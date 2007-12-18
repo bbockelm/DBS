@@ -1,0 +1,10 @@
+<!-- templateRemoteDD.tmpl -->
+
+#import time
+At $time.strftime("%d %b %Y %H:%M:%S GMT",$time.gmtime()) the following
+data discovery services are available:
+#for dd in $ddList
+<a href="$dd">dd</a> contains
+#end for
+
+<!-- end of templateRemoteDD.tmpl -->

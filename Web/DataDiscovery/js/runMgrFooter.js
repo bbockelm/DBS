@@ -6,6 +6,7 @@ function footerMenuText(){
 {label: "RSS", link: "_rss?userMode=runManager", title: "RSS Feeds publish frequently updates about your data"},
 {label: "Sites", link: "_siteSearch?userMode=runManager", title: "Site search: site-based search"},
 {label: "Runs", link: "_runs?userMode=runManager", title: "Run search: run-based search"},
+{label: "Pages", link: "_pages?userMode=runManager", title: "Data discovery world-wide pages"},
 {label: "Help", link: "_help?userMode=runManager", title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: "_contact?userMode=runManager", title: "Contact DBS support team"},
 {label: "View", id:"", link: "javascript:ChangeView()", title: "Define the data view", position: "right"}

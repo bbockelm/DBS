@@ -814,6 +814,22 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _history.exposed=True
 
+    def _pages(self,userMode):
+        try:
+            page = self.genTopHTML(intro=False,userMode=userMode)
+            nameSpace = {
+                         'userMode' : userMode,
+                         'ddList'   : self.ddUrls,
+                        }
+            page+= templateTop(searchList=[nameSpace]).respond()
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in help init function")
+            pass
+            return str(t)
+    _pages.exposed=True
+
     def _help(self,userMode="user",**kwargs):
         try:
             section=""
