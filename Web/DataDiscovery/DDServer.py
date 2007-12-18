@@ -46,10 +46,6 @@ try:
 except:
     pass
 
-# support for web services
-import cElementTree as et
-
-
 # webtools framework
 from Framework import Controller
 from Framework.PluginManager import DeclarePlugin
@@ -204,7 +200,9 @@ class DDServer(DDLogger,Controller):
                'tier'    : ['DataTier'],
                'desc'    : ['MCDescription','TriggerPathDescription','PrimaryDatasetDescription'],
               }
-        self.startupSOAP()
+        self.globalDD=normUrl(self.globalDD)
+        self.dbsdd=normUrl(self.dbsdd)
+        self.sendSOAP("wsAddUrl")
         self.writeLog("DDServer init")
 
     def readyToRun(self):
@@ -227,11 +225,14 @@ class DDServer(DDLogger,Controller):
         securityApi.api.addRole ("DBS admin")
         securityApi.api.addGroup ("dbs_admin")    
 
-    def sendSOAP(self,service,aDict):
+    def sendSOAP(self,service,aDict={}):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
         print envelope
+        print "globalDD",self.globalDD
+        print "dbsdd",self.dbsdd
         # send SOAP message to global Data Discovery
-        sendSOAPMessage(self.globalDD,self.ns,service,envelope,verbose=1)
+        if self.globalDD!=self.dbsdd:
+           sendSOAPMessage(self.globalDD,self.ns,service,envelope,verbose=1)
 
     def redirectPage(self):
         page = self.genTopHTML()
@@ -289,7 +290,8 @@ class DDServer(DDLogger,Controller):
         self.writeLog(data)
         
         request.soap_start = data[:2048]
-        soapreq = et.fromstring(data)
+#        soapreq = et.fromstring(data)
+        soapreq = elementtree.ElementTree.fromstring(data)
         self.writeLog(soapreq)
 
         # find the body of the request and the specific method name that has
@@ -398,7 +400,7 @@ class DDServer(DDLogger,Controller):
         if not xmlDict.has_key('url'):
            return self.wsError("Wrong parameter")
         url = xmlDict['url']
-        if self.ddUrls.count(url)
+        if self.ddUrls.count(url):
            self.ddUrls.append(url)
         print "\n\nwsGetUrl",self.ddUrls
 
