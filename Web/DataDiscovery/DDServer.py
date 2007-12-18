@@ -229,9 +229,12 @@ class DDServer(DDLogger,Controller):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
         # send SOAP message to global Data Discovery
         if self.globalDD!=self.dbsdd:
-           print "\n### Sending SOAP to global DD"
+           print "\n### Sending SOAP to global Data Discovery:"
            print envelope
-           sendSOAPMessage(self.globalDD,self.ns,service,envelope,debug=1)
+           try:
+              sendSOAPMessage(self.globalDD,self.ns,service,envelope,debug=1)
+           except:
+              pass
 
     def redirectPage(self):
         page = self.genTopHTML()
@@ -399,9 +402,9 @@ class DDServer(DDLogger,Controller):
         if not xmlDict.has_key('url'):
            return self.wsError("Wrong parameter")
         url = xmlDict['url']
-        if self.ddUrls.count(url):
+        if not self.ddUrls.count(url):
            self.ddUrls.append(url)
-        print "\n\nwsGetUrl",self.ddUrls
+        print "\n\nwsAddUrl",self.ddUrls
 
     def sendErrorReport(self,iMsg=""):
         """
