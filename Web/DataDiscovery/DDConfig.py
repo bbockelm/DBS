@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','loggerdir','masthead','mastfooter','admin_url','admin_ver','ns']
+    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','loggerdir','masthead','mastfooter','admin_url','admin_ver','ns','global_dd']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -44,6 +44,10 @@ class DDConfig:
                self.configDict[item] = string.split(line,"%s="%keyword)[1]
             if iConfig.has_key(item) and iConfig[item]:
                self.configDict[item] = iConfig[item]
+  def global_dd(self):
+    if not self.configDict.has_key('global_dd'):
+       raise DDException(args="DBS configuration missing global_dd parameter")
+    return self.configDict['global_dd']
   def ns(self):
     if not self.configDict.has_key('ns'):
        return ""

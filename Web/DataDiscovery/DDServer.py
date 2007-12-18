@@ -127,7 +127,7 @@ class DDServer(DDLogger,Controller):
         self.adminUrl = self.ddConfig.adminUrl()
         self.adminVer = self.ddConfig.adminVer()
         self.ns = self.ddConfig.ns()
-        self.globalDD="http://cmsdbs.cern.ch/DBS2_discovery_test/"
+        self.globalDD = self.ddConfig.global_dd()
         self.ddUrls = []
         self.ddUrls.append(self.globalDD)
         self.site = ""
@@ -229,10 +229,14 @@ class DDServer(DDLogger,Controller):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
         # send SOAP message to global Data Discovery
         if self.globalDD!=self.dbsdd:
-           print "\n### Sending SOAP to global Data Discovery:"
-           print envelope
+           if self.verbose:
+              print "\n### Sending SOAP to global Data Discovery:"
+              print envelope
            try:
-              sendSOAPMessage(self.globalDD,self.ns,service,envelope,debug=1)
+              debug=0
+              if self.verbose:
+                 debug=1
+              sendSOAPMessage(self.globalDD,self.ns,service,envelope,debug=debug)
            except:
               pass
 
