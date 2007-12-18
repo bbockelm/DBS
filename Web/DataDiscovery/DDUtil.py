@@ -32,6 +32,10 @@ TIPS= [
 "to send found data to your buddy, use 'bare URL' link at bottom of the page"
 ]
 
+def normUrl(url):
+    path = url.split("http://")[1]
+    return "http://"+os.path.normpath(path)
+    
 def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','not','(',')']):
     oDict={}
     c=0
