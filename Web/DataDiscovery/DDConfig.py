@@ -40,7 +40,7 @@ class DDConfig:
         if line[0]=="#": continue
         for item in iList:
             keyword=string.upper(item)
-            if re.search(keyword,line):
+            if re.match(keyword,line):
                self.configDict[item] = string.split(line,"%s="%keyword)[1]
             if iConfig.has_key(item) and iConfig[item]:
                self.configDict[item] = iConfig[item]
