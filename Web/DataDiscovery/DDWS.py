@@ -3,7 +3,7 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id:$
+# Version: $Id: DDWS.py,v 1.1 2007/12/18 15:50:33 valya Exp $
 """
 Web services toolkit
 """
@@ -66,6 +66,8 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
     try:
 	if debug:
 	    httplib.HTTPConnection.debuglevel = 1
+        if host[:7]=="http://":
+           host=host[7:]
 	http_conn = httplib.HTTP(host)
 	http_conn.putrequest('POST','/ws')
         http_conn.putheader('Host',host)

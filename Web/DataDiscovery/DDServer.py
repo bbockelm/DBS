@@ -227,12 +227,11 @@ class DDServer(DDLogger,Controller):
 
     def sendSOAP(self,service,aDict={}):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
-        print envelope
-        print "globalDD",self.globalDD
-        print "dbsdd",self.dbsdd
         # send SOAP message to global Data Discovery
         if self.globalDD!=self.dbsdd:
-           sendSOAPMessage(self.globalDD,self.ns,service,envelope,verbose=1)
+           print "\n### Sending SOAP to global DD"
+           print envelope
+           sendSOAPMessage(self.globalDD,self.ns,service,envelope,debug=1)
 
     def redirectPage(self):
         page = self.genTopHTML()
