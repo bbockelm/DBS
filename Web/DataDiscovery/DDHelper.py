@@ -816,6 +816,23 @@ MCDescription:      %s
       self.closeConnection(con)
       return oList
 
+  def nDatasets(self):
+      con   = self.connectToDB()
+      nsets =-1
+      try:
+          tblk = self.alias('Block','tblk')
+          oSel =[sqlalchemy.func.count(self.col(tblk,'Path').distinct())]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[tblk] )
+          result = self.getSQLAlchemyResult(con,sel)
+          nsets = result.fetchone()[0]
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in nDatasets"
+      self.closeConnection(con)
+      return nsets
+
   def datasetSummary(self,dataset,watchSite="",htmlMode=""):
       if watchSite.lower()=="any" or watchSite.lower()=="all" or watchSite=="*": watchSite=""
       con   = self.connectToDB()
@@ -2333,6 +2350,7 @@ MCDescription:      %s
 
 #      printListElements(oList,'oList')
       # now let's fill pDict (dict of dataset paths) with SE's
+      condList=[]   
       try:    
           oSel = [self.col(tblk,'Path'),self.col(tse,'SEName')]
           sel  = sqlalchemy.select(oSel,
@@ -2341,7 +2359,6 @@ MCDescription:      %s
                           .join(tse,onclause=self.col(tsb,'SEID')==self.col(tse,'ID'))
                             ],distinct=True )
           sel.append_whereclause(self.col(tse,'SEName')!=sqlalchemy.null())
-          condList=[]   
           for path in pDict.keys():
               condList.append(self.col(tblk,'Path')==path)
           if len(condList): 
