@@ -3,12 +3,12 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.1 2007/12/18 15:50:33 valya Exp $
+# Version: $Id: DDWS.py,v 1.2 2007/12/18 16:34:03 valya Exp $
 """
 Web services toolkit
 """
 
-import os, sys, string, sre, httplib, urllib, inspect
+import os, sys, string, sre, httplib, urllib, urlparse, inspect
 import smtplib, traceback
 
 def parseWSDL(wsdl):
@@ -66,10 +66,14 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
     try:
 	if debug:
 	    httplib.HTTPConnection.debuglevel = 1
-        if host[:7]=="http://":
-           host=host[7:]
+        if host[:7]!="http://":
+           raise "invalid URL '%s' it should be in a form http://url"%host
+        hList = urlparse.urlparse(host)
+        host = hList[1]
+        path = hList[2]
+        ws="%s/ws"%path
 	http_conn = httplib.HTTP(host)
-	http_conn.putrequest('POST','/ws')
+	http_conn.putrequest('POST',ws)
         http_conn.putheader('Host',host)
         http_conn.putheader('Content-Type','text/xml; charset=utf-8')
         http_conn.putheader('Content-Length',str(len(envelope)))
@@ -101,7 +105,8 @@ if __name__ == "__main__":
    x = 1
    verbose = 0
    test    = 1
-   usage ="""DDWS.py [ -help ] [ -listServices ] [ -verbose ]
+   host    = "localhost:8030"
+   usage ="""DDWS.py [ -help ] [ -listServices ] [ -verbose ] [ -host ]
            [ -<serviceName> [<param>=<value> <param>=<value>] ]
 	   
            Examples: DDWS.py -wsGetDatasetSummary dataset=/a/b/c
@@ -127,7 +132,10 @@ if __name__ == "__main__":
      if sys.argv[x]=="-help":
         print usage
 	sys.exit()
-     if x < len(sys.argv) and sys.argv[x][0]=="-" and sys.argv[x]!="-inject":
+     if sys.argv[x]=="-host":
+	host=sys.argv[x+1]
+        x+=2
+     if x < len(sys.argv) and sys.argv[x][0]=="-":
 	service=sys.argv[x][1:]
 	x+=1
 	listArgs=sys.argv[x:]
@@ -151,7 +159,7 @@ if __name__ == "__main__":
             aDict[name]=value
 	    x+=1
    ns="CMS_DBS"
-   host="localhost:8030"
+   print host,ns,service
    envelope=constructSOAPEnvelope(ns,service,aDict)
    sendSOAPMessage(host,ns,service,envelope,verbose)
 
