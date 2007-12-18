@@ -3,8 +3,12 @@
 #import time
 At $time.strftime("%d %b %Y %H:%M:%S GMT",$time.gmtime()) the following
 data discovery services are available:
+<ul>
 #for dd in $ddList
-<a href="$dd">dd</a> contains
+<li>
+<a href="$dd">$dd</a> contains
+</li>
 #end for
+</ul>
 
 <!-- end of templateRemoteDD.tmpl -->
