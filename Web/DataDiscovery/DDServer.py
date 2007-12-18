@@ -202,7 +202,7 @@ class DDServer(DDLogger,Controller):
               }
         self.globalDD=normUrl(self.globalDD)
         self.dbsdd=normUrl(self.dbsdd)
-        self.sendSOAP("wsAddUrl")
+        self.sendSOAP("wsAddUrl",{'url':self.dbsdd})
         self.writeLog("DDServer init")
 
     def readyToRun(self):
