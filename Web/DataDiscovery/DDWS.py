@@ -3,7 +3,7 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.4 2007/12/19 15:24:02 valya Exp $
+# Version: $Id: DDWS.py,v 1.5 2007/12/19 20:23:42 valya Exp $
 """
 Web services toolkit
 """
@@ -124,7 +124,7 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
         if debug:
            print "\n### sendSOAPMessage host='%s' and ws='%s'"%(host,ws)
         conn = httplib.HTTPConnection(host)
-        headers={'Content-Type':'text/xml; charset=utf-8','SOAPAction':ns+method}
+        headers={'Content-Type':'application/xml','SOAPAction':ns+method}
         conn.request("POST",ws,envelope,headers)
         response = conn.getresponse()
         print "+++",response.status, response.reason
