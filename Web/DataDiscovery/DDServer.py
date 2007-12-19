@@ -229,7 +229,7 @@ class DDServer(DDLogger,Controller):
     def sendSOAP(self,host,service,aDict={}):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
         if self.verbose:
-           print "### Host %s sends the following msg to %s"%self.dbsdd,host
+           print "### Host %s sends the following msg to %s"%(self.dbsdd,host)
            print envelope
         try:
            debug=0
