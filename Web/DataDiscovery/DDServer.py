@@ -202,7 +202,8 @@ class DDServer(DDLogger,Controller):
               }
         self.globalDD=normUrl(self.globalDD)
         self.dbsdd=normUrl(self.dbsdd)
-        self.sendSOAP("wsAddUrl",{'url':self.dbsdd})
+        if self.globalDD!=self.dbsdd:
+           self.sendSOAP(self.globalDD,"wsAddUrl",{'url':self.dbsdd,'reply':self.dbsdd})
         self.writeLog("DDServer init")
 
     def readyToRun(self):
@@ -225,20 +226,17 @@ class DDServer(DDLogger,Controller):
         securityApi.api.addRole ("DBS admin")
         securityApi.api.addGroup ("dbs_admin")    
 
-    def sendSOAP(self,service,aDict={}):
+    def sendSOAP(self,host,service,aDict={}):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
-        # send SOAP message to global Data Discovery
-        if self.globalDD!=self.dbsdd:
+        if self.verbose:
+           print envelope
+        try:
+           debug=0
            if self.verbose:
-              print "\n### Sending SOAP to global Data Discovery:"
-              print envelope
-           try:
-              debug=0
-              if self.verbose:
-                 debug=1
-              sendSOAPMessage(self.globalDD,self.ns,service,envelope,debug=debug)
-           except:
-              pass
+              debug=1
+           sendSOAPMessage(host,self.ns,service,envelope,debug=debug)
+        except:
+           pass
 
     def redirectPage(self):
         page = self.genTopHTML()
@@ -296,7 +294,6 @@ class DDServer(DDLogger,Controller):
         self.writeLog(data)
         
         request.soap_start = data[:2048]
-#        soapreq = et.fromstring(data)
         soapreq = elementtree.ElementTree.fromstring(data)
         self.writeLog(soapreq)
 
@@ -322,19 +319,17 @@ class DDServer(DDLogger,Controller):
 
     ws.exposed=True
 
-    def soapTopEnvelop(self):
+    def soapMsg(self,msg):
         page="""
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-"""
-        return page
-
-    def soapBottomEnvelop(self):
-        page="""
+    <DDResponse xmlns="%s">"""%self.ns
+        page+=msg
+        page+="""
+    </DDResponse>
   </soap:Body>
-</soap:Envelope>
-"""
+</soap:Envelope>"""
         return page
 
     def parseWSInput(self,**kwargs):
@@ -350,39 +345,28 @@ class DDServer(DDLogger,Controller):
 
     def wsError(self,msg):
         self.setContentType('xml')
-        page =self.soapTopEnvelop()
-        page+="""<ddError>%s</ddError>"""%msg
-        page+=self.soapBottomEnvelop()
+        page=self.soapMsg("""<ddError>%s</ddError>"""%msg)
         return page
 
     def wsGetNDatasets(self,**kwargs):
         self.setContentType('xml')
-        page =self.soapTopEnvelop()
         xmlDict=self.parseWSInput(**kwargs)
         nsets = self.helper.nDatasets()
-        page+="""
-    <DDResponse xmlns="%s">
-      <NumberOfDatasets>
-        <int>%s</int>
-      </NumberOfDatasets>
-    </DDResponse>
-        """%(self.ns,nsets)
-        page+=self.soapBottomEnvelop()
+        msg="""<NumberOfDatasets><int>%s</int></NumberOfDatasets>"""%nsets
+        page=self.soapMsg(msg)
         self.writeLog(page)
         return page
     wsGetNDatasets.exposed=True
 
     def wsGetDatasetSummary(self,**kwargs):
         self.setContentType('xml')
-        page =self.soapTopEnvelop()
         xmlDict=self.parseWSInput(**kwargs)
         if not xmlDict.has_key('dataset'):
            return self.wsError("Wrong parameter")
         oDict,mDict = self.helper.datasetSummary(xmlDict['dataset'])
         key=mDict.keys()[0]
         prdDate,cBy,nblks,blkSize,nFiles,nEvts=mDict[key]
-        page+="""
-    <DDResponse xmlns="%s">
+        msg="""
       <Dataset>
         <string>%s</string>
         <string>%s</string>
@@ -392,23 +376,24 @@ class DDServer(DDLogger,Controller):
         <int>%s</int>
         <int>%s</int>
       </Dataset>
-    </DDResponse>
-        """%(self.ns,key,prdDate,cBy,nblks,blkSize,nFiles,nEvts)
-        page+=self.soapBottomEnvelop()
+        """%(key,prdDate,cBy,nblks,blkSize,nFiles,nEvts)
+        page=self.soapMsg(msg)
         self.writeLog(page)
         return page
     wsGetDatasetSummary.exposed=True
 
     def wsAddUrl(self,**kwargs):
         self.setContentType('xml')
-        page =self.soapTopEnvelop()
         xmlDict=self.parseWSInput(**kwargs)
         if not xmlDict.has_key('url'):
            return self.wsError("Wrong parameter")
         url = xmlDict['url']
         if not self.ddUrls.count(url):
            self.ddUrls.append(url)
-        print "\n\nwsAddUrl",self.ddUrls
+        if xmlDict.has_key('reply'):
+           aDict={}
+           aDict['url']=self.ddUrls
+           self.sendSOAP(xmlDict['reply'],"wsAddUrl",aDict)
 
     def sendErrorReport(self,iMsg=""):
         """

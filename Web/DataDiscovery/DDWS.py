@@ -3,13 +3,13 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.2 2007/12/18 16:34:03 valya Exp $
+# Version: $Id: DDWS.py,v 1.3 2007/12/18 16:56:55 valya Exp $
 """
 Web services toolkit
 """
 
 import os, sys, string, sre, httplib, urllib, urlparse, inspect
-import smtplib, traceback
+import types, smtplib, traceback
 
 def parseWSDL(wsdl):
     """Parse a wsdl file. So far we use urllib to do a job to read content of the file"""
@@ -44,7 +44,11 @@ def soapBody(ns,method,aDict):
     for key in aDict.keys():
         argName=key
         argValue=aDict[key]
-        envelope+="\n      <%s>%s</%s>"%(argName,argValue,argName)
+        if type(argValue) is types.ListType:
+           for val in argValue:
+               envelope+="\n      <%s>%s</%s>"%(argName,val,argName)
+        else:
+           envelope+="\n      <%s>%s</%s>"%(argName,argValue,argName)
     envelope+="""
     </%s>
   </soap:Body>"""%method
@@ -105,7 +109,7 @@ if __name__ == "__main__":
    x = 1
    verbose = 0
    test    = 1
-   host    = "localhost:8030"
+   host    = "http://localhost:8030"
    usage ="""DDWS.py [ -help ] [ -listServices ] [ -verbose ] [ -host ]
            [ -<serviceName> [<param>=<value> <param>=<value>] ]
 	   
