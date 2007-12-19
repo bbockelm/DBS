@@ -3,7 +3,7 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.3 2007/12/18 16:56:55 valya Exp $
+# Version: $Id: DDWS.py,v 1.4 2007/12/19 15:24:02 valya Exp $
 """
 Web services toolkit
 """
@@ -56,7 +56,7 @@ def soapBody(ns,method,aDict):
     
 def endEnvelope():
     """Add end statement to soap envelop"""
-    envelope="""</soap:Envelope>"""
+    envelope="""\n</soap:Envelope>"""
     return envelope
 
 def constructSOAPEnvelope(ns,method,aDict):
@@ -65,17 +65,20 @@ def constructSOAPEnvelope(ns,method,aDict):
     envelope=soapEnvelope()+soapBody(ns,method,aDict)+endEnvelope()
     return envelope
     
-def sendSOAPMessage(host,ns,method,envelope,debug=0):
+def sendSOAPMessage_v1(host,ns,method,envelope,debug=0):
     """Send soap message to cougar.cs.cornell.edu. Right now we use httplib to do a job"""
+    http_conn=""
     try:
 	if debug:
-	    httplib.HTTPConnection.debuglevel = 1
+	    httplib.HTTPConnection.debuglevel = 3
         if host[:7]!="http://":
            raise "invalid URL '%s' it should be in a form http://url"%host
         hList = urlparse.urlparse(host)
         host = hList[1]
         path = hList[2]
         ws="%s/ws"%path
+        if debug:
+           print "\n### sendSOAPMessage host='%s' and ws='%s'"%(host,ws)
 	http_conn = httplib.HTTP(host)
 	http_conn.putrequest('POST',ws)
         http_conn.putheader('Host',host)
@@ -99,9 +102,41 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
 	    print reply
 	    print "*** Incoming SOAP ", "*"*54
 	    print response
+        http_conn.close()
     except:
+        if http_conn:
+           http_conn.close()
 	# Write out the exception to stderr
         sys.excepthook( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2] )
+
+def sendSOAPMessage(host,ns,method,envelope,debug=0):
+    """Send soap message to cougar.cs.cornell.edu. Right now we use httplib to do a job"""
+    conn=""
+    try:
+        if debug:
+            httplib.HTTPConnection.debuglevel = 1
+        if host[:7]!="http://":
+           raise "invalid URL '%s' it should be in a form http://url"%host
+        hList = urlparse.urlparse(host)
+        host = hList[1]
+        path = hList[2]
+        ws="%s/ws"%path
+        if debug:
+           print "\n### sendSOAPMessage host='%s' and ws='%s'"%(host,ws)
+        conn = httplib.HTTPConnection(host)
+        headers={'Content-Type':'text/xml; charset=utf-8','SOAPAction':ns+method}
+        conn.request("POST",ws,envelope,headers)
+        response = conn.getresponse()
+        print "+++",response.status, response.reason
+        data = response.read()
+        print data
+        conn.close()
+    except:
+        if conn:
+           conn.close()
+        # Write out the exception to stderr
+        sys.excepthook( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2] )
+
 #
 # MAIN
 #
