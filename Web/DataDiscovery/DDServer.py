@@ -392,9 +392,12 @@ class DDServer(DDLogger,Controller):
         if not self.ddUrls.count(url):
            self.ddUrls.append(url)
         if xmlDict.has_key('reply'):
+           host=xmlDict['reply']
+           if self.verbose:
+              print "### I need to reply to",host
            aDict={}
            aDict['url']=self.ddUrls
-           self.sendSOAP(xmlDict['reply'],"wsAddUrl",aDict)
+           self.sendSOAP(host,"wsAddUrl",aDict)
 
     def sendErrorReport(self,iMsg=""):
         """
