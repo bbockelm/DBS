@@ -3,7 +3,7 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.6 2007/12/19 20:51:46 valya Exp $
+# Version: $Id: DDWS.py,v 1.7 2007/12/20 14:16:37 valya Exp $
 """
 Web services toolkit
 """
@@ -71,7 +71,7 @@ def sendSOAPMessage_v1(host,ns,method,envelope,debug=0):
     try:
 	if debug:
 	    httplib.HTTPConnection.debuglevel = 3
-        if host[:7]!="http://" or host[:8]!="https://":
+        if not (host[:7]=="http://" or host[:8]=="https://"):
            raise "invalid URL '%s' it should be in a form http://url or https://url"%host
         hList = urlparse.urlparse(host)
         host = hList[1]
@@ -115,7 +115,7 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
     try:
         if debug:
             httplib.HTTPConnection.debuglevel = 1
-        if host[:7]!="http://" or host[:8]!="https://":
+        if not (host[:7]=="http://" or host[:8]=="https://"):
            raise "invalid URL '%s' it should be in a form http://url or https://url"%host
         hList = urlparse.urlparse(host)
         host = hList[1]
