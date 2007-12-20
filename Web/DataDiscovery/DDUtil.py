@@ -33,8 +33,15 @@ TIPS= [
 ]
 
 def normUrl(url):
-    path = url.split("http://")[1]
-    return "http://"+os.path.normpath(path)
+    try:
+        path = url.split("http://")[1]
+        return "http://"+os.path.normpath(path)
+    except:
+        try:
+            path = url.split("https://")[1]
+            return "http://"+os.path.normpath(path)
+        except:
+            raise "Fail to normalize URL",url
     
 def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','not','(',')']):
     oDict={}
