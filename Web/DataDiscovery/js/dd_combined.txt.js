@@ -1438,23 +1438,23 @@ function CheckOperator() {
 function load(url) {
   window.location.href=url;
 }
-function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,date,idx,ajax,userMode) {
-   var pagerStep=$('pagerStep').value;
+function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,date,idx,ajax,userMode,pagerId) {
+   var pagerStep=$('pagerStep'+pagerId).value;
    var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&primType='+primType+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
-function LoadAnalysisDS(dbsInst,idx,ajax,userMode) {
-   var pagerStep=$('pagerStep').value;
+function LoadAnalysisDS(dbsInst,idx,ajax,userMode,pagerId) {
+   var pagerStep=$('pagerStep'+pagerId).value;
    var url='findAnalysisDS?dbsInst='+dbsInst+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
-function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx) {
-   var pagerStep=$('pagerStep').value;
+function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx,pagerId) {
+   var pagerStep=$('pagerStep'+pagerId).value;
    var url='getFileBlocks?dbsInst='+dbsInst+'&site='+site+'&ajax='+ajax+'&userMode='+userMode+'&idx='+idx+'&pagerStep='+pagerStep;
    load(url);
 }
-function LoadGetRunsFromRange(dbsInst,primD,primType,minRun,maxRun,idx,ajax,userMode) {
-   var pagerStep=$('pagerStep').value;
+function LoadGetRunsFromRange(dbsInst,primD,primType,minRun,maxRun,idx,ajax,userMode,pagerId) {
+   var pagerStep=$('pagerStep'+pagerId).value;
    var url='getRunsFromRange?dbsInst='+dbsInst+'primD='+primD+'primType='+primType+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }

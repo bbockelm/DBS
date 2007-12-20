@@ -9,7 +9,7 @@ Number of $nameForPager per page
 $pList.append(int($pagerStep))
 #end if
 $pList.sort()
-<select id="pagerStep" name="pagerStep" onchange="$onchange">
+<select id="pagerStep$pagerId" name="pagerStep" onchange="$onchange">
 #for item in $pList
 
 #if $item==int($pagerStep)
@@ -24,5 +24,4 @@ $pList.sort()
 $rPage
 </td></tr></table>
 </div>
-
 <!-- end of templatePagerStep.tmpl -->

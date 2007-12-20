@@ -1397,6 +1397,7 @@ class DDServer(DDLogger,Controller):
            else:
               _date=time.strftime("%Y/%m/%d",time.gmtime(int(date)))
         # I re-use this dict for different templates
+        pagerId=1
         _nameSpace = {
                      'nDatasets': nDatasets,
                      'datasetList': datasetsList,
@@ -1420,8 +1421,9 @@ class DDServer(DDLogger,Controller):
                      'style'    : "margin-top:-20px",
                      'rPage'    : rPage,
                      'pagerStep': pagerStep,
+                     'pagerId'  : pagerId,
                      'nameForPager': "datasets",
-                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode)
+                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId)
                     }
         t = templateSnapshot(searchList=[_nameSpace]).respond()
         snapshot=str(t)
@@ -1450,6 +1452,9 @@ class DDServer(DDLogger,Controller):
         # end of response tag
         page+="""</div><hr class="dbs" />"""
         _nameSpace['style']="" # change style for the pager
+        pagerId+=1
+        _nameSpace['pagerId']=pagerId
+        _nameSpace['onchange']="javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId)
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
         
@@ -1801,12 +1806,14 @@ class DDServer(DDLogger,Controller):
             if _idx and (_idx*pagerStep)>nResults:
                return "No data found for this request"
             ##### end of the pager
+            pagerId=1
             _nameSpace = {
                          'style'    : "",
                          'rPage'    : rPage,
                          'pagerStep': pagerStep,
+                         'pagerId'  : pagerId,
                          'nameForPager': "rows",
-                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode)
+                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
                         }
             t = templatePagerStep(searchList=[_nameSpace]).respond()
             pagerPage=str(t)
@@ -1825,7 +1832,12 @@ class DDServer(DDLogger,Controller):
                             }
                 t = templateRunsInfo(searchList=[nameSpace]).respond()
                 page+=str(t)
-                page+=pagerPage
+                pagerId+=1
+                _nameSpace['pagerId']=pagerId
+                _nameSpace['onchange']="javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
+                t = templatePagerStep(searchList=[_nameSpace]).respond()
+                page+=str(t)
+#                page+=pagerPage
         except:
             t=self.errorReport("Fail in getRunsFromRange function")
             page+=str(t)
@@ -2220,7 +2232,7 @@ All LFNs in a block
            rPage+="""<a href="findAnalysisDS?dbsInst=%s&_idx=%s&userMode=%s&pagerStep=%s"> %s </a> """%(dbsInst,index,userMode,pagerStep,ref)
         if nDatasets>(_idx+1)*pagerStep:
            rPage+="""<a href="findAnalysisDS?dbsInst=%s&_idx=%s&userMode=%s&pagerStep=%s">Next &#187;</a>"""%(dbsInst,_idx+1,userMode,pagerStep)
-
+        pagerId=1
         _nameSpace = {
                      'nDatasets': nDatasets,
                      'userMode' : userMode,
@@ -2230,8 +2242,9 @@ All LFNs in a block
                      'style'    : "margin-top:-20px",
                      'rPage'    : rPage,
                      'pagerStep': pagerStep,
+                     'pagerId'  : paherId,
                      'nameForPager': "analysis datasets",
-                     'onchange' : "javascript:LoadAnalysisDS('%s','%s','%s')"%(dbsInst,_idx,userMode)
+                     'onchange' : "javascript:LoadAnalysisDS('%s','%s','%s','%s')"%(dbsInst,_idx,userMode,pagerId)
                     }
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         snapshot=str(t)
@@ -2245,6 +2258,11 @@ All LFNs in a block
             nameSpace={'dList':dList,'dbsInst':dbsInst,'path':"*",'userMode':userMode,'appPath':"/*/*/*",'full':0}
             t = templateAnalysisDS(searchList=[nameSpace]).respond()
 	    page+=str(t)
+        pagerId+=1
+        _nameSpace['pagerId']=pagerId
+        _nameSpace['onchange']="javascript:LoadAnalysisDS('%s','%s','%s','%s')"%(dbsInst,_idx,userMode,pagerId)
+        t = templatePagerStep(searchList=[_nameSpace]).respond()
+        snapshot=str(t)
         page+="<p>"+snapshot+"</p>"
         page+=self.genBottomHTML()
         return page       
@@ -2269,12 +2287,14 @@ All LFNs in a block
             if len(dbsList): rPage+=" | "
         if len(dbsList):
            rPage+="""<a href="getFileBlocks?dbsInst=%s&site=%s&ajax=0&userMode=%s&_idx=%s&pagerStep=%s"> Next &#187;</a> """%(dbsInst,site,userMode,_idx+1,pagerStep)
+        pagerId=1
         _nameSpace = {
                      'rPage'       : rPage,
                      'style'       : "",
                      'pagerStep'   : pagerStep,
+                     'pagerId'     : pagerId,
                      'nameForPager': "blocks",
-                     'onchange'    : "javascript:LoadGetFileBlocks('%s','%s','%s','%s','%s','%s')"%(dbsInst,site,ajax,userMode,int(_idx),int(pagerStep))
+                     'onchange'    : "javascript:LoadGetFileBlocks('%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,ajax,userMode,int(_idx),int(pagerStep),pagerId)
         }
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
@@ -2288,6 +2308,9 @@ All LFNs in a block
                     }
         t = templateDbsInfoTableEntry(searchList=[nameSpace]).respond()
         page+=str(t)
+        pagerId+=1
+        _nameSpace['pagerId']=pagerId
+        _nameSpace['onchange']="javascript:LoadGetFileBlocks('%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,ajax,userMode,int(_idx),int(pagerStep),pagerId)
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
         if  int(ajax):
