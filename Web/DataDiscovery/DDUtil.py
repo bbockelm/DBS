@@ -39,7 +39,7 @@ def normUrl(url):
     except:
         try:
             path = url.split("https://")[1]
-            return "http://"+os.path.normpath(path)
+            return "https://"+os.path.normpath(path)
         except:
             raise "Fail to normalize URL",url
     

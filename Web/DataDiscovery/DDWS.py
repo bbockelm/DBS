@@ -3,7 +3,7 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.7 2007/12/20 14:16:37 valya Exp $
+# Version: $Id: DDWS.py,v 1.8 2007/12/20 14:47:41 valya Exp $
 """
 Web services toolkit
 """
@@ -118,12 +118,18 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
         if not (host[:7]=="http://" or host[:8]=="https://"):
            raise "invalid URL '%s' it should be in a form http://url or https://url"%host
         hList = urlparse.urlparse(host)
-        host = hList[1]
-        path = hList[2]
+        scheme= hList[0]
+        host  = hList[1]
+        path  = hList[2]
         ws="%s/ws"%path
         if debug:
            print "\n### sendSOAPMessage host='%s' and ws='%s'"%(host,ws)
-        conn = httplib.HTTPConnection(host)
+        if scheme=="http":
+           conn = httplib.HTTPConnection(host)
+        elif scheme=="https":
+           conn = httplib.HTTPSConnection(host)
+        else:
+           raise "Unkonwn schema '%s'"%scheme
         headers={'Content-Type':'application/xml','SOAPAction':ns+method}
         conn.request("POST",ws,envelope,headers)
         response = conn.getresponse()
