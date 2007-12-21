@@ -447,6 +447,11 @@ def printListElements(iList,msg=""):
     for item in iList:
         print item 
         
+def printDict(iDict):
+    for key in iDict.keys():
+        print key
+        print iDict[key]
+
 def formattingDictPrint(iDict):
     """
        print dictionary in formated way, e.g.
