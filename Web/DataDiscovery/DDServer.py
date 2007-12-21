@@ -281,41 +281,33 @@ class DDServer(DDLogger,Controller):
                cherrypy.response.headerMap['Content-Type'] = "text/html"
 
     def ws(self,**kwargs):
-        print "\n\n #### ws ### "
         self.namespace_expr = re.compile(r'^\{.*\}')
         # get request data and produce an ElementTree that we can work with.
         request = cherrypy.request
-#        print "\n\n### Request dictionary",printDict(request.__dict__)
-        self.writeLog(request)
+        if self.verbose==2:
+           self.writeLog(printDict(request.__dict__))
         
         response = cherrypy.response
-#        print "\n\n### Respnse dictionary",printDict(response.__dict__)
+        if self.verbose==2:
+           self.writeLog(printDict(response.__dict__))
         if request.headers.has_key('Content-Length'):
            clen = int(request.headers.get('Content-Length'))
         else:
            clen = 0
         data = request.body.read(clen)
-        self.writeLog(data)
         
         request.soap_start = data[:2048]
         soapreq = elementtree.ElementTree.fromstring(data)
-        self.writeLog(soapreq)
 
         # find the body of the request and the specific method name that has
         # been requested.
         body = soapreq.find("{http://schemas.xmlsoap.org/soap/envelope/}Body")
-        self.writeLog("body0="+repr(body))
         body = body.getchildren()[0]
-        self.writeLog("body1="+repr(body))
 
         methodname = body.tag
         methodname = self.namespace_expr.sub("", methodname)
-        self.writeLog(methodname)
-
         request.soap_method = methodname
-
         method=getattr(self,methodname)
-        self.writeLog(method)
 
         params = {"_ws" : True}
         params["xml_body"] = body

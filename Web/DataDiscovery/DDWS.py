@@ -3,7 +3,7 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.9 2007/12/20 15:31:11 valya Exp $
+# Version: $Id: DDWS.py,v 1.10 2007/12/21 17:09:09 valya Exp $
 """
 Web services toolkit
 """
@@ -110,6 +110,8 @@ def sendSOAPMessage_v1(host,ns,method,envelope,debug=0):
         sys.excepthook( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2] )
 
 def getConnection(scheme,host):
+    time.sleep(1) # let's try again to establish connection
+#    yield 1
     conn=""
     if scheme=="http":
        conn = httplib.HTTPConnection(host)
@@ -120,7 +122,7 @@ def getConnection(scheme,host):
     try:
        conn.connect()
     except:
-       time.sleep(5) # let's try again to establish connection
+       time.sleep(1) # let's try again to establish connection
        if scheme=="http":
           conn = httplib.HTTPConnection(host)
        elif scheme=="https":
@@ -132,6 +134,7 @@ def getConnection(scheme,host):
 def sendSOAPMessage(host,ns,method,envelope,debug=0):
     """Send soap message to cougar.cs.cornell.edu. Right now we use httplib to do a job"""
     conn=""
+    _host="%s"%host
     try:
         if debug:
             httplib.HTTPConnection.debuglevel = 1
@@ -146,7 +149,7 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
            print "\n### sendSOAPMessage host='%s' and ws='%s'"%(host,ws)
         conn=getConnection(scheme,host)
         headers={'Content-Type':'application/xml','SOAPAction':ns+method}
-        conn.request("POST",ws,envelope,headers)
+        conn.request("POST","%s/ws"%_host,envelope,headers)
         response = conn.getresponse()
         print "+++",response.status, response.reason
         data = response.read()
