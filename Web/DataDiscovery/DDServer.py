@@ -11,7 +11,7 @@ DBS data discovery server module.
 
 # system modules
 import os, string, logging, types, time, socket, socket, urlparse, random, urllib, difflib
-import smtplib, tempfile, zlib
+import thread, smtplib, tempfile, zlib
 import xml.sax, xml.sax.handler
 from   xml.sax.saxutils import escape
 
@@ -392,12 +392,17 @@ class DDServer(DDLogger,Controller):
         if not self.ddUrls.count(url):
            self.ddUrls.append(url)
         if xmlDict.has_key('reply'):
+           import thread
+           vlock = thread.allocate_lock()
            host=xmlDict['reply']
+           debug=0
            if self.verbose:
+              debug=1
               print "### I need to reply to",host
            aDict={}
            aDict['url']=self.ddUrls
-           self.sendSOAP(host,"wsAddUrl",aDict)
+#           self.sendSOAP(host,"wsAddUrl",aDict)
+           thread.start_new_thread(self.sendSOAP,(host,"wsAddUrl",aDict,debug))
 
     def sendErrorReport(self,iMsg=""):
         """
@@ -4366,6 +4371,8 @@ Save query as:
                                
         conf = {'/'         : {'tools.staticdir.root': os.getcwd(),
                                'tools.response_headers.on':True,
+                               'tools.etags.on':True,
+                               'tools.etags.autotags':True,
                                'tools.response_headers.headers':
                               [('Expires','Mon, 26 Jul 1997 05:00:00 GMT'),
                                ('Accept-Encoding','gzip'),

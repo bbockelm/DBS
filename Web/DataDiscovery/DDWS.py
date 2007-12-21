@@ -3,13 +3,13 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.8 2007/12/20 14:47:41 valya Exp $
+# Version: $Id: DDWS.py,v 1.9 2007/12/20 15:31:11 valya Exp $
 """
 Web services toolkit
 """
 
 import os, sys, string, sre, httplib, urllib, urlparse, inspect
-import types, smtplib, traceback
+import types, smtplib, traceback, time
 
 def parseWSDL(wsdl):
     """Parse a wsdl file. So far we use urllib to do a job to read content of the file"""
@@ -109,6 +109,26 @@ def sendSOAPMessage_v1(host,ns,method,envelope,debug=0):
 	# Write out the exception to stderr
         sys.excepthook( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2] )
 
+def getConnection(scheme,host):
+    conn=""
+    if scheme=="http":
+       conn = httplib.HTTPConnection(host)
+    elif scheme=="https":
+       conn = httplib.HTTPSConnection(host)
+    else:
+       raise "Unkonwn schema '%s'"%scheme
+    try:
+       conn.connect()
+    except:
+       time.sleep(5) # let's try again to establish connection
+       if scheme=="http":
+          conn = httplib.HTTPConnection(host)
+       elif scheme=="https":
+          conn = httplib.HTTPSConnection(host)
+       else:
+          raise "Unkonwn schema '%s'"%scheme
+    return conn
+
 def sendSOAPMessage(host,ns,method,envelope,debug=0):
     """Send soap message to cougar.cs.cornell.edu. Right now we use httplib to do a job"""
     conn=""
@@ -124,12 +144,7 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
         ws="%s/ws"%path
         if debug:
            print "\n### sendSOAPMessage host='%s' and ws='%s'"%(host,ws)
-        if scheme=="http":
-           conn = httplib.HTTPConnection(host)
-        elif scheme=="https":
-           conn = httplib.HTTPSConnection(host)
-        else:
-           raise "Unkonwn schema '%s'"%scheme
+        conn=getConnection(scheme,host)
         headers={'Content-Type':'application/xml','SOAPAction':ns+method}
         conn.request("POST",ws,envelope,headers)
         response = conn.getresponse()
