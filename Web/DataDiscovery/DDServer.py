@@ -211,10 +211,10 @@ class DDServer(DDLogger,Controller):
         self.baseUrl = opts.baseUrl
 #        self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
-#        self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
-#        self.footerUrl=self.baseUrl+"sitedb/Common/footer"
-        self.mastheadUrl=self.baseUrl+"Common/masthead"
-        self.footerUrl=self.baseUrl+"Common/footer"
+        self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
+        self.footerUrl=self.baseUrl+"sitedb/Common/footer"
+#        self.mastheadUrl=self.baseUrl+"Common/masthead"
+#        self.footerUrl=self.baseUrl+"Common/footer"
         self.topUrl=self.baseUrl+"DDServer/"
         try:
            self.verbose=opts.verbose
@@ -386,10 +386,7 @@ class DDServer(DDLogger,Controller):
         url = xmlDict['url']
         if not self.ddUrls.count(url):
            self.ddUrls.append(url)
-        msg="<ok></ok>"
-        page=self.soapMsg(msg)
         if xmlDict.has_key('reply'):
-           import thread
            vlock = thread.allocate_lock()
            host=xmlDict['reply']
            debug=0
@@ -400,8 +397,6 @@ class DDServer(DDLogger,Controller):
            aDict['url']=self.ddUrls
 #           self.sendSOAP(host,"wsAddUrl",aDict)
            thread.start_new_thread(self.sendSOAP,(host,"wsAddUrl",aDict))
-        return page
-    wsAddUrl.exposed=True
 
     def sendErrorReport(self,iMsg=""):
         """
