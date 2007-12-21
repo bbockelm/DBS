@@ -281,12 +281,15 @@ class DDServer(DDLogger,Controller):
                cherrypy.response.headerMap['Content-Type'] = "text/html"
 
     def ws(self,**kwargs):
+        print "\n\n #### ws ### "
         self.namespace_expr = re.compile(r'^\{.*\}')
         # get request data and produce an ElementTree that we can work with.
         request = cherrypy.request
+#        print "\n\n### Request dictionary",printDict(request.__dict__)
         self.writeLog(request)
         
         response = cherrypy.response
+#        print "\n\n### Respnse dictionary",printDict(response.__dict__)
         if request.headers.has_key('Content-Length'):
            clen = int(request.headers.get('Content-Length'))
         else:
@@ -391,6 +394,8 @@ class DDServer(DDLogger,Controller):
         url = xmlDict['url']
         if not self.ddUrls.count(url):
            self.ddUrls.append(url)
+        msg="<ok></ok>"
+        page=self.soapMsg(msg)
         if xmlDict.has_key('reply'):
            import thread
            vlock = thread.allocate_lock()
@@ -402,7 +407,9 @@ class DDServer(DDLogger,Controller):
            aDict={}
            aDict['url']=self.ddUrls
 #           self.sendSOAP(host,"wsAddUrl",aDict)
-           thread.start_new_thread(self.sendSOAP,(host,"wsAddUrl",aDict,debug))
+           thread.start_new_thread(self.sendSOAP,(host,"wsAddUrl",aDict))
+        return page
+    wsAddUrl.exposed=True
 
     def sendErrorReport(self,iMsg=""):
         """
