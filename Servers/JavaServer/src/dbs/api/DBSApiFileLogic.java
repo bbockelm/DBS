@@ -1,6 +1,6 @@
 /**
- $Revision: 1.81 $"
- $Id: DBSApiFileLogic.java,v 1.81 2007/12/14 17:26:19 sekhri Exp $"
+ $Revision: 1.82 $"
+ $Id: DBSApiFileLogic.java,v 1.82 2007/12/14 22:49:59 afaq Exp $"
  *
  */
 
@@ -304,7 +304,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		} //if userJustPath
 		//if old client then send empty xml
 		boolean oldClients = false;
-		System.out.println("clientVersion " + clientVersion + " clientVersion.compareTo DBS_1_0_8 " + clientVersion.compareTo("DBS_1_0_8") );
+		//System.out.println("clientVersion " + clientVersion + " clientVersion.compareTo DBS_1_0_8 " + clientVersion.compareTo("DBS_1_0_8") );
 		if(clientVersion.compareTo("DBS_1_0_8") < 0) oldClients = true;
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
@@ -751,6 +751,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Tier List Check, matchWithFileTiers throws exception in case of error
 		String blockPath = blockName.split("#")[0];
                 String[] blockPathTokens = blockPath.split("/");
+		if (blockPathTokens.length < 3)
+			throw new DBSException("Wrong Parameters", "1038",
+                                                        "User must provide a valid blockName");
                 matchWithFileTiers(files, parseTierVec(blockPathTokens[3]), blockName);
 
                 String blockID = null;
