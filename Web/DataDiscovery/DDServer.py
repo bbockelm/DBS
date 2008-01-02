@@ -2005,9 +2005,9 @@ All LFNs in a block
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             if run and run!="*":
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s, run %s'%(site,run),userMode)
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\', run %s'%(site,run),userMode)
             else:
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s'%site,userMode)
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\''%site,userMode)
             bList=[]
             try:
                 lfnList=self.helper.getLFNsFromSite(site,datasetPath,run)

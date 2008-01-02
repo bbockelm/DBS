@@ -849,11 +849,13 @@ MCDescription:      %s
           oSel = [self.col(tprd,'CreationDate'),self.col(tp,'DistinguishedName'),
                   self.col(tblk,'Path'),self.col(tse,'SEName')]
           gBy  = list(oSel)
-          oSel+= [sqlalchemy.func.count(self.col(tblk,'Name').distinct()),
+          _oSel= [sqlalchemy.func.count(self.col(tblk,'Name').distinct()),
                   sqlalchemy.func.sum(self.col(tblk,'BlockSize')),
                   sqlalchemy.func.sum(self.col(tblk,'NumberOfFiles')),
                   sqlalchemy.func.sum(self.col(tblk,'NumberOfEvents')) ]
+          oSel+=_oSel
           oBy  = [sqlalchemy.desc(self.col(tprd,'CreationDate'))]
+          _sel = sqlalchemy.select(_oSel,from_obj=[tblk],distinct=True )
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                           tprd.join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
@@ -865,15 +867,14 @@ MCDescription:      %s
                                  )
           if dataset and dataset!="*":
              sel.append_whereclause(self.col(tblk,'Path')==dataset)
+             _sel.append_whereclause(self.col(tblk,'Path')==dataset)
           result = self.getSQLAlchemyResult(con,sel)
+          _result = self.getSQLAlchemyResult(con,_sel)
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
           raise "Fail in datasetSummary"
-      totSize=0
-      totFiles=0
-      totEvts=0
-      totBlk=0
+      totBlk,totSize,totFiles,totEvts=_result.fetchone()
       masterSE=""
       _oDict={} # back-up dict
       for item in result:
@@ -882,10 +883,6 @@ MCDescription:      %s
           if not masterSE: masterSE=sename
           if blkSize>totSize and nFiles>totFiles and nEvts>totEvts:
              masterSE=sename
-          totSize += blkSize
-          totFiles+= nFiles
-          totEvts += nEvts
-          totBlk  += nblks
           prdDate  = timeGMT(prdDate)
           cBy      = parseCreatedBy(cBy)
           # I need back-up in a case if someone ask for specific site and masterSE is not that one
@@ -901,7 +898,7 @@ MCDescription:      %s
          if totSize==_blkSize and totFiles==_nFiles and totEvts==_nEvts:
             mDict={'%s'%masterSE:_oDict[masterSE]}
          else:
-            mDict={'*':(_pDate,_cBy,totBlk,totSize,totFiles,totEvts)}
+            mDict={'all':(_pDate,_cBy,totBlk,totSize,totFiles,totEvts)}
       return oDict,mDict
 
   def listBlocks(self,kwargs):
