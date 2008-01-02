@@ -1,6 +1,6 @@
 /**
- $Revision: 1.82 $"
- $Id: DBSApiFileLogic.java,v 1.82 2007/12/14 22:49:59 afaq Exp $"
+ $Revision: 1.83 $"
+ $Id: DBSApiFileLogic.java,v 1.83 2008/01/02 21:03:53 afaq Exp $"
  *
  */
 
@@ -751,7 +751,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Tier List Check, matchWithFileTiers throws exception in case of error
 		String blockPath = blockName.split("#")[0];
                 String[] blockPathTokens = blockPath.split("/");
-		if (blockPathTokens.length < 3)
+		if (blockPathTokens.length < 4)
 			throw new DBSException("Wrong Parameters", "1038",
                                                         "User must provide a valid blockName");
                 matchWithFileTiers(files, parseTierVec(blockPathTokens[3]), blockName);
