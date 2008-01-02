@@ -398,6 +398,23 @@ class DDServer(DDLogger,Controller):
 #           self.sendSOAP(host,"wsAddUrl",aDict)
            thread.start_new_thread(self.sendSOAP,(host,"wsAddUrl",aDict))
 
+    def wsUpdateSiteInfo(self,**kwargs):
+        self.setContentType('xml')
+        xmlDict=self.parseWSInput(**kwargs)
+        if xmlDict.has_key('url') and xmlDict.has_key('nsets'):
+           url  = xmlDict['url']
+           nsets= xmlDict['nsets']
+           print "\n\n### I got reply from '%s' it contains '%s'"%(url,nsets)
+        # send my info to known sites
+        vlock = thread.allocate_lock()
+        for url in self.ddUrls:
+            if url==self.dbsdd: continue
+            aDict={}
+            aDict['url']=self.dbsdd
+            aDict['nsets']=self.helper.nDatasets()
+            print aDict
+#            thread.start_new_thread(self.sendSOAP,(url,"wsUpdateSiteInfo",aDict))
+
     def sendErrorReport(self,iMsg=""):
         """
            Send a complete report with provided msg. Capture internals of
@@ -2000,7 +2017,7 @@ All LFNs in a block
                 printExcept()
                 page+="No LFNs found for site '%s'\n"%site
                 pass
-            page+=self.formatLFNList(lfnList,"cff")
+            page+=self.formatLFNList(lfnList,what)
             page+= self.genBottomHTML()
             return page
         except:

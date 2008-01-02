@@ -873,6 +873,7 @@ MCDescription:      %s
       totSize=0
       totFiles=0
       totEvts=0
+      totBlk=0
       masterSE=""
       _oDict={} # back-up dict
       for item in result:
@@ -881,11 +882,12 @@ MCDescription:      %s
           if not masterSE: masterSE=sename
           if blkSize>totSize and nFiles>totFiles and nEvts>totEvts:
              masterSE=sename
-             totSize=blkSize
-             totFiles=nFiles
-             totEvts=nEvts
-          prdDate = timeGMT(prdDate)
-          cBy     = parseCreatedBy(cBy)
+          totSize += blkSize
+          totFiles+= nFiles
+          totEvts += nEvts
+          totBlk  += nblks
+          prdDate  = timeGMT(prdDate)
+          cBy      = parseCreatedBy(cBy)
           # I need back-up in a case if someone ask for specific site and masterSE is not that one
           _oDict[sename]=(prdDate,cBy,long(nblks),long(blkSize),long(nFiles),long(nEvts))
           # if watchSite was defined, I will apply filter for sename
@@ -895,7 +897,11 @@ MCDescription:      %s
       self.closeConnection(con)
       mDict={}
       if masterSE:
-         mDict={'%s'%masterSE:_oDict[masterSE]}
+         # check if masterSE values are the same as total values for dataset
+         if totSize==_blkSize and totFiles==_nFiles and totEvts==_nEvts:
+            mDict={'%s'%masterSE:_oDict[masterSE]}
+         else:
+            mDict={'*':(_pDate,_cBy,totBlk,totSize,totFiles,totEvts)}
       return oDict,mDict
 
   def listBlocks(self,kwargs):
