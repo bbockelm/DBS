@@ -895,6 +895,7 @@ MCDescription:      %s
       mDict={}
       if masterSE:
          # check if masterSE values are the same as total values for dataset
+         _pDate,_cBy,_nblks,_blkSize,_nFiles,_nEvts=_oDict[masterSE]
          if totSize==_blkSize and totFiles==_nFiles and totEvts==_nEvts:
             mDict={'%s'%masterSE:_oDict[masterSE]}
          else:
