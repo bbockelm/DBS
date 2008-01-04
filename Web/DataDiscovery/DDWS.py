@@ -3,13 +3,23 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.10 2007/12/21 17:09:09 valya Exp $
+# Version: $Id: DDWS.py,v 1.11 2007/12/21 18:55:42 valya Exp $
 """
 Web services toolkit
 """
 
 import os, sys, string, sre, httplib, urllib, urlparse, inspect
-import types, smtplib, traceback, time
+import types, smtplib, traceback, time, socket
+
+# As of Python 2.3 you can specify how long a socket should wait 
+# for a response before timing out. This can be useful in applications 
+# which have to fetch web pages. By default the socket module has no 
+# timeout and can hang. Currently, the socket timeout is not exposed 
+# at the httplib or urllib2 levels. However, you can set the default 
+# timeout globally for all sockets using 
+# timeout in seconds
+timeout = 5
+socket.setdefaulttimeout(timeout)
 
 def parseWSDL(wsdl):
     """Parse a wsdl file. So far we use urllib to do a job to read content of the file"""
@@ -111,7 +121,6 @@ def sendSOAPMessage_v1(host,ns,method,envelope,debug=0):
 
 def getConnection(scheme,host):
     time.sleep(1) # let's try again to establish connection
-#    yield 1
     conn=""
     if scheme=="http":
        conn = httplib.HTTPConnection(host)
