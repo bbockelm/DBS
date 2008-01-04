@@ -14,7 +14,7 @@ function buildMenu(page,title){
 	var mainUlL = document.createElement ("ul");
 
 	var logo  = document.createElement ("img");
-	logo.setAttribute ("src","css/Common/images/logomini.png");
+	logo.setAttribute ("src","https://cmsweb.cern.ch/sitedb/Common/images/logomini.png");
 	logo.setAttribute ("height","16");
 	logo.setAttribute ("width","16");
 	logo.setAttribute ("alt","CMS - Compact Muon Solenoid");
@@ -43,7 +43,11 @@ function buildMenu(page,title){
 	YAHOO.util.Dom.addClass(navbarR ,"mastheadRight");
 	var mainUlR = document.createElement ("ul");
 	var item = document.createElement ("li");
-	changeText (item, getLoginObject());
+        try {
+	addLoginObject(item);
+        } catch(err) {
+          // this part does not work if we use redirection, since addLoginObject relies on window.location.
+        }
 	mainUlR.appendChild(item);
 	navbarR.appendChild(mainUlR);
 	navbar.appendChild(navbarR);
@@ -53,14 +57,49 @@ function buildMenu(page,title){
 	return navbar;
 }
 
-function getLoginObject(){
+function addLoginObject (item){
 	// Login will be an object containing name, role(s), and login type (cert/HN)
 	// Some call to Security Module, page should be enough to work out role
 	// Will show "You are logged in as Simon Metson | more"
 	// Clicking on "more" will bring up a panel with information about your login (cert/HN, roles) and a logout button.
 	// If not logged in will show "Click here to login"
 	//return "You are logged in as Simon Metson | more";
-	return "You are not logged in";
+    redirectionLocation = window.location.href;
+	var callback = {
+	    success: function (o) {
+	        user = o.responseXML.getElementsByTagName ("user")[0];
+	        dn = user.getAttribute ("dn")
+	        if (!dn)
+	        {
+	            window.location.href = "https://cmsweb.cern.ch/sitedb" + 
+	                                   "/SecurityModule/logout?redirect=" + window.location.href;
+	        }else if ( dn == "None" || dn == "guest")
+	        {
+            	var loginObject = "<span class='LoginObject'>";
+            	loginObject += "<a href='https://cmsweb.cern.ch/sitedb/SecurityModule/login?";
+            	loginObject += "requestedPage=" + window.location.href + "'>";
+            	loginObject += "Login</a></span>";	        
+                item.innerHTML = loginObject;	        
+	        }
+	        else
+	        {
+    	        var loginObject = "<span class='LoginObject'>Welcome back, " + dn + ". ";
+    	        loginObject += "<a href=\"https://cmsweb.cern.ch/sitedb/SecurityModule/logout?redirect=";
+    	        loginObject += redirectionLocation;
+    	        loginObject += "\">Logout</a></span>";
+                item.innerHTML = loginObject;
+            }
+	    },
+	    failure: function (o) {
+        	var loginObject = "<span class='LoginObject'>You are not logged in, click ";
+        	loginObject += "<a href='https://cmsweb.cern.ch/sitedb/SecurityModule/login?";
+        	loginObject += "requestedPage=" + redirectionLocation + "'>";
+        	loginObject += "here</a> to login.</span>";	        
+            item.innerHTML = loginObject;	        
+	    }
+	};
+
+	YAHOO.util.Connect.asyncRequest ("get", "https://cmsweb.cern.ch/sitedb/SecurityModule/userInfo", callback);
 }
 
 function doStyle(page){
@@ -68,7 +107,7 @@ function doStyle(page){
 	var cssNode = document.createElement('link');
 	cssNode.setAttribute('rel', 'stylesheet');
 	cssNode.setAttribute('type', 'text/css');
-	cssNode.setAttribute('href', 'css/Common/css/dmwt_main.css');
+	cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_main.css');	
 	document.getElementsByTagName('head')[0].appendChild(cssNode); 
 	
 	cssNode = document.createElement('link');
@@ -76,16 +115,16 @@ function doStyle(page){
 	cssNode.setAttribute('type', 'text/css');
 	var ie = (document.all) ? true : false;
 	if (ie) {
-		cssNode.setAttribute('href', 'css/Common/css/dmwt_masthead_ie.css');
+		cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_masthead_ie.css');
 	} else { 
-		cssNode.setAttribute('href', 'css/Common/css/dmwt_masthead.css');
-	}	
+		cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_masthead.css');
+	}
 	document.getElementsByTagName('head')[0].appendChild(cssNode); 
 	
 	cssNode = document.createElement('link');
 	cssNode.setAttribute('rel', 'stylesheet');
 	cssNode.setAttribute('type', 'text/css');
-	cssNode.setAttribute('href', 'css/Common/css/dmwt_masthead_' + page + '.css');
+	cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_masthead_' + page + '.css');
 	document.getElementsByTagName('head')[0].appendChild(cssNode); 
 }
 	
@@ -93,11 +132,12 @@ function menuText(){
 	//One day this will come from a database or something...
 	return [/*{title: "ASAP - Job submission and monitoring. Currently not available.", link: "na", label: "ASAP"}, */
 	{title: "CMS Dashboard - Monitorring of jobs, transfers, IO rate, Tier 0.", link: "http://arda-dashboard.cern.ch/cms/", label: "Dashboard", id: "dashboard"}, 
-	{title: "DBS/DLS - Data set book keeping and location.", link: "http://cmsdbs.cern.ch/DBS2_discovery/", label: "DBS/DLS", id:"dbs"},
+	{title: "DBS/DLS Discovery - Data set book keeping and location.", link: "https://cmsweb.cern.ch/dbs_discovery/", label: "DBS Discovery", id:"dbs"},
 	{title: "ProdRequest - Request large scale official production of samples.", link: "https://cmsweb.cern.ch/prodrequest/", label: "ProdRequest", id:"prodrequest"},
 	{title: "PhEDEx - Data placement, transfer monitoring", link: "http://cmsdoc.cern.ch/cms/aprom/phedex/", label: "PhEDEx", id:"phedex"},
 	{title: "SiteDB - Site information and aggregate monitoring", link: "https://cmsweb.cern.ch/sitedb/sitelist", label: "SiteDB", id: "sitedb"},
-	{title: "CondDB - Conditions Database", link: "https://cmsweb.cern.ch/conddb/", label: "CondDB", id: "conddb"}]	
+	{title: "CondDB - Conditions Database", link: "https://cmsweb.cern.ch/conddb/", label: "CondDB", id: "conddb"},
+	{title: "Web Tools Support - File a bug report, ask for help, read our FAQ", link: "https://cmsweb.cern.ch/Common/help", label: "Support", id: "help"}]
 }
 function createSiteMasthead(title){
 	YAHOO.namespace("cms.dmwt");
