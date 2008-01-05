@@ -1124,13 +1124,13 @@ class DDServer(DDLogger,Controller):
            kwargs['lfn']=lfnList
         # lookup for block_name and find out a list
         if kwargs.has_key('block_name'):
-           block_name=""
+           block_names=""
            if kwargs['block_name'].lower()=="all":
               block_names=self.helper.getBlocksFromSite(site="*",datasetPath=dataset)
-           del kwargs['block_name'] # delete block_name key-pair from our dictionary
-           kwargs['block_name']=block_names
+              del kwargs['block_name'] # delete block_name key-pair from our dictionary
+              kwargs['block_name']=block_names
 
-        skipList=['submit','title','submit request','choice']
+        skipList=['submit','title','submit request','choice','dbsInst_from','dbsInst_to']
         input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
         xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
         kwargs['apiversion']=self.adminVer
@@ -1140,7 +1140,7 @@ class DDServer(DDLogger,Controller):
         page+= self.genBottomHTML()
         return page
     adminTask.exposed=True
-        
+
     def sendAdminRequest(self,*args,**kwargs):
         skipList=['submit','title','submit request']
         xml=str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
