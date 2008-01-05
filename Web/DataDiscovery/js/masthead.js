@@ -73,7 +73,7 @@ function addLoginObject (item){
 	        {
 	            window.location.href = "https://cmsweb.cern.ch/sitedb" + 
 	                                   "/SecurityModule/logout?redirect=" + window.location.href;
-	        }else if ( dn == "None" || dn == "guest")
+	        }else if ( dn == "None" || dn == "guest" || dn == "Unknown" )
 	        {
             	var loginObject = "<span class='LoginObject'>";
             	loginObject += "<a href='https://cmsweb.cern.ch/sitedb/SecurityModule/login?";
