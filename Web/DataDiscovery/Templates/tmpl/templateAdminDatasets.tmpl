@@ -23,12 +23,13 @@ at sites:
 ### Migration form
 <hr class="dbs" />
 <h5>Migrate dataset</h5>
-<form action="adminTask" method="get">
-<input type="hidden" name="api" value="migrateDataset" />
+<form action="adminTask" method="post">
+<input type="hidden" name="api" value="listDatasetContents" />
 <input type="hidden" name="title" value="Migrate dataset" />
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value="$userMode" />
 <input type="hidden" name="dataset" value="$dataset" />
+<input type="hidden" name="path" value="$dataset" />
 
 <table>
 <tr>
@@ -80,7 +81,7 @@ to
 <input type="radio" name="choice"  onchange="javascript:ShowTag('selectBlocks');changeAttribute('block','enabled')" />individual blocks
 <br/>
 <div id="selectBlocks" class="hide">
-<select multiple="multiple" name="block" id="block" size="$selectSize" disabled="disabled">
+<select multiple="multiple" name="block_name" id="block" size="$selectSize" disabled="disabled">
 #for blk in $blkList
 #set path,blkId=$blk.split('#')
 <option value="$blk">$blkId</option>
