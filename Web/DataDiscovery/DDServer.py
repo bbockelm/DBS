@@ -1829,7 +1829,8 @@ class DDServer(DDLogger,Controller):
                          'pagerStep': pagerStep,
                          'pagerId'  : pagerId,
                          'nameForPager': "rows",
-                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
+                         'pList'    : [],
+                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
                         }
             t = templatePagerStep(searchList=[_nameSpace]).respond()
             pagerPage=str(t)
@@ -1850,7 +1851,7 @@ class DDServer(DDLogger,Controller):
                 page+=str(t)
                 pagerId+=1
                 _nameSpace['pagerId']=pagerId
-                _nameSpace['onchange']="javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
+                _nameSpace['onchange']="javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
                 t = templatePagerStep(searchList=[_nameSpace]).respond()
                 page+=str(t)
 #                page+=pagerPage
