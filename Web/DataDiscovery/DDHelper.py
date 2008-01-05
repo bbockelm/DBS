@@ -2352,7 +2352,10 @@ MCDescription:      %s
               if not pDict.has_key(path): pDict[path]=[]
               runs+="%s,"%run
 
-#      printListElements(oList,'oList')
+      # check if we found any runs, if not just return
+      if not runs:
+         return [],{}
+
       # now let's fill pDict (dict of dataset paths) with SE's
       condList=[]   
       try:    
