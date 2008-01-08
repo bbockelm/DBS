@@ -1696,22 +1696,12 @@ class DDServer(DDLogger,Controller):
         return page
     getDbsData.exposed = True 
 
-    def getRuns(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
+    def getRuns(self,dbsInst,dataset,_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            @type  dbsInst: string
            @param dbsInst: user selection of DBS menu
-           @type  site: string
-           @param site: user selection of the site, default "All"
-           @type  app: string
-           @param app: user selection of the application, default "*"
-           @type  primD: string
-           @param primD: user selection of the primary dataset, default "*"
-           @type  tier: string
-           @param tier: user selection of the data tier, default "*"
-           @type  i: integer
-           @param i: index to start with
-           @type  j: integer
-           @param j: index to end with
+           @type  dataset: string
+           @param dataset: processed dataset path
            @rtype : string
            @return: returns HTML code
         """
@@ -1726,31 +1716,58 @@ class DDServer(DDLogger,Controller):
         try:
             if string.lower(tier)=="all": tier="*"
             self.helperInit(dbsInst)
-            self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
-
-            if type(proc) is not types.ListType:
-               if proc.lower()=="all" or proc.lower()=="any" or proc.lower()=="*":
-                  dList=self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep)
-               else:
-                  dList=[proc]
-            else:
-               dList=proc
             page+=self.whereMsg('Navigator :: Results :: Run information',userMode)
-            for idx in xrange(0,len(dList)):
-                tid = 't_runs_'+str(idx)
-                dataset = dList[idx]
-                runList,runDBInfoDict=self.helper.getRuns(dataset,userMode=userMode)
-                nameSpace = {
-                             'dbsInst'  : dbsInst,
-                             'host'     : self.dbsdd,
-                             'runList'  : runList,
-                             'runDBInfo': runDBInfoDict,
-                             'tableId'  : tid,
-                             'proc'     : dataset,
-                             'userMode' : userMode
-                            }
-                t = templateRunsInfo(searchList=[nameSpace]).respond()
-                page+=str(t)
+
+            # pager
+            nResults=0
+            try:    
+               nResults=self.helper.getRuns(dataset=dataset,count=1,userMode=userMode)
+            except:
+               msg="No runs found for your request:<br />"
+               msg+="<ul>"
+               msg+="<li>DBS instnace: <em>%s</em>"%dbsInst
+               msg+="<li>Dataset     : <em>%s</em>"%dataset
+               msg+="</ul>"
+               page+=msg
+               page+=self.genBottomHTML()
+               return page
+            ########## Construct result page
+            rPage=""
+            if nResults:
+               rPage+="Result page:"
+
+            # the progress bar for all results
+            if _idx:
+                rPage+="""<a href="getRuns?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,ajax,userMode,pagerStep)
+            tot=_idx
+            for x in xrange(_idx,_idx+GLOBAL_STEP):
+                if nResults>x*pagerStep:
+                   tot+=1
+            for index in xrange(_idx,tot):
+                ref=index+1
+                if index==_idx:
+                   ref="""<span class="gray_box">%s</span>"""%(index+1)
+                rPage+="""<a href="getRuns?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,index,ajax,userMode,pagerStep)
+            if  nResults>(_idx+1)*pagerStep:
+                rPage+="""<a href="getRuns?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx+1,ajax,userMode,pagerStep)
+
+            if _idx and (_idx*pagerStep)>nResults:
+               return "No data found for this request"
+            ##### end of the pager
+
+            tid = 't_runs_'+str(idx)
+            runList,runDBInfoDict=self.helper.getRuns(dataset,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
+            nameSpace = {
+                         'dbsInst'  : dbsInst,
+                         'host'     : self.dbsdd,
+                         'runList'  : runList,
+                         'runDBInfo': runDBInfoDict,
+                         'tableId'  : tid,
+                         'proc'     : dataset,
+                         'userMode' : userMode
+                        }
+            t = templateRunsInfo(searchList=[nameSpace]).respond()
+            page+=str(t)
         except:
             t=self.errorReport("Fail in getRunsData function")
             page+=str(t)
