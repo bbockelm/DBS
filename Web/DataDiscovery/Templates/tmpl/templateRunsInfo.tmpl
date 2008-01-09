@@ -7,15 +7,42 @@ registerAjaxRunSummaryCalls();
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
 ####set nRun=len($runList)
 #if $proc
-<div>
+#*
 Dataset:<br />
 <table class="offset_left">
 <tr>
 <td align="left">
 <b>$proc</b>
 </td></tr></table>
-contains $nRun run(s)
-</div>
+*#
+<p><b>$proc</b></p>
+<table width="100%">
+<tr>
+<td align="left">
+contains $nRun run(s). Run range: $minRun-$maxRun.
+PhEDEx <a href="javascript:getPhedexStatus()">info</a>.
+</td>
+<td align="right">
+<script type="text/javascript">
+function CheckRunRange() {
+  var minRun=document.getElementById('minRun');
+  var maxRun=document.getElementById('maxRun');
+  maxRun.value=minRun.value;
+}
+</script>
+<form action="getRuns" method="get">
+<input type="hidden" name="dbsInst" value="$dbsInst" />
+<input type="hidden" name="dataset" value="$proc" />
+<input type="hidden" name="userMode" value="$userMode" />
+Jump to run range: 
+<input type="text" name="minRun" id="minRun" size="6" onchange="javascript:CheckRunRange()" />
+-
+<input type="text" name="maxRun" id="maxRun" size="6" />
+<input type="submit" value="Go" />
+</form>
+</td>
+</tr>
+</table>
 #end if
 <p />
 ###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
@@ -141,7 +168,7 @@ $system
 <div id="$phedexResponse">
 <span class="hide">Phedex</span>
 #for site in $sites
-$site<br>
+$site<br />
 #end for
 </div>
 
@@ -177,6 +204,7 @@ ajaxEngine.registerAjaxObject('runSummary_components_$run',runUpdater_c);
 <hr class="dbs" />
 
 <script type="text/javascript">
+function getPhedexStatus() {
 #set runs=""
 #for run in $datasetDict.keys()
 #set datasets=','.join($datasetDict[$run])
@@ -188,6 +216,7 @@ ajaxPhedexStatus('$listOfSites','$datasets','$run');
 #set runs=runs+',%s'%$run
 #end if
 #end for
+}
 ajaxRunSummary('$runs');
 </script>
 <!-- end of templateRunsInfo.tmpl -->

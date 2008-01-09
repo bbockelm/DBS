@@ -4,7 +4,7 @@
 <tr><td align="left">
 ##Number of datasets per page
 Number of $nameForPager per page
-#set pList=[10,25,50,100]
+#set pList=[10,25,50,100,'All']
 #if not pList.count(int($pagerStep))
 $pList.append(int($pagerStep))
 #end if
@@ -15,7 +15,11 @@ $pList.sort()
 #if $item==int($pagerStep)
 <option selected="selected">$item</option>
 #else
+#if $item=='All'
+<option value="0">All</option>
+#else
 <option>$item</option>
+#end if
 #end if
 
 #end for

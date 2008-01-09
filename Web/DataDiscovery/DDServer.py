@@ -1696,7 +1696,7 @@ class DDServer(DDLogger,Controller):
         return page
     getDbsData.exposed = True 
 
-    def getRuns(self,dbsInst,dataset,_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
+    def getRuns(self,dbsInst,dataset,_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            @type  dbsInst: string
            @param dbsInst: user selection of DBS menu
@@ -1707,6 +1707,10 @@ class DDServer(DDLogger,Controller):
         """
         _idx=int(_idx)
         pagerStep=int(pagerStep)
+        minRun="*"
+        maxRun="*"
+        if kwargs.has_key('minRun'): minRun=int(kwargs['minRun'])
+        if kwargs.has_key('maxRun'): maxRun=int(kwargs['maxRun'])
         t1=time.time()
         if int(ajax):
            # AJAX wants response as "text/xml" type
@@ -1720,9 +1724,13 @@ class DDServer(DDLogger,Controller):
 
             # pager
             nResults=0
+            _minRun=0 # full range for given dataset.
+            _maxRun=0 
             try:    
-               nResults=self.helper.getRuns(dataset=dataset,count=1,userMode=userMode)
+               nResults,_minRun,_maxRun=self.helper.getRuns(dataset=dataset,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
             except:
+               import traceback
+               traceback.print_exc()
                msg="No runs found for your request:<br />"
                msg+="<ul>"
                msg+="<li>DBS instnace: <em>%s</em>"%dbsInst
@@ -1736,40 +1744,43 @@ class DDServer(DDLogger,Controller):
             if nResults:
                rPage+="Result page:"
 
-            # the progress bar for all results
-            if _idx:
-                rPage+="""<a href="getRuns?dbsInst=%s&amp;dataset=%s&amp;_idx=%s&amp;ajax=%s&amp;userMode=%s&amp;pagerStep=%s"> &#171; Prev</a> """%(dbsInst,dataset,_idx-1,ajax,userMode,pagerStep)
-            tot=_idx
-            for x in xrange(_idx,_idx+GLOBAL_STEP):
-                if nResults>x*pagerStep:
-                   tot+=1
-            for index in xrange(_idx,tot):
-                ref=index+1
-                if index==_idx:
-                   ref="""<span class="gray_box">%s</span>"""%(index+1)
-                rPage+="""<a href="getRuns?dbsInst=%s&amp;dataset=%s&amp;_idx=%s&amp;ajax=%s&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,dataset,index,ajax,userMode,pagerStep,ref)
-            if  nResults>(_idx+1)*pagerStep:
-                rPage+="""<a href="getRuns?dbsInst=%s&amp;dataset=%s&amp;_idx=%s&amp;ajax=%s&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,dataset,_idx+1,ajax,userMode,pagerStep)
+            if pagerStep:
+                # the progress bar for all results
+                if _idx:
+                    rPage+="""<a href="getRuns?dbsInst=%s&amp;dataset=%s&amp;_idx=%s&amp;ajax=%s&amp;userMode=%s&amp;pagerStep=%s"> &#171; Prev</a> """%(dbsInst,dataset,_idx-1,ajax,userMode,pagerStep)
+                tot=_idx
+                for x in xrange(_idx,_idx+GLOBAL_STEP):
+                    if nResults>x*pagerStep:
+                       tot+=1
+                for index in xrange(_idx,tot):
+                    ref=index+1
+                    if index==_idx:
+                       ref="""<span class="gray_box">%s</span>"""%(index+1)
+                    rPage+="""<a href="getRuns?dbsInst=%s&amp;dataset=%s&amp;_idx=%s&amp;ajax=%s&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,dataset,index,ajax,userMode,pagerStep,ref)
+                if  nResults>(_idx+1)*pagerStep:
+                    rPage+="""<a href="getRuns?dbsInst=%s&amp;dataset=%s&amp;_idx=%s&amp;ajax=%s&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,dataset,_idx+1,ajax,userMode,pagerStep)
 
-            if _idx and (_idx*pagerStep)>nResults:
-               return "No data found for this request"
-            pagerId=1
-            _nameSpace = {
-                         'style'    : "",
-                         'rPage'    : rPage,
-                         'pagerStep': pagerStep,
-                         'pagerId'  : pagerId,
-                         'nameForPager': "rows",
-                         'pList'    : [],
-                         'onchange' : "javascript:LoadGetRuns('%s','%s','%s','%s','%s','%s')"%(dbsInst,dataset,_idx,ajax,userMode,pagerId)
-                        }
-            t = templatePagerStep(searchList=[_nameSpace]).respond()
-            pagerPage=str(t)
+                if _idx and (_idx*pagerStep)>nResults:
+                   return "No data found for this request"
+                pagerId=1
+                _nameSpace = {
+                             'style'    : "",
+                             'rPage'    : rPage,
+                             'pagerStep': pagerStep,
+                             'pagerId'  : pagerId,
+                             'nameForPager': "rows",
+                             'pList'    : [],
+                             'onchange' : "javascript:LoadGetRuns('%s','%s','%s','%s','%s','%s')"%(dbsInst,dataset,_idx,ajax,userMode,pagerId)
+                            }
+                t = templatePagerStep(searchList=[_nameSpace]).respond()
+                pagerPage=str(t)
+            else:
+                pagerPage=""
             page+=pagerPage
             ##### end of the pager
 
             tid = 't_runs_'+str(_idx)
-            runList,runDBInfoDict=self.helper.getRuns(dataset,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
+            runList,runDBInfoDict=self.helper.getRuns(dataset,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
             nameSpace = {
                          'dbsInst'  : dbsInst,
                          'host'     : self.dbsdd,
@@ -1778,16 +1789,19 @@ class DDServer(DDLogger,Controller):
                          'runDBInfo': runDBInfoDict,
                          'tableId'  : tid,
                          'proc'     : dataset,
-                         'userMode' : userMode
+                         'userMode' : userMode,
+                         'minRun'   : _minRun,
+                         'maxRun'   : _maxRun,
                         }
             t = templateRunsInfo(searchList=[nameSpace]).respond()
             page+=str(t)
             # bottom pager
-            pagerId+=1
-            _nameSpace['pagerId']=pagerId
-            _nameSpace['onchange']="javascript:LoadGetRuns('%s','%s','%s','%s','%s','%s')"%(dbsInst,dataset,_idx,ajax,userMode,pagerId)
-            t = templatePagerStep(searchList=[_nameSpace]).respond()
-            page+=str(t)
+            if pagerStep:
+               pagerId+=1
+               _nameSpace['pagerId']=pagerId
+               _nameSpace['onchange']="javascript:LoadGetRuns('%s','%s','%s','%s','%s','%s')"%(dbsInst,dataset,_idx,ajax,userMode,pagerId)
+               t = templatePagerStep(searchList=[_nameSpace]).respond()
+               page+=str(t)
         except:
             t=self.errorReport("Fail in getRunsData function")
             page+=str(t)

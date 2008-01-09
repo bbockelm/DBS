@@ -2215,8 +2215,8 @@ MCDescription:      %s
   def getRuns(self,dataset,primD="*",primType="*",minRun="*",maxRun="*",fromRow=0,limit=0,count=0,userMode="user"):
       if primD.lower()=="any": primD="*"
       if primType.lower()=="any": primType="*"
-      if minRun.lower()=="any": minRun="*"
-      if maxRun.lower()=="any": maxRun="*"
+      if type(minRun) is types.StringType and minRun.lower()=="any": minRun="*"
+      if type(maxRun) is types.StringType and maxRun.lower()=="any": maxRun="*"
       
 #      print dataset,primD,primType,minRun,maxRun,fromRow,limit,count,userMode
 
@@ -2301,12 +2301,16 @@ MCDescription:      %s
           self.printExcept(msg)
           raise "Fail in getRuns"
       if count:
-#         res = result.fetchone()[0]
          total=0
-         for i in result: total+=1
+         minRun=1000000000
+         maxRun=0
+         for i in result:
+             run,path=i
+             if minRun>run: minRun=run
+             if maxRun<run: maxRun=run
+             total+=1
          self.closeConnection(con)
-#         return long(res)
-         return total
+         return total,minRun,maxRun
       oList=[]
       oDict={}
       pDict={} # diction of dataset path which we will fill with SE's later.
