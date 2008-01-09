@@ -11,7 +11,7 @@ DBS data discovery server module.
 
 # system modules
 import os, string, logging, types, time, socket, socket, urlparse, random, urllib, difflib
-import thread, smtplib, tempfile, zlib
+import thread, smtplib, tempfile, zlib, traceback
 import xml.sax, xml.sax.handler
 from   xml.sax.saxutils import escape
 
@@ -44,6 +44,14 @@ except:
 try:
     import OpenSSL
 except:
+    pass
+
+# DBS framework in order to make migration
+try:
+    from DBSAPI.dbsApi import DbsApi
+    from DBSAPI.dbsMigrateApi import DbsMigrateApi
+except:
+#    traceback.print_exc()
     pass
 
 # webtools framework
@@ -1141,10 +1149,23 @@ class DDServer(DDLogger,Controller):
         return page
     adminTask.exposed=True
 
+    def makeDbsApi(self,url):
+        args = {}
+        args['url'] = url
+        args['mode'] = 'POST'
+        return DbsApi(args)
+
     def sendAdminRequest(self,*args,**kwargs):
         skipList=['submit','title','submit request']
         xml=str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
         print "\n\nsendAdminRequest\n",xml
+        api  = kwargs['api']
+        if api=='migrate':
+           dbsFrom  = self.makeDbsApi(DBS_DLS_INST[kwargs['dbsInst_from']])
+           dbsTo    = self.makeDbsApi(DBS_DLS_INST[kwargs['dbsInst_to']])
+           transfer = DbsMigrateApi(dbsFrom, dbsTo, True)
+           print "+++ DbsMigrateApi init +++"
+           transfer.migratePath(kwargs['path'])
         page = self.genTopHTML(userMode='expert')
         page+="<h3>Your request has been send to DBS</h3>"
         page+="<p>Confirmation number: XXXYYY</p>"

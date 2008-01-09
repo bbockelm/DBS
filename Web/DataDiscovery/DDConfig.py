@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','loggerdir','masthead','mastfooter','admin_url','admin_ver','ns','global_dd']
+    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','loggerdir','masthead','mastfooter','admin_url','admin_ver','ns','global_dd','dbsprimary']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -44,9 +44,13 @@ class DDConfig:
                self.configDict[item] = string.split(line,"%s="%keyword)[1]
             if iConfig.has_key(item) and iConfig[item]:
                self.configDict[item] = iConfig[item]
+  def dbsprimary(self):
+    if not self.configDict.has_key('dbsprimary'):
+       raise DDException(args="DBS configuration missing DBSPRIMARY parameter")
+    return self.configDict['dbsprimary']
   def global_dd(self):
     if not self.configDict.has_key('global_dd'):
-       raise DDException(args="DBS configuration missing global_dd parameter")
+       raise DDException(args="DBS configuration missing GLOBAL_DD parameter")
     return self.configDict['global_dd']
   def ns(self):
     if not self.configDict.has_key('ns'):
@@ -62,43 +66,43 @@ class DDConfig:
     return self.configDict['admin_ver']
   def masthead(self):
     if not self.configDict.has_key('masthead'):
-       raise DDException(args="DBS configuration missing masthead parameter")
+       raise DDException(args="DBS configuration missing MASTHEAD parameter")
     return self.configDict['masthead']
   def mastfooter(self):
     if not self.configDict.has_key('mastfooter'):
-       raise DDException(args="DBS configuration missing mastfooter parameter")
+       raise DDException(args="DBS configuration missing MASTFOOTER parameter")
     return self.configDict['mastfooter']
   def loggerDir(self):
     if not self.configDict.has_key('loggerdir'):
-       raise DDException(args="DBS configuration missing loggerdir parameter")
+       raise DDException(args="DBS configuration missing LOGGERDIR parameter")
     return self.configDict['loggerdir']
   def queryLimit(self):
     if not self.configDict.has_key('querylimit'):
-       raise DDException(args="DBS configuration missing querylimit parameter")
+       raise DDException(args="DBS configuration missing QUERYLIMIT parameter")
     return self.configDict['querylimit']
   def iface(self):
     if not self.configDict.has_key('iface'):
-       raise DDException(args="DBS configuration missing iface parameter")
+       raise DDException(args="DBS configuration missing IFACE parameter")
     return self.configDict['iface']
   def url(self):
     if not self.configDict.has_key('url'):
-       raise DDException(args="DBS configuration missing url parameter")
+       raise DDException(args="DBS configuration missing URL parameter")
     return self.configDict['url']
   def user(self):
     if not self.configDict.has_key('user'):
-       raise DDException(args="DBS configuration missing user parameter")
+       raise DDException(args="DBS configuration missing USER parameter")
     return self.configDict['user']
   def password(self):
     if not self.configDict.has_key('password'):
-       raise DDException(args="DBS configuration missing password parameter")
+       raise DDException(args="DBS configuration missing PASSWORD parameter")
     return self.configDict['password']
   def dbname(self):
     if not self.configDict.has_key('dbname'):
-       raise DDException(args="DBS configuration missing dbname parameter")
+       raise DDException(args="DBS configuration missing DBNAME parameter")
     return self.configDict['dbname']
   def engine(self):
     if not self.configDict.has_key('engine'):
-       raise DDException(args="DBS configuration missing engine parameter")
+       raise DDException(args="DBS configuration missing ENGINE parameter")
     return self.configDict['engine']
   def verbose(self):
     if not self.configDict.has_key('verbose'):

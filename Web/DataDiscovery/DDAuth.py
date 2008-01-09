@@ -44,7 +44,36 @@ class DDAuthentication:
           printExcept("No DBS_DBPARAM environment variable found")
           raise "Fail to open $DBS_DBPARAM"
       found=0
-      for s in self.dbparam.readlines():
+      content = self.dbparam.readlines()
+      mustHave=['Section','Interface','Database','AuthDBUsername','AuthDBPassword','Host','Url']
+      readFile=[]
+      for s in content:
+          line = string.replace(s,"\n","")
+          lines= string.split(line)
+          if not len(lines): continue
+          if lines[0][0]=="#": continue
+          if not readFile.count(lines[0]):
+             readFile.append(lines[0])
+      if  readFile!=mustHave:
+          msg="""
+Initialization of DBS instances failed, please check your DBS_DBPARAM environment
+and correct file it points to, to have the following syntax for each registered
+DBS instance:
+
+Section                 cms_dbs_prod_global
+Interface               Oracle
+Database                cms_dbs
+AuthDBUsername          XXXXXX
+AuthDBPassword          ZZZZZZ
+Host                    host_name (e.g. localhost or localhost:3307)
+Url                     servlet URL
+
+"""
+          msg+="Found    : %s\n"%readFile
+          msg+="Must have: %s\n"%mustHave
+          raise msg
+
+      for s in content:
           line = string.replace(s,"\n","")
           lines= string.split(line)
           if not len(lines): continue

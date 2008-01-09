@@ -37,24 +37,17 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 # DLS instances are: https://twiki.cern.ch/twiki/bin/view/CMS/DLS#DLS_instances
 # DBS2 instances are: https://twiki.cern.ch/twiki/bin/view/CMS/CMS-DMS-DBS-2-instances
 #
-DBSGLOBAL="cms_dbs_prod_global"
+config=DDConfig()
+DBSGLOBAL=config.dbsprimary()
+#DBSGLOBAL="cms_dbs_prod_global"
 DBS_DLS_INST={}
 dbAuth = DDAuthentication() 
 print "\n+++ Initialize DBS instances:"
 for dbs in dbAuth.dbsInstances():
     print dbs
     DBS_DLS_INST[dbs]=""
-if not DBS_DLS_INST.has_key(DBSGLOBAL):
-   msg="""
-Initialization of DBS instances failed, please check your DBS_DBPARAM syntax
-Section                 cms_dbs_prod_global
-Interface               Oracle
-Database                cms_dbs
-AuthDBUsername          XXXXXX
-AuthDBPassword          ZZZZZZ
-Url                     servlet URL
-"""
-   raise msg
+print "\n+++ Primary DBS instance:",DBSGLOBAL
+print
 
 ################################################################################################
 def getDictOfSites():

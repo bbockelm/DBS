@@ -35,7 +35,7 @@ class DDHelper(DDLogger):
   """
       DDHelper class
   """
-  def __init__(self,dbsInst=DBSGLOBAL,iface="sqlalchemy",verbose=0,html=0):
+  def __init__(self,dbsInst="",iface="sqlalchemy",verbose=0,html=0):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -47,6 +47,8 @@ class DDHelper(DDLogger):
          @return: none
       """
       self.ddConfig  = DDConfig()
+      if not dbsInst:
+         dbsInst=self.ddConfig().dbsprimary()
       DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDHelper",verbose)
       self.iface       = string.lower(iface)
       self.dbsInstance = dbsInst
