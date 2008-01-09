@@ -54,6 +54,8 @@ class DDAuthentication:
           if lines[0][0]=="#": continue
           if not readFile.count(lines[0]):
              readFile.append(lines[0])
+      readFile.sort()
+      mustHave.sort()
       if  readFile!=mustHave:
           msg="""
 Initialization of DBS instances failed, please check your DBS_DBPARAM environment
