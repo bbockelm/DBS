@@ -45,6 +45,6 @@ Url                     https://$host:8448/DBS/servlet/DBSServlet
 EOF 
 
 # Fix masthead from WEBTOOLS
-cat $DDHOME/WEBTOOLS/Common/Templates/masthead.tmpl | \
-sed "s,\$context.CmdLineArgs.opts.baseUrl,$host:$port,g" > \
-$DIR/js/masthead.js
+#cat $DDHOME/WEBTOOLS/Common/Templates/masthead.tmpl | \
+#sed "s,\$context.CmdLineArgs.opts.baseUrl,$host:$port,g" > \
+#$DIR/js/masthead.js
