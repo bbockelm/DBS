@@ -8,6 +8,7 @@ if [ -z ${DDHOME} ]; then
    echo $"The DDHOME environment is not set"
    exit 1
 fi
+cd ${DDHOME}
 
 RETVAL=$?
 
@@ -21,13 +22,13 @@ case "$1" in
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
-        nohup ${DDHOME}/cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
+        nohup cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
 	;;
  start)
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
-        nohup ${DDHOME}/cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
+        nohup cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
 	;;
  status)
         if [ ! -z ${pid} ]; then
