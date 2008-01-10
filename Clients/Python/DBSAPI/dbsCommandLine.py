@@ -335,6 +335,22 @@ class cmd_doc_writer:
 		print ""
 		print "            This command WILL NOT work on DBS Global"
 		if self.wiki_help: print "</verbatim>"
+
+  def _help_createads(self):
+                pre=""
+                if self.wiki_help:
+                        pre="---+++"
+                print pre+"Creates Analysis Dataset (Local on Disk), based on the search criteria"
+		print "   This command cannot be used alone you have to use it with dbs search"
+		print "   First you run search, after you have found what you were looking for "
+		print "   Add --createads=<ADSNAME> to the commandline and it will create an ADS for you"
+		print "   Arguments:"
+		print "         --createads=<ADSNAME>"
+		print "                    Where ADSNAME is a Valid Analysis Dataset Name"
+                if self.wiki_help: print "<verbatim>"
+                print "   examples:"
+                print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --createads=ANZARTESTADS"
+		if self.wiki_help: print "</verbatim>"
 		
   def _help_search(self):
                 pre=""
@@ -374,7 +390,7 @@ def print_help(self):
 	print saved_help.getvalue()
 	term=TerminalController()
 	helper = cmd_doc_writer()
-        print term.BLUE+helper.command_short_help()+term.NORMAL
+        #print term.BLUE+helper.command_short_help()+term.NORMAL
 
        #print open(saved_help, 'r').read()
 
@@ -401,6 +417,9 @@ class DbsOptionParser(optparse.OptionParser):
            help="some commands scope could be restricted with pattern, e.g. listPrimaryDataset, supports shell glob for Primary Dataset Names, "+ \
 						"Use --doc or individual commands with --help")
 
+      self.add_option("--run", action="store", type="string", dest="run",
+           help="Run number, can be used by list files or search commands")
+
       self.add_option("--algopattern", action="store", type="string", dest="algopattern",
            help="Algorithms can be specified as algopattern /appname/appversion/appfamily/pset_hash, supports shell glob")
 
@@ -412,6 +431,9 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--lfnpattern", action="store", type="string", dest="lfnpattern",
            help="Logical File Name pattern for glob search")
+
+      self.add_option("--createads", action="store", type="string", dest="createads",
+           help="Create Analysis Dataset for the search query (must be used with --search)")
 
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
@@ -558,7 +580,7 @@ class ApiDispatcher:
         del(opts.__dict__['url']) 
 
     self.api = DbsApi(opts.__dict__)
-    self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
+    #self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
 	print_help(self)
 	return
@@ -605,6 +627,10 @@ class ApiDispatcher:
     ##Search data
     elif apiCall in ('search', '--search') or self.optdict.get('search'):
 	self.handleSearchCall()
+
+    elif apiCall in ('createads', '--createads', '--createads=', 'createads=') or self.optdict.get('createads'):
+        self.handleCreateADSCall()
+
     else:
        self.printRED( "Unsupported API Call '%s', please use --doc or --help" %str(apiCall))
 
@@ -868,13 +894,14 @@ class ApiDispatcher:
        path=self.optdict.get('path') or ''
        blockpattern=self.optdict.get('blockpattern') or ''
        lfnpattern=self.optdict.get('lfnpattern') or ''
+       run=self.optdict.get('run') or ''
 
        if path == '' and blockpattern == '' and lfnpattern=='' :
          self.printRED( "Can not list ALL files of ALL datasets, please specify a dataset path using --path= and/or --blockpattern= and/or --lfnpattern")
        else:
          self.printBLUE( "Making api call, this may take sometime depending upon size of dataset, please wait....\n")
          self.progress.start()
-	 apiret = self.api.listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern)
+	 apiret = self.api.listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern, runNumber=run)
          self.progress.stop()
          if self.optdict.get('report') :
 		for anObj in apiret:
@@ -956,10 +983,18 @@ class ApiDispatcher:
                 printReport(report)
                 return
 
+  def handleCreateADSCall(self):
+	self.helper._help_createads()
+	return
+
+
   def handleSearchCall(self):
        if self.optdict.has_key('want_help'):
 		self.helper._help_search()
                 return
+
+       adsfileslist=[]
+       createads=self.optdict.get('createads') or ''
 
        pathpattern = self.optdict.get('path') or ''
        blockpattern = self.optdict.get('blockpattern') or ''
@@ -1020,7 +1055,34 @@ class ApiDispatcher:
 						self.reportFile(aFile)
 					else: 
 						print "                    %s" %aFile['LogicalFileName']
+
+				if createads not in ('', None):
+					adsfileslist.extend(filesret)
+
+       if createads not in ('', None):
+       		#print "files to be added in ADS:"
+       		#print adsfileslist	
+		self.createADS(createads, aPath, adsfileslist)
+
        return
+
+
+  def createADS(self, ads, path, files):
+	"""
+	Created the ADS in DBS Local ADS File format
+		More info will be passed and added to this method at later stage
+	"""
+	#print "Creating ADS: %s" % ads
+	print "########################"
+	print "[NAME]"
+	print ads
+	print "[HOSTDBS]"
+	print self.api.url()
+	print "[PATH]"
+	print path
+	print "[FILES]"
+	for aFile in files:
+		print aFile['LogicalFileName']
 #
 # main
 #
