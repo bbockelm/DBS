@@ -20,10 +20,29 @@ cat >> $DIR/DBSDD.conf << EOF
 #
 # DO NOT EDIT, AUTO-GENERATED SETTINGS
 #
-URL=$host:$port
+# If you want your Data Discovery site visible, make appropriate change here and setup URL
+# URL=$host:$port
 LOGGERDIR=$DDHOME/Logs
-MASTHEAD=$host:$port/js/masthead.js
 EOF
+
+cat >> $DIR/DBParam << EOF
+######################################################################
+# This is example of DBParam file, please make appropriate changes
+# for your system. 
+# The "Section" represents a name of your DBS instance
+# The "Database" is DBS DB in use at your local site
+# The "Host" represents MySQL host:port in use, it can have optional 
+# port number, e.g. localhost:3307 (default port is 3306)
+# The "Url" is DBS server URL
+Section                 dbs_testbed
+Interface               MYSQL
+Database                dbsdb
+AuthDBUsername          root
+AuthDBPassword          cmsdbs
+Host                    localhost
+Url                     https://$host:8448/DBS/servlet/DBSServlet
+######################################################################
+EOF 
 
 # Fix masthead from WEBTOOLS
 cat $DDHOME/WEBTOOLS/Common/Templates/masthead.tmpl | \
