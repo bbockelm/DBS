@@ -13,17 +13,17 @@
 <div id="$idPath"></div>
 </td>
 
-#*
 <td align="right">
+#*
 #if $userMode=='expert'
 <a href="adminDataset?dbsInst=$dbsInst&amp;dataset=$path&amp;siteList=$str($siteList)&amp;userMode=$userMode">Administrate</a>
 |
 #end if
+*#
 #set histLoc="moreInfo"+$idPath
 #set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
 <a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">more &#187;</a>
 </td>
-*#
 
 </tr>
 </table>
