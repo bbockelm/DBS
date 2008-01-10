@@ -296,7 +296,11 @@ Auto-completion:
 #end if
 <a href="javascript:AutoTurnOn();"><span id="autoOn" class="$classOn">on</span></a> 
 | 
-<a href="javascript:AutoTurnOff();"><span id="autoOff" class="$classOff">off</span></a>
+<a href="javascript:AutoTurnOff();"><span id="autoOff" class="$classOff">off</span></a>, &nbsp;
+Case-sensitivity:
+<a href="javascript:CaseSensitiveOn();"><span id="caseOn" class="td_underline_pad">on</span></a> 
+| 
+<a href="javascript:CaseSensitiveOff();"><span id="caseOff" class="">off</span></a>
 </td>
 </tr>
 
@@ -314,6 +318,7 @@ Auto-completion:
 <input type="hidden" name="app" value="*" />
 <input type="hidden" name="primD" value="*" />
 <input type="hidden" name="site" value="*" />
+<input type="hidden" name="caseSensitive" value="on" id="caseSensitive" />
 <br />
 <!-- begin menu table -->
 

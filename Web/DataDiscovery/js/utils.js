@@ -1502,6 +1502,22 @@ function AutoTurnOff() {
    SetCookie('DBSDD_AutoCompletion','off');
    load(url);
 }
+function CaseSensitiveOn() {
+   var id=$('caseSensitive');
+   id.value='on';
+   id=$('caseOn');
+   id.className='td_underline_pad';
+   id=$('caseOff');
+   id.className='';
+}
+function CaseSensitiveOff() {
+   var id=$('caseSensitive');
+   id.value='off';
+   id=$('caseOff');
+   id.className='td_underline_pad';
+   id=$('caseOn');
+   id.className='';
+}
 function SetAutoCompletion() {
    var c=GetCookie('DBSDD_AutoCompletion');
    if(c) {

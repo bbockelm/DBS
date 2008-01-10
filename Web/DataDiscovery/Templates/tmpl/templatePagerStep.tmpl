@@ -3,16 +3,21 @@
 <table width="100%">
 <tr><td align="left">
 ##Number of datasets per page
+#if not $pagerStep
+#set pagerStep='All'
+#else
+#set pagerStep=int($pagerStep)
+#end if
 Number of $nameForPager per page
 #set pList=[10,25,50,100,'All']
-#if not pList.count(int($pagerStep))
-$pList.append(int($pagerStep))
+#if not pList.count($pagerStep)
+$pList.append($pagerStep)
 #end if
 $pList.sort()
 <select id="pagerStep$pagerId" name="pagerStep" onchange="$onchange">
 #for item in $pList
 
-#if $item==int($pagerStep)
+#if $item==$pagerStep
 <option selected="selected">$item</option>
 #else
 #if $item=='All'
@@ -25,7 +30,9 @@ $pList.sort()
 #end for
 </select>
 </td><td align="right">
+#if $pagerStep!='All'
 $rPage
+#end if
 </td></tr></table>
 </div>
 <!-- end of templatePagerStep.tmpl -->

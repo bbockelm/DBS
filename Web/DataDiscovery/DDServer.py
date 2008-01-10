@@ -1193,23 +1193,38 @@ class DDServer(DDLogger,Controller):
         if type(proc) is not types.ListType and len(proc)>1:
            if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
                proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
+               caseSensitive=True
+               if kwargs.has_key('caseSensitive'):
+                 if kwargs['caseSensitive']=="on":
+                    caseSensitive=True
+                 else:
+                    caseSensitive=False
+                    proc=proc.upper()
                # we got a pattern
                if proc.lower().find("regexp:")!=-1:
+                  arg="Path"
+                  if not caseSensitive:
+                     arg="UPPER(Path)"
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
                   if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause=" REGEXP_LIKE(Path,:p0) "
+                     wClause=" REGEXP_LIKE(%s,:p0) "%arg
                   else:
-                     wClause=" Path REGEXP :p0 "
+                     wClause=" %s REGEXP :p0 "%arg
                   bDict={'p0':"%s"%pat}
                   nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict)
                elif proc.lower().find("like:")!=-1:
                   nDatasets=self.helper.countBlocks(proc,site)
-                  wClause,bDict=parseKeywordInput(proc,"tblk.Path")
+                  arg="tblk.Path"
+                  if not caseSensitive:
+                     arg="UPPER(tblk.Path)"
+                  wClause,bDict=parseKeywordInput(proc,arg)
                else:
                   # we got a pattern
                   nDatasets=self.helper.countBlocks("like:%s"%proc,site)
                   wClause=" tblk.Path LIKE :p0 "
+                  if not caseSensitive:
+                     wClause=" UPPER(tblk.Path) LIKE :p0 "
                   bDict={'p0':"%s"%proc.replace('*','%')}
                proc=self.helper.getDatasetPathFromMatch(wClause,bDict=bDict,site=site)
            else:
@@ -1321,22 +1336,37 @@ class DDServer(DDLogger,Controller):
         if type(proc) is not types.ListType and len(proc)>1:
            if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
                proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
+               caseSensitive=True
+               if kwargs.has_key('caseSensitive'):
+                 if kwargs['caseSensitive']=="on":
+                    caseSensitive=True
+                 else:
+                    caseSensitive=False
+                    proc=proc.upper()
                if proc.lower().find("regexp:")!=-1:
+                  arg="Path"
+                  if not caseSensitive:
+                     arg="UPPER(Path)"
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
                   if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause=" REGEXP_LIKE(Path,:p0) "
+                     wClause=" REGEXP_LIKE(%s,:p0) "%arg
                   else:
-                     wClause=" Path REGEXP :p0 "
+                     wClause=" %s REGEXP :p0 "%arg
                   bDict={'p0':"%s"%pat}
                   nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict)
                elif proc.lower().find("like:")!=-1:
                   nDatasets=self.helper.countBlocks(proc,site)
-                  wClause,bDict=parseKeywordInput(proc,"tblk.Path")
+                  arg="tblk.Path"
+                  if not caseSensitive:
+                     arg="UPPER(tblk.Path)"
+                  wClause,bDict=parseKeywordInput(proc,arg)
                else:
                   # we got a pattern
                   nDatasets=self.helper.countBlocks("like:%s"%proc,site)
                   wClause=" tblk.Path LIKE :p0 "
+                  if not caseSensitive:
+                     wClause=" UPPER(tblk.Path) LIKE :p0 "
                   bDict={'p0':"%s"%proc.replace('*','%')}
                proc=self.helper.getDatasetPathFromMatch(wClause,row=_idx*pagerStep,limit=pagerStep,bDict=bDict,site=site)
            else:
@@ -1379,7 +1409,10 @@ class DDServer(DDLogger,Controller):
         if  type(proc) is types.ListType:
             if not nDatasets:
                nDatasets = len(proc)
-            datasetsList = proc[_idx:_idx+pagerStep]
+            if pagerStep:
+               datasetsList = proc[_idx:_idx+pagerStep]
+            else:
+               datasetsList = proc
             proc=proc_orig
         elif kwargs.has_key('zstring'):
            zproc=eval( zlib.decompress(urllib.unquote(kwargs['zstring'])) )
@@ -2017,6 +2050,8 @@ All LFNs in a block
     getLFNlist.exposed = True
  
     def formatLFNList(self,lfnList,what="txt",idx=-1):
+        if not lfnList:
+           return ""
         page="""<pre>\n"""
         if what=="cff":
            page+="replace PoolSource.fileNames = {\n"

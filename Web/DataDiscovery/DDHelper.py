@@ -1571,11 +1571,11 @@ MCDescription:      %s
       try:
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              sel="SELECT DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate FROM Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id %s where %s %s ORDER BY tprd.CreationDate DESC"%(siteSel,whereCond,siteWhere)
-             if row or limit:
+             if limit:
                 sel="SELECT tblk_path, tprd_cdate FROM (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
           else:
-             sel="SELECT DISTINCT Path,CreationDate FROM Block tblk %s where %s %s order by CreationDate DESC "%(siteSel,whereCond,siteWhere)
-             if row or limit:
+             sel="SELECT DISTINCT Path,CreationDate FROM Block tblk %s where %s %s COLLATE latin1_bin order by CreationDate DESC "%(siteSel,whereCond,siteWhere)
+             if limit:
                 sel+="limit %s, %s"%(row,row+limit)
           bParams= []
           for bind_param in bDict.keys():
