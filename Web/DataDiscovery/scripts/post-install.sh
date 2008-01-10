@@ -39,7 +39,7 @@ Interface               MYSQL
 Database                dbsdb
 AuthDBUsername          root
 AuthDBPassword          cmsdbs
-Host                    localhost
+Host                    127.0.0.1:3306
 Url                     https://$host:8448/DBS/servlet/DBSServlet
 ######################################################################
 EOF 
