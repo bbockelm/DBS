@@ -11,7 +11,8 @@ fi
 
 RETVAL=$?
 
-pid=`ps auxw | grep cmsWeb | grep -v grep | grep 8003 | awk '{print $2}'`
+port=`cat CherryServer3.conf | grep port | awk '{print $3}'`
+pid=`ps auxw | grep cmsWeb | grep -v grep | grep ${port} | awk '{print $2}'`
 base=cmsweb_discovery
 
 case "$1" in
@@ -20,13 +21,13 @@ case "$1" in
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
-        nohup ${DDHOME}/cmsWeb --base-url=https://cmsweb.cern.ch/ --port=8003 2>&1 1>& /dev/null < /dev/null &
+        nohup ${DDHOME}/cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
 	;;
  start)
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
-        nohup ${DDHOME}/cmsWeb --base-url=https://cmsweb.cern.ch/ --port=8003 2>&1 1>& /dev/null < /dev/null &
+        nohup ${DDHOME}/cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
 	;;
  status)
         if [ ! -z ${pid} ]; then
