@@ -1,6 +1,6 @@
 /**
- $Revision: 1.83 $"
- $Id: DBSApiFileLogic.java,v 1.83 2008/01/02 21:03:53 afaq Exp $"
+ $Revision: 1.84 $"
+ $Id: DBSApiFileLogic.java,v 1.84 2008/01/02 21:07:30 afaq Exp $"
  *
  */
 
@@ -305,7 +305,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//if old client then send empty xml
 		boolean oldClients = false;
 		//System.out.println("clientVersion " + clientVersion + " clientVersion.compareTo DBS_1_0_8 " + clientVersion.compareTo("DBS_1_0_8") );
-		if(clientVersion.compareTo("DBS_1_0_8") < 0) oldClients = true;
+		if(clientVersion.compareTo("DBS_1_0_9") < 0) oldClients = true;
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
@@ -328,6 +328,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						" created_by='' last_modified_by=''" ;
 						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME");
 						else toSend += " block_name='";
+						
 					} else {
 						if(DBSUtil.contains(attributes, "retrive_status")) toSend += "' validation_status='" + get(rs, "VALIDATION_STATUS") +
 							"' status='" + get(rs, "STATUS");
