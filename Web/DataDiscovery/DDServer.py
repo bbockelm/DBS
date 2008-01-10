@@ -1197,7 +1197,7 @@ class DDServer(DDLogger,Controller):
                if proc.lower().find("regexp:")!=-1:
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
-                  if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
                      wClause=" REGEXP_LIKE(Path,:p0) "
                   else:
                      wClause=" Path REGEXP :p0 "
@@ -1324,7 +1324,7 @@ class DDServer(DDLogger,Controller):
                if proc.lower().find("regexp:")!=-1:
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
-                  if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
                      wClause=" REGEXP_LIKE(Path,:p0) "
                   else:
                      wClause=" Path REGEXP :p0 "
