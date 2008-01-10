@@ -25,7 +25,7 @@ cat >> $DIR/DBSDD.conf << EOF
 LOGGERDIR=$DDHOME/Logs
 EOF
 
-cat >> $DIR/DBParam << EOF
+cat > $DIR/DBParam << EOF
 ######################################################################
 # This is example of DBParam file, please make appropriate changes
 # for your system. 
@@ -39,10 +39,10 @@ Interface               MYSQL
 Database                dbsdb
 AuthDBUsername          root
 AuthDBPassword          cmsdbs
-Host                    127.0.0.1:3306
+Host                    127.0.0.1:3307
 Url                     https://$host:8448/DBS/servlet/DBSServlet
 ######################################################################
-EOF 
+EOF
 
 # Fix masthead from WEBTOOLS
 #cat $DDHOME/WEBTOOLS/Common/Templates/masthead.tmpl | \
