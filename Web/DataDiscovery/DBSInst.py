@@ -177,7 +177,7 @@ class DBManager(DDLogger):
       con = self.engine[dbsInst].connect()
 
       if  not self.dbTables.has_key(dbsInst):
-          dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=True)
+          dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=False)
           dbsMeta.connect(self.engine[dbsInst])
           self.metaDict[dbsInst]=dbsMeta
           tables={}
@@ -186,7 +186,7 @@ class DBManager(DDLogger):
               if eType=='oracle':
                  tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False)
               else:
-                 tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True,case_sensitive=True)
+                 tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True,case_sensitive=False)
           self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
