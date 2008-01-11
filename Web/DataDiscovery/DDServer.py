@@ -1493,7 +1493,7 @@ class DDServer(DDLogger,Controller):
                      'pagerStep': pagerStep,
                      'pagerId'  : pagerId,
                      'nameForPager': "datasets",
-                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId)
+                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId,moreParams)
                     }
         t = templateSnapshot(searchList=[_nameSpace]).respond()
         snapshot=str(t)
@@ -1524,7 +1524,7 @@ class DDServer(DDLogger,Controller):
         _nameSpace['style']="" # change style for the pager
         pagerId+=1
         _nameSpace['pagerId']=pagerId
-        _nameSpace['onchange']="javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId)
+        _nameSpace['onchange']="javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId,moreParams)
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
         

@@ -1438,9 +1438,9 @@ function CheckOperator() {
 function load(url) {
   window.location.href=url;
 }
-function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,date,idx,ajax,userMode,pagerId) {
+function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,date,idx,ajax,userMode,pagerId,moreParams) {
    var pagerStep=$('pagerStep'+pagerId).value;
-   var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&primType='+primType+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
+   var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&primType='+primType+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep+moreParams;
    load(url);
 }
 function LoadAnalysisDS(dbsInst,idx,ajax,userMode,pagerId) {
