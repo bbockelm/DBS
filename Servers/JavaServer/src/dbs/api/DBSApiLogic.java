@@ -1,6 +1,6 @@
 /**
- $Revision: 1.119 $"
- $Id: DBSApiLogic.java,v 1.119 2007/12/12 19:50:23 afaq Exp $"
+ $Revision: 1.120 $"
+ $Id: DBSApiLogic.java,v 1.120 2007/12/17 16:06:29 sekhri Exp $"
  *
  */
 
@@ -455,9 +455,7 @@ public class DBSApiLogic {
 	private boolean insertNameMain(Connection conn, Writer out, String table, String key, String value, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
 		if(isNull(lmbUserID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
-		System.out.println("insertNameMain table, " + table + " key, " + key + " value, " + value);
 		if(isNull(getID(conn, table, key, value, false))) {
-			System.out.println("IT is NULLLLLLLLLLLLLLLLLLLLL");
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertName(conn, table, key, value, cbUserID, lmbUserID, creationDate);
@@ -467,7 +465,6 @@ public class DBSApiLogic {
 			}
 			return true;
 		} else {
-			System.out.println("NOT NULL ID is " + getID(conn, table, key, value, false));
 		}
 		return false;
 	}

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.84 $"
- $Id: DBSApiFileLogic.java,v 1.84 2008/01/02 21:07:30 afaq Exp $"
+ $Revision: 1.85 $"
+ $Id: DBSApiFileLogic.java,v 1.85 2008/01/10 15:39:37 afaq Exp $"
  *
  */
 
@@ -795,8 +795,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//We have ALL infor about the Block, lets decide if its OK to write to this Block
 
 		//Is it OK to write to this Block ?
-		if ( open_for_writing == 0 )
-			throw new DBSException("Block Closed");
+		if ( open_for_writing == 0 ) {
+			throw new DBSException("Block Closed", "1024", "Block "+ blockName +" not open for further files");
+		}
 
 		//Block can hold more files  ??
 		//Leaving the code commenetd as this may not be handled by DBS !!

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiPrimDSLogic.java,v 1.20 2007/04/13 17:24:42 afaq Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.21 2007/12/12 19:50:23 afaq Exp $"
  *
  */
 
@@ -137,7 +137,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 					cbUserID, lmbUserID, creationDate);
 				ps.execute();
 			} catch (SQLException ex) {
-				System.out.println("Exception: "+ex.getMessage());
+				//System.out.println("Exception: "+ex.getMessage());
 			} finally { 
 				if (ps != null) ps.close();
 			}
