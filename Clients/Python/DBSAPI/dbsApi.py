@@ -94,6 +94,7 @@ class DbsApi(DbsConfig):
     #
     # Connect to the Server proxy
     #
+
     self._server = ""
     if not self.configDict.has_key('mode'):
 	self.configDict['mode'] = "POST"  

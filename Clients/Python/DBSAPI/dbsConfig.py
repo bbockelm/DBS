@@ -27,7 +27,8 @@ class DbsConfig(object):
     """
  
     uFileName=""
-    iList=['user','password','driver','url','host','port','log','level', 'servlet','version','dbname','dbsDB','dbtype','verbose','mode', 'dbshome', 'javahome' ]
+    iList=['user','password','driver','url','host','port','log','level', 'servlet','version','dbname','dbsDB',
+					'dbtype','verbose','mode', 'dbshome', 'javahome', 'adshome']
     self.configDict={}
 
     for item in iList:
@@ -135,6 +136,10 @@ class DbsConfig(object):
     if not self.configDict.has_key('level'):
        raise DbsException(args="DBS configuration missing log level parameter")
     return self.configDict['level']
+  def adshome(self):
+    if not self.configDict.has_key('adshome'):
+       raise DbsException(args="DBS configuration missing adshome parameter")
+    return self.configDict['adshome']
 
 #
 # main

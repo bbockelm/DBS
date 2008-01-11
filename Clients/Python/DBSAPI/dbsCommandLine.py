@@ -116,6 +116,8 @@ class cmd_doc_writer:
       self._help_blocklist()
       print "\n"       
       self._help_search()  
+      print "\n"
+      self._help_myadslist()
 
 
   def command_help(self):
@@ -157,11 +159,28 @@ class cmd_doc_writer:
       command_help += "\n           listFiles or lsf, must provide --path"
       command_help += "\n           listAnalysisDatasetDefinition or lsadef"
       command_help += "\n           listAnalysisDataset or lsads"
+      command_help += "\n           myAnalysisDataset or myads"
       command_help += "\n           search or --search\n"
       command_help += "\n EXAMPLE: python dbsCommandLine.py -c lsd --path=/*/*/RAW" 
       command_help += "\n Note: most commands can print greater details with --report"
       command_help += "\n Please use --doc for details"
       return command_help
+
+  def _help_myadslist(self):
+		pre=""
+                if self.wiki_help:
+                        print "---+++\b"
+                print pre+"Lists Local Analysis Datasets"
+                print "   Arguments:"
+                print "         -c myads, or --command=myAnalysisDataset or --command=myads"
+                print "         optional: --pattern=<Analysis_Dataset_Name_Pattern>"
+                print "                   --help, displays this message"
+                if self.wiki_help: print "<verbatim>"
+                print "   examples:"
+                print "         python dbsCommandLine.py -c myads"
+                print "         python dbsCommandLine.py -c myads --pattern=MyAnalysis*"
+                if self.wiki_help: print "</verbatim>"
+
 
   #Analysis Datasets
   def _help_andslist(self):
@@ -390,6 +409,7 @@ def print_help(self):
 	print saved_help.getvalue()
 	term=TerminalController()
 	helper = cmd_doc_writer()
+        print helper.command_short_help()
         #print term.BLUE+helper.command_short_help()+term.NORMAL
 
        #print open(saved_help, 'r').read()
@@ -580,7 +600,7 @@ class ApiDispatcher:
         del(opts.__dict__['url']) 
 
     self.api = DbsApi(opts.__dict__)
-    #self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
+    self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
 	print_help(self)
 	return
@@ -621,6 +641,10 @@ class ApiDispatcher:
 
     elif apiCall in ('listAnalysisDataset', 'lsads'):
         self.handlelistANDCall()
+
+    elif apiCall in ('myAnalysisDataset', 'myads'):
+	self.handlelistMyADSCall()
+
     elif apiCall in ('deletePDS', '--deletePDS'):
 	self.handledeleteProcDSCall()
 
@@ -708,6 +732,25 @@ class ApiDispatcher:
                                         +"/"+ algo[1] \
                                                 + "/" + algo[3]
 	return	
+
+  def handlelistMyADSCall(self):
+	if self.optdict.has_key('want_help'):
+                self.helper._help_myadslist()
+                return
+	print "Listing lical ADS"
+
+        adshome = os.path.expandvars(self.api.adshome())
+        if not os.path.exists(adshome):
+                self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+	if not os.path.isdir(adshome):
+		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+
+	dirList=os.listdir(adshome)
+	for fname in dirList:
+    		print fname
+	return
+
+
 	         
   def handlelistANDCall(self):
         if self.optdict.has_key('want_help'):
@@ -1001,6 +1044,10 @@ class ApiDispatcher:
        sepattern = self.optdict.get('sepattern') or ''
        algopattern = self.optdict.get('algopattern') or ''
 
+       pathl = self.getPath(pathpattern)
+       if pathl['patternPrim'] in ['*', '', '?'] and  pathl['patternProc'] in ['*', '', '?'] and pathl['patternDT'] in ['*', '', '?']:
+		pathpattern='/*/*/*'
+		
        if pathpattern in ['/*/*/*', ''] and blockpattern in ['*', ''] \
 		and sepattern in ['*', ''] and algopattern in ['/*/*/*/*', '']:
 		self.printRED("You must provide some options with --search, Please look at 'dbs --search --help', or use 'dbs --doc'. \nCannot list EVERYTHING in DBS\n\n")
@@ -1010,7 +1057,6 @@ class ApiDispatcher:
        #### Lets locate all matching PATH and then for each Path List (Blocks, Runs, Algos etc) and then for each Block 
        # See if any path is provided
        paramDict={}
-       pathl = self.getPath(pathpattern)
        if len(pathl):
                 paramDict.update(pathl)
 
@@ -1060,7 +1106,10 @@ class ApiDispatcher:
 					adsfileslist.extend(filesret)
 
        if createads not in ('', None):
-       		#print "files to be added in ADS:"
+		if len(datasetPaths) > 1:
+			self.printRED("Cannot create ADS, more than one matching Paths found for query, limit to ONE Path")
+			return
+#print "files to be added in ADS:"
        		#print adsfileslist	
 		self.createADS(createads, aPath, adsfileslist)
 
@@ -1072,18 +1121,31 @@ class ApiDispatcher:
 	Created the ADS in DBS Local ADS File format
 		More info will be passed and added to this method at later stage
 	"""
-	#print "Creating ADS: %s" % ads
-	print "########################"
-	print "[NAME]"
-	print ads
-	print "[HOSTDBS]"
-	print self.api.url()
-	print "[PATH]"
-	print path
-	print "[FILES]"
-	for aFile in files:
-		print aFile['LogicalFileName']
-#
+
+	adshome = os.path.expandvars(self.api.adshome())
+	if not os.path.exists(adshome):
+		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+	adspath = os.path.join(adshome, ads)
+   
+	if os.path.exists(adspath):
+		self.printRED("ERROR: Cannot create %s, An analysis Dataset with same name already exists" %str(adspath))
+		return
+
+	ads_file=open(adspath, 'w')
+	ads_file.write("########################")
+	# ADS name is same as file name
+        #ads_file.write("\n[NAME]\n")
+        #ads_file.write(ads)
+        ads_file.write("\n[HOSTDBS]\n")
+        ads_file.write(self.api.url())
+        ads_file.write("\n[PATH]\n")
+        ads_file.write(path)
+        ads_file.write("\n[FILES]")
+        for aFile in files:
+                ads_file.write("\n%s" %aFile['LogicalFileName'])
+	ads_file.close()
+	print "Created ADS: %s" % adspath
+
 # main
 #
 if __name__ == "__main__":
