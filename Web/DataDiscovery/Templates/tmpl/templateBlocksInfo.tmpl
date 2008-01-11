@@ -43,7 +43,7 @@ contains $len($blkList) block(s)
 #set mDate=item[8]
 #set seList=item[9]
 #from DDUtil import list2String
-#set seName=$list2String($seList)
+#set seName=$list2String($seList,"html")
 #set bName=$blockName.replace('#','%23')
 #set sName=$blockName.replace('#',"<br />#")
 #set bid=$blockName.split('#')[1]

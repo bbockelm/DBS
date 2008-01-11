@@ -431,12 +431,15 @@ def demanglePattern(pattern):
         if components[idx]=="*": components[idx]=''
     return components[1:]
         
-def list2String(iList):
+def list2String(iList,mode="txt"):
     if not len(iList): return ""
     iList.sort()
     s=iList[0]
     for item in iList[1:]:
-        s+=", %s"%item
+        if mode=="html":
+           s+="<br /> %s"%item
+        else:
+           s+=", %s"%item
     return s
 
 def printListElements(iList,msg=""):
