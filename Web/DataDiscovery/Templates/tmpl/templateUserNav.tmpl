@@ -371,6 +371,79 @@ $prdForm
 
 </td>
 </tr>
+
+
+<!-- LFN-dataset search form -->
+<tr>
+<td align="left">
+<br />
+<br />
+<hr class="dbs" />
+<br />
+</td>
+</tr>
+
+<tr valign="top">
+<td valign="top" align="left">
+
+<div style="margin-left:-35px" id="userNavForm2">
+
+<form action="findDatasetsFromLFN" method="get">
+<input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
+#if $userMode=='user'
+<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+<table cellpadding="2" cellspacing="2" width="100%">
+#else
+<table cellpadding="2" cellspacing="2" width="100%">
+<tr>
+<td align="right">
+<div id="dbsInstDef">
+<b>DBS instances</b>
+</div>
+</td>
+<td>
+<select name="dbsInst" id="dbsInst" onchange="javascript:ReloadMethod('$host','_navigator','$userMode')" style="$style">
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+</td>
+</tr>
+#end if
+
+<tr>
+<td align="right">
+<div id="lfnDef">
+<b>
+&nbsp;Dataset from LFN:
+</b>
+</div>
+</td>
+<td align="left">
+<input type="text" size="80" name="lfn" />
+</td>
+</tr>
+
+<tr>
+<td>
+</td>
+<td>
+<input type="reset" value="Reset" />
+<input type="submit" value="Find" id='userNavId2' />
+</td>
+</tr>
+</table>
+
+</form>
+</div>
+
+</td>
+</tr>
+
+<!-- end of LFN-dataset search form -->
+
+
+
 </table>
 
 
@@ -410,6 +483,8 @@ tooltip="<p>Regular expression search can be done by using <em>regexp:</em> keyw
 MakeTooltip("t_regexp","regexpDef",tooltip);
 tooltip="<p>Like-search allows you to search datasets whose name will match provided pattern. You can construct logical expressions by using <em>like:</em> keyword. For example to search for all datasets who have RECO in their name, but not RelVal use the following <em>like:RECO and not like:RelVal</em></p>";
 MakeTooltip("t_like","likeDef",tooltip);
+tooltip="<p>Search dataset for given LFN, LFN name should be provided, no patterns.</p>";
+MakeTooltip("t_lfn","lfnDef",tooltip);
 //SetAutoCompletion();
 // check if user uses IE and turn on warning message
 if(isInternetExplorer()) {

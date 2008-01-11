@@ -507,6 +507,28 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
+  def findDatasetsFromLFN(self,lfn):
+      con = self.connectToDB()
+      try:
+          tblk = self.alias('Block','tblk')
+          tf   = self.alias('Files','tf')
+          oSel = [self.col(tblk,'Path')]
+          obj  = tblk.join(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
+          sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in findDatasetsFromLFN"
+      oList=[]
+      for item in result:
+          path = item[0]
+          if not path: continue
+          if not oList.count(path): oList.append(path)
+      self.closeConnection(con)
+      return oList
+
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",date="*",userMode="user",fromRow=0,limit=0,count=0):
       if group.lower()=='any': group="*"
       app=app.replace("Any","*")

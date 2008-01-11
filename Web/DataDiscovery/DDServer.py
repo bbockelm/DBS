@@ -1297,7 +1297,14 @@ class DDServer(DDLogger,Controller):
             pList.append(item)
         return pList
 
-    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
+    def findDatasetsFromLFN(self,dbsInst,lfn,**kwargs):
+        pList = self.helper.findDatasetsFromLFN(lfn)
+        print lfn
+        print pList
+        return self.getData(dbsInst,proc=pList)
+    findDatasetsFromLFN.exposed=True
+
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -1564,7 +1571,7 @@ class DDServer(DDLogger,Controller):
         page=str(t)
         return page
 
-    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
+    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
