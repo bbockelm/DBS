@@ -1537,15 +1537,22 @@ MCDescription:      %s
          siteSel=" INNER JOIN SEBlock seb ON seb.BlockID=tblk.ID INNER JOIN StorageElement se ON se.ID=seb.SEID "
          siteWhere=" AND se.SEName=:site "
       return siteSel,siteWhere
-  def countBlocks(self,whereClause,site="",explicitWClause="",explicitDict={}):
+
+  def countBlocks(self,whereClause,site="",explicitWClause="",explicitDict={},caseSensitive=True):
       siteSel,siteWhere=self.getSiteClause(site)
       bindparams=[]
+      blk="tblk.Path"
+      if not caseSensitive:
+         blk="UPPER(tblk.Path)"
+      mysql=""
+      if self.dbManager.dbType[self.dbsInstance]=='mysql':
+         mysql="COLLATE latin1_bin"
       if explicitWClause:
          oDict=explicitDict
-         sel = "select COUNT(DISTINCT Path) from Block tblk %s where %s %s"%(siteSel,explicitWClause,siteWhere)
+         sel = "select COUNT(DISTINCT Path) from Block tblk %s where %s %s %s"%(siteSel,explicitWClause,siteWhere,mysql)
       else:
-         wClause,oDict=parseKeywordInput(whereClause,"tblk.Path")
-         sel = "select COUNT(DISTINCT Path) from Block tblk %s where %s %s"%(siteSel,wClause,siteWhere)
+         wClause,oDict=parseKeywordInput(whereClause,blk)
+         sel = "select COUNT(DISTINCT Path) from Block tblk %s where %s %s %s"%(siteSel,wClause,siteWhere,mysql)
       for bind_param in oDict.keys():
           bindparams.append(sqlalchemy.bindparam(key=bind_param,value=oDict[bind_param]))
       if siteWhere:

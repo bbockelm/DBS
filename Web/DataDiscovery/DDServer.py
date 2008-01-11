@@ -1212,16 +1212,16 @@ class DDServer(DDLogger,Controller):
                   else:
                      wClause=" %s REGEXP :p0 "%arg
                   bDict={'p0':"%s"%pat}
-                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict)
+                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict,caseSensitive=caseSensitive)
                elif proc.lower().find("like:")!=-1:
-                  nDatasets=self.helper.countBlocks(proc,site)
+                  nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
                   arg="tblk.Path"
                   if not caseSensitive:
                      arg="UPPER(tblk.Path)"
                   wClause,bDict=parseKeywordInput(proc,arg)
                else:
                   # we got a pattern
-                  nDatasets=self.helper.countBlocks("like:%s"%proc,site)
+                  nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
                   wClause=" tblk.Path LIKE :p0 "
                   if not caseSensitive:
                      wClause=" UPPER(tblk.Path) LIKE :p0 "
@@ -1354,16 +1354,16 @@ class DDServer(DDLogger,Controller):
                   else:
                      wClause=" %s REGEXP :p0 "%arg
                   bDict={'p0':"%s"%pat}
-                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict)
+                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict,caseSensitive=caseSensitive)
                elif proc.lower().find("like:")!=-1:
-                  nDatasets=self.helper.countBlocks(proc,site)
+                  nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
                   arg="tblk.Path"
                   if not caseSensitive:
                      arg="UPPER(tblk.Path)"
                   wClause,bDict=parseKeywordInput(proc,arg)
                else:
                   # we got a pattern
-                  nDatasets=self.helper.countBlocks("like:%s"%proc,site)
+                  nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
                   wClause=" tblk.Path LIKE :p0 "
                   if not caseSensitive:
                      wClause=" UPPER(tblk.Path) LIKE :p0 "
