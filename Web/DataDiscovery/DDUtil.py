@@ -431,6 +431,14 @@ def demanglePattern(pattern):
         if components[idx]=="*": components[idx]=''
     return components[1:]
         
+def list2String(iList):
+    if not len(iList): return ""
+    iList.sort()
+    s=iList[0]
+    for item in iList[1:]:
+        s+=", %s"%item
+    return s
+
 def printListElements(iList,msg=""):
     """
        Loop over elements in a list and print one in a time on stdout

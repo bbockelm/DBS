@@ -812,6 +812,7 @@ MCDescription:      %s
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
           raise "Fail in getBlocksSummary"
+      oDict={}
       for item in result:
           if not item[0]: continue
           name,blkSize,nFiles,nEvts,status,cBy,cDate,mBy,mDate,se=item
@@ -819,9 +820,16 @@ MCDescription:      %s
           cBy   = parseCreatedBy(cBy)
           mDate = timeGMT(mDate)
           mBy   = parseCreatedBy(mBy)
-          oList.append((name,long(blkSize),long(nFiles),long(nEvts),status,cBy,cDate,mBy,mDate,se))
+          if oDict.has_key(name):
+             seList=oDict[name][-1]
+             if not seList.count(se):
+                seList.append(se)
+          else:
+             oDict[name]=(name,long(blkSize),long(nFiles),long(nEvts),status,cBy,cDate,mBy,mDate,[se])
+#          oList.append((name,long(blkSize),long(nFiles),long(nEvts),status,cBy,cDate,mBy,mDate,se))
       self.closeConnection(con)
-      return oList
+#      return oList
+      return oDict.values()
 
   def nDatasets(self):
       con   = self.connectToDB()

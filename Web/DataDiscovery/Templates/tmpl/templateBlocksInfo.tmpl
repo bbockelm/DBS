@@ -1,5 +1,5 @@
 <!-- templateBlocksInfo.tmpl -->
-<script type="text/javascript" src="js/sorttable.js"></script>
+##<script type="text/javascript" src="js/sorttable.js"></script>
 #set idPath=$proc.replace("/","___")
 #set tableId="table_"+$idPath
 <div>
@@ -12,7 +12,7 @@ Dataset:<br />
 contains $len($blkList) block(s)
 </div>
 <p />
-<table id="$tableId" cellspacing="0" cellpadding="0" border="1" class="sortable">
+<table id="$tableId" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
 <td>Block id</td>
 <td>SEName</td>
@@ -41,7 +41,9 @@ contains $len($blkList) block(s)
 #set cDate=item[6]
 #set mBy=item[7]
 #set mDate=item[8]
-#set seName=item[9]
+#set seList=item[9]
+#from DDUtil import list2String
+#set seName=$list2String($seList)
 #set bName=$blockName.replace('#','%23')
 #set sName=$blockName.replace('#',"<br />#")
 #set bid=$blockName.split('#')[1]
