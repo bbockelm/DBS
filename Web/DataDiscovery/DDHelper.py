@@ -785,6 +785,8 @@ MCDescription:      %s
       oList = []
       sel   = ""
       try:
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
           tblk = self.alias('Block','tblk')
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
@@ -792,12 +794,15 @@ MCDescription:      %s
                  self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),
                  self.col(tblk,'OpenForWriting'),
                  self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),
-                 self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate')
+                 self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate'),
+                 self.col(tse,'SEName')
                 ]
           oBy  = [sqlalchemy.desc(self.col(tblk,'LastModificationDate'))]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                          tblk.outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
+                          tblk.join(tseb,onclause=self.col(tblk,'ID')==self.col(tseb,'BlockID'))
+                          .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                          .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
                             ],distinct=True,order_by=oBy
                                  )
@@ -809,12 +814,12 @@ MCDescription:      %s
           raise "Fail in getBlocksSummary"
       for item in result:
           if not item[0]: continue
-          name,blkSize,nFiles,nEvts,status,cBy,cDate,mBy,mDate=item
+          name,blkSize,nFiles,nEvts,status,cBy,cDate,mBy,mDate,se=item
           cDate = timeGMT(cDate)
           cBy   = parseCreatedBy(cBy)
           mDate = timeGMT(mDate)
           mBy   = parseCreatedBy(mBy)
-          oList.append((name,long(blkSize),long(nFiles),long(nEvts),status,cBy,cDate,mBy,mDate))
+          oList.append((name,long(blkSize),long(nFiles),long(nEvts),status,cBy,cDate,mBy,mDate,se))
       self.closeConnection(con)
       return oList
 
