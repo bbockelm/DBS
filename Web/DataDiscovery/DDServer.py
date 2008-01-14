@@ -1299,9 +1299,13 @@ class DDServer(DDLogger,Controller):
 
     def findDatasetsFromLFN(self,dbsInst,lfn,**kwargs):
         pList = self.helper.findDatasetsFromLFN(lfn)
-        print lfn
-        print pList
-        return self.getData(dbsInst,proc=pList)
+        if len(pList):
+           return self.getData(dbsInst,proc=pList)
+        else:
+           page=self.genTopHTML(userMode=userMode)
+           page+="""<p><span class="box_red">No data found</span></p>"""
+           page+=self.genBottomHTML()
+           return page
     findDatasetsFromLFN.exposed=True
 
     def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
