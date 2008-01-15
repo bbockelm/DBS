@@ -1297,15 +1297,20 @@ class DDServer(DDLogger,Controller):
             pList.append(item)
         return pList
 
-    def findDatasetsFromLFN(self,dbsInst,lfn,**kwargs):
+    def findDatasetsFromLFN(self,dbsInst,lfn,userMode,**kwargs):
         pList = self.helper.findDatasetsFromLFN(lfn)
+        page=self.genTopHTML(userMode=userMode)
         if len(pList):
-           return self.getData(dbsInst,proc=pList)
+           page+="<p>Requested LFN %s found in</p>\n<ul>\n"%lfn
+           for pname in pList:
+               path,bid=pname.split("#")
+               s="%s/getData?dbsInst=%s&amp;userMode=%s&amp;proc=%s"%(self.dbsdd,dbsInst,userMode,path)
+               page+="""<li>dataset: <a href="%s">%s</a>, block <b>%s</b>\n"""%(s,path,bid) 
+           page+="</ul>\n"
         else:
-           page=self.genTopHTML(userMode=userMode)
            page+="""<p><span class="box_red">No data found</span></p>"""
-           page+=self.genBottomHTML()
-           return page
+        page+=self.genBottomHTML()
+        return page
     findDatasetsFromLFN.exposed=True
 
     def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 

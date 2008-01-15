@@ -512,7 +512,7 @@ class DDHelper(DDLogger):
       try:
           tblk = self.alias('Block','tblk')
           tf   = self.alias('Files','tf')
-          oSel = [self.col(tblk,'Path')]
+          oSel = [self.col(tblk,'Name')]
           obj  = tblk.join(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
           sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
