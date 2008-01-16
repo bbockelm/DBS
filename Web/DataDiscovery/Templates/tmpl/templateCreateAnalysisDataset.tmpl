@@ -1,0 +1,105 @@
+<!-- templateCreateAnalysisDataset.tmpl -->
+Create analysis dataset form:
+<form action="createADS" method="POST">
+<input type="hidden" name="userMode" value="$userMode" />
+<input type="hidden" name="dataset" value="$dataset" />
+<p><b>$dataset</b></p>
+<div id="navlist">
+<ul>
+#for item in $bList
+#set block=item[0]
+#set blkSize=item[1]
+#set nFiles=item[2]
+#set nEvts=item[3]
+#set status=item[4]
+#set cBy=item[5]
+#set cDate=item[6]
+#set mBy=item[7]
+#set mDate=item[8]
+#set seList=item[9]
+#set path=$block.replace("/","___")
+#set pname,bid=$block.split("#")
+#set tid=$bid.replace("-","_")
+#from DDUtil import sizeFormat, colorSizeHTMLFormat, list2String
+#set seName=$list2String($seList,"html")
+<li class="moreInfo">
+<input type="checkbox" name="block" value="$block" id="block_$tid" />$bid,
+Details <a href="javascript:ShowTag('details_$tid')">show</a> | 
+        <a href="javascript:HideTag('details_$tid')">hide</a>, 
+LFNs: <a href="javascript:ShowTag('lfns_$tid');ShowLFNs('$dbsInst','$block','lfns_$tid',lfns_$tid,'block_$tid')">show</a> | 
+      <a href="javascript:HideTag('lfns_$tid')">hide</a>
+###<a href="javascript:ShowTag('lfns_$bid');ajaxGetLFNs('$dbsInst','$block','lfns_$bid')">$bid</a>
+<p></p>
+
+<div id="details_$tid" class="hide">
+<table cellspacing="0" cellpadding="0" border="1">
+<tr class="sortable_gray">
+<th>Block size</th>
+<th># files</th>
+<th># events</th>
+<th>Status</th>
+<th>Created by</th>
+<th>Creation date</th>
+<th>Modified by</th>
+<th>Modifcation date</th>
+<th>SEs</th>
+</tr>
+
+<tr valign="top" bgcolor="#FFFADC">
+<td>$colorSizeHTMLFormat($blkSize)</td>
+<td>$nFiles</td>
+<td>$nEvts</td>
+<td>$status</td>
+<td>$cBy</td>
+<td>$cDate</td>
+<td>$mBy</td>
+<td>$mDate</td>
+<td>$seName</td>
+</tr>
+</table>
+</div>
+
+<p></p>
+
+<div id="lfns_$tid" class="hide">
+<img src="images/loading.gif" alt="loading" /> please wait, while we retrieve LFNs
+</div>
+<script type="text/javascript">
+ajaxEngine.registerAjaxElement('lfns_$tid');
+var lfns_$tid=null;
+</script>
+</li>
+#end for
+</ul>
+</div>
+
+<p>Description<br />
+<textarea name="description" rows="5" cols="60">
+</textarea>
+</p>
+
+<p>Tags:
+<input type="text" name="tags" />
+</p>
+
+<p>
+<input type="reset" />
+<input type="submit" />
+</p>
+</form>
+<script type="text/javascript">
+function ShowLFNs(dbsInst,block,tag,id,bid) {
+   if(!id) {
+      ajaxGetLFNs(dbsInst,block,tag,block,'CheckBid(\''+bid+'\')');
+      id=1;
+   }
+}
+function CheckBid(tag) {
+   var id=document.getElementById(tag);
+   if(id) {
+      id.checked="checked";
+   }
+}
+</script>
+
+<!-- end of templateCreateAnalysisDataset.tmpl -->
