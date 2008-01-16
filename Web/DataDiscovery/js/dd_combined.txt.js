@@ -1720,6 +1720,19 @@ function ChangeDbsInst() {
   } 
   load(newurl);
 }
+function SaveADS(name)
+{
+//  str = document.forms[0].ads.value;
+  var id = document.getElementById('ads');
+  var str = id.value;
+  s0=str.replace(/</g,'&lt;');
+  s1=s0.replace(/>/g,'&gt;');
+//alert('SaveADS='+str+" s="+s1);
+  mydoc = document.open();
+  mydoc.write(s1);
+  mydoc.execCommand("saveAs",true,name);
+  mydoc.close();
+}
 function MakeTooltip(_tag,_ctx,_text,autodismissdelay,width) {
   var delay=5000;
   if(autodismissdelay) {
@@ -7033,8 +7046,12 @@ function registerAjaxUserMenuCalls() {
 
 }
 
-function ajaxGetLFNs(dbsInst,blockName) {
-  ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName);
+function ajaxGetLFNs(dbsInst,blockName,ajaxId,blockId,js) {
+  if(ajaxId && blockId && js) {
+    ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName,'ajaxId='+ajaxId,'blockId='+blockId,'onchange='+js);
+  } else {
+    ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName);
+  }
 }
 function ajaxGetRunDBInfo(run) {
   ajaxEngine.sendRequest('ajaxGetRunDBInfo','run='+run);

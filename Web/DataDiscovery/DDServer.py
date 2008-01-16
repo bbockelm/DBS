@@ -1174,6 +1174,63 @@ class DDServer(DDLogger,Controller):
         return page
     sendAdminRequest.exposed=True
 
+    def createAnalysisDS(self,dbsInst,dataset,userMode="user"):
+        page = self.genTopHTML(userMode=userMode)
+        bList= self.helper.getBlocksInfo(dataset) 
+        nameSpace={
+                   'dbsInst' : dbsInst,
+                   'dataset' : dataset,
+                   'bList'   : bList,
+                   'userMode': userMode,
+                  }
+        t = templateCreateAnalysisDataset(searchList=[nameSpace]).respond()
+        page+= str(t)
+        page+= self.genBottomHTML()
+        return page
+    createAnalysisDS.exposed=True
+
+    def createADS(self,dataset,userMode,**kwargs):
+#        print "\n+++ createADS",kwargs
+        xml=False
+        if kwargs.has_key('xml'):
+           xml=True
+        page = self.genTopHTML(userMode=userMode)
+        input="""<?xml version="1.0" encoding="utf-8"?>\n"""
+        input+="""<dataset xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="DBS-Mart">\n"""
+        input+="<path>\n%s\n</path>\n"%dataset
+        if  type(kwargs['block']) is types.StringType:
+            input+="<block>\n<name>\n%s\n</name>\n</block>\n"%kwargs['block']
+        else:
+            for block in kwargs['block']:
+                input+="<block>\n"
+                input+="<name>\n%s\n</name>\n"%block
+                if  kwargs.has_key('%s'%block):
+                    lfnList = kwargs['%s'%block]
+                    if type(lfnList) is types.ListType:
+                       if not lfnList.count('All'):
+                          for lfn in kwargs[block]:
+                              input+="<lfn>\n%s\n</lfn>\n"%lfn
+                    else:
+                       if lfnList!="All":
+                          input+="<lfn>\n%s\n</lfn>\n"%lfnList
+                    input+="</block>\n"
+        input+="<description>"+kwargs['description']+"</description>\n"
+        input+="<tags>"+kwargs['tags']+"</tags>\n"
+        input+="</dataset>\n"
+        if xml:
+           self.setContentType('xml')
+           return input
+#        print input
+        if self.verbose:
+           self.writeLog(input)
+        xmlOutput=input.replace("<","&lt;").replace(">","&gt;").replace("\n","<br/>")
+        page+="<p>The following DBS-Mart XML file has been created:</p>"
+        page+="""<div class="yellow_box">%s</div>"""%xmlOutput
+        page+="""<p>Right click on this <a type="xml" href="createADS?dataset=%s&amp;userMode=%s&amp;xml=True%s">XML</a> file in order to save it locally.</p>"""%(dataset,userMode,getParams(kwargs))
+        page+= self.genBottomHTML()
+        return page
+    createADS.exposed=True
+
     def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user'):
         """
            Get all processed datasets for given set of input parameters
@@ -2006,19 +2063,29 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
+        ajaxId="blockLFNs"
+        if kwargs.has_key("ajaxId"):
+           ajaxId=kwargs["ajaxId"]
+        blockId="blockLFNlist"
+        if kwargs.has_key("blockId"):
+           blockId=kwargs["blockId"]
+        onchange=""
+        if kwargs.has_key("onchange"):
+           onchange="javascript:%s"%kwargs["onchange"]
+#           onchange="javascript:%s"%urllib.unquote(kwargs.has_key("onchange"))
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="blockLFNs">"""
+        page="""<ajax-response><response type="element" id="%s">"""%ajaxId
         dataset="*" # I don't retrieve all LFNs from dataset
         run="*"
         try:
             self.helperInit(dbsInst)
             lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
             page+="""
-<select multiple="multiple" name="blockLFNlist" id="blockLFNlist" style="width:1000px" size="10">
+<select multiple="multiple" name="%s" id="%s" style="width:1000px;font-size:8px" size="10" onchange="%s">
 <option value="All">
 All LFNs in a block
-</option>\n"""
+</option>\n"""%(blockId,blockId.replace("/","___"),onchange)
             for lfn in lfnList:
                 lName = lfn[0]
                 page+="""<option value="%s">%s</option>\n"""%(lName,lName)

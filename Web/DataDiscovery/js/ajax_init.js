@@ -522,8 +522,12 @@ function registerAjaxUserMenuCalls() {
 
 }
 
-function ajaxGetLFNs(dbsInst,blockName) {
-  ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName);
+function ajaxGetLFNs(dbsInst,blockName,ajaxId,blockId,js) {
+  if(ajaxId && blockId && js) {
+    ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName,'ajaxId='+ajaxId,'blockId='+blockId,'onchange='+js);
+  } else {
+    ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName);
+  }
 }
 function ajaxGetRunDBInfo(run) {
   ajaxEngine.sendRequest('ajaxGetRunDBInfo','run='+run);

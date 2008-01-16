@@ -560,6 +560,13 @@ def addToDict(iDict,key,value):
     """
     iDict.setdefault(key,[]).append(value)
 
+def getParams(kwargs):
+    moreParams=""
+    if kwargs:
+       for k in kwargs.keys():
+           moreParams+="&amp;%s=%s"%(k,urllib.quote(kwargs[k]))
+    return moreParams
+
 def monthId(month):
     d={'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12}
     return d[string.lower(month)[:3]]
