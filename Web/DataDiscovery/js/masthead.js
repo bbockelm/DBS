@@ -137,7 +137,7 @@ function menuText(){
 	{title: "PhEDEx - Data placement, transfer monitoring", link: "http://cmsdoc.cern.ch/cms/aprom/phedex/", label: "PhEDEx", id:"phedex"},
 	{title: "SiteDB - Site information and aggregate monitoring", link: "https://cmsweb.cern.ch/sitedb/sitelist", label: "SiteDB", id: "sitedb"},
 	{title: "CondDB - Conditions Database", link: "https://cmsweb.cern.ch/conddb/", label: "CondDB", id: "conddb"},
-	{title: "Web Tools Support - File a bug report, ask for help, read our FAQ", link: "https://cmsweb.cern.ch/Common/help", label: "Support", id: "help"}]
+	{title: "Web Tools Support - File a bug report, ask for help, read our FAQ", link: "https://cmsweb.cern.ch/sitedb/Common/help", label: "Support", id: "help"}]
 }
 function createSiteMasthead(title){
 	YAHOO.namespace("cms.dmwt");
