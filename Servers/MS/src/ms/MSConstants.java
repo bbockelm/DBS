@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.48 $"
- $Id: MSConstants.java,v 1.48 2007/11/28 17:06:41 sekhri Exp $"
+ $Revision: 1.1 $"
+ $Id: MSConstants.java,v 1.1 2008/01/16 22:33:29 sekhri Exp $"
  *
 */
 package ms;
@@ -20,13 +20,16 @@ public class MSConstants {
 	public static boolean USECACHE = true;//If this parameter is set to true, the server will use the cache
 	//public static boolean USECACHE = false;
 	//public static boolean ERROR = false;
-	public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- MS Version 1 -->\n<ms>\n";
-	public static String XML_FOOTER = "</ms>\n";
+	//public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- MS Version 1 -->\n<ms>\n";
+	public static String XML_HEADER =  "<HTML><BODY>\n";
+	//public static String XML_FOOTER = "</ms>\n";
+	public static String XML_FOOTER = "</BODY></HTML>\n";
 	public static String XML_EXCEPTION_HEADER = "<exception>\n";
 	public static String XML_EXCEPTION_FOOTER = "</exception>\n";
 	public static String XML_WARNNING_HEADER = "<warnning>\n";
 	public static String XML_WARNNING_FOOTER = "</warnning>\n";
-	public static String XML_SUCCESS = "<SUCCESS/>\n";
+	//public static String XML_SUCCESS = "<SUCCESS/>\n";
+	public static String XML_SUCCESS = "SUCCESS\n";
         public static String MSTag = "$Name:  $";
 
 }

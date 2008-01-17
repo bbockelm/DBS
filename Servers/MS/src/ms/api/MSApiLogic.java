@@ -1,6 +1,6 @@
 /**
- $Revision: 1.110 $"
- $Id: MSApiLogic.java,v 1.110 2007/11/16 22:20:35 sekhri Exp $"
+ $Revision: 1.1 $"
+ $Id: MSApiLogic.java,v 1.1 2008/01/16 22:33:30 sekhri Exp $"
  *
  */
 
@@ -62,8 +62,35 @@ public class MSApiLogic {
 		try {
 			ps =  MSSql.listRequest(conn, "", "", "", "", id, "");
 			rs =  ps.executeQuery();
-			if(rs.next()) 
-				out.write(((String) "<request id='" + id + 
+			out.write(((String) "<table style=\"font-size:x-small;\" width=\"200\" border=\"1\">\n" +
+					"<tr style=\"color:#FF0000;\">\n" +
+					"<th>Request ID</th>\n" +
+					"<th>Src URL</th>\n" +
+					"<th>Dst URL</th>\n" +
+					"<th>Path</th>\n" +
+					"<th>DN</th>\n" +
+					"<th>Parents</th>\n" +
+					"<th>Force</th>\n" +
+					"<th>Notify</th>\n" +
+					"<th>Detail</th>\n" +
+					"<th>Progress</th>\n" +
+					"<th>Status</th>\n" +
+					"</tr>\n"));
+			if(rs.next()) {
+				out.write(((String) "<tr>\n" +
+							"<td>" + id + "</td>\n" +
+							"<td>" + get(rs, "SRC_URL") + "</td>\n" +
+							"<td>" + get(rs, "DST_URL") + "</td>\n" +
+							"<td>" + get(rs, "PATH") + "</td>\n" +
+							"<td>" + get(rs, "CREATED_BY") + "</td>\n" +
+							"<td>" + get(rs, "WITH_PARENTS") + "</td>\n" +
+							"<td>" + get(rs, "WITH_FORCE") + "</td>\n" +
+							"<td>" + get(rs, "NOTIFY") + "</td>\n" +
+							"<td>" + get(rs, "DETAIL") + "</td>\n" +
+							"<td>" + get(rs, "PROGRESS") + "</td>\n" +
+							"<td>" + get(rs, "STATUS") + "</td>\n" +
+							"</tr>\n"));
+				/*out.write(((String) "<request id='" + id + 
 							"'\n src_url='" + get(rs, "SRC_URL") +
 							"'\n dst_url='" + get(rs, "DST_URL") +
 							"'\n path='" + get(rs, "PATH") +
@@ -74,7 +101,9 @@ public class MSApiLogic {
 							"'\n detail='" + get(rs, "DETAIL") +
 							"'\n progress='" + get(rs, "PROGRESS") +
 							"'\n status='" + get(rs, "STATUS") +
-							"'\n />"));
+							"'\n />"));*/
+			}
+			out.write(((String) "</table>\n"));
 		} finally {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
@@ -86,8 +115,37 @@ public class MSApiLogic {
 		try {
 			ps =  MSSql.listRequest(conn, "", "", "", dn, "", "");
 			rs =  ps.executeQuery();
-			while(rs.next()) 
-				out.write(((String) "<request id='" + get(rs, "ID") + 
+			out.write(((String) "<table style=\"font-size:x-small;\" width=\"200\" border=\"1\">\n" +
+					"<tr style=\"color:#FF0000;\">\n" +
+					"<th>Request ID</th>\n" +
+					"<th>Src URL</th>\n" +
+					"<th>Dst URL</th>\n" +
+					"<th>Path</th>\n" +
+					"<th>DN</th>\n" +
+					"<th>Parents</th>\n" +
+					"<th>Force</th>\n" +
+					"<th>Notify</th>\n" +
+					"<th>Detail</th>\n" +
+					"<th>Progress</th>\n" +
+					"<th>Status</th>\n" +
+					"</tr>\n"));
+
+			while(rs.next()) {
+				out.write(((String) "<tr>\n" +
+							"<td>" + get(rs, "ID") + "</td>\n" +
+							"<td>" + get(rs, "SRC_URL") + "</td>\n" +
+							"<td>" + get(rs, "DST_URL") + "</td>\n" +
+							"<td>" + get(rs, "PATH") + "</td>\n" +
+							"<td>" + dn + "</td>\n" +
+							"<td>" + get(rs, "WITH_PARENTS") + "</td>\n" +
+							"<td>" + get(rs, "WITH_FORCE") + "</td>\n" +
+							"<td>" + get(rs, "NOTIFY") + "</td>\n" +
+							"<td>" + get(rs, "DETAIL") + "</td>\n" +
+							"<td>" + get(rs, "PROGRESS") + "</td>\n" +
+							"<td>" + get(rs, "STATUS") + "</td>\n" +
+							"</tr>\n"));
+
+				/*out.write(((String) "<request id='" + get(rs, "ID") + 
 							"'\n src_url='" + get(rs, "SRC_URL") +
 							"'\n dst_url='" + get(rs, "DST_URL") +
 							"'\n path='" + get(rs, "PATH") +
@@ -99,6 +157,8 @@ public class MSApiLogic {
 							"'\n progress='" + get(rs, "PROGRESS") +
 							"'\n status='" + get(rs, "STATUS") +
 							"'\n />"));
+							*/
+			}
 		} finally {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
@@ -137,7 +197,8 @@ public class MSApiLogic {
 			if (ps != null) ps.close();
        	        }
 		requestID = getRequestID(conn, out, srcUrl, dstUrl, path, "", "");
-		out.write(((String) "<request id='" + requestID + "'/>"));
+		//out.write(((String) "<request id='" + requestID + "'/>"));
+		out.write(((String) "request id='" + requestID + "'<BR>"));
 		return requestID;
 	}
 

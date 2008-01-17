@@ -1,6 +1,6 @@
 /**
- $Revision: 1.114 $"
- $Id: MSApi.java,v 1.114 2007/11/29 17:40:32 sekhri Exp $"
+ $Revision: 1.1 $"
+ $Id: MSApi.java,v 1.1 2008/01/16 22:33:30 sekhri Exp $"
  *
 */
 
@@ -161,9 +161,13 @@ public class MSApi {
 		code = code.replace('\'',' ');
 		code = code.replace('<',' ');
 		code = code.replace('>',' ');
-		out.write("<exception message='" + message + "' "); 
+		/*out.write("<exception message='" + message + "' "); 
 		out.write(" code ='" + code + "' "); 
-		out.write(" detail ='" + detail + "' />\n"); 
+		out.write(" detail ='" + detail + "' />\n"); */
+		out.write("exception message=" + message + " <BR> "); 
+		out.write(" code =" + code + " <BR> "); 
+		out.write(" detail =" + detail + " <BR> \n"); 
+
 		out.write(MSConstants.XML_FOOTER);
 		out.flush();
        		MSUtil.writeErrorLog("<exception message='" + message + "' ");

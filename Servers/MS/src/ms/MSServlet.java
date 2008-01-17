@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.38 $"
- $Id: MSServlet.java,v 1.38 2007/11/28 17:06:42 sekhri Exp $"
+ $Revision: 1.1 $"
+ $Id: MSServlet.java,v 1.1 2008/01/16 22:33:29 sekhri Exp $"
 
  */
 package ms;
@@ -76,7 +76,8 @@ public class MSServlet extends HttpServlet{
 			MSUtil.writeLog("DN of the user is " + dn);
 			
 			//System.out.println("DN of the user is " + dn);
-			response.setContentType("text/xml");
+			//response.setContentType("text/xml");
+			response.setContentType("text/html");
 			out = response.getWriter();
 		
 			api = new MSApi();
