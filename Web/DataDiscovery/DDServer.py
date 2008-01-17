@@ -1231,7 +1231,7 @@ class DDServer(DDLogger,Controller):
         return page
     createADS.exposed=True
 
-    def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user'):
+    def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user',**kwargs):
         """
            Get all processed datasets for given set of input parameters
            @type  dbsInst: string
