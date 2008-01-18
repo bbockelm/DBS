@@ -1078,6 +1078,8 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
 
+    @is_authorized (Role("Global admin"), Group("global"), 
+                    onFail=RedirectToLocalPage ("/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
@@ -1105,6 +1107,8 @@ class DDServer(DDLogger,Controller):
                   'siteDict': siteDict,
                   'style'   : "",
                   'userMode': userMode,
+                  'adminUrl': self.adminUrl,
+                  'email'   : "vk@mail.lns.cornell.edu"
                   }
         t = templateAdminDatasets(searchList=[nameSpace]).respond()
         page+= str(t)
