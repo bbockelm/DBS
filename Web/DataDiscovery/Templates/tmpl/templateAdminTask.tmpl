@@ -43,7 +43,8 @@ $xmlOutput
 *#
 
 #import types
-<form action="$adminUrl" method="get">
+###<form action="$adminUrl" method="get">
+<form action="sendAdminRequest" method="get">
 #for key in $kwargs.keys()
 #if $skipList.count($key.lower())
 #continue
