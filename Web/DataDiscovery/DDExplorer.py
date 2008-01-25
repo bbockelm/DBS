@@ -99,8 +99,11 @@ def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
        hs=host.split("/")
        host=hs[0]
        prefix_path='/'.join(hs[1:])
-    http_conn = httplib.HTTP(host,port)
-    path='/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope)
+    if port==443:
+       http_conn = httplib.HTTPS(host,port)
+    else:
+       http_conn = httplib.HTTP(host,port)
+    path='/dbs_discovery/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope)
     if prefix_path:
        path="/"+prefix_path+path[1:]
     http_conn.putrequest('POST',path)
@@ -234,8 +237,8 @@ if __name__ == "__main__":
 #    port= 8001
 #    dbsInst="cms_dbs_prod_global"
 
-    host= "cmsdbs.cern.ch/DBS2_discovery/"
-    port= 80
+    host= "cmsweb.cern.ch"
+    port= 443
     dbsInst="cms_dbs_prod_global"
 
     optManager  = DDOptionParser()
