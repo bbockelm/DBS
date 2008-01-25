@@ -1881,6 +1881,42 @@ MCDescription:      %s
       self.closeConnection(con)
       return content
 
+  def getLFNsFromRunList(self,dbsInst,dataset,runList):
+      con = self.connectToDB()
+      try:
+          tb   = self.alias('Block','tb')
+          tf   = self.alias('Files','tf')
+          tfs  = self.alias('FileStatus','tfs')
+          tft  = self.alias('FileType','tft')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tr   = self.alias('Runs','tr')
+          oSel = [self.col(tf,'LogicalFileName')]
+          sel  = sqlalchemy.select(oSel,
+                 from_obj=[
+                     tb.join(tf,self.col(tf,'Block')==self.col(tb,'ID'))
+                       .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
+                       .outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
+                     ],distinct=True,order_by=oSel
+                                  )
+          sel.append_whereclause(self.col(tb,'Name')==dataset)
+          condList=[]
+          for run in runList:
+          # implement OR statement, select run from ... where run=1 or run=2
+              condList.append(self.col(tr,'RunNumber')==run)
+          if len(condList): 
+             sel.append_whereclause(sqlalchemy.or_(*condList))
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNs"
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item)
+      self.closeConnection(con)
+      return oList
+
   def getLFNs(self,dbsInst,blockName,dataset,run="*",lfn="*"):
       prim="*"
       tier="*"
@@ -2645,6 +2681,45 @@ MCDescription:      %s
          except:
             pass
       return oList,runDBInfoDict
+
+  def getRunRangeForDataset(self,dataset):
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpdr = self.alias('ProcDSRuns','tpdr')
+          tblk = self.alias('Block','tblk')
+          trun = self.alias('Runs','trun')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tf   = self.alias('Files','tf')
+
+          oSel = [sqlalchemy.func.min(self.col(trun,'RunNumber')),sqlalchemy.func.max(self.col(trun,'RunNumber'))]
+          sel  = sqlalchemy.select(oSel,
+                       from_obj=[
+                          tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
+                          .outerjoin(tpdr,onclause=self.col(tpdr,'ID')==self.col(tprd,'ID'))
+                          .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
+#                          tblk.outerjoin(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
+#                          .outerjoin(tfrl,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
+#                          .outerjoin(trun,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
+                                ],distinct=True
+                                 )
+          sel.append_whereclause(self.col(tblk,'Path')==dataset)
+#          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
+          result = self.getSQLAlchemyResult(con,sel)
+          print sel,result
+          oList = result.fetchall()
+          print oList
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getRunRangeForDataset"
+      rMin=oList[0][0]
+      rMax=oList[0][1]
+      if not rMin: rMin="N/A"
+      if not rMax: rMax="N/A"
+      self.closeConnection(con)
+      return rMin,rMax
 
   def getRunsForPrimary(self,prim="any",primType="any"):
       t1=time.time()
