@@ -888,7 +888,7 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _contact.exposed=True
 
-    @is_authorized (Role("DBS admin"), Group("dbs_admin"), 
+    @is_authorized (Role("Global Admin"), Group("DBS"), 
                     onFail=RedirectToLocalPage ("/redirectPage"))
     def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
         try:
@@ -1078,8 +1078,8 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
 
-    @is_authorized (Role("Global admin"), Group("global"), 
-                    onFail=RedirectToLocalPage ("/redirectPage"))
+#    @is_authorized (Role("Global admin"), Group("global"), 
+#                    onFail=RedirectToLocalPage ("/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
@@ -1181,11 +1181,14 @@ class DDServer(DDLogger,Controller):
     def createAnalysisDS(self,dbsInst,dataset,userMode="user"):
         page = self.genTopHTML(userMode=userMode)
         bList= self.helper.getBlocksInfo(dataset) 
+        minRun,maxRun=self.helper.getRunRangeForDataset(dataset)
         nameSpace={
                    'dbsInst' : dbsInst,
                    'dataset' : dataset,
                    'bList'   : bList,
                    'userMode': userMode,
+                   'minRun'  : minRun,
+                   'maxRun'  : maxRun,
                   }
         t = templateCreateAnalysisDataset(searchList=[nameSpace]).respond()
         page+= str(t)
@@ -1193,8 +1196,34 @@ class DDServer(DDLogger,Controller):
         return page
     createAnalysisDS.exposed=True
 
-    def createADS(self,dataset,userMode,**kwargs):
-#        print "\n+++ createADS",kwargs
+    def createADS(self,dbsInst,dataset,userMode="user",**kwargs):
+        print "\n\n### createADS",kwargs
+        page = self.genTopHTML(userMode=userMode)
+        nameSpace={
+                   'dbsInst'  : dbsInst,
+                   'dataset'  : dataset,
+                   'kwDict'   : kwargs,
+                   'userMode' : userMode,
+                   'user'     : "vk",
+                   'timeStamp': time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()),
+                   'status'   : 'NEW',
+                  }
+        t = templateCreateMart(searchList=[nameSpace]).respond()
+        page+= str(t)
+        page+= self.genBottomHTML()
+        return page
+    createADS.exposed=True
+
+    def createADSFromRunRange(self,dbsInst,dataset,minRun,maxRun,**kwargs):
+        self.helperInit(dbsInst)
+        page = self.genTopHTML(userMode=userMode)
+        lfnList=self.helper.getLFNsFromRunList(dataset,runList)
+        page+=self.formatLFNList(lfnList,"cff")
+        page+= self.genBottomHTML()
+        return page
+    createADSFromRunRange.exposed=True
+
+    def createADS_xml(self,dbsInst,dataset,userMode="user",**kwargs):
         xml=False
         if kwargs.has_key('xml'):
            xml=True
@@ -1224,7 +1253,6 @@ class DDServer(DDLogger,Controller):
         if xml:
            self.setContentType('xml')
            return input
-#        print input
         if self.verbose:
            self.writeLog(input)
         xmlOutput=input.replace("<","&lt;").replace(">","&gt;").replace("\n","<br/>")
@@ -1233,7 +1261,7 @@ class DDServer(DDLogger,Controller):
         page+="""<p>Right click on this <a type="xml" href="createADS?dataset=%s&amp;userMode=%s&amp;xml=True%s">XML</a> file in order to save it locally.</p>"""%(dataset,userMode,getParams(kwargs))
         page+= self.genBottomHTML()
         return page
-    createADS.exposed=True
+    createADS_xml.exposed=True
 
     def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user',**kwargs):
         """
