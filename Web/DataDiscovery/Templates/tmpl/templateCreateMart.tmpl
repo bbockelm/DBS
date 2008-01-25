@@ -1,0 +1,23 @@
+<!-- templateCreateMart.tmpl -->
+<pre>
+[HOSTDBS]
+$dbsInst
+[PATH]
+$dataset
+[User]
+$user
+[STATUS]
+$status
+[TimeStamp]
+$timeStamp
+[FILES]
+#for blk in $kwDict['block']
+$blk
+#*
+#for lfn in $kwDict['%s'%$blk]
+$lfn
+#end for
+*#
+#end for
+</pre>
+<!-- end of templateCreateMart.tmpl -->
