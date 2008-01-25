@@ -2707,9 +2707,7 @@ MCDescription:      %s
           sel.append_whereclause(self.col(tblk,'Path')==dataset)
 #          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
           result = self.getSQLAlchemyResult(con,sel)
-          print sel,result
           oList = result.fetchall()
-          print oList
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)

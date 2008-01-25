@@ -9,10 +9,13 @@ Create analysis dataset form:
 #if $minRun=='N/A'
 Run range: $minRun-$maxRun,
 #else
-Run range: 
-<input name="minRun" value="$minRun" />-<input name="maxRun" value="$maxRun" />,
+Run range: &nbsp;
+<input name="minRun" value="$minRun" size="6" />
+&#8212;
+<input name="maxRun" value="$maxRun" size="6" />
+&nbsp;
 #end if
-Generate <a href="createADSFromRunRange?dbsInst=$dbsInst&amp;dataset=$dataset&amp;minRun=$minRun&amp;maxRun=$maxRun">cff</a> for this range
+generate <a href="createADSFromRunRange?dbsInst=$dbsInst&amp;dataset=$dataset&amp;minRun=$minRun&amp;maxRun=$maxRun&amp;userMode=$userMode">cff</a> for this range
 </p>
 <div id="navlist">
 <ul>

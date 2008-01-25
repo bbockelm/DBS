@@ -1214,10 +1214,17 @@ class DDServer(DDLogger,Controller):
         return page
     createADS.exposed=True
 
-    def createADSFromRunRange(self,dbsInst,dataset,minRun,maxRun,**kwargs):
+    def createADSFromRunRange(self,dbsInst,dataset,minRun,maxRun,userMode="user",**kwargs):
         self.helperInit(dbsInst)
         page = self.genTopHTML(userMode=userMode)
-        lfnList=self.helper.getLFNsFromRunList(dataset,runList)
+        runList=[]
+        if int(minRun)==int(maxRun):
+           runList=[int(minRun)]
+        else:
+            for x in xrange(int(minRun),int(maxRun)):
+                runList.append(x)
+        print "\n\nrunList",runList
+        lfnList=self.helper.getLFNsFromRunList(dbsInst,dataset,runList)
         page+=self.formatLFNList(lfnList,"cff")
         page+= self.genBottomHTML()
         return page
