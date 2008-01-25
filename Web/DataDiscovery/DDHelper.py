@@ -675,6 +675,7 @@ class DDHelper(DDLogger):
   def getPrimDetailsForRSS(self,prim="*"):
       if prim.lower() =='any': prim ="*"
       con = self.connectToDB()
+      sel = ""
       try:
           tpm  = self.alias('PrimaryDataset','tpm')
           oSel = [self.col(tpm,'CreationDate'),self.col(tpm,'Annotation')]
