@@ -1,9 +1,19 @@
 <!-- templateCreateAnalysisDataset.tmpl -->
 Create analysis dataset form:
 <form action="createADS" method="POST">
+<input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value="$userMode" />
 <input type="hidden" name="dataset" value="$dataset" />
 <p><b>$dataset</b></p>
+<p>
+#if $minRun=='N/A'
+Run range: $minRun-$maxRun,
+#else
+Run range: 
+<input name="minRun" value="$minRun" />-<input name="maxRun" value="$maxRun" />,
+#end if
+Generate <a href="createADSFromRunRange?dbsInst=$dbsInst&amp;dataset=$dataset&amp;minRun=$minRun&amp;maxRun=$maxRun">cff</a> for this range
+</p>
 <div id="navlist">
 <ul>
 #for item in $bList
