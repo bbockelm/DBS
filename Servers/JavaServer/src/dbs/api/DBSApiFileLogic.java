@@ -1,6 +1,6 @@
 /**
- $Revision: 1.85 $"
- $Id: DBSApiFileLogic.java,v 1.85 2008/01/10 15:39:37 afaq Exp $"
+ $Revision: 1.86 $"
+ $Id: DBSApiFileLogic.java,v 1.86 2008/01/11 18:07:14 afaq Exp $"
  *
  */
 
@@ -320,26 +320,42 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' checksum='" + get(rs, "CHECKSUM") +
 					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
-					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") ;
+					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") + "'";
+
+				
 					if(oldClients) {
-						toSend += "' validation_status='' status=''" +
+						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + 	"' status='" + get(rs, "STATUS") + "'";
+						else toSend += "' validation_status='' status=''";
+
+						if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
+						else toSend += " type=''";
+
+						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME") + "'";
+						else toSend += " block_name=''";
+
+						if(DBSUtil.contains(attributes, "retrive_date")) toSend += " creation_date='" + getTime(rs, "CREATION_DATE") +	"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") + "'";
+						else toSend += " creation_date='0' last_modification_date='0'" ;
+
+						if(DBSUtil.contains(attributes, "retrive_person")) toSend += " created_by='" + get(rs, "CREATED_BY") +	 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") + "'";
+						else toSend += " created_by='' last_modified_by=''";
+
+
+						/*toSend += "' validation_status='' status=''" +
 						" type=''"  + 
 						" creation_date='0' last_modification_date='0'" +
 						" created_by='' last_modified_by=''" ;
 						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME");
-						else toSend += " block_name='";
+						else toSend += " block_name='";*/
 						
 					} else {
-						if(DBSUtil.contains(attributes, "retrive_status")) toSend += "' validation_status='" + get(rs, "VALIDATION_STATUS") +
-							"' status='" + get(rs, "STATUS");
-						if(DBSUtil.contains(attributes, "retrive_type")) toSend += "' type='" + get(rs, "TYPE") ;
-						if(DBSUtil.contains(attributes, "retrive_block")) toSend += "' block_name='" + get(rs, "BLOCK_NAME") ;
-						if(DBSUtil.contains(attributes, "retrive_date")) toSend += "' creation_date='" + getTime(rs, "CREATION_DATE") +
-							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE");
-						if(DBSUtil.contains(attributes, "retrive_person")) toSend += "' created_by='" + get(rs, "CREATED_BY") +
-							 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") ;
+						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + "' status='" + get(rs, "STATUS") + "'";
+						if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
+						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME") + "'";
+						if(DBSUtil.contains(attributes, "retrive_date")) toSend += " creation_date='" + getTime(rs, "CREATION_DATE") +	"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") + "'";
+						if(DBSUtil.contains(attributes, "retrive_person")) toSend += " created_by='" + get(rs, "CREATED_BY") +
+							 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY")  + "'";
 					}
-					toSend += "'>\n";
+					toSend += ">\n";
 				out.write(toSend);
 				this.data.localFile = new Hashtable();
 				this.data.localFile.put(lfn, fileID);
@@ -799,6 +815,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			throw new DBSException("Block Closed", "1024", "Block "+ blockName +" not open for further files");
 		}
 
+
 		//Block can hold more files  ??
 		//Leaving the code commenetd as this may not be handled by DBS !!
 		//DBSConfig config = DBSConfig.getInstance();
@@ -843,7 +860,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         String fileID = "";
                         String lfn = get(file, "lfn", true);
                         String fileStatus = get(file, "file_status", false).toUpperCase();
+
                         String type = get(file, "type", true).toUpperCase();
+
                         String valStatus = get(file, "validation_status", false).toUpperCase();
                         String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
                         String creationDate = getTime(file, "creation_date", false);
