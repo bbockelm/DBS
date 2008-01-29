@@ -1,23 +1,54 @@
 <!-- templateCreateMart.tmpl -->
+#*
+ * we pass the following format
+ * {'block':[blockList],'blockName':[lfnList]}
+*#
 <pre>
 [HOSTDBS]
 $dbsInst
+
 [PATH]
 $dataset
-[User]
+
+[USER]
 $user
+
 [STATUS]
 $status
-[TimeStamp]
+
+##[DEFINITION]
+##$kwDict['definition']
+
+[DESCRIPTION]
+$kwDict['description']
+
+[TIMESTAMP]
 $timeStamp
+
+#set blkList=$kwDict['block']
+[BLOCKS]
+#for idx in xrange(0,len($blkList))
+$idx $blkList[$idx]
+#end for
+
 [FILES]
-#for blk in $kwDict['block']
-$blk
-#*
-#for lfn in $kwDict['%s'%$blk]
-$lfn
+#for idx in xrange(0,len($blkList))
+#for jdx in xrange(0,len( $kwDict[$blkList[$idx]] ))
+$jdx $kwDict[$blkList[$idx]][$jdx] $idx
 #end for
-*#
 #end for
+## create run list out of min/max runs
+#set runList=[]
+#for run in xrange($minRun,$maxRun)
+#runList.append(run)
+#end for
+
+[RUNS]
+#for idx in xrange(0,len($runList))
+$idx $runList[$idx]
+#end for
+
+[EXCLUDED LUMISECTIONS]
+
 </pre>
 <!-- end of templateCreateMart.tmpl -->
