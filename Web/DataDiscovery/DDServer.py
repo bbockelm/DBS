@@ -3830,7 +3830,8 @@ All LFNs in a block
             key='%s.%s'%(table,column)
 #            val=kwargs['query'].replace('*','').replace('%','') # remove wildcard
 #            whereDict[key]='%'+val # we will do where like '%s%', see helper.getTableContent
-            whereDict[key]='%'+kwargs['query'] # we will do "where like '%s%'"
+#            whereDict[key]='%'+kwargs['query'] # we will do "where like '%s%'"
+            whereDict[key]=kwargs['query'] # we will do "where like 's%'"
         # since this method is used only in auto-completion forms, restrict output to 10 results
         row=0
         limit=10
