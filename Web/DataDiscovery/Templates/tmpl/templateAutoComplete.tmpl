@@ -47,10 +47,11 @@ myXHRDataSource = new YAHOO.widget.DS_XHR('./$method', schema);
 //myXHRDataSource = new YAHOO.widget.DS_XHR('./getTableColumn', schema);
 //myXHRDataSource.scriptQueryParam = "name"; // name replace default 'query' 
 myXHRDataSource.scriptQueryAppend = "dbsInst=$dbsInst&table=$table&column=$column&autocomplete=on";
-myXHRDataSource.connTimeout = 3000; 
+//myXHRDataSource.connTimeout = 3000; 
 myXHRDataSource.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT;
 myXHRDataSource.maxCacheEntries = 60;
-myXHRDataSource.queryMatchSubset = true;
+// This flag below does not allow to invoke query again once typed additional letters
+//myXHRDataSource.queryMatchSubset = true;
 
 // Instantiate first AutoComplete
 var myAutoComp = new YAHOO.widget.AutoComplete('$inputId','$ysearchcontainer', myXHRDataSource);
