@@ -126,6 +126,10 @@ public class DBSDataCache {
 	
 
 	private DBSDataCache(Connection conn) throws Exception {
+		resetCache(conn);
+	}
+
+	public void resetCache(Connection conn) throws Exception {
 		if (DBSConstants.USECACHE) {
 			System.out.print("\nLoading Person information in cache ...... ");
 			refreshPersons(conn);
@@ -151,6 +155,7 @@ public class DBSDataCache {
 		}
 
 	}
+
 
 	//----------------------------------------------------------------------------------------------------------------------------
 	// Person cache

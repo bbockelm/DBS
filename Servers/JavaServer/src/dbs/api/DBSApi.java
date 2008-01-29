@@ -1,6 +1,6 @@
 /**
- $Revision: 1.118 $"
- $Id: DBSApi.java,v 1.118 2007/12/13 17:11:01 sekhri Exp $"
+ $Revision: 1.119 $"
+ $Id: DBSApi.java,v 1.119 2007/12/14 17:26:19 sekhri Exp $"
  *
 */
 
@@ -235,6 +235,7 @@ public class DBSApi {
 	public void call(Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
          
 		Connection conn = null;
+		DBSDataCache cache = null;
 
 		try {
 			//this.data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
@@ -249,7 +250,7 @@ public class DBSApi {
 			
 			conn = getConnection();
 			conn.setAutoCommit(false);
-			DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
+			cache = DBSDataCache.getDBSDataCacheInstance(conn);
 			this.data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(conn));
 			api = new DBSApiLogic(data);
 	                checkVersion(apiVersion);
@@ -680,7 +681,10 @@ public class DBSApi {
 			}
 			conn.commit();
 		} catch (DBSException dbsEx) {
-			if(conn != null) conn.rollback();
+			if(conn != null) { 
+				conn.rollback();
+				resetCache(conn, cache);
+			}
 			if (dbsEx.getMessage() == null ) {
 				writeException(out, "Unexpected execution exception", "1080", "NULL POINTER DBSException");
 				return;
@@ -689,7 +693,10 @@ public class DBSApi {
 			writeException(out, dbsEx.getMessage(), dbsEx.getCode(), dbsEx.getDetail());
 			return; 
 		} catch (XMLException xmlEx) {
-			if(conn != null) conn.rollback();
+			if(conn != null) {
+				conn.rollback();
+				resetCache(conn, cache);
+			}
 			if (xmlEx.getMessage() == null ) {
 				writeException(out, "Unexpected execution exception", "3003", "NULL POINTER XMLException");
 				return;
@@ -698,7 +705,10 @@ public class DBSApi {
 			writeException(out, xmlEx.getMessage(), xmlEx.getCode(), xmlEx.getDetail());
 			return;
 		} catch (SQLException sqlEx) {
-			if(conn != null) conn.rollback();
+			if(conn != null) {
+				conn.rollback();
+				resetCache(conn, cache);
+			}
 			if (sqlEx.getMessage() == null ) {
 				writeException(out, "Unexpected execution exception", "2001", "NULL POINTER SQLException");
 				return;
@@ -707,7 +717,10 @@ public class DBSApi {
 			writeException(out, "Database exception", "2000", sqlEx.getMessage());
 			return;
 		} catch (Exception ex) {
-			if(conn != null) conn.rollback();
+			if(conn != null) {
+				conn.rollback();
+				resetCache(conn, cache);
+			}
 			ex.printStackTrace();
 			if (ex.getMessage() == null ) {
 				writeException(out, "Unexpected execution exception", "4001", "NULL POINTER Exception");
@@ -728,6 +741,15 @@ public class DBSApi {
                 return; 
 	}
 	
+
+	private void resetCache(Connection conn, DBSDataCache cache) {
+		try {
+			if(cache != null) cache.resetCache(conn);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private String get(Hashtable table, String key, boolean excep) throws Exception {
 		String value = "";
 		if ( isNull(value = DBSUtil.get(table, key)) ) {
