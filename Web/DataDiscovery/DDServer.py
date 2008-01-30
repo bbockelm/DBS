@@ -1321,24 +1321,34 @@ class DDServer(DDLogger,Controller):
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
                   if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause=" REGEXP_LIKE(%s,:p0) "%arg
+                     wClause=" REGEXP_LIKE(%s,:p0) ESCAPE '\\'"%arg
+                     bDict={'p0':"%s"%pat.replace("_","\_")}
                   else:
                      wClause=" %s REGEXP :p0 "%arg
-                  bDict={'p0':"%s"%pat}
+                     bDict={'p0':"%s"%pat}
                   nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict,caseSensitive=caseSensitive)
                elif proc.lower().find("like:")!=-1:
-                  nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
                   arg="tblk.Path"
                   if not caseSensitive:
                      arg="UPPER(tblk.Path)"
-                  wClause,bDict=parseKeywordInput(proc,arg)
+                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
+                     wClause,bDict=parseKeywordInput(proc.replace("_","\_"),arg)
+                     nDatasets=self.helper.countBlocks(proc.replace("_","\_"),site,caseSensitive=caseSensitive)
+                  else:
+                     wClause,bDict=parseKeywordInput(proc,arg,type=self.helper.dbManager.dbType[dbsInst])
+                     nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
                else:
                   # we got a pattern
-                  nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
                   wClause=" tblk.Path LIKE :p0 "
                   if not caseSensitive:
                      wClause=" UPPER(tblk.Path) LIKE :p0 "
                   bDict={'p0':"%s"%proc.replace('*','%')}
+                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
+                     wClause+="ESCAPE '\\'"
+                     bDict={'p0':"%s"%proc.replace('*','%').replace("_","\_")}
+                     nDatasets=self.helper.countBlocks("like:%s"%proc.replace("_","\_"),site,caseSensitive=caseSensitive)
+                  else:
+                     nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
                proc=self.helper.getDatasetPathFromMatch(wClause,bDict=bDict,site=site)
            else:
                if proc[0]!="/":
@@ -1479,24 +1489,34 @@ class DDServer(DDLogger,Controller):
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
                   if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause=" REGEXP_LIKE(%s,:p0) "%arg
+                     wClause=" REGEXP_LIKE(%s,:p0) ESCAPE '\\'"%arg
+                     bDict={'p0':"%s"%pat.replace("_","\_")}
                   else:
                      wClause=" %s REGEXP :p0 "%arg
-                  bDict={'p0':"%s"%pat}
+                     bDict={'p0':"%s"%pat}
                   nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict,caseSensitive=caseSensitive)
                elif proc.lower().find("like:")!=-1:
-                  nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
                   arg="tblk.Path"
                   if not caseSensitive:
                      arg="UPPER(tblk.Path)"
-                  wClause,bDict=parseKeywordInput(proc,arg)
+                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
+                     wClause,bDict=parseKeywordInput(proc.replace("_","\_"),arg)
+                     nDatasets=self.helper.countBlocks(proc.replace("_","\_"),site,caseSensitive=caseSensitive)
+                  else:
+                     wClause,bDict=parseKeywordInput(proc,arg,type=self.helper.dbManager.dbType[dbsInst])
+                     nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
                else:
                   # we got a pattern
-                  nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
                   wClause=" tblk.Path LIKE :p0 "
                   if not caseSensitive:
                      wClause=" UPPER(tblk.Path) LIKE :p0 "
                   bDict={'p0':"%s"%proc.replace('*','%')}
+                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
+                     wClause+="ESCAPE '\\'"
+                     bDict={'p0':"%s"%proc.replace('*','%').replace("_","\_")}
+                     nDatasets=self.helper.countBlocks("like:%s"%proc.replace("_","\_"),site,caseSensitive=caseSensitive)
+                  else:
+                     nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
                proc=self.helper.getDatasetPathFromMatch(wClause,row=_idx*pagerStep,limit=pagerStep,bDict=bDict,site=site)
            else:
                if proc[0]!="/":

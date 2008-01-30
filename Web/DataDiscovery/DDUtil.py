@@ -66,11 +66,10 @@ def normUrl(url):
         except:
             raise "Fail to normalize URL",url
     
-def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','not','(',')']):
+def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','not','(',')'],type='oracle'):
     oDict={}
     c=0
     s=""
-    print "\n\nparseKeywordInput",input
     sList = input.replace("("," ( ").replace(")"," ) ").split()
     for item in sList:
         if item.lower().find(keyword)!=-1:
@@ -91,6 +90,8 @@ def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','
     s=s.replace("like","%s like"%tableCol)
     # now replace not tableCol to be tableCol not
     s=s.replace("not %s"%tableCol,"%s not"%tableCol)
+    if type=='oracle':
+       s+=" ESCAPE '\\'"
     return s,oDict
 
 def tip():

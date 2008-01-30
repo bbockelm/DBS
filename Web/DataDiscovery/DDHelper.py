@@ -1590,6 +1590,9 @@ MCDescription:      %s
       else:
          wClause,oDict=parseKeywordInput(whereClause,blk)
          sel = "select COUNT(DISTINCT Path) from Block tblk %s where %s %s %s"%(siteSel,wClause,siteWhere,mysql)
+      if self.dbManager.dbType[self.dbsInstance]=='oracle':
+         if sel.lower().find("like")!=-1 and sel.lower().find("escape")==-1:
+            sel+=" ESCAPE '\\'" # I hate DBs for having non-standard keywords
       for bind_param in oDict.keys():
           bindparams.append(sqlalchemy.bindparam(key=bind_param,value=oDict[bind_param]))
       if siteWhere:
