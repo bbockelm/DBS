@@ -496,6 +496,7 @@ function registerAjaxObjectCalls() {
 //    ajaxEngine.registerRequest('ajaxGetUserNav','genUserNavigator');
 //    ajaxEngine.registerAjaxElement('kw_userNavigator');
     ajaxEngine.registerRequest('ajaxGetLFNs','getLFNs');
+    ajaxEngine.registerRequest('ajaxGetLFNs_Runs','getLFNs_Runs');
     ajaxEngine.registerAjaxElement('blockLFNs');
 }
 function registerAjaxUserMenuCalls() {
@@ -522,6 +523,9 @@ function registerAjaxUserMenuCalls() {
 
 }
 
+function ajaxGetLFNs_Runs(dbsInst,blockName,ajaxId,blockId,js) {
+  ajaxEngine.sendRequest('ajaxGetLFNs_Runs','dbsInst='+dbsInst,'blockName='+blockName,'ajaxId='+ajaxId,'blockId='+blockId,'onchange='+js);
+}
 function ajaxGetLFNs(dbsInst,blockName,ajaxId,blockId,js) {
   if(ajaxId && blockId && js) {
     ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName,'ajaxId='+ajaxId,'blockId='+blockId,'onchange='+js);

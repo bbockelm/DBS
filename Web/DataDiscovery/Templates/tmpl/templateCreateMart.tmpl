@@ -16,36 +16,28 @@ $user
 [STATUS]
 $status
 
-##[DEFINITION]
-##$kwDict['definition']
+[DEFINITION]
+$definition
 
 [DESCRIPTION]
-$kwDict['description']
+$description
 
 [TIMESTAMP]
 $timeStamp
 
-#set blkList=$kwDict['block']
 [BLOCKS]
-#for idx in xrange(0,len($blkList))
-$idx $blkList[$idx]
+#for item in $blkList
+$item[0] $item[1]
 #end for
 
 [FILES]
-#for idx in xrange(0,len($blkList))
-#for jdx in xrange(0,len( $kwDict[$blkList[$idx]] ))
-$jdx $kwDict[$blkList[$idx]][$jdx] $idx
-#end for
-#end for
-## create run list out of min/max runs
-#set runList=[]
-#for run in xrange($minRun,$maxRun)
-#runList.append(run)
+#for item in $lfnList
+$item[0] $item[1] $item[2]
 #end for
 
 [RUNS]
-#for idx in xrange(0,len($runList))
-$idx $runList[$idx]
+#for item in $runList
+$item[0] $item[1] $item[2]
 #end for
 
 [EXCLUDED LUMISECTIONS]

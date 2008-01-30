@@ -32,6 +32,29 @@ TIPS= [
 "to send found data to your buddy, use 'bare URL' link at bottom of the page"
 ]
 
+def getKeyValue(dict,key):
+    if dict.has_key(key): return dict[key]
+    return ""
+
+def genMartList(kwargs,key,extra_idx=-1):
+    idx=0
+    oList=[]
+    if kwargs.has_key(key):
+       idx=0
+       if  type(kwargs[key]) is types.ListType:
+           for o in kwargs[key]:
+               if extra_idx!=-1:
+                  oList.append((idx,o,extra_idx))
+               else:
+                  oList.append((idx,o))
+               idx+=1
+       else:
+           if extra_idx!=-1:
+               oList.append((idx,kwargs[key],extra_idx))
+           else:
+               oList.append((idx,kwargs[key]))
+    return oList
+
 def normUrl(url):
     try:
         path = url.split("http://")[1]
@@ -47,6 +70,7 @@ def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','
     oDict={}
     c=0
     s=""
+    print "\n\nparseKeywordInput",input
     sList = input.replace("("," ( ").replace(")"," ) ").split()
     for item in sList:
         if item.lower().find(keyword)!=-1:
@@ -59,7 +83,7 @@ def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','
            c+=1
            s+=" %s %s "%(keyword,bindKey) 
         else: 
-           if not valList.count(item):
+           if not valList.count(item.lower()):
               raise "Invalid input keyword='%s'"%item
            s+=" %s "%item
     s=' '.join(s.split())

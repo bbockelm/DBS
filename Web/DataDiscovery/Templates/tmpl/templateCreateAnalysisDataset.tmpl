@@ -5,6 +5,7 @@
 <input type="hidden" name="userMode" id="userMode" value="$userMode" />
 <input type="hidden" name="dataset" id="dataset" value="$dataset" />
 <p><b>$dataset</b> contains the following</p>
+#if $minRun!='N/A'
 <p>
 <u>runs:</u> $minRun-$maxRun
 </p>
@@ -15,9 +16,7 @@ you may specify run ranges below in a form: minR-maxR,minR-maxR,...
 <input id="runRanges" name="runRanges" size="80" /> &nbsp; generate
 <span class="td_underline"><a href="javascript:CreateADSFromRunRange('$minRun','$maxRun')">cff</a></span> file
 </p>
-##generate <a href="javascript:CreateADSFromRunRange()">cff</a> for this range
-##generate <a href="createADSFromRunRange?dbsInst=$dbsInst&amp;dataset=$dataset&amp;runRanges=$&amp;maxRun=$maxRun&amp;userMode=$userMode">cff</a> for this range
-</p>
+#end if
 <p>
 <u>blocks/LNFs:</u>
 </p>
@@ -40,12 +39,12 @@ you may specify run ranges below in a form: minR-maxR,minR-maxR,...
 #from DDUtil import sizeFormat, colorSizeHTMLFormat, list2String
 #set seName=$list2String($seList,"html")
 <li class="moreInfo">
-<input type="checkbox" name="block" value="$block" id="block_$tid" />$bid,
+<input type="checkbox" name="block" value="$block" id="block_$tid" />
+<span style="font-family:monospace;">$bid</span>,
 Details <a href="javascript:ShowTag('details_$tid')">show</a> | 
         <a href="javascript:HideTag('details_$tid')">hide</a>, 
 LFNs: <a href="javascript:ShowTag('lfns_$tid');ShowLFNs('$dbsInst','$block','lfns_$tid',lfns_$tid,'block_$tid')">show</a> | 
       <a href="javascript:HideTag('lfns_$tid')">hide</a>
-###<a href="javascript:ShowTag('lfns_$bid');ajaxGetLFNs('$dbsInst','$block','lfns_$bid')">$bid</a>
 <p></p>
 
 <div id="details_$tid" class="hide">
@@ -107,7 +106,7 @@ var lfns_$tid=null;
 <script type="text/javascript">
 function ShowLFNs(dbsInst,block,tag,id,bid) {
    if(!id) {
-      ajaxGetLFNs(dbsInst,block,tag,block,'CheckBid(\''+bid+'\')');
+      ajaxGetLFNs_Runs(dbsInst,block,tag,block,'CheckBid(\''+bid+'\')');
       id=1;
    }
 }

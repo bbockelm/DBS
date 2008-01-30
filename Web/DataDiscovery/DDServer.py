@@ -1197,16 +1197,38 @@ class DDServer(DDLogger,Controller):
     createAnalysisDS.exposed=True
 
     def createADS(self,dbsInst,dataset,userMode="user",**kwargs):
-        print "\n\n### createADS",kwargs
+#        print "\n\n### createADS",kwargs
+        description=getKeyValue(kwargs,"description")
+        definition=getKeyValue(kwargs,"definition")
+        user=getKeyValue(kwargs,"user")
+        status=getKeyValue(kwargs,"status")
+        blkList=[] # (idx,block)
+        lfnList=[] # (idx,lfn,blk_idx)
+        runList=[] # (idx,run,run_idx)
+        if  kwargs.has_key('block'):
+            idx=0
+            blkList+=genMartList(kwargs,'block',-1) # -1 here means no extra index
+        for item in blkList:
+            blk_idx=item[0]
+            blk=item[1]
+            lfnList+=genMartList(kwargs,blk,blk_idx)
+        for item in lfnList:
+            lfn_idx=item[0]
+            lfn=item[1]
+            runList+=genMartList(kwargs,lfn,lfn_idx)
         page = self.genTopHTML(userMode=userMode)
         nameSpace={
-                   'dbsInst'  : dbsInst,
-                   'dataset'  : dataset,
-                   'kwDict'   : kwargs,
-                   'userMode' : userMode,
-                   'user'     : "vk",
-                   'timeStamp': time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()),
-                   'status'   : 'NEW',
+                   'dbsInst'    : dbsInst,
+                   'dataset'    : dataset,
+                   'description': description,
+                   'definition' : definition,
+                   'blkList'    : blkList,
+                   'lfnList'    : lfnList,
+                   'runList'    : runList,
+                   'userMode'   : userMode,
+                   'user'       : user,
+                   'timeStamp'  : time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()),
+                   'status'     : status,
                   }
         t = templateCreateMart(searchList=[nameSpace]).respond()
         page+= str(t)
@@ -2087,6 +2109,55 @@ class DDServer(DDLogger,Controller):
         return page
     getParameterSet.exposed=True
 
+    def getLFNs_Runs(self,dbsInst,blockName,**kwargs):
+        """
+           Retrieves LFN list.
+           @type  dataset: string 
+           @param dataset: dataset name
+           @type blockName: string
+           @param blockName: block name
+           @rtype : string
+           @return: returns HTML code
+        """
+        ajaxId="blockLFNs"
+        if kwargs.has_key("ajaxId"):
+           ajaxId=kwargs["ajaxId"]
+        blockId="blockLFNlist"
+        if kwargs.has_key("blockId"):
+           blockId=kwargs["blockId"]
+        onchange=""
+        if kwargs.has_key("onchange"):
+           onchange="javascript:%s"%kwargs["onchange"]
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="%s">"""%ajaxId
+        run="*"
+        try:
+            self.helperInit(dbsInst)
+            lfnDict = self.helper.getLFNs_Runs(dbsInst,blockName)
+            lfnList = lfnDict.keys()
+            lfnList.sort()
+            page+="""
+<select multiple="multiple" name="%s" id="%s" style="width:1000px;font-size:8px" size="10" onchange="%s">\n"""%(blockId,blockId.replace("/","___"),onchange)
+            for lName in lfnList:
+                runList = lfnDict[lName]
+                if runList:
+                   page+="""\n<optgroup label="Runs: %s">"""%str(runList)
+                page+="""<option value="%s">%s</option>\n"""%(lName,lName)
+                if runList:
+                   page+="</optgroup>\n"
+            page+="</select>\n"
+        except:
+            if self.verbose:
+               self.writeLog(getExcept())
+            printExcept()
+            pass
+        page+="</response></ajax-response>"
+        if self.verbose==2:
+           print page
+        return page
+    getLFNs_Runs.exposed = True
+ 
     def getLFNs(self,dbsInst,blockName,**kwargs):
         """
            Retrieves LFN list.

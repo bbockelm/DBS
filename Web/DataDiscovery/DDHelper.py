@@ -1995,6 +1995,44 @@ MCDescription:      %s
       self.closeConnection(con)
       return oList
 
+  def getLFNs_Runs(self,dbsInst,blockName):
+      con = self.connectToDB()
+      try:
+          tb   = self.alias('Block','tb')
+          tf   = self.alias('Files','tf')
+          tfs  = self.alias('FileStatus','tfs')
+          tft  = self.alias('FileType','tft')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tr   = self.alias('Runs','tr')
+          oSel = [self.col(tf,'LogicalFileName'),self.col(tr,'RunNumber')]
+          sel  = sqlalchemy.select(oSel,
+                 from_obj=[
+                     tb.join(tf,self.col(tf,'Block')==self.col(tb,'ID'))
+                       .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
+                       .outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
+                     ],distinct=True,order_by=oSel
+                                  )
+          if blockName and blockName!="*":
+             sel.append_whereclause(self.col(tb,'Name')==blockName)
+          #sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNs_Runs"
+      oDict={}
+      for item in result:
+          if not item[0]: continue
+          lfn,run=item
+          if oDict.has_key(lfn):
+             _list=oDict[lfn]
+             _list+=[run]
+             oDict[lfn]=_list
+          else:
+             oDict[lfn]=[run]
+      self.closeConnection(con)
+      return oDict
+
   def getLFN_Branches(self,dbsInst,lfn,userMode='user'):
       con = self.connectToDB()
       try:
