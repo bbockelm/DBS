@@ -13,7 +13,7 @@ you may specify run ranges below in a form: minR-maxR,minR-maxR,...
 </p>
 <p>
 <input id="runRanges" name="runRanges" size="80" /> &nbsp; generate
-<span class="td_underline"><a href="javascript:CreateADSFromRunRange()">cff</a></span> file
+<span class="td_underline"><a href="javascript:CreateADSFromRunRange('$minRun','$maxRun')">cff</a></span> file
 </p>
 ##generate <a href="javascript:CreateADSFromRunRange()">cff</a> for this range
 ##generate <a href="createADSFromRunRange?dbsInst=$dbsInst&amp;dataset=$dataset&amp;runRanges=$&amp;maxRun=$maxRun&amp;userMode=$userMode">cff</a> for this range
@@ -117,13 +117,31 @@ function CheckBid(tag) {
       id.checked="checked";
    }
 }
-function CreateADSFromRunRange() {
-  var dbsInst   = document.createADS.dbsInst.value;
-  var dataset   = document.createADS.dataset.value;
-  var runRanges = document.createADS.runRanges.value;
-  var userMode  = document.createADS.userMode.value;
-  var url='createADSFromRunRange?dbsInst='+dbsInst+'&dataset='+dataset+'&runRanges='+runRanges+'&userMode='+userMode;
-  load(url);
+function validateRunRange(minRun,maxRun,runRange) {
+   try {
+       var arr=runRange.split(",");
+       for(i=0;i<arr.length;i++) {
+           var range=arr[i].split("-");
+           if(parseInt(range[0])>parseInt(range[1]) || parseInt(range[0])<parseInt(minRun) || parseInt(range[1])>parseInt(maxRun)) {
+              return 0;
+           }
+       }
+       return 1;
+   } catch(err) {
+       return 0;
+   }
+}
+function CreateADSFromRunRange(minRun,maxRun) {
+   var dbsInst   = document.createADS.dbsInst.value;
+   var dataset   = document.createADS.dataset.value;
+   var runRanges = document.createADS.runRanges.value;
+   var userMode  = document.createADS.userMode.value;
+   var url='createADSFromRunRange?dbsInst='+dbsInst+'&dataset='+dataset+'&runRanges='+runRanges+'&userMode='+userMode;
+   if (validateRunRange(minRun,maxRun,runRanges)==1) {
+       load(url);
+   } else {
+       alert("You input run-ranges are invalid");
+   }
 }
 </script>
 
