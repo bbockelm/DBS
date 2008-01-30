@@ -1883,7 +1883,7 @@ MCDescription:      %s
       self.closeConnection(con)
       return content
 
-  def getLFNsFromRunList(self,dbsInst,dataset,runList):
+  def getLFNsFromRunRanges(self,dbsInst,dataset,runRanges):
       con = self.connectToDB()
       try:
           tb   = self.alias('Block','tb')
@@ -1900,14 +1900,20 @@ MCDescription:      %s
                        .outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
                      ],distinct=True,order_by=oSel
                                   )
-          sel.append_whereclause(self.col(tb,'Name')==dataset)
+          sel.append_whereclause(self.col(tb,'Path')==dataset)
+          # parse runRanges=minRun-maxRun,minRun-maxRun
+          runList=[]
+          for item in runRanges.split(","):
+              minR,maxR=item.split("-")
+              runList.append((minR,maxR))
           condList=[]
-          for run in runList:
-          # implement OR statement, select run from ... where run=1 or run=2
-              condList.append(self.col(tr,'RunNumber')==run)
+          for minR,maxR in runList:
+              condList.append(self.col(tr,'RunNumber')>=minR)
+              condList.append(self.col(tr,'RunNumber')<=maxR)
           if len(condList): 
              sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
+          print "\n+++ getLFNsFromRuNList",self.printQuery(sel),runList
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
@@ -2699,13 +2705,12 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
-                          .outerjoin(tpdr,onclause=self.col(tpdr,'ID')==self.col(tprd,'ID'))
+                          .outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
 #                          tblk.outerjoin(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
 #                          .outerjoin(tfrl,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
 #                          .outerjoin(trun,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
-                                ],distinct=True
-                                 )
+                                ] )
           sel.append_whereclause(self.col(tblk,'Path')==dataset)
 #          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
           result = self.getSQLAlchemyResult(con,sel)

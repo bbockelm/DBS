@@ -1214,18 +1214,13 @@ class DDServer(DDLogger,Controller):
         return page
     createADS.exposed=True
 
-    def createADSFromRunRange(self,dbsInst,dataset,minRun,maxRun,userMode="user",**kwargs):
+    def createADSFromRunRange(self,dbsInst,dataset,runRanges,userMode="user",**kwargs):
         self.helperInit(dbsInst)
         page = self.genTopHTML(userMode=userMode)
-        runList=[]
-        if int(minRun)==int(maxRun):
-           runList=[int(minRun)]
-        else:
-            for x in xrange(int(minRun),int(maxRun)):
-                runList.append(x)
-        print "\n\nrunList",runList
-        lfnList=self.helper.getLFNsFromRunList(dbsInst,dataset,runList)
-        page+=self.formatLFNList(lfnList,"cff")
+        # TODO: I need to validate user input, runRanges
+        # it should be in a form minR-maxRun,minRun-maxRun,...
+        lfnList=self.helper.getLFNsFromRunRanges(dbsInst,dataset,runRanges)
+        page+=self.formatLFNList(lfnList,"cff",idx=0)
         page+= self.genBottomHTML()
         return page
     createADSFromRunRange.exposed=True
