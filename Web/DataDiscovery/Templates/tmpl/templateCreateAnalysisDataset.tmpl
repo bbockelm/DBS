@@ -1,21 +1,25 @@
 <!-- templateCreateAnalysisDataset.tmpl -->
-Create analysis dataset form:
-<form action="createADS" method="POST">
-<input type="hidden" name="dbsInst" value="$dbsInst" />
-<input type="hidden" name="userMode" value="$userMode" />
-<input type="hidden" name="dataset" value="$dataset" />
-<p><b>$dataset</b></p>
+##Create analysis dataset form:
+<form action="createADS" name="createADS" method="POST">
+<input type="hidden" name="dbsInst" id="dbsInst" value="$dbsInst" />
+<input type="hidden" name="userMode" id="userMode" value="$userMode" />
+<input type="hidden" name="dataset" id="dataset" value="$dataset" />
+<p><b>$dataset</b> contains the following</p>
 <p>
-#if $minRun=='N/A'
-Run range: $minRun-$maxRun,
-#else
-Run range: &nbsp;
-<input name="minRun" value="$minRun" size="6" />
-&#8212;
-<input name="maxRun" value="$maxRun" size="6" />
-&nbsp;
-#end if
-generate <a href="createADSFromRunRange?dbsInst=$dbsInst&amp;dataset=$dataset&amp;minRun=$minRun&amp;maxRun=$maxRun&amp;userMode=$userMode">cff</a> for this range
+<u>runs:</u> $minRun-$maxRun
+</p>
+<p>
+you may specify run ranges below in a form: minR-maxR,minR-maxR,...
+</p>
+<p>
+<input id="runRanges" name="runRanges" size="80" /> &nbsp; generate
+<span class="td_underline"><a href="javascript:CreateADSFromRunRange()">cff</a></span> file
+</p>
+##generate <a href="javascript:CreateADSFromRunRange()">cff</a> for this range
+##generate <a href="createADSFromRunRange?dbsInst=$dbsInst&amp;dataset=$dataset&amp;runRanges=$&amp;maxRun=$maxRun&amp;userMode=$userMode">cff</a> for this range
+</p>
+<p>
+<u>blocks/LNFs:</u>
 </p>
 <div id="navlist">
 <ul>
@@ -112,6 +116,14 @@ function CheckBid(tag) {
    if(id) {
       id.checked="checked";
    }
+}
+function CreateADSFromRunRange() {
+  var dbsInst   = document.createADS.dbsInst.value;
+  var dataset   = document.createADS.dataset.value;
+  var runRanges = document.createADS.runRanges.value;
+  var userMode  = document.createADS.userMode.value;
+  var url='createADSFromRunRange?dbsInst='+dbsInst+'&dataset='+dataset+'&runRanges='+runRanges+'&userMode='+userMode;
+  load(url);
 }
 </script>
 
