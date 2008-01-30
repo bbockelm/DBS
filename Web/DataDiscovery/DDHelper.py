@@ -1908,12 +1908,14 @@ MCDescription:      %s
               runList.append((minR,maxR))
           condList=[]
           for minR,maxR in runList:
-              condList.append(self.col(tr,'RunNumber')>=minR)
-              condList.append(self.col(tr,'RunNumber')<=maxR)
+              cList=[]
+              cList.append(self.col(tr,'RunNumber')>=minR)
+              cList.append(self.col(tr,'RunNumber')<=maxR)
+              condList.append(sqlalchemy.and_(*cList))
           if len(condList): 
              sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
-          print "\n+++ getLFNsFromRuNList",self.printQuery(sel),runList
+          #print "\n+++ getLFNsFromRuNList",self.printQuery(sel),runList
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
