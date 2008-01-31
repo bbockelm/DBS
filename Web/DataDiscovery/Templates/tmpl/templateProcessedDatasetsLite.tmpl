@@ -14,12 +14,10 @@
 </td>
 
 <td align="right">
-#*
 #if $userMode=='expert'
 <a href="adminDataset?dbsInst=$dbsInst&amp;dataset=$path&amp;siteList=$str($siteList)&amp;userMode=$userMode">Administrate</a>
 |
 #end if
-*#
 #set histLoc="moreInfo"+$idPath
 #set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
 <a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">more &#187;</a>
@@ -44,13 +42,18 @@
 #set _site="sites"
 #end if
 Created $prdDate,
-contains $nEvts events, $nFiles files, $nblks block(s), $size, located at $len($dDict.keys())
+contains $nEvts events, $nFiles files, $nblks block(s), $size, located at 
+#if $se!='None'
+$len($dDict.keys())
 #if $userMode=='user'
 $_site
 (<a href="javascript:ShowTag('$tid')">show</a>, 
 <a href="javascript:HideTag('$tid')">hide</a>), 
 #else
 ${_site},
+#end if
+#else
+<span class="box_red"><b>no sites</b></span>
 #end if
 LFNs:
 <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
@@ -105,7 +108,11 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
 #if $long($nEvts)!=$long($siteTotEvt) or $long($nFiles)!=$long($siteTotFiles)
      <td><div class="dbs_cell_warmred">$site</div></td>
 #else
+#if $site
      <td><div class="dbs_cell">$site</div></td>
+#else
+     <td class="dbs_cell_r"><div>$site</div></td>
+#end if
 #end if
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>

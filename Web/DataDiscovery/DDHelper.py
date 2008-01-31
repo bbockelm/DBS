@@ -898,8 +898,8 @@ MCDescription:      %s
                    from_obj=[
                           tprd.join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                           .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                          .join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                          .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                          .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                          .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                           .outerjoin(tp,onclause=self.col(tprd,'CreatedBy')==self.col(tp,'ID'))
                             ],distinct=True,order_by=oBy,group_by=gBy
                                  )
@@ -908,6 +908,8 @@ MCDescription:      %s
              _sel.append_whereclause(self.col(tblk,'Path')==dataset)
           result = self.getSQLAlchemyResult(con,sel)
           _result = self.getSQLAlchemyResult(con,_sel)
+#          print "\n\n+++datasetSummary",self.printQuery(sel),dataset
+#          print "_sel query:",self.printQuery(_sel)
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
@@ -938,6 +940,9 @@ MCDescription:      %s
             mDict={'%s'%masterSE:_oDict[masterSE]}
          else:
             mDict={'all':(_pDate,_cBy,totBlk,totSize,totFiles,totEvts)}
+      else: # when no SE's found
+         if _oDict:
+            mDict={'%s'%masterSE:_oDict[masterSE]}
       return oDict,mDict
 
   def listBlocks(self,kwargs):
@@ -1599,6 +1604,7 @@ MCDescription:      %s
           bindparams.append(sqlalchemy.bindparam(key="site",value=site))
 
       query = sqlalchemy.text(sel, bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
+#      print "\n\n+++countBlocks",self.printQuery(query),bindparams
       if self.verbose:
          self.writeLog(query)
          self.writeLog(bindparams)
@@ -1630,6 +1636,7 @@ MCDescription:      %s
           if siteWhere:
              bParams.append(sqlalchemy.bindparam(key="site",value=site))
           query  = sqlalchemy.text(sel,bindparams=bParams,bind=self.dbManager.engine[self.dbsInstance])
+#          print "\n\n+++getDatasetPathFromMatch",self.printQuery(query),bParams
           if self.verbose:
              self.writeLog(query)
              self.writeLog(bParams)
