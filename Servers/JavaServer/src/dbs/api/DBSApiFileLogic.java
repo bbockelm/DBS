@@ -1,6 +1,6 @@
 /**
- $Revision: 1.86 $"
- $Id: DBSApiFileLogic.java,v 1.86 2008/01/11 18:07:14 afaq Exp $"
+ $Revision: 1.87 $"
+ $Id: DBSApiFileLogic.java,v 1.87 2008/01/29 17:34:45 afaq Exp $"
  *
  */
 
@@ -302,6 +302,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				procDSID = "";
 			}
 		} //if userJustPath
+
+		//Block is always required
+		//At least until everyone switches to DBS_1_0_9 and CRAB stop using BLOCK infor from listFiles()
+		attributes.add("retrive_block");
+
 		//if old client then send empty xml
 		boolean oldClients = false;
 		//System.out.println("clientVersion " + clientVersion + " clientVersion.compareTo DBS_1_0_8 " + clientVersion.compareTo("DBS_1_0_8") );
@@ -321,11 +326,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
 					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") + "'";
-
 				
 					if(oldClients) {
 						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + 	"' status='" + get(rs, "STATUS") + "'";
-						else toSend += "' validation_status='' status=''";
+						else toSend += " validation_status='' status=''";
 
 						if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
 						else toSend += " type=''";
@@ -340,13 +344,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						else toSend += " created_by='' last_modified_by=''";
 
 
-						/*toSend += "' validation_status='' status=''" +
-						" type=''"  + 
-						" creation_date='0' last_modification_date='0'" +
-						" created_by='' last_modified_by=''" ;
-						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME");
-						else toSend += " block_name='";*/
-						
 					} else {
 						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + "' status='" + get(rs, "STATUS") + "'";
 						if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
