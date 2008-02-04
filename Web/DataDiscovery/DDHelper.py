@@ -100,10 +100,13 @@ class DDHelper(DDLogger):
           #        group by rownum,path having rownum between 1 and 5;
           query.use_labels=True
           sel=query.select()
+          bindparams=query.__dict__['whereclause'].__dict__['bindparams'].values()
           s=str(sel).replace("\n","")
           gBy=''.join(s.split('FROM')[0].split('SELECT'))
           fromRow=long(offset)
-          query=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
+          #query=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
+          nq=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
+          query = sqlalchemy.text(nq,bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
       else:
           query.limit=long(limit)
           query.offset=long(offset)
@@ -1746,7 +1749,7 @@ MCDescription:      %s
       query.distinct=True
       if long(limit):
          query=self.addQueryLimits(query,offset,limit)
-#      print "\n\n###queryMaker",self.printQuery(query)
+#      print "\n\n###queryMaker",self.printQuery(query),query.__dict__,type(query)
 #      print str(query)
       if  execute:
           res = self.executeSQLQuery(query)
@@ -1805,6 +1808,7 @@ MCDescription:      %s
 
   def checkQuery(self,query):
       if type(query) is sqlalchemy.sql.Select: return True
+      if type(query) is sqlalchemy.sql._TextClause: return True
       if string.find(query.lower(),"insert")!=-1:
          return False
       if string.find(query.lower(),"update")!=-1:
