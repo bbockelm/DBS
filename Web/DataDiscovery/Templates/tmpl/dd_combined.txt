@@ -1,7 +1,0 @@
-js/userName.js
-js/utils.js
-js/yui_utils.js
-js/prototype.js
-js/rico.js
-js/ajax_init.js
-js/dhtml_history/dhtmlHistory.js
