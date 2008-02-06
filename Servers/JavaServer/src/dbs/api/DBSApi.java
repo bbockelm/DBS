@@ -1,6 +1,6 @@
 /**
- $Revision: 1.119 $"
- $Id: DBSApi.java,v 1.119 2007/12/14 17:26:19 sekhri Exp $"
+ $Revision: 1.120 $"
+ $Id: DBSApi.java,v 1.120 2008/01/29 18:07:52 afaq Exp $"
  *
 */
 
@@ -300,6 +300,8 @@ public class DBSApi {
 						get(table, "ps_hash", false),
 						apiVersion
 						);
+			} else if (apiStr.equals("listDatasetSummary")) {
+				(new DBSApiProcDSLogic(this.data)).listDatasetSummary(conn, out, get(table, "path", true));
 				
 			} else if (apiStr.equals("listRuns")) {
 				(new DBSApiProcDSLogic(this.data)).listRuns(conn, out, get(table, "path", true));

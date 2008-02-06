@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.134 $"
- $Id: DBSSql.java,v 1.134 2007/12/12 22:31:09 sekhri Exp $"
+ $Revision: 1.135 $"
+ $Id: DBSSql.java,v 1.135 2007/12/13 17:11:02 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1080,6 +1080,20 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		ps.setString(columnIndx++, value);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listDatasetSummary(Connection conn, String procDSID) throws SQLException {
+		String sql = "SELECT COUNT(*) as COUNT,\n " + 
+			"SUM(NumberOfEvents) as NUMBER_OF_EVENTS,\n " + 
+			"SUM(NumberOfFiles) as NUMBER_OF_FILES,\n " + 
+			"SUM(BlockSize) as TOTAL_SIZE\n " + 
+			"FROM Block b\n " + 
+			"WHERE b.Dataset = ? \n ";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, procDSID);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}

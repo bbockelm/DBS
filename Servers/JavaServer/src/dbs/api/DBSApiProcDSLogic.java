@@ -1,6 +1,6 @@
 /**
- $Revision: 1.52 $"
- $Id: DBSApiProcDSLogic.java,v 1.52 2007/11/29 17:40:32 sekhri Exp $"
+ $Revision: 1.53 $"
+ $Id: DBSApiProcDSLogic.java,v 1.53 2007/12/07 22:24:43 sekhri Exp $"
  *
  */
 
@@ -263,6 +263,28 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"'/>\n"));
+			}
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+
+	}
+
+	
+	public void listDatasetSummary(Connection conn, Writer out, String path) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = DBSSql.listDatasetSummary(conn, getProcessedDSID(conn, path, true));
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<processed_dataset path='" + path +
+					"' number_of_blocks='" + get(rs, "COUNT") +
+					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+					"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
+					"' total_size='" + get(rs, "TOTAL_SIZE") +
 					"'/>\n"));
 			}
 		} finally { 

@@ -68,6 +68,13 @@ listPrimaryDatasets () {
 	display "$out"
 	#$CMD api=listPrimaryDatasets pattern=*
 }
+listDatasetSummary () {
+	message="Executing listDatasetSummary API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listDatasetSummary path=$path_child`
+	display "$out"
+}
+
 
 listProcessedDatasets () {
 	message="Executing listProcessedDatasets API..."
@@ -735,6 +742,7 @@ listTiers
 listBlocks
 listFiles
 listLFNs
+listDatasetSummary
 #listDatasetContents
 listDatasetParents
 listFileParents
