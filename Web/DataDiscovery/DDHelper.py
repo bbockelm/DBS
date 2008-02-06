@@ -694,7 +694,12 @@ class DDHelper(DDLogger):
       annotation=""
       for item in result:
           if item and item[0]:
-             cDate,annotation=item
+             try:
+                cDate,annotation=item
+             except:
+                print "\n### Exception too many values to unpack, item=",item
+                self.printExcept("")
+                pass
              cDate=timeGMT(cDate)
       self.closeConnection(con)
       return cDate,annotation
