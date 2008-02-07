@@ -1,6 +1,6 @@
 /**
- $Revision: 1.87 $"
- $Id: DBSApiFileLogic.java,v 1.87 2008/01/29 17:34:45 afaq Exp $"
+ $Revision: 1.88 $"
+ $Id: DBSApiFileLogic.java,v 1.88 2008/02/01 19:32:50 afaq Exp $"
  *
  */
 
@@ -981,6 +981,44 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 //Insert FileLumi table by first inserting and then fetching Lumi Section ID
 				valueVec.clear();
 				String runID = null;
+
+                                for (int j = 0; j < lumiVector.size(); ++j) {
+                                        Hashtable hashTable = (Hashtable)lumiVector.get(j);
+					String thisRunN = get(hashTable, "run_number", true);
+					runID = getID(conn, "Runs", "RunNumber",  thisRunN, true);
+                                        String lsNumber = get(hashTable, "lumi_section_number", false);
+
+                                        if ( !isNull(lsNumber) ) {
+                                                String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
+                                                if( isNull(lumiID)) {
+                                                        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+                                                }
+
+                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
+                                                        fileID,
+                                                        getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true),
+                                                        runID,
+                                                        cbUserID, lmbUserID, creationDate, false);
+                                        }
+                                        //Just add Run-Fileid map
+                                        else {
+                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
+                                                        fileID,
+                                                        runID,
+                                                        cbUserID, lmbUserID, creationDate, false);
+                                        }
+                                        // Insert ProcDS-Run Map, if its already not there
+                                        insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+                                                        procDSID, runID,
+                                                        cbUserID, lmbUserID, creationDate);
+                                }
+
+
+
+
+
+
+/*
                                 for (int j = 0; j < lumiVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)lumiVector.get(j);
 
@@ -992,8 +1030,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
                                         String lsNumber = get(hashTable, "lumi_section_number", false);
                                         if ( !isNull(lsNumber) ) {
-                                                String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
-						valueVec.add(getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true));
+						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
+                                                //String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
+						valueVec.add(lumiID);
 
                                         }
 
@@ -1015,6 +1054,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 }
 				//insert LumiRun Map now
 				insertMapBatch(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run", fileID, valueVec, runID, cbUserID, lmbUserID, creationDate);
+*/
+
 
                                 //Insert Trigger tags (if present)
                                 for (int j = 0; j < trigTagVector.size(); ++j) {
@@ -1389,17 +1430,20 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 					//Only when User provides a lumi section, MAP it
 					//There can be cases when NO lumi Section number is give (Run only)
+
 					String runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
 					String lsNumber = get(hashTable, "lumi_section_number", false);
 					if ( !isNull(lsNumber) ) {
-						String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
+						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
+						//String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
 					 	if( isNull(lumiID)) {
 							insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
 						}	
 
 						insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
 							fileID, 
-							getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true), 
+							getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true),
+							//getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true), 
 							runID,
 							cbUserID, lmbUserID, creationDate, false);
 					}
@@ -1566,6 +1610,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
 	public void insertLumiInFile(Connection conn, Writer out, Hashtable table, String lsNumber, Hashtable dbsUser) throws Exception {
+
+
+		//This METHOD is INCORRECT, We ALSO NEED RUn NUMBER
+
 		insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
 				getFileID(conn, get(table, "lfn", true), true), 
 				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
