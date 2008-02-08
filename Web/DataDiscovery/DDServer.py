@@ -1453,6 +1453,13 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
+        self.helperInit(dbsInst)
+        self.dbs  = dbsInst
+        self.site = site
+        self.app  = app
+        self.primD= primD
+        self.tier = tier
+        
 #        t1=time.time()
         run=""
         if kwargs.has_key('run'):
@@ -1538,13 +1545,6 @@ class DDServer(DDLogger,Controller):
         
 #        print "Init step",time.time()-t1
 
-        self.helperInit(dbsInst)
-        self.dbs  = dbsInst
-        self.site = site
-        self.app  = app
-        self.primD= primD
-        self.tier = tier
-        
 
         primaryDataset=primD
         dataTier = tier
