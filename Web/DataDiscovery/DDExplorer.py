@@ -103,7 +103,7 @@ def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
        http_conn = httplib.HTTPS(host,port)
     else:
        http_conn = httplib.HTTP(host,port)
-    path='/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope)
+    path='/dbs_discovery/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope)
     if prefix_path:
        path="/"+prefix_path+path[1:]
     http_conn.putrequest('POST',path)
@@ -212,11 +212,7 @@ def formXMLInput(iDict,verbose=0):
         xmlOutput+="""<select column='%s' />\n"""%str(item)
     if  iDict.has_key('output'):
         for item in iDict['output']:
-            si=item.split("=")
-            if si[1].find("'")!=-1 or si[1].find('"')!=-1:
-               xmlOutput+="""<output %s />\n"""%str(item)
-            else:
-               xmlOutput+="""<output %s='%s' />\n"""%(si[0],si[1])
+            xmlOutput+="""<output %s />\n"""%str(item)
     else:
         xmlOutput+="""<option limit="100" offset="0" />"""
     if  iDict.has_key('where'):
@@ -241,7 +237,7 @@ if __name__ == "__main__":
 #    port= 8001
 #    dbsInst="cms_dbs_prod_global"
 
-    host= "cmsweb.cern.ch/dbs_discovery/"
+    host= "cmsweb.cern.ch"
     port= 443
     dbsInst="cms_dbs_prod_global"
 
