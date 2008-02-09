@@ -229,10 +229,10 @@ class DDServer(DDLogger,Controller):
            self.helper.setVerbose(self.verbose)
         except:
            pass
-        self.context.Logger ().message ("Creating DBS Data Discovery roles and groups")
-        securityApi = self.context.SecurityDBApi ()
-        securityApi.api.addRole ("DBS admin")
-        securityApi.api.addGroup ("dbs_admin")    
+#        self.context.Logger ().message ("Creating DBS Data Discovery roles and groups")
+#        securityApi = self.context.SecurityDBApi ()
+#        securityApi.api.addRole ("DBS admin")
+#        securityApi.api.addGroup ("dbs_admin")    
 
     def sendSOAP(self,host,service,aDict={}):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
@@ -1078,8 +1078,8 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
 
-#    @is_authorized (Role("Global admin"), Group("global"), 
-#                    onFail=RedirectToLocalPage ("/redirectPage"))
+    @is_authorized (Role("Global Admin"), Group("DBS"), 
+                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
