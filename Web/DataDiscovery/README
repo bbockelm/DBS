@@ -60,4 +60,12 @@ export CLASSPATH=/opt/local/share/java/mysql-connector-java-5.0.jar
 /opt/local/share/java/tomcat5/bin/setenv.sh
 sudo /opt/local/share/java/tomcat5/bin/tomcatctl
 
+##################### NEW comments for WEBTOOLS
 
+Starting new version of webtools 1.2, I need to run data discovery as
+cmsWeb --base-url https://cmsweb.cern.ch/dbs_discovery_test2 -p 8008 --default-page /DDServer
+Also Controllers/DataDiscovery/__init__.py should include /DDServer,
+The new set of redirect rules are:
+ProxyRequests Off
+ProxyPass /dbs_discovery_test2/ http://cmswt01.cern.ch:8008/
+ProxyPassReverse /dbs_discovery_test2/ http://cmswt01.cern.ch:8008/
