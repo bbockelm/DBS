@@ -93,7 +93,14 @@ def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
     if debug:
        httplib.HTTPConnection.debuglevel = 1
        print "Contact",host,port
-    host.replace("http://","")
+    _port=""
+    if host.find("http://")!=-1:
+       _port=80
+    if host.find("https://")!=-1:
+       _port=443
+    host=host.replace("http://","").replace("https://","")
+    if host.find(":")==-1:
+       port=_port
     prefix_path=""
     if host.find("/")!=-1:
        hs=host.split("/")
