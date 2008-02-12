@@ -32,17 +32,23 @@
 </td>
 </tr>
 
-<tr>
+<tr valign="top">
 <td align="right">
 <b>Example:</b>
 </td>
 <td>
-(run:34850 or release:CMSSW_1_7*) and se:srm.cern.ch
+run:34850 dataset:*Online* se:srm.cern.ch
+<br/>
+lookup run 34850 from dataset with pattern name Online, located at srm.cern.ch.
 </td>
 </tr>
 
 </table>
 
+<p>
+Use double quotes to provide a string with spaces and other quotes, e.g.
+pset:""untracked vstring fileNames = {'file:digi.root'}""
+</p>
 
 </div> <!-- end of center -->
 

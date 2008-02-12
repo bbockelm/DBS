@@ -3560,19 +3560,12 @@ MCDescription:      %s
 
   def FindDatasets(self,iSel,fromRow=0,limit=0,count=0):
       """Take a list of input blockid's and return list of dataset"""
-      print "\n\n+++FindDatasets",str(iSel)
       qList=[]
       for item in iSel.split():
-#          if ['UNION','INTERSECTS'].count(item):
-#             qList.append(item)
-#          else:
-          if not ['UNION','INTERSECTS'].count(item):
-             qList.append( eval(item) )
-      sel  = sqlalchemy.union(*qList)
-#      if count:
-#         tblk = self.alias('Block','t_blk')
-#         oSel =[sqlalchemy.func.count(self.col(tblk,'Path'))]
-#         sel  = sqlalchemy.select(oSel,from_obj=[sel])
+          qList.append( eval(item) )
+      # NOTE: INTERSECT works ONLY in ORACLE
+      sel  = sqlalchemy.intersect(*qList)
+      print "\n\n+++FindDatasets",str(iSel)
       print self.printQuery(sel)
       oList=[]
       con  = self.connectToDB()
@@ -3587,10 +3580,6 @@ MCDescription:      %s
           for item in result:
               nd+=1
           return nd
-#         print result,type(result)
-#         res = result.fetchone()[0]
-#         self.closeConnection(con)
-#         return res
       idx=0
       for item in result:
           if item and item[0]:
