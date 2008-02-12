@@ -3211,7 +3211,7 @@ MCDescription:      %s
       try:
           kwargs=kwargs['input']
           tblk = self.alias('Block','tblk')
-          oSel =[self.col(tblk,'ID')]
+          oSel =[self.col(tblk,'Path')]
           sel  = sqlalchemy.select(oSel,from_obj=[tblk],distinct=True )
           if kwargs.has_key('block'):
              blk_name=kwargs['block']
@@ -3226,17 +3226,18 @@ MCDescription:      %s
              else:
                  sel.append_whereclause(self.col(tblk,'Path')==dataset)
 #          print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          return sel
+#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Block2Block"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
+#      for item in result:
+#          if item and item[0]:
+#             oList.append(item[0])
+#      self.closeConnection(con)
 #      print oList
-      return oList
+#      return oList
 
   def Pset2Algo(self,**kwargs):
       print "Call Pset2Algo",str(kwargs)
@@ -3369,7 +3370,7 @@ MCDescription:      %s
           tse  = self.alias('StorageElement','tse')
           tseb = self.alias('SEBlock','tseb')
           tblk = self.alias('Block','tblk')
-          oSel =[self.col(tblk,'ID')]
+          oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
           obj  = obj.join(tse,onclause=self.col(tse,'ID')==self.col(tseb,'SEID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
@@ -3379,16 +3380,17 @@ MCDescription:      %s
                  sel.append_whereclause(self.col(tse,'SEName').like(sename.replace("*","%")))
              else:
                  sel.append_whereclause(self.col(tse,'SEName')==sename)
-          result = self.getSQLAlchemyResult(con,sel)
+          return sel
+#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in SE2Block"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
-      return oList
+#      for item in result:
+#          if item and item[0]:
+#             oList.append(item[0])
+#      self.closeConnection(con)
+#      return oList
 
   def Lumi2Run(self,**kwargs):
       print "Call Lumi2Run",str(kwargs)
@@ -3484,7 +3486,7 @@ MCDescription:      %s
           kwargs=kwargs['input']
           tf   = self.alias('Files','tf')
           tblk = self.alias('Block','tblk')
-          oSel =[self.col(tblk,'ID')]
+          oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('file'):
@@ -3503,17 +3505,18 @@ MCDescription:      %s
              if len(condList): 
                 sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          return sel
+#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in File2Block"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
+#      for item in result:
+#          if item and item[0]:
+#             oList.append(item[0])
+#      self.closeConnection(con)
 #      print oList
-      return oList
+#      return oList
 
   def Proc2Block(self,**kwargs):
       print "Call Proc2Block",str(kwargs)
@@ -3525,7 +3528,7 @@ MCDescription:      %s
           kwargs=kwargs['input']
           tprd = self.alias('ProcessedDataset','tprd')
           tblk = self.alias('Block','tblk')
-          oSel =[self.col(tblk,'ID')]
+          oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
@@ -3538,23 +3541,69 @@ MCDescription:      %s
              if len(condList): 
                 sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          return sel
+#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Proc2Block"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
+#      for item in result:
+#          if item and item[0]:
+#             oList.append(item[0])
+#      self.closeConnection(con)
 #      print oList
-      return oList
+#      return oList
 
   def Ads2Proc(self,**kwargs):
       print "Call Ads2Proc",str(kwargs)
       return [1,2,3]
 
-  def FindDatasets(self,bidList,fromRow=0,limit=0,count=0):
+  def FindDatasets(self,iSel,fromRow=0,limit=0,count=0):
+      """Take a list of input blockid's and return list of dataset"""
+      print "\n\n+++FindDatasets",str(iSel)
+      qList=[]
+      for item in iSel.split():
+#          if ['UNION','INTERSECTS'].count(item):
+#             qList.append(item)
+#          else:
+          if not ['UNION','INTERSECTS'].count(item):
+             qList.append( eval(item) )
+      sel  = sqlalchemy.union(*qList)
+#      if count:
+#         tblk = self.alias('Block','t_blk')
+#         oSel =[sqlalchemy.func.count(self.col(tblk,'Path'))]
+#         sel  = sqlalchemy.select(oSel,from_obj=[sel])
+      print self.printQuery(sel)
+      oList=[]
+      con  = self.connectToDB()
+      try:
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(bidList)
+          self.printExcept(msg)
+          raise "Fail in FindDatasets"
+      if count:
+          nd=0
+          for item in result:
+              nd+=1
+          return nd
+#         print result,type(result)
+#         res = result.fetchone()[0]
+#         self.closeConnection(con)
+#         return res
+      idx=0
+      for item in result:
+          if item and item[0]:
+             if limit:
+                if idx>=fromRow and idx<=(fromRow+limit):
+                   oList.append(item[0])
+             else:
+                oList.append(item[0])
+          idx+=1
+      self.closeConnection(con)
+      return oList
+      
+  def FindDatasets_v1(self,bidList,fromRow=0,limit=0,count=0):
       """Take a list of input blockid's and return list of dataset"""
 #      print "\n\n+++FindDatasets",bidList
       if not len(bidList): return []
@@ -3585,8 +3634,6 @@ MCDescription:      %s
               if item.find(":")!=-1:
                  condDict[item.replace(":","")]=_bidList[idx]
                  idx+=1
-#          result = self.getSQLAlchemyResult(con,sel)
-#          print "\n\n+++ FindDatasets",self.printQuery(sel),condList
           if not count and limit:
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
                  minRow,maxRow=fromRow,fromRow+limit

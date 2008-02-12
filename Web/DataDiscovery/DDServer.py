@@ -4711,15 +4711,15 @@ Save query as:
         # get result
         print "\n\n+++ aSearch",kwargs
         try:
-            bidList = self.asearch.parseSearchInput(urllib.unquote(kwargs['userInput']))
+            sel = self.asearch.parseSearchInput(urllib.unquote(kwargs['userInput']))
         except:
             page = self.genTopHTML(userMode=userMode)
             page+="<pre>%s</pre>"%traceback.format_exc()
             page+= self.genBottomHTML()
             pass
             return page
-        nDatasets=self.helper.FindDatasets(bidList=bidList,count=1)
-        result  = self.helper.FindDatasets(bidList=bidList,fromRow=_idx*pagerStep,limit=pagerStep)
+        nDatasets=self.helper.FindDatasets(sel,count=1)
+        result  = self.helper.FindDatasets(sel,fromRow=_idx*pagerStep,limit=pagerStep)
         if kwargs.has_key("html"):
            if not kwargs['html']:
               for d in results: print d

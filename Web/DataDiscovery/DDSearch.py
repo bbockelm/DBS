@@ -90,7 +90,8 @@ class DDSearch:
                   raise "Not supported expression, '%s'"%w
               try:
                  fList = self.dbms[sub][f]
-                 _call = "set("
+#                 _call = "set("
+                 _call = ""
                  count = 0
                  _fList=list(fList)
                  _fList.reverse()
@@ -103,7 +104,7 @@ class DDSearch:
                  _call+="'%s'}"%v
                  for i in xrange(0,count):
                      _call+=")"
-                 _call+=")" # end of set
+#                 _call+=")" # end of set
                  _words.append(_call)
               except:
                  traceback.print_exc()
@@ -113,14 +114,21 @@ class DDSearch:
                  traceback.print_exc()
                  raise "Unknown boolean keyword '%s', known list: %s"%(w,str(self.boolwords))
               if w=="and":
-                 _words.append(" & ") # intersection
+                 _words.append(" INTERSECTS ") # intersection
               elif w=="or":
-                 _words.append(" | ") # union
+                 _words.append(" UNION ") # union
               else:
                  _words.append(w)
+#              if w=="and":
+#                 _words.append(" & ") # intersection
+#              elif w=="or":
+#                 _words.append(" | ") # union
+#              else:
+#                 _words.append(w)
        eString = ' '.join(_words)
        print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
-       return eval(eString)
+       return eString
+#       return eval(eString)
 
 class PhedexTest:
    def __init__(self):
