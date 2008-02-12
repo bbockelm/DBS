@@ -32,6 +32,22 @@ TIPS= [
 "to send found data to your buddy, use 'bare URL' link at bottom of the page"
 ]
 
+def inputParser(input):
+    words=[]
+    sList=input.split()
+    tList=[]
+    for item in sList:
+        if not tList and item.find('""')==-1:
+           words.append(item)
+        else:
+           if item.find('""')!=-1 and tList:
+              tList.append(item)
+              words.append(' '.join(tList).replace('""',''))
+              tList=[]
+           else:
+              tList.append(item)
+    return words
+
 def getKeyValue(dict,key):
     if dict.has_key(key): return dict[key]
     return ""
