@@ -1,9 +1,10 @@
 <!-- templateAdvancedSearchForm.tmpl -->
 
 <div align="center">
-<form>
+<form action="aSearch" method="get">
 
 <input type="text" size="80" name="userInput" />
+<input type="hidden" name="dbsInst" value="cms_dbs_prod_global" />
 <input type="submit" value="Search" />
 ###<input type="reset" value="Reset" />
 
@@ -11,78 +12,23 @@
 
 <p></p>
 <p></p>
+<p>The advanced search engine look-up dataset based on your keyword input.</p>
 
 <table>
-<tr>
-<td align="right">
-<b>Supported DBs:</b>
-</td>
-<td>dbs, phedex, conddb, runsumdb, triggerdb</td>
-</tr>
-
-<tr valign="top">
-<td align="right">
-<b>Search keywords:</b>
-</td>
-<td>
-
-<table>
-<tr valign="top" style="background-color: #F0F0F0;">
-<td>for <u>dbs</u></td>
-<td>dataset, block, file, trigger, release, run, lumi, ads, se
-</td>
-</tr>
-
-<tr valign="top" style="background-color: #E0E0E0;">
-<td>for
-<u>
-phedex
-</u>
-</td>
-<td>site</td>
-</tr>
-
-<tr valign="top" style="background-color: #F0F0F0;">
-<td>for
-<u>
-triggerdb
-</u>
-</td>
-<td></td>
-</tr>
-
-<tr valign="top" style="background-color: #E0E0E0;">
-<td>for
-<u>
-lumidb
-</u>
-</td>
-<td>
-record,orbit,fill
-</td>
-</tr>
-</table>
-
-</td>
-</tr>
-
-#*
-<tr>
-<td align="right">
-<b>Boolean keywords:</b>
-</td>
-<td>
-and, or
-</td>
-</tr>
-*#
-
 <tr>
 <td align="right">
 <b>Syntax:</b>
 </td>
 <td>
-&lt;db&gt;:&lt;keyword&gt;::&lt;value&gt;
+&lt;keyword&gt;:&lt;value&gt;
+</td>
+</tr>
+
+<tr valign="top">
+<td align="right">
+<b>Keywords:</b>
+</td>
+<td>dataset, block, file, trigger, release, run, lumi, ads, se
 </td>
 </tr>
 
@@ -91,7 +37,7 @@ and, or
 <b>Example:</b>
 </td>
 <td>
-(dbs:run:123 or trigger:*muon*) and release:CMSSW_1_7* and phedex:site:srm.cern.ch
+(run:123 or trigger:*muon*) and release:CMSSW_1_7* and site:srm.cern.ch
 </td>
 </tr>
 

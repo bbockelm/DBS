@@ -3188,6 +3188,407 @@ MCDescription:      %s
           printExcept()
           pass
       return bList
+  ### Implementation for DDSearch
+  def Block2Block(self,**kwargs):
+      """Take a list of input vars and return list of block Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tblk = self.alias('Block','tblk')
+          oSel =[self.col(tblk,'ID')]
+          sel  = sqlalchemy.select(oSel,from_obj=[tblk],distinct=True )
+          if kwargs.has_key('block'):
+             blk_name=kwargs['block']
+             if blk_name.find("*")!=-1:
+                 sel.append_whereclause(self.col(tblk,'Name').like(blk_name.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tblk,'Name').like('%%'+blk_name+'%%'))
+          if kwargs.has_key('dataset'):
+             dataset=kwargs['dataset']
+             if dataset.find("*")!=-1:
+                 sel.append_whereclause(self.col(tblk,'Path').like(dataset.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tblk,'Path')==dataset)
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Block2Block"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return oList
+
+  def Pset2Algo(self,**kwargs):
+      print "Call Pset2Algo",str(kwargs)
+      """Take a list of input vars and return list of algo Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tq   = self.alias('QueryableParameterSet','tq')
+          tac  = self.alias('AlgorithmConfig','tac')
+          talgo= self.alias('ProcAlgo','talgo')
+          oSel =[self.col(talgo,'ID')]
+          obj  = talgo.join(tac,onclause=self.col(talgo,'Algorithm')==self.col(tac,'ID'))
+          obj  = obj.join(tq,onclause=self.col(tac,'ParameterSetID')==self.col(tq,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('pset'):
+             pset=kwargs['pset']
+             if pset.find("*")!=-1:
+                 sel.append_whereclause(self.col(tq,'Content').like(pset.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tq,'Content')==pset)
+          elif kwargs.has_key('idlist'):
+             idList=kwargs['idlist']
+             condList=[]
+             for id in idList:
+                 cList=[]
+                 cList.append(self.col(tq,'ID')==id)
+                 condList.append(sqlalchemy.and_(*cList))
+             if len(condList): 
+                sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Pset2Algo"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return {'idlist':oList}
+
+  def Rel2Algo(self,**kwargs):
+      print "Call Rel2Algo",str(kwargs)
+      """Take a list of input vars and return list of algo Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tav  = self.alias('AppVersion','tav')
+          tac  = self.alias('AlgorithmConfig','tac')
+          talgo= self.alias('ProcAlgo','talgo')
+          oSel =[self.col(talgo,'ID')]
+          obj  = talgo.join(tac,onclause=self.col(talgo,'Algorithm')==self.col(tac,'ID'))
+          obj  = obj.join(tav,onclause=self.col(tac,'ApplicationVersion')==self.col(tav,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('release'):
+             rel=kwargs['release']
+             if rel.find("*")!=-1:
+                 sel.append_whereclause(self.col(tav,'Version').like(rel.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tav,'Version')==rel)
+          elif kwargs.has_key('idlist'):
+             idList=kwargs['idlist']
+             condList=[]
+             for id in idList:
+                 cList=[]
+                 cList.append(self.col(tav,'ID')==id)
+                 condList.append(sqlalchemy.and_(*cList))
+             if len(condList): 
+                sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Rel2Algo"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return {'idlist':oList}
+
+  def Algo2Proc(self,**kwargs):
+      print "Call Algo2Proc",str(kwargs)
+      """Take a list of input vars and return list of proc Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tprd = self.alias('ProcessedDataset','tprd')
+          talgo= self.alias('ProcAlgo','talgo')
+          oSel =[self.col(tprd,'ID')]
+          obj  = tprd.join(talgo,onclause=self.col(talgo,'Dataset')==self.col(tprd,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('idlist'):
+             idList=kwargs['idlist']
+             condList=[]
+             for id in idList:
+                 cList=[]
+                 cList.append(self.col(talgo,'ID')==id)
+                 condList.append(sqlalchemy.and_(*cList))
+             if len(condList): 
+                sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Algo2Proc"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return {'idlist':oList}
+
+  def SE2Block(self,**kwargs):
+      """Take a list of input vars and return list of block Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tse  = self.alias('StorageElement','tse')
+          tseb = self.alias('SEBlock','tseb')
+          tblk = self.alias('Block','tblk')
+          oSel =[self.col(tblk,'ID')]
+          obj  = tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+          obj  = obj.join(tse,onclause=self.col(tse,'ID')==self.col(tseb,'SEID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('site'):
+             sename=kwargs['site']
+             if sename.find("*")!=-1:
+                 sel.append_whereclause(self.col(tse,'SEName').like(sename.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tse,'SEName')==sename)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in SE2Block"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+      return oList
+
+  def Lumi2Run(self,**kwargs):
+      print "Call Lumi2Run",str(kwargs)
+      """Take a list of input vars and return list of run Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tr   = self.alias('Runs','tr')
+          tl   = self.alias('LumiSection','tl')
+          oSel =[self.col(tr,'ID')]
+          obj  = tr.join(tl,onclause=self.col(tr,'ID')==self.col(tl,'RunNumber'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('lumi'):
+             lumi=kwargs['lumi']
+             if lumi.find("*")!=-1:
+                 sel.append_whereclause(self.col(tl,'LumiSectionNumber').like(lumi.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')==lumi)
+          elif kwargs.has_key('idlist'):
+             idList=kwargs['idlist']
+             condList=[]
+             for id in idList:
+                 cList=[]
+                 cList.append(self.col(tl,'ID')==id)
+                 condList.append(sqlalchemy.and_(*cList))
+             if len(condList): 
+                sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Lumi2Run"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return {'idlist':oList}
+
+  def Run2Proc(self,**kwargs):
+      print "Call Run2Proc",str(kwargs)
+      """Take a list of input vars and return list of proc Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tprd = self.alias('ProcessedDataset','tprd')
+          tr   = self.alias('Runs','tr')
+          tpr  = self.alias('ProcDSRuns','tpr')
+          oSel =[self.col(tprd,'ID')]
+          obj  = tprd.join(tpr,onclause=self.col(tpr,'Dataset')==self.col(tprd,'ID'))
+          obj  = obj.join(tr,onclause=self.col(tpr,'Run')==self.col(tr,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('run'):
+             run=kwargs['run']
+             if run.find("*")!=-1:
+                 sel.append_whereclause(self.col(tr,'RunNumber').like(run.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tr,'RunNumber')==run)
+          elif kwargs.has_key('idlist'):
+             idList=kwargs['idlist']
+             condList=[]
+             for id in idList:
+                 cList=[]
+                 cList.append(self.col(tr,'ID')==id)
+                 condList.append(sqlalchemy.and_(*cList))
+             if len(condList): 
+                sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Run2File"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return {'idlist':oList}
+
+  def File2Block(self,**kwargs):
+      print "Call File2Block",str(kwargs)
+      """Take a list of input vars and return list of block Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tf   = self.alias('Files','tf')
+          tblk = self.alias('Block','tblk')
+          oSel =[self.col(tblk,'ID')]
+          obj  = tblk.join(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('file'):
+             fname=kwargs['file']
+             if fname.find("*")!=-1:
+                 sel.append_whereclause(self.col(tf,'LogicalFileName').like(fname.replace("*","%")))
+             else:
+                 sel.append_whereclause(self.col(tf,'LogicalFileName')==fname)
+          elif kwargs.has_key('idlist'):
+             idList=kwargs['idlist']
+             condList=[]
+             for id in idList:
+                 cList=[]
+                 cList.append(self.col(tf,'ID')==id)
+                 condList.append(sqlalchemy.and_(*cList))
+             if len(condList): 
+                sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in File2Block"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return oList
+
+  def Proc2Block(self,**kwargs):
+      print "Call Proc2Block",str(kwargs)
+      """Take a list of input vars and return list of block Ids"""
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          kwargs=kwargs['input']
+          tprd = self.alias('ProcessedDataset','tprd')
+          tblk = self.alias('Block','tblk')
+          oSel =[self.col(tblk,'ID')]
+          obj  = tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('idlist'):
+             idList=kwargs['idlist']
+             condList=[]
+             for id in idList:
+                 cList=[]
+                 cList.append(self.col(tprd,'ID')==id)
+                 condList.append(sqlalchemy.and_(*cList))
+             if len(condList): 
+                sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Proc2Block"
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+#      print oList
+      return oList
+
+  def Ads2Proc(self,**kwargs):
+      print "Call Ads2Proc",str(kwargs)
+      return [1,2,3]
+
+  def FindDatasets(self,bidList,fromRow=0,limit=0,count=0):
+      """Take a list of input blockid's and return list of dataset"""
+#      print "\n\n+++FindDatasets",bidList
+      if not len(bidList): return []
+      # TODO: add pagination for this method.
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          tblk = self.alias('Block','tblk')
+          if count:
+             oSel = [sqlalchemy.func.count(self.col(tblk,'Path').distinct())]
+          else:
+             oSel =[self.col(tblk,'Path')]
+          sel  = sqlalchemy.select(oSel,from_obj=[tblk],distinct=True )
+
+          condList=[]
+          for bid in bidList:
+              cList=[]
+              cList.append(self.col(tblk,'ID')==bid)
+              condList.append(sqlalchemy.and_(*cList))
+          if len(condList): 
+             sel.append_whereclause(sqlalchemy.or_(*condList))
+#          result = self.getSQLAlchemyResult(con,sel)
+#          print "\n\n+++ FindDatasets",self.printQuery(sel),condList
+          if not count and limit:
+             if  self.dbManager.dbType[self.dbsInstance]=='oracle':
+                 minRow,maxRow=fromRow,fromRow+limit
+                 s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
+                 result=con.execute(s,condDict)
+             else:
+                 sel.limit=limit
+                 sel.offset=fromRow
+                 result = self.getSQLAlchemyResult(con,sel)
+          else:       
+              result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)+str(bidList)
+          self.printExcept(msg)
+          raise "Fail in FindDatasets"
+      if count:
+         res = result.fetchone()[0]
+         self.closeConnection(con)
+         return res
+      for item in result:
+          if item and item[0]:
+             oList.append(item[0])
+      self.closeConnection(con)
+      return oList
       
 def formAppPath(iAppString):
     """

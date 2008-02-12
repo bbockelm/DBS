@@ -1,5 +1,6 @@
 function footerMenuText(){
     return [
+{label: "aSearch", link: "_advanced?userMode=user", title: "Advanced keyword search"},
 {label: "Navigator", link: "_navigator?userMode=user", title: "Navigator: menu-driven search"},
 {label: "Finder", link: "_finder?userMode=user", title: "Finder: query-driven search"},
 {label: "Analysis", link: "_analysis?userMode=user", title: "Search analysis datasets"},

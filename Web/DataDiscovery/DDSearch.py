@@ -25,9 +25,9 @@ class DDSearch:
            'block':['Block2Block'],
            'file':['File2Block'],
            'ads':['Ads2Proc','Proc2Block'],
-           'release':['Algo2Proc','Proc2Block'],
-           'run':['Run2File','File2Block'],
-           'lumi':['Lumi2Run','Run2File','File2Block'],
+           'release':['Rel2Algo','Algo2Proc','Proc2Block'],
+           'run':['Run2Proc','Proc2Block'],
+           'lumi':['Lumi2Run','Run2Proc','Proc2Block'],
            'se':['SE2Block'],
            'pset':['Pset2Algo','Algo2Proc','Proc2Block']
        }
@@ -73,8 +73,11 @@ class DDSearch:
 
    def parseSearchInput(self,input):
        input = input.replace("("," ( ").replace(")"," ) ")
-       words = input.split()
+       words = ":".join(input.split(":")).split()
+#       words = input.split()
        _words= []
+       f=""
+       v=""
        for w in words:
            if w.find(":")!=-1:
               _split=w.split(":")
@@ -87,15 +90,20 @@ class DDSearch:
                   raise "Not supported expression, '%s'"%w
               try:
                  fList = self.dbms[sub][f]
-                 _call = ""
+                 _call = "set("
                  count = 0
-                 fList.reverse()
-                 for f in fList:
-                     _call+= "self.%s(input="%f
+                 _fList=list(fList)
+                 _fList.reverse()
+                 for func in _fList:
+                     if len(_fList)==1 or func==_fList[-1]:
+                        _call+= "self.%s(input={'%s':"%(func,f)
+                     else:
+                        _call+= "self.%s(input="%func
                      count+=1
-                 _call+="'%s'"%v
+                 _call+="'%s'}"%v
                  for i in xrange(0,count):
                      _call+=")"
+                 _call+=")" # end of set
                  _words.append(_call)
               except:
                  traceback.print_exc()
@@ -103,8 +111,13 @@ class DDSearch:
            else:
               if not self.boolwords.count(w):
                  traceback.print_exc()
-                 raise "Unknown boolean keyword '%s', known list: %s"%(f,str(self.boolwords))
-              _words.append(w)
+                 raise "Unknown boolean keyword '%s', known list: %s"%(w,str(self.boolwords))
+              if w=="and":
+                 _words.append(" & ") # intersection
+              elif w=="or":
+                 _words.append(" | ") # union
+              else:
+                 _words.append(w)
        eString = ' '.join(_words)
        print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
        return eval(eString)
@@ -114,29 +127,39 @@ class PhedexTest:
        print "Init PhedexTest"
    def PhedexCall(self,**kwargs):
        print "Call PhedexCall with %s"%(str(kwargs))
+       return [1,2,3]
 class DbsTest:
    def __init__(self):
        print "Init DbsTest"
    def Pset2Algo(self,**kwargs):
-       print "Call Pset2Algo"
+       print "Call Pset2Algo",str(kwargs)
+       return [1,2,3]
+   def Rel2Algo(self,**kwargs):
+       print "Call Rel2Algo",str(kwargs)
+       return [1,2,3]
    def Algo2Proc(self,**kwargs):
-       print "Call Algo2Proc"
+       print "Call Algo2Proc",str(kwargs)
+       return [1,2,3]
    def SE2Block(self,**kwargs):
-       print "Call SE2Block"
+       print "Call SE2Block",str(kwargs)
+       return [1,2,3]
    def Lumi2Run(self,**kwargs):
-       print "Call Lumi2Run"
-   def Run2File(self,**kwargs):
-       print "Call Run2File"
+       print "Call Lumi2Run",str(kwargs)
+       return [1,2,3]
    def File2Block(self,**kwargs):
-       print "Call File2Block"
+       print "Call File2Block",str(kwargs)
+       return [1,2,3]
    def Proc2Block(self,**kwargs):
-       print "Call Proc2Block"
+       print "Call Proc2Block",str(kwargs)
+       return [1,2,3]
    def Ads2Proc(self,**kwargs):
-       print "Call Ads2Proc"
+       print "Call Ads2Proc",str(kwargs)
+       return [1,2,3]
    def Block2Block(self,**kwargs):
-       print "Call Block2Block"
-   def FindBlocks(self,**kwargs):
-       print "Call FindBlocks"
+       print "Call Block2Block",str(kwargs)
+       return [1,2,3]
+   def FindDatasets(self,**kwargs):
+       print "Call FindDatasets",str(kwargs)
 #
 # main
 #

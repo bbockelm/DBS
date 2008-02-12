@@ -101,7 +101,10 @@ def tip():
 SYMBOLS_LIST=[('+','__pl__'),('-','__mi__'),('/','__sl__'),('#','__po__')]
 
 def timeGMT(iTime):
-    return time.strftime("%d %b %Y %H:%M:%S GMT",time.gmtime(iTime))
+    try:
+       return time.strftime("%d %b %Y %H:%M:%S GMT",time.gmtime(iTime))
+    except:
+       return "Unknown time format, iTime=%s"%iTime
 
 def parseBLOBdata(data):
     return str(data).replace(",",", ").replace(";","; ")

@@ -1338,6 +1338,11 @@ function LoadGetRuns(dbsInst,dataset,idx,ajax,userMode,pagerId) {
    var url='getRuns?dbsInst='+dbsInst+'&dataset='+dataset+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
+function LoadASearch(dbsInst,userMode,idx,pagerId,userInput) {
+   var pagerStep=$('pagerStep'+pagerId).value;
+   var url='aSearch?dbsInst='+dbsInst+'&userMode='+userMode+'&_idx='+idx+'&pagerStep='+pagerStep+'&userInput='+userInput;
+   load(url);
+}
 function Disable2EnableTag(tag) {
    if($(tag).disabled) {
       $(tag).disabled='';

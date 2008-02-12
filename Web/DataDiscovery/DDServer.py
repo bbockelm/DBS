@@ -29,6 +29,7 @@ from   DDUtil      import *
 from   DDConfig    import *
 from   DDHelper    import *
 from   Templates   import *
+from   DDSearch   import *
 from DDParamServer import *
 from DDWS          import *
 
@@ -143,6 +144,7 @@ class DDServer(DDLogger,Controller):
         self.primD= ""
         self.tier = ""
         self.helper     = DDHelper(self.dbs,self.ddConfig.iface(),verbose,html=1)
+        self.asearch    = DDSearch(dbsHelper=self.helper)
         self.dbsdls     = self.helper.getDbsDls()
         self.dbsList    = self.dbsdls.keys()
         self.dbsList.sort()
@@ -727,6 +729,20 @@ class DDServer(DDLogger,Controller):
             pass
             return str(t)
     _analysis.exposed=True
+
+    def _advanced(self,userMode="user"):
+        try:
+            page = self.genTopHTML(intro=False,userMode=userMode)
+            nameSearch={}
+            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
+            page+= str(t)
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in advanced init function")
+            pass
+            return str(t)
+    _advanced.exposed=True
 
     def _rss(self,userMode="user"):
         try:
@@ -1932,7 +1948,6 @@ class DDServer(DDLogger,Controller):
             try:    
                nResults,_minRun,_maxRun=self.helper.getRuns(dataset=dataset,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
             except:
-               import traceback
                traceback.print_exc()
                msg="No runs found for your request:<br />"
                msg+="<ul>"
@@ -4687,6 +4702,91 @@ Save query as:
            self.writeLog(page)
         return page
     getRunDBInfo.exposed=True 
+
+    def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+        _idx=int(_idx)
+        pagerStep=int(pagerStep)
+        # get input parameters
+        self.helperInit(dbsInst)
+        # get result
+        print "\n\n+++ aSearch",kwargs
+        try:
+            bidList = self.asearch.parseSearchInput(urllib.unquote(kwargs['userInput']))
+        except:
+            page = self.genTopHTML(userMode=userMode)
+            page+="<pre>%s</pre>"%traceback.format_exc()
+            page+= self.genBottomHTML()
+            pass
+            return page
+        nDatasets=self.helper.FindDatasets(bidList=bidList,count=1)
+        result  = self.helper.FindDatasets(bidList=bidList,fromRow=_idx*pagerStep,limit=pagerStep)
+        if kwargs.has_key("html"):
+           if not kwargs['html']:
+              for d in results: print d
+              return
+        page = self.genTopHTML()
+        # Construct result page
+        rPage=""
+        if nDatasets:
+           rPage+="Result page:"
+
+        moreParams=""
+        if kwargs:
+           for k in kwargs.keys():
+               moreParams+="&amp;%s=%s"%(k,urllib.quote(kwargs[k]))
+        # the progress bar for all results
+        if _idx:
+            rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">&#171; Prev</a> """%(dbsInst,userMode,_idx-1,pagerStep,moreParams)
+        tot=_idx
+        for x in xrange(_idx,_idx+GLOBAL_STEP):
+            if nDatasets>x*pagerStep:
+               tot+=1
+        for index in xrange(_idx,tot):
+           ref=index+1
+           if index==_idx:
+              ref="""<span class="gray_box">%s</span>"""%(index+1)
+           rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s"> %s </a> """%(dbsInst,userMode,index,pagerStep,moreParams,ref)
+        if nDatasets>(_idx+1)*pagerStep:
+           rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">Next &#187;</a>"""%(dbsInst,userMode,_idx+1,pagerStep,moreParams)
+
+        if _idx and _idx*pagerStep>nDatasets:
+           return "No data found for this request"
+
+        page+=self.whereMsg('Adv. search :: Results',userMode)
+        page+="""Found %s datasets, show <a href="">all</a>."""%(nDatasets,)
+        pagerId=1
+        _nameSpace = {
+                     'idx'      : _idx,
+                     'host'     : self.dbsdd,
+                     'style'    : "",
+                     'rPage'    : rPage,
+                     'pagerStep': pagerStep,
+                     'pagerId'  : pagerId,
+                     'nameForPager': "datasets",
+                     'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
+                    }
+        t = templatePagerStep(searchList=[_nameSpace]).respond()
+        page+=str(t)
+        try:
+            run=appPath=phedex=site="*"
+            for id in xrange(0,len(result)):
+                dataset=result[id]
+                dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
+                if mDict:
+                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run}]).respond()
+                    page+=str(t)
+                else:
+                    page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
+        except:    
+            page+="<verbatim>"+getExcept()+"</verbatim>"
+        pagerId+=1
+        _nameSpace['pagerId']=pagerId
+        _nameSpace['onchange']="javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
+        t = templatePagerStep(searchList=[_nameSpace]).respond()
+        page+=str(t)
+        page+=self.genBottomHTML()
+        return page
+    aSearch.exposed=True
 
     def setConfig(self,base=""):
         mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
