@@ -1732,9 +1732,23 @@ MCDescription:      %s
          Build a query out of input iList=['TableName.ColumnName',]
          whereClause is a list of (table,col,operator,value)
       """
+      # scan whereClause and use lval's for query builder
+      fw=[]
+      wc=whereClause.split()
+      bWords=['=','!=','like','not']
+      for idx in xrange(0,len(wc)):
+          item=wc[idx]
+          if item.find(".")!=-1 and idx!=len(wc) and bWords.count(wc[idx+1]):
+             n=item.replace("(","").replace(")","")
+             table,col=n.split(".")
+             fw.append("%s.%s"%(self.dbManager.getDBTableName(self.dbsInstance,table),col) )
       # I need to lookup SQLAlchemy tables
+      _list=[]
+      for item in iList+fw:
+          if not _list.count(item):
+             _list.append(item)
       oSel = []
-      for item in iList:
+      for item in _list:
           table,col=item.split(".")
           if col=="*":
              for c in self.dbManager.getColumns(self.dbsInstance,table):
@@ -3557,12 +3571,20 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[tblk],distinct=True )
 
           condList=[]
+          _bidList=[]
           for bid in bidList:
               cList=[]
               cList.append(self.col(tblk,'ID')==bid)
               condList.append(sqlalchemy.and_(*cList))
+              _bidList.append(bid)
           if len(condList): 
              sel.append_whereclause(sqlalchemy.or_(*condList))
+          condDict={}
+          idx=0
+          for item in str(sel).split():
+              if item.find(":")!=-1:
+                 condDict[item.replace(":","")]=_bidList[idx]
+                 idx+=1
 #          result = self.getSQLAlchemyResult(con,sel)
 #          print "\n\n+++ FindDatasets",self.printQuery(sel),condList
           if not count and limit:
