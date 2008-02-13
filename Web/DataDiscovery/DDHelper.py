@@ -3565,8 +3565,8 @@ MCDescription:      %s
           qList.append( eval(item) )
       # NOTE: INTERSECT works ONLY in ORACLE
       sel  = sqlalchemy.intersect(*qList)
-      print "\n\n+++FindDatasets",str(iSel)
-      print self.printQuery(sel)
+#      print "\n\n+++FindDatasets",str(iSel)
+#      print self.printQuery(sel)
       oList=[]
       con  = self.connectToDB()
       try:

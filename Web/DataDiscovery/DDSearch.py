@@ -11,6 +11,7 @@ Data Discovery search module
 
 # system modules
 import os, string, logging, types, time, traceback, new
+import DDUtil
 
 class DDSearch:
    def __init__(self,dbsHelper="",phedexHelper="",runsumHelper="",lumiHelper="",condHelper=""):
@@ -72,8 +73,42 @@ class DDSearch:
           print "%s.%s is not yet implemented"%(str(base),f)
 
    def parseSearchInput(self,input):
-       input = input.replace("("," ( ").replace(")"," ) ")
-       words = ":".join(input.split(":")).split()
+       words = DDUtil.inputParser(input,self.dbs_map.keys())
+       _words= []
+       f=""
+       v=""
+       for w in words:
+           if w.find(":")!=-1:
+              f,v=w.split(":")
+              try:
+                 fList = self.dbs_map[f]
+                 _call = ""
+                 count = 0
+                 _fList=list(fList)
+                 _fList.reverse()
+                 for func in _fList:
+                     if len(_fList)==1 or func==_fList[-1]:
+                        _call+= "self.%s(input={'%s':"%(func,f)
+                     else:
+                        _call+= "self.%s(input="%func
+                     count+=1
+                 _call+="'%s'}"%v
+                 for i in xrange(0,count):
+                     _call+=")"
+                 _words.append(_call)
+              except:
+                 traceback.print_exc()
+                 raise "Unknown keyword '%s', known list: %s"%(f,str(self.dbs_map.keys()))
+           else:
+                 traceback.print_exc()
+                 raise "Keyword does not contain separator \":\"."
+       eString = ' '.join(_words)
+#       print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
+       return eString
+
+   def parseSearchInput_v1(self,input):
+#       input = input.replace("("," ( ").replace(")"," ) ")
+       words = DDUtil.inputParser( ":".join(input.split(":")) )
 #       words = input.split()
        _words= []
        f=""
@@ -110,15 +145,17 @@ class DDSearch:
                  traceback.print_exc()
                  raise "Unknown keyword '%s', known list: %s"%(f,str(self.dbms[sub].keys()))
            else:
-              if not self.boolwords.count(w):
                  traceback.print_exc()
-                 raise "Unknown boolean keyword '%s', known list: %s"%(w,str(self.boolwords))
-              if w=="and":
-                 _words.append(" INTERSECTS ") # intersection
-              elif w=="or":
-                 _words.append(" UNION ") # union
-              else:
-                 _words.append(w)
+                 raise "Keyword does not contain separator \":\"."
+#              if not self.boolwords.count(w):
+#                 traceback.print_exc()
+#                 raise "Unknown boolean keyword '%s', known list: %s"%(w,str(self.boolwords))
+#              if w=="and":
+#                 _words.append(" INTERSECTS ") # intersection
+#              elif w=="or":
+#                 _words.append(" UNION ") # union
+#              else:
+#                 _words.append(w)
 #              if w=="and":
 #                 _words.append(" & ") # intersection
 #              elif w=="or":

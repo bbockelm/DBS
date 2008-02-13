@@ -32,20 +32,13 @@ TIPS= [
 "to send found data to your buddy, use 'bare URL' link at bottom of the page"
 ]
 
-def inputParser(input):
+def inputParser(input,keys):
+    for key in keys:
+        input=input.replace("%s:"%key,"_____%s:"%key)
     words=[]
-    sList=input.split()
-    tList=[]
-    for item in sList:
-        if not tList and item.find('""')==-1:
-           words.append(item)
-        else:
-           if item.find('""')!=-1 and tList:
-              tList.append(item)
-              words.append(' '.join(tList).replace('""',''))
-              tList=[]
-           else:
-              tList.append(item)
+    for w in input.split("_____"):
+        if w:
+           words.append(w.strip())
     return words
 
 def getKeyValue(dict,key):

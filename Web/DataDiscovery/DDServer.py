@@ -4706,85 +4706,102 @@ Save query as:
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         _idx=int(_idx)
         pagerStep=int(pagerStep)
+        html=1
+        if kwargs.has_key('html'):
+           try:
+              html=int(kwargs['html'])
+           except:
+              pass
         # get input parameters
         self.helperInit(dbsInst)
         # get result
-        print "\n\n+++ aSearch",kwargs
+#        print "\n\n+++ aSearch",kwargs
         try:
             sel = self.asearch.parseSearchInput(urllib.unquote(kwargs['userInput']))
         except:
+            if not html:
+               return traceback.format_exc()
             page = self.genTopHTML(userMode=userMode)
             page+="<pre>%s</pre>"%traceback.format_exc()
             page+= self.genBottomHTML()
-            pass
             return page
         nDatasets=self.helper.FindDatasets(sel,count=1)
         result  = self.helper.FindDatasets(sel,fromRow=_idx*pagerStep,limit=pagerStep)
-        if kwargs.has_key("html"):
-           if not kwargs['html']:
-              for d in results: print d
-              return
-        page = self.genTopHTML()
-        # Construct result page
-        rPage=""
-        if nDatasets:
-           rPage+="Result page:"
+        if html:
+           page = self.genTopHTML()
+        else:
+           page ="\nFound %s datasets, showing results from %s-%s\n"%(nDatasets,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
-        moreParams=""
-        if kwargs:
-           for k in kwargs.keys():
-               moreParams+="&amp;%s=%s"%(k,urllib.quote(kwargs[k]))
-        # the progress bar for all results
-        if _idx:
-            rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">&#171; Prev</a> """%(dbsInst,userMode,_idx-1,pagerStep,moreParams)
-        tot=_idx
-        for x in xrange(_idx,_idx+GLOBAL_STEP):
-            if nDatasets>x*pagerStep:
-               tot+=1
-        for index in xrange(_idx,tot):
-           ref=index+1
-           if index==_idx:
-              ref="""<span class="gray_box">%s</span>"""%(index+1)
-           rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s"> %s </a> """%(dbsInst,userMode,index,pagerStep,moreParams,ref)
-        if nDatasets>(_idx+1)*pagerStep:
-           rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">Next &#187;</a>"""%(dbsInst,userMode,_idx+1,pagerStep,moreParams)
+        if html:
+           # Construct result page
+           rPage=""
+           if nDatasets:
+              rPage+="Result page:"
 
-        if _idx and _idx*pagerStep>nDatasets:
-           return "No data found for this request"
+           moreParams=""
+           if kwargs:
+              for k in kwargs.keys():
+                  moreParams+="&amp;%s=%s"%(k,urllib.quote(kwargs[k]))
+           # the progress bar for all results
+           if _idx:
+               rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">&#171; Prev</a> """%(dbsInst,userMode,_idx-1,pagerStep,moreParams)
+           tot=_idx
+           for x in xrange(_idx,_idx+GLOBAL_STEP):
+               if nDatasets>x*pagerStep:
+                  tot+=1
+           for index in xrange(_idx,tot):
+              ref=index+1
+              if index==_idx:
+                 ref="""<span class="gray_box">%s</span>"""%(index+1)
+              rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s"> %s </a> """%(dbsInst,userMode,index,pagerStep,moreParams,ref)
+           if nDatasets>(_idx+1)*pagerStep:
+              rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">Next &#187;</a>"""%(dbsInst,userMode,_idx+1,pagerStep,moreParams)
 
-        page+=self.whereMsg('Adv. search :: Results',userMode)
-        page+="""Found %s datasets, show <a href="">all</a>."""%(nDatasets,)
-        pagerId=1
-        _nameSpace = {
-                     'idx'      : _idx,
-                     'host'     : self.dbsdd,
-                     'style'    : "",
-                     'rPage'    : rPage,
-                     'pagerStep': pagerStep,
-                     'pagerId'  : pagerId,
-                     'nameForPager': "datasets",
-                     'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
-                    }
-        t = templatePagerStep(searchList=[_nameSpace]).respond()
-        page+=str(t)
+           if _idx and _idx*pagerStep>nDatasets:
+              return "No data found for this request"
+
+           page+=self.whereMsg('Adv. search :: Results',userMode)
+           page+="""Found %s datasets, show <a href="">all</a>."""%(nDatasets,)
+           pagerId=1
+           _nameSpace = {
+                        'idx'      : _idx,
+                        'host'     : self.dbsdd,
+                        'style'    : "",
+                        'rPage'    : rPage,
+                        'pagerStep': pagerStep,
+                        'pagerId'  : pagerId,
+                        'nameForPager': "datasets",
+                        'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
+                       }
+           t = templatePagerStep(searchList=[_nameSpace]).respond()
+           page+=str(t)
         try:
             run=appPath=phedex=site="*"
             for id in xrange(0,len(result)):
                 dataset=result[id]
                 dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
-                if mDict:
-                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run}]).respond()
-                    page+=str(t)
+                if html:
+                   if mDict:
+                       t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run}]).respond()
+                       page+=str(t)
+                   else:
+                       page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
                 else:
-                    page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
+                    prdDate,cBy,nblks,blkSize,nFiles,nEvts=mDict.values()[0]
+                    seNames=dDict.keys()
+                    page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
         except:    
-            page+="<verbatim>"+getExcept()+"</verbatim>"
-        pagerId+=1
-        _nameSpace['pagerId']=pagerId
-        _nameSpace['onchange']="javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
-        t = templatePagerStep(searchList=[_nameSpace]).respond()
-        page+=str(t)
-        page+=self.genBottomHTML()
+            if html:
+               page+="<verbatim>"+getExcept()+"</verbatim>"
+            else:
+               page+=getExcept()
+        if html:
+           pagerId+=1
+           _nameSpace['pagerId']=pagerId
+           _nameSpace['onchange']="javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
+           t = templatePagerStep(searchList=[_nameSpace]).respond()
+           page+=str(t)
+           page+=self.genBottomHTML()
         return page
     aSearch.exposed=True
 
