@@ -25,12 +25,12 @@ class DDSearch:
            'dataset':['Block2Block'],
            'block':['Block2Block'],
            'file':['File2Block'],
-           'ads':['Ads2Proc','Proc2Block'],
+           #'ads':['Ads2Proc','Proc2Block'],
            'release':['Rel2Algo','Algo2Proc','Proc2Block'],
            'run':['Run2Proc','Proc2Block'],
            'lumi':['Lumi2Run','Run2Proc','Proc2Block'],
            'se':['SE2Block'],
-           'pset':['Pset2Algo','Algo2Proc','Proc2Block']
+           #'pset':['Pset2Algo','Algo2Proc','Proc2Block']
        }
        self.runsum_map={}
        self.lumi_map={}
