@@ -130,26 +130,25 @@ b { font-weight: bold; text-decoration : none; }
 
 a:link  {
   color: #005599;
-/*  color: #606060;*/
-  font-weight: bold;
-  text-decoration: none;
+/*  font-weight: bold;*/
+/*  text-decoration: none;*/
 }
 
 a:visited  {
   color: #005599;
-  font-weight: bold;
-  text-decoration: none;
+/*  font-weight: bold;*/
+/*  text-decoration: none;*/
 }
 
 a:hover  {
   color: #996699;
-  font-weight: bold;
-  text-decoration: none;
+/*  font-weight: bold;*/
+/*  text-decoration: none;*/
 }
 a:active  {
   color: lime;
-  font-weight: bold;
-  text-decoration: none;
+/*  font-weight: bold;*/
+/*  text-decoration: none;*/
 }
 
 em.itbold  {
