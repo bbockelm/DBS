@@ -9,16 +9,8 @@
 DBS data discovery command line interface
 """
 
-import  xml.sax, xml.sax.handler
-from xml.sax.saxutils import escape
-
 import httplib, urllib, types, string, os, sys
 from optparse import OptionParser
-
-def help():
-    h ="""
-"""
-    return h
 
 class DDOptionParser: 
   """
@@ -30,20 +22,14 @@ class DDOptionParser:
          help="specify DBS instance to use, e.g. --dbsInst=cms_dbs_prod_global")
     self.parser.add_option("-v","--verbose",action="store", type="int", default=0, dest="verbose",
          help="specify verbosity level, 0-none, 1-info, 2-debug")
-#    self.parser.add_option("-q","--quit",action="store", type="int", default=0, dest="quiet",
-#         help="quiet output, not summary details about datasets, non-zero value for being quiet")
     self.parser.add_option("--input",action="store", type="string", default=False, dest="input",
          help="specify input for your request.")
     self.parser.add_option("--host",action="store",type="string",dest="host",
          help="specify a host name of Data Discovery service, e.g. https://cmsweb.cern.ch/dbs_discovery/")
-#    self.parser.add_option("--port",action="store",type="string",dest="port",
-#         help="specify a port number of Data Discovery service")
     self.parser.add_option("--page",action="store",type="string",default="0",dest="page",
          help="specify output page, should come together with --limit")
     self.parser.add_option("--limit",action="store",type="string",default="10",dest="limit",
          help="specify a limit on output, e.g. 50 results, should come together with --pager")
-#    self.parser.add_option("--show",action="store",type="string",default="10",dest="show",
-#         help="specify which information to show about datasets, like --filter=lfn will show LFNs,etc. Tools accepts the following filters: lfn, se, run")
   def getOpt(self):
     """
         Returns parse list of options
@@ -98,8 +84,6 @@ def sendMessage(host,port,dbsInst,userInput,page,limit,debug=0):
        print "message:",msg
        print "************************************************************************"
        print reply
-#       print "*** Server data ***"
-#       print data,type(data)
     return data
 
 #
