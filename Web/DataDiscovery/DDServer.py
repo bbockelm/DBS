@@ -22,6 +22,7 @@ from   Cheetah.Template import Template
 import cherrypy 
 from   cherrypy    import expose
 from   cherrypy    import tools
+from   cherrypy.lib.static import serve_file
 #from   cherrypy.lib import profiler
 
 # DBS  modules
@@ -4702,6 +4703,10 @@ Save query as:
            self.writeLog(page)
         return page
     getRunDBInfo.exposed=True 
+
+    def aSearchCLI(self):
+        return serve_file(os.path.join(os.getcwd(),'DDSearchCLI.py'),content_type='text/plain')
+    aSearchCLI.exposed=True
 
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         _idx=int(_idx)
