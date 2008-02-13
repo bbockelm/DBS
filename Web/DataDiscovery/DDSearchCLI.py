@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #-*- coding: ISO-8859-1 -*-
 #
-# Copyright 2006 Cornell University, Ithaca, NY 14853. All rights reserved.
+# Copyright 2008 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
-# Author:  Valentin Kuznetsov, 2007
+# Author:  Valentin Kuznetsov, 2008
 
 """
 DBS data discovery command line interface
