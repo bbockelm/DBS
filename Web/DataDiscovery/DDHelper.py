@@ -2810,25 +2810,32 @@ MCDescription:      %s
           tpmt = self.alias('PrimaryDSType','tpmt')
           tpdr = self.alias('ProcDSRuns','tpdr')
           trun = self.alias('Runs','trun')
-          tfrl = self.alias('FileRunLumi','tfrl')
-          tf   = self.alias('Files','tf')
+#          tfrl = self.alias('FileRunLumi','tfrl')
+#          tf   = self.alias('Files','tf')
 
           oSel = [sqlalchemy.func.min(self.col(trun,'RunNumber')),sqlalchemy.func.max(self.col(trun,'RunNumber'))]
-          sel  = sqlalchemy.select(oSel,
-                       from_obj=[
-                          tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
-                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                          .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
-                          .outerjoin(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
-                          .outerjoin(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
+          if prim.lower()=="any" and primType.lower()=="any":
+              sel  = sqlalchemy.select(oSel,from_obj=[trun])
+          else:
+              sel  = sqlalchemy.select(oSel,
+                           from_obj=[
+                              tprd.join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                              .join(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+                              .outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
+                              .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
+#                          tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
+#                          .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
+#                          .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+#                          .join(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+#                          .outerjoin(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
+#                          .outerjoin(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
                                 ],distinct=True
                                  )
           if prim and prim.lower()!="any":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if primType and primType.lower()!="any":
              sel.append_whereclause(self.col(tpmt,'Type')==primType)
-          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
+#          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
