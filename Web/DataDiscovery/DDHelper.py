@@ -3416,6 +3416,10 @@ MCDescription:      %s
              lumi=kwargs['lumi']
              if lumi.find("*")!=-1:
                  sel.append_whereclause(self.col(tl,'LumiSectionNumber').like(lumi.replace("*","%")))
+             elif lumi.find("-")!=-1:
+                 minL,maxL=lumi.split("-")
+                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')>=minL)
+                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')<=maxL)
              else:
                  sel.append_whereclause(self.col(tl,'LumiSectionNumber')==lumi)
           elif kwargs.has_key('idlist'):
@@ -3459,6 +3463,10 @@ MCDescription:      %s
              run=kwargs['run']
              if run.find("*")!=-1:
                  sel.append_whereclause(self.col(tr,'RunNumber').like(run.replace("*","%")))
+             elif run.find("-")!=-1:
+                 minRun,maxRun=run.split("-")
+                 sel.append_whereclause(self.col(tr,'RunNumber')>=minRun)
+                 sel.append_whereclause(self.col(tr,'RunNumber')<=maxRun)
              else:
                  sel.append_whereclause(self.col(tr,'RunNumber')==run)
           elif kwargs.has_key('idlist'):

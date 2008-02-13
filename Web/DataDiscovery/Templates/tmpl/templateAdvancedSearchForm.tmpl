@@ -28,7 +28,35 @@
 <td align="right">
 <b>Keywords:</b>
 </td>
-<td>dataset, block, file, release, run, lumi, pset, se
+<td>
+<span id="dsetDef">
+dataset
+</span>
+,
+<span id="blkDef">
+block
+</span>
+,
+<span id="lfnDef">
+lfn
+</span>
+,
+<span id="relDef">
+release
+</span>
+,
+<span id="runDef">
+run
+</span>
+,
+<span id="lumiDef">
+lumi
+</span>
+,
+<span id="seDef">
+se.
+</span>
+Hover over keywords for <span class="box_red">info</span>.
 </td>
 </tr>
 
@@ -50,5 +78,23 @@ Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 </p>
 
 </div> <!-- end of center -->
+
+<script type="text/javascript">
+var tooltip;
+tooltip="<p>Full qualified dataset name or pattern, e.g. /DaqTest-A/Online/RAW.</p>";
+MakeTooltip("t_dset","dsetDef",tooltip);
+tooltip="<p>Block name, including block UID.</p>";
+MakeTooltip("t_","blkDef",tooltip);
+tooltip="<p>LFN name or pattern </p>";
+MakeTooltip("t_","lfnDef",tooltip);
+tooltip="<p>Release version/name, e.g. CMSSW_1_7*.</p>";
+MakeTooltip("t_","relDef",tooltip);
+tooltip="<p>Run number or run range, e.g. 34850-34860.</p>";
+MakeTooltip("t_","runDef",tooltip);
+tooltip="<p>Lumi section number or range of lumi section numbers</p>";
+MakeTooltip("t_","lumiDef",tooltip);
+tooltip="<p>SE's name or pattern, e.g. srm.cern.ch.</p>";
+MakeTooltip("t_","seDef",tooltip);
+</script>
 
 <!-- end of templateAdvancedSearchForm.tmpl -->

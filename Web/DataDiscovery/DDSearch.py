@@ -24,7 +24,7 @@ class DDSearch:
        self.dbs_map={
            'dataset':['Block2Block'],
            'block':['Block2Block'],
-           'file':['File2Block'],
+           'lfn':['File2Block'],
            #'ads':['Ads2Proc','Proc2Block'],
            'release':['Rel2Algo','Algo2Proc','Proc2Block'],
            'run':['Run2Proc','Proc2Block'],
