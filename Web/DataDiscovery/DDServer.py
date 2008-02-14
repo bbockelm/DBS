@@ -129,6 +129,7 @@ class DDServer(DDLogger,Controller):
 # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
         self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8030",verbose=verbose)
         self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
+        self.PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
         self.topUrl= ""
@@ -734,7 +735,7 @@ class DDServer(DDLogger,Controller):
     def _advanced(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
-            nameSearch={}
+            nameSearch={'userHelp':1}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -1672,11 +1673,12 @@ class DDServer(DDLogger,Controller):
             page+="""<p><span class="box_red">No data found</span></p>"""
 #        print "####",nDatasets,len(datasetsList)
         try:
+            dbsInstURL=DBS_DLS_INST[dbsInst]
             for id in xrange(0,len(datasetsList)):
                 dataset=datasetsList[id]
                 dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
                 if mDict:
-                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run}]).respond()
+                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL}]).respond()
                     page+=str(t)
                 else:
                     page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
@@ -3796,7 +3798,7 @@ All LFNs in a block
         path=path.replace('#','%23')
 #        dbsInstURL="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet"
         dbsInstURL=DBS_DLS_INST[dbsInst]
-        PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
+        PhedexURL=self.PhedexURL
         nameSpace={'host':self.dbsdd,'dbsInst':dbsInst,'path':path,'appPath':appPath,'id':id,'userMode':userMode,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':PhedexURL}
         t = templateMoreInfo(searchList=[nameSpace]).respond()
 #        t = templatePanelMore(searchList=[nameSpace]).respond()
@@ -4735,6 +4737,9 @@ Save query as:
         result  = self.helper.FindDatasets(sel,fromRow=_idx*pagerStep,limit=pagerStep)
         if html:
            page = self.genTopHTML()
+           nameSearch={'userHelp':0}
+           t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
+           page+=str(t)
         else:
            page ="\nFound %s datasets, showing results from %s-%s\n"%(nDatasets,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
@@ -4782,13 +4787,15 @@ Save query as:
            t = templatePagerStep(searchList=[_nameSpace]).respond()
            page+=str(t)
         try:
-            run=appPath=phedex=site="*"
+            run=appPath=site="*"
+            dbsInstURL=DBS_DLS_INST[dbsInst]
+            phedex=0
             for id in xrange(0,len(result)):
                 dataset=result[id]
                 dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
                 if html:
                    if mDict:
-                       t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run}]).respond()
+                       t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL}]).respond()
                        page+=str(t)
                    else:
                        page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
@@ -4806,6 +4813,7 @@ Save query as:
            _nameSpace['pagerId']=pagerId
            _nameSpace['onchange']="javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
            t = templatePagerStep(searchList=[_nameSpace]).respond()
+           page+="""<hr class="dbs" />"""
            page+=str(t)
            page+=self.genBottomHTML()
         return page
@@ -4911,8 +4919,15 @@ if __name__ == "__main__":
     print "Using CherryPy:",cherrypy.__version__
     if opts.quiet:
        dbsManager.setQuiet()
+    port=opts.port
     if  int(string.split(cherrypy.__version__,".")[0])==3:
-        cherrypy.config.update("CherryServer3.conf")
+        #cherrypy.config.update("CherryServer3.conf")
+        cherrypy.config.update({'server.socket_port': port,
+                                'server.thread_pool': 20,
+                                'environment': 'production',
+                                'log.screen':True,
+                                'log.error_file':"dbs.log",
+                               })
         if opts.ssl:
            try:
                cherrypy.config.update({'server.ssl_certificate': '%s'%os.environ['DD_CRT'],

@@ -3,13 +3,14 @@
 <div align="center">
 <form action="aSearch" method="get">
 
-<input type="text" size="80" name="userInput" />
+<input type="text" size="80" name="userInput" id="userInput" />
 <input type="hidden" name="dbsInst" value="cms_dbs_prod_global" />
-<input type="submit" value="Search" />
+<input type="submit" value="Search" onclick="javascript:SetTagCookie('DBSDD_ainput','userInput')" />
 ###<input type="reset" value="Reset" />
 
 </form>
 
+#if $userHelp
 <p></p>
 <p></p>
 ##<p>The advanced search engine look-up dataset based on your keyword input.</p>
@@ -76,10 +77,12 @@ lookup run 34850 from dataset with pattern name Online, located at srm.cern.ch.
 <p>
 Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 </p>
+#end if
 
 </div> <!-- end of center -->
 
 <script type="text/javascript">
+#if $userHelp
 var tooltip;
 tooltip="<p>Full qualified dataset name or pattern, e.g. /DaqTest-A/Online/RAW.</p>";
 MakeTooltip("t_dset","dsetDef",tooltip);
@@ -95,6 +98,9 @@ tooltip="<p>Lumi section number or range of lumi section numbers</p>";
 MakeTooltip("t_","lumiDef",tooltip);
 tooltip="<p>SE's name or pattern, e.g. srm.cern.ch.</p>";
 MakeTooltip("t_","seDef",tooltip);
+#end if
+SetTagValue('DBSDD_ainput','userInput');
 </script>
+<p></p>
 
 <!-- end of templateAdvancedSearchForm.tmpl -->

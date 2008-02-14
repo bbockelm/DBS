@@ -361,7 +361,7 @@ $prdForm
 </td>
 <td>
 <input type="reset" value="Reset" />
-<input type="submit" value="Find" id='userNavId2' />
+<input type="submit" value="Find" id='userNavId2' onclick="javascript:SetTagCookie('DBSDD_prdInput','proc')" />
 </td>
 </tr>
 </table>
@@ -420,7 +420,7 @@ $prdForm
 </div>
 </td>
 <td align="left">
-<input type="text" size="80" name="lfn" />
+<input type="text" size="80" name="lfn" id='datasetLFNInput' />
 </td>
 </tr>
 
@@ -429,7 +429,7 @@ $prdForm
 </td>
 <td>
 <input type="reset" value="Reset" />
-<input type="submit" value="Find" id='userNavId2' />
+<input type="submit" value="Find" id='userNavId2' onclick="javascript:SetTagCookie('DBSDD_datasetLFNInput','datasetLFNInput')" />
 </td>
 </tr>
 </table>
@@ -490,6 +490,8 @@ MakeTooltip("t_lfn","lfnDef",tooltip);
 if(isInternetExplorer()) {
 ShowTag("isIE");
 }
+SetTagValue('DBSDD_prdInput','proc'); // it's set in DDServer in autoCompleteForm
+SetTagValue('DBSDD_datasetLFNInput','datasetLFNInput');
 </script>
 
 <!-- end of templateUserNav.tmpl -->
