@@ -1738,6 +1738,19 @@ function SaveADS(name)
   mydoc.execCommand("saveAs",true,name);
   mydoc.close();
 }
+function SetTagValue(cName,tag) {
+   var cookie=GetCookie(cName);
+   var id=document.getElementById(tag);
+   if(cookie) {
+      id.value=cookie;
+   }
+}
+function SetTagCookie(cName,tag) {
+   var id=document.getElementById(tag);
+   if (id) {
+       SetCookie(cName,id.value);
+   }
+}
 function MakeTooltip(_tag,_ctx,_text,autodismissdelay,width) {
   var delay=5000;
   if(autodismissdelay) {
