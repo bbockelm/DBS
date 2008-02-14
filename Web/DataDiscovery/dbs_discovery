@@ -11,6 +11,7 @@ fi
 
 RETVAL=$?
 
+port=`cat DBSDD.conf | grep -i "port=" | sed "s/PORT=//g"`
 pid=`ps auxw | grep DDServer | grep -v grep | awk '{print $2}'`
 base=dbs_discovery
 
@@ -21,13 +22,13 @@ case "$1" in
           kill -9 ${pid}
         fi
 	echo $"Restart DDServer..."
-        nohup ${DDHOME}/DDServer.py --verbose=1 2>&1 1>& /dev/null < /dev/null &
+        nohup ${DDHOME}/DDServer.py --verbose=1 --port=$port 2>&1 1>& /dev/null < /dev/null &
 	;;
  start)
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
-        nohup ${DDHOME}/DDServer.py --verbose=1 2>&1 1>& /dev/null < /dev/null &
+        nohup ${DDHOME}/DDServer.py --verbose=1 --port=$port 2>&1 1>& /dev/null < /dev/null &
 	;;
  status)
         if [ ! -z ${pid} ]; then

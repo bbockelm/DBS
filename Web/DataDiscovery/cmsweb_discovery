@@ -12,7 +12,8 @@ cd ${DDHOME}
 
 RETVAL=$?
 
-port=`cat CherryServer3.conf | grep port | awk '{print $3}'`
+#port=`cat CherryServer3.conf | grep port | awk '{print $3}'`
+port=`cat DBSDD.conf | grep -i "port=" | sed "s/PORT=//g"`
 pid=`ps auxw | grep cmsWeb | grep -v grep | grep ${port} | awk '{print $2}'`
 base=cmsweb_discovery
 
