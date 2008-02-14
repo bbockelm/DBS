@@ -32,6 +32,8 @@ class DDOptionParser:
          help="specify server name, e.g. cgi or JavaServer")
     self.parser.add_option("--ssl",action="store_true", default=False, dest="ssl",
          help="run data discovery in secure mode, you must define DD_CRT/DD_PEM environments for host certificate and private keys respectively")
+    self.parser.add_option("--port",action="store", type="int", default=8003, dest="port",
+         help="specify port number to be used by web server, default is 8003.")
 
     # options specific to DDHelper
     if  service=="DDHelper":
