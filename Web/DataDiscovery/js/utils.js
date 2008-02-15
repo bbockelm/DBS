@@ -1508,6 +1508,7 @@ function AutoTurnOff() {
    load(url);
 }
 function CaseSensitiveOn() {
+   SetCookie('DBSDD_caseSensitive','on');
    var id=$('caseSensitive');
    id.value='on';
    id=$('caseOn');
@@ -1516,6 +1517,7 @@ function CaseSensitiveOn() {
    id.className='';
 }
 function CaseSensitiveOff() {
+   SetCookie('DBSDD_caseSensitive','off');
    var id=$('caseSensitive');
    id.value='off';
    id=$('caseOff');

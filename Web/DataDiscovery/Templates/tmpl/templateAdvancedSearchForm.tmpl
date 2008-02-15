@@ -132,6 +132,14 @@ tooltip="<p>SE's name or pattern, e.g. srm.cern.ch.</p>";
 MakeTooltip("t_","seDef",tooltip);
 #end if
 SetTagValue('DBSDD_ainput','userInput');
+function UpdateCaseSens() {
+  if(GetCookie('DBSDD_caseSensitive')=='off') {
+     CaseSensitiveOff();
+  } else {
+     CaseSensitiveOn();
+  }
+}
+UpdateCaseSens();
 </script>
 <p></p>
 

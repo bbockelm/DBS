@@ -492,6 +492,14 @@ ShowTag("isIE");
 }
 SetTagValue('DBSDD_prdInput','proc'); // it's set in DDServer in autoCompleteForm
 SetTagValue('DBSDD_datasetLFNInput','datasetLFNInput');
+function UpdateCaseSens() {
+  if(GetCookie('DBSDD_caseSensitive')=='off') {
+     CaseSensitiveOff();
+  } else {
+     CaseSensitiveOn();
+  }
+}
+UpdateCaseSens();
 </script>
 
 <!-- end of templateUserNav.tmpl -->
