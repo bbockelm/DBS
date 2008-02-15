@@ -11,7 +11,7 @@ CLI DBS Data discovery toolkit.
 
 # import system modules
 import string, sys, time, types, popen2, httplib
-import elementtree
+import elementtree, traceback
 from elementtree.ElementTree import fromstring
 
 # import DBS modules
@@ -3210,11 +3210,54 @@ MCDescription:      %s
           pass
       return bList
   ### Implementation for DDSearch
+  def buildLikeExp(self,sel,tc,val,case='on'):
+      if case=='on':
+         return sel.append_whereclause( tc.like(val.replace("*","%")) )
+      else:
+         return sel.append_whereclause( sqlalchemy.func.upper(tc).like(val.upper().replace("*","%")) )
+  def buildEqExp(self,sel,tc,val,case='on'):
+      if case=='on':
+         return sel.append_whereclause(tc==val)
+      else:
+         return sel.append_whereclause(sqlalchemy.func.upper(tc)==val.upper())
+  def buildLtExp(self,sel,tc,val,case='on'):
+      if case=='on':
+         return sel.append_whereclause(tc<=val)
+      else:
+         return sel.append_whereclause(sqlalchemy.func.upper(tc)<=val.upper())
+  def buildGtExp(self,sel,tc,val,case='on'):
+      if case=='on':
+         return sel.append_whereclause(tc>=val)
+      else:
+         return sel.append_whereclause(sqlalchemy.func.upper(tc)>=val.upper())
+  def buildExp(self,sel,tc,val,case):
+      try:
+         if val.find("*")!=-1:
+            return self.buildLikeExp(sel,tc,val,case)
+         elif val.find("-")!=-1:
+            min,max=val.split("-")
+            self.buildLtExp(sel,tc,max,case)
+            return self.buildGtExp(sel,tc,min,case)
+         else:
+            return self.buildEqExp(sel,tc,val,case)
+      except:
+         traceback.print_exc()
+         raise "Fail to build query for '%s', '%s', '%s', case='%s'"%(self.printQuery(sel),tc,val,case)
+  def buildListExp(self,sel,tc,idList):
+      condList=[]
+      for id in idList:
+          cList=[]
+          cList.append(tc==id)
+          condList.append(sqlalchemy.and_(*cList))
+      if len(condList): 
+         sel.append_whereclause(sqlalchemy.or_(*condList))
   def Block2Block(self,**kwargs):
       """Take a list of input vars and return list of block Ids"""
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tblk = self.alias('Block','tblk')
@@ -3223,28 +3266,19 @@ MCDescription:      %s
           if kwargs.has_key('block'):
              blk_name=kwargs['block']
              if blk_name.find("*")!=-1:
-                 sel.append_whereclause(self.col(tblk,'Name').like(blk_name.replace("*","%")))
+#                 sel.append_whereclause(self.col(tblk,'Name').like(blk_name.replace("*","%")))
+                 self.buildLikeExp(sel,self.col(tblk,'Name'),blk_name,case)
              else:
-                 sel.append_whereclause(self.col(tblk,'Name').like('%%'+blk_name+'%%'))
+#                 sel.append_whereclause(self.col(tblk,'Name').like('%%'+blk_name+'%%'))
+                 self.buildLikeExp(sel,self.col(tblk,'Name'),'%%'+blk_name+'%%',case)
           if kwargs.has_key('dataset'):
-             dataset=kwargs['dataset']
-             if dataset.find("*")!=-1:
-                 sel.append_whereclause(self.col(tblk,'Path').like(dataset.replace("*","%")))
-             else:
-                 sel.append_whereclause(self.col(tblk,'Path')==dataset)
+             self.buildExp(sel,self.col(tblk,'Path'),kwargs['dataset'],case)
 #          print self.printQuery(sel)
           return sel
-#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Block2Block"
-#      for item in result:
-#          if item and item[0]:
-#             oList.append(item[0])
-#      self.closeConnection(con)
-#      print oList
-#      return oList
 
   def Pset2Algo(self,**kwargs):
       print "Call Pset2Algo",str(kwargs)
@@ -3252,6 +3286,8 @@ MCDescription:      %s
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tq   = self.alias('QueryableParameterSet','tq')
@@ -3262,20 +3298,22 @@ MCDescription:      %s
           obj  = obj.join(tq,onclause=self.col(tac,'ParameterSetID')==self.col(tq,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('pset'):
-             pset=kwargs['pset']
-             if pset.find("*")!=-1:
-                 sel.append_whereclause(self.col(tq,'Content').like(pset.replace("*","%")))
-             else:
-                 sel.append_whereclause(self.col(tq,'Content')==pset)
+             self.buildExp(sel,self.col(tq,'Content'),kwargs['pset'],case)
+#             pset=kwargs['pset']
+#             if pset.find("*")!=-1:
+#                 sel.append_whereclause(self.col(tq,'Content').like(pset.replace("*","%")))
+#             else:
+#                 sel.append_whereclause(self.col(tq,'Content')==pset)
           elif kwargs.has_key('idlist'):
-             idList=kwargs['idlist']
-             condList=[]
-             for id in idList:
-                 cList=[]
-                 cList.append(self.col(tq,'ID')==id)
-                 condList.append(sqlalchemy.and_(*cList))
-             if len(condList): 
-                sel.append_whereclause(sqlalchemy.or_(*condList))
+             self.buildListExp(sel,self.col(tq,'ID'),kwargs['idlist'])
+#             idList=kwargs['idlist']
+#             condList=[]
+#             for id in idList:
+#                 cList=[]
+#                 cList.append(self.col(tq,'ID')==id)
+#                 condList.append(sqlalchemy.and_(*cList))
+#             if len(condList): 
+#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -3286,7 +3324,6 @@ MCDescription:      %s
           if item and item[0]:
              oList.append(item[0])
       self.closeConnection(con)
-#      print oList
       return {'idlist':oList}
 
   def Rel2Algo(self,**kwargs):
@@ -3295,6 +3332,8 @@ MCDescription:      %s
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tav  = self.alias('AppVersion','tav')
@@ -3305,20 +3344,22 @@ MCDescription:      %s
           obj  = obj.join(tav,onclause=self.col(tac,'ApplicationVersion')==self.col(tav,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('release'):
-             rel=kwargs['release']
-             if rel.find("*")!=-1:
-                 sel.append_whereclause(self.col(tav,'Version').like(rel.replace("*","%")))
-             else:
-                 sel.append_whereclause(self.col(tav,'Version')==rel)
+             self.buildExp(sel,self.col(tav,'Version'),kwargs['release'],case)
+#             rel=kwargs['release']
+#             if rel.find("*")!=-1:
+#                 sel.append_whereclause(self.col(tav,'Version').like(rel.replace("*","%")))
+#             else:
+#                 sel.append_whereclause(self.col(tav,'Version')==rel)
           elif kwargs.has_key('idlist'):
-             idList=kwargs['idlist']
-             condList=[]
-             for id in idList:
-                 cList=[]
-                 cList.append(self.col(tav,'ID')==id)
-                 condList.append(sqlalchemy.and_(*cList))
-             if len(condList): 
-                sel.append_whereclause(sqlalchemy.or_(*condList))
+             self.buildListExp(sel,self.col(tav,'ID'),kwargs['idlist'])
+#             idList=kwargs['idlist']
+#             condList=[]
+#             for id in idList:
+#                 cList=[]
+#                 cList.append(self.col(tav,'ID')==id)
+#                 condList.append(sqlalchemy.and_(*cList))
+#             if len(condList): 
+#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -3329,7 +3370,6 @@ MCDescription:      %s
           if item and item[0]:
              oList.append(item[0])
       self.closeConnection(con)
-#      print oList
       return {'idlist':oList}
 
   def Algo2Proc(self,**kwargs):
@@ -3338,6 +3378,8 @@ MCDescription:      %s
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tprd = self.alias('ProcessedDataset','tprd')
@@ -3346,14 +3388,15 @@ MCDescription:      %s
           obj  = tprd.join(talgo,onclause=self.col(talgo,'Dataset')==self.col(tprd,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
-             idList=kwargs['idlist']
-             condList=[]
-             for id in idList:
-                 cList=[]
-                 cList.append(self.col(talgo,'ID')==id)
-                 condList.append(sqlalchemy.and_(*cList))
-             if len(condList): 
-                sel.append_whereclause(sqlalchemy.or_(*condList))
+             self.buildListExp(sel,self.col(talgo,'ID'),kwargs['idlist'])
+#             idList=kwargs['idlist']
+#             condList=[]
+#             for id in idList:
+#                 cList=[]
+#                 cList.append(self.col(talgo,'ID')==id)
+#                 condList.append(sqlalchemy.and_(*cList))
+#             if len(condList): 
+#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -3364,7 +3407,6 @@ MCDescription:      %s
           if item and item[0]:
              oList.append(item[0])
       self.closeConnection(con)
-#      print oList
       return {'idlist':oList}
 
   def SE2Block(self,**kwargs):
@@ -3372,6 +3414,8 @@ MCDescription:      %s
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tse  = self.alias('StorageElement','tse')
@@ -3382,22 +3426,17 @@ MCDescription:      %s
           obj  = obj.join(tse,onclause=self.col(tse,'ID')==self.col(tseb,'SEID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('site'):
-             sename=kwargs['site']
-             if sename.find("*")!=-1:
-                 sel.append_whereclause(self.col(tse,'SEName').like(sename.replace("*","%")))
-             else:
-                 sel.append_whereclause(self.col(tse,'SEName')==sename)
+             self.buildExp(sel,self.col(tse,'SEName'),kwargs['site'],case)
+#             sename=kwargs['site']
+#             if sename.find("*")!=-1:
+#                 sel.append_whereclause(self.col(tse,'SEName').like(sename.replace("*","%")))
+#             else:
+#                 sel.append_whereclause(self.col(tse,'SEName')==sename)
           return sel
-#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in SE2Block"
-#      for item in result:
-#          if item and item[0]:
-#             oList.append(item[0])
-#      self.closeConnection(con)
-#      return oList
 
   def Lumi2Run(self,**kwargs):
       print "Call Lumi2Run",str(kwargs)
@@ -3413,24 +3452,26 @@ MCDescription:      %s
           obj  = tr.join(tl,onclause=self.col(tr,'ID')==self.col(tl,'RunNumber'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('lumi'):
-             lumi=kwargs['lumi']
-             if lumi.find("*")!=-1:
-                 sel.append_whereclause(self.col(tl,'LumiSectionNumber').like(lumi.replace("*","%")))
-             elif lumi.find("-")!=-1:
-                 minL,maxL=lumi.split("-")
-                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')>=minL)
-                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')<=maxL)
-             else:
-                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')==lumi)
+             self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case)
+#             lumi=kwargs['lumi']
+#             if lumi.find("*")!=-1:
+#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber').like(lumi.replace("*","%")))
+#             elif lumi.find("-")!=-1:
+#                 minL,maxL=lumi.split("-")
+#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')>=minL)
+#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')<=maxL)
+#             else:
+#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')==lumi)
           elif kwargs.has_key('idlist'):
-             idList=kwargs['idlist']
-             condList=[]
-             for id in idList:
-                 cList=[]
-                 cList.append(self.col(tl,'ID')==id)
-                 condList.append(sqlalchemy.and_(*cList))
-             if len(condList): 
-                sel.append_whereclause(sqlalchemy.or_(*condList))
+             self.buildListExp(sel,self.col(tl,'ID'),kwargs['idlist'])
+#             idList=kwargs['idlist']
+#             condList=[]
+#             for id in idList:
+#                 cList=[]
+#                 cList.append(self.col(tl,'ID')==id)
+#                 condList.append(sqlalchemy.and_(*cList))
+#             if len(condList): 
+#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -3441,7 +3482,6 @@ MCDescription:      %s
           if item and item[0]:
              oList.append(item[0])
       self.closeConnection(con)
-#      print oList
       return {'idlist':oList}
 
   def Run2Proc(self,**kwargs):
@@ -3450,6 +3490,8 @@ MCDescription:      %s
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tprd = self.alias('ProcessedDataset','tprd')
@@ -3460,35 +3502,36 @@ MCDescription:      %s
           obj  = obj.join(tr,onclause=self.col(tpr,'Run')==self.col(tr,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('run'):
-             run=kwargs['run']
-             if run.find("*")!=-1:
-                 sel.append_whereclause(self.col(tr,'RunNumber').like(run.replace("*","%")))
-             elif run.find("-")!=-1:
-                 minRun,maxRun=run.split("-")
-                 sel.append_whereclause(self.col(tr,'RunNumber')>=minRun)
-                 sel.append_whereclause(self.col(tr,'RunNumber')<=maxRun)
-             else:
-                 sel.append_whereclause(self.col(tr,'RunNumber')==run)
+             self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case)
+#             run=kwargs['run']
+#             if run.find("*")!=-1:
+#                 sel.append_whereclause(self.col(tr,'RunNumber').like(run.replace("*","%")))
+#             elif run.find("-")!=-1:
+#                 minRun,maxRun=run.split("-")
+#                 sel.append_whereclause(self.col(tr,'RunNumber')>=minRun)
+#                 sel.append_whereclause(self.col(tr,'RunNumber')<=maxRun)
+#             else:
+#                 sel.append_whereclause(self.col(tr,'RunNumber')==run)
           elif kwargs.has_key('idlist'):
-             idList=kwargs['idlist']
-             condList=[]
-             for id in idList:
-                 cList=[]
-                 cList.append(self.col(tr,'ID')==id)
-                 condList.append(sqlalchemy.and_(*cList))
-             if len(condList): 
-                sel.append_whereclause(sqlalchemy.or_(*condList))
-#          print self.printQuery(sel)
+             self.buildListExp(sel,self.col(tr,'ID'),kwargs['idlist'])
+#             idList=kwargs['idlist']
+#             condList=[]
+#             for id in idList:
+#                 cList=[]
+#                 cList.append(self.col(tr,'ID')==id)
+#                 condList.append(sqlalchemy.and_(*cList))
+#             if len(condList): 
+#                sel.append_whereclause(sqlalchemy.or_(*condList))
+          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
-          raise "Fail in Run2File"
+          raise "Fail in Run2Proc"
       for item in result:
           if item and item[0]:
              oList.append(item[0])
       self.closeConnection(con)
-#      print oList
       return {'idlist':oList}
 
   def File2Block(self,**kwargs):
@@ -3497,6 +3540,8 @@ MCDescription:      %s
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tf   = self.alias('Files','tf')
@@ -3505,33 +3550,28 @@ MCDescription:      %s
           obj  = tblk.join(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('file'):
-             fname=kwargs['file']
-             if fname.find("*")!=-1:
-                 sel.append_whereclause(self.col(tf,'LogicalFileName').like(fname.replace("*","%")))
-             else:
-                 sel.append_whereclause(self.col(tf,'LogicalFileName')==fname)
+             self.buildExp(sel,self.col(tf,'LogicalFileName'),kwargs['file'],case)
+#             fname=kwargs['file']
+#             if fname.find("*")!=-1:
+#                 sel.append_whereclause(self.col(tf,'LogicalFileName').like(fname.replace("*","%")))
+#             else:
+#                 sel.append_whereclause(self.col(tf,'LogicalFileName')==fname)
           elif kwargs.has_key('idlist'):
-             idList=kwargs['idlist']
-             condList=[]
-             for id in idList:
-                 cList=[]
-                 cList.append(self.col(tf,'ID')==id)
-                 condList.append(sqlalchemy.and_(*cList))
-             if len(condList): 
-                sel.append_whereclause(sqlalchemy.or_(*condList))
+             self.buildListExp(sel,self.col(tf,'ID'),kwargs['idlist'])
+#             idList=kwargs['idlist']
+#             condList=[]
+#             for id in idList:
+#                 cList=[]
+#                 cList.append(self.col(tf,'ID')==id)
+#                 condList.append(sqlalchemy.and_(*cList))
+#             if len(condList): 
+#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           return sel
-#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in File2Block"
-#      for item in result:
-#          if item and item[0]:
-#             oList.append(item[0])
-#      self.closeConnection(con)
-#      print oList
-#      return oList
 
   def Proc2Block(self,**kwargs):
       print "Call Proc2Block",str(kwargs)
@@ -3539,6 +3579,8 @@ MCDescription:      %s
       oList=[]
       con  = self.connectToDB()
       sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
       try:
           kwargs=kwargs['input']
           tprd = self.alias('ProcessedDataset','tprd')
@@ -3547,27 +3589,21 @@ MCDescription:      %s
           obj  = tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
-             idList=kwargs['idlist']
-             condList=[]
-             for id in idList:
-                 cList=[]
-                 cList.append(self.col(tprd,'ID')==id)
-                 condList.append(sqlalchemy.and_(*cList))
-             if len(condList): 
-                sel.append_whereclause(sqlalchemy.or_(*condList))
+             self.buildListExp(sel,self.col(tprd,'ID'),kwargs['idlist'])
+#             idList=kwargs['idlist']
+#             condList=[]
+#             for id in idList:
+#                 cList=[]
+#                 cList.append(self.col(tprd,'ID')==id)
+#                 condList.append(sqlalchemy.and_(*cList))
+#             if len(condList): 
+#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           return sel
-#          result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Proc2Block"
-#      for item in result:
-#          if item and item[0]:
-#             oList.append(item[0])
-#      self.closeConnection(con)
-#      print oList
-#      return oList
 
   def Ads2Proc(self,**kwargs):
       print "Call Ads2Proc",str(kwargs)
@@ -3580,8 +3616,9 @@ MCDescription:      %s
           qList.append( eval(item) )
       # NOTE: INTERSECT works ONLY in ORACLE
       sel  = sqlalchemy.intersect(*qList)
-#      print "\n\n+++FindDatasets",str(iSel)
-#      print self.printQuery(sel)
+      if not count:
+         print "\n\n+++FindDatasets",str(iSel)
+         print self.printQuery(sel)
       oList=[]
       con  = self.connectToDB()
       try:
@@ -3604,62 +3641,6 @@ MCDescription:      %s
              else:
                 oList.append(item[0])
           idx+=1
-      self.closeConnection(con)
-      return oList
-      
-  def FindDatasets_v1(self,bidList,fromRow=0,limit=0,count=0):
-      """Take a list of input blockid's and return list of dataset"""
-#      print "\n\n+++FindDatasets",bidList
-      if not len(bidList): return []
-      # TODO: add pagination for this method.
-      oList=[]
-      con  = self.connectToDB()
-      sel  = ""
-      try:
-          tblk = self.alias('Block','tblk')
-          if count:
-             oSel = [sqlalchemy.func.count(self.col(tblk,'Path').distinct())]
-          else:
-             oSel =[self.col(tblk,'Path')]
-          sel  = sqlalchemy.select(oSel,from_obj=[tblk],distinct=True )
-
-          condList=[]
-          _bidList=[]
-          for bid in bidList:
-              cList=[]
-              cList.append(self.col(tblk,'ID')==bid)
-              condList.append(sqlalchemy.and_(*cList))
-              _bidList.append(bid)
-          if len(condList): 
-             sel.append_whereclause(sqlalchemy.or_(*condList))
-          condDict={}
-          idx=0
-          for item in str(sel).split():
-              if item.find(":")!=-1:
-                 condDict[item.replace(":","")]=_bidList[idx]
-                 idx+=1
-          if not count and limit:
-             if  self.dbManager.dbType[self.dbsInstance]=='oracle':
-                 minRow,maxRow=fromRow,fromRow+limit
-                 s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
-                 result=con.execute(s,condDict)
-             else:
-                 sel.limit=limit
-                 sel.offset=fromRow
-                 result = self.getSQLAlchemyResult(con,sel)
-          else:       
-              result = self.getSQLAlchemyResult(con,sel)
-      except:
-          msg="\n### Query:\n"+str(sel)+str(bidList)
-          self.printExcept(msg)
-          raise "Fail in FindDatasets"
-      if count:
-         res = result.fetchone()[0]
-         self.closeConnection(con)
-         return res
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
       self.closeConnection(con)
       return oList
       
