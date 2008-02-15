@@ -72,7 +72,7 @@ class DDSearch:
        else:
           print "%s.%s is not yet implemented"%(str(base),f)
 
-   def parseSearchInput(self,input):
+   def parseSearchInput(self,input,case="on"):
        words = DDUtil.inputParser(input,self.dbs_map.keys())
        _words= []
        f=""
@@ -92,7 +92,7 @@ class DDSearch:
                      else:
                         _call+= "self.%s(input="%func
                      count+=1
-                 _call+="'%s'}"%v
+                 _call+="'%s'},case='%s'"%(v,case)
                  for i in xrange(0,count):
                      _call+=")"
                  _words.append(_call)
@@ -103,69 +103,8 @@ class DDSearch:
                  traceback.print_exc()
                  raise "Keyword does not contain separator \":\"."
        eString = ' '.join(_words)
-#       print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
-       return eString
-
-   def parseSearchInput_v1(self,input):
-#       input = input.replace("("," ( ").replace(")"," ) ")
-       words = DDUtil.inputParser( ":".join(input.split(":")) )
-#       words = input.split()
-       _words= []
-       f=""
-       v=""
-       for w in words:
-           if w.find(":")!=-1:
-              _split=w.split(":")
-              sub="dbs"
-              if len(_split)==3:
-                 sub,f,v=w.split(":")
-              elif len(_split)==2:
-                 f,v=w.split(":")
-              else:
-                  raise "Not supported expression, '%s'"%w
-              try:
-                 fList = self.dbms[sub][f]
-#                 _call = "set("
-                 _call = ""
-                 count = 0
-                 _fList=list(fList)
-                 _fList.reverse()
-                 for func in _fList:
-                     if len(_fList)==1 or func==_fList[-1]:
-                        _call+= "self.%s(input={'%s':"%(func,f)
-                     else:
-                        _call+= "self.%s(input="%func
-                     count+=1
-                 _call+="'%s'}"%v
-                 for i in xrange(0,count):
-                     _call+=")"
-#                 _call+=")" # end of set
-                 _words.append(_call)
-              except:
-                 traceback.print_exc()
-                 raise "Unknown keyword '%s', known list: %s"%(f,str(self.dbms[sub].keys()))
-           else:
-                 traceback.print_exc()
-                 raise "Keyword does not contain separator \":\"."
-#              if not self.boolwords.count(w):
-#                 traceback.print_exc()
-#                 raise "Unknown boolean keyword '%s', known list: %s"%(w,str(self.boolwords))
-#              if w=="and":
-#                 _words.append(" INTERSECTS ") # intersection
-#              elif w=="or":
-#                 _words.append(" UNION ") # union
-#              else:
-#                 _words.append(w)
-#              if w=="and":
-#                 _words.append(" & ") # intersection
-#              elif w=="or":
-#                 _words.append(" | ") # union
-#              else:
-#                 _words.append(w)
-       eString = ' '.join(_words)
        print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
        return eString
-#       return eval(eString)
 
 class PhedexTest:
    def __init__(self):
