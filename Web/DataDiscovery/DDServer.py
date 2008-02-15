@@ -732,10 +732,13 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _analysis.exposed=True
 
-    def _advanced(self,userMode="user"):
+    def _advanced(self,dbsInst=DBSGLOBAL,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
-            nameSearch={'userHelp':1}
+            dbsList=list(self.dbsList)
+            dbsList.remove(dbsInst)
+            dbsList=[dbsInst]+dbsList
+            nameSearch={'dbsInst':dbsInst,'userHelp':1,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -4724,8 +4727,11 @@ Save query as:
         self.helperInit(dbsInst)
         # get result
 #        print "\n\n+++ aSearch",kwargs
+        case="on"
+        if  kwargs.has_key('caseSensitive'):
+            case=kwargs['caseSensitive']
         try:
-            sel = self.asearch.parseSearchInput(urllib.unquote(kwargs['userInput']))
+            sel = self.asearch.parseSearchInput(urllib.unquote(kwargs['userInput']),case)
         except:
             if not html:
                return traceback.format_exc()
@@ -4737,7 +4743,10 @@ Save query as:
         result  = self.helper.FindDatasets(sel,fromRow=_idx*pagerStep,limit=pagerStep)
         if html:
            page = self.genTopHTML()
-           nameSearch={'userHelp':0}
+           dbsList=list(self.dbsList)
+           dbsList.remove(dbsInst)
+           dbsList=[dbsInst]+dbsList
+           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode}
            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
            page+=str(t)
         else:
