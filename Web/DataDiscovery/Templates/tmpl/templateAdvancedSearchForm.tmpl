@@ -2,9 +2,41 @@
 
 <div align="center">
 <form action="aSearch" method="get">
+<input type="hidden" name="caseSensitive" value="on" id="caseSensitive" />
+
+## add table with case sensitivity and choice of dbs instance (in expert mode)
+<table cellpadding="2" cellspacing="2">
+<tr>
+#if $userMode=='user'
+<td>
+<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+</td>
+<td>
+</td>
+#else
+<td align="right">
+<div id="dbsInstDef">
+<b>DBS instances</b>
+</div>
+</td>
+<td>
+<select name="dbsInst" id="dbsInst" onchange="javascript:ReloadMethod('$host','_advanced','$userMode')" style="$style">
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+</td>
+#end if
+<td>
+Case-sensitivity:
+<a href="javascript:CaseSensitiveOn();"><span id="caseOn" class="td_underline_pad">on</span></a> 
+| 
+<a href="javascript:CaseSensitiveOff();"><span id="caseOff" class="">off</span></a>
+</td>
+</tr>
+</table>
 
 <input type="text" size="80" name="userInput" id="userInput" />
-<input type="hidden" name="dbsInst" value="cms_dbs_prod_global" />
 <input type="submit" value="Search" onclick="javascript:SetTagCookie('DBSDD_ainput','userInput')" />
 ###<input type="reset" value="Reset" />
 
