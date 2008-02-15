@@ -103,7 +103,7 @@ class DDSearch:
                  traceback.print_exc()
                  raise "Keyword does not contain separator \":\"."
        eString = ' '.join(_words)
-       print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
+#       print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
        return eString
 
 class PhedexTest:

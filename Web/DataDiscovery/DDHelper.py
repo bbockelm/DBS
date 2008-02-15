@@ -3522,7 +3522,7 @@ MCDescription:      %s
 #                 condList.append(sqlalchemy.and_(*cList))
 #             if len(condList): 
 #                sel.append_whereclause(sqlalchemy.or_(*condList))
-          print self.printQuery(sel)
+#          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3616,7 +3616,7 @@ MCDescription:      %s
           qList.append( eval(item) )
       # NOTE: INTERSECT works ONLY in ORACLE
       sel  = sqlalchemy.intersect(*qList)
-      if not count:
+      if not count and self.verbose:
          print "\n\n+++FindDatasets",str(iSel)
          print self.printQuery(sel)
       oList=[]
