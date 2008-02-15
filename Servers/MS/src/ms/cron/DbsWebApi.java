@@ -123,7 +123,7 @@ public class DbsWebApi {
 		table.put("block_name", block);
 		String instanceUrl = this.url + "?" + u.makeUrl(table);
 		String xml = u.readUrl(instanceUrl);
-		System.out.println("xml from listDatasetContents " + xml);
+		//System.out.println("xml from listDatasetContents " + xml);
 		if(u.isException(xml)) throw new Exception(xml);
 		return xml;
 	}
@@ -132,9 +132,12 @@ public class DbsWebApi {
 		Hashtable table = new Hashtable();
 		table.put("api", "insertDatasetContents");
 		table.put("xmlinput", xmlinput);
+		//String instanceUrl = this.url + "?" + u.makeUrl(table);
+		
+		//table = new Hashtable();
 		String data = u.makeUrl(table);
 		String xml = u.postUrl(this.url, data);
-		System.out.println("xml from insertDatasetContents " + xml);
+		//System.out.println("xml from insertDatasetContents " + xml);
 		if(u.isException(xml)) {
 			if(xml.indexOf("code ='1024'") == -1) {
 				throw new Exception(xml);
@@ -159,10 +162,8 @@ public class DbsWebApi {
 	
 	public String migrateDataset(String srcUrl, String dstUrl, String path, boolean withParents, boolean force) throws Exception {
 		String toReturn = "";
-		System.out.println("Line 1");
 		DbsWebApi dwApiSrc = new DbsWebApi(srcUrl);
 		DbsWebApi dwApiDst = new DbsWebApi(dstUrl);
-		System.out.println("Line 2");
 		if(withParents) {
 			List<String> parents = dwApiSrc.listDatasetParents(path);
 			for (int i = 0; i != parents.size() ; ++i) {
@@ -171,19 +172,16 @@ public class DbsWebApi {
 				toReturn += migrateDataset(srcUrl, dstUrl, parentPath, withParents, force);
 			}
 		}
-		System.out.println("Line 3");
 		boolean transfer = false;
 		if (!force) {
 			if(!doesPathExists(dwApiDst, path)) {
 				transfer = true;
 			}
 		} else transfer = true;
-		System.out.println("Line 4");
 		System.out.println("************************************");
 		System.out.println("force " + force + "  parents " + withParents + " transfer " + transfer);
 		if(transfer) {
 			List<String> v = dwApiSrc.listBlocks(path);
-		System.out.println("Line 5");
 			for (int i = 0; i != v.size() ; ++i) {
 				String progress = String.valueOf((int)(((float)(i + 1)/v.size()) * 100));
 				String blockName = (String)v.get(i);

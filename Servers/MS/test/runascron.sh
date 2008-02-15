@@ -1,8 +1,8 @@
 #!/bin/sh
-#JAVA_HOME=/usr/java/jdk1.5.0_06/
-#cd /home/sekhri/MS/
-#source setup.sh
-#cd test
+JAVA_HOME=/usr/java/jdk1.5.0_10/
+cd /home/sekhri/MS/
+source setup.sh
+cd test
 #cd ../lib
 #export CLASSPATH=.
 #for i in $(ls *.jar) ; do export CLASSPATH=$PWD/$i:$CLASSPATH ; done
