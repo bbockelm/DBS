@@ -3253,6 +3253,7 @@ MCDescription:      %s
          sel.append_whereclause(sqlalchemy.or_(*condList))
   def Block2Block(self,**kwargs):
       """Take a list of input vars and return list of block Ids"""
+      if self.verbose: print "Call Block2Block",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3281,8 +3282,8 @@ MCDescription:      %s
           raise "Fail in Block2Block"
 
   def Pset2Algo(self,**kwargs):
-      print "Call Pset2Algo",str(kwargs)
       """Take a list of input vars and return list of algo Ids"""
+      if self.verbose: print "Call Pset2Algo",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3299,21 +3300,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('pset'):
              self.buildExp(sel,self.col(tq,'Content'),kwargs['pset'],case)
-#             pset=kwargs['pset']
-#             if pset.find("*")!=-1:
-#                 sel.append_whereclause(self.col(tq,'Content').like(pset.replace("*","%")))
-#             else:
-#                 sel.append_whereclause(self.col(tq,'Content')==pset)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tq,'ID'),kwargs['idlist'])
-#             idList=kwargs['idlist']
-#             condList=[]
-#             for id in idList:
-#                 cList=[]
-#                 cList.append(self.col(tq,'ID')==id)
-#                 condList.append(sqlalchemy.and_(*cList))
-#             if len(condList): 
-#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -3327,8 +3315,8 @@ MCDescription:      %s
       return {'idlist':oList}
 
   def Rel2Algo(self,**kwargs):
-      print "Call Rel2Algo",str(kwargs)
       """Take a list of input vars and return list of algo Ids"""
+      if self.verbose: print "Call Rel2Algo",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3345,21 +3333,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('release'):
              self.buildExp(sel,self.col(tav,'Version'),kwargs['release'],case)
-#             rel=kwargs['release']
-#             if rel.find("*")!=-1:
-#                 sel.append_whereclause(self.col(tav,'Version').like(rel.replace("*","%")))
-#             else:
-#                 sel.append_whereclause(self.col(tav,'Version')==rel)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tav,'ID'),kwargs['idlist'])
-#             idList=kwargs['idlist']
-#             condList=[]
-#             for id in idList:
-#                 cList=[]
-#                 cList.append(self.col(tav,'ID')==id)
-#                 condList.append(sqlalchemy.and_(*cList))
-#             if len(condList): 
-#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -3373,8 +3348,8 @@ MCDescription:      %s
       return {'idlist':oList}
 
   def Algo2Proc(self,**kwargs):
-      print "Call Algo2Proc",str(kwargs)
       """Take a list of input vars and return list of proc Ids"""
+      if self.verbose: print "Call Algo2Proc",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3389,14 +3364,6 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(talgo,'ID'),kwargs['idlist'])
-#             idList=kwargs['idlist']
-#             condList=[]
-#             for id in idList:
-#                 cList=[]
-#                 cList.append(self.col(talgo,'ID')==id)
-#                 condList.append(sqlalchemy.and_(*cList))
-#             if len(condList): 
-#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -3411,6 +3378,7 @@ MCDescription:      %s
 
   def SE2Block(self,**kwargs):
       """Take a list of input vars and return list of block Ids"""
+      if self.verbose: print "Call SE2Block",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3427,11 +3395,6 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('site'):
              self.buildExp(sel,self.col(tse,'SEName'),kwargs['site'],case)
-#             sename=kwargs['site']
-#             if sename.find("*")!=-1:
-#                 sel.append_whereclause(self.col(tse,'SEName').like(sename.replace("*","%")))
-#             else:
-#                 sel.append_whereclause(self.col(tse,'SEName')==sename)
           return sel
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3439,8 +3402,8 @@ MCDescription:      %s
           raise "Fail in SE2Block"
 
   def Lumi2Run(self,**kwargs):
-      print "Call Lumi2Run",str(kwargs)
       """Take a list of input vars and return list of run Ids"""
+      if self.verbose: print "Call Lumi2Run",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3453,26 +3416,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('lumi'):
              self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case)
-#             lumi=kwargs['lumi']
-#             if lumi.find("*")!=-1:
-#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber').like(lumi.replace("*","%")))
-#             elif lumi.find("-")!=-1:
-#                 minL,maxL=lumi.split("-")
-#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')>=minL)
-#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')<=maxL)
-#             else:
-#                 sel.append_whereclause(self.col(tl,'LumiSectionNumber')==lumi)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tl,'ID'),kwargs['idlist'])
-#             idList=kwargs['idlist']
-#             condList=[]
-#             for id in idList:
-#                 cList=[]
-#                 cList.append(self.col(tl,'ID')==id)
-#                 condList.append(sqlalchemy.and_(*cList))
-#             if len(condList): 
-#                sel.append_whereclause(sqlalchemy.or_(*condList))
-#          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3485,8 +3430,8 @@ MCDescription:      %s
       return {'idlist':oList}
 
   def Run2Proc(self,**kwargs):
-      print "Call Run2Proc",str(kwargs)
       """Take a list of input vars and return list of proc Ids"""
+      if self.verbose: print "Call Run2Proc",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3503,26 +3448,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('run'):
              self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case)
-#             run=kwargs['run']
-#             if run.find("*")!=-1:
-#                 sel.append_whereclause(self.col(tr,'RunNumber').like(run.replace("*","%")))
-#             elif run.find("-")!=-1:
-#                 minRun,maxRun=run.split("-")
-#                 sel.append_whereclause(self.col(tr,'RunNumber')>=minRun)
-#                 sel.append_whereclause(self.col(tr,'RunNumber')<=maxRun)
-#             else:
-#                 sel.append_whereclause(self.col(tr,'RunNumber')==run)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tr,'ID'),kwargs['idlist'])
-#             idList=kwargs['idlist']
-#             condList=[]
-#             for id in idList:
-#                 cList=[]
-#                 cList.append(self.col(tr,'ID')==id)
-#                 condList.append(sqlalchemy.and_(*cList))
-#             if len(condList): 
-#                sel.append_whereclause(sqlalchemy.or_(*condList))
-#          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3535,8 +3462,8 @@ MCDescription:      %s
       return {'idlist':oList}
 
   def File2Block(self,**kwargs):
-      print "Call File2Block",str(kwargs)
       """Take a list of input vars and return list of block Ids"""
+      if self.verbose: print "Call File2Block",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3551,21 +3478,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('file'):
              self.buildExp(sel,self.col(tf,'LogicalFileName'),kwargs['file'],case)
-#             fname=kwargs['file']
-#             if fname.find("*")!=-1:
-#                 sel.append_whereclause(self.col(tf,'LogicalFileName').like(fname.replace("*","%")))
-#             else:
-#                 sel.append_whereclause(self.col(tf,'LogicalFileName')==fname)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tf,'ID'),kwargs['idlist'])
-#             idList=kwargs['idlist']
-#             condList=[]
-#             for id in idList:
-#                 cList=[]
-#                 cList.append(self.col(tf,'ID')==id)
-#                 condList.append(sqlalchemy.and_(*cList))
-#             if len(condList): 
-#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           return sel
       except:
@@ -3574,8 +3488,8 @@ MCDescription:      %s
           raise "Fail in File2Block"
 
   def Proc2Block(self,**kwargs):
-      print "Call Proc2Block",str(kwargs)
       """Take a list of input vars and return list of block Ids"""
+      if self.verbose: print "Call Proc2Block",str(kwargs)
       oList=[]
       con  = self.connectToDB()
       sel  = ""
@@ -3590,14 +3504,6 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tprd,'ID'),kwargs['idlist'])
-#             idList=kwargs['idlist']
-#             condList=[]
-#             for id in idList:
-#                 cList=[]
-#                 cList.append(self.col(tprd,'ID')==id)
-#                 condList.append(sqlalchemy.and_(*cList))
-#             if len(condList): 
-#                sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
           return sel
       except:
