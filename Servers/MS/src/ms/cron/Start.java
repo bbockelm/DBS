@@ -28,7 +28,7 @@ public class Start {
 				srcUrl = get(rs, "SRC_URL");
 				dstUrl = get(rs, "DST_URL");
 				path = get(rs, "PATH");
-				apiLogic.updateRequest(conn, out, srcUrl, dstUrl, path, "InProgress", "", "");
+				apiLogic.updateRequest(conn, out, srcUrl, dstUrl, path, "InProgress", "", "Transferring..");
 
 				System.out.println( "<request id='" + get(rs, "ID") +
 							"'\n src_url='" + srcUrl +
