@@ -1936,17 +1936,18 @@ MCDescription:      %s
           sel.append_whereclause(self.col(tb,'Path')==dataset)
           # parse runRanges=minRun-maxRun,minRun-maxRun
           runList=[]
-          for item in runRanges.split(","):
-              minR,maxR=item.split("-")
-              runList.append((minR,maxR))
-          condList=[]
-          for minR,maxR in runList:
-              cList=[]
-              cList.append(self.col(tr,'RunNumber')>=minR)
-              cList.append(self.col(tr,'RunNumber')<=maxR)
-              condList.append(sqlalchemy.and_(*cList))
-          if len(condList): 
-             sel.append_whereclause(sqlalchemy.or_(*condList))
+          if  runRanges:
+              for item in runRanges.split(","):
+                  minR,maxR=item.split("-")
+                  runList.append((minR,maxR))
+              condList=[]
+              for minR,maxR in runList:
+                  cList=[]
+                  cList.append(self.col(tr,'RunNumber')>=minR)
+                  cList.append(self.col(tr,'RunNumber')<=maxR)
+                  condList.append(sqlalchemy.and_(*cList))
+              if len(condList): 
+                 sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
           #print "\n+++ getLFNsFromRuNList",self.printQuery(sel),runList
       except:
