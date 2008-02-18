@@ -1116,8 +1116,8 @@ class DDServer(DDLogger,Controller):
     genNavigatorMenuDict.exposed = True
 
     #################### ADMIN FORMS #######################
-#    @is_authorized (Role("Global Admin"), Group("DBS"), 
-#                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
+    @is_authorized (Role("Global Admin"), Group("DBS"), 
+                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
@@ -1208,6 +1208,7 @@ class DDServer(DDLogger,Controller):
         return status
 
     def adminTask(self,**kwargs):
+        print "\n\n+++adminTask",kwargs
 #        if kwargs.has_key('method'):
 #           result=getattr(self,kwargs['method'])(**kwargs)
         userMode='user' # default
@@ -1217,11 +1218,11 @@ class DDServer(DDLogger,Controller):
         if kwargs.has_key('dst_url'):
            dbs=kwargs['dst_url']
            del kwargs['dst_url']
-           kwargs['dst_url']=DBS_DLS_INST[dbs]
+           kwargs['dst_url']=DBS_INST_URL[dbs]
         if kwargs.has_key('src_url'):
            dbs=kwargs['src_url']
            del kwargs['src_url']
-           kwargs['src_url']=DBS_DLS_INST[dbs]
+           kwargs['src_url']=DBS_INST_URL[dbs]
         page = self.genTopHTML(userMode=userMode)
         result=self.adminRequest(**kwargs)
         nameSpace = {
@@ -1283,8 +1284,8 @@ class DDServer(DDLogger,Controller):
         print "\n\nsendAdminRequest\n",xml
         api  = kwargs['api']
         if api=='migrate':
-           dbsFrom  = self.makeDbsApi(DBS_DLS_INST[kwargs['dbsInst_from']])
-           dbsTo    = self.makeDbsApi(DBS_DLS_INST[kwargs['dbsInst_to']])
+           dbsFrom  = self.makeDbsApi(DBS_INST_URL[kwargs['dbsInst_from']])
+           dbsTo    = self.makeDbsApi(DBS_INST_URL[kwargs['dbsInst_to']])
            transfer = DbsMigrateApi(dbsFrom, dbsTo, True)
            print "+++ DbsMigrateApi init +++"
            transfer.migratePath(kwargs['path'])
@@ -1741,7 +1742,7 @@ class DDServer(DDLogger,Controller):
                      'datasetList': datasetsList,
                      'userMode' : userMode,
                      'dbsInst'  : dbsInst,
-                     'dbsInstUrl': DBS_DLS_INST[dbsInst],
+                     'dbsInstUrl': DBS_INST_URL[dbsInst],
                      'site'     : site,
                      'rel'      : softRel,
                      'primD'    : primD,
@@ -1774,7 +1775,7 @@ class DDServer(DDLogger,Controller):
             page+="""<p><span class="box_red">No data found</span></p>"""
 #        print "####",nDatasets,len(datasetsList)
         try:
-            dbsInstURL=DBS_DLS_INST[dbsInst]
+            dbsInstURL=DBS_INST_URL[dbsInst]
             for id in xrange(0,len(datasetsList)):
                 dataset=datasetsList[id]
                 dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
@@ -3898,7 +3899,7 @@ All LFNs in a block
         page="""<ajax-response><response type="element" id="%s">"""%id
         path=path.replace('#','%23')
 #        dbsInstURL="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet"
-        dbsInstURL=DBS_DLS_INST[dbsInst]
+        dbsInstURL=DBS_INST_URL[dbsInst]
         PhedexURL=self.PhedexURL
         nameSpace={'host':self.dbsdd,'dbsInst':dbsInst,'path':path,'appPath':appPath,'id':id,'userMode':userMode,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':PhedexURL}
         t = templateMoreInfo(searchList=[nameSpace]).respond()
@@ -4895,7 +4896,7 @@ Save query as:
            page+=str(t)
         try:
             run=appPath=site="*"
-            dbsInstURL=DBS_DLS_INST[dbsInst]
+            dbsInstURL=DBS_INST_URL[dbsInst]
             phedex=0
             for id in xrange(0,len(result)):
                 dataset=result[id]

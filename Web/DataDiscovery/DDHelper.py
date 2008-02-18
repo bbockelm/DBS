@@ -52,7 +52,7 @@ class DDHelper(DDLogger):
       DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDHelper",verbose)
       self.iface       = string.lower(iface)
       self.dbsInstance = dbsInst
-      self.dbsdls      = DBS_DLS_INST
+      self.dbsdls      = DBS_INST_URL
       self.verbose     = verbose
       self.html        = html
       self.datasetPath = "*"# default path to entire content of DBS
@@ -334,7 +334,7 @@ class DDHelper(DDLogger):
 #         if self.iface=="cgi":
 #            self.api = dbsCgiApi.DbsCgiApi(DEFAULT_URL,{'instance':dbsInst})
 #         else: 
-#            url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
+#            url,dlsType,endpoint = DBS_INST_URL[dbsInst]
 #            self.api=""
 #            con = self.connectToDB()
 #            self.closeConnection(con)
@@ -343,7 +343,7 @@ class DDHelper(DDLogger):
 #         self.api = self.dbsApi[dbsInst]
       # UNCOMMENT FOR DLS usage
 #      if not self.dbsDLS.has_key(dbsInst):
-#         url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
+#         url,dlsType,endpoint = DBS_INST_URL[dbsInst]
 #         self.writeLog("DLS Instance: %s %s"%(dlsType,endpoint))
 #         self.dlsApi = dlsClient.getDlsApi(dlsType, endpoint)
 #      else:
@@ -357,7 +357,7 @@ class DDHelper(DDLogger):
          12 hour cycle, we invoke voms-proxy-init call to get new credentials. Then we iniliaze
          appropriate DLS LFC instance and cache it.
       """
-      url,dlsType,endpoint = DBS_DLS_INST[self.dbsInstance]
+      url,dlsType,endpoint = DBS_INST_URL[self.dbsInstance]
       # replace DLI type with LFC
       if dlsType=="DLS_TYPE_DLI":
          dlsType ="DLS_TYPE_LFC"
@@ -3394,7 +3394,7 @@ if __name__ == "__main__":
 #    print "options:  ",opts
 #    print "arguments:",args
     
-    dbsInst = DBS_DLS_INST.keys()[0]
+    dbsInst = DBS_INST_URL.keys()[0]
     if opts.dbsInst:
        dbsInst = opts.dbsInst
 
