@@ -109,7 +109,7 @@ Notify me at: <input type="text" name="notify" value="$email" />
 </table>
 
 <input type="reset" name="reset" />
-<input type="submit" name="submit" onclick="javascript:CatchDN()" />
+<input type="submit" name="submit" />
 </form>
 ### end of Migration form
 
@@ -191,7 +191,7 @@ Change block(s) status
 </table>
 
 <input type="reset" name="reset" />
-<input type="submit" name="submit" onclick="javascript:CatchDN()" />
+<input type="submit" name="submit" />
 </form>
 ### end of Administration form
 
@@ -241,7 +241,7 @@ or provide a match pattern, e.g like:SomePattern
 </table>
 
 <input type="reset" name="reset" />
-<input type="submit" name="submit" onclick="javascript:CatchDN()" />
+<input type="submit" name="submit" />
 </form>
 ### end of LFN form
 <hr class="dbs" />
@@ -259,11 +259,12 @@ function changeAttribute(tag,att) {
    id.setAttribute("class",att);
 }
 function CatchDN() {
-   var id = document.getElementByName("dn");
-   if (id) {
-       id.value=GetCookie('dn');
+   var tags=document.getElementsByName('dn');
+   for(i=0;i<tags.length;i++) {
+       tags[i].value=GetCookie('dn');
    }
 }
+CatchDN();
 </script>
 
 <!-- end of templateAdminDatasets.tmpl -->
