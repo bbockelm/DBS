@@ -606,6 +606,7 @@ class DDServer(DDLogger,Controller):
     def decodeUserName(self,**kwargs):
         if kwargs.has_key('dn'):
            dn=kwargs['dn'][1:-1] # the DN I get from browser has extra quotes at beg/end of string
+           if not dn: return ""
            return decryptCookie(dn, self.securityApi)
         return ""
     def getEmail(self,userName):
@@ -615,8 +616,14 @@ class DDServer(DDLogger,Controller):
         """
            Get user DN, for that we use WEBTOOLS SecurityAPI.
         """
-        dnDict=self.securityApi.getDNFromUsername(userName)
-        return dnDict[0]['dn']
+        if not userName: return ""
+        dn=""
+        try:
+            dnDict=self.securityApi.getDNFromUsername(userName)
+            dn=dnDict[0]['dn']
+        except:
+            pass
+        return dn
 
     ################## Menu init methods
     def _navigator(self,dbsInst=DBSGLOBAL,userMode="user",**kwargs):
@@ -1109,8 +1116,8 @@ class DDServer(DDLogger,Controller):
     genNavigatorMenuDict.exposed = True
 
     #################### ADMIN FORMS #######################
-    @is_authorized (Role("Global Admin"), Group("DBS"), 
-                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
+#    @is_authorized (Role("Global Admin"), Group("DBS"), 
+#                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
@@ -1147,16 +1154,20 @@ class DDServer(DDLogger,Controller):
         return page
     adminDataset.exposed=True
 
-    def migrateDataset(self,**kwargs):
-        print "\n\n+++migrateDataset",kwargs
+    def adminRequest(self,**kwargs):
+        print "\n\n+++adminRequest",kwargs
         debug=1
-        userName=self.decodeUserName(**kwargs)
-        dn=urllib.quote(self.getDN(userName))
-        email=self.getEmail(self.getDN(userName))
-        dst_url=kwargs['dst_url']
-        src_url=kwargs['src_url']
-        path=urllib.quote(kwargs['path'])
-        api=kwargs['api']
+        params="?xml=yes"
+        for key in kwargs.keys():
+            if key=='dn' or key=='submit' or key=='choice': continue
+            params+="&%s=%s"%(key,kwargs[key])
+        try:
+            userName=self.decodeUserName(**kwargs)
+            dn=urllib.quote(self.getDN(userName))
+            email=self.getEmail(self.getDN(userName))
+            params+="&dn=%s"%dn
+        except:
+            pass
         # parse admin url
         tup=urlparse.urlparse(self.adminUrl)
         host,port=tup[1].split(":")
@@ -1167,10 +1178,10 @@ class DDServer(DDLogger,Controller):
            http_conn = httplib.HTTPS(host,port)
         else:
            http_conn = httplib.HTTP(host,port)
-        path='%s?api=%s&src_url=%s&dst_url=%s&path=%s&dn=%s&xml=yes'%(path,api,src_url,dst_url,path,dn)
+        path='%s%s'%(path,params)
         if debug:
            httplib.HTTPConnection.debuglevel = 1
-           print "Contact",host,port
+           print "Contact",host,port,path
         input=""
         http_conn.putrequest('POST',path)
         http_conn.putheader('Host',host)
@@ -1196,21 +1207,33 @@ class DDServer(DDLogger,Controller):
         status="NEED TO IMPEMENT RETURN STATUS"
         return status
 
-    def chageDSStatus(self,**kwargs):
-        return "changeDSStatus"
-    def chageLFNStatus(self,**kwargs):
-        return "changeLFNStatus"
-    def adminTask(self,dbsInst,userMode,dataset,**kwargs):
+    def adminTask(self,**kwargs):
+#        if kwargs.has_key('method'):
+#           result=getattr(self,kwargs['method'])(**kwargs)
+        userMode='user' # default
+        if kwargs.has_key('userMode'):
+           userMode=kwargs['userMode']
+           del kwargs['userMode']
+        if kwargs.has_key('dst_url'):
+           dbs=kwargs['dst_url']
+           del kwargs['dst_url']
+           kwargs['dst_url']=DBS_DLS_INST[dbs]
+        if kwargs.has_key('src_url'):
+           dbs=kwargs['src_url']
+           del kwargs['src_url']
+           kwargs['src_url']=DBS_DLS_INST[dbs]
         page = self.genTopHTML(userMode=userMode)
-        # analyse input kwargs
-        print kwargs
-        if kwargs.has_key('method'):
-           result=getattr(self,kwargs['method'])(**kwargs)
-        else:
-           result="Unable to find method in request form"
-        page+=str(result)
+        result=self.adminRequest(**kwargs)
+        nameSpace = {
+                     'status'   : result,
+                     'adminUrl' : self.adminUrl,
+                     'dn'       : self.getDN(self.decodeUserName(**kwargs)),
+                    }
+        t = templateAdminConfirmation(searchList=[nameSpace]).respond()
+        page+= str(t)
         page+= self.genBottomHTML()
         return page
+    adminTask.exposed=True
 
     def adminTask_v1(self,dbsInst,userMode,dataset,**kwargs):
         page = self.genTopHTML(userMode=userMode)
@@ -1247,7 +1270,6 @@ class DDServer(DDLogger,Controller):
         page+= str(t)
         page+= self.genBottomHTML()
         return page
-    adminTask.exposed=True
 
     def makeDbsApi(self,url):
         args = {}
