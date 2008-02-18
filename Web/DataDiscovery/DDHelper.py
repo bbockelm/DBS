@@ -89,6 +89,13 @@ class DDHelper(DDLogger):
 
   def printQuery(self,sel):
       return self.dbManager.printQuery(self.dbsInstance,sel).replace("\n","")
+
+  def addOracleLimits(self,sel,min,max):
+      bindparams=[]
+      bindparams.append(sqlalchemy.bindparam(key='r_1',value=min))
+      bindparams.append(sqlalchemy.bindparam(key='r_2',value=max))
+      have=sqlalchemy.text('rownum>:r_1 and rownum<=:r_2',bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
+      sel.append_having(have)
       
   def addQueryLimits(self,query,offset,limit):
       if  self.dbManager.dbType[self.dbsInstance]=='oracle':
@@ -105,7 +112,10 @@ class DDHelper(DDLogger):
           gBy=''.join(s.split('FROM')[0].split('SELECT'))
           fromRow=long(offset)
           #query=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
-          nq=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
+          #nq=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
+          nq=s+" GROUP BY rownum, "+gBy+'HAVING rownum>:r_1 and rownum<=:r_2'
+          bindparams.append(sqlalchemy.bindparam(key='r_1',value=fromRow))
+          bindparams.append(sqlalchemy.bindparam(key='r_2',value=fromRow+limit))
           query = sqlalchemy.text(nq,bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
       else:
           query.limit=long(limit)
@@ -655,11 +665,7 @@ class DDHelper(DDLogger):
                  oSel=[s.c.tblk_path,s.c.tprd_creationdate]
                  sel = sqlalchemy.select(oSel,group_by=['rownum']+oSel,order_by=[sqlalchemy.desc(s.c.tprd_creationdate)])
                  #sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
-                 bindparams=[]
-                 bindparams.append(sqlalchemy.bindparam(key='r_1',value=fromRow))
-                 bindparams.append(sqlalchemy.bindparam(key='r_2',value=fromRow+limit))
-                 have=sqlalchemy.text('rownum>:r_1 and rownum<=:r_2',bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
-                 sel.append_having(have)
+                 self.addOracleLimits(sel,fromRow,fromRow+limit)
              else:
                  sel.limit=limit
                  sel.offset=fromRow
@@ -1635,15 +1641,17 @@ MCDescription:      %s
       oList=[]
       query=""
       try:
+          bParams= []
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              sel="SELECT DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate FROM Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id %s where %s %s ORDER BY tprd.CreationDate DESC"%(siteSel,whereCond,siteWhere)
              if limit:
-                sel="SELECT tblk_path, tprd_cdate FROM (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
+                sel="SELECT tblk_path, tprd_cdate FROM (%s) group by rownum, tblk_path, tprd_cdate having rownum>:r_1 and rownum<=:r_2 ORDER BY tprd_cdate DESC"%(sel,)
+                bParams.append(sqlalchemy.bindparam(key='r_1',value=row))
+                bParams.append(sqlalchemy.bindparam(key='r_2',value=row+limit))
           else:
              sel="SELECT DISTINCT Path,CreationDate FROM Block tblk %s where %s %s COLLATE latin1_bin order by CreationDate DESC "%(siteSel,whereCond,siteWhere)
              if limit:
                 sel+="limit %s, %s"%(row,row+limit)
-          bParams= []
           for bind_param in bDict.keys():
               bParams.append(sqlalchemy.bindparam(key=bind_param,value=bDict[bind_param]))
           if siteWhere:
@@ -2451,10 +2459,10 @@ MCDescription:      %s
 #             sel.use_labels=True
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
                  minRow,maxRow=fromRow,fromRow+limit
-                 s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
-#                 print "not count and limit"
-#                 print s
-#                 print condDict
+                 #s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
+                 s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between :r_1 and :r_2"""%(self.printQuery(sel),)
+                 condDict['r_1']=minRow
+                 condDict['r_2']=maxRow
                  result=con.execute(s,condDict)
              else:
                  sel.limit=limit
@@ -2537,206 +2545,6 @@ MCDescription:      %s
                           .join(tse,onclause=self.col(tsb,'SEID')==self.col(tse,'ID'))
                             ],distinct=True )
           sel.append_whereclause(self.col(tse,'SEName')!=sqlalchemy.null())
-          for path in pDict.keys():
-              condList.append(self.col(tblk,'Path')==path)
-          if len(condList): 
-             sel.append_whereclause(sqlalchemy.or_(*condList))
-          result = self.getSQLAlchemyResult(con,sel)
-          for item in result:
-              path,se=item
-              if pDict.has_key(path):
-                 pDict[path]=pDict[path]+[se]
-              else:
-                 pDict[path]=[se]
-          for idx in xrange(0,len(oList)):
-              path=oList[idx][12]
-              oList[idx][13]=pDict[path] # place for se's list
-      except:
-          msg="\n### Query:\n"+str(sel)+"\nConditions\n"+str(condList)
-          self.printExcept(msg)
-          raise "Fail in getRuns"
-      ######### end of se's lookup
-
-      if self.verbose:
-         self.writeLog("time in getRuns: %s"%(time.time()-t1))
-      self.closeConnection(con)
-      runs=runs[:-1] # get rid of last comma
-      runDBInfoDict={}
-      if userMode!="user":
-         try:
-            runDBInfoDict=self.getRunSummaryTIF(runs)
-         except:
-            pass
-      return oList,runDBInfoDict
-
-  def getRuns_old(self,dataset,primD="*",primType="*",minRun="*",maxRun="*",fromRow=0,limit=0,count=0,userMode="user"):
-      if primD.lower()=="any": primD="*"
-      if primType.lower()=="any": primType="*"
-      if minRun.lower()=="any": minRun="*"
-      if maxRun.lower()=="any": maxRun="*"
-      
-#      print dataset,primD,primType,minRun,maxRun,fromRow,limit,count,userMode
-
-      t1=time.time()
-      aDict = {}
-      con = self.connectToDB()
-      oList  = []
-      try:
-          tprd = self.alias('ProcessedDataset','tprd')
-          tblk = self.alias('Block','tblk')
-          tpm  = self.alias('PrimaryDataset','tpm')
-          tpds = self.alias('ProcDSTier','tpds')
-          tdt  = self.alias('DataTier','tdt')
-          tpdr = self.alias('ProcDSRuns','tpdr')
-          trun = self.alias('Runs','trun')
-          tfrl = self.alias('FileRunLumi','tfrl')
-          tf   = self.alias('Files','tf')
-          tfs  = self.alias('FileValidStatus','tfs')
-          tse  = self.alias('StorageElement','tse')
-          tsb  = self.alias('SEBlock','tsb')
-          tpt  = self.alias('PrimaryDSType','tpt')
-          tp1  = self.alias('Person','tp1')
-          tp2  = self.alias('Person','tp2')
-
-          if  count:
-#              oSel = [sqlalchemy.func.count(self.col(trun,'RunNumber').distinct())]
-#              gBy  = []
-              oSel = [self.col(trun,'RunNumber'),self.col(tblk,'Path')]
-              gBy  = list(oSel)
-          else:
-              oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
-              gBy=list(oSel)
-              oSel+=[sqlalchemy.func.sum(self.col(tf,'FileSize').distinct()),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct())]
-
-### New way, once I'll fix problem with data type
-#          obj=trun
-#          obj=obj.outerjoin(tblk,onclause=self.col(trun,'Block')==self.col(tblk,'ID'))
-#          if  not count:
-#              if dataset or (primD and primD!="*"):
-#                 obj=obj.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
-#                 empty,prim,proc,tier=string.split(dataset,"/")
-#                 if (prim and prim!="*") or (primD and primD!="*"):
-#                    obj=obj.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-#                 if tier and tier!="*":
-#                    obj=obj.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-#                    obj=obj.outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
-#              if primType and primType!="*":
-#                 obj=obj.outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
-#          sel = sqlalchemy.select(oSel,from_obj=[obj],distinct=True,group_by=gBy,
-#                                  order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
-#                                 )
-          sel  = sqlalchemy.select(oSel,
-                       from_obj=[
-                          tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
-                          .join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
-                          .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                          .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                          .join(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
-                          .join(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
-                          .join(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
-                          .join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
-                          .outerjoin(tp1,onclause=self.col(trun,'CreatedBy')==self.col(tp1,'ID'))
-                          .outerjoin(tp2,onclause=self.col(trun,'LastModifiedBy')==self.col(tp2,'ID'))
-                                ],distinct=True,
-                                  group_by=gBy,
-                                  order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
-                                 )
-          condDict={}
-          if dataset:
-             empty,prim,proc,tier=string.split(dataset,"/")
-             if proc and proc!="*":
-                sel.append_whereclause(self.col(tprd,'Name')==proc)
-                condDict[findLastBindVar(str(sel))]=proc
-             if prim and prim!="*":
-                sel.append_whereclause(self.col(tpm,'Name')==prim)
-                condDict[findLastBindVar(str(sel))]=prim
-             if tier and tier!="*":
-                self.joinTiers(sel,tpds,tier,tprd,condDict)
-          if primD and primD!="*":
-             sel.append_whereclause(self.col(tpm,'Name')==primD)
-             condDict[findLastBindVar(str(sel))]=primD
-          if primType and primType!="*":
-             sel.append_whereclause(self.col(tpt,'Type')==primType)
-             condDict[findLastBindVar(str(sel))]=primType
-          if minRun and minRun!="*":
-             sel.append_whereclause(self.col(trun,'RunNumber')>=minRun)
-             condDict[findLastBindVar(str(sel))]=minRun
-          if maxRun and maxRun!="*":
-             sel.append_whereclause(self.col(trun,'RunNumber')<=maxRun)
-             condDict[findLastBindVar(str(sel))]=maxRun
-
-          sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
-          sel.append_whereclause(self.col(tf,'Dataset')==self.col(tprd,'ID'))
-          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
-          status="INVALID"
-          sel.append_whereclause(self.col(tfs,'Status')!=status)   
-          condDict[findLastBindVar(str(sel))]=status
-          result=""
-          print sel
-          print condDict
-          if not count and limit:
-#             sel.use_labels=True
-             if  self.dbManager.dbType[self.dbsInstance]=='oracle':
-                 minRow,maxRow=fromRow,fromRow+limit
-                 s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
-                 print "not count and limit"
-                 print s
-                 print condDict
-                 result=con.execute(s,condDict)
-             else:
-                 sel.limit=limit
-                 sel.offset=fromRow
-                 result = self.getSQLAlchemyResult(con,sel)
-          else:       
-              result = self.getSQLAlchemyResult(con,sel)
-#              print sel
-      except:
-          msg="\n### Query:\n"+str(sel)
-          self.printExcept(msg)
-          raise "Fail in getRuns"
-      if count:
-#         res = result.fetchone()[0]
-         total=0
-         for i in result: total+=1
-         self.closeConnection(con)
-#         return long(res)
-         return total
-      oList=[]
-      oDict={}
-      pDict={} # diction of dataset path which we will fill with SE's later.
-      runs=""
-      for item in result:
-          if  item and item[0]:
-              if self.dbManager.dbType[self.dbsInstance]=='oracle' and limit:
-                 run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mDate,dsType,path,fSize,nFiles,row=item
-              else:
-                 run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mDate,dsType,path,fSize,nFiles=item
-              mBy=''
-              cDate=timeGMT(cDate)
-              mDate=timeGMT(mDate)
-              cBy=parseCreatedBy(cBy)
-              mBy=parseCreatedBy(mBy)
-              if not fSize: fSize=0
-              if not run: continue
-#              print "\n\n#####"
-#              print run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mDate,dsType,path,se,fSize,nFiles
-
-              oList.append( [run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path,[],fSize,nFiles] )
-              if not pDict.has_key(path): pDict[path]=[]
-              runs+="%s,"%run
-
-#      printListElements(oList,'oList')
-      # now let's fill pDict (dict of dataset paths) with SE's
-      try:    
-          oSel = [self.col(tblk,'Path'),self.col(tse,'SEName')]
-          sel  = sqlalchemy.select(oSel,
-                   from_obj=[
-                      tblk.join(tsb,onclause=self.col(tsb,'BlockID')==self.col(tblk,'ID'))
-                          .join(tse,onclause=self.col(tsb,'SEID')==self.col(tse,'ID'))
-                            ],distinct=True )
-          sel.append_whereclause(self.col(tse,'SEName')!=sqlalchemy.null())
-          condList=[]   
           for path in pDict.keys():
               condList.append(self.col(tblk,'Path')==path)
           if len(condList): 
