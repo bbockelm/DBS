@@ -654,7 +654,12 @@ class DDHelper(DDLogger):
                  s=sel
                  oSel=[s.c.tblk_path,s.c.tprd_creationdate]
                  sel = sqlalchemy.select(oSel,group_by=['rownum']+oSel,order_by=[sqlalchemy.desc(s.c.tprd_creationdate)])
-                 sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
+                 #sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
+                 bindparams=[]
+                 bindparams.append(sqlalchemy.bindparam(key='r_1',value=fromRow))
+                 bindparams.append(sqlalchemy.bindparam(key='r_2',value=fromRow+limit))
+                 have=sqlalchemy.text('rownum>:r_1 and rownum<=:r_2',bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
+                 sel.append_having(have)
              else:
                  sel.limit=limit
                  sel.offset=fromRow
