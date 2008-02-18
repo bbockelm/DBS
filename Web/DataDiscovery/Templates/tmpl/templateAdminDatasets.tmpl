@@ -35,6 +35,7 @@ at sites:
 <form action="$adminUrl" method="post">
 <input type="hidden" name="api" value="addRequest" />
 <input type="hidden" name="path" value="$dataset" />
+<input type="hidden" name="dn" />
 
 <table>
 <tr>
@@ -108,7 +109,7 @@ Notify me at: <input type="text" name="notify" value="$email" />
 </table>
 
 <input type="reset" name="reset" />
-<input type="submit" name="submit" />
+<input type="submit" name="submit" onclick="javascript:CatchDN()" />
 </form>
 ### end of Migration form
 
@@ -120,6 +121,7 @@ Notify me at: <input type="text" name="notify" value="$email" />
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
+<input type="hidden" name="dn" />
 
 <table>
 
@@ -189,7 +191,7 @@ Change block(s) status
 </table>
 
 <input type="reset" name="reset" />
-<input type="submit" name="submit" />
+<input type="submit" name="submit" onclick="javascript:CatchDN()" />
 </form>
 ### end of Administration form
 
@@ -203,6 +205,7 @@ Change block(s) status
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
+<input type="hidden" name="dn" />
 <table>
 <tr>
 <td>
@@ -238,7 +241,7 @@ or provide a match pattern, e.g like:SomePattern
 </table>
 
 <input type="reset" name="reset" />
-<input type="submit" name="submit" />
+<input type="submit" name="submit" onclick="javascript:CatchDN()" />
 </form>
 ### end of LFN form
 <hr class="dbs" />
@@ -254,6 +257,12 @@ function changeAttribute(tag,att) {
       id.checked="checked";
    }
    id.setAttribute("class",att);
+}
+function CatchDN() {
+   var id = document.getElementByName("dn");
+   if (id) {
+       id.value=GetCookie('dn');
+   }
 }
 </script>
 
