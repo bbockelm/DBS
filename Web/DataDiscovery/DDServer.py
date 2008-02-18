@@ -603,11 +603,20 @@ class DDServer(DDLogger,Controller):
             pass
         return userName
 
+    def decodeUserName(self,**kwargs):
+        if kwargs.has_key('dn'):
+           dn=kwargs['dn'][1:-1] # the DN I get from browser has extra quotes at beg/end of string
+           return decryptCookie(dn, self.securityApi)
+        return ""
+    def getEmail(self,userName):
+        return "%s@cern.ch"%userName
+
     def getDN(self,userName):
         """
            Get user DN, for that we use WEBTOOLS SecurityAPI.
         """
-        return self.securityApi.getDNFromUsername(userName)
+        dnDict=self.securityApi.getDNFromUsername(userName)
+        return dnDict[0]['dn']
 
     ################## Menu init methods
     def _navigator(self,dbsInst=DBSGLOBAL,userMode="user",**kwargs):
@@ -1099,6 +1108,7 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
 
+    #################### ADMIN FORMS #######################
     @is_authorized (Role("Global Admin"), Group("DBS"), 
                     onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
@@ -1137,7 +1147,72 @@ class DDServer(DDLogger,Controller):
         return page
     adminDataset.exposed=True
 
+    def migrateDataset(self,**kwargs):
+        print "\n\n+++migrateDataset",kwargs
+        debug=1
+        userName=self.decodeUserName(**kwargs)
+        dn=urllib.quote(self.getDN(userName))
+        email=self.getEmail(self.getDN(userName))
+        dst_url=kwargs['dst_url']
+        src_url=kwargs['src_url']
+        path=urllib.quote(kwargs['path'])
+        api=kwargs['api']
+        # parse admin url
+        tup=urlparse.urlparse(self.adminUrl)
+        host,port=tup[1].split(":")
+        if tup[0]=='https': port=443
+        if not port: port=80
+        path=tup[2]
+        if port==443:
+           http_conn = httplib.HTTPS(host,port)
+        else:
+           http_conn = httplib.HTTP(host,port)
+        path='%s?api=%s&src_url=%s&dst_url=%s&path=%s&dn=%s&xml=yes'%(path,api,src_url,dst_url,path,dn)
+        if debug:
+           httplib.HTTPConnection.debuglevel = 1
+           print "Contact",host,port
+        input=""
+        http_conn.putrequest('POST',path)
+        http_conn.putheader('Host',host)
+        http_conn.putheader('Content-Type','text/html; charset=utf-8')
+        http_conn.putheader('Content-Length',str(len(input)))
+        http_conn.endheaders()
+        http_conn.send(input)
+
+        (status_code,msg,reply)=http_conn.getreply()
+        data=http_conn.getfile().read()
+        if debug or msg!="OK":
+           print
+           print http_conn.headers
+           print "*** Send message ***"
+           print input
+           print "************************************************************************"
+           print "status code:",status_code
+           print "message:",msg
+           print "************************************************************************"
+           print reply
+           print "*** Server data ***"
+           print data,type(data)
+        status="NEED TO IMPEMENT RETURN STATUS"
+        return status
+
+    def chageDSStatus(self,**kwargs):
+        return "changeDSStatus"
+    def chageLFNStatus(self,**kwargs):
+        return "changeLFNStatus"
     def adminTask(self,dbsInst,userMode,dataset,**kwargs):
+        page = self.genTopHTML(userMode=userMode)
+        # analyse input kwargs
+        print kwargs
+        if kwargs.has_key('method'):
+           result=getattr(self,kwargs['method'])(**kwargs)
+        else:
+           result="Unable to find method in request form"
+        page+=str(result)
+        page+= self.genBottomHTML()
+        return page
+
+    def adminTask_v1(self,dbsInst,userMode,dataset,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         # analyse input kwargs
         print kwargs
@@ -1198,6 +1273,7 @@ class DDServer(DDLogger,Controller):
         page+= self.genBottomHTML()
         return page
     sendAdminRequest.exposed=True
+    #################### END OF ADMIN FORMS #######################
 
     def createAnalysisDS(self,dbsInst,dataset,userMode="user"):
         page = self.genTopHTML(userMode=userMode)
