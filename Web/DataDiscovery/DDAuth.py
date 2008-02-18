@@ -77,6 +77,8 @@ Url                     servlet URL
           msg+="Must have: %s\n"%mustHave
           raise msg
 
+      dbs=""
+      url=""
       for s in content:
           line = string.replace(s,"\n","")
           lines= string.split(line)
