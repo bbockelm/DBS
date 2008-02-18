@@ -32,10 +32,16 @@ at sites:
 <input type="hidden" name="dataset" value="$dataset" />
 <input type="hidden" name="path" value="$dataset" />
 *#
-<form action="$adminUrl" method="post">
+###<form action="$adminUrl" method="post">
+<form action="adminTask" method="post">
+<input type="hidden" name="method" value="migrateDataset" />
 <input type="hidden" name="api" value="addRequest" />
 <input type="hidden" name="path" value="$dataset" />
 <input type="hidden" name="dn" />
+<input type="hidden" name="title" value="Migrate dataset" />
+<input type="hidden" name="dbsInst" value="$dbsInst" />
+<input type="hidden" name="userMode" value="$userMode" />
+<input type="hidden" name="dataset" value="$dataset" />
 
 <table>
 <tr>
@@ -122,6 +128,7 @@ Notify me at: <input type="text" name="notify" value="$email" />
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
 <input type="hidden" name="dn" />
+<input type="hidden" name="method" value="changeDSStatus" />
 
 <table>
 
@@ -206,6 +213,7 @@ Change block(s) status
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
 <input type="hidden" name="dn" />
+<input type="hidden" name="method" value="changeLFNStatus" />
 <table>
 <tr>
 <td>
