@@ -40,12 +40,10 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 config=DDConfig()
 DBSGLOBAL=config.dbsprimary()
 #DBSGLOBAL="cms_dbs_prod_global"
-DBS_DLS_INST={}
 dbAuth = DDAuthentication() 
 print "\n+++ Initialize DBS instances:"
 for dbs in dbAuth.dbsInstances():
     print dbs
-    DBS_DLS_INST[dbs]=""
 print "\n+++ Primary DBS instance:",DBSGLOBAL
 print
 
@@ -144,7 +142,6 @@ class DBManager(DDLogger):
       if  not self.engine.has_key(dbsInst):
           dbAuth = DDAuthentication(dbsInst,self.verbose) 
           dbType, dbName, dbUser, dbPass, host, url = dbAuth.dbInfo()
-          DBS_DLS_INST[dbsInst]=url
 
           eType  = string.lower(dbType)
           print "DBManager:connect to %s@%s:%s/%s"%(dbType,dbsInst,host,dbName)
