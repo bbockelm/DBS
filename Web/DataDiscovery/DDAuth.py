@@ -16,6 +16,8 @@ import os, string, sys
 from DDUtil import *
 from DDExceptions import *
 
+DBS_INST_URL={}
+
 class DDAuthentication:
   """
       DBS authentication module constructor. It reads DBS_DBPARAM file and parse it.
@@ -83,6 +85,7 @@ Url                     servlet URL
           if lines[0]=="Section":
              if not self.dbsInst.count(lines[1]) and lines[1].find("cms_dbs")!=-1:
                 self.dbsInst.append(lines[1])
+                dbs=lines[1]
 
              if lines[1]==pattern:
                 found = 1
@@ -100,7 +103,12 @@ Url                     servlet URL
              if lines[0]=="Host":
                 self.host = lines[1]
              if lines[0]=="Url":
-                self.url = lines[1]
+                url = lines[1]
+                self.url = url
+          else:
+             if lines[0]=="Url":
+                url = lines[1]
+          DBS_INST_URL[dbs]=url
 
   def dbsInstances(self):
       return self.dbsInst
