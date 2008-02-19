@@ -4847,7 +4847,7 @@ Save query as:
         else:
            if xml:
               page="""<?xml version="1.0" encoding="utf-8"?>\n<ddresponse>\n"""
-              page+="<query>\n<input>%s</input>\n<timeStamp>%s</timeStamp>\n</query>\n"%(urllib.unquote(kwargs['userInput']),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
+              page+="<query>\n  <input>%s</input>\n  <timeStamp>%s</timeStamp>\n</query>\n"%(urllib.unquote(kwargs['userInput']),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
            else:
               page ="\nFound %s datasets, showing results from %s-%s\n"%(nDatasets,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
