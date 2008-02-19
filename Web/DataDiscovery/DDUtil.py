@@ -41,6 +41,17 @@ def inputParser(input,keys):
            words.append(w.strip())
     return words
 
+def getArg(kwargs,key,default):
+    arg=default
+    if kwargs.has_key(key):
+       try:
+          arg=kwargs[key]
+          if type(default) is types.IntType:
+             arg=int(arg)
+       except:
+          pass
+    return arg
+
 def getKeyValue(dict,key):
     if dict.has_key(key): return dict[key]
     return ""
