@@ -229,6 +229,16 @@ class DBManager(DDLogger):
       if  self.dbType[dbsInst]=='sqlite':
           return str(sel.compile(dialect=sqlite.dialect())) 
 
+  def compileQuery(self,dbsInst,sel):
+      if  type(sel) is types.StringType:
+          return sel
+      if  self.dbType[dbsInst]=='oracle':
+          return sel.compile(dialect=oracle.dialect()) 
+      if  self.dbType[dbsInst]=='mysql':
+          return sel.compile(dialect=mysql.dialect()) 
+      if  self.dbType[dbsInst]=='sqlite':
+          return sel.compile(dialect=sqlite.dialect()) 
+
   def getForeignKeys(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
       if self.dbType[dbsInst]=='oracle':
