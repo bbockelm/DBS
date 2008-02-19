@@ -90,6 +90,17 @@ class DDHelper(DDLogger):
   def printQuery(self,sel):
       return self.dbManager.printQuery(self.dbsInstance,sel).replace("\n","")
 
+  def compileQuery(self,sel):
+      return self.dbManager.compileQuery(self.dbsInstance,sel)
+
+  def extractBindParams(self,query):
+      cq=self.compileQuery(query)
+      bindparams=cq.__dict__['binds']
+      bparams={}
+      for key in bindparams.keys():
+          bparams[key]=bindparams[key].value
+      return bparams
+
   def addOracleLimits(self,sel,min,max):
       bindparams=[]
       bindparams.append(sqlalchemy.bindparam(key='r_1',value=min))
@@ -3367,7 +3378,9 @@ MCDescription:      %s
       """Take a list of input blockid's and return list of dataset"""
       qList=[]
       for item in iSel.split():
-          qList.append( eval(item) )
+          query=eval(item)
+          qList.append( query )
+          bparams=self.extractBindParams(query)
       # NOTE: INTERSECT works ONLY in ORACLE
       sel  = sqlalchemy.intersect(*qList)
       if not count and self.verbose:
