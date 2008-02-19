@@ -9,8 +9,8 @@ try:
 	optManager  = NvsOptionParser()
 	(opts,args) = optManager.getOpt()
 	api = NvsApi(opts.__dict__)
-	print "listing nvs by bunch"
-	for a in api.validate('Rec','Tier'):
+	#for a in api.validate('RelVal','Primary'):
+	for a in api.validate('reco','Tier'):
 		print a
   
 except NvsException, ex:

@@ -2,37 +2,13 @@
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
     <description>NAME VALIDATION SERVICE</description>
-    <context-param>
-  <param-name>facelets.REFRESH_PERIOD</param-name>
-  <param-value>2</param-value>
- </context-param>
 
- <context-param>
-  <param-name>facelets.DEVELOPMENT</param-name>
-  <param-value>true</param-value>
+       <context-param>
+                <param-name>org.richfaces.LoadScriptStrategy</param-name>
+                <param-value>DEFAULT</param-value>
+        </context-param>
 
- </context-param>
- <context-param>
-  <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-  <param-value>server</param-value>
-
- </context-param>
- <context-param>
-  <param-name>com.sun.faces.validateXml</param-name>
-
-  <param-value>true</param-value>
- </context-param>
- <context-param>
-  <param-name>com.sun.faces.verifyObjects</param-name>
-
-  <param-value>true</param-value>
- </context-param>
- <context-param>
-
-  <param-name>org.ajax4jsf.SKIN</param-name>
-  <param-value>wine</param-value>
- </context-param>
- <context-param>
+<context-param>
 
   <param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
   <param-value>com.sun.facelets.FaceletViewHandler</param-value>
@@ -48,20 +24,17 @@
   <param-value>false</param-value>
 
  </context-param>
+
+
  <context-param>
-  <param-name>org.ajax4jsf.xmlparser.ORDER</param-name>
-
-  <param-value>NEKO</param-value>
+  <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+  <param-value>client</param-value>
+  </context-param>
+  
+ <context-param>
+  <param-name>org.ajax4jsf.SKIN</param-name>
+  <param-value>wine</param-value>
  </context-param>
- 	<!--context-param>
-		<param-name>org.richfaces.LoadStyleStrategy</param-name>
-		<param-value>DEFAULT</param-value>
-	</context-param-->
-	<context-param>
-		<param-name>org.richfaces.LoadScriptStrategy</param-name>
-		<param-value>DEFAULT</param-value>
-	</context-param>
-
  
  <filter>
   <display-name>Ajax4jsf Filter</display-name>
@@ -89,7 +62,15 @@
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
- 
+    <servlet>
+        <servlet-name>NVWebService</servlet-name>
+        <servlet-class>fnal.gov.web.service.NVWebService</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        </servlet>
+    <servlet-mapping>
+        <servlet-name>NVWebService</servlet-name>
+        <url-pattern>/nvservice</url-pattern>
+    </servlet-mapping>
  <servlet-mapping>
   <servlet-name>Faces Servlet</servlet-name>
   <url-pattern>*.jsf</url-pattern>
