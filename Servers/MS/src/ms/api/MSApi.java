@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: MSApi.java,v 1.1 2008/01/16 22:33:30 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: MSApi.java,v 1.2 2008/01/17 16:59:10 sekhri Exp $"
  *
 */
 
@@ -33,18 +33,20 @@ public class MSApi {
 	
 	private MSApiLogic api;
 	private String apiStr = null;
+	private  Hashtable table;
 
 	public MSApi() {
 		apiStr = "";
 	}
 
 	public void call(Writer out, Hashtable table) throws Exception {
-         
+         	this.table = table;
 		Connection conn = null;
 
 		try {
 	
-			out.write(MSConstants.XML_HEADER); 
+			if(table.containsKey("xml")) out.write(MSConstants.XML_HEADER); 
+			else out.write(MSConstants.HTTP_HEADER);
 			String apiStr = get(table, "api", true);
 			this.apiStr = apiStr;
                 	MSUtil.writeLog("apiStr: "+apiStr);
@@ -54,6 +56,8 @@ public class MSApi {
 			conn = getConnection();
 			conn.setAutoCommit(false);
 			api = new MSApiLogic();
+			
+			if(table.containsKey("xml")) api.setXml(true);
  
 			if (apiStr.equals("addRequest")) {
 				api.addRequest(conn, out, 
@@ -130,8 +134,14 @@ public class MSApi {
 			}
 		}
                 
-		out.write(MSConstants.XML_SUCCESS);
-		out.write(MSConstants.XML_FOOTER);
+		if(table.containsKey("xml")) {
+			out.write(MSConstants.XML_SUCCESS);
+			out.write(MSConstants.XML_FOOTER);
+		} else {
+			out.write(MSConstants.HTTP_SUCCESS);
+			out.write(MSConstants.HTTP_FOOTER);
+
+		}
 		out.flush();
                 return; 
 	}
@@ -161,14 +171,18 @@ public class MSApi {
 		code = code.replace('\'',' ');
 		code = code.replace('<',' ');
 		code = code.replace('>',' ');
-		/*out.write("<exception message='" + message + "' "); 
-		out.write(" code ='" + code + "' "); 
-		out.write(" detail ='" + detail + "' />\n"); */
-		out.write("exception message=" + message + " <BR> "); 
-		out.write(" code =" + code + " <BR> "); 
-		out.write(" detail =" + detail + " <BR> \n"); 
+		if(table.containsKey("xml")) {
+			out.write("<exception message='" + message + "' "); 
+			out.write(" code ='" + code + "' "); 
+			out.write(" detail ='" + detail + "' />\n"); 
+			out.write(MSConstants.XML_FOOTER);
+		}else {
+			out.write("exception message=" + message + " <BR> "); 
+			out.write(" code =" + code + " <BR> "); 
+			out.write(" detail =" + detail + " <BR> \n"); 
+			out.write(MSConstants.HTTP_FOOTER);
+		}
 
-		out.write(MSConstants.XML_FOOTER);
 		out.flush();
        		MSUtil.writeErrorLog("<exception message='" + message + "' ");
 		MSUtil.writeErrorLog(" code ='" + code + "' ");

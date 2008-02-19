@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.2 $"
- $Id: MSConstants.java,v 1.2 2008/01/17 16:59:09 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: MSConstants.java,v 1.3 2008/02/15 16:54:46 sekhri Exp $"
  *
 */
 package ms;
@@ -20,16 +20,16 @@ public class MSConstants {
 	public static boolean USECACHE = true;//If this parameter is set to true, the server will use the cache
 	//public static boolean USECACHE = false;
 	//public static boolean ERROR = false;
-	//public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- MS Version 1 -->\n<ms>\n";
-	public static String XML_HEADER =  "<HTML><BODY>\n";
-	//public static String XML_FOOTER = "</ms>\n";
-	public static String XML_FOOTER = "</BODY></HTML>\n";
+	public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- MS Version 1 -->\n<ms>\n";
+	public static String HTTP_HEADER =  "<HTML><BODY>\n";
+	public static String XML_FOOTER = "</ms>\n";
+	public static String HTTP_FOOTER = "</BODY></HTML>\n";
 	public static String XML_EXCEPTION_HEADER = "<exception>\n";
 	public static String XML_EXCEPTION_FOOTER = "</exception>\n";
 	public static String XML_WARNNING_HEADER = "<warnning>\n";
 	public static String XML_WARNNING_FOOTER = "</warnning>\n";
-	//public static String XML_SUCCESS = "<SUCCESS/>\n";
-	public static String XML_SUCCESS = "SUCCESS\n";
+	public static String XML_SUCCESS = "<SUCCESS/>\n";
+	public static String HTTP_SUCCESS = "SUCCESS\n";
         public static String MSTag = "$Name:  $";
 
 }

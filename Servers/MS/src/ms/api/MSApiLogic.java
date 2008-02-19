@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: MSApiLogic.java,v 1.1 2008/01/16 22:33:30 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: MSApiLogic.java,v 1.2 2008/01/17 16:59:10 sekhri Exp $"
  *
  */
 
@@ -25,13 +25,16 @@ public class MSApiLogic {
 	//private static String SAFE_STR = "[-\\w_\\.%/%:]+";
 	private static String SAFE_STR = "[-\\w_\\.%/%:]+";
 	//private static String SAFE_PTH = "[-\\w_\\.%/]+";
-		
+	private boolean xml = false;	
 	/**
 	* Constructs a MSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
 	*/
 	public MSApiLogic() {
 	}
 
+	public void setXml(boolean xml) {
+		this.xml = xml;
+	}
 	private String addPerson(Connection conn, Writer out, String dn) throws Exception {
 		return insertName(conn, out, "Person", "DistinguishedName", dn);
 	}
@@ -62,7 +65,8 @@ public class MSApiLogic {
 		try {
 			ps =  MSSql.listRequest(conn, "", "", "", "", id, "");
 			rs =  ps.executeQuery();
-			out.write(((String) "<table style=\"font-size:x-small;\" width=\"200\" border=\"1\">\n" +
+			if(!xml) 
+				out.write(((String) "<table style=\"font-size:x-small;\" width=\"200\" border=\"1\">\n" +
 					"<tr style=\"color:#FF0000;\">\n" +
 					"<th>Request ID</th>\n" +
 					"<th>Src URL</th>\n" +
@@ -77,7 +81,17 @@ public class MSApiLogic {
 					"<th>Status</th>\n" +
 					"</tr>\n"));
 			if(rs.next()) {
-				out.write(((String) "<tr>\n" +
+				String detail = get(rs, "DETAIL");
+				detail= detail.replace('\'',' ');
+				detail = detail.replace('<',' ');
+				detail = detail.replace('>',' ');
+				detail = detail.replace('=',' ');
+				detail = detail.replace('?',' ');
+				detail = detail.replace('&',' ');
+
+
+				if(!xml) 
+					out.write(((String) "<tr>\n" +
 							"<td>" + id + "</td>\n" +
 							"<td>" + get(rs, "SRC_URL") + "</td>\n" +
 							"<td>" + get(rs, "DST_URL") + "</td>\n" +
@@ -90,7 +104,8 @@ public class MSApiLogic {
 							"<td>" + get(rs, "PROGRESS") + "</td>\n" +
 							"<td>" + get(rs, "STATUS") + "</td>\n" +
 							"</tr>\n"));
-				/*out.write(((String) "<request id='" + id + 
+				else
+					out.write(((String) "<request id='" + id + 
 							"'\n src_url='" + get(rs, "SRC_URL") +
 							"'\n dst_url='" + get(rs, "DST_URL") +
 							"'\n path='" + get(rs, "PATH") +
@@ -98,12 +113,13 @@ public class MSApiLogic {
 							"'\n with_parents='" + get(rs, "WITH_PARENTS") +
 							"'\n with_force='" + get(rs, "WITH_FORCE") +
 							"'\n notify='" + get(rs, "NOTIFY") +
-							"'\n detail='" + get(rs, "DETAIL") +
+							"'\n detail='" + detail +
 							"'\n progress='" + get(rs, "PROGRESS") +
 							"'\n status='" + get(rs, "STATUS") +
-							"'\n />"));*/
+							"'\n />"));
 			}
-			out.write(((String) "</table>\n"));
+
+			if(!xml) out.write(((String) "</table>\n"));
 		} finally {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
@@ -115,7 +131,8 @@ public class MSApiLogic {
 		try {
 			ps =  MSSql.listRequest(conn, "", "", "", dn, "", "");
 			rs =  ps.executeQuery();
-			out.write(((String) "<table style=\"font-size:x-small;\" width=\"200\" border=\"1\">\n" +
+			if(!xml) 
+				out.write(((String) "<table style=\"font-size:x-small;\" width=\"200\" border=\"1\">\n" +
 					"<tr style=\"color:#FF0000;\">\n" +
 					"<th>Request ID</th>\n" +
 					"<th>Src URL</th>\n" +
@@ -130,8 +147,18 @@ public class MSApiLogic {
 					"<th>Status</th>\n" +
 					"</tr>\n"));
 
-			while(rs.next()) {
-				out.write(((String) "<tr>\n" +
+			while(rs.next()) {	
+				String detail = get(rs, "DETAIL");
+				detail= detail.replace('\'',' ');
+				detail = detail.replace('<',' ');
+				detail = detail.replace('>',' ');
+				detail = detail.replace('=',' ');
+				detail = detail.replace('?',' ');
+				detail = detail.replace('&',' ');
+
+
+				if(!xml) 
+					out.write(((String) "<tr>\n" +
 							"<td>" + get(rs, "ID") + "</td>\n" +
 							"<td>" + get(rs, "SRC_URL") + "</td>\n" +
 							"<td>" + get(rs, "DST_URL") + "</td>\n" +
@@ -144,8 +171,8 @@ public class MSApiLogic {
 							"<td>" + get(rs, "PROGRESS") + "</td>\n" +
 							"<td>" + get(rs, "STATUS") + "</td>\n" +
 							"</tr>\n"));
-
-				/*out.write(((String) "<request id='" + get(rs, "ID") + 
+				else 
+					out.write(((String) "<request id='" + get(rs, "ID") + 
 							"'\n src_url='" + get(rs, "SRC_URL") +
 							"'\n dst_url='" + get(rs, "DST_URL") +
 							"'\n path='" + get(rs, "PATH") +
@@ -153,12 +180,13 @@ public class MSApiLogic {
 							"'\n with_parents='" + get(rs, "WITH_PARENTS") +
 							"'\n with_force='" + get(rs, "WITH_FORCE") +
 							"'\n notify='" + get(rs, "NOTIFY") +
-							"'\n detail='" + get(rs, "DETAIL") +
+							"'\n detail='" + detail +
 							"'\n progress='" + get(rs, "PROGRESS") +
 							"'\n status='" + get(rs, "STATUS") +
 							"'\n />"));
-							*/
+							
 			}
+			if(!xml) out.write(((String) "</table>\n"));
 		} finally {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
@@ -197,8 +225,8 @@ public class MSApiLogic {
 			if (ps != null) ps.close();
        	        }
 		requestID = getRequestID(conn, out, srcUrl, dstUrl, path, "", "");
-		//out.write(((String) "<request id='" + requestID + "'/>"));
-		out.write(((String) "request id='" + requestID + "'<BR>"));
+		if(!xml) out.write(((String) "request id='" + requestID + "'<BR>"));
+		else out.write(((String) "<request id='" + requestID + "'/>"));
 		return requestID;
 	}
 

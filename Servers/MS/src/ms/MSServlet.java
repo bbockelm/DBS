@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.1 $"
- $Id: MSServlet.java,v 1.1 2008/01/16 22:33:29 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: MSServlet.java,v 1.2 2008/01/17 16:59:09 sekhri Exp $"
 
  */
 package ms;
@@ -77,12 +77,14 @@ public class MSServlet extends HttpServlet{
 			
 			//System.out.println("DN of the user is " + dn);
 			//response.setContentType("text/xml");
-			response.setContentType("text/html");
-			out = response.getWriter();
+			//response.setContentType("text/html");
 		
 			api = new MSApi();
 			Hashtable table = getTable(request);
+			if(table.containsKey("xml")) response.setContentType("text/xml");
+			else response.setContentType("text/html");
 			table.put("dn" , dn);
+			out = response.getWriter();
 			api.call(out, table);
 
 		} catch(Exception e) {
