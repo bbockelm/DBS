@@ -4816,12 +4816,6 @@ Save query as:
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         _idx=int(_idx)
         pagerStep=int(pagerStep)
-#        html=1
-#        if kwargs.has_key('html'):
-#           try:
-#              html=int(kwargs['html'])
-#           except:
-#              pass
         html=getArg(kwargs,'html',1) # 3d parameter is default value which I would like to get back
         xml=getArg(kwargs,'xml',0)
         # get input parameters
@@ -4938,7 +4932,7 @@ Save query as:
            page+=str(t)
            page+=self.genBottomHTML()
         elif xml:
-           page+="\n</ddresponse>"
+           page+="</ddresponse>"
         return page
     aSearch.exposed=True
 
