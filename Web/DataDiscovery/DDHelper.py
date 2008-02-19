@@ -3063,19 +3063,19 @@ MCDescription:      %s
       try:
          if val.find("*")!=-1:
             if val[0]=="!":
-               return self.buildNotLikeExp(sel,tc,val,case)
+               return self.buildNotLikeExp(sel,tc,val[1:],case)
             else:
                return self.buildLikeExp(sel,tc,val,case)
          elif val[0]==">":
             if val[1]=="=":
-               return self.buildGteqExp(sel,tc,val,case)
+               return self.buildGteqExp(sel,tc,val[2:],case)
             else:
-               return self.buildGtExp(sel,tc,val,case)
+               return self.buildGtExp(sel,tc,val[1:],case)
          elif val[0]=="<":
             if val[1]=="=":
-               return self.buildLteqExp(sel,tc,val,case)
+               return self.buildLteqExp(sel,tc,val[2:],case)
             else:
-               return self.buildLtExp(sel,tc,val,case)
+               return self.buildLtExp(sel,tc,val[1:],case)
          elif val.find("-")!=-1:
             min,max=val.split("-")
             self.buildLteqExp(sel,tc,max,case)
