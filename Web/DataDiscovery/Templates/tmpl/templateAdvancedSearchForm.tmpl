@@ -87,20 +87,36 @@ lumi
 </span>
 ,
 <span id="seDef">
-se.
+site.
 </span>
 Hover over keywords for <span class="box_red">info</span>.
+<br/>
+You can also use comparison operators, i.e. '==', '&gt;', '&gt;=', '&lt;', '&lt;=' and '!'.
 </td>
 </tr>
 
 <tr valign="top">
 <td align="right">
-<b>Example:</b>
+<b>Examples:</b>
 </td>
 <td>
-run:34850 dataset:*Online* se:srm.cern.ch
+<em>
+dataset:*Online* site:srm.cern.ch
+</em>
 <br/>
-lookup run 34850 from dataset with pattern name Online, located at srm.cern.ch.
+lookup dataset with name Online, located at srm.cern.ch.
+<br/><br/>
+<em>
+run:34850-36000
+</em>
+<br/>
+look-up data with runs within a given run range.
+<br/><br/>
+<em>
+release:>CMSSW_1_7_1 dataset:!*RelVal*
+</em>
+<br/>
+look-up data who processed with releases higher then 1_7_1 and are not RelVal samples.
 </td>
 </tr>
 
