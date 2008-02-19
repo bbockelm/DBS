@@ -29,7 +29,7 @@ class DDSearch:
            'release':['Rel2Algo','Algo2Proc','Proc2Block'],
            'run':['Run2Proc','Proc2Block'],
            'lumi':['Lumi2Run','Run2Proc','Proc2Block'],
-           'se':['SE2Block'],
+           'site':['SE2Block'],
            #'pset':['Pset2Algo','Algo2Proc','Proc2Block']
        }
        self.runsum_map={}
@@ -101,7 +101,7 @@ class DDSearch:
                  raise "Unknown keyword '%s', known list: %s"%(f,str(self.dbs_map.keys()))
            else:
                  traceback.print_exc()
-                 raise "Keyword does not contain separator \":\"."
+                 raise "Keyword '%s' does not contain separator \":\"."%w
        eString = ' '.join(_words)
 #       print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
        return eString
