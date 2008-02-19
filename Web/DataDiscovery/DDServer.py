@@ -4916,7 +4916,7 @@ Save query as:
                     prdDate,cBy,nblks,blkSize,nFiles,nEvts=mDict.values()[0]
                     seNames=dDict.keys()
                     if xml:
-                       nameSpace={'path':dataset,'date':prdDate,'nEvts':nEvts,'nFiles':nFiles,'nBlks':nblks,'blkSize':blkSize,'sites':seNames)}
+                       nameSpace={'path':dataset,'date':prdDate,'nEvts':nEvts,'nFiles':nFiles,'nBlks':nblks,'blkSize':blkSize,'sites':seNames}
                        t = templateDatasetXML(searchList=[nameSpace]).respond()
                        page+=str(t)
                     else:
