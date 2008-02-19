@@ -24,6 +24,8 @@ class DDOptionParser:
          help="specify verbosity level, 0-none, 1-info, 2-debug")
     self.parser.add_option("--input",action="store", type="string", default=False, dest="input",
          help="specify input for your request.")
+    self.parser.add_option("--output",action="store", type="string", default="", dest="output",
+         help="specify output for your request (plain|xml), default is plain text")
     self.parser.add_option("--host",action="store",type="string",dest="host",
          help="specify a host name of Data Discovery service, e.g. https://cmsweb.cern.ch/dbs_discovery/")
     self.parser.add_option("--page",action="store",type="string",default="0",dest="page",
@@ -36,7 +38,7 @@ class DDOptionParser:
     """
     return self.parser.parse_args()
 
-def sendMessage(host,port,dbsInst,userInput,page,limit,debug=0):
+def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,debug=0):
     """
        Send message to server, message should be an well formed XML document.
     """
@@ -62,7 +64,7 @@ def sendMessage(host,port,dbsInst,userInput,page,limit,debug=0):
        http_conn = httplib.HTTPS(host,port)
     else:
        http_conn = httplib.HTTP(host,port)
-    path='/aSearch?dbsInst=%s&html=0&_idx=%s&pagerStep=%s&userInput=%s'%(dbsInst,page,limit,input)
+    path='/aSearch?dbsInst=%s&html=0&_idx=%s&pagerStep=%s&userInput=%s&xml=%s'%(dbsInst,page,limit,input,xml)
     if prefix_path:
        path="/"+prefix_path+path[1:]
     http_conn.putrequest('POST',path)
@@ -109,5 +111,5 @@ if __name__ == "__main__":
     else:
        print "\nUsage: DDSearchCLI.py --help"
        sys.exit(0)
-    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.verbose)
+    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.output,opts.verbose)
     print result
