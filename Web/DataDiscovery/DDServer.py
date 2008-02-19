@@ -4816,12 +4816,14 @@ Save query as:
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         _idx=int(_idx)
         pagerStep=int(pagerStep)
-        html=1
-        if kwargs.has_key('html'):
-           try:
-              html=int(kwargs['html'])
-           except:
-              pass
+#        html=1
+#        if kwargs.has_key('html'):
+#           try:
+#              html=int(kwargs['html'])
+#           except:
+#              pass
+        html=getArg(kwargs,'html',1) # 3d parameter is default value which I would like to get back
+        xml=getArg(kwargs,'xml',0)
         # get input parameters
         self.helperInit(dbsInst)
         # get result
@@ -4849,7 +4851,10 @@ Save query as:
            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
            page+=str(t)
         else:
-           page ="\nFound %s datasets, showing results from %s-%s\n"%(nDatasets,_idx*pagerStep,_idx*pagerStep+pagerStep)
+           if xml:
+              page="""<?xml version="1.0" encoding="utf-8"?>\n<ddresponse>\n"""
+           else:
+              page ="\nFound %s datasets, showing results from %s-%s\n"%(nDatasets,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
         if html:
            # Construct result page
@@ -4910,12 +4915,20 @@ Save query as:
                 else:
                     prdDate,cBy,nblks,blkSize,nFiles,nEvts=mDict.values()[0]
                     seNames=dDict.keys()
-                    page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
+                    if xml:
+                       nameSpace={'path':dataset,'date':prdDate,'nEvts':nEvts,'nFiles':nFiles,'nBlks':nblks,'blkSize':blkSize,'sites':seNames)}
+                       t = templateDatasetXML(searchList=[nameSpace]).respond()
+                       page+=str(t)
+                    else:
+                       page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
         except:    
             if html:
                page+="<verbatim>"+getExcept()+"</verbatim>"
             else:
-               page+=getExcept()
+               if xml:
+                  page+="Server experience a problem processing your request"
+               else:
+                  page+=getExcept()
         if html:
            pagerId+=1
            _nameSpace['pagerId']=pagerId
@@ -4924,6 +4937,8 @@ Save query as:
            page+="""<hr class="dbs" />"""
            page+=str(t)
            page+=self.genBottomHTML()
+        elif xml:
+           page+="\n</ddresponse>"
         return page
     aSearch.exposed=True
 
