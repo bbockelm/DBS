@@ -3024,6 +3024,11 @@ MCDescription:      %s
           pass
       return bList
   ### Implementation for DDSearch
+  def buildNotLikeExp(self,sel,tc,val,case='on'):
+      if case=='on':
+         return sel.append_whereclause( ~tc.like(val.replace("*","%")) )
+      else:
+         return sel.append_whereclause( ~sqlalchemy.func.upper(tc).like(val.upper().replace("*","%")) )
   def buildLikeExp(self,sel,tc,val,case='on'):
       if case=='on':
          return sel.append_whereclause( tc.like(val.replace("*","%")) )
@@ -3036,10 +3041,20 @@ MCDescription:      %s
          return sel.append_whereclause(sqlalchemy.func.upper(tc)==val.upper())
   def buildLtExp(self,sel,tc,val,case='on'):
       if case=='on':
+         return sel.append_whereclause(tc<val)
+      else:
+         return sel.append_whereclause(sqlalchemy.func.upper(tc)<val.upper())
+  def buildLteqExp(self,sel,tc,val,case='on'):
+      if case=='on':
          return sel.append_whereclause(tc<=val)
       else:
          return sel.append_whereclause(sqlalchemy.func.upper(tc)<=val.upper())
   def buildGtExp(self,sel,tc,val,case='on'):
+      if case=='on':
+         return sel.append_whereclause(tc>val)
+      else:
+         return sel.append_whereclause(sqlalchemy.func.upper(tc)>val.upper())
+  def buildGteqExp(self,sel,tc,val,case='on'):
       if case=='on':
          return sel.append_whereclause(tc>=val)
       else:
@@ -3047,11 +3062,24 @@ MCDescription:      %s
   def buildExp(self,sel,tc,val,case):
       try:
          if val.find("*")!=-1:
-            return self.buildLikeExp(sel,tc,val,case)
+            if val[0]=="!":
+               return self.buildNotLikeExp(sel,tc,val,case)
+            else:
+               return self.buildLikeExp(sel,tc,val,case)
+         elif val[0]==">":
+            if val[1]=="=":
+               return self.buildGteqExp(sel,tc,val,case)
+            else:
+               return self.buildGtExp(sel,tc,val,case)
+         elif val[0]=="<":
+            if val[1]=="=":
+               return self.buildLteqExp(sel,tc,val,case)
+            else:
+               return self.buildLtExp(sel,tc,val,case)
          elif val.find("-")!=-1:
             min,max=val.split("-")
-            self.buildLtExp(sel,tc,max,case)
-            return self.buildGtExp(sel,tc,min,case)
+            self.buildLteqExp(sel,tc,max,case)
+            return self.buildGteqExp(sel,tc,min,case)
          else:
             return self.buildEqExp(sel,tc,val,case)
       except:
@@ -3065,6 +3093,7 @@ MCDescription:      %s
           condList.append(sqlalchemy.and_(*cList))
       if len(condList): 
          sel.append_whereclause(sqlalchemy.or_(*condList))
+
   def Block2Block(self,**kwargs):
       """Take a list of input vars and return list of block Ids"""
       if self.verbose: print "Call Block2Block",str(kwargs)
@@ -3079,16 +3108,12 @@ MCDescription:      %s
           oSel =[self.col(tblk,'Path')]
           sel  = sqlalchemy.select(oSel,from_obj=[tblk],distinct=True )
           if kwargs.has_key('block'):
-             blk_name=kwargs['block']
-             if blk_name.find("*")!=-1:
-#                 sel.append_whereclause(self.col(tblk,'Name').like(blk_name.replace("*","%")))
-                 self.buildLikeExp(sel,self.col(tblk,'Name'),blk_name,case)
-             else:
-#                 sel.append_whereclause(self.col(tblk,'Name').like('%%'+blk_name+'%%'))
-                 self.buildLikeExp(sel,self.col(tblk,'Name'),'%%'+blk_name+'%%',case)
+             blk_name='*'+kwargs['block'].replace('*','')+'*' # always use like, since block=/path#GUID
+             self.buildExp(sel,self.col(tblk,'Name'),blk_name,case)
           if kwargs.has_key('dataset'):
              self.buildExp(sel,self.col(tblk,'Path'),kwargs['dataset'],case)
-#          print self.printQuery(sel)
+          if self.verbose:
+             print self.printQuery(sel)
           return sel
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3116,7 +3141,8 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tq,'Content'),kwargs['pset'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tq,'ID'),kwargs['idlist'])
-#          print self.printQuery(sel)
+          if self.verbose:
+             print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3149,7 +3175,8 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tav,'Version'),kwargs['release'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tav,'ID'),kwargs['idlist'])
-#          print self.printQuery(sel)
+          if self.verbose:
+             print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3178,7 +3205,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(talgo,'ID'),kwargs['idlist'])
-#          print self.printQuery(sel)
+          if self.verbose:
+             print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3232,6 +3260,8 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tl,'ID'),kwargs['idlist'])
+          if self.verbose:
+             print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3264,6 +3294,8 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tr,'ID'),kwargs['idlist'])
+          if self.verbose:
+             print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3294,7 +3326,8 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tf,'LogicalFileName'),kwargs['file'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tf,'ID'),kwargs['idlist'])
-#          print self.printQuery(sel)
+          if self.verbose:
+             print self.printQuery(sel)
           return sel
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3318,7 +3351,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tprd,'ID'),kwargs['idlist'])
-#          print self.printQuery(sel)
+          if self.verbose:
+             print self.printQuery(sel)
           return sel
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3327,7 +3361,7 @@ MCDescription:      %s
 
   def Ads2Proc(self,**kwargs):
       print "Call Ads2Proc",str(kwargs)
-      return [1,2,3]
+      return []
 
   def FindDatasets(self,iSel,fromRow=0,limit=0,count=0):
       """Take a list of input blockid's and return list of dataset"""
