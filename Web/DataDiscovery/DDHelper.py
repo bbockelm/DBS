@@ -3316,6 +3316,62 @@ MCDescription:      %s
           self.printExcept(msg)
           raise "Fail in File2Block"
 
+  def Tier2Proc(self,**kwargs):
+      """Take a list of input vars and return new query"""
+      if self.verbose: print "Call Tier2Proc",str(kwargs)
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
+      try:
+          kwargs=kwargs['input']
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpt  = self.alias('ProcDSTier','tpt')
+          ttier= self.alias('DataTier','ttier')
+          oSel =[self.col(tprd,'ID')]
+          obj  = tprd.join(tpt,onclause=self.col(tpt,'Dataset')==self.col(tprd,'ID'))
+          obj  = obj.join(ttier,onclause=self.col(tpt,'DataTier')==self.col(ttier,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('tier'):
+             self.buildExp(sel,self.col(ttier,'Name'),kwargs['tier'],case)
+          elif kwargs.has_key('idlist'):
+             self.buildListExp(sel,self.col(ttier,'ID'),kwargs['idlist'])
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(ttier,'ID').in_(kwargs['sel']))
+          return {'sel':sel}
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Tier2Proc"
+
+  def Prim2Proc(self,**kwargs):
+      """Take a list of input vars and return new query"""
+      if self.verbose: print "Call Prim2Proc",str(kwargs)
+      oList=[]
+      con  = self.connectToDB()
+      sel  = ""
+      case = 'on'
+      if kwargs.has_key('case'): case=kwargs['case']
+      try:
+          kwargs=kwargs['input']
+          tprd = self.alias('ProcessedDataset','tprd')
+          tprim= self.alias('PrimaryDataset','tprim')
+          oSel =[self.col(tprd,'ID')]
+          obj  = tprd.join(tprim,onclause=self.col(tprim,'ID')==self.col(tprd,'PrimaryDataset'))
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          if kwargs.has_key('prim'):
+             self.buildExp(sel,self.col(tprim,'Name'),kwargs['prim'],case)
+          elif kwargs.has_key('idlist'):
+             self.buildListExp(sel,self.col(tprim,'ID'),kwargs['idlist'])
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(tprim,'ID').in_(kwargs['sel']))
+          return {'sel':sel}
+      except:
+          msg="\n### Query:\n"+str(sel)+str(kwargs)
+          self.printExcept(msg)
+          raise "Fail in Prim2Proc"
+
   def Proc2Block(self,**kwargs):
       """Take a list of input vars and return list of block Ids"""
       if self.verbose: print "Call Proc2Block",str(kwargs)
@@ -3331,7 +3387,9 @@ MCDescription:      %s
           oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
-          if kwargs.has_key('idlist'):
+          if kwargs.has_key('Name'):
+             self.buildExp(sel,self.col(tprd,'Name'),kwargs['Name'],case)
+          elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tprd,'ID'),kwargs['idlist'])
           elif kwargs.has_key('sel'):
              sel.append_whereclause(self.col(tprd,'ID').in_(kwargs['sel']))
