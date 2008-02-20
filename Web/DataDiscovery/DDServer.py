@@ -1146,6 +1146,7 @@ class DDServer(DDLogger,Controller):
                   'style'   : "",
                   'userMode': userMode,
                   'adminUrl': self.adminUrl,
+                  'apiversion': self.adminVer,
                   'email'   : "vk@mail.lns.cornell.edu"
                   }
         t = templateAdminDatasets(searchList=[nameSpace]).respond()
@@ -1156,62 +1157,67 @@ class DDServer(DDLogger,Controller):
 
     def adminRequest(self,**kwargs):
         print "\n\n+++adminRequest",kwargs
+        if kwargs.has_key('submit'): del kwargs['submit']
+        if kwargs.has_key('choice'): del kwargs['choice']
         debug=1
         dn=""
-        params="?xml=yes"
-        for key in kwargs.keys():
-            if key=='dn' or key=='submit' or key=='choice': continue
-            params+="&%s=%s"%(key,kwargs[key])
         try:
             userName=self.decodeUserName(**kwargs)
             dn=urllib.quote(self.getDN(userName))
             email=self.getEmail(self.getDN(userName))
-            params+="&dn=%s"%dn
         except:
             pass
         # parse admin url
         if  kwargs['api']=="addRequest": # migration service
             tup=urlparse.urlparse(self.adminUrl)
+            kwargs['dn']=dn
+            kwargs['xml']="yes"
+            adminUrl=self.adminUrl
         else:
             tup=urlparse.urlparse(DBS_INST_URL[kwargs['dbsInst']])
-#            cherrypy.response.headerMap['UserID']=dn
+            if kwargs.has_key('dn'): del kwargs['dn']
+            adminUrl=DBS_INST_URL[kwargs['dbsInst']]
         host,port=tup[1].split(":")
-        if tup[0]=='https': port=443
-        if not port: port=80
-        path=tup[2]
-        if port==443:
-           http_conn = httplib.HTTPS(host,port)
+        if tup[0]=='https':
+           secure=1
+           if not port: port=443
         else:
-           http_conn = httplib.HTTP(host,port)
-        path='%s%s'%(path,params)
+           secure=0
+           if not port: port=80
+        port=int(port)
+        path=tup[2]
+        if secure:
+           http_conn = httplib.HTTPSConnection(host,port)
+        else:
+           http_conn = httplib.HTTPConnection(host,port)
         if debug:
            httplib.HTTPConnection.debuglevel = 1
+           httplib.HTTPSConnection.debuglevel = 1
            print "Contact",host,port,path
-        input=""
-        http_conn.putrequest('POST',path)
-        http_conn.putheader('Host',host)
-        http_conn.putheader('Content-Type','text/html; charset=utf-8')
-        http_conn.putheader('Content-Length',str(len(input)))
-        http_conn.putheader('UserID',dn)
-        http_conn.endheaders()
-        http_conn.send(input)
-
-        (status_code,msg,reply)=http_conn.getreply()
-        data=http_conn.getfile().read()
-        if debug or msg!="OK":
-           print
-           print http_conn.headers
-           print "*** Send message ***"
-           print input
-           print "************************************************************************"
-           print "status code:",status_code
-           print "message:",msg
-           print "************************************************************************"
-           print reply
-           print "*** Server data ***"
-           print data,type(data)
-        status="NEED TO IMPEMENT RETURN STATUS"
-        return status
+        headers={"UserID":dn,"Content-type":"application/x-www-form-urlencoded","Accept":"text/plain"}
+        if debug:
+           print "\n\n"
+           print http_conn,http_conn.__dict__
+           print path
+           print kwargs
+           print urllib.urlencode(kwargs)
+           print "\n\n"
+        result   = http_conn.request('POST',path,urllib.urlencode(kwargs),headers)
+        response = http_conn.getresponse()
+        code     = int(response.status)
+        status   = ""
+        if code==200:
+           data=response.read()
+           elem=elementtree.ElementTree.fromstring(data)
+           for i in elem:
+               if i.tag=="request":
+                  id=i.attrib['id']
+                  status="""Your request processed, request ID='%s', check its status <a href="%s?api=getRequestByID&request_id=%s">here</a>"""%(adminUrl,id,id,id)
+               elif i.tag=="exception":
+                  status="DBS server returns code=%s, %s"%(i.attrib['code'],i.attrib['detail'])
+        else:
+            status="Fail to send HTTP request %s, %s"%(code,response.reason)
+        return "<em>"+status+"</em>"
 
     def adminTask(self,**kwargs):
         print "\n\n+++adminTask",kwargs
@@ -4843,7 +4849,7 @@ Save query as:
         nDatasets=self.helper.FindDatasets(sel,count=1)
         result  = self.helper.FindDatasets(sel,fromRow=_idx*pagerStep,limit=pagerStep)
         if html:
-           page = self.genTopHTML()
+           page = self.genTopHTML(userMode=userMode)
            dbsList=list(self.dbsList)
            dbsList.remove(dbsInst)
            dbsList=[dbsInst]+dbsList
