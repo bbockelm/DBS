@@ -30,6 +30,9 @@ class DDSearch:
            'run':['Run2Proc','Proc2Block'],
            'lumi':['Lumi2Run','Run2Proc','Proc2Block'],
            'site':['SE2Block'],
+           'prim':['Prim2Proc','Proc2Block'],
+           'proc':['Proc2Block'],
+           'tier':['Tier2Proc','Proc2Block'],
            #'pset':['Pset2Algo','Algo2Proc','Proc2Block']
        }
        self.runsum_map={}

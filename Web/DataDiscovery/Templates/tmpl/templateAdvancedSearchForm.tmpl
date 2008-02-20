@@ -3,6 +3,7 @@
 <div align="center">
 <form action="aSearch" method="get">
 <input type="hidden" name="caseSensitive" value="on" id="caseSensitive" />
+<input type="hidden" name="userMode" value="$userMode" />
 
 ## add table with case sensitivity and choice of dbs instance (in expert mode)
 <table cellpadding="2" cellspacing="2">
@@ -20,7 +21,7 @@
 </div>
 </td>
 <td>
-<select name="dbsInst" id="dbsInst" onchange="javascript:ReloadMethod('$host','_advanced','$userMode')" style="$style">
+<select name="dbsInst" id="dbsInst" onchange="javascript:ReloadMethod('$host','DDServer/_advanced','$userMode')" style="$style">
 #for dbs in $dbsList
 <option value="$dbs">$dbs</option>
 #end for
@@ -66,6 +67,18 @@ Case-sensitivity:
 dataset
 </span>
 ,
+<span id="primDef">
+prim
+</span>
+,
+<span id="procDef">
+proc
+</span>
+,
+<span id="tierDef">
+tier
+</span>
+,
 <span id="blkDef">
 block
 </span>
@@ -89,6 +102,7 @@ lumi
 <span id="seDef">
 site.
 </span>
+<br/>
 Hover over keywords for <span class="box_red">info</span>.
 <br/>
 You can also use comparison operators, i.e. '==', '&gt;', '&gt;=', '&lt;', '&lt;=' and '!'.
@@ -132,8 +146,14 @@ Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 <script type="text/javascript">
 #if $userHelp
 var tooltip;
-tooltip="<p>Full qualified dataset name or pattern, e.g. /DaqTest-A/Online/RAW.</p>";
+tooltip="<p>Full qualified dataset path or pattern, e.g. /DaqTest-A/Online/RAW.</p>";
 MakeTooltip("t_dset","dsetDef",tooltip);
+tooltip="<p>Full qualified processed dataset name or pattern, e.g. Online.</p>";
+MakeTooltip("t_proc","procDef",tooltip);
+tooltip="<p>Full qualified primary dataset name or pattern, e.g. DaqTest-A.</p>";
+MakeTooltip("t_prim","primDef",tooltip);
+tooltip="<p>Full qualified data tier name or pattern, e.g. RAW.</p>";
+MakeTooltip("t_tier","tierDef",tooltip);
 tooltip="<p>Block name, including block UID.</p>";
 MakeTooltip("t_","blkDef",tooltip);
 tooltip="<p>LFN name or pattern </p>";
