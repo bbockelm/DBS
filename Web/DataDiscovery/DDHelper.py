@@ -3123,8 +3123,6 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tblk,'Name'),blk_name,case)
           if kwargs.has_key('dataset'):
              self.buildExp(sel,self.col(tblk,'Path'),kwargs['dataset'],case)
-          if self.verbose:
-             print self.printQuery(sel)
           return sel
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3152,18 +3150,11 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tq,'Content'),kwargs['pset'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tq,'ID'),kwargs['idlist'])
-          if self.verbose:
-             print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          return {'sel':sel}
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Pset2Algo"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
-      return {'idlist':oList}
 
   def Rel2Algo(self,**kwargs):
       """Take a list of input vars and return list of algo Ids"""
@@ -3186,18 +3177,13 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tav,'Version'),kwargs['release'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tav,'ID'),kwargs['idlist'])
-          if self.verbose:
-             print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(tav,'ID').in_(kwargs['sel']))
+          return {'sel':sel}
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Rel2Algo"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
-      return {'idlist':oList}
 
   def Algo2Proc(self,**kwargs):
       """Take a list of input vars and return list of proc Ids"""
@@ -3216,18 +3202,13 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(talgo,'ID'),kwargs['idlist'])
-          if self.verbose:
-             print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(talgo,'ID').in_(kwargs['sel']))
+          return {'sel':sel}
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Algo2Proc"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
-      return {'idlist':oList}
 
   def SE2Block(self,**kwargs):
       """Take a list of input vars and return list of block Ids"""
@@ -3271,18 +3252,13 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case,split=1)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tl,'ID'),kwargs['idlist'])
-          if self.verbose:
-             print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(tl,'ID').in_(kwargs['sel']))
+          return {'sel':sel}
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Lumi2Run"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
-      return {'idlist':oList}
 
   def Run2Proc(self,**kwargs):
       """Take a list of input vars and return list of proc Ids"""
@@ -3305,18 +3281,13 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case,split=1)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tr,'ID'),kwargs['idlist'])
-          if self.verbose:
-             print self.printQuery(sel)
-          result = self.getSQLAlchemyResult(con,sel)
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(tr,'ID').in_(kwargs['sel']))
+          return {'sel':sel}
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
           self.printExcept(msg)
           raise "Fail in Run2Proc"
-      for item in result:
-          if item and item[0]:
-             oList.append(item[0])
-      self.closeConnection(con)
-      return {'idlist':oList}
 
   def File2Block(self,**kwargs):
       """Take a list of input vars and return list of block Ids"""
@@ -3337,8 +3308,8 @@ MCDescription:      %s
              self.buildExp(sel,self.col(tf,'LogicalFileName'),kwargs['file'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tf,'ID'),kwargs['idlist'])
-          if self.verbose:
-             print self.printQuery(sel)
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(tf,'ID').in_(kwargs['sel']))
           return sel
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
@@ -3362,8 +3333,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tprd,'ID'),kwargs['idlist'])
-          if self.verbose:
-             print self.printQuery(sel)
+          elif kwargs.has_key('sel'):
+             sel.append_whereclause(self.col(tprd,'ID').in_(kwargs['sel']))
           return sel
       except:
           msg="\n### Query:\n"+str(sel)+str(kwargs)
