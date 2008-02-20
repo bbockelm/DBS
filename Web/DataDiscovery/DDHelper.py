@@ -3070,7 +3070,7 @@ MCDescription:      %s
          return sel.append_whereclause(tc>=val)
       else:
          return sel.append_whereclause(sqlalchemy.func.upper(tc)>=val.upper())
-  def buildExp(self,sel,tc,val,case):
+  def buildExp(self,sel,tc,val,case,split=0):
       try:
          if val.find("*")!=-1:
             if val[0]=="!":
@@ -3087,7 +3087,7 @@ MCDescription:      %s
                return self.buildLteqExp(sel,tc,val[2:],case)
             else:
                return self.buildLtExp(sel,tc,val[1:],case)
-         elif val.find("-")!=-1:
+         elif val.find("-")!=-1 and split:
             min,max=val.split("-")
             self.buildLteqExp(sel,tc,max,case)
             return self.buildGteqExp(sel,tc,min,case)
@@ -3268,7 +3268,7 @@ MCDescription:      %s
           obj  = tr.join(tl,onclause=self.col(tr,'ID')==self.col(tl,'RunNumber'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('lumi'):
-             self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case)
+             self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case,split=1)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tl,'ID'),kwargs['idlist'])
           if self.verbose:
@@ -3302,7 +3302,7 @@ MCDescription:      %s
           obj  = obj.join(tr,onclause=self.col(tpr,'Run')==self.col(tr,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('run'):
-             self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case)
+             self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case,split=1)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tr,'ID'),kwargs['idlist'])
           if self.verbose:
