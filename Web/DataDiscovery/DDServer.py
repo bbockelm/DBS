@@ -1157,6 +1157,7 @@ class DDServer(DDLogger,Controller):
     def adminRequest(self,**kwargs):
         print "\n\n+++adminRequest",kwargs
         debug=1
+        dn=""
         params="?xml=yes"
         for key in kwargs.keys():
             if key=='dn' or key=='submit' or key=='choice': continue
@@ -1169,7 +1170,11 @@ class DDServer(DDLogger,Controller):
         except:
             pass
         # parse admin url
-        tup=urlparse.urlparse(self.adminUrl)
+        if  kwargs['api']=="addRequest": # migration service
+            tup=urlparse.urlparse(self.adminUrl)
+        else:
+            tup=urlparse.urlparse(DBS_INST_URL[kwargs['dbsInst']])
+#            cherrypy.response.headerMap['UserID']=dn
         host,port=tup[1].split(":")
         if tup[0]=='https': port=443
         if not port: port=80
@@ -1187,6 +1192,7 @@ class DDServer(DDLogger,Controller):
         http_conn.putheader('Host',host)
         http_conn.putheader('Content-Type','text/html; charset=utf-8')
         http_conn.putheader('Content-Length',str(len(input)))
+        http_conn.putheader('UserID',dn)
         http_conn.endheaders()
         http_conn.send(input)
 
