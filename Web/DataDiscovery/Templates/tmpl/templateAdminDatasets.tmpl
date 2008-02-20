@@ -113,12 +113,11 @@ Notify me at: <input type="text" name="notify" value="$email" />
 ### Administration form
 <h5>Change status of dataset/block(s)</h5>
 <form action="adminTask" method="get">
-##<input type="hidden" name="title" value="Dataset/Block(s) admin task" />
-##<input type="hidden" name="dbsInst" value="$dbsInst" />
+<input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
 <input type="hidden" name="dn" />
-##<input type="hidden" name="method" value="changeDSStatus" />
+<input type="hidden" name="apiversion" value="$apiversion" />
 
 <table>
 
@@ -198,12 +197,12 @@ Change block(s) status
 ###Choose one or more block id's by selecting them:
 <form action="adminTask" method="post">
 <input type="hidden" name="api" value="updateFileStatus" />
-##<input type="hidden" name="title" value="LFN administration" />
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
 <input type="hidden" name="dn" />
-##<input type="hidden" name="method" value="changeLFNStatus" />
+<input type="hidden" name="apiversion" value="$apiversion" />
+
 <table>
 <tr>
 <td>
