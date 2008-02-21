@@ -1221,7 +1221,6 @@ class DDServer(DDLogger,Controller):
         return "<em>"+status+"</em>"
 
     def adminTask(self,**kwargs):
-#        print "\n\n+++adminTask",kwargs
         userMode='user' # default
         if kwargs.has_key('userMode'):
            userMode=kwargs['userMode']
@@ -1235,18 +1234,16 @@ class DDServer(DDLogger,Controller):
            del kwargs['src_url']
            kwargs['src_url']=DBS_INST_URL[dbs]
         dbsInst=kwargs['dbsInst']
+        self.helperInit(dbsInst)
         dataset=kwargs['dataset']
         if kwargs.has_key('lfn'):
-           lfnList=[]
            if kwargs['lfn'].lower()=="all":
-              lfns=self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,run="")
+              lfnList=self.helper.getLFNsFromSite(site="all",datasetPath=dataset,run="*")
            elif kwargs['lfn'].lower().find("like")!=-1:
               lfn=kwargs['lfn'].split("like:")[1]
-              lfns=self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,lfn="%%%s%%"%lfn)
+              lfnList=self.helper.getLFNsFromSite(site="all",datasetPath=dataset,run="*",lfn="%%%s%%"%lfn)
            else:
-              lfns=self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,lfn=lfn)
-           for item in lfns:
-              lfnList.append(item[0])
+              lfnList=self.helper.getLFNsFromSite(site="all",datasetPath=dataset,run="*",lfn=lfn)
            del kwargs['lfn'] # delete lfn key-pair from our dictionary
            kwargs['lfn']=lfnList
         # lookup for block_name and find out a list
