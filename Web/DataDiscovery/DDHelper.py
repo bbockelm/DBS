@@ -3387,8 +3387,8 @@ MCDescription:      %s
           oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
-          if kwargs.has_key('Name'):
-             self.buildExp(sel,self.col(tprd,'Name'),kwargs['Name'],case)
+          if kwargs.has_key('proc'):
+             self.buildExp(sel,self.col(tprd,'Name'),kwargs['proc'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tprd,'ID'),kwargs['idlist'])
           elif kwargs.has_key('sel'):
