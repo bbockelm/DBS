@@ -1177,6 +1177,7 @@ class DDServer(DDLogger,Controller):
             tup=urlparse.urlparse(DBS_INST_URL[kwargs['dbsInst']])
             if kwargs.has_key('dn'): del kwargs['dn']
             adminUrl=DBS_INST_URL[kwargs['dbsInst']]
+            del kwargs['dbsInst'] # I don't need it anymore
         host,port=tup[1].split(":")
         if tup[0]=='https':
            secure=1
@@ -1220,9 +1221,7 @@ class DDServer(DDLogger,Controller):
         return "<em>"+status+"</em>"
 
     def adminTask(self,**kwargs):
-        print "\n\n+++adminTask",kwargs
-#        if kwargs.has_key('method'):
-#           result=getattr(self,kwargs['method'])(**kwargs)
+#        print "\n\n+++adminTask",kwargs
         userMode='user' # default
         if kwargs.has_key('userMode'):
            userMode=kwargs['userMode']
@@ -1235,24 +1234,8 @@ class DDServer(DDLogger,Controller):
            dbs=kwargs['src_url']
            del kwargs['src_url']
            kwargs['src_url']=DBS_INST_URL[dbs]
-        page = self.genTopHTML(userMode=userMode)
-        result=self.adminRequest(**kwargs)
-        nameSpace = {
-                     'status'   : result,
-                     'adminUrl' : self.adminUrl,
-                     'dn'       : self.getDN(self.decodeUserName(**kwargs)),
-                    }
-        t = templateAdminConfirmation(searchList=[nameSpace]).respond()
-        page+= str(t)
-        page+= self.genBottomHTML()
-        return page
-    adminTask.exposed=True
-
-    def adminTask_v1(self,dbsInst,userMode,dataset,**kwargs):
-        page = self.genTopHTML(userMode=userMode)
-        # analyse input kwargs
-        print kwargs
-        # lookup for lfn and find out a list
+        dbsInst=kwargs['dbsInst']
+        dataset=kwargs['dataset']
         if kwargs.has_key('lfn'):
            lfnList=[]
            if kwargs['lfn'].lower()=="all":
@@ -1273,16 +1256,28 @@ class DDServer(DDLogger,Controller):
               block_names=self.helper.getBlocksFromSite(site="*",datasetPath=dataset)
               del kwargs['block_name'] # delete block_name key-pair from our dictionary
               kwargs['block_name']=block_names
-
-        skipList=['submit','title','submit request','choice','dbsInst_from','dbsInst_to']
-        input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
-        xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
-        kwargs['apiversion']=self.adminVer
-        nameSpace = {'kwargs':kwargs,'skipList':skipList,'xmlOutput':xmlOutput,'userMode':userMode,'adminUrl':self.adminUrl}
-        t = templateAdminTask(searchList=[nameSpace]).respond()
-        page+= str(t)
+        if kwargs.has_key('dataset'): del kwargs['dataset'] # I don't need it anymore
+        page = self.genTopHTML(userMode=userMode)
+        if  kwargs['api']=="addRequest":
+            result=self.adminRequest(**kwargs)
+            nameSpace = {
+                         'status'   : result,
+                         'adminUrl' : self.adminUrl,
+                         'dn'       : self.getDN(self.decodeUserName(**kwargs)),
+                        }
+            t = templateAdminConfirmation(searchList=[nameSpace]).respond()
+            page+= str(t)
+        else:
+            skipList=['submit','title','submit request','choice','dbsInst_from','dbsInst_to','dn']
+            input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
+            xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
+            kwargs['apiversion']=self.adminVer
+            nameSpace = {'kwargs':kwargs,'skipList':skipList,'xmlOutput':xmlOutput,'userMode':userMode,'adminUrl':DBS_INST_URL[dbsInst]}
+            t = templateAdminTask(searchList=[nameSpace]).respond()
+            page+= str(t)
         page+= self.genBottomHTML()
         return page
+    adminTask.exposed=True
 
     def makeDbsApi(self,url):
         args = {}

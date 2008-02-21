@@ -30,8 +30,8 @@ at sites:
 <input type="hidden" name="dn" />
 <input type="hidden" name="userMode" value="$userMode" />
 ##<input type="hidden" name="title" value="Migrate dataset" />
-##<input type="hidden" name="dbsInst" value="$dbsInst" />
-##<input type="hidden" name="dataset" value="$dataset" />
+<input type="hidden" name="dbsInst" value="$dbsInst" />
+<input type="hidden" name="dataset" value="$dataset" />
 
 <table>
 <tr>
@@ -113,6 +113,7 @@ Notify me at: <input type="text" name="notify" value="$email" />
 ### Administration form
 <h5>Change status of dataset/block(s)</h5>
 <form action="adminTask" method="get">
+<input type="hidden" name="title" value="Change status of dataset/block(s)" />
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
@@ -197,6 +198,7 @@ Change block(s) status
 ###Choose one or more block id's by selecting them:
 <form action="adminTask" method="post">
 <input type="hidden" name="api" value="updateFileStatus" />
+<input type="hidden" name="title" value="Change LFN(s) status" />
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
 <input type="hidden" name="dataset" value="$dataset" />
