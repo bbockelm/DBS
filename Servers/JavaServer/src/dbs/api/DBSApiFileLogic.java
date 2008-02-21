@@ -1,6 +1,6 @@
 /**
- $Revision: 1.88 $"
- $Id: DBSApiFileLogic.java,v 1.88 2008/02/01 19:32:50 afaq Exp $"
+ $Revision: 1.89 $"
+ $Id: DBSApiFileLogic.java,v 1.89 2008/02/07 19:44:43 afaq Exp $"
  *
  */
 
@@ -989,7 +989,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         String lsNumber = get(hashTable, "lumi_section_number", false);
 
                                         if ( !isNull(lsNumber) ) {
-                                                String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
+                                                String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false);
                                                 if( isNull(lumiID)) {
                                                         insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
                                                 }
