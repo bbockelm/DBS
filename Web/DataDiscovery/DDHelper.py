@@ -2041,6 +2041,7 @@ MCDescription:      %s
           if lfn and lfn!="*":
              sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+#          print self.printQuery(sel),blockName,dataset,run
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
@@ -2966,9 +2967,10 @@ MCDescription:      %s
       self.closeConnection(con)
       return aList
 
-  def getLFNsFromSite(self,site,datasetPath,run="*"):
+  def getLFNsFromSite(self,site,datasetPath,run="*",lfn="*"):
       if site.lower()=='all' or site.lower()=='any': site="*"
       if run.lower()=='all' or run.lower()=='any': run="*"
+      if lfn.lower()=='all' or lfn.lower()=='any': lfn="*"
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
@@ -2983,10 +2985,15 @@ MCDescription:      %s
           tr   = self.alias('Runs','tr')
 
           oSel = [self.col(tf,'LogicalFileName')]
-          obj  = tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-          obj  = obj.join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
-          obj  = obj.join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
+#          obj  = tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+#          obj  = obj.join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+#          obj  = obj.join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
+#          obj  = obj.join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+          obj  = tblk.join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
           obj  = obj.join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+          if site!="*":
+             obj  = obj.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+             obj  = obj.join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
           if run and run!="*":
              obj=obj.outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
              obj=obj.outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
@@ -2999,7 +3006,13 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tblk,'Path')==datasetPath)
           if run and run!="*":
              sel.append_whereclause(self.col(tr,'RunNumber')==run)
+          if lfn and lfn!="*":
+             if lfn.find("*")!=-1 or lfn.find("%")!=-1:
+                sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
+             else:
+                sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+#          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
