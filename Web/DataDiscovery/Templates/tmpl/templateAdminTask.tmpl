@@ -20,9 +20,18 @@ and it's ready to go, please verify and confirm it
   #continue
 #end if
 <b>$key:</b>
+#if $key=='lfn'
 <br/>
-<span class="offset_left">$kwargs[$key]</span>
+#for lfn in $kwargs[$key]
+$lfn<br/>
+#end for
 <br/>
+#else
+&nbsp; $kwargs[$key]<br/><br/>
+##<br/>
+##<span class="offset_left">$kwargs[$key]</span>
+##<br/>
+#end if
 #end for
 
 #*
