@@ -4830,7 +4830,7 @@ Save query as:
         if  kwargs.has_key('caseSensitive'):
             case=kwargs['caseSensitive']
         try:
-            sel = self.asearch.parseSearchInput(urllib.unquote(kwargs['userInput']),case)
+            sel = self.asearch.parser(urllib.unquote(kwargs['userInput']),case)
         except:
             if not html:
                return traceback.format_exc()

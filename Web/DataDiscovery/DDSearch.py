@@ -13,6 +13,10 @@ Data Discovery search module
 import os, string, logging, types, time, traceback, new
 import DDUtil
 
+def constrainList():
+    return ['>=','>','<=','<','=','not like','like','in','between']
+#    return ['>=','>','<=','<','=','not like','like','in','between','is not null','is null']
+
 class DDSearch:
    def __init__(self,dbsHelper="",phedexHelper="",runsumHelper="",lumiHelper="",condHelper=""):
        self.dbsHelper=dbsHelper
@@ -35,6 +39,13 @@ class DDSearch:
            'tier':['Tier2Proc','Proc2Block'],
            #'pset':['Pset2Algo','Algo2Proc','Proc2Block']
        }
+       # list of supported constrain operator, order is matter, since we walk through
+       # the list to find a match. Example, if pattern is '<=' and order is <,<= we will
+       # find first match to <, which is wrong, while if order is <=,< first match will be correct.
+       self.sList=constrainList()
+       self.oList=['and','or','minus','(',')']
+       self.kLIst=self.dbs_map.keys()
+
        self.runsum_map={}
        self.lumi_map={}
        self.phedex_map={
@@ -75,8 +86,63 @@ class DDSearch:
        else:
           print "%s.%s is not yet implemented"%(str(base),f)
 
-   def parseSearchInput(self,input,case="on"):
-       words = DDUtil.inputParser(input,self.dbs_map.keys())
+   def parser(self,input,case='on'):
+       words=self.parseInput(self.preParseInput(input),case)
+       print words
+       return words
+
+   def preParseInput(self,input):
+       input=input.replace(")"," ) ").replace("("," ( ")
+       return input
+    
+   def parseInput(self,input,case):
+       iList = input.split()
+       print "My input",input,iList
+       msg   = "Fail to parse your input"
+       words = []
+       pDict = {}
+       pattern = ""
+       try:
+           for idx in xrange(0,len(iList)):
+               item = iList[idx]
+               if self.oList.count(item):
+                  if pattern:
+                     key="q_%s"%idx
+                     pDict[key]=pattern
+                     words.append(key)
+                     pattern=""
+                  words.append(item)
+                  continue
+               pattern+=" "+item
+           if  pattern:
+               key="q_%s"%idx
+               pDict[key]=pattern
+               words.append(key)
+       except:
+           raise msg
+       for key in pDict.keys():
+           words[words.index(key)]=self.parsePattern(pDict[key],case)
+       return ' '.join(words)
+
+   def parsePattern(self,pattern,case):
+       co_idx=-1
+       words=[]
+       for co in self.sList:
+           j=pattern.find(co)
+           if j!=-1:
+              key = pattern[:j]
+              k   = pattern.rfind(co)
+              val = pattern[j+len(co):]
+              words.append("%s:"%key.strip())
+              words.append(co)
+              words.append(val.strip())
+              break
+       if not words:
+          raise "Fail to parse '%s', no constrain operator found"%pattern
+       return self.parseObject([''.join(words)],case)
+
+   def parseObject(self,input,case):
+       words = input
        _words= []
        f=""
        v=""
@@ -101,7 +167,8 @@ class DDSearch:
                  _words.append(_call)
               except:
                  traceback.print_exc()
-                 raise "Unknown keyword '%s', known list: %s"%(f,str(self.dbs_map.keys()))
+                 raise "Unable to parse your input, parse it as '%s', list of known keywords %s, list of supported operators %s"%(words,str(self.dbs_map.keys()),self.sList)
+#                 raise "Unknown keyword '%s', known list: %s"%(f,str(self.dbs_map.keys()))
            else:
                  traceback.print_exc()
                  raise "Keyword '%s' does not contain separator \":\"."%w
@@ -152,5 +219,8 @@ class DbsTest:
 #
 if __name__ == "__main__":
     aSearch = DDSearch(dbsHelper=DbsTest(),phedexHelper=PhedexTest())
-    aSearch.parseSearchInput("(dataset:*bla* and block:123) or pset:*2g")
-    aSearch.parseSearchInput("phedex:site:cern.ch")
+    aSearch.parser("(dataset like *bla* and block>=123) or run=12345")
+    aSearch.parser("run=12345")
+    aSearch.parser("run not like 12345")
+    aSearch.parser("run no like 12345")
+    aSearch.parser("run 12345")

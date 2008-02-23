@@ -49,12 +49,15 @@ Case-sensitivity:
 ##<p>The advanced search engine look-up dataset based on your keyword input.</p>
 
 <table>
-<tr>
+<tr valign="top">
 <td align="right">
 <b>Syntax:</b>
 </td>
 <td>
-&lt;keyword&gt;:&lt;value&gt;, you may use asterisk symbol to define patterns.
+Support normal boolean expressions, e.g. ((a and b) or c)<br/>
+Constrain operators: 
+&lt;=, &lt;, &gt;=, &gt;, =, not like, like, in,between
+##&lt;keyword&gt;:&lt;value&gt;, you may use asterisk symbol to define patterns.
 </td>
 </tr>
 
@@ -104,8 +107,8 @@ site.
 </span>
 <br/>
 Hover over keywords for <span class="box_red">info</span>.
-<br/>
-You can also use comparison operators, i.e. '==', '&gt;', '&gt;=', '&lt;', '&lt;=' and '!'.
+##<br/>
+##You can also use comparison operators, i.e. '==', '&gt;', '&gt;=', '&lt;', '&lt;=' and '!'.
 </td>
 </tr>
 
@@ -115,22 +118,22 @@ You can also use comparison operators, i.e. '==', '&gt;', '&gt;=', '&lt;', '&lt;
 </td>
 <td>
 <em>
-dataset:*Online* site:srm.cern.ch
+dataset like *Online* site=srm.cern.ch
 </em>
 <br/>
-lookup dataset with name Online, located at srm.cern.ch.
+look-up data with dataset name like Online, located at srm.cern.ch.
 <br/><br/>
 <em>
-run:34850-36000
+run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
-look-up data with runs within a given run range.
+look-up data with runs within a given run ranges.
 <br/><br/>
 <em>
-release:>CMSSW_1_7_1 dataset:!*RelVal*
+release>CMSSW_1_7_1 dataset not like *RelVal*
 </em>
 <br/>
-look-up data processed with releases higher then 1_7_1 and who are not RelVal samples.
+look-up data processed with releases higher then 1_7_1 which are not RelVal samples.
 </td>
 </tr>
 

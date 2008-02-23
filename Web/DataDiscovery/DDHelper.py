@@ -19,6 +19,7 @@ import DDOptions
 from   DDConfig  import *
 from   DBSInst   import * # defines DBS instances and schema
 from   DDUtil    import * # general utils
+from   DDSearch  import constrainList
 
 # QueryBuilder
 from QueryBuilder.Schema import Schema
@@ -3083,37 +3084,54 @@ MCDescription:      %s
          return sel.append_whereclause(tc>=val)
       else:
          return sel.append_whereclause(sqlalchemy.func.upper(tc)>=val.upper())
-  def buildExp(self,sel,tc,val,case,split=0):
+  def buildInExp(self,sel,tc,val,case='on'):
+      iList=val.split(",")
+      if case=='on':
+         return sel.append_whereclause(tc.in_(*iList))
+      else:
+         return sel.append_whereclause(sqlalchemy.func.upper(tc).in_(*iList))
+  def buildExp(self,sel,tc,val,case):
       try:
-         if val.find("*")!=-1:
-            if val[0]=="!":
-               return self.buildNotLikeExp(sel,tc,val[1:],case)
-            else:
-               return self.buildLikeExp(sel,tc,val,case)
-         elif val[0]==">":
-            if val[1]=="=":
-               return self.buildGteqExp(sel,tc,val[2:],case)
-            else:
-               return self.buildGtExp(sel,tc,val[1:],case)
-         elif val[0]=="<":
-            if val[1]=="=":
-               return self.buildLteqExp(sel,tc,val[2:],case)
-            else:
-               return self.buildLtExp(sel,tc,val[1:],case)
-         elif val.find("-")!=-1 and split:
+         for co in constrainList():
+             idx=val.lower().find(co)
+             if idx!=-1:
+                op=co
+                val=val[len(co):]
+         print op,val
+         if op=='like':
+            return self.buildLikeExp(sel,tc,val,case)
+         elif op=='not like':
+            return self.buildNotLikeExp(sel,tc,val,case)
+         elif op=="<":
+            return self.buildLtExp(sel,tc,val,case)
+         elif op=="<=":
+            return self.buildLteqExp(sel,tc,val,case)
+         elif op==">":
+            return self.buildGtExp(sel,tc,val,case)
+         elif op==">=":
+            return self.buildGteqExp(sel,tc,val,case)
+         elif op=="=":
+            return self.buildEqExp(sel,tc,val,case)
+         elif op=="in":
+            return self.buildInExp(sel,tc,val,case)
+         elif op=="between":
             min,max=val.split("-")
             self.buildLteqExp(sel,tc,max,case)
             return self.buildGteqExp(sel,tc,min,case)
          else:
-            return self.buildEqExp(sel,tc,val,case)
+            raise "Unknown operator",op
       except:
          traceback.print_exc()
          raise "Fail to build query for '%s', '%s', '%s', case='%s'"%(self.printQuery(sel),tc,val,case)
-  def buildListExp(self,sel,tc,idList):
+
+  def buildListExp(self,sel,tc,idList,case='on'):
       condList=[]
       for id in idList:
           cList=[]
-          cList.append(tc==id)
+          if case=="on":
+             cList.append(tc==id)
+          else:
+             cList.append(sqlalchemy.func.upper(tc)>id.upper())
           condList.append(sqlalchemy.and_(*cList))
       if len(condList): 
          sel.append_whereclause(sqlalchemy.or_(*condList))
@@ -3130,7 +3148,7 @@ MCDescription:      %s
           kwargs=kwargs['input']
           tblk = self.alias('Block','tblk')
           oSel =[self.col(tblk,'Path')]
-          sel  = sqlalchemy.select(oSel,from_obj=[tblk],distinct=True )
+          sel  = sqlalchemy.select(oSel,from_obj=[tblk],order_by=oSel,distinct=True )
           if kwargs.has_key('block'):
              blk_name='*'+kwargs['block'].replace('*','')+'*' # always use like, since block=/path#GUID
              self.buildExp(sel,self.col(tblk,'Name'),blk_name,case)
@@ -3239,7 +3257,7 @@ MCDescription:      %s
           oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
           obj  = obj.join(tse,onclause=self.col(tse,'ID')==self.col(tseb,'SEID'))
-          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],order_by=oSel,distinct=True )
           if kwargs.has_key('site'):
              self.buildExp(sel,self.col(tse,'SEName'),kwargs['site'],case)
           return sel
@@ -3262,7 +3280,7 @@ MCDescription:      %s
           obj  = tr.join(tl,onclause=self.col(tr,'ID')==self.col(tl,'RunNumber'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('lumi'):
-             self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case,split=1)
+             self.buildExp(sel,self.col(tl,'LumiSectionNumber'),kwargs['lumi'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tl,'ID'),kwargs['idlist'])
           elif kwargs.has_key('sel'):
@@ -3291,7 +3309,7 @@ MCDescription:      %s
           obj  = obj.join(tr,onclause=self.col(tpr,'Run')==self.col(tr,'ID'))
           sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
           if kwargs.has_key('run'):
-             self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case,split=1)
+             self.buildExp(sel,self.col(tr,'RunNumber'),kwargs['run'],case)
           elif kwargs.has_key('idlist'):
              self.buildListExp(sel,self.col(tr,'ID'),kwargs['idlist'])
           elif kwargs.has_key('sel'):
@@ -3316,7 +3334,7 @@ MCDescription:      %s
           tblk = self.alias('Block','tblk')
           oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tf,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
-          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],order_by=oSel,distinct=True )
           if kwargs.has_key('file'):
              self.buildExp(sel,self.col(tf,'LogicalFileName'),kwargs['file'],case)
           elif kwargs.has_key('idlist'):
@@ -3399,7 +3417,7 @@ MCDescription:      %s
           tblk = self.alias('Block','tblk')
           oSel =[self.col(tblk,'Path')]
           obj  = tblk.join(tprd,onclause=self.col(tprd,'ID')==self.col(tblk,'Dataset'))
-          sel  = sqlalchemy.select(oSel,from_obj=[obj],distinct=True )
+          sel  = sqlalchemy.select(oSel,from_obj=[obj],order_by=oSel,distinct=True )
           if kwargs.has_key('proc'):
              self.buildExp(sel,self.col(tprd,'Name'),kwargs['proc'],case)
           elif kwargs.has_key('idlist'):
@@ -3416,29 +3434,80 @@ MCDescription:      %s
       print "Call Ads2Proc",str(kwargs)
       return []
 
-  def FindDatasets(self,iSel,fromRow=0,limit=0,count=0):
-      """Take a list of input blockid's and return list of dataset"""
-      qList=[]
-      for item in iSel.split():
-          query=eval(item)
-          qList.append( query )
-          bparams=self.extractBindParams(query)
+  def processSelSeq(self,iList):
+      """
+         I got input list ( a and b or c ... ), with optional brackets. Will transform it into SQL
+         The a,b,c in this example are path-functions.
+      """
+      if len(iList)==1: return iList[0]
+      if iList[0]=="(":
+         iList = iList[1:-1]
+      # get 3 first elements from the list and eval 1st and 3d, since those are functions, and
+      # construct either union or intersect between SQL statements
+      i1 = iList[0]
+      i2 = iList[1]
+      i3 = iList[2]
+      qList=[i1,i3]
+      if i2.lower()=="and":
+         sel = sqlalchemy.intersect(*qList)
+      elif i2.lower()=="or":
+         sel = sqlalchemy.union(*qList)
+      else:
+         raise "Unknown operator '%s'"%i2
+      if len(iList)>3:
+         return self.processSelSeq([sel]+iList[3:])
+      else:
+         return sel
+
+  def processSelExp(self,input):
+      """Transform input expression ((q1 and q2) or q3) into SQL"""
+      # input is a string, where queries are transformed into path-fuinctions
+      iList=[]
+      for item in input.split():
+          if item[:4]=="self":
+             iList.append(eval(item))
+          else:
+             iList.append(item)
+      input = iList
+      lpos=-1
+      rpos=-1
+      for idx in xrange(0,len(input)):
+          if input[idx]=="(":
+             lpos=idx
+          if input[idx]==")" and not rpos:
+             rpos=idx
+      if lpos!=-1 and rpos!=-1:
+         expr = self.processSelSeq(input[lpos:rpos+1])
+         return self.processSelExp(input[:lpos]+[expr]+input[rpos+1:])
+      else:
+         return self.processSelSeq(input)
+
+  def FindDatasets(self,iList,fromRow=0,limit=0,count=0):
+      """Take input list of path-functions and construct out of them SQL and process it"""
       # NOTE: INTERSECT works ONLY in ORACLE
-      sel  = sqlalchemy.intersect(*qList)
+      sel = self.processSelExp(iList)
+#      qList=[]
+#      for item in iList.split():
+#          query=eval(item)
+#          qList.append( query )
+#          bparams=self.extractBindParams(query)
+#      sel  = sqlalchemy.intersect(*qList)
       if not count and self.verbose:
-         print "\n\n+++FindDatasets",str(iSel)
+         print "\n\n+++FindDatasets",str(iList)
          print self.printQuery(sel)
+         print self.extractBindParams(sel)
       oList=[]
       con  = self.connectToDB()
       try:
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          msg="\n### Query:\n"+str(sel)+str(bidList)
+          msg="\n### Query:\n"+str(sel)+str(iList)
           self.printExcept(msg)
           raise "Fail in FindDatasets"
       if count:
           nd=0
           for item in result:
+              print item
               nd+=1
           return nd
       idx=0
