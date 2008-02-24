@@ -3100,7 +3100,7 @@ MCDescription:      %s
          print op,val
          if op=='like':
             return self.buildLikeExp(sel,tc,val,case)
-         elif op=='not like':
+         elif op=='not like' or op=='not_like':
             return self.buildNotLikeExp(sel,tc,val,case)
          elif op=="<":
             return self.buildLtExp(sel,tc,val,case)
@@ -3447,6 +3447,7 @@ MCDescription:      %s
       i1 = iList[0]
       i2 = iList[1]
       i3 = iList[2]
+#      print "\n\n+++processSelSeq",i1,i2,i3
       qList=[i1,i3]
       if i2.lower()=="and":
          sel = sqlalchemy.intersect(*qList)
@@ -3454,6 +3455,7 @@ MCDescription:      %s
          sel = sqlalchemy.union(*qList)
       else:
          raise "Unknown operator '%s'"%i2
+#      print "\n\n+++processSelSeq new query is\n",self.printQuery(sel)
       if len(iList)>3:
          return self.processSelSeq([sel]+iList[3:])
       else:
@@ -3462,8 +3464,10 @@ MCDescription:      %s
   def processSelExp(self,input):
       """Transform input expression ((q1 and q2) or q3) into SQL"""
       # input is a string, where queries are transformed into path-fuinctions
+#      print "\n\n+++processSelExp",input
       iList=[]
       for item in input.split():
+          print "item",item
           if item[:4]=="self":
              iList.append(eval(item))
           else:
@@ -3507,7 +3511,6 @@ MCDescription:      %s
       if count:
           nd=0
           for item in result:
-              print item
               nd+=1
           return nd
       idx=0

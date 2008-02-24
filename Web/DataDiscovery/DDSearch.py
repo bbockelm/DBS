@@ -14,7 +14,7 @@ import os, string, logging, types, time, traceback, new
 import DDUtil
 
 def constrainList():
-    return ['>=','>','<=','<','=','not like','like','in','between']
+    return ['>=','>','<=','<','=','not_like','not like','like','in','between']
 #    return ['>=','>','<=','<','=','not like','like','in','between','is not null','is null']
 
 class DDSearch:
@@ -88,7 +88,6 @@ class DDSearch:
 
    def parser(self,input,case='on'):
        words=self.parseInput(self.preParseInput(input),case)
-       print words
        return words
 
    def preParseInput(self,input):
@@ -149,6 +148,8 @@ class DDSearch:
        for w in words:
            if w.find(":")!=-1:
               f,v=w.split(":")
+              if v.find('not like')==0:
+                 v='not_like'+v[len('not like'):]
               try:
                  fList = self.dbs_map[f]
                  _call = ""
