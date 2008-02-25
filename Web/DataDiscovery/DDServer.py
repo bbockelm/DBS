@@ -1213,9 +1213,11 @@ class DDServer(DDLogger,Controller):
            for i in elem:
                if i.tag=="request":
                   id=i.attrib['id']
-                  status="""Your request processed, request ID='%s', check its status <a href="%s?api=getRequestByID&request_id=%s">here</a>"""%(adminUrl,id,id,id)
+                  status="""Your request processed, request ID='%s', check its status <a href="%s?api=getRequestByID&request_id=%s">here</a>"""%(id,adminUrl,id)
                elif i.tag=="exception":
                   status="DBS server returns code=%s, %s"%(i.attrib['code'],i.attrib['detail'])
+               elif i.tag=="error":
+                  status="DBS server returns error, %s"%(i.attrib['message'])
         else:
             status="Fail to send HTTP request %s, %s"%(code,response.reason)
         return "<em>"+status+"</em>"
