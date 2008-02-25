@@ -1,6 +1,7 @@
 package fnal.gov.web.servlet;
 
 import fnal.gov.ejb.entity.Request;
+import fnal.gov.ejb.session.MSSessionEJB;
 import fnal.gov.ejb.session.MSSessionEJBLocal;
 import fnal.gov.web.util.Util;
 
@@ -9,19 +10,32 @@ import java.io.PrintWriter;
 
 import java.util.List;
 
+import javax.jms.Queue;
+
+import javax.jms.QueueConnectionFactory;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+//import javax.ejb.EJB;
+
 public class MigrationServlet extends HttpServlet {
-    
-    private MSSessionEJBLocal myBean;
+    //@EJB(beanInterface=fnal.gov.ejb.session.MSSessionEJBLocal.class, name="ms/MSSessionEJB/local")
+    private MSSessionEJBLocal mySessionBean;
+    private Queue queue;
+    private QueueConnectionFactory factory;
     private Util u;
+    
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         u = new Util();
-        Object obj = u.getEJB("ms/MSSessionEJB/local");
-        if(obj != null)  myBean = (MSSessionEJBLocal) obj;
+        Object obj = u.getJNDIObj("ms/MSSessionEJB/local");
+        if(obj != null)  mySessionBean = (MSSessionEJBLocal) obj;
+        obj = u.getJNDIObj("queue/mdb");
+        if(obj != null) queue = (Queue) obj;
+        obj = u.getJNDIObj("ConnectionFactory");
+        if(obj != null) factory = (QueueConnectionFactory)obj;
     }
 
     public void doGet(HttpServletRequest request, 
@@ -51,8 +65,12 @@ public class MigrationServlet extends HttpServlet {
             out.println(header);
             
             String apiStr = u.get(request, "api", true);
+            if(mySessionBean == null) {
+                out.println("Bean is null");
+                return;
+            }
             if (apiStr.equals("addRequest")) {
-                Request r = myBean.addRequest(
+                Request r = mySessionBean.addRequest(
                     u.get(request, "src_url", true),
                     u.get(request, "dst_url", true),
                     u.get(request, "path", true),
@@ -61,13 +79,14 @@ public class MigrationServlet extends HttpServlet {
                     u.get(request, "with_force", false),
                     u.get(request, "notify", false)
                 );
+                u.sendMsg(factory, queue, "newRequest");
                 out.println(reqTag + breakTag);
                 out.println(breakTag + "id = '" + r.getId() + "'");
                 out.println(tagClose);
             }
             
-            if (apiStr.equals("deleteRequest")) {
-                myBean.deleteRequest(
+            else if (apiStr.equals("deleteRequest")) {
+                mySessionBean.deleteRequest(
                     u.get(request, "src_url", true),
                     u.get(request, "dst_url", true),
                     u.get(request, "path", true)                
@@ -77,8 +96,8 @@ public class MigrationServlet extends HttpServlet {
                 out.println(tagClose);
             }
             
-            if (apiStr.equals("getRequestByUser")) {
-                List<Request> rList = myBean.getRequestByUser(u.get(request, "dn", true));
+            else if (apiStr.equals("getRequestByUser")) {
+                List<Request> rList = mySessionBean.getRequestByUser(u.get(request, "dn", true));
                 for(int i = 0 ; i != rList.size(); ++i) {
                     Request r = rList.get(i);
                     out.println(reqTag + breakTag);
@@ -97,8 +116,8 @@ public class MigrationServlet extends HttpServlet {
                 }
             }
 
-            if (apiStr.equals("getRequestById")) {
-                List<Request> rList = myBean.getRequestById(Long.parseLong(u.get(request, "request_id", true)));
+            else if (apiStr.equals("getRequestById")) {
+                List<Request> rList = mySessionBean.getRequestById(Long.parseLong(u.get(request, "request_id", true)));
                 for(int i = 0 ; i != rList.size(); ++i) {
                     Request r = rList.get(i);
                     out.println(reqTag + breakTag);
@@ -116,9 +135,10 @@ public class MigrationServlet extends HttpServlet {
                     out.println(tagClose);
                 }
             }
+            else throw new Exception ("API " + apiStr + " not recognized");
             
             /*if (apiStr.equals("updateRequest")) {
-                myBean.updateRequest(
+                mySessionBean.updateRequest(
                     u.get(request, "src_url", true),
                     u.get(request, "dst_url", true),
                     u.get(request, "path", true),

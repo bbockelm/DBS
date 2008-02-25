@@ -25,6 +25,11 @@
          <profileURL path="../ui/mswebapp.deploy"/>
          <projectURL path="../ui/ui.jpr"/>
       </Item>
+      <Item>
+         <pathInEar class="java.lang.String"/>
+         <profileURL path="../client/msclient.deploy"/>
+         <projectURL path="../client/client.jpr"/>
+      </Item>
    </profileDeps>
    <properties/>
 </ear-deployment>

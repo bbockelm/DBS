@@ -32,6 +32,9 @@
       <string v="oracle.tip.tools.ide.pm.addin.PMProjectSettings/Integration_Content"/>
    </list>
    <value n="defaultPackage" v="ui"/>
+   <hash n="ejbModuleContainer">
+      <value n="ejbVersion" v="NOT SPECIFIED"/>
+   </hash>
    <hash n="oracle.bm.commonIde.data.project.ModelerProjectSettings">
       <hash n="modelersContentSet">
          <list n="url-path">
@@ -52,16 +55,7 @@
          </list>
       </hash>
    </hash>
-   <hash n="oracle.jdeveloper.compiler.ant.AntConfiguration">
-      <value n="makeTarget" v="all"/>
-      <url n="projectBuildfile" path="build.xml"/>
-      <list n="targetList">
-         <string v="all"/>
-         <string v="clean"/>
-         <string v="compile"/>
-         <string v="copy"/>
-      </list>
-   </hash>
+   <hash n="oracle.jdeveloper.compiler.ant.AntConfiguration"/>
    <hash n="oracle.jdeveloper.compiler.OjcConfiguration">
       <value n="internalEncoding" v="Cp1252"/>
    </hash>
@@ -111,10 +105,26 @@
             <value n="id" v="Servlet Runtime"/>
             <value n="isJDK" v="false"/>
          </hash>
+         <hash>
+            <value n="id" v="EJB 3.0"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <url n="id" path="../../../system/oracle.jdeveloper.10.1.3.41.57/Javaee.jar.library"/>
+            <value n="isJDK" v="false"/>
+         </hash>
       </list>
       <list n="libraryReferences">
          <hash>
             <value n="id" v="Servlet Runtime"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="EJB 3.0"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <url n="id" path="../../../system/oracle.jdeveloper.10.1.3.41.57/Javaee.jar.library"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>
