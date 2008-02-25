@@ -501,20 +501,34 @@ function registerAjaxObjectCalls() {
 }
 function registerAjaxUserMenuCalls() {
     ajaxEngine.registerRequest('ajaxGetPrimDSTypes','getPrimaryDSTypes');
-    ajaxEngine.registerAjaxElement('kw_primType_holder');
+    ptUpdater = new GetDataUpdater('kw_primType_holder','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('kw_primType_holder',ptUpdater);
+//    ajaxEngine.registerAjaxElement('kw_primType_holder');
     ajaxEngine.registerRequest('ajaxGetReleases','getSoftwareReleases');
-    ajaxEngine.registerAjaxElement('kw_release_holder');
+    relUpdater = new GetDataUpdater('kw_release_holder','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('kw_release_holder',relUpdater);
+//    ajaxEngine.registerAjaxElement('kw_release_holder');
     ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');
-    ajaxEngine.registerAjaxElement('kw_prim_holder');
+    primUpdater = new GetDataUpdater('kw_prim_holder','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('kw_prim_holder',primUpdater);
+//    ajaxEngine.registerAjaxElement('kw_prim_holder');
     ajaxEngine.registerRequest('ajaxGetTiers','getTiers');
-    ajaxEngine.registerAjaxElement('kw_tier_holder');
+    tierUpdater = new GetDataUpdater('kw_tier_holder','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('kw_tier_holder',tierUpdater);
+//    ajaxEngine.registerAjaxElement('kw_tier_holder');
     ajaxEngine.registerRequest('ajaxGetSites','getSites');
-    ajaxEngine.registerAjaxElement('kw_site_holder');
+    siteUpdater = new GetDataUpdater('kw_site_holder','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('kw_site_holder',siteUpdater);
+//    ajaxEngine.registerAjaxElement('kw_site_holder');
     ajaxEngine.registerAjaxElement('form2_siteHolder');
     ajaxEngine.registerRequest('ajaxGetGroups','getGroups');
-    ajaxEngine.registerAjaxElement('kw_group_holder');
+    groupUpdater = new GetDataUpdater('kw_group_holder','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('kw_group_holder',groupUpdater);
+//    ajaxEngine.registerAjaxElement('kw_group_holder');
 
     ajaxEngine.registerRequest('ajaxGetRunRange','getRunRange');
+//    rrUpdater = new GetDataUpdater('kw_runRange_holder','replace','noResultsMenu');
+//    ajaxEngine.registerAjaxObject('kw_runRange_holder',rrUpdater);
     ajaxEngine.registerAjaxElement('kw_runRange_holder');
 
 //    ajaxEngine.registerRequest('ajaxGetBranches','getBranches');

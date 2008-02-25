@@ -3024,13 +3024,15 @@ All LFNs in a block
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_group_holder">"""
+        page="""<ajax-response><response type="object" id="kw_group_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getPhysicsGroups()
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'group','iList': dList,'selTag':'kw_group','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        t = templateSetFromCookie(searchList=[{'name':'group'}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3072,7 +3074,7 @@ All LFNs in a block
         if not sel: sel="kw_site_holder"
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="%s">"""%sel
+        page="""<ajax-response><response type="object" id="%s">"""%sel
         self.helperInit(dbsInst)
 #        dList=['Any']+self.helper.getSites()
         siteDict=sortSitesByDomain(self.helper.getSites())
@@ -3081,6 +3083,8 @@ All LFNs in a block
 #        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':'','style':style}
         nameSpace = {'name':tag,'iList': siteDict,'selTag':tag,'changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        t = templateSetFromCookie(searchList=[{'name':'site'}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3094,13 +3098,15 @@ All LFNs in a block
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_tier_holder">"""
+        page="""<ajax-response><response type="object" id="kw_tier_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getDataTiers()
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        t = templateSetFromCookie(searchList=[{'name':'tier'}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3114,7 +3120,7 @@ All LFNs in a block
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_prim_holder">"""
+        page="""<ajax-response><response type="object" id="kw_prim_holder">"""
         self.helperInit(dbsInst)
         group=tier=rel=dsType="*"
         for key in kwargs:
@@ -3135,6 +3141,8 @@ All LFNs in a block
         nameSpace = {'name':'primD','iList': ['Any']+natsort24(dList),'selTag':'kw_prim','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
+        t = templateSetFromCookie(searchList=[{'name':'prim'}])
+        page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
            self.writeLog(page)
@@ -3147,7 +3155,7 @@ All LFNs in a block
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_release_holder">"""
+        page="""<ajax-response><response type="object" id="kw_release_holder">"""
         self.helperInit(dbsInst)
         relList=self.helper.getSoftwareReleases()
         relList.reverse()
@@ -3157,6 +3165,8 @@ All LFNs in a block
         if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'app','iList': dList,'selTag':'kw_release','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        t = templateSetFromCookie(searchList=[{'name':'release'}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3170,7 +3180,7 @@ All LFNs in a block
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_primType_holder">"""
+        page="""<ajax-response><response type="object" id="kw_primType_holder">"""
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getPrimaryDSTypes()
         cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
@@ -3179,6 +3189,8 @@ All LFNs in a block
         if kwargs.has_key('changeFunction'): cFunc=kwargs['changeFunction']
         nameSpace = {'name':'primType','iList': dList,'selTag':'kw_primType','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        t = templateSetFromCookie(searchList=[{'name':'primType'}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:

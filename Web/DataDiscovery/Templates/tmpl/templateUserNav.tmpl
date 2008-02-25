@@ -236,7 +236,7 @@ to:
 <td>
 ###<input type="submit" value="Find" onclick="javascript:checkNavSelection()" />
 <input type="reset" value="Reset" onclick="resetUserNav()" />
-<input type="submit" value="Find" id='userNavId' />
+<input type="submit" value="Find" id='userNavId' onclick="SetNavigatorCookies()"/>
 </td>
 </tr>
 </table>
@@ -500,6 +500,27 @@ function UpdateCaseSens() {
   }
 }
 UpdateCaseSens();
+function SetNavigatorCookies() {
+    var tag=document.getElementById('kw_dbsInstSelector');
+    SetCookie('DBSDD_dbsInst',tag.value);
+    tag=document.getElementById('kw_group');
+    SetCookie('DBSDD_group',tag.value);
+    tag=document.getElementById('kw_tier');
+    SetCookie('DBSDD_tier',tag.value);
+    tag=document.getElementById('kw_cTier');
+    SetCookie('DBSDD_cTier',tag.value);
+    tag=document.getElementById('kw_release');
+    //SetCookie('DBSDD_release',tag.value);
+    SetCookie('DBSDD_release',tag.value);
+    tag=document.getElementById('kw_primType');
+    SetCookie('DBSDD_primType',tag.value);
+    tag=document.getElementById('kw_prim');
+    SetCookie('DBSDD_prim',tag.value);
+    tag=document.getElementById('kw_site');
+    SetCookie('DBSDD_site',tag.value);
+    tag=document.getElementById('kw_date');
+    SetCookie('DBSDD_date',tag.value);
+}
 </script>
 
 <!-- end of templateUserNav.tmpl -->
