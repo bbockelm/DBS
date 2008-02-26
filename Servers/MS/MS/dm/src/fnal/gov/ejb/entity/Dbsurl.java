@@ -116,6 +116,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -138,10 +139,13 @@ public class Dbsurl implements Serializable {
     private Long id;
     @Column(nullable = false)
     private String url;
+    /*
+    //@OneToMany(mappedBy = "dstUrl", fetch = FetchType.EAGER)
     @OneToMany(mappedBy = "dstUrl")
     private List<Request> requestList;
+    //@OneToMany(mappedBy = "srcUrl", fetch = FetchType.EAGER)
     @OneToMany(mappedBy = "srcUrl")
-    private List<Request> requestList1;
+    private List<Request> requestList1;*/
 
     public Dbsurl() {
     }
@@ -161,7 +165,7 @@ public class Dbsurl implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
-
+/*
     public List<Request> getRequestList() {
         return requestList;
     }
@@ -200,5 +204,5 @@ public class Dbsurl implements Serializable {
         getRequestList1().remove(request);
         request.setSrcUrl(null);
         return request;
-    }
+    }*/
 }

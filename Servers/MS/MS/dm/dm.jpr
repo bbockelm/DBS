@@ -38,6 +38,7 @@
          <url path="src/fnal/gov/ejb/entity/Person.java"/>
          <url path="src/fnal/gov/ejb/entity/Request.java"/>
          <url path="src/fnal/gov/ejb/session/MSSessionEJBBean.java"/>
+         <url path="src/fnal/gov/ejb/md/MSMessageDrivenEJBBean.java"/>
       </list>
       <value n="cmpProvider" v="EJB 3.0"/>
       <value n="dbConnection" v="Mysql_MS_on_cmssrv48"/>
@@ -46,6 +47,7 @@
          <value n="38eecf0a-0118-1000-8002-83e15ebe24ce" v="fnal.gov.ejb.entity.Person"/>
          <value n="38eecf97-0118-1000-8003-83e15ebe24ce" v="fnal.gov.ejb.entity.Request"/>
          <value n="38f444ee-0118-1000-8004-83e15ebe24ce" v="fnal.gov.ejb.session.MSSessionEJBBean"/>
+         <value n="51ec981c-0118-1000-8001-c0a80165fbe2" v="fnal.gov.ejb.md.MSMessageDrivenEJBBean"/>
       </hash>
       <value n="ejbVersion" v="3.0"/>
    </hash>
@@ -55,6 +57,20 @@
             <url path="model/"/>
          </list>
       </hash>
+   </hash>
+   <hash n="oracle.ide.model.DependencyConfiguration">
+      <list n="dependencyList">
+         <hash>
+            <value n="class" v="oracle.jdevimpl.deploy.ProfileLibrary"/>
+            <url n="sourceOwnerURL" path="../client/client.jpr"/>
+            <url n="sourceURL" path="../client/msclient.deploy"/>
+         </hash>
+         <hash>
+            <value n="class" v="oracle.jdeveloper.library.ProjectLibrary"/>
+            <url n="sourceOwnerURL" path="../MS.jws"/>
+            <url n="sourceURL" path="../client/client.jpr"/>
+         </hash>
+      </list>
    </hash>
    <hash n="oracle.ide.model.ResourcePaths">
       <hash n="resourcesContentSet">
@@ -66,16 +82,7 @@
          </list>
       </hash>
    </hash>
-   <hash n="oracle.jdeveloper.compiler.ant.AntConfiguration">
-      <value n="makeTarget" v="all"/>
-      <url n="projectBuildfile" path="build.xml"/>
-      <list n="targetList">
-         <string v="all"/>
-         <string v="clean"/>
-         <string v="compile"/>
-         <string v="copy"/>
-      </list>
-   </hash>
+   <hash n="oracle.jdeveloper.compiler.ant.AntConfiguration"/>
    <hash n="oracle.jdeveloper.compiler.OjcConfiguration">
       <value n="internalEncoding" v="Cp1252"/>
    </hash>
@@ -120,7 +127,16 @@
       </list>
    </hash>
    <hash n="oracle.jdevimpl.config.JProjectLibraries">
-      <list n="exportedReferences"/>
+      <list n="exportedReferences">
+         <hash>
+            <value n="id" v="AQJMS"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="JSR-181 Web Services"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+      </list>
       <list n="libraryReferences">
          <hash>
             <value n="id" v="EJB 3.0"/>
@@ -132,6 +148,14 @@
          </hash>
          <hash>
             <value n="id" v="J2EE"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="AQJMS"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="JSR-181 Web Services"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>

@@ -126,8 +126,9 @@ public class Person implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long id;
-    @OneToMany(mappedBy = "person")
-    private List<Request> requestList;
+    
+    /*@OneToMany(mappedBy = "person")
+    private List<Request> requestList;*/
 
     public Person() {
     }
@@ -147,7 +148,7 @@ public class Person implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
+/*
     public List<Request> getRequestList() {
         return requestList;
     }
@@ -166,5 +167,5 @@ public class Person implements Serializable {
         getRequestList().remove(request);
         request.setPerson(null);
         return request;
-    }
+    }*/
 }

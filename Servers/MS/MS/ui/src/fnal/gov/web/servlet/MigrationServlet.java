@@ -1,7 +1,7 @@
 package fnal.gov.web.servlet;
 
 import fnal.gov.ejb.entity.Request;
-import fnal.gov.ejb.session.MSSessionEJB;
+//import fnal.gov.ejb.session.MSSessionEJB;
 import fnal.gov.ejb.session.MSSessionEJBLocal;
 import fnal.gov.web.util.Util;
 
@@ -10,9 +10,9 @@ import java.io.PrintWriter;
 
 import java.util.List;
 
-import javax.jms.Queue;
+//import javax.jms.Queue;
 
-import javax.jms.QueueConnectionFactory;
+//import javax.jms.QueueConnectionFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -22,8 +22,8 @@ import javax.servlet.http.*;
 public class MigrationServlet extends HttpServlet {
     //@EJB(beanInterface=fnal.gov.ejb.session.MSSessionEJBLocal.class, name="ms/MSSessionEJB/local")
     private MSSessionEJBLocal mySessionBean;
-    private Queue queue;
-    private QueueConnectionFactory factory;
+    /*private Queue queue;
+    private QueueConnectionFactory factory;*/
     private Util u;
     
 
@@ -32,10 +32,10 @@ public class MigrationServlet extends HttpServlet {
         u = new Util();
         Object obj = u.getJNDIObj("ms/MSSessionEJB/local");
         if(obj != null)  mySessionBean = (MSSessionEJBLocal) obj;
-        obj = u.getJNDIObj("queue/mdb");
+        /*obj = u.getJNDIObj("queue/mdb");
         if(obj != null) queue = (Queue) obj;
         obj = u.getJNDIObj("ConnectionFactory");
-        if(obj != null) factory = (QueueConnectionFactory)obj;
+        if(obj != null) factory = (QueueConnectionFactory)obj;*/
     }
 
     public void doGet(HttpServletRequest request, 
@@ -79,7 +79,7 @@ public class MigrationServlet extends HttpServlet {
                     u.get(request, "with_force", false),
                     u.get(request, "notify", false)
                 );
-                u.sendMsg(factory, queue, "newRequest");
+                //u.sendMsg(factory, queue, "newRequest");
                 out.println(reqTag + breakTag);
                 out.println(breakTag + "id = '" + r.getId() + "'");
                 out.println(tagClose);
