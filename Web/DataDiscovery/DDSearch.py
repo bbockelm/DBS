@@ -96,7 +96,7 @@ class DDSearch:
     
    def parseInput(self,input,case):
        iList = input.split()
-       print "My input",input,iList
+#       print "My input",input,iList
        msg   = "Fail to parse your input"
        words = []
        pDict = {}

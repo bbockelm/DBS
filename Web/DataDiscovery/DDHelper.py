@@ -3467,7 +3467,7 @@ MCDescription:      %s
 #      print "\n\n+++processSelExp",input
       iList=[]
       for item in input.split():
-          print "item",item
+#          print "item",item
           if item[:4]=="self":
              iList.append(eval(item))
           else:
