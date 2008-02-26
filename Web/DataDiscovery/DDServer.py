@@ -1938,6 +1938,7 @@ class DDServer(DDLogger,Controller):
         page=self.genTopHTML(userMode=userMode)
         try:
             page+= self.whereMsg('Navigator :: Results :: File block information',userMode)
+            self.helperInit(dbsInst)
             blkList = self.helper.getBlocksInfo(dataset)
             nameSpace = {
                          'blkList'  : blkList,
