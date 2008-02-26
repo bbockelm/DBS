@@ -3123,7 +3123,10 @@ All LFNs in a block
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="kw_prim_holder">"""
         self.helperInit(dbsInst)
-        group=tier=rel=dsType="*"
+        group="*"
+        tier="*"
+        rel="*"
+        dsType="*"
         for key in kwargs:
             if key=='group':
                group=kwargs['group']

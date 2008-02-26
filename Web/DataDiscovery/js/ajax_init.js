@@ -855,7 +855,27 @@ function ajaxGetTriggerLines(_dbs,_cFunc) {
       ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'changeFunction='+_cFunc);
       return;
   }
-  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
+  var rel="*";
+  var tier="*";
+  var group="*";
+  var dsType="*";
+  var _rel=GetCookie('DBSDD_release');
+  if(_rel) {
+     rel=_rel;
+  }
+  var _group=GetCookie('DBSDD_group');
+  if(_group) {
+     group=_group;
+  }
+  var _tier=GetCookie('DBSDD_tier');
+  if(_tier) {
+     tier=_tier;
+  }
+  var _dsType=GetCookie('DBSDD_primType');
+  if(_dsType) {
+     dsType=_dsType;
+  }
+  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel,'dsType='+dsType);
 }
 function ajaxGetPrimDSTypes(_dbs,_cFunc) {
   var dbs=getDBS_kw(_dbs);
