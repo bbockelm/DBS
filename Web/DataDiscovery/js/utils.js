@@ -1380,7 +1380,13 @@ function D2E_dates() {
    Disable2Enable('kw_date','kw_cDate1','kw_cDate2');
 }
 function resetUserNav() {
-   $('kw_tier').disabled='';
+   var val=GetCookie('DBSDD_dbsInst');
+   if (val) {
+       ResetSelect('kw_dbsInstSelector',val);
+   }
+   if($('kw_tier')) {
+      $('kw_tier').disabled='';
+   }
    if($('kw_cTier')) {
       $('kw_cTier').disabled='disabled';
    }

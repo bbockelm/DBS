@@ -3033,7 +3033,7 @@ All LFNs in a block
         nameSpace = {'name':'group','iList': dList,'selTag':'kw_group','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
-        t = templateSetFromCookie(searchList=[{'name':'group'}])
+        t = templateSetFromCookie(searchList=[{'name':'group','func':''}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3085,7 +3085,7 @@ All LFNs in a block
         nameSpace = {'name':tag,'iList': siteDict,'selTag':tag,'changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
-        t = templateSetFromCookie(searchList=[{'name':'site'}])
+        t = templateSetFromCookie(searchList=[{'name':'site','func':''}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3107,7 +3107,7 @@ All LFNs in a block
         nameSpace = {'name':'tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
-        t = templateSetFromCookie(searchList=[{'name':'tier'}])
+        t = templateSetFromCookie(searchList=[{'name':'tier','func':''}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3142,7 +3142,7 @@ All LFNs in a block
         nameSpace = {'name':'primD','iList': ['Any']+natsort24(dList),'selTag':'kw_prim','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
-        t = templateSetFromCookie(searchList=[{'name':'prim'}])
+        t = templateSetFromCookie(searchList=[{'name':'prim','func':''}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3167,7 +3167,7 @@ All LFNs in a block
         nameSpace = {'name':'app','iList': dList,'selTag':'kw_release','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
-        t = templateSetFromCookie(searchList=[{'name':'release'}])
+        t = templateSetFromCookie(searchList=[{'name':'release','func':'ajaxUpdatePrimaryDatasets();'}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -3191,7 +3191,7 @@ All LFNs in a block
         nameSpace = {'name':'primType','iList': dList,'selTag':'kw_primType','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
-        t = templateSetFromCookie(searchList=[{'name':'primType'}])
+        t = templateSetFromCookie(searchList=[{'name':'primType','func':'ajaxUpdatePrimaryDatasets();'}])
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
