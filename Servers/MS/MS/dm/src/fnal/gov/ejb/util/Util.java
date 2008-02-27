@@ -30,7 +30,7 @@ public class Util {
     }
     
     
-    public Object getJNDIObj(String jndiName) {
+    /*public Object getJNDIObj(String jndiName) {
             Object object = null;
             try {
                 InitialContext ctx = new InitialContext();
@@ -39,18 +39,12 @@ public class Util {
                 e.printStackTrace();
             }
             return object;
-    }
+    }*/
     
-    public void sendMsg(QueueConnectionFactory factory, Queue queue, String strMsg) throws Exception{
-        QueueConnection conn = null;
-        try {
-            conn = factory.createQueueConnection();
-            QueueSession session = conn.createQueueSession(false,QueueSession.AUTO_ACKNOWLEDGE);
-            TextMessage msg = session.createTextMessage(strMsg);
-            session.createSender(queue).send(msg);
-        
-        } finally {
-            if (conn != null ) conn.close();
-        }
+    //public void sendMsg(QueueConnectionFactory factory, Queue queue, String strMsg) throws Exception{
+    public void sendMsg(QueueConnection conn, Queue queue, String strMsg) throws Exception{
+        QueueSession session = conn.createQueueSession(false,QueueSession.AUTO_ACKNOWLEDGE);
+        TextMessage msg = session.createTextMessage(strMsg);
+        session.createSender(queue).send(msg);        
     }
 }

@@ -15,20 +15,73 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import fnal.gov.ejb.util.Util;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+
+import javax.ejb.SessionContext;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+
+import javax.jws.WebService;
+
 //import javax.transaction.UserTransaction;
 
 @Stateless(name="MSSessionEJB")
-public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal {
+@WebService(endpointInterface = "fnal.gov.ejb.session.MSSessionEJBWS")
+public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal, MSSessionEJBWS {
+//public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal {
     @PersistenceContext(unitName="dm")
     private EntityManager em;
     private Util u;
+    @Resource
+    private SessionContext ctx;
+    
+    
+    @Resource(mappedName = "ConnectionFactory")
+    private QueueConnectionFactory factory;
+    @Resource(mappedName = "queue/mdb")
+    private Queue queue;
+    private QueueConnection conn;
     //@Resource
     //private UserTransaction utx;
 
 
     public MSSessionEJBBean() {
         u = new Util();
+        /*Object obj = u.getJNDIObj("queue/mdb");
+        if(obj != null) queue = (Queue) obj;
+        obj = u.getJNDIObj("ConnectionFactory");
+        if(obj != null) factory = (QueueConnectionFactory)obj;*/
     }
+
+
+    @PostConstruct
+    public void makeConnection() {
+        try {
+            conn = factory.createQueueConnection();
+        } catch (Exception e) {
+            //throw new JMSException(t.toString());
+             e.printStackTrace();
+        }
+    }
+
+    @PreDestroy
+    public void endConnection() throws RuntimeException {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public Object mergeEntity(Object entity) {
         return em.merge(entity);
@@ -77,9 +130,13 @@ public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal {
     }
     
     public List<Request> getRequestByUser(String dn) throws Exception {
-        return em.createNamedQuery("Request.findByDn")
+        //System.out.println("DN is -----------------------> " + dn);
+        //List<Request> rList = em.createNamedQuery("Request.findByDn")
+        return  em.createNamedQuery("Request.findByDn")
             .setParameter("distinguishedName", dn)
             .getResultList();
+        //System.out.println("Rlist returned hhahah");
+        //return(rList);
     }
 
     public List<Request> getRequestByStatus(String status) throws Exception {
@@ -88,7 +145,7 @@ public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal {
             .getResultList();
     }
 
-
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void deleteRequest(String srcUrl, String dstUrl, String path ) throws Exception {
         List<Request> reqList = getRequest(srcUrl, dstUrl, path);
         Request r;
@@ -118,10 +175,12 @@ public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal {
         if(reqList.size() >  0) {
             r = reqList.get(0);
             System.out.println("Request with ID = " + r.getId() + " Already exists");
+            ctx.setRollbackOnly();
             throw new Exception("Request with ID = " + r.getId() + " Already exists");
             
         } else {
-        
+            if (u.isNull(withParents)) withParents = "y";
+            if (u.isNull(withForce)) withForce = "y";
             Dbsurl dbsUrlDst = addDbsUrl(dstUrl);
             Dbsurl dbsUrlSrc = addDbsUrl(srcUrl);
             Person p = addPerson(dn);
@@ -137,8 +196,11 @@ public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal {
             r.setStatus("Queued");
             r.setDetail("Waiting to be Picked up");
             em.persist(r);
-            System.out.println("Entity persisted");
+            System.out.println("Request Entity persisted");
             System.out.println("ID is " + r.getId());
+            //u.sendMsg(factory, queue, "newRequest");
+            u.sendMsg(conn, queue, "newRequest");
+            System.out.println("Message sent to queue");
         }
         return r;
     }
