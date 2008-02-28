@@ -1,0 +1,27 @@
+<!-- templateAdminPage -->
+
+<hr class="dbs" />
+<p>
+Check requests by using <a href="ms_getRequestByUser&userMode=$userMode">user name</a>
+</p>
+<p>
+Check requests by request id:
+<form action="ms_getRequestById" method="get">
+<input type="text" name="id" size="3" />
+<input type="hidden" name="userMode" value="$userMode" />
+<input type="submit" />
+</form>
+</p>
+<p>
+Check requests by status:
+<form action="ms_getRequestByStatus" method="get">
+<input type="text" name="status" size="3" />
+<input type="hidden" name="userMode" value="$userMode" />
+<input type="submit" />
+</form>
+</p>
+
+<hr class="dbs" />
+
+<!-- end of templateAdminPage -->
+
