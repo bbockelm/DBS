@@ -1,27 +1,119 @@
 <!-- templateAdminPage -->
 
 <hr class="dbs" />
-<p>
-Check requests by using <a href="ms_getRequestByUser&userMode=$userMode">user name</a>
-</p>
-<p>
+<table>
+<tr><td>
+Check requests by user name:
+</td>
+<td>
+<a href="ms_getRequestByUser?userMode=$userMode">link</a>
+</td></tr>
+<tr><td>
 Check requests by request id:
+</td>
+<td>
 <form action="ms_getRequestById" method="get">
 <input type="text" name="id" size="3" />
 <input type="hidden" name="userMode" value="$userMode" />
-<input type="submit" />
+<input type="submit" value="Go" />
 </form>
-</p>
-<p>
+</td>
+</tr>
+<tr>
+<td>
 Check requests by status:
+</td>
+<td>
 <form action="ms_getRequestByStatus" method="get">
-<input type="text" name="status" size="3" />
+<input type="text" name="status" size="10" />
 <input type="hidden" name="userMode" value="$userMode" />
-<input type="submit" />
+<input type="submit" value="Go" />
 </form>
-</p>
+</td>
+</tr>
+</table>
 
 <hr class="dbs" />
 
+#import types
+#if $result and $type($result) is $types.ListType
+<table>
+#for req in $result
+<tr>
+<td>
+source URL
+</td>
+<td>
+$req._srcUrl._url
+</td>
+</tr>
+
+<tr>
+<td>
+destination URL
+</td>
+<td>
+$req._dstUrl._url
+</td>
+</tr>
+
+<tr>
+<td>
+dataset path
+</td>
+<td>
+$req._path
+</td>
+</tr>
+
+<tr>
+<td>
+with force
+</td>
+<td>
+$req._withForce
+</td>
+</tr>
+
+<tr>
+<td>
+with parents
+</td>
+<td>
+$req._withParents
+</td>
+</tr>
+
+<tr>
+<td>
+Notify
+</td>
+<td>
+$req._notify
+</td>
+</tr>
+
+<tr>
+<tr>
+<td>
+Status
+</td>
+<td>
+$req._status
+</td>
+</tr>
+
+<tr>
+<td>
+Progress
+</td>
+<td>
+$req._progress
+</td>
+</tr>
+
+#end for
+</table>
+#end if
 <!-- end of templateAdminPage -->
 

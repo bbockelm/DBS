@@ -60,7 +60,7 @@ except:
 try:
     from MS.Wrapper import API as DBS_MS
 except:
-#    traceback.print_exc()
+    traceback.print_exc()
     pass
 
 # webtools framework
@@ -120,11 +120,6 @@ class DDServer(DDLogger,Controller):
         setSQLAlchemyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
         setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
         self.securityApi=""
-        self.msApi=""
-        try:
-            self.msApi = DBS_MS.API()
-        except:
-            pass
         try:
             if context:
                context.OptionParser ().add_option("-v","--verbose",action="store",type="int", 
@@ -148,6 +143,13 @@ class DDServer(DDLogger,Controller):
         self.mastheadUrl = self.ddConfig.masthead()
         self.footerUrl   = self.ddConfig.mastfooter()
         self.adminUrl = self.ddConfig.adminUrl()
+        self.msApi=""
+        try:
+            self.msApi = DBS_MS(url=self.adminUrl)
+        except:
+            if verbose:
+               traceback.print_exc()
+            pass
         self.adminVer = self.ddConfig.adminVer()
         self.ns = self.ddConfig.ns()
         self.globalDD = self.ddConfig.global_dd()
@@ -1178,6 +1180,7 @@ class DDServer(DDLogger,Controller):
             result = "Fail to process request",traceback.format_exc()
             pass
         return result
+
     def ms_getRequestByUser(self,userMode="user"):
         dn=""
         try:
@@ -1187,19 +1190,17 @@ class DDServer(DDLogger,Controller):
             pass
         result = self.msApi.getRequestByUser(dn)
         page   = self.genTopHTML(userMode=userMode)
-        t      = templateAdminPage(searchList=[{'userMode':userMode}]).respond()
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
         page  += str(t)
-        page  += str(result)
         page  += self.genBottomHTML()
         return page
     ms_getRequestByUser.exposed=True
 
     def ms_getRequestById(self,id,userMode="user"):
-        result = self.msApi.getRequestById(id)
+        result = self.msApi.getRequestById(int(id))
         page   = self.genTopHTML(userMode=userMode)
-        t      = templateAdminPage(searchList=[{'userMode':userMode}]).respond()
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
         page  += str(t)
-        page  += str(result)
         page  += self.genBottomHTML()
         return page
     ms_getRequestById.exposed=True
@@ -1207,15 +1208,14 @@ class DDServer(DDLogger,Controller):
     def ms_getRequestByStatus(self,status,userMode="user"):
         result = self.msApi.getRequestByStatus(status)
         page   = self.genTopHTML(userMode=userMode)
-        t      = templateAdminPage(searchList=[{'userMode':userMode}]).respond()
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
         page  += str(t)
-        page  += str(result)
         page  += self.genBottomHTML()
         return page
     ms_getRequestByStatus.exposed=True
 
     def ms_addRequest(self,**kwargs):
-        print "\n\n+++ms_addRequest",kwargs
+        print "\n\n+++ms_addRequest",kwargs,self.msApi,type(self.msApi)
         if kwargs.has_key('submit'): del kwargs['submit']
         if kwargs.has_key('choice'): del kwargs['choice']
         dn=""
@@ -1226,11 +1226,11 @@ class DDServer(DDLogger,Controller):
         except:
             pass
         try:
-            srcUrl = kwargs['srcUrl']
-            dstUrl = kwargs['dstUrl']
+            srcUrl = kwargs['src_url']
+            dstUrl = kwargs['dst_url']
             path   = kwargs['path']
             force  = getArg(kwargs,'force','y')
-            parents= kwargs['with_parents']
+            parents= getArg(kwargs,'with_parents','y')
             notify = kwargs['notify']
             result = self.msApi.addRequest(srcUrl,dstUrl,path,dn,force,parents,notify)
         except:
@@ -1344,16 +1344,8 @@ class DDServer(DDLogger,Controller):
         if  kwargs['api']=="addRequest":
 #            result=self.adminRequest(**kwargs)
             result=self.ms_addRequest(**kwargs)
-            t     = templateAdminPage(searchList=[{'userMode':userMode}]).respond()
+            t     = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
             page += str(t)
-            page += str(result)
-#            nameSpace = {
-#                         'status'   : result,
-#                         'adminUrl' : self.adminUrl,
-#                         'dn'       : self.getDN(self.decodeUserName(**kwargs)),
-#                        }
-#            t = templateAdminConfirmation(searchList=[nameSpace]).respond()
-#            page+= str(t)
         else:
             skipList=['submit','title','submit request','choice','dbsInst_from','dbsInst_to','dn']
             input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
