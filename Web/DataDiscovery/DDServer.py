@@ -1176,19 +1176,24 @@ class DDServer(DDLogger,Controller):
             path   = kwargs['path']
             result = self.msApi.deleteRequest(srcUrl, dstUrl, path)
         except:
-            print "ms_deleteRequest",kwargs
-            result = "Fail to process request",traceback.format_exc()
+            result = traceback.format_exc()
             pass
-        return result
+        page   = self.genTopHTML(userMode=userMode)
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
+        page  += str(t)
+        page  += self.genBottomHTML()
+        return page
+    ms_deteleRequest.exposed=True
 
     def ms_getRequestByUser(self,userMode="user"):
         dn=""
         try:
             userName=self.decodeUserName(**kwargs)
             dn=urllib.quote(self.getDN(userName))
+            result = self.msApi.getRequestByUser(dn)
         except:
+            result = traceback.format_exc()
             pass
-        result = self.msApi.getRequestByUser(dn)
         page   = self.genTopHTML(userMode=userMode)
         t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
         page  += str(t)
@@ -1197,7 +1202,11 @@ class DDServer(DDLogger,Controller):
     ms_getRequestByUser.exposed=True
 
     def ms_getRequestById(self,id,userMode="user"):
-        result = self.msApi.getRequestById(int(id))
+        try:
+            result = self.msApi.getRequestById(int(id))
+        except:
+            result = traceback.format_exc()
+            pass
         page   = self.genTopHTML(userMode=userMode)
         t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
         page  += str(t)
@@ -1206,7 +1215,11 @@ class DDServer(DDLogger,Controller):
     ms_getRequestById.exposed=True
 
     def ms_getRequestByStatus(self,status,userMode="user"):
-        result = self.msApi.getRequestByStatus(status)
+        try:
+            result = self.msApi.getRequestByStatus(status)
+        except:
+            result = traceback.format_exc()
+            pass
         page   = self.genTopHTML(userMode=userMode)
         t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
         page  += str(t)
@@ -1234,8 +1247,7 @@ class DDServer(DDLogger,Controller):
             notify = kwargs['notify']
             result = self.msApi.addRequest(srcUrl,dstUrl,path,dn,force,parents,notify)
         except:
-            print "ms_addRequest",kwargs
-            result = "Fail to process request",traceback.format_exc()
+            result = traceback.format_exc()
             pass
         return result
 

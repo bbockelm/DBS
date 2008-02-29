@@ -112,8 +112,21 @@ $req._progress
 </td>
 </tr>
 
+<tr>
+<td>
+Details
+</td>
+<td>
+$req._detail
+</td>
+</tr>
+
 #end for
 </table>
+#elif $type($result) is $types.StringType
+$result
+#else
+Got unknown result type for your request.
 #end if
 <!-- end of templateAdminPage -->
 
