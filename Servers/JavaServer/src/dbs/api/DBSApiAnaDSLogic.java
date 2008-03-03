@@ -1,6 +1,6 @@
 /**
- $Revision: 1.40 $"
- $Id: DBSApiAnaDSLogic.java,v 1.40 2007/10/10 21:20:41 afaq Exp $"
+ $Revision: 1.41 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.41 2007/10/15 22:11:25 afaq Exp $"
  *
  */
 
@@ -18,6 +18,7 @@ import dbs.util.DBSUtil;
 import dbs.DBSException;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
 * A class that has the core business logic of all the Analysis datasets APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -73,6 +74,82 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	 }
+
+
+	/** Creates a .cfg Framework file for an ADS (Version specified) **/
+         public void createSourceFromADS(Connection conn, Writer out, String adsName, String adsVersion, String xml) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		String procDSID = null; //Just a place holder, not used in this query !
+
+		try {
+                     	ps = DBSSql.listAnalysisDataset(conn, adsName, adsVersion , procDSID);
+                        rs =  ps.executeQuery();
+			//This must return A Version, or the latest version
+                        if (rs.next()) {
+				if ( !isNull(xml) ) out.write( ((String)  "<config value='" ));
+				out.write(((String)  	" cms.PSet(\n" +
+								" ANALYSIS_DATASET_NAME=(" + adsName +  "),\n" +
+								" PATH=cms.string(" + get(rs, "ANALYSIS_DATASET_PATH") + "),\n" +
+                                                        	" DESCRIPTION=cms.string(" + get(rs, "DESCRIPTION") + "),\n" +
+								" STATUS=cms.string(" + get(rs, "STATUS") + "),\n" +			
+                                                        	" TYPE=cms.string(" + get(rs, "TYPE") + "),\n" +
+								" VERSION=cms.string(" + get(rs, "VERSION") + "),\n" +
+								" PHYSICS_GROUP_NAME=cms.string(" + get(rs, "PHYSICS_GROUP_NAME") + "),\n" +
+								" CREATION_DATE=cms.string(" + getTime(rs, "CREATION_DATE") + "),\n" +
+                                                        	" LAST_MODIFICATION_DATE=cms.string(" + get(rs, "LAST_MODIFICATION_DATE") + "),\n" +
+                                                        	" CREATED_BY=cms.string(" + get(rs, "CREATED_BY") + "),\n" +
+                                                        	" LAST_MODIFIED_BY=cms.string(" + get(rs, "LAST_MODIFIED_BY") + "),\n" +
+								" DEFINITION=cms.string(\"Should we have one here?\"),\n" ));
+				//List files for this ADS
+				String aDSID = get(rs, "ID");
+				ArrayList attributes = new ArrayList();
+
+             /*   attributes.add("retrive_invalid_files");
+                attributes.add("retrive_status");
+                attributes.add("retrive_type");
+                attributes.add("retrive_date");
+                attributes.add("retrive_person");
+                attributes.add("retrive_parent");
+                attributes.add("retrive_algo");
+                attributes.add("retrive_tier");
+                attributes.add("retrive_lumi");
+                attributes.add("retrive_run");
+                attributes.add("retrive_branch"); */
+
+				attributes.add("retrive_block");
+				out.write(((String)    "FILES=cms.vPSet(" ));
+				Vector temp = new Vector();
+                		try {
+                        		ps = DBSSql.listFiles(conn, null, null, null, aDSID, null, temp, null, attributes);
+                        		rs =  ps.executeQuery();
+                        		while(rs.next()) {
+						out.write( (String)   "\ncms.PSet(filename=cms.string("+ get(rs, "LFN") +"),\n" +
+						//List ADS Runs and Excluded Lumis Here (From Def) ?"
+						"runs=vuint32(123456,234567),\n" +
+						"excludeLumis=vPSet() ),\n" +
+						" ))\n" );
+					}
+                		} finally {
+                        		if (rs != null) rs.close();
+                        		if (ps != null) ps.close();
+                		}
+
+				out.write((String)    ")\n");							
+				if (!isNull(xml)) out.write((String)  "' />");
+			} else {
+                                String msg = "No such Analysis Dataset" + adsName;
+                                if (!isNull(adsVersion)) msg += " and version: "+adsVersion;
+                                throw new DBSException("Unavailable data", "1011", msg);
+                        }	
+
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
+		
+
 
 	 /**
          * Lists analysis dataset along with its definition, ALL, or for a particular PATH  

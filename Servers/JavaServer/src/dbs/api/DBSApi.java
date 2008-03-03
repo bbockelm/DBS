@@ -1,6 +1,6 @@
 /**
- $Revision: 1.120 $"
- $Id: DBSApi.java,v 1.120 2008/01/29 18:07:52 afaq Exp $"
+ $Revision: 1.121 $"
+ $Id: DBSApi.java,v 1.121 2008/02/06 17:03:39 sekhri Exp $"
  *
 */
 
@@ -239,13 +239,13 @@ public class DBSApi {
 
 		try {
 			//this.data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
-	
 			out.write(DBSConstants.XML_HEADER); 
+	
 			String apiStr = get(table, "api", true);
 			this.apiStr = apiStr;
         	        String apiVersion = get(table, "apiversion", true);
                 	DBSUtil.writeLog("apiStr: "+apiStr);
-
+                        
 
 			
 			conn = getConnection();
@@ -398,7 +398,12 @@ public class DBSApi {
                                 (new DBSApiAnaDSLogic(this.data)).listAnalysisDatasetDefinition(conn, out,
                                                                         get(table, "pattern_analysis_dataset_definition_name", false)
                                                 );
-
+			} else if (apiStr.equals("createSourceFromADS")) {
+				(new DBSApiAnaDSLogic(this.data)).createSourceFromADS(conn, out,
+									get(table, "analysis_dataset_name", false),
+									get(table, "version", false),
+									get(table, "xml", false)
+									);
                         } else if (apiStr.equals("listRowsInTable")) {
 				(new DBSApiLogic(this.data)).listRowsInTable(conn, out,
      									get(table, "table_name", true),

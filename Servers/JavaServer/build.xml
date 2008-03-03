@@ -8,6 +8,7 @@
 	<property name="metatargetdir" value="${basedir}/bin/META-INF"/>
 	<property name="librarydir" value="${basedir}/bin/WEB-INF/lib"/>
 	<property name="libraryolddir" value="${basedir}/lib"/>
+	<!--property name="app.name" value="DBSADSTEST01"/-->
 	<property name="app.name" value="DBS"/>
 	<property environment="env"/>
 	<property name="jredir" value="${env.JAVA_HOME}/jre/lib"/>
