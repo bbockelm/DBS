@@ -2,10 +2,10 @@ function footerMenuText(){
     return [
 {label: "aSearch", link: "_advanced?userMode=runManager", title: "Advanced keyword search"},
 {label: "Navigator", link: "_navigator?userMode=runManager", title: "Navigator: menu-driven search"},
-{label: "Finder", link: "_finder?userMode=runManager", title: "Finder: query-driven search"},
+//{label: "Finder", link: "_finder?userMode=runManager", title: "Finder: query-driven search"},
 {label: "Analysis", link: "_analysis?userMode=runManager", title: "Search analysis datasets"},
 {label: "RSS", link: "_rss?userMode=runManager", title: "RSS Feeds publish frequently updates about your data"},
-{label: "Sites", link: "_siteSearch?userMode=runManager", title: "Site search: site-based search"},
+//{label: "Sites", link: "_siteSearch?userMode=runManager", title: "Site search: site-based search"},
 {label: "Runs", link: "_runs?userMode=runManager", title: "Run search: run-based search"},
 {label: "Pages", link: "_pages?userMode=runManager", title: "Data discovery world-wide pages"},
 {label: "Help", link: "_help?userMode=runManager", title: "Help: DBS glossary, terms, feedback form"},

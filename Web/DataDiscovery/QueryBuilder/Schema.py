@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.1 2007/03/22 15:15:04 valya Exp $
+# $Id: Schema.py,v 1.2 2007/04/21 14:53:25 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.1 $"
+__revision__ = "$Revision: 1.2 $"
 
 
 import unittest
@@ -85,8 +85,17 @@ class Schema(object):
             if issubclass(clause.right.__class__,Column):
                 tablesOfConcern.add(clause.right.table)
         
-
     def BuildQuery(self,query):
+        rootJoin = self.RootJoin(query)
+        query.append_from(rootJoin)
+        return query
+
+    def BuildQueryWithSel(self,sel,query):
+        rootJoin = self.RootJoin(query)
+        sel.append_from(rootJoin)
+        return sel
+
+    def RootJoin(self,query):
         '''Query is a sqlalchemy query with select elements and where clauses.
         This method looks through the elements and clauses to determine which
         tables need to be joined in order to support the query. It then adds
@@ -142,8 +151,9 @@ class Schema(object):
                     (rightColumn,leftColumn) = self._foreignTables[nodeIdx][parentIdx]
                 rootJoin = rootJoin.join(rightColumn.table, leftColumn==rightColumn)
                 
-        query.append_from(rootJoin)
-        return query
+        return rootJoin
+#        query.append_from(rootJoin)
+#        return query
 
     def MakeForeignKeys(self,foreignKeys,schema):
         if not foreignKeys:

@@ -3,14 +3,18 @@
 <div align="center">
 <form action="aSearch" method="get">
 <input type="hidden" name="caseSensitive" value="on" id="caseSensitive" />
-<input type="hidden" name="userMode" value="$userMode" />
+<input type="hidden" name="userMode" id="userMode" value="$userMode" />
+<input type="hidden" name="sortOrder" id="sortOrder" value="desc" />
+<input type="hidden" name="sortName" id="sortName" value="CreationDate" />
+<input type="hidden" name="grid" id="grid" value="0" />
 
 ## add table with case sensitivity and choice of dbs instance (in expert mode)
 <table cellpadding="2" cellspacing="2">
 <tr>
 #if $userMode=='user'
 <td>
-<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+##<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+<input type="hidden" name="dbsInst" value="$dbsInst" id="dbsInst" />
 </td>
 <td>
 </td>
@@ -54,9 +58,18 @@ Case-sensitivity:
 <b>Syntax:</b>
 </td>
 <td>
-Support normal boolean expressions, e.g. ((a and b) or c)<br/>
+<b>
+FIND &lt;keyword&gt; WHERE &lt;keyword&gt; &lt;operator&gt; value AND | OR 
+&lt;keyword&gt; &lt;operator&gt; value
+</b>
+<br/>
+words FIND,WHERE,AND,OR can be upper or lower case. 
+<br/>
+Expressions can be
+groupped together using brackets, e.g. ((a and b) or c)
+<br/>
 Constrain operators: 
-&lt;=, &lt;, &gt;=, &gt;, =, not like, like, in,between
+&lt;=, &lt;, &gt;=, &gt;, =, not like, like, in, between
 ##&lt;keyword&gt;:&lt;value&gt;, you may use asterisk symbol to define patterns.
 </td>
 </tr>
@@ -118,22 +131,32 @@ Hover over keywords for <span class="box_red">info</span>.
 </td>
 <td>
 <em>
-dataset like *Online* site=srm.cern.ch
+find dataset where dataset like *Online* and site=srm.cern.ch
 </em>
 <br/>
-look-up data with dataset name like Online, located at srm.cern.ch.
+look-up datasets with dataset name like Online, located at srm.cern.ch.
 <br/><br/>
 <em>
-run between 34850-36000 or run in 34850,34890
+find dataset where run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
-look-up data with runs within a given run ranges.
+look-up dataset with runs within a given run ranges.
 <br/><br/>
+
 <em>
-release>CMSSW_1_7_1 and dataset not like *RelVal*
+find run where dataset like *Online* and release>CMSSW_1_7*
 </em>
 <br/>
-look-up data processed with releases higher then 1_7_1 which are not RelVal samples.
+look-up runs who belong to dataset like *Online* and processed with release higher then 1_7
+<br/><br/>
+
+<em>
+find prim where dataset like *Online* or dataset not like *RelVal*
+</em>
+<br/>
+look-up primary dataset who belong to dataset path like Online or dataset path not like RelVal.
+<br/><br/>
+
 </td>
 </tr>
 

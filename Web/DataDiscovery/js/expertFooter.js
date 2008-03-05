@@ -2,11 +2,11 @@ function footerMenuText(){
         return [
 {label: "aSearch", link: "_advanced?userMode=expert", title: "Advanced keyword search"},
 {label: "Navigator", link: "_navigator?userMode=expert", title: "Navigator: menu-driven search"},
-{label: "Finder", link: "_finder?userMode=expert", title: "Finder: query-driven search"},
+//{label: "Finder", link: "_finder?userMode=expert", title: "Finder: query-driven search"},
 {label: "Config", link: "_config?userMode=expert", title: "Config search: parameter set search"},
 {label: "Analysis", link: "_analysis?userMode=expert", title: "Search analysis datasets"},
 {label: "RSS", link: "_rss?userMode=expert", title: "RSS Feeds publish frequently updates about your data"},
-{label: "Sites", link: "_siteSearch?userMode=expert", title: "Site search: site-based search"},
+//{label: "Sites", link: "_siteSearch?userMode=expert", title: "Site search: site-based search"},
 {label: "Runs", link: "_runs?userMode=expert", title: "Run search: run-based search"},
 {label: "Pages", link: "_pages?userMode=expert", title: "Data discovery world-wide pages"},
 //    {label: "History", link: "_history?userMode=expert", title: "History: persistent history of user queries"},

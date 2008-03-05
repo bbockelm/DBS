@@ -1531,6 +1531,24 @@ function CaseSensitiveOff() {
    id=$('caseOn');
    id.className='';
 }
+function SortDesc() {
+   SetCookie('DBSDD_sortOrder','desc');
+   var id=$('sortOrder');
+   id.value='desc';
+   id=$('sortDesc');
+   id.className='td_underline_pad';
+   id=$('sortAsc');
+   id.className='';
+}
+function SortAsc() {
+   SetCookie('DBSDD_sortOrder','asc');
+   var id=$('sortOrder');
+   id.value='asc';
+   id=$('sortAsc');
+   id.className='td_underline_pad';
+   id=$('sortDesc');
+   id.className='';
+}
 function SetAutoCompletion() {
    var c=GetCookie('DBSDD_AutoCompletion');
    if(c) {

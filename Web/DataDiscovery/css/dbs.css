@@ -266,6 +266,15 @@ table.dbs_table td {
   vertical-align: top;
   text-align: right;
 }
+.dbs_table_left {
+  border-width: 1px 1px 1px 1px;
+  padding: 2px 2px 2px 2px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  background-color: #FFFADC;
+  vertical-align: top;
+  text-align: left;
+}
 table.dbs_table_plain {
   font-size: 12px;
   font-weight: normal;
@@ -684,7 +693,7 @@ table.image td.size {
   border-style: solid;
   border-width: 1px 1px 1px 1px;
   padding: 1px 1px 1px 1px;
-  border-style: solid solid hidden solid;
+  border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
   cursor: pointer;
 }
