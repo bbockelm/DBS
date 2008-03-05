@@ -1,0 +1,124 @@
+<!-- templateProcessedDatasetsGrid.tmpl -->
+#set siteList=$dDict.keys()
+#set empty,prim,proc,tier=$path.split("/")
+#set idPath=$path.replace("/","___")
+#set tid="table_"+$idPath
+
+#from DDUtil import sizeFormat, colorSizeHTMLFormat
+#set values=$masterDict.values()[0]
+#set prdDate=$values[0]
+#set cBy=$values[1]
+#set nblks=$values[2]
+#set size=$colorSizeHTMLFormat($values[3])
+#set nFiles=$values[4]
+#set nEvts=$values[5]
+#set keys=$masterDict.keys()
+#set se=$keys[0]
+#set nSites=$len($dDict.keys())
+#*
+<hr class="dbs" />
+<table width="100%" class="dbs_table">
+<tr>
+<th>
+Path
+</th>
+<th>
+Created
+</th>
+<th>
+Size
+</th>
+<th>
+Blocks
+</th>
+<th>
+LFNs
+</th>
+<th>
+Events
+</th>
+<th>
+Sites
+</th>
+<th>
+Links
+</th>
+</tr>
+*#
+
+
+<tr>
+<td>
+#set newpath=$path[1:]
+<div align="left">
+/$newpath.replace("/","<br/>/")
+</div>
+</td>
+<td>
+$prdDate
+</td>
+<td>
+$size
+</td>
+<td>
+<a href="$host/getBlocksInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">
+$nblks
+</a>
+</td>
+<td>
+$nFiles,
+<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
+<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
+</td>
+<td>
+$nEvts
+</td>
+<td>
+$nSites
+</td>
+
+<td>
+<a href="$host/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">
+Run info
+</a>
+,
+##<br/>
+<a href="$host/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">
+Conf. files
+</a>
+,
+##<br/>
+<a href="$host/getDatasetProvenance?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
+Provenance
+</a>
+,
+##<br/>
+<a href="$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path&amp;userMode=$userMode">
+Description
+</a>
+,
+##<br/>
+<a href="$PhedexURL?type=xfer&amp;dbschoice=known&amp;dbs=$dbsInstURL&amp;data=$path&amp;priority=1">
+PhEDEx
+</a>
+,
+##<br/>
+<a href="$host/createAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path">
+Create ADS
+</a>
+,
+##<br/>
+<a href="$host/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
+ADS
+</a>
+,
+##<br/>
+<a href="$host/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
+crab.cfg
+</a>
+</td>
+</tr>
+
+##</table>
+
+<!-- end of templateProcessedDatasetsGrid.tmpl -->
