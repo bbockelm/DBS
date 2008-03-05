@@ -144,17 +144,19 @@ look-up dataset with runs within a given run ranges.
 <br/><br/>
 
 <em>
-find run where dataset like *Online* and release>CMSSW_1_7*
+find run where dataset like *Online*
 </em>
 <br/>
-look-up runs who belong to dataset like *Online* and processed with release higher then 1_7
+look-up runs who belong to dataset like *Online* 
 <br/><br/>
 
 <em>
-find prim where dataset like *Online* or dataset not like *RelVal*
+find prim where (dataset like *Online* or dataset not like *RelVal* ) and release>CMSSW_1_7*
+ind prim where dataset like *Online* or dataset not like *RelVal*
 </em>
 <br/>
-look-up primary dataset who belong to dataset path like Online or dataset path not like RelVal.
+look-up primary datasets whose dataset path pattern either Online or not like RelVal which
+are processed with release greater them CMSSW_1_7
 <br/><br/>
 
 </td>
