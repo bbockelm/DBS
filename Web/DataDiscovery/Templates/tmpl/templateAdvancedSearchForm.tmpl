@@ -52,25 +52,29 @@ Case-sensitivity:
 <p></p>
 ##<p>The advanced search engine look-up dataset based on your keyword input.</p>
 
-<table>
+<table width="65%">
 <tr valign="top">
 <td align="right">
 <b>Syntax:</b>
 </td>
 <td>
 <b>
-FIND &lt;keyword&gt; WHERE &lt;keyword&gt; &lt;operator&gt; value AND | OR 
-&lt;keyword&gt; &lt;operator&gt; value
+FIND &lt;keyword&gt; WHERE &lt;keyword&gt; &lt;operator&gt; &lt;value&gt; AND | OR 
+&lt;keyword&gt; &lt;operator&gt; &lt;value&gt;
+</b>
+<br/>
+Constrain operators: 
+<b>
+&lt;=, &lt;, &gt;=, &gt;, =, not like, like, in, between
 </b>
 <br/>
 words FIND,WHERE,AND,OR can be upper or lower case. 
 <br/>
+<b>FIND dataset WHERE ...</b> is default and can be skipped.
+<br/>
 Expressions can be
 groupped together using brackets, e.g. ((a and b) or c)
 <br/>
-Constrain operators: 
-&lt;=, &lt;, &gt;=, &gt;, =, not like, like, in, between
-##&lt;keyword&gt;:&lt;value&gt;, you may use asterisk symbol to define patterns.
 </td>
 </tr>
 
@@ -79,6 +83,7 @@ Constrain operators:
 <b>Keywords:</b>
 </td>
 <td>
+<b>
 <span id="dsetDef">
 dataset
 </span>
@@ -118,6 +123,7 @@ lumi
 <span id="seDef">
 site.
 </span>
+</b>
 <br/>
 Hover over keywords for <span class="box_red">info</span>.
 ##<br/>
@@ -130,27 +136,27 @@ Hover over keywords for <span class="box_red">info</span>.
 <b>Examples:</b>
 </td>
 <td>
-<em>
+<em class="box_blue">
 find dataset where dataset like *Online* and site=srm.cern.ch
 </em>
 <br/>
 look-up datasets with dataset name like Online, located at srm.cern.ch.
 <br/><br/>
-<em>
+<em class="box_blue">
 find dataset where run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
 look-up dataset with runs within a given run ranges.
 <br/><br/>
 
-<em>
+<em class="box_blue">
 find run where dataset like *Online*
 </em>
 <br/>
 look-up runs who belong to dataset like *Online* 
 <br/><br/>
 
-<em>
+<em class="box_blue">
 find prim where (dataset like *Online* or dataset not like *RelVal* ) and release>CMSSW_1_7*
 </em>
 <br/>
