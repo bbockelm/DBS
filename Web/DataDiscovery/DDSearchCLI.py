@@ -28,6 +28,10 @@ class DDOptionParser:
          help="specify output for your request (plain|xml), default is plain text")
     self.parser.add_option("--host",action="store",type="string",dest="host",
          help="specify a host name of Data Discovery service, e.g. https://cmsweb.cern.ch/dbs_discovery/")
+    self.parser.add_option("--details",action="store_true",dest="details",
+         help="show detailed output")
+    self.parser.add_option("--case",action="store",default="on",type="string",dest="case",
+         help="specify if your input is case sensitive of not, default is on.")
     self.parser.add_option("--page",action="store",type="string",default="0",dest="page",
          help="specify output page, should come together with --limit")
     self.parser.add_option("--limit",action="store",type="string",default="10",dest="limit",
@@ -38,7 +42,7 @@ class DDOptionParser:
     """
     return self.parser.parse_args()
 
-def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,debug=0):
+def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',details=0,debug=0):
     """
        Send message to server, message should be an well formed XML document.
     """
@@ -64,7 +68,9 @@ def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,debug=0):
        http_conn = httplib.HTTPS(host,port)
     else:
        http_conn = httplib.HTTP(host,port)
-    path='/aSearch?dbsInst=%s&html=0&_idx=%s&pagerStep=%s&userInput=%s&xml=%s'%(dbsInst,page,limit,input,xml)
+    if details: details=1
+    else:       details=0
+    path='/aSearch?dbsInst=%s&html=0&caseSensitive=%s&_idx=%s&pagerStep=%s&userInput=%s&xml=%s&details=%s'%(dbsInst,case,page,limit,input,xml,details)
     if prefix_path:
        path="/"+prefix_path+path[1:]
     http_conn.putrequest('POST',path)
@@ -111,5 +117,5 @@ if __name__ == "__main__":
     else:
        print "\nUsage: DDSearchCLI.py --help"
        sys.exit(0)
-    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.output,opts.verbose)
+    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.output,opts.case,opts.details,opts.verbose)
     print result

@@ -4997,11 +4997,14 @@ Save query as:
             res  = self.qmaker.getSummary(tabCol,rval)
             for it in res:
                 name,cDate,cBy=it
-                if grid:
-                   page+="""<tr><td><b>%s</b></td><td>%s</td><td>%s</td></tr>\n"""%(name,cDate,parseCreatedBy(cBy))
+                if  html:
+                    if grid:
+                       page+="""<tr><td><b>%s</b></td><td>%s</td><td>%s</td></tr>\n"""%(name,cDate,parseCreatedBy(cBy))
+                    else:
+                       page+="""<hr class="dbs"/>%s <b>%s</b><br/>Creation Date %s, Created by %s\n"""%(longName,name,cDate,parseCreatedBy(cBy))
                 else:
-                   page+="""<hr class="dbs"/>%s <b>%s</b><br/>Creation Date %s, Created by %s\n"""%(longName,name,cDate,parseCreatedBy(cBy))
-        if grid:
+                    page+="%s %s, created %s, by %s\n"%(longName,name,cDate,parseCreatedBy(cBy))
+        if grid and html:
            page="""<table width="100%%" class="dbs_table"><tr><th>%s</th><th>%s</th><th>%s</th></tr>\n"""%(longName,'Creation Date','Created by')+page+"</table>\n"
         return page
 
@@ -5085,6 +5088,7 @@ Save query as:
         xml       = getArg(kwargs,'xml',0)
         case      = getArg(kwargs,'caseSensitive','on')
         sortName  = getArg(kwargs,'sortName','CreationDate')
+        details   = getArg(kwargs,'details',1)
         try:
             userInput = kwargs['userInput']
         except:
@@ -5131,7 +5135,10 @@ Save query as:
               page="""<?xml version="1.0" encoding="utf-8"?>\n<ddresponse>\n"""
               page+="<query>\n  <input>%s</input>\n  <timeStamp>%s</timeStamp>\n</query>\n"%(urllib.unquote(userInput),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
            else:
-              page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
+              if details:
+                 page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
+              else:
+                 page ="\nFound %s %ss\n"%(nResults,_out)
 
         if html:
            # Construct result page
@@ -5188,9 +5195,11 @@ Save query as:
 #           page+=str(t)
 
         try:
-            method=getattr(self,output+'Summary')
-            page+=method(**kDict)
-#            page+=method(query,output,tabCol,sortName,sortOrder,dbsInst,fromRow,limit,html,xml,userMode)
+            if details:
+               method=getattr(self,output+'Summary')
+               page+=method(**kDict)
+            else:
+               page+=self.aSearchShowAll(**kDict)
         except:    
             if html:
                page+="<verbatim>"+getExcept()+"</verbatim>"
