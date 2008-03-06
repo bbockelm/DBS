@@ -4948,6 +4948,7 @@ Save query as:
         xml      = kwargs['xml']
         case     = kwargs['caseSensitive']
         userMode = kwargs['userMode']
+        output   = kwargs['output']
         self.qmaker.initDBS(dbsInst)
         sel      = self.ddrules.parser(urllib.unquote(userInput),sortName,sortOrder,case)
         query    = self.qmaker.processQuery(sel)
