@@ -1,6 +1,6 @@
 /**
- $Revision: 1.121 $"
- $Id: DBSApi.java,v 1.121 2008/02/06 17:03:39 sekhri Exp $"
+ $Revision: 1.122 $"
+ $Id: DBSApi.java,v 1.122 2008/03/03 22:00:08 afaq Exp $"
  *
 */
 
@@ -682,6 +682,13 @@ public class DBSApi {
                         } else if (apiStr.equals("listDQVersions")) {
 
                                 (new DBSApiDQLogic(this.data)).listDQVersions(conn, out);
+			} else if (apiStr.equals("getIntegratedLuminosity")) {
+				(new DBSApiLumiLogic(this.data)).getIntegratedLuminosity(conn, out,
+						get(table, "path", true),
+						get(table, "run", false),
+						get(table, "runRange", false),
+						get(table, "tag", false)
+						);
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;

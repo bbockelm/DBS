@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.135 $"
- $Id: DBSSql.java,v 1.135 2007/12/13 17:11:02 sekhri Exp $"
+ $Revision: 1.136 $"
+ $Id: DBSSql.java,v 1.136 2008/02/06 17:03:40 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -2882,6 +2882,54 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+
+	public static PreparedStatement getIntegratedLuminosity(Connection conn, String procDSID, String aDSID, String run, String runRange, String tag) throws SQLException {
+		String lumiSO = "CMS_LUMI_PROD_OFFLINE";
+		String dbsSO = "cms_dbs_prod_local_10_reader";
+		String sql = "SELECT \n" +
+			//r.RunNumber, ls.LumiSectionNumber, ldblt.TAG_NAME,
+			"ldblsum.INSTANT_LUMI AS INSTANT_LUMI, \n" +
+ 			"ldblsum.INSTANT_LUMI_ERR AS INSTANT_LUMI_ERR, \n" +
+ 			"ldblsum.NORMALIZATION AS NORMALIZATION, \n" +
+ 			"ldblsum.DEADTIME_NORMALIZATION AS DEADTIME_NORMALIZATION \n" +
+	 		"FROM " + lumiSO + ".LUMI_SUMMARIES ldblsum \n" +
+	 		"JOIN " + lumiSO + ".LUMI_SECTIONS ldbls \n" +
+ 				"ON ldblsum.SECTION_ID = ldbls.SECTION_ID \n" +
+ 			"JOIN " + lumiSO + ".LUMI_VERSION_TAG_MAPS ldblvtm \n" +
+				"ON ldblvtm.LUMI_SUMMARY_ID = ldblsum.LUMI_SUMMARY_ID \n" +
+			"JOIN " + lumiSO + ".LUMI_TAGS ldblt \n" +
+				"ON ldblt.LUMI_TAG_ID =  ldblvtm.LUMI_TAG_ID \n" +
+			"JOIN  " + dbsSO + ".Runs r \n" +
+				"ON r.RunNumber = ldbls.RUN_NUMBER \n" +
+			"JOIN " + dbsSO + ".LumiSection ls \n" +
+				"ON ls.RunNumber = r.ID AND ls.LumiSectionNumber = ldbls.LUMI_SECTION_NUMBER \n";
+		if (! DBSUtil.isNull(procDSID)) 
+			sql +="JOIN " + dbsSO + ".ProcDSRuns pdr \n" +
+				"ON pdr.Run = r.ID \n";
+		if (! DBSUtil.isNull(aDSID)) 
+			sql +="JOIN " + dbsSO + ".AnalysisDSFileLumi adsfl \n" +
+				"ON adsfl.Lumi = ls.ID \n";
+
+		sql += "WHERE \n" +
+			"ldblt.TAG_NAME = ? \n";
+			
+               	if (! DBSUtil.isNull(procDSID)) sql += "AND pdr.Dataset = ? \n";
+               	if (! DBSUtil.isNull(aDSID)) sql += "AND adsfl.AnalysisDataset = ? \n";
+               	if (! DBSUtil.isNull(run)) sql += "AND r.RunNumber = ? \n";
+
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, tag);
+		if (! DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
+               	if (! DBSUtil.isNull(aDSID)) ps.setString(columnIndx++, aDSID);
+               	if (! DBSUtil.isNull(run)) ps.setString(columnIndx++, run);
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
 
 	private static PreparedStatement getInsertSQL (Connection conn, String tableName, Hashtable table) throws SQLException	{
 		String sql = "INSERT INTO " + tableName + " ( \n";
