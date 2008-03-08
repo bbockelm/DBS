@@ -5040,16 +5040,21 @@ Save query as:
         grid     = int(getArg(kwargs,'grid',0))
         result   = self.qmaker.executeQuery(tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
+        counter  = 0
         for item in result:
             dataset=item[0]
             run=appPath=site="*"
             dbsInstURL=DBS_INST_URL[dbsInst]
             phedex=0
+            if counter%2:
+               style='class="zebra"'
+            else:
+               style=""
             dDict,mDict = self.helper.datasetSummary(dataset)
             if html:
                if mDict:
                    if grid:
-                      t = templateProcessedDatasetsGrid(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL}]).respond()
+                      t = templateProcessedDatasetsGrid(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style}]).respond()
                    else:
                       t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL}]).respond()
                    page+=str(t)
@@ -5064,10 +5069,11 @@ Save query as:
                    page+=str(t)
                 else:
                    page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
+            counter+=1
         if grid:
            head=""
-           for item in ['Path','Created','Size','Blocks','LFNs','Events','Sites','Links']:
-               head+="<th>%s</th>"%item
+           for item in ['PATH','CREATED<br/><div class="tiny">(dd/mm/yy)</div>','SIZE','BLOCKS','FILES','EVENTS','SITES','CRAB','LINKS']:
+               head+="<th><b>%s</b></th>"%item
            head = """<table width="100%%" class="dbs_table"><tr>%s</tr>"""%head
            page=head+page+"</table>"
         return page
