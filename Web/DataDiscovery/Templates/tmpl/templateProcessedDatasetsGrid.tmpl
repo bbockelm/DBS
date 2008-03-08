@@ -46,16 +46,24 @@ Links
 </tr>
 *#
 
-
-<tr>
-<td>
+#set months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+<tr ${style}>
+<td class="left">
+#*
 #set newpath=$path[1:]
-<div align="left">
 /$newpath.replace("/","<br/>/")
-</div>
+*#
+$path
 </td>
 <td>
-$prdDate
+#set t=$prdDate.split()
+#set idx=$months.index($t[1])
+#if $idx<10
+#set mm="0%d"%$idx
+#else
+#set mm=$idx
+#end if
+$t[0]/$mm/$t[2][2:]
 </td>
 <td>
 $size
@@ -66,9 +74,9 @@ $nblks
 </a>
 </td>
 <td>
-$nFiles,
 <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
-<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
+<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">txt</a>,
+(${nFiles})
 </td>
 <td>
 $nEvts
@@ -76,49 +84,34 @@ $nEvts
 <td>
 $nSites
 </td>
+<td>
+<a href="$host/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
+cfg
+</a>
+</td>
 
 <td>
-<a href="$host/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">
-Run info
-</a>
-,
-##<br/>
-<a href="$host/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">
-Conf. files
-</a>
-,
-##<br/>
-<a href="$host/getDatasetProvenance?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
-Provenance
-</a>
-,
-##<br/>
-<a href="$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path&amp;userMode=$userMode">
-Description
-</a>
-,
-##<br/>
-<a href="$PhedexURL?type=xfer&amp;dbschoice=known&amp;dbs=$dbsInstURL&amp;data=$path&amp;priority=1">
-PhEDEx
-</a>
-,
-##<br/>
-<a href="$host/createAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path">
-Create ADS
-</a>
-,
-##<br/>
-<a href="$host/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
-ADS
-</a>
-,
-##<br/>
-<a href="$host/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
-crab.cfg
-</a>
+<select id="moreInfo" onchange="javascript:LoadSelected();" style="width:100px">
+<option value="">More info</option>
+<option value="$host/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">Run info</option>
+<option value="$host/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">Conf files</option>
+<option value="$host/getDatasetProvenance?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Provenance</option>
+<option value="$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path&amp;userMode=$userMode">Data Description</option>
+<option value="$PhedexURL?type=xfer&amp;dbschoice=known&amp;dbs=$dbsInstURL&amp;data=$path&amp;priority=1">Subscribe to PhEDEx</option>
+<option value="$host/createAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path">Create Analysis dataset</option>
+<option value="$host/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Find Analysis Dataset</option>
+</select>
 </td>
 </tr>
 
 ##</table>
 
+<script type="text/javascript">
+function LoadSelected() {
+   var rval=document.getElementById('moreInfo');
+   if(rval && rval.value!='') {
+      load(rval.value);
+   }
+}
+</script>
 <!-- end of templateProcessedDatasetsGrid.tmpl -->
