@@ -66,22 +66,22 @@ function Update_aSearchForm() {
 }
 function UpdateSortOrder() {
    var view=GetCookie('DBSDD_view');
-   var grid=document.getElementById('grid');
+   //var grid=document.getElementById('grid');
    if (view) {
       var l_view=document.getElementById('listView');
       var g_view=document.getElementById('gridView');
       if (view=='grid') {
           g_view.className='td_underline_pad';
           l_view.className='';
-          grid.value=1;
+          //grid.value=1;
       } else {
           l_view.className='td_underline_pad';
           g_view.className='';
-          grid.value=0;
+          //grid.value=0;
       }
-   }  else {
-      SetCookie('DBSDD_view','list');
-      grid.value=0;
+   //}  else {
+   //   SetCookie('DBSDD_view','list');
+   //   grid.value=0;
    }
    var sort=GetCookie('DBSDD_sortOrder');
    if (sort=='asc') {
