@@ -103,8 +103,10 @@ b { font-weight: bold; text-decoration : none; }
 }
 .tiny  {
   font-size: 10px;
+  font-weight: normal;
   font-family: helvetica, arial, verdana, sans-serif;
   text-decoration: none;
+  text-transform: none;
 }
 .tiny_purple_on_gray  {
 /*  color: #FF66CC;*/
@@ -219,18 +221,6 @@ em.smallbold  {
 /*
  * Table settings
  */
-table.valign tr td {
-vertical-align:middle;
-}
-
-table.valign form {
-display:inline;
-} 
-
-table.valign_top tr td {
-vertical-align:top;
-}
-
 table.dbs_table {
   font-size: 12px;
   font-weight: normal;
@@ -238,43 +228,53 @@ table.dbs_table {
   text-decoration: none;
   border-width: 1px 1px 1px 1px;
   border-spacing: 3px;
-  /* border-style: top right bottom left */
   border-style: solid solid solid solid;
   border-color: gray gray gray gray;
   border-collapse: collapse;
   background-color: rgb(255, 250, 250);
-  vertical-align: top;
+  vertical-align: bottom;
 }
+
 table.dbs_table th {
-  border-width: 1px 1px 1px 1px;
-  padding: 2px 2px 2px 2px;
-  border-style: solid solid solid solid;
-  border-color: gray gray gray gray;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: 5px;
+  margin: 0px;
   background-color: #F0F0F0;
-  vertical-align: top;
-  text-align: right;
+  vertical-align: middle;
 }
-table.dbs_table th.center {
-  text-align: center;
-}
-table.dbs_table td {
-  border-width: 1px 1px 1px 1px;
-  padding: 2px 2px 2px 2px;
-  border-style: solid solid solid solid;
-  border-color: gray gray gray gray;
-  background-color: #FFFADC;
-  vertical-align: top;
-  text-align: right;
-}
-.dbs_table_left {
-  border-width: 1px 1px 1px 1px;
-  padding: 2px 2px 2px 2px;
-  border-style: solid solid solid solid;
-  border-color: gray gray gray gray;
-  background-color: #FFFADC;
-  vertical-align: top;
+
+table.dbs_table th.left {
   text-align: left;
 }
+
+table.dbs_table tr{
+  background-color: #FFFADC;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  padding: 5px;
+  margin: 0px;
+}
+
+table.dbs_table tr.zebra{
+  background-color: #fff5e8;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+}
+
+table.dbs_table td {
+  text-align: right;
+  padding: 5px;
+  margin: 0px;
+}
+
+table.dbs_table td.left {
+  text-align: left;
+}
+
 table.dbs_table_plain {
   font-size: 12px;
   font-weight: normal;
@@ -305,6 +305,19 @@ table.dbs_table_plain td {
   background-color: #FFFADC;
   vertical-align: top;
 }
+
+table.valign tr td {
+vertical-align:middle;
+}
+
+table.valign form {
+display:inline;
+} 
+
+table.valign_top tr td {
+vertical-align:top;
+}
+
 
 table.intro {
   border-width: 1px 1px 1px 1px;
