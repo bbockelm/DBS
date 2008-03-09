@@ -15,6 +15,7 @@
 #set keys=$masterDict.keys()
 #set se=$keys[0]
 #set nSites=$len($dDict.keys())
+#set siteList=$dDict.keys()
 #*
 <hr class="dbs" />
 <table width="100%" class="dbs_table">
@@ -82,7 +83,9 @@ $nblks
 $nEvts
 </td>
 <td>
-$nSites
+<span id="$idPath">
+<u>$nSites</u>
+</span>
 </td>
 <td>
 <a href="$host/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
@@ -106,6 +109,13 @@ cfg
 
 ##</table>
 
+#set tt=""
+#for site in $siteList
+#set tt=$tt+"<li>"+$site+"</li>";
+#end for
+#set tt="<ul>"+$tt+"</ul>"
+#set tag="t_"+$idPath
+
 <script type="text/javascript">
 function LoadSelected() {
    var rval=document.getElementById('moreInfo');
@@ -113,5 +123,7 @@ function LoadSelected() {
       load(rval.value);
    }
 }
+var tooltip='$tt';
+MakeTooltip('$tag','$idPath',tooltip);
 </script>
 <!-- end of templateProcessedDatasetsGrid.tmpl -->
