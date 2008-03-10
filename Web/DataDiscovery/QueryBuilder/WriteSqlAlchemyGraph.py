@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from sqlalchemy import Join
+from sqlalchemy import sql
+#from sqlalchemy import Join
 
 def WriteSqlAlchemyGraph(dot,metadata,excludeTables):
     '''This shows how tables relate through foreign keys in a sqlalchemy schema.'''
