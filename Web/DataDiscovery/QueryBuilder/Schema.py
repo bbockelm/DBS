@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.2 2007/04/21 14:53:25 valya Exp $
+# $Id: Schema.py,v 1.3 2008/03/05 21:31:53 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.2 $"
+__revision__ = "$Revision: 1.3 $"
 
 
 import unittest
@@ -106,12 +106,18 @@ class Schema(object):
         # This is unsupported in sqlalchemy!
         for col in query._raw_columns:
             tablesOfConcern.add(col.table)
-        if query.whereclause:
-            if query.whereclause.__dict__.has_key('clauses'):
-                for clause in query.whereclause.clauses:
+        if  query.__dict__.has_key('whereclause'): # SQLAlchemy 0.3
+            whereclause=query.whereclause
+        elif query.__dict__.has_key('_whereclause'): # SQLAlchemy 0.4
+            whereclause=query._whereclause
+        else:
+            raise "Query '%s' does not contain whereclause"%query
+        if whereclause:
+            if whereclause.__dict__.has_key('clauses'):
+                for clause in whereclause.clauses:
                     self.PullOperatorSide(clause,tablesOfConcern)
             else:
-                self.PullOperatorSide(query.whereclause,tablesOfConcern)
+                self.PullOperatorSide(whereclause,tablesOfConcern)
 
         # No need to calculate joins if there is only one table involved.
         # We actually make mistakes if that single table is Person.
@@ -188,6 +194,7 @@ class Schema(object):
                 relations.append(indexSet)
                 self._foreignTables[tableIdx] = shortTables
         except ValueError, ve:
+            print ve
             _logger.error("""Schema.GraphFromSchema ValueError %s.
                           Could not find fk.column.table %s in
                           self._ordered %s. Len(ordered)=%d
