@@ -4988,6 +4988,7 @@ Save query as:
         xml      = kwargs['xml']
         userMode = kwargs['userMode']
         output   = kwargs['output']
+        titleList= kwargs['titleList']
         grid     = int(getArg(kwargs,'grid',0))
         result   = self.qmaker.executeQuery(tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
@@ -4996,35 +4997,66 @@ Save query as:
             rval = item[0]
             res  = self.qmaker.getSummary(tabCol,rval)
             for it in res:
-                name,cDate,cBy=it
                 if  html:
-                    if grid:
-                       page+="""<tr><td><b>%s</b></td><td>%s</td><td>%s</td></tr>\n"""%(name,cDate,parseCreatedBy(cBy))
+                    if  grid:
+                        page+="<tr>\n"
                     else:
-                       page+="""<hr class="dbs"/>%s <b>%s</b><br/>Creation Date %s, Created by %s\n"""%(longName,name,cDate,parseCreatedBy(cBy))
-                else:
-                    page+="%s %s, created %s, by %s\n"%(longName,name,cDate,parseCreatedBy(cBy))
+                        page+="""<hr class="dbs"/>\n"""
+                for idx in xrange(0,len(it)):
+                    elem =it[idx]
+                    if  html:
+                        if grid:
+                           page+="""<td>%s</td>\n"""%elem
+                        else:
+                           if elem==it[0]: page+="""<b>%s</b><br/>\n"""%elem
+                           else:           page+="""%s %s\n"""%(titleList[idx],elem)
+                    else:
+                        page+="%s %s,"%(titleList[idx],elem)
+                if html and grid: page+="</tr>\n"
+                if not html: page+="\n"
+#                name,cDate,cBy=it
+#                if  html:
+#                    if grid:
+#                       page+="""<tr><td><b>%s</b></td><td>%s</td><td>%s</td></tr>\n"""%(name,cDate,parseCreatedBy(cBy))
+#                    else:
+#                       page+="""<hr class="dbs"/>%s <b>%s</b><br/>Creation Date %s, Created by %s\n"""%(longName,name,cDate,parseCreatedBy(cBy))
+#                else:
+#                    page+="%s %s, created %s, by %s\n"%(longName,name,cDate,parseCreatedBy(cBy))
         if grid and html:
-           page="""<table width="100%%" class="dbs_table"><tr><th>%s</th><th>%s</th><th>%s</th></tr>\n"""%(longName,'Creation Date','Created by')+page+"</table>\n"
+#           page="""<table width="100%%" class="dbs_table"><tr><th>%s</th><th>%s</th><th>%s</th></tr>\n"""%(longName,'Creation Date','Created by')+page+"</table>\n"
+           tab="""<table width="100%%" class="dbs_table">\n<tr>"""
+           for t in titleList:
+               tab+="<th>%s</th>"%t
+           tab+="</tr>"
+           page=tab+page+"</table>\n"
         return page
 
     def blockSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def lfnSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def releaseSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def runSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def lumiSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def siteSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def primSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def procSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def tierSummary(self,**kwargs):
+        kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def datasetSummary(self,**kwargs):
         tabCol   = kwargs['tabCol']
