@@ -394,20 +394,23 @@ class DDQueryMaker(DDLogger):
 
   def countSel(self,query,tabCol):
       con  = self.connectToDB()
+      query= query.alias('query')
       t,c  = tabCol.split(".")
       tc   = self.col(self.dbManager.getTable(self.dbsInstance,t),c)
       oSel = [sqlalchemy.func.count('*')]
       sel  = sqlalchemy.select(oSel,from_obj=[query])
+      sel  = sel.alias('sel')
       if self.verbose:
          print self.printQuery(sel)
       try:
           result = self.getSQLAlchemyResult(con,sel)
+          res = result.fetchone()[0]
       except:
-          msg="\n### Query:\n"+str(sel)+str(iList)
+          msg="\n### Query:\n"+str(sel)+str(result)
           print msg
+          print sel.__dict__
           traceback.print_exc()
           raise "Fail in countSel"
-      res = result.fetchone()[0]
       self.closeConnection(con)
       return res
 
@@ -442,7 +445,9 @@ class DDQueryMaker(DDLogger):
              oSel= [self.col(tab,c)]
           else:
              oSel= [self.col(tab,c),sortCol]
-          gBy = oSel+['rownum']
+          gBy = oSel
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             gBy = gBy+['rownum']
           sel = sqlalchemy.select(oSel,from_obj=[obj],group_by=gBy,order_by=oBy)
           sel.distinct=True
           sel.append_whereclause(self.col(tab,c).in_(query))
@@ -452,7 +457,6 @@ class DDQueryMaker(DDLogger):
                  q   = sqlalchemy.select(['tmp.*','rownum as rnum'],from_obj=[tmp])
                  sel = sqlalchemy.select(['*'],from_obj=[q])
                  sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
-#                 sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
               else:
                  sel.limit=limit
                  sel.offset=fromRow
