@@ -36,6 +36,39 @@ from TermUtilities import ProgressBar
 import StringIO
 import signal, os
 
+import pprint 
+
+# Importing a dynamically generated module
+def importCode(code,name,add_to_sys_modules=0):
+    """
+    Import dynamically generated code as a module. code is the
+    object containing the code (a string, a file handle or an
+    actual compiled code object, same types as accepted by an
+    exec statement). The name is the name to give to the module,
+    and the final argument says wheter to add it to sys.modules
+    or not. If it is added, a subsequent import statement using
+    name will return this module. If it is not added to sys.modules
+    import will try to load it in the normal fashion.
+
+    import foo
+
+    is equivalent to
+
+    foofile = open("/path/to/foo.py")
+    foo = importCode(foofile,"foo",1)
+
+    Returns a newly generated module.
+    """
+    import sys,imp
+
+    module = imp.new_module(name)
+
+    exec code in module.__dict__
+    if add_to_sys_modules:
+        sys.modules[name] = module
+
+    return module
+
 class printDot ( threading.Thread ):
        def __init__(self):  
           threading.Thread.__init__(self)
@@ -455,6 +488,9 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--createads", action="store", type="string", dest="createads",
            help="Create Analysis Dataset for the search query (must be used with --search)")
 
+      self.add_option("--dbsmartfile", action="store", type="string", dest="dbsmartfile",
+           help="Location of the dbs mart file, absolute path or relative to $ADSHOME")
+
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
 
@@ -721,7 +757,7 @@ class ApiDispatcher:
 	print "         RunRanges Included: %s" % str(anObj['RunRangeList'])
 	print "         Lumi Sections Included: %s" %str(anObj['LumiList'])
 	print "         LumiRanges Included: %s" %str(anObj['LumiRangeList'])
-	print "         Tiers Included: %s" %str(anObj['TierList'])
+	#print "         Tiers Included: %s" %str(anObj['TierList'])
 	print "         Algorithms Included:"
 	for anAlgo in anObj['AlgoList']:
 		if anAlgo in ('', None):
@@ -737,7 +773,7 @@ class ApiDispatcher:
 	if self.optdict.has_key('want_help'):
                 self.helper._help_myadslist()
                 return
-	print "Listing lical ADS"
+	print "Listing ADS from DBS MART"
 
         adshome = os.path.expandvars(self.api.adshome())
         if not os.path.exists(adshome):
@@ -745,9 +781,23 @@ class ApiDispatcher:
 	if not os.path.isdir(adshome):
 		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
 
+	import pdb
+	#pdb.set_trace()
+
 	dirList=os.listdir(adshome)
-	for fname in dirList:
-    		print fname
+	for mart_file in dirList:
+		if mart_file.endswith(".dm"):
+    			print "Processing: %s " %mart_file
+			martFile=open(os.path.join(adshome, mart_file), "r")
+                	mart = importCode(martFile, "mart", 0)
+                	KnownADS = mart.KnownADS
+			pp = pprint.PrettyPrinter(indent=1)
+			pp.pprint(KnownADS)
+			#print KnownADS
+                	#if adsname in KnownADS.keys():
+			#--pattern
+			print "Yet to be implemented to search for a particular ADS, easy and coming!"
+
 	return
 
 
@@ -857,30 +907,35 @@ class ApiDispatcher:
         	printReport(report)
                 return
 
-  def getPath(self, inpath):
+  def getPath(self, inpath=None):
 
-    pathDict = {} 
-    if self.optdict.get('path'): 
-	inpath = self.optdict.get('path')
-   	if not inpath.startswith('/'):
-      		raise DbsException (args="Path must start with a '/'",  code="1201")
-   	# remove the starting '/' 
-   	inpath=inpath[1:]
-   	if inpath.endswith('/'):
-      		inpath=inpath[:-1]
-   	pathl = inpath.split('/')
-   	if len(pathl) < 3:
-		raise DbsException (args="must provide a full qualifying --path=/?/?/?, or no --path", code="1203")
-   	else:
-      		pathDict['patternPrim'] = pathl[0]
-      		pathDict['patternDT'] = pathl[2]
-      		pathDict['patternProc'] = pathl[1]
-    else :
-         pathDict['patternPrim'] = "*"
-         pathDict['patternDT'] = "*"
-         pathDict['patternProc'] = "*"
+	pathDict = {} 
+	if inpath not in (None, ''):
+   		if not inpath.startswith('/'):
+			raise DbsException (args="Path must start with a '/'",  code="1201")
+	
+	else:
+		if self.optdict.get('path'):
+			inpath = self.optdict.get('path')
 
-    return pathDict
+	if inpath not in (None, ''):	
+		# remove the starting '/' 
+   		inpath=inpath[1:]
+   		if inpath.endswith('/'):
+     			inpath=inpath[:-1]
+   		pathl = inpath.split('/')
+   		if len(pathl) < 3:
+			raise DbsException (args="must provide a full qualifying --path=/?/?/?, or no --path", code="1203")
+   		else:
+      			pathDict['patternPrim'] = pathl[0]
+      			pathDict['patternDT'] = pathl[2]
+      			pathDict['patternProc'] = pathl[1]
+	else :
+        	pathDict['patternPrim'] = "*"
+        	pathDict['patternDT'] = "*"
+        	pathDict['patternProc'] = "*"
+
+    	return pathDict
 
   def getAlgoPattern(self):
 
@@ -1032,12 +1087,15 @@ class ApiDispatcher:
 
 
   def handleSearchCall(self):
+
        if self.optdict.has_key('want_help'):
 		self.helper._help_search()
                 return
 
        adsfileslist=[]
        createads=self.optdict.get('createads') or ''
+
+       query=""
 
        pathpattern = self.optdict.get('path') or ''
        blockpattern = self.optdict.get('blockpattern') or ''
@@ -1054,6 +1112,8 @@ class ApiDispatcher:
 		self.helper._help_search()
 		return
 
+       if pathpattern in ['/*/*/*', ''] and blockpattern not in ['*', '']:
+		pathl = self.getPath(blockpattern[:blockpattern.find("#")])
        #### Lets locate all matching PATH and then for each Path List (Blocks, Runs, Algos etc) and then for each Block 
        # See if any path is provided
        paramDict={}
@@ -1064,6 +1124,9 @@ class ApiDispatcher:
        if len(algoparam):
                 paramDict.update(algoparam)
        self.printBLUE( "listing data, please wait...\n")
+
+       query = str(paramDict)
+
        procret = self.api.listProcessedDatasets(**paramDict)
 
        if len(procret) < 1 :
@@ -1111,27 +1174,95 @@ class ApiDispatcher:
 			return
 #print "files to be added in ADS:"
        		#print adsfileslist	
-		self.createADS(createads, aPath, adsfileslist)
+		self.createADS(query, createads, aPath, adsfileslist)
 
        return
 
 
-  def createADS(self, ads, path, files):
+  def createADS(self, query, adsname, path, files):
 	"""
 	Created the ADS in DBS Local ADS File format
 		More info will be passed and added to this method at later stage
 	"""
 
+	# The fun begins
+	#Lets see if user has provided a MART File as destination
+
 	adshome = os.path.expandvars(self.api.adshome())
 	if not os.path.exists(adshome):
 		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
-	adspath = os.path.join(adshome, ads)
-   
+
+	mart_file_name = self.optdict.get('dbsmartfile') or ''
+	if mart_file_name not in ('', None):
+		if not os.path.exists(mart_file_name):
+			mart_file = os.path.join(adshome, mart_file_name)
+		else : mart_file = mart_file_name
+	#Else use the DEFAULT Mart file
+	else :
+		mart_file = os.path.join(adshome, "ImportedADS.dm")
+	
+	KnownADS = {}
+        newADS={}
+	newADS['QUERY']=query
+	newADS['HOSTURL']=self.api.url()
+	newADS['PATH']=path
+	
+	# LOAD the mart file if it already exits, otherwise create a new one
+	if os.path.exists(mart_file):
+		martFile=open(mart_file, "r")
+		mart = importCode(martFile, "mart", 0)
+		KnownADS = mart.KnownADS
+		if adsname in KnownADS.keys():
+			self.printRED("ERROR: Cannot create %s, An analysis Dataset with same name already exists in the mart %s" 
+											%( str(adsname), mart_file) )
+			return 
+		else:
+			
+			KnownADS[adsname]=newADS
+			print KnownADS
+	else :
+		#Create a Python Object and then it can be easily appended
+		KnownADS = {}
+		KnownADS[adsname]=newADS
+		"""
+		KnownADS[adsname]['QUERY']="This is some query"
+		KnownADS[adsname]['HOSTURL']=self.api.url()
+		KnownADS[adsname]['PATH']=path
+		"""
+
+	mart = open(str(mart_file), "w")
+	mart.write("#File Last Update %s" % str(time.time()))
+	mart.write("\nKnownADS = ")
+
+	pp = pprint.PrettyPrinter(indent=1)
+        pp.pprint(KnownADS)
+	safestr=pp.pformat(KnownADS)
+
+	#mart.write(str(KnownADS))
+	mart.write(safestr)
+	mart.close()
+		
+	adspath = os.path.join(adshome, adsname)
+
 	if os.path.exists(adspath):
+		# That must be checked in the MART file as well
 		self.printRED("ERROR: Cannot create %s, An analysis Dataset with same name already exists" %str(adspath))
 		return
 
 	ads_file=open(adspath, 'w')
+	ads_file.write("<?xml version='1.0' standalone='yes'?>")
+	ads_file.write("\n<!-- DBS Version 1 -->")
+	ads_file.write("\n<dbs>")
+	ads_file.write("\n<src url='%s' />" % self.api.url())
+	ads_file.write("\n<dataset path='%s' />" % path)
+	
+	for aFile in files:
+		ads_file.write("\n<file lfn='%s' />" % aFile['LogicalFileName'])
+	ads_file.write("\n</dbs>")
+        ads_file.close()
+	print "Created ADS: %s" % adspath
+
+	"""
 	ads_file.write("########################")
 	# ADS name is same as file name
         #ads_file.write("\n[NAME]\n")
@@ -1145,6 +1276,7 @@ class ApiDispatcher:
                 ads_file.write("\n%s" %aFile['LogicalFileName'])
 	ads_file.close()
 	print "Created ADS: %s" % adspath
+	"""
 
 # main
 #
