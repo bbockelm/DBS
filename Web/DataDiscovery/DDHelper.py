@@ -939,8 +939,9 @@ MCDescription:      %s
              _sel.append_whereclause(self.col(tblk,'Path')==dataset)
           result = self.getSQLAlchemyResult(con,sel)
           _result = self.getSQLAlchemyResult(con,_sel)
-#          print "\n\n+++datasetSummary",self.printQuery(sel),dataset
-#          print "_sel query:",self.printQuery(_sel)
+          print "\n\n+++datasetSummary",dataset,
+          print " sel query:",self.printQuery(sel)
+          print "_sel query:",self.printQuery(_sel)
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)

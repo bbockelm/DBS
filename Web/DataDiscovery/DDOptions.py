@@ -34,11 +34,11 @@ class DDOptionParser:
          help="run data discovery in secure mode, you must define DD_CRT/DD_PEM environments for host certificate and private keys respectively")
     self.parser.add_option("--port",action="store", type="int", default=8003, dest="port",
          help="specify port number to be used by web server, default is 8003.")
+    self.parser.add_option("--dbsInst",action="store", type="string", dest="dbsInst",
+         help="specify DBS instance to use, e.g. cms_dbs_prod_global")
 
     # options specific to DDHelper
     if  service=="DDHelper":
-        self.parser.add_option("--dbsInst",action="store", type="string", dest="dbsInst",
-             help="specify DBS instance to use, e.g. --dbsInst=MCLocal_1/Writer")
         self.parser.add_option("--dict",action="store", type="string", dest="dict",
              help="use to generate JavaScript dictionary, pass Global/All")
         self.parser.add_option("--primaryDataset",action="store", type="string", dest="primD",
@@ -53,6 +53,9 @@ class DDOptionParser:
              help="specify DLS site you're interesting, e.g. --site=fnal.gov")
         self.parser.add_option("--search",action="store", type="string", dest="search",
              help="specify any keywords to search your data, e.g. --search='CMSSW_0_8_1 and Merged'")
+    if  service=="DDQueryMaker":
+        self.parser.add_option("--query",action="store", type="string", dest="query",
+             help="specify input query")
 
 
     # options specific to DDExplorer

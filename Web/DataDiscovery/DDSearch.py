@@ -223,5 +223,5 @@ if __name__ == "__main__":
     aSearch.parser("(dataset like *bla* and block>=123) or run=12345")
     aSearch.parser("run=12345")
     aSearch.parser("run not like 12345")
-    aSearch.parser("run no like 12345")
-    aSearch.parser("run 12345")
+#    aSearch.parser("run no like 12345")
+#    aSearch.parser("run 12345")
