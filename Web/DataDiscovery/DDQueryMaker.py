@@ -200,12 +200,12 @@ class DDQueryMaker(DDLogger):
           tabIn     = self.dbManager.getTable(self.dbsInstance,table)
           colIn     = col
           iSel      = [self.col(tabIn,colIn)]
-          _oSel     = sqlalchemy.select(oSel)
+          _oSel     = sqlalchemy.select(oSel,distinct=True)
           if nameIn==nameOut:
              query  =_oSel 
           else:
              md     = self.dbManager.metaDict[self.dbsInstance]
-             _Sel   = sqlalchemy.select(iSel+oSel)
+             _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
              qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
              query  = qb.BuildQueryWithSel(_oSel,_Sel)
           query.distinct=True

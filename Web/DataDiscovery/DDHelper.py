@@ -2168,6 +2168,8 @@ MCDescription:      %s
           if lfn and lfn!="*":
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           result = self.getSQLAlchemyResult(con,sel)
+          if self.verbose:
+             print self.printQuery(sel)
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
