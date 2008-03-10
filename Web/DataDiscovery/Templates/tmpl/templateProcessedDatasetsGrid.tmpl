@@ -50,10 +50,6 @@ Links
 #set months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 <tr ${style}>
 <td class="left">
-#*
-#set newpath=$path[1:]
-/$newpath.replace("/","<br/>/")
-*#
 $path
 </td>
 <td>
@@ -94,7 +90,7 @@ cfg
 </td>
 
 <td>
-<select id="moreInfo" onchange="javascript:LoadSelected();" style="width:100px">
+<select id="moreInfo_$idPath" onchange="javascript:LoadSelected();" style="width:100px">
 <option value="">More info</option>
 <option value="$host/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">Run info</option>
 <option value="$host/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">Conf files</option>
@@ -118,7 +114,7 @@ cfg
 
 <script type="text/javascript">
 function LoadSelected() {
-   var rval=document.getElementById('moreInfo');
+   var rval=document.getElementById('moreInfo_$idPath');
    if(rval && rval.value!='') {
       load(rval.value);
    }
