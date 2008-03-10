@@ -60,25 +60,25 @@ class DDSearch:
            'conddb':self.cond_map,
        }
        # construct DBS methods
-       for v in self.dbs_map.values():
-           for f in v:
-               setattr(self,f,self.templateFunc(self.dbsHelper,f))
+#       for v in self.dbs_map.values():
+#           for f in v:
+#               setattr(self,f,self.templateFunc(self.dbsHelper,f))
        # construct runsumdb methods
-       for v in self.runsum_map.values():
-           for f in v:
-               setattr(self,f,self.templateFunc(self.runsumHelper,f))
+#       for v in self.runsum_map.values():
+#           for f in v:
+#               setattr(self,f,self.templateFunc(self.runsumHelper,f))
        # construct lumidb methods
-       for v in self.lumi_map.values():
-           for f in v:
-               setattr(self,f,self.templateFunc(self.lumiHelper,f))
+#       for v in self.lumi_map.values():
+#           for f in v:
+#               setattr(self,f,self.templateFunc(self.lumiHelper,f))
        # construct Phedex methods
-       for v in self.phedex_map.values():
-           for f in v:
-               setattr(self,f,self.templateFunc(self.phedexHelper,f))
+#       for v in self.phedex_map.values():
+#           for f in v:
+#               setattr(self,f,self.templateFunc(self.phedexHelper,f))
        # construct conddb methods
-       for v in self.cond_map.values():
-           for f in v:
-               setattr(self,f,self.templateFunc(self.condHelper,f))
+#       for v in self.cond_map.values():
+#           for f in v:
+#               setattr(self,f,self.templateFunc(self.condHelper,f))
 
    def templateFunc(self,base,f):
        if base and hasattr(base,f):
