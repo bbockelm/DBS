@@ -4993,27 +4993,35 @@ Save query as:
         result   = self.qmaker.executeQuery(tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
         longName = self.ddrules.longName[output].capitalize()
+        counter  = 0
         for item in result:
             rval = item[0]
             res  = self.qmaker.getSummary(tabCol,rval)
+            if counter%2:
+               style='class="zebra"'
+            else:
+               style=""
             for it in res:
                 if  html:
                     if  grid:
-                        page+="<tr>\n"
+                        page+="<tr %s>\n"%style
                     else:
                         page+="""<hr class="dbs"/>\n"""
-                for idx in xrange(0,len(it)):
-                    elem =it[idx]
+                for jdx in xrange(0,len(it)):
+                    elem = it[jdx]
                     if  html:
                         if grid:
-                           page+="""<td>%s</td>\n"""%elem
+                           if not jdx: td_style='class="left"'
+                           else:       td_style=''
+                           page+="""<td %s>%s</td>\n"""%(td_style,elem)
                         else:
                            if elem==it[0]: page+="""<b>%s</b><br/>\n"""%elem
-                           else:           page+="""%s %s\n"""%(titleList[idx],elem)
+                           else:           page+="""%s %s\n"""%(titleList[jdx],elem)
                     else:
-                        page+="%s %s,"%(titleList[idx],elem)
+                        page+="%s %s,"%(titleList[jdx],elem)
                 if html and grid: page+="</tr>\n"
                 if not html: page+="\n"
+            counter+=1
 #                name,cDate,cBy=it
 #                if  html:
 #                    if grid:
@@ -5026,6 +5034,7 @@ Save query as:
 #           page="""<table width="100%%" class="dbs_table"><tr><th>%s</th><th>%s</th><th>%s</th></tr>\n"""%(longName,'Creation Date','Created by')+page+"</table>\n"
            tab="""<table width="100%%" class="dbs_table">\n<tr>"""
            for t in titleList:
+               if t.lower()=='created': t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                tab+="<th>%s</th>"%t
            tab+="</tr>"
            page=tab+page+"</table>\n"
