@@ -24,15 +24,18 @@ case "$1" in
           echo $"Found data discovery running on pid=${pid}, will restart"
           kill -9 ${pid}
         fi
+	echo $"Start Data Discovery Service on port ${port}..."
         nohup cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
 	;;
  start)
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
+	echo $"Start Data Discovery Service on port ${port}..."
         nohup cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
 	;;
  status)
+	echo $"Checking Data Discovery Service on port ${port}..."
         if [ ! -z ${pid} ]; then
           echo $"${base} is running, pid=${pid}"
           exit 0
@@ -41,6 +44,7 @@ case "$1" in
         exit 3
 	;;
  stop)
+	echo $"Stop Data Discovery Service on port ${port}..."
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
