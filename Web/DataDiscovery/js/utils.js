@@ -1313,6 +1313,10 @@ function CheckOperator() {
 function load(url) {
   window.location.href=url;
 }
+function LoadSelected(sel_id) {
+   var rval=document.getElementById(sel_id);
+   load(rval.options[rval.selectedIndex].value);
+}
 function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,date,idx,ajax,userMode,pagerId,moreParams) {
    var pagerStep=$('pagerStep'+pagerId).value;
    var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&primType='+primType+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep+moreParams;
