@@ -25,7 +25,7 @@ class DDRules:
        self.longName={
            'dataset':'processed dataset',
            'block'  :'block',
-           'lfn'    :'logical file name',
+           'file'   :'logical file name',
            'release':'software release',
            'run'    :'run',
            'lumi'   :'luminosity section',
@@ -33,12 +33,13 @@ class DDRules:
            'prim'   :'primary dataset',
            'proc'   :'processed dataset',
            'tier'   :'data tier',
+           'date'   :'creation date',
        }
        # associate between keyword-names and DBS tables
        self.tableName={
            'dataset':'Block',
            'block'  :'Block',
-           'lfn'    :'Files',
+           'file'   :'Files',
            'release':'AppVersion',
            'run'    :'Runs',
            'lumi'   :'LumiSection',
@@ -50,7 +51,7 @@ class DDRules:
        self.colName={
            'dataset':'Path',
            'block'  :'Name',
-           'lfn'    :'LogicalFileName',
+           'file'   :'LogicalFileName',
            'release':'Version',
            'run'    :'RunNumber',
            'lumi'   :'LumiSectionNumber',
@@ -58,13 +59,14 @@ class DDRules:
            'prim'   :'Name',
            'proc'   :'Name',
            'tier'   :'Name',
+           'date'   :'CreationDate',
        }
        # mapping from keyword to keyword pairs and DBS DB paths
        self.dbs_map={
            # to dataset
            ('dataset','dataset'):['Block_Path2Block_Path'],
            ('block','dataset'):['Block_Name2Block_Path'],
-           ('lfn','dataset'):['Files_LogicalFileName2Block_Path'],
+           ('file','dataset'):['Files_LogicalFileName2Block_Path'],
            ('release','dataset'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
            ('run','dataset'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
            ('lumi','dataset'):['LumiSection_LumiSectionNumber2Runs_ID','Runs_ID2ProcessedDataset_ID2Block_Path'],
@@ -75,7 +77,7 @@ class DDRules:
            # to block
            ('dataset','block'):['Block_Path2Block_Name'],
            ('block','block'):['Block_Name2Block_Name'],
-           ('lfn','block'):['Files_LogicalFileName2Block_Name'],
+           ('file','block'):['Files_LogicalFileName2Block_Name'],
            ('release','block'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
            ('run','block'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
            ('lumi','block'):['LumiSection_LumiSectionNumber2Runs_ID','Runs_ID2ProcessedDataset_ID2Block_Name'],
@@ -83,21 +85,21 @@ class DDRules:
            ('prim','block'):['PrimaryDataset_Name2Block_Name'],
            ('proc','block'):['ProcessedDataset_Name2Block_Name'],
            ('tier','block'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
-           # to lfn
-           ('dataset','lfn'):['Block_Path2Files_LogicalFileName'],
-           ('block','lfn'):['Block_Name2Files_LogicalFileName'],
-           ('lfn','lfn'):[''],
-           ('release','lfn'):['AppVersion_Version2Files_LogicalFileName'],
-           ('run','lfn'):['Runs_RunNumber2Files_LogicalFileName'],
-           ('lumi','lfn'):['LumiSection_LumiSectionNumber2Files_LogicalFileName'],
-           ('site','lfn'):['StorageElement_SEName2Files_LogicalFileName'],
-           ('prim','lfn'):['PrimaryDatset_Name2Files_LogicalFileName'],
-           ('proc','lfn'):['ProcessedDataset_Name2Files_LogicalFileName'],
-           ('tier','lfn'):['DataTier_Name2Files_LogicalFileName'],
+           # to file
+           ('dataset','file'):['Block_Path2Files_LogicalFileName'],
+           ('block','file'):['Block_Name2Files_LogicalFileName'],
+           ('file','file'):[''],
+           ('release','file'):['AppVersion_Version2Files_LogicalFileName'],
+           ('run','file'):['Runs_RunNumber2Files_LogicalFileName'],
+           ('lumi','file'):['LumiSection_LumiSectionNumber2Files_LogicalFileName'],
+           ('site','file'):['StorageElement_SEName2Files_LogicalFileName'],
+           ('prim','file'):['PrimaryDatset_Name2Files_LogicalFileName'],
+           ('proc','file'):['ProcessedDataset_Name2Files_LogicalFileName'],
+           ('tier','file'):['DataTier_Name2Files_LogicalFileName'],
            # to release
            ('dataset','release'):['Block_Path2AppVersion_Version'],
            ('block','release'):['Block_Name2AppVersion_Version'],
-           ('lfn','release'):['Files_LogicalFileName2AppVersion_Version'],
+           ('file','release'):['Files_LogicalFileName2AppVersion_Version'],
            ('release','release'):[''],
            ('run','release'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
            ('lumi','release'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
@@ -108,7 +110,7 @@ class DDRules:
            # to run
            ('dataset','run'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            ('block','run'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('lfn','run'):['Files_LogicalFileName2Runs_RunNumber'],
+           ('file','run'):['Files_LogicalFileName2Runs_RunNumber'],
            ('release','run'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            ('run','run'):[''],
            ('lumi','run'):['LumiSection_LumiSectionNumber2Runs_RunNumber'],
@@ -119,7 +121,7 @@ class DDRules:
            # to lumi
            ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('block','lumi'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
-           ('lfn','lumi'):['Files_LogicalFileName2LumiSection_LumiSectionNumber'],
+           ('file','lumi'):['Files_LogicalFileName2LumiSection_LumiSectionNumber'],
            ('release','lumi'):['AppVersion_Version2ProcessedDatset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('run','lumi'):['Runs_RunNumber2LumiSection_LumiSectionNumber'],
            ('lumi','lumi'):[''],
@@ -130,7 +132,7 @@ class DDRules:
            # to site
            ('dataset','site'):['Block_Path2StorateElement_SEName'],
            ('block','site'):['Block_Name2StorageElement_SEName'],
-           ('lfn','site'):['Files_LogicalFileName2StorageElement_SEName'],
+           ('file','site'):['Files_LogicalFileName2StorageElement_SEName'],
            ('release','site'):['AppVersion_Version2StorageElement_SEName'],
            ('run','site'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
            ('lumi','site'):['LumiSection_LumiSectionNumber2ProcessedDatset_ID','ProcessedDataset_ID2StorageElement_SEName'],
@@ -141,7 +143,7 @@ class DDRules:
            # to prim
            ('dataset','prim'):['Block_Path2PrimaryDataset_Name'],
            ('block','prim'):['Block_Name2PrimaryDataset_Name'],
-           ('lfn','prim'):['Files_LogicalFileName2PrimaryDataset_Name'],
+           ('file','prim'):['Files_LogicalFileName2PrimaryDataset_Name'],
            ('release','prim'):['AppVersion_Version2PrimaryDataset_Name'],
            ('run','prim'):['Runs_RunNumber2PrimaryDataset_Name'],
            ('lumi','prim'):['LumiSection_LumiSectionNumber2PrimaryDataset_Name'],
@@ -152,7 +154,7 @@ class DDRules:
            # to proc
            ('dataset','proc'):['Block_Path2ProcessedDataset_Name'],
            ('block','proc'):['Block_Name2ProcessedDataset_Name'],
-           ('lfn','proc'):['Files_LogicalFileName2ProcessedDataset_Name'],
+           ('file','proc'):['Files_LogicalFileName2ProcessedDataset_Name'],
            ('release','proc'):['AppVersion_Version2ProcessedDataset_Name'],
            ('run','proc'):['Runs_RunNumber2ProcessedDataset_Name'],
            ('lumi','proc'):['LumiSection_LumiSectionNumber2ProcessedDataset_Name'],
@@ -163,7 +165,7 @@ class DDRules:
            # to tier
            ('dataset','tier'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
            ('block','tier'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
-           ('lfn','tier'):['Files_LogicalFileName2DataTier_Name'],
+           ('file','tier'):['Files_LogicalFileName2DataTier_Name'],
            ('release','tier'):['AppVersion_Version2DataTier_Name'],
            ('run','tier'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
            ('lumi','tier'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],

@@ -5033,10 +5033,12 @@ Save query as:
 #                    page+="%s %s, created %s, by %s\n"%(longName,name,cDate,parseCreatedBy(cBy))
         if grid and html:
 #           page="""<table width="100%%" class="dbs_table"><tr><th>%s</th><th>%s</th><th>%s</th></tr>\n"""%(longName,'Creation Date','Created by')+page+"</table>\n"
-           tab="""<table width="100%%" class="dbs_table">\n<tr>"""
+           tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
            for t in titleList:
                if t.lower()=='created': t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
-               tab+="<th>%s</th>"%t
+               th_class=""
+               if t==titleList[0]: th_class="left"
+               tab+="<th class=\"%s\">%s</th>"%(th_class,t)
            tab+="</tr>"
            page=tab+page+"</table>\n"
         return page
@@ -5044,7 +5046,7 @@ Save query as:
     def blockSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
-    def lfnSummary(self,**kwargs):
+    def fileSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator']
         return self.aSearchSummary(**kwargs)
     def releaseSummary(self,**kwargs):
@@ -5114,9 +5116,13 @@ Save query as:
             counter+=1
         if grid:
            head=""
-           for item in ['PATH','CREATED<br/><div class="tiny">(dd/mm/yy)</div>','SIZE','BLOCKS','FILES','EVENTS','SITES','CRAB','LINKS']:
-               head+="<th><b>%s</b></th>"%item
-           head = """<table width="100%%" class="dbs_table"><tr>%s</tr>"""%head
+        
+           titleList=['PATH','CREATED<br/><div class="tiny">(dd/mm/yy)</div>','SIZE','BLOCKS','FILES','EVENTS','SITES','CRAB','LINKS']
+           for item in titleList:
+               th_class=""
+               if item==titleList[0]: th_class="left"
+               head+="<th class=\"%s\">%s</th>"%(th_class,item)
+           head = """<table width="100%%" class="dbs_table">\n<tr class="tr_th">%s</tr>"""%head
            page=head+page+"</table>"
         return page
 

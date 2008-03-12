@@ -246,13 +246,25 @@ table.dbs_table th {
   margin: 0px;
   background-color: #F0F0F0;
   vertical-align: top;
+  text-align: right;
 }
 
 table.dbs_table th.left {
   text-align: left;
 }
+table.dbs_table th.middle {
+  text-align: middle;
+}
 
-table.dbs_table tr{
+table.dbs_table tr.tr_th {
+  background-color: #F0F0F0;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  padding: 5px;
+  margin: 0px;
+}
+table.dbs_table tr {
   background-color: #FFFADC;
   border-width: 1px 1px 1px 1px;
   border-style: solid solid solid solid;
@@ -266,6 +278,8 @@ table.dbs_table tr.zebra{
   border-width: 1px 1px 1px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray;
+  padding: 5px;
+  margin: 0px;
 }
 
 table.dbs_table td {
