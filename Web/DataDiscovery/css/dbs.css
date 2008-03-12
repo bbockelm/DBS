@@ -117,8 +117,11 @@ b { font-weight: bold; text-decoration : none; }
   text-decoration: none;
 }
 .tooltip  {
+/*  font-size: 10px;*/
+/*  font-family: helvetica, arial, verdana, sans-serif;*/
   font-size: 12px;
-  font-family: helvetica, arial, verdana, sans-serif;
+  font-weight: normal;
+  font-family: verdana, sans-serif;
 /*  font-family: "Trebuchet MS", verdana, helvetica, arial, sans-serif;*/
   text-decoration: none;
 }
