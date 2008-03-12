@@ -126,6 +126,12 @@ def timeGMT(iTime):
     except:
        return "Unknown time format, iTime=%s"%iTime
 
+def timeGMTshort(iTime):
+    try:
+       return time.strftime("%d/%m/%y",time.gmtime(iTime))
+    except:
+       return "Unknown time format, iTime=%s"%iTime
+
 def parseBLOBdata(data):
     return str(data).replace(",",", ").replace(";","; ")
 
