@@ -107,9 +107,10 @@ cfg
 
 #set tt=""
 #for site in $siteList
-#set tt=$tt+"<li>"+$site+"</li>";
+####set tt=$tt+"<li>"+$site+"</li>";
+#set tt=$site+"<br/>"+"\n"
 #end for
-#set tt="<ul>"+$tt+"</ul>"
+####set tt="<ul>"+$tt+"</ul>"
 #set tag="t_"+$idPath
 
 <script type="text/javascript">
@@ -120,6 +121,6 @@ function LoadSelected() {
    }
 }
 var tooltip='$tt';
-MakeTooltip('$tag','$idPath',tooltip);
+MakeTooltip('$tag','$idPath',tooltip,5000,'100px');
 </script>
 <!-- end of templateProcessedDatasetsGrid.tmpl -->
