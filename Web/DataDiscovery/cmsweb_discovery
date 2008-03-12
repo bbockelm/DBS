@@ -16,6 +16,7 @@ RETVAL=$?
 port=`cat DBSDD.conf | grep -i "port=" | sed "s/PORT=//g"`
 pid=`ps auxw | grep cmsWeb | grep -v grep | grep ${port} | awk '{print $2}'`
 base=cmsweb_discovery
+cmd="cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port}"
 
 case "$1" in
  restart)
@@ -25,14 +26,14 @@ case "$1" in
           kill -9 ${pid}
         fi
 	echo $"Start Data Discovery Service on port ${port}..."
-        nohup cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
+        nohup ${cmd} 2>&1 1>& /dev/null < /dev/null &
 	;;
  start)
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
         fi
 	echo $"Start Data Discovery Service on port ${port}..."
-        nohup cmsWeb --base-url=https://cmsweb.cern.ch/ --port=${port} 2>&1 1>& /dev/null < /dev/null &
+        nohup ${cmd} 2>&1 1>& /dev/null < /dev/null &
 	;;
  status)
 	echo $"Checking Data Discovery Service on port ${port}..."
