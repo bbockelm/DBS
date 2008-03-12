@@ -952,7 +952,7 @@ class DDServer(DDLogger,Controller):
     _contact.exposed=True
 
     @is_authorized (Role("Global Admin"), Group("DBS"), 
-                    onFail=RedirectToLocalPage ("/redirectPage"))
+		    onFail=RedirectToLocalPage ("/redirectPage"))
     def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -1142,8 +1142,9 @@ class DDServer(DDLogger,Controller):
     genNavigatorMenuDict.exposed = True
 
     #################### ADMIN FORMS #######################
-    @is_authorized (Role("Global Admin"), Group("DBS"), 
-                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
+#    @is_authorized (Role("Global Admin"), Group("DBS"), 
+    @is_authorized (Role("DBSExpert"), Group("DBS"), 
+		    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
 #        page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
