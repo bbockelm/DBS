@@ -1146,7 +1146,7 @@ class DDServer(DDLogger,Controller):
                     onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
-        page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
+#        page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
         page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin tasks',userMode)
 
         # auto-competion form for processed datasets
