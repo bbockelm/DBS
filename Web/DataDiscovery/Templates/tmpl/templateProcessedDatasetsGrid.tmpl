@@ -90,7 +90,7 @@ cfg
 </td>
 
 <td>
-<select id="moreInfo_$idPath" onchange="javascript:LoadSelected();" style="width:100px">
+<select id="moreInfo_$idPath" onchange="javascript:LoadSelected('moreInfo_$idPath');" style="width:100px">
 <option value="">More info</option>
 <option value="$host/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">Run info</option>
 <option value="$host/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">Conf files</option>
@@ -105,22 +105,20 @@ cfg
 
 ##</table>
 
+#set longestSEName=0
 #set tt=""
 #for site in $siteList
 ####set tt=$tt+"<li>"+$site+"</li>";
-#set tt=$site+"<br/>"+"\n"
+#set tt=$tt+"&nbsp;"+$site+"<br/>"
+#if len($site)>$longestSEName
+#set longestSEName=len($site)+5
+#end if
 #end for
 ####set tt="<ul>"+$tt+"</ul>"
 #set tag="t_"+$idPath
 
 <script type="text/javascript">
-function LoadSelected() {
-   var rval=document.getElementById('moreInfo_$idPath');
-   if(rval && rval.value!='') {
-      load(rval.value);
-   }
-}
 var tooltip='$tt';
-MakeTooltip('$tag','$idPath',tooltip,5000,'100px');
+MakeTooltip('$tag','$idPath',tooltip,5000,'200px');
 </script>
 <!-- end of templateProcessedDatasetsGrid.tmpl -->
