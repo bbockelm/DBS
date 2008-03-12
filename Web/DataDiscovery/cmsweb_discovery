@@ -39,6 +39,8 @@ case "$1" in
 	echo $"Checking Data Discovery Service on port ${port}..."
         if [ ! -z ${pid} ]; then
           echo $"${base} is running, pid=${pid}"
+          cmd_pid=`ps auxw | grep cmsWeb | grep -v grep | grep ${port}`
+	  echo $"${cmd_pid}"
           exit 0
         fi
         echo $"${base} is stopped"
