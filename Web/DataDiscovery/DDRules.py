@@ -130,7 +130,7 @@ class DDRules:
            ('proc','lumi'):['ProcessedDataset_Name2LumiSection_LumiSectionNumber'],
            ('tier','lumi'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            # to site
-           ('dataset','site'):['Block_Path2StorateElement_SEName'],
+           ('dataset','site'):['Block_Path2StorageElement_SEName'],
            ('block','site'):['Block_Name2StorageElement_SEName'],
            ('file','site'):['Files_LogicalFileName2StorageElement_SEName'],
            ('release','site'):['AppVersion_Version2StorageElement_SEName'],
