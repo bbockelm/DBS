@@ -424,7 +424,8 @@ def printExcMessage():
            continue
         if counter: print m
 
-def getExcMessage():
+def getExcMessage(userMode='user'):
+    if userMode=='dbsExpert': return traceback.format_exc()
     counter=0
     msg=""
     for m in  traceback.format_exc().split("\n"):
