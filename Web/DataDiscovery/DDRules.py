@@ -48,6 +48,17 @@ class DDRules:
            'proc'   :'ProcessedDataset',
            'tier'   :'DataTier',
        }
+       self.tableWeights={
+           'Block':5,
+           'Files':5,
+           'AppVersion':1,
+           'Runs':5,
+           'LumiSection':5,
+           'StorageElement':1,
+           'PrimaryDataset':1,
+           'ProcessedDataset':1,
+           'DataTier':1,
+       }
        self.colName={
            'dataset':'Path',
            'block'  :'Name',
@@ -88,7 +99,7 @@ class DDRules:
            # to file
            ('dataset','file'):['Block_Path2Files_LogicalFileName'],
            ('block','file'):['Block_Name2Files_LogicalFileName'],
-           ('file','file'):[''],
+           ('file','file'):['Files_LogicalFileName2Files_LogicalFileName'],
            ('release','file'):['AppVersion_Version2Files_LogicalFileName'],
            ('run','file'):['Runs_RunNumber2Files_LogicalFileName'],
            ('lumi','file'):['LumiSection_LumiSectionNumber2Files_LogicalFileName'],
@@ -100,7 +111,7 @@ class DDRules:
            ('dataset','release'):['Block_Path2AppVersion_Version'],
            ('block','release'):['Block_Name2AppVersion_Version'],
            ('file','release'):['Files_LogicalFileName2AppVersion_Version'],
-           ('release','release'):[''],
+           ('release','release'):['AppVersion_Version2AppVersion_Version'],
            ('run','release'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
            ('lumi','release'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
            ('site','release'):['StorageElement_SEName2AppVersion_Version'],
@@ -112,7 +123,7 @@ class DDRules:
            ('block','run'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            ('file','run'):['Files_LogicalFileName2Runs_RunNumber'],
            ('release','run'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('run','run'):[''],
+           ('run','run'):['Runs_RunNumber2Runs_RunNumber'],
            ('lumi','run'):['LumiSection_LumiSectionNumber2Runs_RunNumber'],
            ('site','run'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            ('prim','run'):['PrimaryDataset_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
@@ -122,9 +133,9 @@ class DDRules:
            ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('block','lumi'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('file','lumi'):['Files_LogicalFileName2LumiSection_LumiSectionNumber'],
-           ('release','lumi'):['AppVersion_Version2ProcessedDatset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
+           ('release','lumi'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('run','lumi'):['Runs_RunNumber2LumiSection_LumiSectionNumber'],
-           ('lumi','lumi'):[''],
+           ('lumi','lumi'):['LumiSection_LumiSectionNumber2LumiSection_LumiSectionNumber'],
            ('site','lumi'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('prim','lumi'):['PrimaryDatset_Name2LumiSection_LumiSectionNumber'],
            ('proc','lumi'):['ProcessedDataset_Name2LumiSection_LumiSectionNumber'],
@@ -135,8 +146,8 @@ class DDRules:
            ('file','site'):['Files_LogicalFileName2StorageElement_SEName'],
            ('release','site'):['AppVersion_Version2StorageElement_SEName'],
            ('run','site'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
-           ('lumi','site'):['LumiSection_LumiSectionNumber2ProcessedDatset_ID','ProcessedDataset_ID2StorageElement_SEName'],
-           ('site','site'):[''],
+           ('lumi','site'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
+           ('site','site'):['StorageElement_SEName2StorageElement_SEName'],
            ('prim','site'):['PrimaryDataset_Name2StorageElement_SEName'],
            ('proc','site'):['ProcessedDataset_Name2StorageElement_SEName'],
            ('tier','site'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
@@ -148,7 +159,7 @@ class DDRules:
            ('run','prim'):['Runs_RunNumber2PrimaryDataset_Name'],
            ('lumi','prim'):['LumiSection_LumiSectionNumber2PrimaryDataset_Name'],
            ('site','prim'):['StorageElement_SEName2PrimaryDataset_Name'],
-           ('prim','prim'):[''],
+           ('prim','prim'):['PrimaryDataset_Name2PrimaryDataset_Name'],
            ('proc','prim'):['ProcessedDataset_Name2PrimaryDataset_Name'],
            ('tier','prim'):['DataTier_Name2PrimaryDataset_Name'],
            # to proc
@@ -160,7 +171,7 @@ class DDRules:
            ('lumi','proc'):['LumiSection_LumiSectionNumber2ProcessedDataset_Name'],
            ('site','proc'):['StorageElement_SEName2ProcessedDataset_Name'],
            ('prim','proc'):['PrimaryDataset_Name2ProcessedDataset_Name'],
-           ('proc','proc'):[''],
+           ('proc','proc'):['ProcessedDataset_Name2ProcessedDataset_Name'],
            ('tier','proc'):['DataTier_Name2ProcessedDataset_Name'],
            # to tier
            ('dataset','tier'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
@@ -172,7 +183,7 @@ class DDRules:
            ('site','tier'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
            ('prim','tier'):['PrimaryDataset_Name2DataTier_Name'],
            ('proc','tier'):['ProcessedDataset_Name2DataTier_Name'],
-           ('tier','tier'):[''],
+           ('tier','tier'):['DataTier_Name2DataTier_Name'],
        }
        # list of supported constrain operator, order is matter, since we walk through
        # the list to find a match. Example, if pattern is '<=' and order is <,<= we will
@@ -273,7 +284,6 @@ class DDRules:
               if v.find('not like')==0:
                  v='not_like'+v[len('not like'):]
               try:
-#                 print "+++",f,selKey
                  fList = self.dbs_map[(f,selKey)]
                  _call = ""
                  count = 0
@@ -282,7 +292,6 @@ class DDRules:
                  for func in _fList:
                      _call+= "self.makeQuery('%s',rval="%func
                      count+=1
-#                 _call+="'%s',sortName='%s',sortOrder='%s',case='%s'"%(v,sortName,sortOrder,case)
                  _call+="'%s',case='%s'"%(v,case)
                  for i in xrange(0,count):
                      if i==count-1:
@@ -293,7 +302,6 @@ class DDRules:
               except:
                  traceback.print_exc()
                  raise "Unable to parse your input, selKey='%s', parse it as '%s', list of known keywords %s, list of supported operators %s"%(selKey,words,str(self.dbs_map.keys()),self.sList)
-#                 raise "Unknown keyword '%s', known list: %s"%(f,str(self.dbs_map.keys()))
            else:
                  traceback.print_exc()
                  raise "Keyword '%s' does not contain separator \":\"."%w
