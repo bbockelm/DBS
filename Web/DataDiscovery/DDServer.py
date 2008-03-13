@@ -5053,7 +5053,8 @@ Save query as:
         if grid and html:
            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
            for t in titleList:
-               if t.lower()=='created': t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
+               if t.lower()=='created' or t.lower()=='creationdate':
+                  t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                th_class=""
                if t==titleList[0]: th_class="left"
                tab+="<th class=\"%s\">%s</th>"%(th_class,t)
