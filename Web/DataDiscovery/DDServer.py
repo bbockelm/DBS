@@ -5321,6 +5321,8 @@ Save query as:
 #           page+=str(t)
 
         try:
+            if userMode=='dbsExpert':
+               page+="<pre>%s</pre>"%query
             if details:
                method=getattr(self,output+'Summary')
                page+=method(**kDict)
