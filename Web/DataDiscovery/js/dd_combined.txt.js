@@ -1469,7 +1469,13 @@ function LoadGetRuns(dbsInst,dataset,idx,ajax,userMode,pagerId) {
 }
 function LoadASearch(dbsInst,userMode,idx,pagerId,userInput) {
    var pagerStep=$('pagerStep'+pagerId).value;
-   var url='aSearch?dbsInst='+dbsInst+'&userMode='+userMode+'&_idx='+idx+'&pagerStep='+pagerStep+'&userInput='+userInput;
+   var view=GetCookie('DBSDD_view');
+   var grid=0;
+   if(view=='grid') { grid=1; }
+   var sortName=GetCookie('DBSDD_sortName');
+   var sortOrder=GetCookie('DBSDD_sortOrder');
+   var caseSensitive=GetCookie('DBSDD_caseSensitive');
+   var url='aSearch?dbsInst='+dbsInst+'&userMode='+userMode+'&_idx='+idx+'&pagerStep='+pagerStep+'&userInput='+userInput+'&sortName='+sortName+'&sortOrder='+sortOrder+'&caseSensitive='+caseSensitive+'&grid='+grid;
    load(url);
 }
 function Disable2EnableTag(tag) {
