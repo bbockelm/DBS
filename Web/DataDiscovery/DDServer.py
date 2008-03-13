@@ -5001,6 +5001,8 @@ Save query as:
         userMode = kwargs['userMode']
         output   = kwargs['output']
         titleList= kwargs['titleList']
+        if self.helper.dbManager.dbType[dbsInst]=='oracle':
+           titleList+=['ID']
         grid     = int(getArg(kwargs,'grid',0))
         result   = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
@@ -5041,8 +5043,8 @@ Save query as:
                        else:       td_style=''
                        page+="""<td %s>%s</td>\n"""%(td_style,elem)
                     else:
-                       if elem==it[0]: page+="""<b>%s</b><br/>\n"""%elem
-                       else:           page+="""%s %s\n"""%(titleList[jdx],elem)
+                       if elem==item[0]: page+="""<b>%s</b><br/>\n"""%elem
+                       else:             page+="""%s %s\n"""%(titleList[jdx],elem)
                 else:
                     page+="%s %s,"%(titleList[jdx],elem)
             if html and grid: page+="</tr>\n"
@@ -5060,49 +5062,58 @@ Save query as:
         return page
 
     def blockSummary(self,**kwargs):
-        sortName = kwargs['sortName']
         kwargs['titleList']=['Name','Created','Creator']
-        kwargs['titleList']=['Name',sortName]
+        sortName = kwargs['sortName']
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def fileSummary(self,**kwargs):
         kwargs['titleList']=['LFN','Created','Creator','Checksum','Events','File size','Type','Status']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def releaseSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator','Family','Executable']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def runSummary(self,**kwargs):
         kwargs['titleList']=['Run','Created','Creator','Total lumi','Store #','Start run','End run','Start evt','End evt','# lumis']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def lumiSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def siteSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator','Proc DS']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def primSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator','Type','Proc DS']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def procSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator','Blocks','Size','Files','Events']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def tierSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator','Proc DS']
         sortName = kwargs['sortName']
-        kwargs['titleList']=['Name',sortName]
+        output   = kwargs['output']
+        kwargs['titleList']=[self.ddrules.longName[output],sortName]
         return self.aSearchSummary(**kwargs)
     def datasetSummary(self,**kwargs):
         tabCol   = kwargs['tabCol']
