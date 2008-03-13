@@ -182,7 +182,14 @@ class DBManager(DDLogger):
           for t in tList: 
               if self.verbose:
                  print "DBS Tables|Views",t[0]
-              tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True)
+# since SQLAlchemy 0.4
+#              tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True)
+              if eType=='oracle':
+                 tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False
+)
+              else:
+                 tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True,case_sensitive=False)
+
               if self.verbose>1:
                  print tables[t[0]].__dict__
           self.dbTables[dbsInst]=tables
