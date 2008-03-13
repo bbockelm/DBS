@@ -416,6 +416,24 @@ def getExcept(_msg=None):
     msg+="\n\n"
     return msg
 
+def printExcMessage():
+    counter=0
+    for m in  traceback.format_exc().split("\n"):
+        if m.find(" raise ")!=-1:
+           counter=1
+           continue
+        if counter: print m
+
+def getExcMessage():
+    counter=0
+    msg=""
+    for m in  traceback.format_exc().split("\n"):
+        if m.find(" raise ")!=-1:
+           counter=1
+           continue
+        if counter: msg+="%s\n"%m
+    return msg
+
 def findLastBindVar(s):
     sList=s.replace(")","").replace("(","").split()
     sList.reverse()
