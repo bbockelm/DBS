@@ -19,7 +19,8 @@ import DDOptions
 from   DDConfig  import *
 from   DBSInst   import * # defines DBS instances and schema
 from   DDUtil    import * # general utils
-from   DDRules   import constrainList
+from   DDRules   import *
+#from   DDRules   import constrainList
 
 # QueryBuilder
 from QueryBuilder.Schema import Schema
@@ -53,6 +54,7 @@ class DDQueryMaker(DDLogger):
       self.dbsInstance = dbsInst
       self.verbose     = 0
       self.html        = 0
+      self.ddrules     = DDRules(self.verbose)
       DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDQueryMaker",self.verbose)
       try:
          self.dbManager      = DBManager('OBSOLETE need to be removed',self.verbose)
@@ -159,33 +161,6 @@ class DDQueryMaker(DDLogger):
          oBy = [sqlalchemy.asc(sortName)]
       return oBy
 
-  def sortQuery(self,tabCol,sortName,sortOrder,query):
-      try:
-          print "DDQueryMaker::makerQuery",_name,kwargs
-          t,c       = tabCol.split(".")
-          tab    = self.dbManager.getTable(self.dbsInstance,t)
-          oSel      = [self.col(tabOut,c)]
-          oBy       = None
-          obj       = None
-          if t.lower()=='block' and c=='Path' and sortCol.find('Date')!=-1:
-              tprd      = self.alias('ProcessedDataset','tprd')
-              oBy       = self.sortOrder(self.col(tprd,sortName),sortOrder)
-              sortSel   = [self.col(tprd,sortName)]
-              obj       = tprd.join(tab,onclause=self.col(tprd,'ID')==self.col(tab,'Dataset'))
-          else:
-              oBy       = self.sortOrder(self.col(tab,sortName),sortOrder)
-              sortSel   = [self.col(tab,sortName)]
-          iSel      = [self.col(tabIn,colIn)]
-          _oSel     = sqlalchemy.select(oSel+sortSel)
-          query  = sqlalchemy.select(oSel+sortSel,from_obj=[obj],distinct=True,order_by=[oBy])
-          query.append_whereclause(self.col(tab,c).in_(sel))
-#          print query
-#          print
-          return query
-      except:
-          traceback.print_exc()
-          raise "Fail in DDQueryMaker::sortQuery"+traceback.format_exc()
-      
   def makeQuery(self,_name,**kwargs):
       try:
 #          print "DDQueryMaker::makerQuery",_name,kwargs
@@ -223,32 +198,6 @@ class DDQueryMaker(DDLogger):
           traceback.print_exc()
           raise "Fail in DDQueryMaker::makerQuery"+traceback.format_exc()
       
-  def executeSQLQuery(self,query):
-      if not self.checkQuery(query):
-         return "Your query is not valid, you either specified unkonwn table or tried to perform insert/update operation, which are forbidden."
-      if self.verbose==2:
-         print "Execute SQL query:\n",query
-
-      con = self.connectToDB()
-      res = ""
-      if type(query) is sqlalchemy.sql.Select:
-         query.use_labels=True
-      try:
-         res = con.execute(query)
-      except:
-         res = getExceptionInHTML()
-         self.closeConnection(con)
-         return res
-      oList = []
-      counter=0
-      for item in res:
-          if not counter:
-             oList.append(item.keys())
-          oList.append(item)
-          counter+=1
-      self.closeConnection(con)
-      return oList
-
   ### Implementation for DDSearch
   def buildNotLikeExp(self,sel,tc,val,case='on'):
       if case=='on':
@@ -414,16 +363,97 @@ class DDQueryMaker(DDLogger):
       self.closeConnection(con)
       return res
 
-  def processQuery(self,iList):
+  def queryAnalyzer(self,query,userMode="user"):
+      sel_txt = str(query)
+      selList = sel_txt.lower().split()
+      nJoins  = selList.count('join')
+      weight  = 0
+      for table in self.ddrules.tableName.values():
+          if selList.count(" %s "%table.lower()):
+             weight+=self.ddrules.tableWeights[table]
+      if sel_txt.lower().find("like %")!=-1:
+         weight+=2
+      if self.verbose:
+         print "\n+++ QUERY ANALYZER\n",sel_txt
+         print "number of joins=%s, total weight=%s"%(nJoins,weight)
+         print sel_txt
+      if nJoins>5 or weight>7 or (nJoins+weight)>10:
+         msg ="Your request cannot be efficiently fulfilled due to large amount of processing data.\n"
+         msg+="Please revise your search criterias and try again.\n"
+         msg+="Hints:\n"
+         msg+=" - Try to avoid if possible 'like *pattern' since a full table scan need to be done.\n"
+         msg+="   Instead be more specific and use 'like pattern*' to narrow down your search.\n"
+         msg+="   Example:\n"
+         msg+="       (bad)  find dataset where release like *CMSSW_1_7*\n"
+         msg+="       (good) find dataset where release like CMSSW_1_7*\n"
+         msg+=" - Use more constrains\n."
+         msg+="   Example:\n"
+         msg+="       (much better) find dataset where release like CMSSW_1_7* and prim GlobalNov07-A\n"
+         if userMode!='user':
+            msg+="Number of joins=%s, total query weight=%s\n"%(nJoins,weight)
+         if userMode=='dbsExpert':
+            msg+=sel_txt
+         print "\n+++ QUERY ANALYZER\n",sel_txt
+         print "number of joins=%s, total weight=%s"%(nJoins,weight)
+         raise msg
+
+  def processQuery(self,iList,userMode="user"):
       """Take input list of path-functions and construct out of them SQL and process it"""
       sel = self.processSelExp(iList)
+      self.queryAnalyzer(sel,userMode)
       if self.verbose:
          print "\n\n+++ProcessQuery",str(iList)
          print self.printQuery(sel)
          print self.extractBindParams(sel)
       return sel
 
-  def executeQuery(self,tabCol,sortName,sortOrder,query,fromRow,limit):
+  def executeQuery_new(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
+      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          # see http://progcookbook.blogspot.com/2006/02/using-rownum-properly-for-pagination.html
+          # ORACLE need special way to fetch fromRow/limit, so we wrap query into
+          # select * from (SELECT x.*, rownum as rnum FROM (query) x) where rnum between min and max;
+          t,c    = tabCol.split(".")
+          tab    = self.dbManager.getTable(self.dbsInstance,output+"summary")
+          oBy    = self.sortOrder(self.col(tab,sortName),sortOrder)
+          obj    = tab
+          sortCol= self.col(tab,sortName)
+          oSel   = ['*']
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             gBy = gBy+['rownum']
+          sel = sqlalchemy.select(oSel,from_obj=[obj],order_by=oBy,limit=limit,offset=fromRow)
+          sel.distinct=True
+          sel.append_whereclause(self.col(tab,c).in_(query))
+          if  limit:
+              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                 tmp = sel.alias('tmp')
+                 q   = sqlalchemy.select(['tmp.*','rownum as rnum'],from_obj=[tmp])
+                 sel = sqlalchemy.select(['*'],from_obj=[q])
+                 sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
+              else:
+                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                     sel.limit=limit
+                     sel.offset=fromRow
+                 else: # SQLAlchemy 0.4 and above
+                     sel.offset(fromRow).limit(limit)
+          if self.verbose:
+             print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          print msg
+          traceback.print_exc()
+          raise "Fail in executeQuery"
+      oList=[]
+      for item in result:
+          oList.append(item)
+      self.closeConnection(con)
+      return oList
+
+  def executeQuery(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
+      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
       con  = self.connectToDB()
       sel  = ""
       try:
