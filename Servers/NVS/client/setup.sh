@@ -1,8 +1,0 @@
-#/bin/sh
-export CLIENTHOME=$PWD
-export PYTHONPATH=$CLIENTHOME:$PYTHONPATH
-export NVS_CLIENT_CONFIG=$PWD/nvs.config
-
-#
-#
-
