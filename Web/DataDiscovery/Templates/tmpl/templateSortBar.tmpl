@@ -66,22 +66,16 @@ function Update_aSearchForm() {
 }
 function UpdateSortOrder() {
    var view=GetCookie('DBSDD_view');
-   //var grid=document.getElementById('grid');
    if (view) {
       var l_view=document.getElementById('listView');
       var g_view=document.getElementById('gridView');
       if (view=='grid') {
           g_view.className='td_underline_pad';
           l_view.className='';
-          //grid.value=1;
       } else {
           l_view.className='td_underline_pad';
           g_view.className='';
-          //grid.value=0;
       }
-   //}  else {
-   //   SetCookie('DBSDD_view','list');
-   //   grid.value=0;
    }
    var sort=GetCookie('DBSDD_sortOrder');
    if (sort=='asc') {
@@ -119,9 +113,14 @@ function ReloadASearch() {
    var userInput=\$('userInput').value;
    var sortName=\$('sel_sortName').value;
    var sortOrder=\$('sortOrder').value;
+   var view=GetCookie('DBSDD_view');
+   var grid=0;
+   if(view=='grid') {
+     grid=1;
+   }
    SetCookie('DBSDD_sortName',sortName);
    SetCookie('DBSDD_sortOrder',sortOrder);
-   var url='aSearch?dbsInst='+dbsInst+'&caseSensitive='+caseSens+'&userMode='+userMode+'&userInput='+userInput+'&sortName='+sortName+'&sortOrder='+sortOrder;
+   var url='aSearch?dbsInst='+dbsInst+'&caseSensitive='+caseSens+'&userMode='+userMode+'&userInput='+userInput+'&sortName='+sortName+'&sortOrder='+sortOrder+'&grid='+grid;
    load(url);
 }
 function GridView() {

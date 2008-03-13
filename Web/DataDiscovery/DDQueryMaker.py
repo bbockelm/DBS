@@ -408,7 +408,7 @@ class DDQueryMaker(DDLogger):
       return sel
 
   def executeQuery_new(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
-      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
+#      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
       con  = self.connectToDB()
       sel  = ""
       try:
@@ -453,7 +453,7 @@ class DDQueryMaker(DDLogger):
       return oList
 
   def executeQuery(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
-      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
+#      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
       con  = self.connectToDB()
       sel  = ""
       try:
