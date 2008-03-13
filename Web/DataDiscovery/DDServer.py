@@ -5306,21 +5306,6 @@ Save query as:
 
            t = templateSortBar(searchList=[{'num':nResults,'out':output,'oname':_out,'link':link}]).respond()
            page+=str(t)
-
-           pagerId=1
-           _nameSpace = {
-                        'idx'      : _idx,
-                        'host'     : self.dbsdd,
-                        'style'    : "",
-                        'rPage'    : rPage,
-                        'pagerStep': pagerStep,
-                        'pagerId'  : pagerId,
-                        'nameForPager': _out+"s",
-                        'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,userInput)
-                       }
-#           t = templatePagerStep(searchList=[_nameSpace]).respond()
-#           page+=str(t)
-
         try:
             if userMode=='dbsExpert':
                page+="<pre>%s</pre>"%query
@@ -5338,9 +5323,17 @@ Save query as:
                else:
                   page+=getExcept()
         if html:
-           pagerId+=1
-           _nameSpace['pagerId']=pagerId
-           _nameSpace['onchange']="javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,kwargs['userInput'])
+           pagerId=1
+           _nameSpace = {
+                        'idx'      : _idx,
+                        'host'     : self.dbsdd,
+                        'style'    : "",
+                        'rPage'    : rPage,
+                        'pagerStep': pagerStep,
+                        'pagerId'  : pagerId,
+                        'nameForPager': _out+"s",
+                        'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,userInput)
+                       }
            t = templatePagerStep(searchList=[_nameSpace]).respond()
            page+="""<hr class="dbs" />"""
            page+=str(t)
