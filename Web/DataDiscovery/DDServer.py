@@ -774,15 +774,19 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _analysis.exposed=True
 
-    def _advanced(self,dbsInst=DBSGLOBAL,userMode="user"):
+    def _advanced(self,dbsInst=DBSGLOBAL,userMode="user",msg=""):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             dbsList=list(self.dbsList)
             dbsList.remove(dbsInst)
             dbsList=[dbsInst]+dbsList
-            nameSearch={'dbsInst':dbsInst,'userHelp':1,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode}
+            if msg: userHelp=0
+            else:   userHelp=1
+            nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
             page+= str(t)
+            if msg:
+               page+=msg
             page+= self.genBottomHTML()
             return page
         except:
@@ -4952,8 +4956,15 @@ Save query as:
         output   = kwargs['output']
         self.qmaker.initDBS(dbsInst)
         sel      = self.ddrules.parser(urllib.unquote(userInput),sortName,sortOrder,case)
-        query    = self.qmaker.processQuery(sel)
-        result   = self.qmaker.executeQuery(tabCol,sortName,sortOrder,query,fromRow,limit=0)
+        try:
+            query= self.qmaker.processQuery(sel)
+        except:
+            if not html:
+               return traceback.format_exc()
+            msg ="<pre>%s</pre>"%getExcMessage(userMode)
+            page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+            return page
+        result   = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit=0)
         if html:
            page  = self.genTopHTML(userMode=userMode)
            page += "<p>%s sorted by %s in %s order</p>"%(self.ddrules.longName[output].capitalize(),sortName,sortOrder.upper())
@@ -4991,48 +5002,53 @@ Save query as:
         output   = kwargs['output']
         titleList= kwargs['titleList']
         grid     = int(getArg(kwargs,'grid',0))
-        result   = self.qmaker.executeQuery(tabCol,sortName,sortOrder,query,fromRow,limit)
+        result   = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
         longName = self.ddrules.longName[output].capitalize()
         counter  = 0
+        try:
+            cDateIdx= titleList.index('Created')
+        except:
+            cDateIdx=-1
+        try:
+            cDateIdx= titleList.index('CreationDate')
+        except:
+            cDateIdx=-1
+        try:
+            sizeIdx = titleList.index('Size')
+        except:
+            sizeIdx =-1
         for item in result:
-            rval = item[0]
-            res  = self.qmaker.getSummary(tabCol,rval)
+#            print "aSearchSummary::item",item
             if counter%2:
                style='class="zebra"'
             else:
                style=""
-            for it in res:
+            if  html:
+                if  grid:
+                    page+="\n<tr %s>\n"%style
+                else:
+                    page+="""<hr class="dbs"/>\n"""
+            for jdx in xrange(0,len(item)):
+                elem = item[jdx]
+                if cDateIdx!=-1 and jdx==cDateIdx:
+                   elem=timeGMTshort(elem)
+                elif sizeIdx!=-1 and jdx==sizeIdx:
+                   elem=colorSizeHTMLFormat(elem)
                 if  html:
-                    if  grid:
-                        page+="<tr %s>\n"%style
+                    if grid:
+                       if not jdx: td_style='class="left"'
+                       else:       td_style=''
+                       page+="""<td %s>%s</td>\n"""%(td_style,elem)
                     else:
-                        page+="""<hr class="dbs"/>\n"""
-                for jdx in xrange(0,len(it)):
-                    elem = it[jdx]
-                    if  html:
-                        if grid:
-                           if not jdx: td_style='class="left"'
-                           else:       td_style=''
-                           page+="""<td %s>%s</td>\n"""%(td_style,elem)
-                        else:
-                           if elem==it[0]: page+="""<b>%s</b><br/>\n"""%elem
-                           else:           page+="""%s %s\n"""%(titleList[jdx],elem)
-                    else:
-                        page+="%s %s,"%(titleList[jdx],elem)
-                if html and grid: page+="</tr>\n"
-                if not html: page+="\n"
+                       if elem==it[0]: page+="""<b>%s</b><br/>\n"""%elem
+                       else:           page+="""%s %s\n"""%(titleList[jdx],elem)
+                else:
+                    page+="%s %s,"%(titleList[jdx],elem)
+            if html and grid: page+="</tr>\n"
+            if not html: page+="\n"
             counter+=1
-#                name,cDate,cBy=it
-#                if  html:
-#                    if grid:
-#                       page+="""<tr><td><b>%s</b></td><td>%s</td><td>%s</td></tr>\n"""%(name,cDate,parseCreatedBy(cBy))
-#                    else:
-#                       page+="""<hr class="dbs"/>%s <b>%s</b><br/>Creation Date %s, Created by %s\n"""%(longName,name,cDate,parseCreatedBy(cBy))
-#                else:
-#                    page+="%s %s, created %s, by %s\n"%(longName,name,cDate,parseCreatedBy(cBy))
         if grid and html:
-#           page="""<table width="100%%" class="dbs_table"><tr><th>%s</th><th>%s</th><th>%s</th></tr>\n"""%(longName,'Creation Date','Created by')+page+"</table>\n"
            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
            for t in titleList:
                if t.lower()=='created': t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
@@ -5044,31 +5060,49 @@ Save query as:
         return page
 
     def blockSummary(self,**kwargs):
+        sortName = kwargs['sortName']
         kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def fileSummary(self,**kwargs):
-        kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['LFN','Created','Creator','Checksum','Events','File size','Type','Status']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def releaseSummary(self,**kwargs):
-        kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['Name','Created','Creator','Family','Executable']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def runSummary(self,**kwargs):
-        kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['Run','Created','Creator','Total lumi','Store #','Start run','End run','Start evt','End evt','# lumis']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def lumiSummary(self,**kwargs):
         kwargs['titleList']=['Name','Created','Creator']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def siteSummary(self,**kwargs):
-        kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['Name','Created','Creator','Proc DS']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def primSummary(self,**kwargs):
-        kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['Name','Created','Creator','Type','Proc DS']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def procSummary(self,**kwargs):
-        kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['Name','Created','Creator','Blocks','Size','Files','Events']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def tierSummary(self,**kwargs):
-        kwargs['titleList']=['Name','Created','Creator']
+        kwargs['titleList']=['Name','Created','Creator','Proc DS']
+        sortName = kwargs['sortName']
+        kwargs['titleList']=['Name',sortName]
         return self.aSearchSummary(**kwargs)
     def datasetSummary(self,**kwargs):
         tabCol   = kwargs['tabCol']
@@ -5081,8 +5115,10 @@ Save query as:
         html     = kwargs['html']
         xml      = kwargs['xml']
         userMode = kwargs['userMode']
+        output   = kwargs['output']
         grid     = int(getArg(kwargs,'grid',0))
-        result   = self.qmaker.executeQuery(tabCol,sortName,sortOrder,query,fromRow,limit)
+        titleList=['Path','Created','Creator','Size','Blocks','Files','Events','Sites']
+        result   = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
         counter  = 0
         for item in result:
@@ -5161,7 +5197,7 @@ Save query as:
             if not html:
                return traceback.format_exc()
             page = self.genTopHTML(userMode=userMode)
-            page+="<pre>%s</pre>"%traceback.format_exc()
+            msg ="<pre>%s</pre>"%getExcMessage(userMode)
             page+= self.genBottomHTML()
             return page
 
@@ -5170,7 +5206,14 @@ Save query as:
         oTable   = self.ddrules.tableName[output]
         tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
         self.qmaker.initDBS(dbsInst)
-        query    = self.qmaker.processQuery(sel)
+        try:
+            query= self.qmaker.processQuery(sel,userMode)
+        except:
+            if not html:
+               return traceback.format_exc()
+            msg ="<pre>%s</pre>"%getExcMessage(userMode)
+            page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+            return page
         nResults = self.qmaker.countSel(query,tabCol)
 
         # construct output kwargs
