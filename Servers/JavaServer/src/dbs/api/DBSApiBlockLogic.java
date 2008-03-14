@@ -1,6 +1,6 @@
 /**
- $Revision: 1.49 $"
- $Id: DBSApiBlockLogic.java,v 1.49 2007/12/10 18:17:27 sekhri Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSApiBlockLogic.java,v 1.50 2007/12/10 19:44:19 sekhri Exp $"
  *
  */
 
@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.UUID;
+import codec.Base64;
 import dbs.DBSConstants;
 import dbs.sql.DBSSql;
 import dbs.util.DBSConfig;
@@ -666,7 +667,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 		//System.out.println("XML is " + sout.toString());
 		//Write the XML in Recycle Bin
-		(new DBSApiRecycleBin(this.data)).insertRecycleBin(conn, out, path, blockName, sout.toString(), lmbUserID, cbUserID, creationDate);
+		//(new DBSApiRecycleBin(this.data)).insertRecycleBin(conn, out, path, blockName, sout.toString(), lmbUserID, cbUserID, creationDate);
+		(new DBSApiRecycleBin(this.data)).insertRecycleBin(conn, out, path, blockName, Base64.encodeBytes(sout.toString().getBytes()), lmbUserID, cbUserID, creationDate);
 		//Delete the actual Block
 		deleteName(conn, out, "Block", "Name", blockName);
 		//Record history in TimeLog
@@ -686,7 +688,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			ps =  DBSSql.listBlockContentsInRecycleBin(conn, path, blockName);
 			rs =  ps.executeQuery();
 			if(rs.next()) {
-			       	undeleteBlock(conn, out, path, blockName, get(rs, "XML"), dbsUser, clientVersion);
+		       		undeleteBlock(conn, out, path, blockName, get(rs, "XML"), dbsUser, clientVersion);
+			       	//undeleteBlock(conn, out, path, blockName, xml, dbsUser, clientVersion);
 				//Delete the actual block from Recycle Bin
 				(new DBSApiRecycleBin(this.data)).deleteRecycleBin(conn, out, path, blockName);
 			}
@@ -698,6 +701,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}
 
 	public void undeleteBlock(Connection conn, Writer out, String path, String blockName, String xml, Hashtable dbsUser, String clientVersion) throws Exception {
+			if(!isNull(xml)) xml = new String(Base64.decode(xml));
+	
 			(new DBSApiTransferLogic(this.data)).insertDatasetContents(conn, out,
 				DBSApiParser.parseDatasetContents(xml), 
 				dbsUser,

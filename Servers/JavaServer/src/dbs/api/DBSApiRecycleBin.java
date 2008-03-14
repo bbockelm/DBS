@@ -38,6 +38,7 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 				path,
 				blockName,
 				xml,
+				//Base64.encodeBytes(xml.getBytes()),
 				cbUserID,
 				cbUserID,
 				creationDate);
