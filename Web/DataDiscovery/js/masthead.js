@@ -68,7 +68,7 @@ function addLoginObject (item){
 	var callback = {
 	    success: function (o) {
 	        user = o.responseXML.getElementsByTagName ("user")[0];
-	        dn = user.getAttribute ("dn")
+	        dn = user.getAttribute ("dn");
 	        if (!dn)
 	        {
 	            window.location.href = "https://cmsweb.cern.ch/sitedb" + 
@@ -95,11 +95,16 @@ function addLoginObject (item){
         	loginObject += "<a href='https://cmsweb.cern.ch/sitedb/SecurityModule/login?";
         	loginObject += "requestedPage=" + redirectionLocation + "'>";
         	loginObject += "here</a> to login.</span>";	        
-            item.innerHTML = loginObject;	        
-	    }
+                item.innerHTML = loginObject;	        
+	    },
+            timeout : 3000
 	};
 
-	YAHOO.util.Connect.asyncRequest ("get", "https://cmsweb.cern.ch/sitedb/SecurityModule/userInfo", callback);
+//try{
+	YAHOO.util.Connect.asyncRequest ("GET", "https://cmsweb.cern.ch/sitedb/SecurityModule/userInfo", callback);
+//} catch(x) {
+//   alert('Fail in YAHOO.util.Connect.asyncRequest, error='+x);
+//}
 }
 
 function doStyle(page){
