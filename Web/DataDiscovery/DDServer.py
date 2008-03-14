@@ -30,7 +30,7 @@ from   DDUtil      import *
 from   DDConfig    import *
 from   DDHelper    import *
 from   Templates   import *
-from   DDSearch   import *
+from   DDSearch    import *
 from DDParamServer import *
 from DDWS          import *
 
@@ -1148,7 +1148,7 @@ class DDServer(DDLogger,Controller):
     #################### ADMIN FORMS #######################
 #    @is_authorized (Role("Global Admin"), Group("DBS"), 
     @is_authorized (Role("DBSExpert"), Group("DBS"), 
-		    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
+                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
 #        page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
@@ -1193,7 +1193,7 @@ class DDServer(DDLogger,Controller):
             path   = kwargs['path']
             result = self.msApi.deleteRequest(srcUrl, dstUrl, path)
         except:
-            result = traceback.format_exc()
+            result = getExcMessage(kwargs['userMode'])
             pass
         page   = self.genTopHTML(userMode=userMode)
         t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
@@ -1209,7 +1209,7 @@ class DDServer(DDLogger,Controller):
             dn=urllib.quote(self.getDN(userName))
             result = self.msApi.getRequestByUser(dn)
         except:
-            result = traceback.format_exc()
+            result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
         t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
@@ -1222,7 +1222,7 @@ class DDServer(DDLogger,Controller):
         try:
             result = self.msApi.getRequestById(int(id))
         except:
-            result = traceback.format_exc()
+            result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
         t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
@@ -1235,7 +1235,7 @@ class DDServer(DDLogger,Controller):
         try:
             result = self.msApi.getRequestByStatus(status)
         except:
-            result = traceback.format_exc()
+            result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
         t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
@@ -1261,10 +1261,12 @@ class DDServer(DDLogger,Controller):
             path   = kwargs['path']
             force  = getArg(kwargs,'force','y')
             parents= getArg(kwargs,'with_parents','y')
+            if parents=='on': parents='y'
+            else: parents='n'
             notify = kwargs['notify']
             result = self.msApi.addRequest(srcUrl,dstUrl,path,dn,force,parents,notify)
         except:
-            result = traceback.format_exc()
+            result = getExcMessage(kwargs['userMode'])
             pass
         return result
 
