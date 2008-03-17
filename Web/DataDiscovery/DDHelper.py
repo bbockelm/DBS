@@ -1438,6 +1438,8 @@ MCDescription:      %s
                      ],distinct=True,order_by=oSel )
           if dataset and dataset!="*":
              sel.append_whereclause(self.col(tblk,'Path')==dataset)
+          if self.verbose:
+             print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
               id,path=item
