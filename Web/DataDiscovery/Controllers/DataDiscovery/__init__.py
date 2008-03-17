@@ -4,5 +4,5 @@ from cherrypy import expose
 
 from DDServer import *
 
-DeclarePlugin ("/Controllers/DataDiscovery/DDServer", DDServer, {"baseUrl": "/"})
-#DeclarePlugin ("/Controllers/DataDiscovery/DDServer", DDServer, {"baseUrl": "/DDServer"})
+#DeclarePlugin ("/Controllers/DataDiscovery/DDServer", DDServer, {"baseUrl": "/"})
+DeclarePlugin ("/Controllers/DataDiscovery/DDServer", DDServer, {"baseUrl": "/DDServer"})

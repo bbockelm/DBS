@@ -253,15 +253,13 @@ class DDServer(DDLogger,Controller):
 #        self.mastheadUrl=self.baseUrl+"Common/masthead"
 #        self.footerUrl=self.baseUrl+"Common/footer"
         self.topUrl=self.baseUrl+"DDServer/"
+        # I only need this if webtools force to use a new URL structure.
+        self.dbsdd=self.dbsdd+"/DDServer/"
         try:
            self.verbose=opts.verbose
            self.helper.setVerbose(self.verbose)
         except:
            pass
-#        self.context.Logger ().message ("Creating DBS Data Discovery roles and groups")
-#        securityApi = self.context.SecurityDBApi ()
-#        securityApi.api.addRole ("DBS admin")
-#        securityApi.api.addGroup ("dbs_admin")    
 
     def sendSOAP(self,host,service,aDict={}):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
