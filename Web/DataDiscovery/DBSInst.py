@@ -185,8 +185,7 @@ class DBManager(DDLogger):
 # since SQLAlchemy 0.4
 #              tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True)
               if eType=='oracle':
-                 tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False
-)
+                 tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False)
               else:
                  tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True,case_sensitive=False)
 
