@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.15 $"
- $Id: DBSConfig.java,v 1.15 2007/04/13 21:42:03 afaq Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSConfig.java,v 1.16 2007/11/15 21:02:31 sekhri Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -37,6 +37,7 @@ public class DBSConfig {
         private String supportedClientVersions;
         private long maxBlockSize = 100000;
         private long maxBlockFiles = 100;
+	private String schemaOwner;
 
         private static DBSConfig ref;
 
@@ -127,6 +128,7 @@ public class DBSConfig {
                           dbDriver = (String)atribs.get("driverClassName");
                           dbURL = (String)atribs.get("url");
                        }   
+
                        if ( name.equals("SupportedSchemaVersion") ) {
                           supportedSchemaVersion = (String)atribs.get("schemaversion");
                        }
@@ -152,9 +154,13 @@ public class DBSConfig {
 
                        }
 
+                       if ( name.equals("SchemaOwner") ) {
+                                schemaOwner = (String)atribs.get("schemaowner");
+                       }
+
                     } //for loop
                     //Check to see if all parameters are read if not throw exception
-   
+  
                     if (dbUserName == null ) {
                       throw new DBSException("Configuration Error", "1052", "Database USERID not found in Config File");  
                     }
@@ -173,6 +179,9 @@ public class DBSConfig {
                     if (supportedClientVersions == null ) {
                       throw new DBSException("Configuration Error", "1057", "Supported CLIENT_VERSIONS not found in Config File");
                     }
+		    if (schemaOwner == null ) {
+                      throw new DBSException("Configuration Error", "1058", "Database SchemaOwner not found in Config File");
+                    } 
 
                     DBSUtil.writeLog("dbUserName: "+dbUserName);
                     //Lets NOT Print the Password even in the Log
@@ -235,6 +244,10 @@ public class DBSConfig {
         public long getMaxBlockFiles() {
             return maxBlockFiles; 
         }
+
+	public String getSchemaOwner() {
+	    return schemaOwner;
+	}
 
         public static void main(String args[])
         {
