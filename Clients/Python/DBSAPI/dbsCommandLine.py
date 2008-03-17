@@ -150,7 +150,14 @@ class cmd_doc_writer:
       print "\n"       
       self._help_search()  
       print "\n"
+      self._help_storequery()
+      print "\n"
+      self._help_createads()
+      print "\n"
       self._help_myadslist()
+      print "\n"
+      self._help_myadsdeflist()
+      print "\n"
 
 
   def command_help(self):
@@ -185,19 +192,34 @@ class cmd_doc_writer:
       return command_help
 
   def command_short_help(self):
-      command_help = "IMAGINE the possibilities:"
-      command_help = "\nSome possible commands are:"
+      command_help = "   Some possible commands are:"
       command_help += "\n           listProcessedDatasets or lsd, can provide --path"
       command_help += "\n           listAlgorithms or lsa, can provide --path"
       command_help += "\n           listFiles or lsf, must provide --path"
       command_help += "\n           listAnalysisDatasetDefinition or lsadef"
       command_help += "\n           listAnalysisDataset or lsads"
+      command_help += "\n           myAnalysisDatasetDef or myadsdef or --myadsdef"
       command_help += "\n           myAnalysisDataset or myads"
       command_help += "\n           search or --search\n"
       command_help += "\n EXAMPLE: python dbsCommandLine.py -c lsd --path=/*/*/RAW" 
       command_help += "\n Note: most commands can print greater details with --report"
       command_help += "\n Please use --doc for details"
       return command_help
+
+  def _help_myadsdeflist(self):
+                pre=""
+                if self.wiki_help:
+                        print "---+++\b"
+                print pre+"Lists Local Analysis Dataset Definitions"
+                print "   Arguments:"
+                print "         -c myadsdef, or --command=myAnalysisDatasetDef or --command=myadsdef"
+                print "         optional: --pattern=<Analysis_Dataset_Name_Pattern>"
+                print "                   --help, displays this message"
+                if self.wiki_help: print "<verbatim>"
+                print "   examples:"
+                print "         python dbsCommandLine.py -c myadsdef"
+                print "         python dbsCommandLine.py -c myadsdef --pattern=MyStoredQuery*"
+                if self.wiki_help: print "</verbatim>"
 
   def _help_myadslist(self):
 		pre=""
@@ -388,20 +410,43 @@ class cmd_doc_writer:
 		print "            This command WILL NOT work on DBS Global"
 		if self.wiki_help: print "</verbatim>"
 
+  def _help_storequery(self):
+                pre=""
+                if self.wiki_help:
+                        pre="---+++"
+                print pre+"Store the serach Criteria in DBS Mart"
+                print "   At the query storeage time or later this query could be used to create ADS"
+                print "   First you run search, after you have found what you were looking for "
+                print "   Add --storequery=<QUERYNAME> to the commandline and it will create an ADS Definition for you"
+                print "   Arguments:"
+                print "         --storequery=<QUERYNAME>"
+                print "                    Where QUERYNAME is a Valid Analysis Dataset Definition Name"
+                if self.wiki_help: print "<verbatim>"
+                print "   examples:"
+                print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --storequery=MYTESTADSDEF"
+                if self.wiki_help: print "</verbatim>"
+
   def _help_createads(self):
                 pre=""
                 if self.wiki_help:
                         pre="---+++"
                 print pre+"Creates Analysis Dataset (Local on Disk), based on the search criteria"
-		print "   This command cannot be used alone you have to use it with dbs search"
+		print "   This command cannot be used alone you have to use it with either 'dbs search' or --usequery="
 		print "   First you run search, after you have found what you were looking for "
-		print "   Add --createads=<ADSNAME> to the commandline and it will create an ADS for you"
+		print "   Add --createADS=<ADSNAME> to the commandline and it will create an ADS for you"
+		print "   you will have to specify a name for your search as well --storequery=<QUERYNAME>"
+		print "                    Where QUERYNAME is a Valid Analysis Dataset Definition Name"
+		print "   You can use --usequery=<QUERYNAME> to specify a pre-stored query from DBS Mart"
 		print "   Arguments:"
-		print "         --createads=<ADSNAME>"
-		print "                    Where ADSNAME is a Valid Analysis Dataset Name"
+		print "         --createADS=<ADSNAME> --storequery=<QUERYNAME>"
+		print "                Where ADSNAME is a Valid Analysis Dataset Name, QUERYNAME is a Valid Analysis Dataset Definition Name"
+		print "                   "
+		print "         --createADS=<ADSNAME> --usequery=<QUERYNAME>"
+		print "                Where ADSNAME is a Valid Analysis Dataset Name, QUERYNAME is a Valid Analysis Dataset Definition Name from DBS Mart"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --createads=ANZARTESTADS"
+                print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --storequery=ANZARTESTADS --createADS=MYADS01"
+                print "         python dbsCommandLine.py --createADS=MYADS01 --usequery=MYTESTADSDEF"
 		if self.wiki_help: print "</verbatim>"
 		
   def _help_search(self):
@@ -485,8 +530,14 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--lfnpattern", action="store", type="string", dest="lfnpattern",
            help="Logical File Name pattern for glob search")
 
-      self.add_option("--createads", action="store", type="string", dest="createads",
-           help="Create Analysis Dataset for the search query (must be used with --search)")
+      self.add_option("--storequery", action="store", type="string", dest="storequery",
+           help="Store the search query as ADS Definition (must be used with --search)")
+
+      self.add_option("--createADS", action="store", type="string", dest="createADS",
+           help="Create Analysis Dataset for the search query (must be used with --search, or --usequery)")
+
+      self.add_option("--usequery", action="store", type="string", dest="usequery",
+           help="Specifies the ADS Def/query to be used for creating an ADS (must be used with --createADS)")
 
       self.add_option("--dbsmartfile", action="store", type="string", dest="dbsmartfile",
            help="Location of the dbs mart file, absolute path or relative to $ADSHOME")
@@ -606,19 +657,6 @@ class Report(dict):
 # API Call Wrapper
 class ApiDispatcher:
 
-
-  def printRED(self, msg):
-    print self.term.RED+msg+self.term.NORMAL
-
-  def printGREEN(self, msg):
-    print self.term.GREEN+msg+self.term.NORMAL
-
-  def printBLUE(self, msg):
-    print self.term.BLUE+msg+self.term.NORMAL
-
-  def makeTIME(self, intime):
-    return time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(intime)))
-
   def __init__(self, args):
    try:
     self.helper = cmd_doc_writer()
@@ -626,6 +664,7 @@ class ApiDispatcher:
     self.progress=showProgress()
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
+
 
     #See if Twril needs to be ignored
     if self.optdict.has_key('notwril'):
@@ -637,6 +676,7 @@ class ApiDispatcher:
 
     self.api = DbsApi(opts.__dict__)
     self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
+
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
 	print_help(self)
 	return
@@ -678,18 +718,29 @@ class ApiDispatcher:
     elif apiCall in ('listAnalysisDataset', 'lsads'):
         self.handlelistANDCall()
 
-    elif apiCall in ('myAnalysisDataset', 'myads'):
+    elif apiCall in ('myAnalysisDataset', 'myads', '--myads'):
 	self.handlelistMyADSCall()
+
+    elif apiCall in ('myAnalysisDatasetDef', 'myadsdef', '--myadsdef'):
+        self.handlelistMyADSDEFCall()
 
     elif apiCall in ('deletePDS', '--deletePDS'):
 	self.handledeleteProcDSCall()
 
+    elif apiCall.startswith('usequery') or apiCall.startswith('--usequery') or \
+                        apiCall.startswith('--usequery=') or apiCall.startswith('usequery=') or self.optdict.get('usequery'):
+        self.handleUseQueryCall()
+
+    elif apiCall in ('storequery', '--storequery', '--storequery=', 'storequery=') or self.optdict.get('storequery'):
+        self.handleStoreQueryCall()
+
+    elif apiCall.startswith('createADS') or apiCall.startswith('--createADS') or \
+                        apiCall.startswith('--createADS=') or apiCall.startswith('createADS=') or self.optdict.get('createADS'):
+        self.handleCreateADSCall()
+
     ##Search data
     elif apiCall in ('search', '--search') or self.optdict.get('search'):
 	self.handleSearchCall()
-
-    elif apiCall in ('createads', '--createads', '--createads=', 'createads=') or self.optdict.get('createads'):
-        self.handleCreateADSCall()
 
     else:
        self.printRED( "Unsupported API Call '%s', please use --doc or --help" %str(apiCall))
@@ -715,6 +766,48 @@ class ApiDispatcher:
         self.progress.stop()
         print "Interrupted."
         sys.exit(1)
+
+  def setMartParams(self):
+
+	#Loaded with MART Queries
+	self.KnownQueries = {}
+	self.mart_file = ""
+
+        #Lets see if user has provided a MART File as destination
+        self.adshome = os.path.expandvars(self.api.adshome())
+        if not os.path.exists(self.adshome):
+                self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+                return False
+
+        mart_file_name = self.optdict.get('dbsmartfile') or ''
+        if mart_file_name not in ('', None):
+                if not os.path.exists(mart_file_name):
+                        self.mart_file = os.path.join(self.adshome, mart_file_name)
+                else : self.mart_file = mart_file_name
+        #Else use the DEFAULT Mart file
+        else :
+                self.mart_file = os.path.join(self.adshome, "ImportedADS.dm")
+
+	# LOAD the mart file if it already exits, otherwise create a new one
+	if os.path.exists(self.mart_file):
+		martFile=open(self.mart_file, "r")
+		mart = importCode(martFile, "mart", 0)
+		self.KnownQueries = mart.KnownQueries
+
+	return
+
+  def printRED(self, msg):
+    print self.term.RED+msg+self.term.NORMAL
+
+  def printGREEN(self, msg):
+    print self.term.GREEN+msg+self.term.NORMAL
+
+  def printBLUE(self, msg):
+    print self.term.BLUE+msg+self.term.NORMAL
+
+  def makeTIME(self, intime):
+    return time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(intime)))
+
 
   def handledeleteProcDSCall(self):
         if self.optdict.has_key('want_help'):
@@ -769,38 +862,60 @@ class ApiDispatcher:
                                                 + "/" + algo[3]
 	return	
 
+  def handlelistMyADSDEFCall(self):
+        if self.optdict.has_key('want_help'):
+                self.helper._help_myadsdeflist()
+                return
+        print "Listing ADS DEFs from DBS MART"
+
+        self.getALLKnownQueries()
+        pp = pprint.PrettyPrinter(indent=1)
+        pp.pprint(self.KnownQueries)
+
+        print "Yet to be implemented to search for a particular ADS DEF, easy and coming!"
+	print "self.optdict.get('pattern')"
+
+
+
   def handlelistMyADSCall(self):
 	if self.optdict.has_key('want_help'):
                 self.helper._help_myadslist()
                 return
 	print "Listing ADS from DBS MART"
 
-        adshome = os.path.expandvars(self.api.adshome())
-        if not os.path.exists(adshome):
+	self.getALLKnownQueries()
+
+	pp = pprint.PrettyPrinter(indent=1)
+	for aQuery in self.KnownQueries.keys():
+		self.printGREEN( "ADSs for ADSDEF/Query %s \n" % aQuery )
+		pp.pprint(self.KnownQueries[aQuery]['MARTADS'])
+
+	print "Yet to be implemented to search for a particular ADS, easy and coming!"
+	print "self.optdict.get('pattern')"
+
+  def getALLKnownQueries(self):
+	"""
+	List ALL Queries in ALL Known mart files
+	Helpful for searching ADSDef/ADS etc.
+	"""
+
+	self.setMartParams()
+	if self.KnownQueries!= {} : return #Never do it twice
+        #adshome = os.path.expandvars(self.api.adshome())
+        if not os.path.exists(self.adshome):
                 self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
-	if not os.path.isdir(adshome):
+	if not os.path.isdir(self.adshome):
 		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
 
-	import pdb
-	#pdb.set_trace()
-
-	dirList=os.listdir(adshome)
+	dirList=os.listdir(self.adshome)
 	for mart_file in dirList:
 		if mart_file.endswith(".dm"):
     			print "Processing: %s " %mart_file
-			martFile=open(os.path.join(adshome, mart_file), "r")
+			martFile=open(os.path.join(self.adshome, mart_file), "r")
                 	mart = importCode(martFile, "mart", 0)
-                	KnownADS = mart.KnownADS
-			pp = pprint.PrettyPrinter(indent=1)
-			pp.pprint(KnownADS)
-			#print KnownADS
-                	#if adsname in KnownADS.keys():
-			#--pattern
-			print "Yet to be implemented to search for a particular ADS, easy and coming!"
+                	self.KnownQueries=mart.KnownQueries
 
 	return
-
-
 	         
   def handlelistANDCall(self):
         if self.optdict.has_key('want_help'):
@@ -1081,60 +1196,147 @@ class ApiDispatcher:
                 printReport(report)
                 return
 
-  def handleCreateADSCall(self):
-	self.helper._help_createads()
+  def handleStoreQueryCall(self):
+        if self.optdict.has_key('want_help'):
+		self.helper._help_storequery()
+        	return
+	self.handleSearchCall()
 	return
 
+  def handleCreateADSCall(self, path="", files=[]):
+	self.setMartParams()
+	if self.optdict.has_key('want_help'):
+		self.helper._help_createads()
+		return
+
+	# Get the Definition name
+	# see if user provide --usequery
+	storequery=''
+	usequery=self.optdict.get('usequery') or ''
+        if usequery in ('', None):
+		storequery=self.optdict.get('storequery') or ''	
+		
+		if storequery in ('', None):
+			self.printRED("You cannot use --createADS without --storequery or --usequery (see --doc)")
+			self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
+			return
+		else : que = storequery
+	else : 
+		que = usequery
+
+	if usequery not in ('', None) and storequery not in ('', None):
+                self.printRED("You cannot provide BOTH --storequery and --usequery (see --doc)")
+		return
+	
+	if que not in self.KnownQueries.keys():
+		self.printRED("Query not found in the specified MART")
+		return
+
+	# Get Path etc from and query DBS to get the list of files
+	if files in ([], None):
+		# Get Path etc from and query DBS to get the list of files
+		print "SEARCHING for Files based on QUERY: %s for PATH : %s " %(que, self.KnownQueries[que]['PATH'])
+		self.printRED( "NOT IMPLEMENTED")
+		return
+
+	adsname=self.optdict.get('createADS') or ''	
+	if adsname in ('', None):
+		self.printRED("You must provide a valid ADS name --createADS=<ADSNAME>")
+
+        ads_list=self.KnownQueries[que]['MARTADS']
+	if adsname in ads_list.keys():
+		self.printRED("An ADS with same name already exists in the MART")
+
+	newADS={}
+	newADS['PATH']=path
+	newADS['EXISTS_IN_DBS']='false'
+	newADS['CREATEDAT']=time.asctime()
+	newADS['LASTMODIFIEDAT']=time.asctime()
+        newADS['CREATEDBY']=os.environ['USER']
+	newADS['LASTMODIFIEDBY']=os.environ['USER']
+
+	self.KnownQueries[que]['MARTADS'][adsname]=newADS
+	self.rewriteMart()
+			
+	adspath = os.path.join(self.adshome, adsname)
+
+	if os.path.exists(adspath):
+		# That must be checked in the MART file as well
+		self.printRED("ERROR: Cannot create %s, An analysis Dataset with same name already exists" %str(adspath))
+		return False
+
+	ads_file=open(adspath, 'w')
+	ads_file.write("<?xml version='1.0' standalone='yes'?>")
+	ads_file.write("\n<!-- DBS Version 1 -->")
+	ads_file.write("\n<dbs>")
+	ads_file.write("\n<src url='%s' />" % self.api.url())
+	ads_file.write("\n<dataset path='%s' />" % path)
+	ads_file.write("\n<analysis_dataset_def name='%s' query='%s' />" % (que, self.KnownQueries[que]['QUERY']) )	
+	for aFile in files:
+		ads_file.write("\n<file lfn='%s' />" % aFile['LogicalFileName'])
+	ads_file.write("\n</dbs>")
+        ads_file.close()
+	print "Created ADS: %s" % adspath
+
+	return
+ 	
+  def handleUseQueryCall(self):
+	if self.optdict.has_key('want_help'):
+		self.printRED("\n--usequery Can only be used with --createADS call\n")
+		return
+	self.handleCreateADSCall()
 
   def handleSearchCall(self):
 
-       if self.optdict.has_key('want_help'):
+        if self.optdict.has_key('want_help'):
 		self.helper._help_search()
                 return
 
-       adsfileslist=[]
-       createads=self.optdict.get('createads') or ''
+        adsfileslist=[]
+        storequery=self.optdict.get('storequery') or ''
+        createADS=self.optdict.get('createADS') or ''
 
-       query=""
+        query=""
 
-       pathpattern = self.optdict.get('path') or ''
-       blockpattern = self.optdict.get('blockpattern') or ''
-       sepattern = self.optdict.get('sepattern') or ''
-       algopattern = self.optdict.get('algopattern') or ''
+        pathpattern = self.optdict.get('path') or ''
+        blockpattern = self.optdict.get('blockpattern') or ''
+        sepattern = self.optdict.get('sepattern') or ''
+        algopattern = self.optdict.get('algopattern') or ''
 
-       pathl = self.getPath(pathpattern)
-       if pathl['patternPrim'] in ['*', '', '?'] and  pathl['patternProc'] in ['*', '', '?'] and pathl['patternDT'] in ['*', '', '?']:
+        pathl = self.getPath(pathpattern)
+        if pathl['patternPrim'] in ['*', '', '?'] and  pathl['patternProc'] in ['*', '', '?'] and pathl['patternDT'] in ['*', '', '?']:
 		pathpattern='/*/*/*'
 		
-       if pathpattern in ['/*/*/*', ''] and blockpattern in ['*', ''] \
+        if pathpattern in ['/*/*/*', ''] and blockpattern in ['*', ''] \
 		and sepattern in ['*', ''] and algopattern in ['/*/*/*/*', '']:
-		self.printRED("You must provide some options with --search, Please look at 'dbs --search --help', or use 'dbs --doc'. \nCannot list EVERYTHING in DBS\n\n")
+		self.printRED("You must provide some options with --search, Please look at 'dbs --search --help', \
+									 or use 'dbs --doc'. \nCannot list EVERYTHING in DBS\n\n")
 		self.helper._help_search()
 		return
 
-       if pathpattern in ['/*/*/*', ''] and blockpattern not in ['*', '']:
+        if pathpattern in ['/*/*/*', ''] and blockpattern not in ['*', '']:
 		pathl = self.getPath(blockpattern[:blockpattern.find("#")])
-       #### Lets locate all matching PATH and then for each Path List (Blocks, Runs, Algos etc) and then for each Block 
-       # See if any path is provided
-       paramDict={}
-       if len(pathl):
+        #### Lets locate all matching PATH and then for each Path List (Blocks, Runs, Algos etc) and then for each Block 
+        # See if any path is provided
+        paramDict={}
+        if len(pathl):
                 paramDict.update(pathl)
 
-       algoparam=self.getAlgoPattern() 
-       if len(algoparam):
+        algoparam=self.getAlgoPattern() 
+        if len(algoparam):
                 paramDict.update(algoparam)
-       self.printBLUE( "listing data, please wait...\n")
+        self.printBLUE( "listing data, please wait...\n")
 
-       query = str(paramDict)
+        query = str(paramDict)
 
-       procret = self.api.listProcessedDatasets(**paramDict)
+        procret = self.api.listProcessedDatasets(**paramDict)
 
-       if len(procret) < 1 :
+        if len(procret) < 1 :
                 self.printRED( "No Datasets found..?")
                 return  
-       #avoid duplication, wonder thats must not be possible anyways.
-       datasetPaths=[]
-       for anObj in procret:
+        #avoid duplication, wonder thats must not be possible anyways.
+        datasetPaths=[]
+        for anObj in procret:
 		print "---------------------------------------------------------------------------------------------------------"
 		print "Dataset PrimaryDataset=%s, ProcessedDataset=%s" %(anObj['Name'], anObj['PrimaryDataset']['Name'])
 		print "---------------------------------------------------------------------------------------------------------"
@@ -1165,118 +1367,69 @@ class ApiDispatcher:
 					else: 
 						print "                    %s" %aFile['LogicalFileName']
 
-				if createads not in ('', None):
+				if storequery not in ('', None):
 					adsfileslist.extend(filesret)
 
-       if createads not in ('', None):
+	if storequery not in ('', None):
 		if len(datasetPaths) > 1:
 			self.printRED("Cannot create ADS, more than one matching Paths found for query, limit to ONE Path")
 			return
-#print "files to be added in ADS:"
-       		#print adsfileslist	
-		self.createADS(query, createads, aPath, adsfileslist)
+		canstore=self.storeQuery(aPath, query, storequery)
+		if (canstore) and createADS not in ('', None): 	
+			self.handleCreateADSCall(aPath, adsfileslist)
 
-       return
+	if createADS not in ('', None) and storequery in ('', None):
+		self.printRED("You cannot use --createADS without --storequery (see --doc)")
+		self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
+
+        return
 
 
-  def createADS(self, query, adsname, path, files):
+  def storeQuery(self, path, query, queryname):
 	"""
 	Created the ADS in DBS Local ADS File format
 		More info will be passed and added to this method at later stage
 	"""
 
+	self.setMartParams()
 	# The fun begins
-	#Lets see if user has provided a MART File as destination
+	adsdef = {}
+	adsdef['PATH']=path
+	adsdef['QUERY']=query
+	adsdef['EXISTS_IN_DBS']='false'
+	adsdef['HOSTURL']=self.api.url()
+	adsdef['CREATEDAT']=time.asctime()
+	adsdef['LASTMODIFIEDAT']=time.asctime()
+        adsdef['CREATEDBY']=os.environ['USER']
+        adsdef['LASTMODIFIEDBY']=os.environ['USER']
+	adsdef['MARTADS']={}
 
-	adshome = os.path.expandvars(self.api.adshome())
-	if not os.path.exists(adshome):
-		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+        if queryname in self.KnownQueries.keys():
+		self.printRED("ERROR: Cannot create %s, An Analysis Dataset Definition (query) with same name already exists in the mart %s" \
+									% (queryname, self.mart_file))
+		if self.optdict.get('createADS') not in ('', None):
+			self.printRED("Try using --usequery=<QUERYNAME> with --createADS")
+		return False
+	else:
+		self.KnownQueries[queryname]=adsdef
+		print self.KnownQueries
 
-	mart_file_name = self.optdict.get('dbsmartfile') or ''
-	if mart_file_name not in ('', None):
-		if not os.path.exists(mart_file_name):
-			mart_file = os.path.join(adshome, mart_file_name)
-		else : mart_file = mart_file_name
-	#Else use the DEFAULT Mart file
-	else :
-		mart_file = os.path.join(adshome, "ImportedADS.dm")
-	
-	KnownADS = {}
-        newADS={}
-	newADS['QUERY']=query
-	newADS['HOSTURL']=self.api.url()
-	newADS['PATH']=path
-	
-	# LOAD the mart file if it already exits, otherwise create a new one
-	if os.path.exists(mart_file):
-		martFile=open(mart_file, "r")
-		mart = importCode(martFile, "mart", 0)
-		KnownADS = mart.KnownADS
-		if adsname in KnownADS.keys():
-			self.printRED("ERROR: Cannot create %s, An analysis Dataset with same name already exists in the mart %s" 
-											%( str(adsname), mart_file) )
-			return 
-		else:
-			
-			KnownADS[adsname]=newADS
-			print KnownADS
-	else :
-		#Create a Python Object and then it can be easily appended
-		KnownADS = {}
-		KnownADS[adsname]=newADS
-		"""
-		KnownADS[adsname]['QUERY']="This is some query"
-		KnownADS[adsname]['HOSTURL']=self.api.url()
-		KnownADS[adsname]['PATH']=path
-		"""
+	self.rewriteMart()
+        return True
 
-	mart = open(str(mart_file), "w")
-	mart.write("#File Last Update %s" % str(time.time()))
-	mart.write("\nKnownADS = ")
+  def rewriteMart(self):
+
+	mart = open(str(self.mart_file), "w")
+	mart.write("#File Last Update %s" % str(time.asctime()))
+	mart.write("\nKnownQueries = ")
 
 	pp = pprint.PrettyPrinter(indent=1)
-        pp.pprint(KnownADS)
-	safestr=pp.pformat(KnownADS)
+        #pp.pprint(self.KnownQueries)
+	safestr=pp.pformat(self.KnownQueries)
 
-	#mart.write(str(KnownADS))
 	mart.write(safestr)
 	mart.close()
-		
-	adspath = os.path.join(adshome, adsname)
 
-	if os.path.exists(adspath):
-		# That must be checked in the MART file as well
-		self.printRED("ERROR: Cannot create %s, An analysis Dataset with same name already exists" %str(adspath))
-		return
-
-	ads_file=open(adspath, 'w')
-	ads_file.write("<?xml version='1.0' standalone='yes'?>")
-	ads_file.write("\n<!-- DBS Version 1 -->")
-	ads_file.write("\n<dbs>")
-	ads_file.write("\n<src url='%s' />" % self.api.url())
-	ads_file.write("\n<dataset path='%s' />" % path)
-	
-	for aFile in files:
-		ads_file.write("\n<file lfn='%s' />" % aFile['LogicalFileName'])
-	ads_file.write("\n</dbs>")
-        ads_file.close()
-	print "Created ADS: %s" % adspath
-
-	"""
-	ads_file.write("########################")
-	# ADS name is same as file name
-        #ads_file.write("\n[NAME]\n")
-        #ads_file.write(ads)
-        ads_file.write("\n[HOSTDBS]\n")
-        ads_file.write(self.api.url())
-        ads_file.write("\n[PATH]\n")
-        ads_file.write(path)
-        ads_file.write("\n[FILES]")
-        for aFile in files:
-                ads_file.write("\n%s" %aFile['LogicalFileName'])
-	ads_file.close()
-	print "Created ADS: %s" % adspath
-	"""
 
 # main
 #
