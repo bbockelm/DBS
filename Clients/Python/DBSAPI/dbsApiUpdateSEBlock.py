@@ -45,3 +45,33 @@ def dbsApiImplUpdateSEBlock(self, blockName, storage_element_from, storage_eleme
 		    'storage_element_name_to' : seNameTo }, 'POST')
     logging.log(DBSDEBUG, data)
 
+def dbsApiImplUpdateSEBlockRole(self, blockName, storage_element, role):
+    """
+    Updates the role in Storage Element Block combination to the specified role
+    
+    param: 
+	blockName : the name of the block in which storage element will be changed
+	storage_element : The name of storage element in the string format or object format that needs to be changed
+	role : The role name to be updated to. Allowed valued are 'Y' or 'N'
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         api.updateSEBlockRole ("/pri/proc/tier#1234", "se1", "Y")
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    seNameFrom = get_name(storage_element)
+    
+    name = get_name(blockName)
+
+    data = self._server._call ({ 'api' : 'updateSEBlockRole',
+		    'block_name' : name,
+		    'storage_element_name' : seNameFrom,
+		    'role' : role}, 'POST')
+    logging.log(DBSDEBUG, data)
+

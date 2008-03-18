@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.137 $"
- $Id: DBSSql.java,v 1.137 2008/03/07 23:06:50 sekhri Exp $"
+ $Revision: 1.138 $"
+ $Id: DBSSql.java,v 1.138 2008/03/18 17:15:17 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1827,6 +1827,7 @@ public class DBSSql {
 			"b.CreationDate as CREATION_DATE, \n" +
 			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"se.SEName as STORAGE_ELEMENT_NAME, \n" +
+			"seb.Roles as ROLES, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Block b \n" +

@@ -27,11 +27,12 @@ class DbsConfig(object):
     """
  
     uFileName=""
-    iList=['user','password','driver','url','host','port','log','level', 'servlet','version','dbname','dbsDB',
+    iList=['user','password','driver','url','host','port','log','level', 'servlet','version','dbname','dbsDB','clienttype',
 					'dbtype','verbose','mode', 'dbshome', 'javahome', 'adshome']
     self.configDict={}
 
     for item in iList:
+	#print item    
 	if iConfig.has_key(item) and iConfig[item]:
 		self.configDict[item] = iConfig[item]
 
@@ -62,6 +63,9 @@ class DbsConfig(object):
            for item in iList:
                keyword=string.upper(item)
                if re.search(keyword,line):
+		  #print item, line, keyword     
+		  #import pdb
+		  #pdb.set_trace()
                   self.configDict[item] = string.split(line,"%s="%keyword)[1]
                #if iConfig.has_key(item) and iConfig[item]:
                #   self.configDict[item] = iConfig[item]
@@ -88,6 +92,10 @@ class DbsConfig(object):
     if not self.configDict.has_key('mode'):
        raise DbsException(args="DBS configuration missing mode parameter")
     return self.configDict['mode']
+  def clienttype(self):
+    if not self.configDict.has_key('clienttype'):
+       raise DbsException(args="DBS configuration missing user_type parameter")
+    return self.configDict['clienttype']
   def dbshome(self):
     if not self.configDict.has_key('dbshome'):
        raise DbsException(args="DBS configuration missing mode parameter")

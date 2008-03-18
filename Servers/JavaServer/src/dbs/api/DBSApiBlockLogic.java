@@ -1,6 +1,6 @@
 /**
- $Revision: 1.50 $"
- $Id: DBSApiBlockLogic.java,v 1.50 2007/12/10 19:44:19 sekhri Exp $"
+ $Revision: 1.51 $"
+ $Id: DBSApiBlockLogic.java,v 1.51 2008/03/14 20:50:54 sekhri Exp $"
  *
  */
 
@@ -50,6 +50,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable  or processed dataset is not found.
 	 */
 	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName) throws Exception {
+		listBlocks(conn, out, path, patternBlockName, patternSEName, "NORMAL");
+	}
+	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName, String userType) throws Exception {
 		boolean first = true; 
 		String prevBlock = "";
 		PreparedStatement ps = null;
@@ -63,6 +66,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			}
 			ps =  DBSSql.listBlocks(conn, procDSID, patternPath, getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
 			rs =  ps.executeQuery();
+			//System.out.println("userType " + userType);
+			if(isNull(userType)) userType = "NORMAL";
 			while(rs.next()) {
 				String blockID = get(rs, "ID");
 				if( !prevBlock.equals(blockID) && ! first) {
@@ -82,8 +87,15 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'>\n"));
 				}
-				String se = get(rs, "STORAGE_ELEMENT_NAME");
-				if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"'/>\n"));
+				String role = get(rs, "ROLES");
+				//System.out.println("Role is " + role);
+				if(!isNull(role)) {
+					if(role.equals("Y") || userType.equals("SUPER")) {
+						String se = get(rs, "STORAGE_ELEMENT_NAME");
+						//System.out.println("SE name is " + se);
+						if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"'/>\n"));
+					}
+				}
 
 				prevBlock = blockID;
 				first = false;
@@ -432,6 +444,26 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				seIDNew,
 				getID(conn, "StorageElement", "SEName", seNameFrom , true),
 				personApi.getUserID(conn, dbsUser));
+
+	}
+
+	public void updateSEBlockRole(Connection conn, Writer out, String blockName, String seName, String role, Hashtable dbsUser) throws Exception {
+		if(!role.equals("N") && !role.equals("Y")) 
+			throw new DBSException("Invalid Role", "1098", "Role can have just these values Y or N. Given " + role);
+			
+		updateValue(conn, out, "SEBlock", 
+				getMapID(conn, "SEBlock", "SEID", "BlockID", 
+					getID(conn, "StorageElement", "SEName", seName , true), 
+					getBlockID(conn, blockName, false, true),
+					true),
+				"Roles", 
+				role, 
+				personApi.getUserID(conn, dbsUser));
+		insertTimeLog(conn, "updateSEBlockRole", "User called updateSEBlockRole", 
+						"Chaged role to " + role,
+						"The Role in Block " + blockName + " Storage Element " + seName + " is changed to  " + role,
+						dbsUser);
+
 
 	}
 

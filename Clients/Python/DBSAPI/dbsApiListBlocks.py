@@ -18,7 +18,7 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_name="*"):
+def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_name="*",  userType="NORMAL"):
     """
     Retrieve list of Blocks matching shell glob pattern for Block Name and/or 
     Storage Element Name, for a dataset path.  All the three parameters are optional.
@@ -66,7 +66,10 @@ def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_nam
 
     # Invoke Server.
     path = get_path(dataset)
-    data = self._server._call ({ 'api' : 'listBlocks', 'path' : path, 'block_name' : block_name, 'storage_element_name' : storage_element_name }, 'GET')
+    data = self._server._call ({ 'api' : 'listBlocks', 'path' : path, 
+		    'block_name' : block_name, 
+		    'storage_element_name' : storage_element_name ,
+		    'user_type' : userType}, 'GET')
     logging.log(DBSDEBUG, data)
 
 

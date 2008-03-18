@@ -205,7 +205,8 @@ class DbsApi(DbsConfig):
      try:
        #Calling the Implementation function
        from dbsApiListBlocks import dbsApiImplListBlocks
-       return  dbsApiImplListBlocks(self, dataset, block_name, storage_element_name)
+       #print self.configDict
+       return  dbsApiImplListBlocks(self, dataset, block_name, storage_element_name, self.configDict['clienttype'])
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
@@ -544,6 +545,17 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+  def updateSEBlockRole(self, blockName, storage_element, role):
+     try:
+       #Calling the Implementation function
+       from dbsApiUpdateSEBlock import dbsApiImplUpdateSEBlockRole
+       return  dbsApiImplUpdateSEBlockRole(self, blockName, storage_element, role)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
   def openBlock(self, block=None ):
      try:
        #Calling the Implementation function

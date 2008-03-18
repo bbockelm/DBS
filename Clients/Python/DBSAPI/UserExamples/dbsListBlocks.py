@@ -13,6 +13,7 @@ from DBSAPI.dbsOptions import DbsOptionParser
 try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
+  #print opts.__dict__
   api = DbsApi(opts.__dict__)
   #for block in api.listBlocks("/TestPrimary_001_20070315_03h12m26s/TestProcessed_20070315_03h12m26s/GEN-SIM"):
   for block in api.listBlocks(""):

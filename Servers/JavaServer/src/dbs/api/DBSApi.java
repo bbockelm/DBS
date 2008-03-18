@@ -1,6 +1,6 @@
 /**
- $Revision: 1.122 $"
- $Id: DBSApi.java,v 1.122 2008/03/03 22:00:08 afaq Exp $"
+ $Revision: 1.123 $"
+ $Id: DBSApi.java,v 1.123 2008/03/07 23:06:50 sekhri Exp $"
  *
 */
 
@@ -313,7 +313,8 @@ public class DBSApi {
 				(new DBSApiBlockLogic(this.data)).listBlocks(conn, out, 
 						get(table, "path", false),
 						get(table, "block_name", false),
-						get(table, "storage_element_name", false)
+						get(table, "storage_element_name", false),
+						get(table, "user_type", false)
 						);
 
 			} else if (apiStr.equals("listStorageElements")) {
@@ -460,6 +461,12 @@ public class DBSApi {
 						get(table, "block_name", true),
 						get(table, "storage_element_name_from", true),
 						get(table, "storage_element_name_to", true),
+						dbsUser);
+			} else if (apiStr.equals("updateSEBlockRole")) {
+				(new DBSApiBlockLogic(this.data)).updateSEBlockRole(conn, out, 
+						get(table, "block_name", true),
+						get(table, "storage_element_name", true),
+						get(table, "role", true),
 						dbsUser);
 
 			} else if (apiStr.equals("deleteSEFromBlock")) {
