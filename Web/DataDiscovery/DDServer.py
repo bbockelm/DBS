@@ -3328,7 +3328,8 @@ All LFNs in a block
                        'dataset'   : dataset, 
                        'userMode'  : userMode,
                        'dbsInst'   : dbsInst,
-                       'parentList': parents
+                       'oList'     : parents,
+                       'who'       :'parents',
                       }
             t = templateProvenance(searchList=[nameSpace]).respond()
             page+= str(t)
@@ -3406,47 +3407,28 @@ All LFNs in a block
         return page
     getProvenanceForAllDatasets.exposed = True 
     
-#    def getSites(self,dbsInst,ajax=0,**kwargs):
-#        self.helperInit(dbsInst)
-#        if int(ajax):
-#           self.setContentType('xml')
-#           page="""<ajax-response><response type="element" id="sitesHolder">"""
-#        else:
-#           page=self.genTopHTML()
-#           page+= self.genResultsHTML()
-#        try:
-#            siteList=['AnyVK']+self.helper.getSites()
-#            nameSpace={'selTag':"siteList",'changeFunction':"",'name':"siteList",'iList':siteList}
-#            t = templateSelect(searchList=[nameSpace]).respond()
-#            page+=str(t)
-#        except:
-#            t=self.errorReport("Fail in getSites function")
-#            page+=str(t)
-#            pass
-#        if int(ajax):
-#           page+="</response></ajax-response>"
-#        else:
-#           page+=self.genBottomHTML()
-#        if self.verbose==2:
-#           self.writeLog(page)
-#        return page
-#    getSites.exposed = True
-
-#    def genSiteMenuDict(self):
-#        self.setContentType('xml')
-#        page="""<ajax-response><response type="object" id="navigatorDict">"""
-#        endAjaxMsg="</response></ajax-response>"
-#        try:
-#            page+="siteDict="+getDictOfSites()
-#        except:
-#            t=self.errorReport("Fail in genSiteMenuDict function")
-#            page+=str(t)
-#            pass
-#        page+=endAjaxMsg
-#        if self.verbose==2:
-#           self.writeLog(page)
-#        return page
-#    genSiteMenuDict.exposed = True
+    def getDatasetChildren(self,dbsInst,dataset,userMode='user',**kwargs):
+        """
+           Get dataset children
+        """
+        page=self.genTopHTML(userMode=userMode)
+        self.helperInit(dbsInst)
+        children = self.helper.getDatasetChildren(dataset)
+        nameSpace={
+                   'host'      : self.dbsdd, 
+                   'dataset'   : dataset, 
+                   'userMode'  : userMode,
+                   'dbsInst'   : dbsInst,
+                   'oList'     : children,
+                   'who'       :'children',
+                  }
+        t = templateProvenance(searchList=[nameSpace]).respond()
+        page+= str(t)
+        page+=self.genBottomHTML()
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getDatasetChildren.exposed=True
         
     def siteForm(self,firstDBS="",firstSite="",userMode='expert',auto=0):
         """
