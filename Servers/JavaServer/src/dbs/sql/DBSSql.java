@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.136 $"
- $Id: DBSSql.java,v 1.136 2008/02/06 17:03:40 sekhri Exp $"
+ $Revision: 1.137 $"
+ $Id: DBSSql.java,v 1.137 2008/03/07 23:06:50 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import dbs.util.DBSUtil;
 import db.DBManagement;
 import java.util.Date;
+import dbs.util.DBSConfig;
 
 
 
@@ -28,20 +29,34 @@ public class DBSSql {
 	/**
 	 * 
 	 */
+
+        public static String owner() throws SQLException {
+
+                String schemaOwner = null;
+                try {
+                        DBSConfig config = DBSConfig.getInstance();
+                        schemaOwner = config.getSchemaOwner();
+                } catch (dbs.DBSException ex) {
+                        throw new SQLException("Failed to setup Schema Owner Name");
+                }
+
+                return schemaOwner;
+        }
+
 	public static String getDual() throws SQLException {
 		return "SELECT 1 FROM dual";
 	}
 
 	public static PreparedStatement getSchemaVersion(Connection conn) throws SQLException {
 
-		String sql = "SELECT SchemaVersion, InstanceName FROM SchemaVersion";
+		String sql = "SELECT SchemaVersion, InstanceName FROM "+owner()+"SchemaVersion";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
 
 	public static PreparedStatement updateValue(Connection conn, String tableName, String ID, String key, String value, String lmbUserID) throws SQLException {
-		String sql = "UPDATE " + tableName + " \n" +
+		String sql = "UPDATE " + owner() + tableName + " \n" +
 			"SET " + key + " = ?, \n" +
 			"LastModifiedBy = ? \n" +
 			"WHERE ID = ?" ;
@@ -55,7 +70,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement updateMap(Connection conn, String tableName, String key1, String key2, String value1, String value2New, String value2Old, String lmbUserID) throws SQLException {
-		String sql = "UPDATE " + tableName + " \n" +
+		String sql = "UPDATE " + owner()+  tableName + " \n" +
 			"SET " + key2 + " = ?, \n" +
 			"LastModifiedBy = ? \n" +
 			"WHERE " + key1 + " = ? \n" +
@@ -72,7 +87,7 @@ public class DBSSql {
 
 
 	public static PreparedStatement updateName(Connection conn, String tableName, String key, String valueFrom, String valueTo, String lmbUserID) throws Exception {
-		String sql = "UPDATE " + tableName + " \n" +
+		String sql = "UPDATE " +  owner()+tableName + " \n" +
 			"SET " + key + " = ?, \n" +
 			"LastModifiedBy = ? \n" +
 			"WHERE " + key + " = ?" ;
@@ -144,7 +159,7 @@ public class DBSSql {
         public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String mapTo,
                         java.util.ArrayList values, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 
-                String sql = "INSERT INTO "+tableName+" \n"+
+                String sql = "INSERT INTO "+owner()+tableName+" \n"+
                                 "("+key1+","+key2+", \n"+
                                 " CreatedBy, LastModifiedBy, CreationDate) \n"+
                                 " select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n";
@@ -173,7 +188,7 @@ public class DBSSql {
 
 	public static PreparedStatement insertMapBatch_OLD(Connection conn, String tableName,
                                 String key1, String key2, String cbUserID, String lmbUserID, String cDate) throws SQLException {
-                String sql = "INSERT INTO "+tableName+" \n"+
+                String sql = "INSERT INTO "+owner()+tableName+" \n"+
                         "("+key1+","+key2+", \n"+
                                 "CreatedBy, LastModifiedBy, CreationDate) \n"+
                                 "values (?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+") \n";
@@ -185,7 +200,7 @@ public class DBSSql {
          public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String key3,
                         String mapTo, java.util.ArrayList values, String mapK3, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 
-                String sql = "INSERT INTO "+tableName+" \n"+
+                String sql = "INSERT INTO "+owner()+tableName+" \n"+
                         "("+key1+","+key2+","+key3+", \n"+
                                 " CreatedBy, LastModifiedBy, CreationDate) \n"+
                                 " select ?, ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n" +
@@ -218,7 +233,7 @@ public class DBSSql {
         public static PreparedStatement insertDQFlagHistory(Connection conn, String rowID) throws SQLException {
 
 		//HistoryTimeStamp  MUSt be provided by Trigger later ON.
-                String sql = "INSERT INTO QualityHistory \n "+
+                String sql = "INSERT INTO "+owner()+"QualityHistory \n "+
                                 " (HistoryOf, Run,  Lumi, SubSystem, DQValue, \n" +
                                 " CreationDate, CreatedBy, LastModificationDate, LastModifiedBy, \n"+
                                 " HistoryTimeStamp) select ID, Run, Lumi, SubSystem, DQValue, CreationDate, \n" +
@@ -237,7 +252,7 @@ public class DBSSql {
                                                         String valueID,
                                                         String lmbUserID) throws SQLException {
 
-                String sql = "UPDATE RunLumiQuality \n" +
+                String sql = "UPDATE "+ owner()+"RunLumiQuality \n" +
                                 "SET DQValue = ? , \n"+
                                 "LastModifiedBy = ? \n" +
                                 "WHERE ID = ?";
@@ -285,7 +300,7 @@ public class DBSSql {
 
         public static PreparedStatement getDQVerTimeStamp(Connection conn, String dqVersion) throws SQLException {
 		String sql = "SELECT VersionTimeStamp as TIMESTAMP \n" +
-				" FROM QualityVersion \n" +
+				" FROM "+owner()+"QualityVersion \n" +
 				" WHERE Version = ? ";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -299,7 +314,7 @@ public class DBSSql {
 	{
 		String sql = "SELECT Name as SUBSYSTEM, \n"+
 				" Parent as PARENT \n" +
-				" FROM SubSystem \n";
+				" FROM "+owner()+"SubSystem \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
@@ -318,10 +333,10 @@ public class DBSSql {
 				"ss.Name as DQ_FLAG, qv.Value as QVALUE, \n"+
 				"ss.Parent as PARENT, \n"+
 				"rq.LastModificationDate as LASTMODIFICATIONDATE \n"+
-				"FROM  RunLumiQuality rq \n"+
-				"join Runs r \n"+
+				"FROM  "+owner()+"RunLumiQuality rq \n"+
+				"join "+owner()+"Runs r \n"+
 				       "on rq.Run = r.ID \n"+
-				"LEFT OUTER JOIN LumiSection ls \n"+
+				"LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
 				       "on ls.ID = rq.Lumi \n"+
 				"join SubSystem ss \n"+
 			       		"on ss.ID = rq.SubSystem \n"+
@@ -378,14 +393,14 @@ public class DBSSql {
 				"ss.Name as DQ_FLAG, qv.Value as QVALUE, \n"+
 				"ss.Parent as PARENT, \n"+
 				"qh.LastModificationDate as LASTMODIFICATIONDATE \n"+
-				"FROM  QualityHistory qh \n"+
-				"join Runs r \n"+
+				"FROM  "+owner()+"QualityHistory qh \n"+
+				"join "+owner()+"Runs r \n"+
        					"on qh.Run = r.ID \n"+
-				"LEFT OUTER JOIN LumiSection ls \n"+
+				"LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
        					"on ls.ID = qh.Lumi \n"+
-				"join SubSystem ss \n"+
+				"join "+owner()+"SubSystem ss \n"+
        					"on ss.ID = qh.SubSystem \n"+
-				"join QualityValues qv \n"+
+				"join "+owner()+"QualityValues qv \n"+
        					"on qv.ID = qh.DQValue \n";
 
 					sql += "where qh.CreationDate <= "+timeStamp+" and \n"+
@@ -413,14 +428,14 @@ public class DBSSql {
                                 "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
                                 "ss.Name as DQ_FLAG, qv.Value as QVALUE, \n" +
                                 "ss.Parent as PARENT \n" +
-                                "FROM  RunLumiQuality rq \n" +
-                                "join Runs r \n" +
+                                "FROM  "+owner()+"RunLumiQuality rq \n" +
+                                "join "+owner()+"Runs r \n" +
                                         "on rq.Run = r.ID \n" +
-                                "LEFT OUTER JOIN LumiSection ls \n" +
+                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n" +
                                         "on ls.ID = rq.Lumi \n" +
-                                "join SubSystem ss \n" +
+                                "join "+owner()+"SubSystem ss \n" +
                                         "on ss.ID = rq.SubSystem \n" +
-                                "join QualityValues qv \n" +
+                                "join "+owner()+"QualityValues qv \n" +
                                         "on qv.ID = rq.DQValue \n";
 
                                 String rlsql = "";
@@ -475,7 +490,7 @@ public class DBSSql {
                                                         String value) throws SQLException
         {
                 String sql = "SELECT DISTINCT ID \n " +
-                        "FROM RunLumiQuality \n " +
+                        "FROM "+owner()+"RunLumiQuality \n " +
                         "WHERE Run = ? \n";
                 if (!DBSUtil.isNull(flagID)) sql +=  "AND SubSystem = ? \n";
                 if (!DBSUtil.isNull(value))  sql +=  "AND DQValue = ? \n";
@@ -549,8 +564,8 @@ public class DBSSql {
 
         public static PreparedStatement updateRunLumiCount(Connection conn, String runID) throws SQLException {
 
-		String sql = "UPDATE Runs SET \n" +
-			"NumberOfLumiSections = (SELECT COUNT(*) FROM LumiSection WHERE RunNumber = ?) \n" +
+		String sql = "UPDATE "+owner()+"Runs SET \n" +
+			"NumberOfLumiSections = (SELECT COUNT(*) FROM "+owner()+"LumiSection WHERE RunNumber = ?) \n" +
 			"WHERE ID = ? ";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -563,7 +578,7 @@ public class DBSSql {
 
 								
 	 public static PreparedStatement updateLumiSection(Connection conn, String lumiNumber, String runNumber, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String lmbUserID) throws SQLException {
-		String sql = "UPDATE LumiSection SET \n";
+		String sql = "UPDATE "+owner()+"LumiSection SET \n";
 		if ( !DBSUtil.isNull(startEvNumber) ) sql += "StartEventNumber = ? ,";
 		if ( !DBSUtil.isNull(endEvNumber) ) sql += "EndEventNumber = ? ,";
 		if ( !DBSUtil.isNull(lStartTime) ) sql += "LumiStartTime = ? ,";
@@ -588,7 +603,7 @@ public class DBSSql {
         }
 
         public static PreparedStatement updateRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String startOfRun, String endOfRun, String lmbUserID) throws SQLException {
-		String sql = "UPDATE Runs SET \n";
+		String sql = "UPDATE "+owner()+"Runs SET \n";
 		if ( !DBSUtil.isNull(nOfEvents) ) sql += "NumberOfEvents = ? ,";
 		if ( !DBSUtil.isNull(nOfLumiSections) ) sql += "NumberOfLumiSections = ? ,";
 		if ( !DBSUtil.isNull(totalLumi) ) sql += "TotalLuminosity = ? ,";
@@ -828,7 +843,7 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT \n" +
                         "adsfl.Lumi as LUMIID, \n" +
                         "adsfl.Fileid as FILEID \n" +
-                        "FROM AnalysisDSFileLumi adsfl \n" +
+                        "FROM "+owner()+"AnalysisDSFileLumi adsfl \n" +
 			"WHERE AnalysisDataset = ? \n\t" +
 			"ORDER BY adsfl.Fileid, adsfl.Lumi";
 		//PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -842,7 +857,7 @@ public class DBSSql {
           
         public static PreparedStatement getADSVersion(Connection conn, String adsName) throws SQLException {
                 String sql = "SELECT DISTINCT ads.Version as VERSION \n " +
-                        "FROM AnalysisDataset ads \n " +
+                        "FROM "+owner()+"AnalysisDataset ads \n " +
                         "WHERE Name = ? \n" +
                         "ORDER by ads.Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -853,7 +868,7 @@ public class DBSSql {
 
         public static PreparedStatement getADSVersionID(Connection conn, String adsName, String version) throws SQLException {
                 String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
-                        "FROM AnalysisDataset ads \n " +
+                        "FROM "+owner()+"AnalysisDataset ads \n " +
                         "WHERE Name = ? \n" +
                         "AND Version = ? \n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -867,7 +882,7 @@ public class DBSSql {
 
         public static PreparedStatement getADSID(Connection conn, String adsName) throws SQLException {
                 String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
-                        "FROM AnalysisDataset ads \n " +
+                        "FROM "+owner()+"AnalysisDataset ads \n " +
                         "WHERE Name = ? \n" +
 			"ORDER by Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -886,18 +901,18 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT \n" + 
 			"f.ID as FILEID, \n" +
 			"ls.ID as LUMIID \n" +
-                        "FROM Files f \n" +
-                        "LEFT OUTER JOIN FileRunLumi fl \n"+
+                        "FROM "+owner()+"Files f \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileRunLumi fl \n"+
 				"ON fl.Fileid = f.ID \n" +
-                        "LEFT OUTER JOIN LumiSection ls \n"+
+                        "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
 				"ON fl.Lumi = ls.ID \n";
 		
 		if(algoIDList.size() > 0) 
-			sql += "LEFT OUTER JOIN FileAlgo fa \n\t" +
+			sql += "LEFT OUTER JOIN "+owner()+"FileAlgo fa \n\t" +
 			"ON fa.Fileid = f.ID \n";
 		
 		if((runIDList.size() > 0) || (runRangeList.size() > 0)) 
-			sql += "LEFT OUTER JOIN Runs r \n\t" +
+			sql += "LEFT OUTER JOIN "+owner()+"Runs r \n\t" +
 			"ON r.ID = fl.Run \n";
 
 		sql += "WHERE f.Dataset = ? \n\t" ;
@@ -993,8 +1008,8 @@ public class DBSSql {
 		String sql = "SELECT count(*) AS NUMBER_OF_FILES, \n" +
  			"SUM(NumberOfEvents) AS NUMBER_OF_EVENTS, \n" +
   			"SUM(FileSize) AS FILE_SIZE \n" + 
-			"FROM Files f \n" +
-			"JOIN FileStatus st \n" +
+			"FROM "+owner()+"Files f \n" +
+			"JOIN "+owner()+"FileStatus st \n" +
 				"ON st.id = f.FileStatus \n" +
 			"WHERE  st.Status <> 'INVALID' \n" +
 			"AND f.Block = ?";
@@ -1009,7 +1024,7 @@ public class DBSSql {
 	public static PreparedStatement updateBlock(Connection conn, String blockID, 
 			String blockSize, String numberOfFiles, 
 			String numberOfEvents, String lmbUserID) throws SQLException {
-		String sql = "UPDATE Block \n" +
+		String sql = "UPDATE "+owner()+"Block \n" +
 			"SET LastModifiedBy = ? ,\n" +
 			"BlockSize = ? , \n" +
 			"NumberOfFiles = ? , \n" +
@@ -1031,7 +1046,7 @@ public class DBSSql {
 	}
 
         public static PreparedStatement openBlock(Connection conn, String blockID, String lmbUserID) throws SQLException {
-                String sql = "UPDATE Block \n" +
+                String sql = "UPDATE "+owner()+"Block \n" +
                         "SET LastModifiedBy = ? , \n" +
                         "OpenForWriting = 1 \n" +
                         "WHERE ID = ?" ;
@@ -1045,7 +1060,7 @@ public class DBSSql {
 
 
 	public static PreparedStatement closeBlock(Connection conn, String blockID, String lmbUserID) throws SQLException {
-		String sql = "UPDATE Block \n" +
+		String sql = "UPDATE "+owner()+"Block \n" +
 			"SET LastModifiedBy = ? , \n" +
 			"OpenForWriting = 0 \n" +
 			"WHERE ID = ?" ;
@@ -1059,7 +1074,7 @@ public class DBSSql {
 
 
 	public static PreparedStatement deleteMap(Connection conn, String tableName, String key1, String key2, String value1, String value2) throws SQLException {	
-		String sql = "DELETE FROM \n" +
+		String sql = "DELETE FROM \n" +owner()+
 			tableName + "\n" +
 			"WHERE \n" +
 			key1 + " = ?\n" +
@@ -1073,7 +1088,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement deleteName(Connection conn, String tableName, String key, String value) throws SQLException {	
-		String sql = "DELETE FROM \n" +
+		String sql = "DELETE FROM \n" +owner()+
 			tableName + "\n" +
 			"WHERE \n" +
 			key + " = ?\n";
@@ -1089,7 +1104,7 @@ public class DBSSql {
 			"SUM(NumberOfEvents) as NUMBER_OF_EVENTS,\n " + 
 			"SUM(NumberOfFiles) as NUMBER_OF_FILES,\n " + 
 			"SUM(BlockSize) as TOTAL_SIZE\n " + 
-			"FROM Block b\n " + 
+			"FROM "+owner()+"Block b\n " + 
 			"WHERE b.Dataset = ? \n ";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
@@ -1106,7 +1121,7 @@ public class DBSSql {
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
 			"b.OpenForWriting as OPEN_FOR_WRITING \n" +
-			"FROM Block b \n";
+			"FROM "+owner()+"Block b \n";
 		if(procDSID != null && blockName != null) {
 			sql += "WHERE b.Dataset = ? AND  b.Name = ? \n";
 		} else if(procDSID != null) {
@@ -1136,9 +1151,9 @@ public class DBSSql {
                              "blk.NumberOfFiles as NUMBER_OF_FILES \n" +
                              "From Block blk \n";
                               if (seVector.size() > 0) {
-                                      sql += " LEFT OUTER JOIN SEBlock seb \n" +
+                                      sql += " LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
                                                 " ON seb.BlockID = blk.ID \n" +
-                                             " LEFT OUTER JOIN StorageElement se \n" +
+                                             " LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
                                                 " ON se.ID = seb.SEID \n";
                               }
                               sql += " WHERE blk.Dataset = ?";
@@ -1172,7 +1187,7 @@ public class DBSSql {
                              "b.BlockSize as BLOCKSIZE, \n" +
                              "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
                              "b.OpenForWriting as OPEN_FOR_WRITING \n" +
-                             "FROM Block b \n" +
+                             "FROM "+owner()+"Block b \n" +
                              "WHERE b.Name = ?";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -1186,7 +1201,7 @@ public class DBSSql {
 	
         public static PreparedStatement getDataTierOrder(Connection conn) throws SQLException {
                 String sql = "SELECT DataTierOrder as DATATIERORDER \n" +
-                                "FROM DataTierOrder";
+                                "FROM "+owner()+"DataTierOrder";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
@@ -1197,7 +1212,7 @@ public class DBSSql {
         throws SQLException
         {
                 String sql = "SELECT * \n"+
-                                "FROM "+tableName ;
+                                "FROM "+owner()+tableName ;
                 if (!DBSUtil.isNull(from) || !rows.equals("*") ) {
                         sql +=  " WHERE\n" ;
                         sql +=  " ID between ? and ? \n";
@@ -1224,7 +1239,7 @@ public class DBSSql {
         {
               //We can expand this query if we need, for now we don't !
               String sql = "SELECT DISTINCT ls.id as ID \n "+
-                           "FROM LumiSection ls \n"+
+                           "FROM "+owner()+"LumiSection ls \n"+
                            "WHERE ls.RunNumber = ? \n";
               PreparedStatement ps = DBManagement.getStatement(conn, sql);
               ps.setString(1, runNumber);
@@ -1237,7 +1252,7 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT ls.id as ID, \n " +
 			"ls.LumiSectionNumber as LUMISECTIONNUMBER, \n " +
 			"ls.RunNumber as RUNNUMBER \n" +
-			"FROM LumiSection ls \n" +
+			"FROM "+owner()+"LumiSection ls \n" +
 			"JOIN Runs rs\n" +	
 				"ON rs.ID = ls.ID\n" +
 			"JOIN ProcDSRuns pdsr\n" +
@@ -1252,7 +1267,7 @@ public class DBSSql {
 	public static PreparedStatement listPersons(Connection conn) throws SQLException {
 		String sql = "SELECT DISTINCT p.ID as ID, \n" +
 			"p.DistinguishedName as DN \n" +
-			"FROM Person p\n" +
+			"FROM "+owner()+"Person p\n" +
 			"ORDER BY p.DistinguishedName DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -1264,7 +1279,7 @@ public class DBSSql {
 		String sql = "SELECT procds.id as ID, \n" +
 			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
 			"procds.name as PROCESSED_DATATSET_NAME \n" +
-			"FROM ProcessedDataset procds \n" +
+			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -1294,20 +1309,20 @@ public class DBSSql {
 			"ty.Type as TYPE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM PrimaryDataset pd \n" +
-			"LEFT OUTER JOIN PrimaryDSType ty \n" +
+			"FROM "+owner()+"PrimaryDataset pd \n" +
+			"LEFT OUTER JOIN "+owner()+"PrimaryDSType ty \n" +
 				"ON ty.id = pd.Type \n" +
-			"LEFT OUTER JOIN PrimaryDatasetDescription pdd \n" +
+			"LEFT OUTER JOIN "+owner()+"PrimaryDatasetDescription pdd \n" +
 				"ON pdd.id = pd.Description \n" +
-			"LEFT OUTER JOIN TriggerPathDescription tpd \n" +
+			"LEFT OUTER JOIN "+owner()+"TriggerPathDescription tpd \n" +
 				"ON tpd.id = pdd.TriggerDescriptionID \n" + 
-			"LEFT OUTER JOIN MCDescription md \n" +
+			"LEFT OUTER JOIN "+owner()+"MCDescription md \n" +
 				"ON md.id = pdd.MCChannelDescriptionID \n" +
-			"LEFT OUTER JOIN OtherDescription od \n" +
+			"LEFT OUTER JOIN "+owner()+"OtherDescription od \n" +
 				"ON od.id = pdd.OtherDescriptionID \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = pd.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = pd.LastModifiedBy \n" +
 			"WHERE pd.Name like ?\n" +
 				"ORDER BY pd.Name DESC";
@@ -1351,36 +1366,36 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
 			"blk.Path as PATH \n" +
-			"FROM ProcessedDataset procds \n" +
+			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
-			"LEFT OUTER JOIN ProcDSTier pdst \n" +
+			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
-			"LEFT OUTER JOIN DataTier dt \n" +
+			"LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
 				"ON dt.id = pdst.DataTier \n" +
-			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
-			"LEFT OUTER JOIN Person perpg \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +
-			"LEFT OUTER JOIN ProcAlgo pa \n" +
+			"LEFT OUTER JOIN "+owner()+"ProcAlgo pa \n" +
 				"ON pa.Dataset = procds.id \n" +
-			"LEFT OUTER JOIN AlgorithmConfig algo \n" +
+			"LEFT OUTER JOIN "+owner()+"AlgorithmConfig algo \n" +
 				"ON algo.id = pa.Algorithm \n" +
-			"LEFT OUTER JOIN AppVersion av \n" +
+			"LEFT OUTER JOIN "+owner()+"AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
-			"LEFT OUTER JOIN AppFamily af \n" +
+			"LEFT OUTER JOIN "+owner()+"AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
-			"LEFT OUTER JOIN AppExecutable ae \n" +
+			"LEFT OUTER JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
-			"LEFT OUTER JOIN QueryableParameterSet ps \n" +
+			"LEFT OUTER JOIN "+owner()+"QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
-			"LEFT OUTER JOIN ProcDSStatus pds \n" +
+			"LEFT OUTER JOIN "+owner()+"ProcDSStatus pds \n" +
 				"ON pds.id = procds.Status \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = procds.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = procds.LastModifiedBy \n" +
-			"LEFT OUTER JOIN Block blk \n" +
+			"LEFT OUTER JOIN "+owner()+"Block blk \n" +
 				"ON blk.Dataset = procds.id \n";
 
 
@@ -1453,7 +1468,7 @@ public class DBSSql {
 	
 	public static PreparedStatement listDatasetPaths(Connection conn) throws SQLException {
 		String sql = "SELECT DISTINCT blk.Path as PATH \n" +
-			"FROM Block blk \n" +
+			"FROM "+owner()+"Block blk \n" +
 			"ORDER BY blk.Path DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -1484,20 +1499,20 @@ public class DBSSql {
 			"perpg.DistinguishedName as PHYSICS_GROUP_CONVENER, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM ProcessedDataset procds \n" +
+			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
-			"LEFT OUTER JOIN ProcDSTier pdst \n" +
+			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
-			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"JOIN ProcDSParent dp \n" +
 				joinStr +
-			"LEFT OUTER JOIN Person perpg \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = procds.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = procds.LastModifiedBy \n";
 		
 		if(!DBSUtil.isNull(procDSID)) sql += whereStr;
@@ -1533,19 +1548,19 @@ public class DBSSql {
 			"FROM ProcessedDataset procds \n" +
 			"JOIN PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
-			"LEFT OUTER JOIN ProcDSTier pdst \n" +
+			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
-			//"LEFT OUTER JOIN DataTier dt \n" +
+			//"LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
 			//	"ON dt.id = pdst.DataTier \n" +
-			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"JOIN ProcDSParent dp \n" +
 				"ON dp.ItsParent = procds.id \n" +
-			"LEFT OUTER JOIN Person perpg \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = procds.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = procds.LastModifiedBy \n";
 		
 		if(procDSID != null) {
@@ -1569,7 +1584,7 @@ public class DBSSql {
 			"af.FamilyName as APP_FAMILY_NAME, \n" +
 			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
 			"ps.Hash as PS_HASH \n" +
-			"FROM AlgorithmConfig algo \n" +
+			"FROM "+owner()+"AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
 			"JOIN AppFamily af \n" +
@@ -1598,7 +1613,7 @@ public class DBSSql {
 			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM AlgorithmConfig algo \n" +
+			"FROM "+owner()+"AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
 			"JOIN AppFamily af \n" +
@@ -1607,9 +1622,9 @@ public class DBSSql {
 				"ON ae.id = algo.ExecutableName \n" +
 			"JOIN QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n";
 
 		/*if(patternVer == null) patternVer = "%";
@@ -1647,7 +1662,7 @@ public class DBSSql {
 			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM AlgorithmConfig algo\n" +
+			"FROM "+owner()+"AlgorithmConfig algo\n" +
 			"JOIN ProcAlgo pa \n" +
 				"ON pa.Algorithm = algo.id \n" +
 			"JOIN AppVersion av \n" +
@@ -1658,9 +1673,9 @@ public class DBSSql {
 				"ON ae.id = algo.ExecutableName \n" +
 			"JOIN QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n" +
 			"WHERE pa.Dataset = ? \n" +
 			"ORDER BY af.FamilyName, ae.ExecutableName, av.Version, ps.Name DESC";
@@ -1684,12 +1699,12 @@ public class DBSSql {
 			"run.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM Runs run \n" +
+			"FROM "+owner()+"Runs run \n" +
 			"JOIN ProcDSRuns pdsr \n" +
 				"ON pdsr.Run = run.id \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = run.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = run.LastModifiedBy \n";
 
 		if(procDSID != null) {
@@ -1706,7 +1721,7 @@ public class DBSSql {
 	public static PreparedStatement listTiers(Connection conn) throws SQLException {
 		String sql = "SELECT dt.ID as ID, \n " +
 			"dt.Name as NAME \n" +
-			"FROM DataTier dt \n" +
+			"FROM "+owner()+"DataTier dt \n" +
 			"ORDER BY dt.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -1716,7 +1731,7 @@ public class DBSSql {
 	public static PreparedStatement listFileStatus(Connection conn) throws SQLException {
 		String sql = "SELECT fs.ID as ID, \n " +
 			"fs.Status as STATUS \n" +
-			"FROM FileStatus fs \n" ;
+			"FROM "+owner()+"FileStatus fs \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -1725,7 +1740,7 @@ public class DBSSql {
 	public static PreparedStatement listFileTypes(Connection conn) throws SQLException {
 		String sql = "SELECT ft.ID as ID, \n " +
 			"ft.Type as TYPE \n" +
-			"FROM FileType ft \n" ;
+			"FROM "+owner()+"FileType ft \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -1734,7 +1749,7 @@ public class DBSSql {
 	public static PreparedStatement listFileValStatus(Connection conn) throws SQLException {
 		String sql = "SELECT fs.ID as ID, \n " +
 			"fs.Status as STATUS \n" +
-			"FROM FileValidStatus fs \n" ;
+			"FROM "+owner()+"FileValidStatus fs \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -1747,12 +1762,12 @@ public class DBSSql {
 			"dt.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM DataTier dt \n" +
+			"FROM "+owner()+"DataTier dt \n" +
 			"JOIN ProcDSTier pdst \n" +
 				"ON pdst.DataTier = dt.id \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = dt.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = dt.LastModifiedBy \n";
 
 		if(procDSID != null) {
@@ -1768,7 +1783,7 @@ public class DBSSql {
 
 	public static PreparedStatement listProcDSStatus(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT DISTINCT pds.Status as STATUS \n " +
-			"FROM ProcDSStatus pds \n" +
+			"FROM "+owner()+"ProcDSStatus pds \n" +
 			"JOIN ProcessedDataset pd \n" +
 				"ON pd.Status = pds.id \n";
 
@@ -1791,7 +1806,7 @@ public class DBSSql {
                         "b.BlockSize as BLOCKSIZE, \n" +
                         "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
                         "b.OpenForWriting as OPEN_FOR_WRITING \n" +
-			"FROM Block b \n" +
+			"FROM "+owner()+"Block b \n" +
 			"WHERE \n"+
 			"b.Name = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -1814,14 +1829,14 @@ public class DBSSql {
 			"se.SEName as STORAGE_ELEMENT_NAME, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM Block b \n" +
-			"LEFT OUTER JOIN SEBlock seb \n" +
+			"FROM "+owner()+"Block b \n" +
+			"LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
 				"ON seb.BlockID = b.ID \n" +
-			"LEFT OUTER JOIN StorageElement se \n" +
+			"LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
 				"ON se.ID = seb.SEID \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = b.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = b.LastModifiedBy \n";
 
 		boolean useAnd = false;
@@ -1865,7 +1880,7 @@ public class DBSSql {
 
 	public static PreparedStatement listBlocks(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT b.Name as NAME \n" +
-			"FROM Block b \n" +
+			"FROM "+owner()+"Block b \n" +
 			"WHERE b.Dataset = ? \n";
 
                 int columnIndx = 1;
@@ -1878,7 +1893,7 @@ public class DBSSql {
 	public static PreparedStatement listBlockContentsInRecycleBin(Connection conn, String path, String blockName) throws SQLException {
 		String sql = "SELECT rb.BlockName as BLOCK_NAME, \n" +
 			"rb.Xml as XML \n" +
-			"FROM RecycleBin rb \n" +
+			"FROM "+owner()+"RecycleBin rb \n" +
 			"WHERE rb.Path = ? \n";
 
 		if(!DBSUtil.isNull(blockName)) sql += "AND rb.BlockName = ? \n";
@@ -1898,10 +1913,10 @@ public class DBSSql {
 			"se.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM StorageElement se \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"FROM "+owner()+"StorageElement se \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = se.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = se.LastModifiedBy \n";
 
 		if(!seName.equals("%")){
@@ -1941,17 +1956,17 @@ public class DBSSql {
                         		"JOIN Runs r \n" +
                                 		"ON r.ID = fr.Run \n";
 			}
-                        sql += "LEFT OUTER JOIN Block b \n" +
+                        sql += "LEFT OUTER JOIN "+owner()+"Block b \n" +
                                 "ON b.id = f.Block \n "+
-                        "LEFT OUTER JOIN FileType ty \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileType ty \n" +
                                 "ON ty.id = f.FileType \n" +
-                        "LEFT OUTER JOIN FileStatus st \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
                                 "ON st.id = f.FileStatus \n" +
-                        "LEFT OUTER JOIN FileValidStatus vst \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
                                 "ON vst.id = f.ValidationStatus \n" +
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = f.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = f.LastModifiedBy \n";
                 sql += "WHERE b.Path = ? \n" ;
                 sql += "AND f.Dataset = ? \n";
@@ -1991,17 +2006,17 @@ public class DBSSql {
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
                         "FROM Files f \n" +
-                        "LEFT OUTER JOIN Block b \n" +
+                        "LEFT OUTER JOIN "+owner()+"Block b \n" +
                                 "ON b.id = f.Block \n "+
-                        "LEFT OUTER JOIN FileType ty \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileType ty \n" +
                                 "ON ty.id = f.FileType \n" +
-                        "LEFT OUTER JOIN FileStatus st \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
                                 "ON st.id = f.FileStatus \n" +
-                        "LEFT OUTER JOIN FileValidStatus vst \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
                                 "ON vst.id = f.ValidationStatus \n" +
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = f.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = f.LastModifiedBy \n";
                 sql += "WHERE f.LogicalFileName = ?\n" ;
 
@@ -2017,7 +2032,7 @@ public class DBSSql {
 	public static PreparedStatement listFiles(Connection conn, String lfn) throws SQLException {
  		String sql = "SELECT f.ID as ID, \n " +
 			"b.ID as BLOCK_ID \n"+
-			"FROM Files f \n" +
+			"FROM "+owner()+"Files f \n" +
 			"JOIN Block b \n" +
 				"ON b.id = f.Block \n "+
 			"WHERE f.LogicalFileName = ?\n" ;
@@ -2030,7 +2045,7 @@ public class DBSSql {
 
         public static PreparedStatement listFileBranchID(Connection conn, String lfn) throws SQLException {
 		String sql = "SELECT f.FileBranch as FILE_BRANCH \n" +
-				"FROM Files f \n" +
+				"FROM "+owner()+"Files f \n" +
 				"WHERE f.LogicalFileName = ?\n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -2047,16 +2062,16 @@ public class DBSSql {
 			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM Files f \n" +
-			"LEFT OUTER JOIN Block b \n" +
+			"FROM "+owner()+"Files f \n" +
+			"LEFT OUTER JOIN "+owner()+"Block b \n" +
 				"ON b.id = f.Block \n "+  
-			"LEFT OUTER JOIN FileTriggerTag ftrig \n" +
+			"LEFT OUTER JOIN "+owner()+"FileTriggerTag ftrig \n" +
 				"ON ftrig.Fileid = f.id \n "+  
-			"LEFT OUTER JOIN FileStatus st \n" +
+			"LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
 				"ON st.id = f.FileStatus \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = f.LastModifiedBy \n" +
 			"WHERE f.Dataset = ? \n" +
 			"AND b.OpenForWriting = 0 \n " ;
@@ -2084,7 +2099,7 @@ public class DBSSql {
 		String joinStrTier = "";
 		for(int i = 0 ; i != tierIDList.size(); ++i) {
 			String index = String.valueOf(i);
-			joinStrTier += "LEFT OUTER JOIN FileTier fdt" + index + "\n" +
+			joinStrTier += "LEFT OUTER JOIN "+owner()+"FileTier fdt" + index + "\n" +
 				"ON fdt" + index + ".Fileid = f.id \n";
 		}
 
@@ -2108,23 +2123,23 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Files f \n" +
-			"LEFT OUTER JOIN Block b \n" +
+			"LEFT OUTER JOIN "+owner()+"Block b \n" +
 				"ON b.id = f.Block \n "+  
-			//"LEFT OUTER JOIN FileTier fdt \n" +
+			//"LEFT OUTER JOIN "+owner()+"FileTier fdt \n" +
 			//	"ON fdt.Fileid = f.id \n" +
 			joinStrTier +
 			joinStrAna +
-			//"LEFT OUTER JOIN DataTier dt \n" +
+			//"LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
 			//	"ON dt.id = fdt.DataTier " +
-			"LEFT OUTER JOIN FileType ty \n" +
+			"LEFT OUTER JOIN "+owner()+"FileType ty \n" +
 				"ON ty.id = f.FileType \n" +
-			"LEFT OUTER JOIN FileStatus st \n" +
+			"LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
 				"ON st.id = f.FileStatus \n" +
-			"LEFT OUTER JOIN FileValidStatus vst \n" +
+			"LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
 				"ON vst.id = f.ValidationStatus \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = f.LastModifiedBy \n";
 		sql += "WHERE f.LogicalFileName like ? \n" ;
 		if(!DBSUtil.isNull(procDSID)) sql += "AND f.Dataset = ? \n";
@@ -2195,7 +2210,7 @@ public class DBSSql {
 			sql += "percb.DistinguishedName as CREATED_BY, \n" +
 				"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" ;
 			sql += "f.NumberOfEvents as NUMBER_OF_EVENTS \n" +
-				"FROM Files f \n";
+				"FROM "+owner()+"Files f \n";
 		if(DBSUtil.contains(attributes, "retrive_block")) { 
 			String whereClause = "";
 			if(!DBSUtil.isNull(path)) whereClause = "WHERE Path = ? ";
@@ -2227,7 +2242,7 @@ public class DBSSql {
 
 		for(int i = 0 ; i != tierIDList.size(); ++i) {
 			String index = String.valueOf(i);
-			sql += "LEFT OUTER JOIN FileTier fdt" + index + "\n" +
+			sql += "LEFT OUTER JOIN "+owner()+"FileTier fdt" + index + "\n" +
 				"ON fdt" + index + ".Fileid = f.id \n";
 		}
 		sql += "WHERE ";
@@ -2321,20 +2336,20 @@ public class DBSSql {
                         "b.Name as BLOCK_NAME, \n"+ 
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM Files f \n" +
+			"FROM "+owner()+"Files f \n" +
 			"JOIN FileParentage fp \n" +
 				joinStr +
-			"LEFT OUTER JOIN Block b \n" +
+			"LEFT OUTER JOIN "+owner()+"Block b \n" +
 				"ON b.id = f.Block \n "+  
-			"LEFT OUTER JOIN FileType ty \n" +
+			"LEFT OUTER JOIN "+owner()+"FileType ty \n" +
 				"ON ty.id = f.FileType \n" +
-			"LEFT OUTER JOIN FileStatus st \n" +
+			"LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
 				"ON st.id = f.FileStatus \n" +
-                        //"LEFT OUTER JOIN FileValidStatus vst \n" +
+                        //"LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
                         //        "ON vst.id = f.ValidationStatus \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = f.LastModifiedBy \n";
 	
 		if(!DBSUtil.isNull(fileID)) {
@@ -2357,7 +2372,7 @@ public class DBSSql {
 	public static PreparedStatement listFilesChildern(Connection conn, String blockID) throws SQLException {
 			
 		String sql = "SELECT DISTINCT f.ID as ID \n " +
-			"FROM Files f \n" +
+			"FROM "+owner()+"Files f \n" +
 			"JOIN FileParentage fp \n" +
 				"ON fp.ThisFile = f.ID \n" +
 			" WHERE\n" +
@@ -2376,12 +2391,12 @@ public class DBSSql {
 			"dt.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM DataTier dt \n" +
+			"FROM "+owner()+"DataTier dt \n" +
 			"JOIN FileTier ft \n" +
 				"ON ft.DataTier = dt.id \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = dt.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = dt.LastModifiedBy \n";
 		if(fileID != null) {
 			sql += "WHERE ft.Fileid = ? \n";
@@ -2404,10 +2419,10 @@ public class DBSSql {
                         "br.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM BranchHash br \n" +
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "FROM "+owner()+"BranchHash br \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = br.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = br.LastModifiedBy \n" +
                         "WHERE br.id = ? \n";
 
@@ -2426,10 +2441,10 @@ public class DBSSql {
 				"ftrig.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 	                        "percb.DistinguishedName as CREATED_BY, \n" +
 	                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-        	                "FROM FileTriggerTag ftrig \n" +
-		                        "LEFT OUTER JOIN Person percb \n" +
+        	                "FROM "+owner()+"FileTriggerTag ftrig \n" +
+		                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
         	                        	"ON percb.id = ftrig.CreatedBy \n" +
-                		        "LEFT OUTER JOIN Person perlm \n" +
+                		        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 		"ON perlm.id = ftrig.LastModifiedBy \n";
 				if(fileID != null) {
 		                        sql += "WHERE ftrig.Fileid = ? \n";
@@ -2458,18 +2473,18 @@ public class DBSSql {
                         "b.Name as BLOCK_NAME, \n"+
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM Files f \n" +
+                        "FROM "+owner()+"Files f \n" +
                         "JOIN FileAssoc fa \n" +
 				"ON fa.ItsAssoc = f.ID \n" +
-                        "LEFT OUTER JOIN Block b \n" +
+                        "LEFT OUTER JOIN "+owner()+"Block b \n" +
                                 "ON b.id = f.Block \n "+
-                        "LEFT OUTER JOIN FileType ty \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileType ty \n" +
                                 "ON ty.id = f.FileType \n" +
-                        "LEFT OUTER JOIN FileStatus st \n" +
+                        "LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
                                 "ON st.id = f.FileStatus \n" +
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = f.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = f.LastModifiedBy \n";
 
                 if(!DBSUtil.isNull(fileID)) {
@@ -2495,7 +2510,7 @@ public class DBSSql {
 			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM AlgorithmConfig algo \n" +
+			"FROM "+owner()+"AlgorithmConfig algo \n" +
 			"JOIN FileAlgo fa \n" +
 				"ON fa.Algorithm = algo.id \n" +
 			"JOIN AppVersion av \n" +
@@ -2506,9 +2521,9 @@ public class DBSSql {
 				"ON ae.id = algo.ExecutableName \n" +
 			"JOIN QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n";
 		if(fileID != null) {
 			sql += "WHERE fa.Fileid = ? \n";
@@ -2533,14 +2548,14 @@ public class DBSSql {
 			"lumi.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM LumiSection lumi \n" +
+			"FROM "+owner()+"LumiSection lumi \n" +
 			"JOIN FileRunLumi fl \n" +
 				"ON fl.Lumi = lumi.id \n" +
 			"JOIN Runs r \n" +
 				"ON r.ID = fl.Run \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = lumi.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = lumi.LastModifiedBy \n";
 		if(fileID != null) {
 			sql += "WHERE fl.Fileid = ? \n";
@@ -2566,12 +2581,12 @@ public class DBSSql {
                         "run.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM Runs run \n" +
+			"FROM "+owner()+"Runs run \n" +
                         "JOIN FileRunLumi fl \n" +
                                 "ON run.ID = fl.Run \n" +
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = run.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = run.LastModifiedBy \n";
                 if(fileID != null) {
                         sql += "WHERE fl.Fileid = ? \n";
@@ -2601,10 +2616,10 @@ public class DBSSql {
 			"adsdef.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM AnalysisDSDef adsdef \n" +
-			"LEFT OUTER JOIN Person percb \n" +
+			"FROM "+owner()+"AnalysisDSDef adsdef \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = adsdef.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = adsdef.LastModifiedBy \n" +
 			"WHERE adsdef.Name like  ? \n" +
 				"ORDER BY adsdef.Name DESC";
@@ -2624,10 +2639,10 @@ public class DBSSql {
                         "comads.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM CompositeADS comads \n" +
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "FROM "+owner()+"CompositeADS comads \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = comads.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = comads.LastModifiedBy \n" +
                         "WHERE comads.Name like  ? \n" +
                                 "ORDER BY comads.Name DESC";
@@ -2655,14 +2670,14 @@ public class DBSSql {
                         "perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
                         "pg.PhysicsGroupName as PHYSICS_GROUP_NAME \n" +
 
-                        "FROM AnalysisDataset ads \n" +
+                        "FROM "+owner()+"AnalysisDataset ads \n" +
                         "JOIN CompADSMap compadsmap \n"+
                                 "ON ads.ID = compadsmap.ADS \n"+
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = ads.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = ads.LastModifiedBy \n" +
-                        "LEFT OUTER JOIN PhysicsGroup pg \n" +
+                        "LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
                                 "ON pg.id = ads.PhysicsGroup \n" +
                         "WHERE compadsmap.CompADS= ? \n";
 
@@ -2713,18 +2728,18 @@ public class DBSSql {
                         "adsdef.LastModificationDate as ADD_LAST_MODIFICATION_DATE, \n" +
                         "adsdefpercb.DistinguishedName as ADD_CREATED_BY, \n" +
                         "adsdefperlm.DistinguishedName as ADD_LAST_MODIFIED_BY \n" +
-                        "FROM AnalysisDataset ads \n" +
+                        "FROM "+owner()+"AnalysisDataset ads \n" +
                         "JOIN AnalysisDSDef adsdef \n"+
                                 "ON adsdef.ID = ads.Definition \n"+
-                        "LEFT OUTER JOIN Person adsdefpercb \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person adsdefpercb \n" +
                                 "ON adsdefpercb.id = adsdef.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person adsdefperlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person adsdefperlm \n" +
                                 "ON adsdefperlm.id = adsdef.LastModifiedBy \n" +
-                        "LEFT OUTER JOIN Person percb \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = ads.CreatedBy \n" +
-                        "LEFT OUTER JOIN Person perlm \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = ads.LastModifiedBy \n" +
-			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
                                 "ON pg.id = ads.PhysicsGroup \n" +
                         "WHERE ads.Name like ? \n";
 			
@@ -2754,7 +2769,7 @@ public class DBSSql {
 
 	public static PreparedStatement getID(Connection conn, String table, String key, String value) throws SQLException {
 		String sql = "SELECT DISTINCT ID \n " +
-			"FROM " + table + "\n " +
+			"FROM " + owner()+table + "\n " +
 			"WHERE " + key + " = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, value);
@@ -2765,7 +2780,7 @@ public class DBSSql {
 
 	public static PreparedStatement getMap(Connection conn, String table, String key1, String key2, String value1, String value2) throws SQLException {
 		String sql = "SELECT DISTINCT ID, " + key1 + ", " + key2 + " \n " +
-			"FROM " + table + "\n ";
+			"FROM " + owner()+table + "\n ";
 		if(!DBSUtil.isNull(value1) || !DBSUtil.isNull(value2)) sql += "WHERE \n";
 		boolean useAnd = false;
 		
@@ -2788,7 +2803,7 @@ public class DBSSql {
 
 	public static PreparedStatement getMapID(Connection conn, String table, String key1, String key2, String value1, String value2) throws SQLException {
 		String sql = "SELECT DISTINCT ID \n " +
-			"FROM " + table + "\n " +
+			"FROM " + owner()+table + "\n " +
 			"WHERE " + key1 + " = ? \n" +
 			"AND " + key2 + " = ? \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -2801,7 +2816,7 @@ public class DBSSql {
 	
 	public static PreparedStatement getMapID(Connection conn, String table, String key1, String key2, String key3, String value1, String value2, String value3) throws SQLException {
 		String sql = "SELECT DISTINCT ID \n " +
-			"FROM " + table + "\n " +
+			"FROM " + owner()+table + "\n " +
 			"WHERE " + key1 + " = ? \n" +
 			"AND " + key2 + " = ? \n" +
 			"AND " + key3 + " = ? \n" ;
@@ -2816,7 +2831,7 @@ public class DBSSql {
 
 	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String proc) throws SQLException {
 		String sql = "SELECT DISTINCT procds.ID as ID \n" +
-				"FROM ProcessedDataset procds \n" +
+				"FROM "+owner()+"ProcessedDataset procds \n" +
 				"JOIN PrimaryDataset primds \n" +
 					"ON primds.id = procds.PrimaryDataset \n" ;
 		if(DBSUtil.isNull(prim) || DBSUtil.isNull(proc)) {
@@ -2860,7 +2875,7 @@ public class DBSSql {
 	//public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws SQLException {
 	public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash) throws SQLException {
 		String sql = "SELECT DISTINCT algo.id \n" +
-			"FROM AlgorithmConfig algo \n" +
+			"FROM "+owner()+"AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
 			"JOIN AppFamily af \n" +
@@ -2932,7 +2947,7 @@ public class DBSSql {
 
 
 	private static PreparedStatement getInsertSQL (Connection conn, String tableName, Hashtable table) throws SQLException	{
-		String sql = "INSERT INTO " + tableName + " ( \n";
+		String sql = "INSERT INTO " + owner()+tableName + " ( \n";
 		String sqlKeys = "  ";
 		String sqlValues = "  ";
 		Enumeration e = table.keys();

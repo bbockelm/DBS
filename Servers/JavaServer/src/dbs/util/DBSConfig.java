@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.16 $"
- $Id: DBSConfig.java,v 1.16 2007/11/15 21:02:31 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSConfig.java,v 1.17 2008/03/17 22:18:57 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -156,8 +156,12 @@ public class DBSConfig {
 
                        if ( name.equals("SchemaOwner") ) {
                                 schemaOwner = (String)atribs.get("schemaowner");
+				if ( schemaOwner.equals("__MYSQL__") || schemaOwner.equals("") ) {
+					schemaOwner = (String)("");
+				} else {
+					schemaOwner = schemaOwner+".";
+				}
                        }
-
                     } //for loop
                     //Check to see if all parameters are read if not throw exception
   
