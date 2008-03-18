@@ -183,6 +183,8 @@ class DBManager(DDLogger):
           self.metaDict[dbsInst]=dbsMeta
           tables={}
           tList = con.execute(self.tQuery[dbsInst])
+# since SQLAlchemy 0.4
+#          tList = self.engine[dbsInst].table_names()
           for t in tList: 
               if self.verbose:
                  print "DBS Tables|Views",t[0]
