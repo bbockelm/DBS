@@ -1473,26 +1473,26 @@ MCDescription:      %s
           # find ID of processed dataset
           oSel = [self.col(tprd,'ID')]
           obj  = tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-          sel1 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
+          sel1 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True,use_labels=True)
           if dataset and dataset!="*":
              sel1.append_whereclause(self.col(tblk,'Path')==dataset)
           # find ID's of children
           oSel = [self.col(tpdp,'ThisDataset')]
           obj  = tprd.outerjoin(tpdp,onclause=self.col(tpdp,'ThisDataset')==self.col(tprd,'ID'))
-          sel2 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
+          sel2 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True,use_labels=True)
           sel2.append_whereclause(self.col(tpdp,'ItsParent').in_(sel1))
           # find path name of children
           oSel = [self.col(tblk,'Path')]
           obj  = tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-          sel3 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
+          sel3 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True,use_labels=True)
           sel3.append_whereclause(self.col(tprd,'ID').in_(sel2))
           sel  = sel3
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
-              id,path=item
-              if not id and not path: continue
+              path=item[0]
+              if not path: continue
               oList.append(path)
       except:
           msg="\n### Query:\n"+str(sel)

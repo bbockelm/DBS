@@ -17,17 +17,18 @@ $dataset
 </table>
 has the following list of $who:
 <table class="offset_left">
-    #for path in $oList
-    <tr>
-    <td align="left">
-    <b>
-    <a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($path)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off">
-    $path
-    </a>
-    </b>
-    </td>
-    </tr>
-    #end for
+#for dataset in $oList
+#set path=$urllib.quote($dataset)
+<tr>
+<td align="left">
+<b>
+<a href="$host/getData?dbsInst=$dbsInst&amp;proc=$path&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off">
+$dataset
+</a>
+</b>
+</td>
+</tr>
+#end for
 </table>
 
 #else
