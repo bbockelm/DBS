@@ -433,6 +433,7 @@ def getExcMessage(userMode='user'):
            counter=1
            continue
         if counter: msg+="%s\n"%m
+    if not msg: return traceback.format_exc()
     return msg
 
 def findLastBindVar(s):
