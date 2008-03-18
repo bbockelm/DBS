@@ -181,9 +181,11 @@ class DDQueryMaker(DDLogger):
           else:
              md     = self.dbManager.metaDict[self.dbsInstance]
              _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
-             qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
+#             qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
+             qb     = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
              query  = qb.BuildQueryWithSel(_oSel,_Sel)
           query.distinct=True
+          query.use_labels=True
           if kwargs.has_key('rval'):
              rval   = kwargs['rval']
              if  type(rval) is types.StringType:
@@ -349,6 +351,7 @@ class DDQueryMaker(DDLogger):
       oSel = [sqlalchemy.func.count('*')]
       sel  = sqlalchemy.select(oSel,from_obj=[query])
       sel  = sel.alias('sel')
+      sel.use_labels=True
       if self.verbose:
          print self.printQuery(sel)
       try:
@@ -480,6 +483,7 @@ class DDQueryMaker(DDLogger):
              gBy = gBy+['rownum']
           sel = sqlalchemy.select(oSel,from_obj=[obj],group_by=gBy,order_by=oBy)
           sel.distinct=True
+          sel.user_labels=True
           sel.append_whereclause(self.col(tab,c).in_(query))
           if  limit:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':

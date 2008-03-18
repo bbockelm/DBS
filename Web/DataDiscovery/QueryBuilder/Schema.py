@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.3 2008/03/05 21:31:53 valya Exp $
+# $Id: Schema.py,v 1.4 2008/03/10 18:42:28 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.3 $"
+__revision__ = "$Revision: 1.4 $"
 
 
 import unittest
@@ -53,7 +53,7 @@ class Schema(object):
     '''This object is created around a sqlalchemy MetaData object. When given
     a sqlalchemy select object in BuildQuery, it constructs determines how to
     join tables from the MetaData to support the query.'''
-    def __init__(self,tables,foreignKeys=None):
+    def __init__(self,tables,foreignKeys=None,owner=None):
         class MySchema(object):
             def __init__(self,tables):
                 self.tables=tables
@@ -64,6 +64,7 @@ class Schema(object):
             tableDict[table.name]=table
         self._schema = MySchema(tableDict)
         self._ordered = None
+        self._owner=owner
         self._foreignTables = {}
         self._personTable=FindTable(self._schema,'person')
 
@@ -176,6 +177,13 @@ class Schema(object):
         self._ordered = [metadata.tables[tableName] for tableName in metadata.tables
                          if metadata.tables[tableName] not in exclude]
         relations = []
+        # VK, use names rather then compare tables objects
+        orderedNames=[]
+        for item in self._ordered:
+            orderedNames.append(item.fullname)
+        eNames=[]
+        for i in exclude: eNames.append(i.fullname)
+        excludeNames=set(eNames)
         try:
             searchName=None
             for tableIdx in xrange(0,len(self._ordered)):
@@ -187,7 +195,13 @@ class Schema(object):
                     if fk.column.table in exclude: continue
     
                     searchName=fk.column.table
-                    fkIdx = self._ordered.index(searchName)
+                    if self._owner and not searchName.schema:
+                       searchName.schema=self._owner
+                       searchName.owner=self._owner
+                       searchName.fullname='%s.%s'%(self._owner,searchName.fullname)
+                    if searchName.fullname in excludeNames: continue
+#                    fkIdx = self._ordered.index(searchName)
+                    fkIdx = orderedNames.index(searchName.fullname)
                     indexSet.add(fkIdx)
                     shortTables[fkIdx]=(fk.parent, fk.column)
     

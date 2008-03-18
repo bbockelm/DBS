@@ -131,6 +131,7 @@ class DBManager(DDLogger):
   def clear(self):
       self.engine    = {}
       self.tQuery    = {}
+      self.vQuery    = {}
       self.dbTables  = {}
       self.dbType    = {}
       self.lowTables = {}
@@ -148,6 +149,7 @@ class DBManager(DDLogger):
 
           # Initialize SQLAlchemy engines
           eName=""
+          vQuery=""
           if eType=='sqlite':
              self.writeLog("Use SQLite instance '%s'"%dbsInst)
              eName = "%s:///%s"%(eType,dbName)
@@ -159,6 +161,7 @@ class DBManager(DDLogger):
 #             tQuery= "select table_name from user_tables"
              tQuery= "select tname from tab"
              tQuery="""SELECT table_name FROM all_tables WHERE owner='%s'"""%dbsInst.upper()
+             vQuery="""SELECT view_name FROM all_views WHERE owner='%s'"""%dbsInst.upper()
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
@@ -170,6 +173,7 @@ class DBManager(DDLogger):
           self.dbType[dbsInst] = eType
           self.engine[dbsInst] = engine
           self.tQuery[dbsInst] = tQuery
+          self.vQuery[dbsInst] = vQuery
 
       con = self.engine[dbsInst].connect()
 
@@ -183,15 +187,24 @@ class DBManager(DDLogger):
               if self.verbose:
                  print "DBS Tables|Views",t[0]
 # since SQLAlchemy 0.4
-#              tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True)
+#              tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,schema=dbsInst.upper())
               if eType=='oracle':
-                 tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False)
+#                 tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,case_sensitive=False)
+                 tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
               else:
-                 tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True,case_sensitive=False)
-
+                 tables[t[0]]=sqlalchemy.Table(t[0],dbsMeta,autoload=True,case_sensitive=False)
               if self.verbose>1:
                  print tables[t[0]].__dict__
           self.dbTables[dbsInst]=tables
+          if  eType=='oracle': # read views separately
+              vList = con.execute(self.vQuery[dbsInst])
+              for v in vList: 
+                  if self.verbose:
+                     print "DBS Views",t[0]
+                  tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
+                  if self.verbose>1:
+                     print tables[t[0]].__dict__
+              self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
       return con

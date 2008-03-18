@@ -1264,7 +1264,7 @@ class DDServer(DDLogger,Controller):
             notify = kwargs['notify']
             result = self.msApi.addRequest(srcUrl,dstUrl,path,dn,force,parents,notify)
         except:
-            result = getExcMessage(kwargs['userMode'])
+            result = getExcMessage(getArg(kwargs,'userMode','user'))
             pass
         return result
 
