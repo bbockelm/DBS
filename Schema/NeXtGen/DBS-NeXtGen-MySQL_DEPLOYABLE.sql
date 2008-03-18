@@ -4,9 +4,9 @@
 -- === Build : 745
 -- ======================================================================
 
-drop database if exists DBS_1_0_8;
-create database DBS_1_0_8;
-use DBS_1_0_8;
+drop database if exists DBS_1_0_8Vijay;
+create database DBS_1_0_8Vijay;
+use DBS_1_0_8Vijay;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -749,6 +749,7 @@ CREATE TABLE SEBlock
     ID                    BIGINT UNSIGNED not null auto_increment,
     SEID                  BIGINT UNSIGNED   not null,
     BlockID               BIGINT UNSIGNED   not null,
+    Roles                 ENUM('N', 'Y') not null default 'N',
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
