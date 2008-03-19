@@ -31,10 +31,6 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-#from dbsApiListPrimaryDatasets import *
-
-
-
 #DBS Api version
 __version__ = "DBS_1_0_8"
 #__version__ = "$Name:  $"
