@@ -696,6 +696,18 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def createAnalysisDatasetFromLFNs(self, analysisDatasetXML):
+     try:
+       #Calling the Implementation function
+       from dbsCreateAnalysisDatasetFromLFNs import dbsApiImplCreateAnalysisDatasetFromLFNs
+       return  dbsApiImplCreateAnalysisDatasetFromLFNs(self, analysisDatasetXML )
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
   def createCompADS(self, compADS):
      try:
       #Calling the Implementation function
