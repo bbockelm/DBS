@@ -106,7 +106,7 @@ class DBManager(DDLogger):
       config = DDConfig()
       DDLogger.__init__(self,config.loggerDir(),"DBManager",verbose)
       self.iface     = iface
-      self.verbose   = verbose
+      self.verbose   =int(verbose)
       self.clear()
       
   def setVerbose(self,level):
@@ -186,27 +186,28 @@ class DBManager(DDLogger):
 # since SQLAlchemy 0.4
 #          tList = self.engine[dbsInst].table_names()
           for t in tList: 
+              tName = t[0].lower()
               if self.verbose:
-                 print "DBS Tables|Views",t[0]
+                 print "DBS Tables|Views",tName
 # since SQLAlchemy 0.4
-#              tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,schema=dbsInst.upper())
+#              tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.upper())
               if eType=='oracle':
-                 tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,case_sensitive=False)
-#                 tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
+                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False)
+#                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
               else:
                  tables[t[0]]=sqlalchemy.Table(t[0],dbsMeta,autoload=True,case_sensitive=False)
               if self.verbose>1:
-                 print tables[t[0]].__dict__
-          self.dbTables[dbsInst]=tables
+                 print tables[tName].__dict__
           if  eType=='oracle': # read views separately
               vList = con.execute(self.vQuery[dbsInst])
               for v in vList: 
+                  tName=v[0].lower()
                   if self.verbose:
-                     print "DBS Views",t[0]
-                  tables[t[0]]=sqlalchemy.Table(t[0].lower(),dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
+                     print "DBS Views",tName
+                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
                   if self.verbose>1:
-                     print tables[t[0]].__dict__
-              self.dbTables[dbsInst]=tables
+                     print tables[tName].__dict__
+          self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
       return con
@@ -223,7 +224,7 @@ class DBManager(DDLogger):
       """
       tables = self.dbTables[dbsInst]
       if self.dbType[dbsInst]=='oracle':
-         tableName=string.upper(tableName)
+         tableName=string.lower(tableName)
       if tableAlias:
          # return alias to the table
          return tables[tableName].alias(tableAlias)
@@ -264,7 +265,7 @@ class DBManager(DDLogger):
   def getForeignKeys(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
       if self.dbType[dbsInst]=='oracle':
-         table=string.upper(table)
+         table=string.lower(table)
       if tDict.has_key(table):
          return tDict[table].foreign_keys
       raise "No table '%s' found"%table
@@ -272,7 +273,7 @@ class DBManager(DDLogger):
   def getColumns(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
       if self.dbType[dbsInst]=='oracle':
-         table=string.upper(table)
+         table=string.lower(table)
       if tDict.has_key(table):
          return tDict[table]._columns.keys()
       raise "No table '%s' found"%table

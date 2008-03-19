@@ -424,10 +424,11 @@ class DDQueryMaker(DDLogger):
           obj    = tab
           sortCol= self.col(tab,sortName)
           oSel   = ['*']
-          if self.dbManager.dbType[self.dbsInstance]=='oracle':
-             gBy = gBy+['rownum']
-          sel = sqlalchemy.select(oSel,from_obj=[obj],order_by=oBy,limit=limit,offset=fromRow)
+#          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+#             gBy = gBy+['rownum']
+          sel = sqlalchemy.select(oSel,from_obj=[obj],order_by=oBy)
           sel.distinct=True
+          sel.user_labels=True
           sel.append_whereclause(self.col(tab,c).in_(query))
           if  limit:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
