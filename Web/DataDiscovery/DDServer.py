@@ -2168,6 +2168,7 @@ class DDServer(DDLogger,Controller):
             _maxRun=0 
             try:    
                nResults,_minRun,_maxRun=self.helper.getRuns(dataset=dataset,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
+               if not nResults: raise "No runs found"
             except:
                traceback.print_exc()
                msg="No runs found for your request:<br />"
