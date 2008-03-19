@@ -1,6 +1,6 @@
 /**
- $Revision: 1.41 $"
- $Id: DBSApiAnaDSLogic.java,v 1.41 2007/10/15 22:11:25 afaq Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.42 2008/03/03 22:00:08 afaq Exp $"
  *
  */
 
@@ -454,7 +454,116 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		
 
 	 }
-	 
+
+	public void createAnalysisDatasetFromLFNs(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+
+		//Check N See if ADS already exists
+		Hashtable ads = DBSUtil.getTable(table, "analysis_dataset");
+		// get the path and verify that it exists in DBS
+		Hashtable pds = DBSUtil.getTable(table, "dataset");
+                String path = get(pds, "path", true);
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+
+		if (isNull (procDSID) ) {
+			throw new DBSException("Dataset Does Not Exists", "1039", "Dataset Path " + path + "Does not exists in this DBS");
+		}
+
+		String analysisDatasetName = get(ads, "name", true);
+		String aDSID = null;
+
+		//Not doing any versioning AS of YET
+		if( ! isNull((aDSID = getADSID(conn, analysisDatasetName, false))) ) {
+			throw new DBSException("Already Exists", "10299", "AnalysisDataset " + analysisDatasetName + " Already Exists in DBS ");
+		}
+
+		// Get the Definition of the analysis dataset first 
+
+		Hashtable ads_def = DBSUtil.getTable(table, "analysis_dataset_def");
+                String analysisDatasetDefinitionName = get(ads_def, "name", true);
+		
+		System.out.println("Verify the ADS Def Exists, if not Create it ?!");
+                String anaDSDefID = null;
+		anaDSDefID = getID(conn, "AnalysisDSDef", "Name", analysisDatasetDefinitionName, true);
+
+		if (isNull(anaDSDefID)) {
+			System.out.println("CALL createAnalysisDatasetDefinition HERE !!!!!!!");
+			//createAnalysisDatasetDefinition(Connection conn, Writer out, ads_def, Hashtable dbsUser);
+		}
+	
+		anaDSDefID = getID(conn, "AnalysisDSDef", "Name", analysisDatasetDefinitionName, true);
+		if (isNull(anaDSDefID)) {
+			throw new DBSException("Unavailable data", "1021", "No such analysis dataset definition " + analysisDatasetDefinitionName );
+		}
+
+		//Verify the ADS Def Exists, if not Create it ?!
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps = DBSSql.listAnalysisDatasetDefinition(conn, analysisDatasetDefinitionName);
+                        rs =  ps.executeQuery();
+			if (rs.next()) {
+				anaDSDefID = get(rs, "ID");
+			}
+			else {
+				System.out.println("CALL createAnalysisDatasetDefinition HERE !!!!!!!");
+				//createAnalysisDatasetDefinition(Connection conn, Writer out, ads_def, Hashtable dbsUser);
+			}
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+
+		String desc = getStr(ads, "description", false);
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+                String cbUserID = personApi.getUserID(conn, get(ads, "created_by"), dbsUser );
+                String creationDate = getTime(ads, "creation_date", false);
+		String type = getStr(ads, "type", true);
+		String status = getStr(ads, "status", true);
+		
+		//Lets create the first version ONLY, if user wants to create MORE versions, use other APSs, or we will revisit
+		String adsVer = "0";
+
+		try {
+			ps = DBSSql.insertAnalysisDataset(conn,
+                                                        analysisDatasetName,
+                                                        path,
+                                                        procDSID,
+                                                        anaDSDefID,
+                                                        String.valueOf(adsVer),
+                                                        getID(conn, "AnalysisDSType", "Type", type, true),
+                                                        getID(conn, "AnalysisDSStatus", "Status", status, true),
+                                                        getID(conn, "PhysicsGroup", "PhysicsGroupName",
+                                                                get(ads, "physics_group_name", true),
+                                                                true),
+                                                        desc,
+                                                        cbUserID, lmbUserID, creationDate);
+			ps.execute();
+		} finally {
+			if (ps != null) ps.close();
+		}
+
+		java.util.ArrayList files = DBSUtil.getArrayList(table, "files");		
+		System.out.println("Looking for files: " + files.size());
+		for (int i=0;i<files.size();++i) {
+			Hashtable aFile = (Hashtable) files.get(i);
+			String lfn = get(aFile, "lfn");
+			System.out.println("LFN: "+lfn);
+			java.util.ArrayList lumis = DBSUtil.getArrayList(aFile, "file_lumi_section");
+			if (lumis.size() < 1 ) lumis.add("");
+			insertMapBatch(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
+									aDSID, lumis, getID(conn, "Files", "LogicalFileName", lfn, true), 
+									cbUserID, lmbUserID, creationDate);
+
+			//for (int j=0;j<lumis.size();++j) {
+			//	Hashtable aLumi = (Hashtable) lumis.get(i);
+			//	String lsNumber = get(aLumi, "lumi_section_number", false);
+			//}
+		}
+
+
+	}
+
+
          //public void createAnalysisDataset(Connection conn, Writer out, String analysisDatasetDefinitionName, Hashtable dbsUser) throws Exception {
          public void createAnalysisDataset(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 

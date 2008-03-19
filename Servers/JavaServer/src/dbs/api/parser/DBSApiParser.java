@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApiParser.java,v 1.18 2007/12/10 23:10:09 afaq Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSApiParser.java,v 1.19 2007/12/17 16:06:33 sekhri Exp $"
  *
 */
 
@@ -110,81 +110,49 @@ public class DBSApiParser {
 		}
 		return psDS;
 	}
-	/*
-	public static Hashtable parseDatasetContents(String inputXml) throws Exception {
-		int index = -1;
-		int blockIndex = -1;
-		//System.out.println("inputXml "+inputXml);
-		DBSXMLParser dbsParser = new DBSXMLParser();
-		dbsParser.parseString(inputXml); 
-		Vector allElement = dbsParser.getElements();
-		Hashtable table = null;
-		Hashtable psDS = null;
-		Vector topLevel = new Vector();
-		for (int i=0; i<allElement.size(); ++i) {
-			Element e = (Element)allElement.elementAt(i);
-			String name = e.name;
-			if (name.equals("dataset") ) {
-				table = e.attributes;
-			}
-			if (name.equals("primary_dataset") ) {
-				table.put("primary_dataset", e.attributes);
-			}
-			if (name.equals("processed_dataset") ) {
-				psDS = e.attributes;
-				psDS.put("data_tier", new Vector());
-				psDS.put("parent", new Vector());
-				psDS.put("algorithm", new Vector());
-				psDS.put("run", new Vector());
-				psDS.put("block", new Vector());
-			} 
-			if (name.equals("data_tier") ) 
-				((Vector)(get(psDS, "data_tier", "processed_dataset"))).add(e.attributes);
-			if (name.equals("processed_dataset_parent") ) 
-				((Vector)(get(psDS, "parent", "processed_dataset"))).add(e.attributes);
-			//if (name.equals("algorithm") ) 
-			if (name.equals("processed_dataset_algorithm") ) 
-				((Vector)(get(psDS, "algorithm", "processed_dataset"))).add(e.attributes);
-			if (name.equals("run") ) 
-				((Vector)(get(psDS, "run", "processed_dataset"))).add(e.attributes);
-			if (name.equals("block") ) 
-				((Vector)(get(psDS, "block", "processed_dataset"))).add(e.attributes);
-			
-			if (name.equals("block") ) {
-				Hashtable block = e.attributes;
-				block.put("storage_element", new Vector());
-				((Vector)(get(psDS, "block", "processed_dataset"))).add(block);
-				++blockIndex;
-			} 
-			if (name.equals("storage_element") ) 
-				((Vector)((Hashtable)(((Vector)(get(psDS, "block", "processed_dataset"))).get(blockIndex))).get("storage_element")).add(e.attributes);
 
-			if (name.equals("file") ) {
-				Hashtable file = e.attributes;
-				file.put("file_lumi_section", new Vector());
-				file.put("file_data_tier", new Vector());
-				file.put("file_parent", new Vector());
-				file.put("file_algorithm", new Vector());
-				file.put("file_branch", new Vector());
-				topLevel.add(file);
-				++index;
-			} 
-			if (name.equals("file_lumi_section") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_lumi_section", "file"))).add(e.attributes);
-			if (name.equals("file_data_tier") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_data_tier", "file"))).add(e.attributes);
-			if (name.equals("file_parent") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_parent", "file"))).add(e.attributes);
-			if (name.equals("file_algorithm") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
-			//if (name.equals("file_branch") ) 
-			//	((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
+        public static Hashtable parseADSContents(String inputXml) throws Exception {
+                int index = -1;
+                int blockIndex = -1;
+                DBSXMLParser dbsParser = new DBSXMLParser();
+                dbsParser.parseString(inputXml);
+                ArrayList allElement = dbsParser.getArrayElements();
+                Hashtable table = new Hashtable();
+                Hashtable psDS = null;
+                ArrayList files = new ArrayList();
 
-		}
-		table.put("processed_dataset", psDS);
-		table.put("file", topLevel);
-		return table;
-	}*/
+                for (int i=0; i<allElement.size(); ++i) {
+
+                        //Element e = (Element)allElement.elementAt(i);
+                        Element e = (Element)allElement.get(i);
+                        String name = e.name;
+
+                        if (name.equals("analysis_dataset") ) {
+                                table.put("analysis_dataset", e.attributes);
+                        }
+
+                        if (name.equals("dataset") ) {
+                                table.put("dataset", e.attributes);
+                        }
+
+
+                        if (name.equals("analysis_dataset_def") ) {
+                                table.put("analysis_dataset_def", e.attributes);
+                        }
+
+                        if (name.equals("file") ) {
+                                Hashtable file = e.attributes;
+                                file.put("file_lumi_section", new ArrayList());
+                                files.add(file);
+                                ++index;
+                        }
+                        if (name.equals("file_lumi_section") ) {
+                                ((ArrayList)( get((Hashtable) get(files, index, "file"), "file_lumi_section", "file"))).add(e.attributes);
+			}
+                }
+                table.put("files", files);
+                return table;
+        }
 
 	public static Hashtable parseDatasetContents(String inputXml) throws Exception {
 		int index = -1;
