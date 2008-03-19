@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 745
+-- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_1_0_8;
-create database DBS_1_0_8;
-use DBS_1_0_8;
+drop database if exists DBS_1_0_9;
+create database DBS_1_0_9;
+use DBS_1_0_9;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -203,10 +203,10 @@ CREATE TABLE LumiSection
 CREATE TABLE TimeLog
   (
     ID                    BIGINT UNSIGNED,
-    Action                varchar(100)      not null,
-    Cause                 varchar(100)      not null,
-    Effect                varchar(100)      not null,
-    Description           varchar(500)      not null,
+    Action                varchar(500)      not null,
+    Cause                 varchar(500)      not null,
+    Effect                varchar(500)      not null,
+    Description           varchar(1000)     not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -250,7 +250,7 @@ CREATE TABLE RecycleBin
   (
     ID                    BIGINT UNSIGNED,
     Path                  varchar(500)      not null,
-    Name                  varchar(700)      not null,
+    BlockName             varchar(700)      not null,
     Xml                   LONGTEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -622,6 +622,22 @@ CREATE TABLE ProcAlgo
 
 -- ======================================================================
 
+CREATE TABLE ProcADSParent
+  (
+    ID                    BIGINT UNSIGNED,
+    ThisDataset           BIGINT UNSIGNED   not null,
+    ItsParentADS          BIGINT UNSIGNED   not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID),
+    unique(ThisDataset,ItsParentADS)
+  );
+
+-- ======================================================================
+
 CREATE TABLE AnalysisDataset
   (
     ID                    BIGINT UNSIGNED,
@@ -748,6 +764,7 @@ CREATE TABLE SEBlock
   (
     ID                    BIGINT UNSIGNED,
     SEID                  BIGINT UNSIGNED   not null,
+    Roles                 char(1)           default 'Y',
     BlockID               BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -1347,6 +1364,19 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
 /
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParent_ItsParentADS_FK foreign key(ItsParentADS) references AnalysisDataset(ID) on delete CASCADE
+/
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParentLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 

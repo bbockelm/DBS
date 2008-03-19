@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 745
+-- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_1_0_8Vijay;
-create database DBS_1_0_8Vijay;
-use DBS_1_0_8Vijay;
+drop database if exists DBS_1_0_9;
+create database DBS_1_0_9;
+use DBS_1_0_9;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -206,7 +206,7 @@ CREATE TABLE TimeLog
     Action                varchar(500)      not null,
     Cause                 varchar(500)      not null,
     Effect                varchar(500)      not null,
-    Description           varchar(1000)      not null,
+    Description           varchar(1000)     not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -250,7 +250,7 @@ CREATE TABLE RecycleBin
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Path                  varchar(500)      not null,
-    BlockName                  varchar(700)      not null,
+    BlockName             varchar(700)      not null,
     Xml                   LONGTEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -622,6 +622,22 @@ CREATE TABLE ProcAlgo
 
 -- ======================================================================
 
+CREATE TABLE ProcADSParent
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ThisDataset           BIGINT UNSIGNED   not null,
+    ItsParentADS          BIGINT UNSIGNED   not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID),
+    unique(ThisDataset,ItsParentADS)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE AnalysisDataset
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -748,8 +764,8 @@ CREATE TABLE SEBlock
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     SEID                  BIGINT UNSIGNED   not null,
+    Roles                 char(1)           default 'Y',
     BlockID               BIGINT UNSIGNED   not null,
-    Roles                 ENUM('N', 'Y') not null default 'N',
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -1350,6 +1366,19 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on delete CASCADE
+;
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParent_ItsParentADS_FK foreign key(ItsParentADS) references AnalysisDataset(ID) on delete CASCADE
+;
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE ProcADSParent ADD CONSTRAINT 
+    ProcADSParentLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_Definition_FK foreign key(Definition) references AnalysisDSDef(ID)
 ;
@@ -1678,6 +1707,9 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_ProcAlgo BEFORE INSERT ON ProcAlgo
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER TR_ProcADSParent BEFORE INSERT ON ProcADSParent
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER TR_AnalysisDataset BEFORE INSERT ON AnalysisDataset
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1852,6 +1884,9 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_ProcAlgo BEFORE UPDATE ON ProcAlgo
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_ProcADSParent BEFORE UPDATE ON ProcADSParent
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER UTR_AnalysisDataset BEFORE UPDATE ON AnalysisDataset
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1914,7 +1949,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_8', 'LOCAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_9', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
