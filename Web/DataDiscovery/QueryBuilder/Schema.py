@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.4 2008/03/10 18:42:28 valya Exp $
+# $Id: Schema.py,v 1.5 2008/03/18 16:01:14 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.4 $"
+__revision__ = "$Revision: 1.5 $"
 
 
 import unittest
@@ -64,7 +64,10 @@ class Schema(object):
             tableDict[table.name]=table
         self._schema = MySchema(tableDict)
         self._ordered = None
-        self._owner=owner
+        if owner:
+           self._owner=owner.upper()
+        else:
+           self._owner=owner
         self._foreignTables = {}
         self._personTable=FindTable(self._schema,'person')
 
@@ -184,6 +187,12 @@ class Schema(object):
         eNames=[]
         for i in exclude: eNames.append(i.fullname)
         excludeNames=set(eNames)
+        oList=list(orderedNames)
+        oList.sort()
+#        print "\n\nSchema:"
+#        print oList
+#        print excludeNames
+#        print "owner",self._owner
         try:
             searchName=None
             for tableIdx in xrange(0,len(self._ordered)):
@@ -195,10 +204,12 @@ class Schema(object):
                     if fk.column.table in exclude: continue
     
                     searchName=fk.column.table
+#                    print "old searchName",searchName.__dict__
                     if self._owner and not searchName.schema:
                        searchName.schema=self._owner
                        searchName.owner=self._owner
                        searchName.fullname='%s.%s'%(self._owner,searchName.fullname)
+#                    print "new searchName",searchName.__dict__
                     if searchName.fullname in excludeNames: continue
 #                    fkIdx = self._ordered.index(searchName)
                     fkIdx = orderedNames.index(searchName.fullname)
