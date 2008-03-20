@@ -7,10 +7,10 @@ fi
 
 _host=$1
 if [ -n `echo $_host | grep "http://"` ] ; then
-host=_host
+host=$_host
 fi
 if [ -n `echo $_host | grep "https://"` ] ; then
-host=_host
+host=$_host
 else
 host="http://"`echo $_host | sed "s,http://,,g"`
 fi
@@ -28,7 +28,9 @@ cat >> $DIR/DBSDD.conf << EOF
 # DO NOT EDIT, AUTO-GENERATED SETTINGS
 #
 # If you want your Data Discovery site visible, make appropriate change here and setup URL
-# URL=$host:$port
+### you may change URL to be in a form $host:$port
+# URL=$host
+# PORT=$port
 LOGGERDIR=$DDHOME/Logs
 EOF
 
