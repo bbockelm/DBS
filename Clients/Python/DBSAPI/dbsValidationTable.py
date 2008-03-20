@@ -75,6 +75,7 @@ ValidationTable = {
          "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "PathList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "ParentList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
+         "ADSParent" : { "Comment" : "Name of the Parent ADS, if any", "Validator" : isStringType },
          "RunsList" : { "Comment" : "User may need to provide run list", "Validator" : isListType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },

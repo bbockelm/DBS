@@ -6,6 +6,8 @@ from cStringIO import StringIO
 
 from dbsProcessedDataset import DbsProcessedDataset
 from dbsPrimaryDataset import DbsPrimaryDataset
+from dbsAnalysisDataset import DbsAnalysisDataset
+
 from xml.sax import SAXParseException
 
 from dbsException import DbsException
@@ -55,10 +57,17 @@ def dbsApiImplListDatasetParents(self, dataset):
       class Handler (xml.sax.handler.ContentHandler):
 
         def startElement(self, name, attrs):
-          if name == 'processed_dataset_parent':
-		  parentPath = str(attrs['path'])
-		  myPath = parentPath.split('/')
-		  result.append(DbsProcessedDataset ( 
+          if name == 'processed_dataset_parent' or 'processed_dataset_ads_parent':
+
+		if name == 'processed_dataset_ads_parent':
+			ADSParent = str(attrs['name'])
+			result.append(DbsAnalysisDataset(Name=ADSParent))
+	
+		if name == 'processed_dataset_parent':
+			parentPath = str(attrs['path'])
+			myPath = parentPath.split('/')
+
+			result.append(DbsProcessedDataset ( 
 			  			Name=myPath[2],
                                                 #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=myPath[1]),

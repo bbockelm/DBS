@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.138 $"
- $Id: DBSSql.java,v 1.138 2008/03/18 17:15:17 afaq Exp $"
+ $Revision: 1.139 $"
+ $Id: DBSSql.java,v 1.139 2008/03/18 21:23:32 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1474,6 +1474,22 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+        public static PreparedStatement listDatasetADSParent(Connection conn, String procDSID) throws SQLException {
+
+		String sql = "SELECT DISTINCT ads.Name as NAME \n" +
+				" FROM " +owner()+"AnalysisDataset ads \n" +
+				" LEFT OUTER JOIN "+owner()+"ProcADSParent padsp \n" +
+					" ON ads.ID = padsp.ItsParentADS \n" +
+					" AND padsp.ThisDataset = ? \n";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, procDSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	}
+
+
 
 	//public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
 	public static PreparedStatement listDatasetProvenence(Connection conn, String procDSID, boolean parentOrChild) throws SQLException {

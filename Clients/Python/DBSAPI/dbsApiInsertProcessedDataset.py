@@ -74,6 +74,7 @@ def dbsApiImplInsertProcessedDataset(self, dataset):
     xmlinput += " processed_datatset_name='"+dataset.get('Name', "")+"'"
     xmlinput += " open_for_writing='"+dataset.get('OpenForWriting', "")+"'"
     xmlinput += " physics_group_name='"+dataset.get('PhysicsGroup', "")+"'"
+    xmlinput += " analysis_datatset_parent='"+dataset.get('ADSParent', "")+"'"
     xmlinput += " physics_group_convener='"+dataset.get('PhysicsGroupConverner', "")+"'"
     xmlinput += " status='"+dataset.get('Status', "")+"'>" 
     

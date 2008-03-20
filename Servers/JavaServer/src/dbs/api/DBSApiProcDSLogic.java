@@ -1,6 +1,6 @@
 /**
- $Revision: 1.53 $"
- $Id: DBSApiProcDSLogic.java,v 1.53 2007/12/07 22:24:43 sekhri Exp $"
+ $Revision: 1.54 $"
+ $Id: DBSApiProcDSLogic.java,v 1.54 2008/02/06 17:03:39 sekhri Exp $"
  *
  */
 
@@ -199,8 +199,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 public void listDatasetParents(Connection conn, Writer out, String path) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
+
+		String procDSID = getProcessedDSID(conn, path, true);
 		try {
-			ps = DBSSql.listDatasetProvenence(conn, getProcessedDSID(conn, path, true), true);
+			ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset_parent id='" + get(rs, "ID") + 
@@ -217,6 +219,19 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
 		}
+		
+		try {
+                        ps = DBSSql.listDatasetADSParent(conn, procDSID);
+			rs =  ps.executeQuery();
+			//Should be one
+			while(rs.next()) {
+				out.write( "<processed_dataset_ads_parent name='"+ get(rs, "NAME") +"' />" );
+			}
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+
 	 }
 
 
@@ -463,13 +478,20 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 
 		//Insert ProcDSParent table by fetching parent File ID
-		if(!ignoreParent)
+		if(!ignoreParent) {
 			for (int j = 0; j < parentVector.size(); ++j) {
 				insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent", 
 						procDSID, 
 						getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true), 
 						cbUserID, lmbUserID, creationDate);
 			}
+			String analysisDatasetName = get(dataset, "analysis_datatset_parent", false);
+			if (!isNull(analysisDatasetName))
+	                        insertMap(conn, out, "ProcADSParent", "ThisDataset", "ItsParentADS",
+                                                procDSID,
+						(new DBSApiAnaDSLogic(this.data)).getADSID(conn, analysisDatasetName, true),
+                                                cbUserID, lmbUserID, creationDate);
+		}
 
 		//Insert ProcDSRun table by fetching Run ID
 		for (int j = 0; j < runVector.size(); ++j) {

@@ -39,7 +39,7 @@ algo = DbsAlgorithm (
 primary = DbsPrimaryDataset (Name = "test_primary_001")
 proc = DbsProcessedDataset (
         PrimaryDataset=primary, 
-        Name="TestProcessedDS001", 
+        Name="TestProcessedDSWithADSParent", 
         PhysicsGroup="BPositive",
         Status="Valid",
         TierList=['SIM', 'GEN'],
@@ -212,8 +212,14 @@ myfile44= DbsFile (
 # Need to provide Block name if YOU want to control Block management (The block named must pre-exist), if NOT then DBS will throw this file in
 # Open Block for this Dataset, and will do the Block management too.
 # Make a choice
-                   
+        
+
 block = DbsFileBlock (
+         Name="/test_primary_001/TestProcessedDSWithADSParent/GEN-SIM#12345"
+         #Name="/test_primary_001/TestProcessedDS001/SIM#12345"
+         )
+           
+block2 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
 	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
          )
