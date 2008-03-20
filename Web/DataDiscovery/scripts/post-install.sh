@@ -6,7 +6,14 @@ if [ $# -ne 2 ]; then
 fi
 
 _host=$1
+if [ -n `echo $_host | grep "http://"` ] ; then
+host=_host
+fi
+if [ -n `echo $_host | grep "https://"` ] ; then
+host=_host
+else
 host="http://"`echo $_host | sed "s,http://,,g"`
+fi
 port=$2
 DIR=$DDHOME
 
