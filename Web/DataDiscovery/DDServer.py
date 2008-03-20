@@ -1191,6 +1191,8 @@ class DDServer(DDLogger,Controller):
             path   = kwargs['path']
             result = self.msApi.deleteRequest(srcUrl, dstUrl, path)
         except:
+            if self.verbose:
+               traceback.print_exc()
             result = getExcMessage(kwargs['userMode'])
             pass
         page   = self.genTopHTML(userMode=userMode)
@@ -1200,13 +1202,15 @@ class DDServer(DDLogger,Controller):
         return page
     ms_deleteRequest.exposed=True
 
-    def ms_getRequestByUser(self,userMode="user"):
+    def ms_getRequestByUser(self,userMode="user",**kwargs):
         dn=""
         try:
             userName=self.decodeUserName(**kwargs)
             dn=urllib.quote(self.getDN(userName))
             result = self.msApi.getRequestByUser(dn)
         except:
+            if self.verbose:
+               traceback.print_exc()
             result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
@@ -1220,6 +1224,8 @@ class DDServer(DDLogger,Controller):
         try:
             result = self.msApi.getRequestById(int(id))
         except:
+            if self.verbose:
+               traceback.print_exc()
             result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
@@ -1233,6 +1239,8 @@ class DDServer(DDLogger,Controller):
         try:
             result = self.msApi.getRequestByStatus(status)
         except:
+            if self.verbose:
+               traceback.print_exc()
             result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
@@ -1243,7 +1251,7 @@ class DDServer(DDLogger,Controller):
     ms_getRequestByStatus.exposed=True
 
     def ms_addRequest(self,**kwargs):
-        print "\n\n+++ms_addRequest",kwargs,self.msApi,type(self.msApi)
+#        print "\n\n+++ms_addRequest",kwargs,self.msApi,type(self.msApi)
         if kwargs.has_key('submit'): del kwargs['submit']
         if kwargs.has_key('choice'): del kwargs['choice']
         dn=""
@@ -1264,6 +1272,8 @@ class DDServer(DDLogger,Controller):
             notify = kwargs['notify']
             result = self.msApi.addRequest(srcUrl,dstUrl,path,dn,force,parents,notify)
         except:
+            if self.verbose:
+               traceback.print_exc()
             result = getExcMessage(getArg(kwargs,'userMode','user'))
             pass
         return result
