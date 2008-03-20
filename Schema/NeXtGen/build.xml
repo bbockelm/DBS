@@ -62,5 +62,21 @@
 
   </target>
 
+  <target name="CreateViews" description="Create Views and grant permissions.">
+        <property name="workingdir" location="." />
+        <echo message="Create views for ${build.schema.owner.name}"/>
+        <delete quiet="true" file="${workingdir}/newViews.sql"/>
+        <delete quiet="true" file="${workingdir}/newViews.out"/>
+        <copy file="${workingdir}/view_templates.sql" tofile="${workingdir}/newViews.sql"/>
+        <replace file="${workingdir}/newViews.sql" token="@build.schema.owner.name@" value="${build.schema.owner.name}"/>
+        <exec executable="sqlplus" dir="${workingdir}" output="newViews.output" 
+              description="Run test via sqlplus. Note An sqlplus client is needed.">
+                <arg line="${build.schema.owner.name}/${build.schema.owner.passwd}@${build.dbname} @${workingdir}/newViews.sql"/>
+        </exec>
+  </target>
+
+
+
+
 
 </project>
