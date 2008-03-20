@@ -11,7 +11,7 @@
 #export JAVA_HOME=/usr/java/jdk1.5.0_06/
 #export ANT_HOME=/home/sekhri/work/frontier/apache-ant-1.6.5/
 export ANT_HOME=/home/sekhri/apache-ant-1.6.5/
-export JAVA_HOME=/usr/java/jdk1.5.0_10/
+export JAVA_HOME=/usr/java/jdk1.5.0_14/
 export DBS_SERVER_CONFIG=$PWD/etc/context.xml
 
 ret=0
