@@ -886,6 +886,32 @@ MCDescription:      %s
 #      return oList
       return oDict.values()
 
+  def getSiteList(self,dataset):
+      con   = self.connectToDB()
+      oList = []
+      sel   = ""
+      try:
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
+          tblk = self.alias('Block','tblk')
+          oSel =[self.col(tse,'SEName')]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                          tblk.join(tseb,onclause=self.col(tblk,'ID')==self.col(tseb,'BlockID'))
+                          .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                            ],distinct=True )
+          sel.append_whereclause(self.col(tblk,'Path')==dataset)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getSiteList"
+      for item in result:
+          if not item[0]: continue
+          oList.append(item[0])
+      self.closeConnection(con)
+      return oList
+
   def nDatasets(self):
       con   = self.connectToDB()
       nsets =-1
