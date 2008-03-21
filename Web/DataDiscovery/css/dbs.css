@@ -235,7 +235,8 @@ table.dbs_table {
   border-color: gray gray gray gray;
   border-collapse: collapse;
   background-color: rgb(255, 250, 250);
-  vertical-align: text-bottom;
+/*  vertical-align: text-bottom;*/
+/*  vertical-align: middle;*/
 }
 
 table.dbs_table th {
@@ -249,7 +250,7 @@ table.dbs_table th {
   text-align: right;
 }
 
-table.dbs_table th.left {
+table.dbs_table th.th_left {
   text-align: left;
 }
 table.dbs_table th.middle {
@@ -288,7 +289,7 @@ table.dbs_table td {
   margin: 0px;
 }
 
-table.dbs_table td.left {
+table.dbs_table td.td_left {
   text-align: left;
   padding: 5px;
   margin: 0px;
