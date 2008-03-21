@@ -4992,9 +4992,10 @@ Save query as:
         html     = kwargs['html']
         xml      = kwargs['xml']
         userMode = kwargs['userMode']
+        case     = kwargs['caseSensitive']
         output   = kwargs['output']
-#        titleList= kwargs['titleList']
         grid     = int(getArg(kwargs,'grid',0))
+        userInput= kwargs['userInput']
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
         num      = kwargs['num']
@@ -5048,12 +5049,24 @@ Save query as:
                        else:             page+="""%s %s\n"""%(titleList[jdx],elem)
                 else:
                     page+="%s %s,"%(titleList[jdx],elem)
-            if html and grid: page+="</tr>\n"
+            if html and grid:
+               more ="""<select style="width:100px"><option value="">Find ...</option>\n"""
+               where=userInput[userInput.lower().find("where"):]
+               for key in self.ddrules.tableName.keys():
+                   if key==output: continue
+                   ref  = urllib.quote("find %s where %s"%(key,where))
+                   aref = """aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s"""%(ref,userMode,dbsInst,case,sortOrder)
+                   more+="""<option value='%s'>%s</option>\n"""%(aref,"Find %s"%self.ddrules.longName[key])
+               more+="</select>\n"
+               page+="<td %s>%s</td>\n"%(td_style,more) # for LINKS, see adding to titleList
+               page+="</tr>\n"
             if not html: page+="\n"
             counter+=1
         if grid and html:
            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
+           titleList+=['LINKS']
            for t in titleList:
+               t=t.upper().replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
                if t.lower()=='created' or t.lower()=='creationdate':
                   t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                th_class=""
@@ -5113,12 +5126,15 @@ Save query as:
                style='class="zebra"'
             else:
                style=""
-            sList = self.helper.getSiteList(dataset)
-            dDict = {}
-            for site in sList:
-                dDict[site]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
-            mDict = dDict
-#            dDict,mDict = self.helper.datasetSummary(dataset)
+            if grid:
+               sList = self.helper.getSiteList(dataset)
+               dDict = {}
+               for site in sList:
+                   dDict[site]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
+               mDict = dDict
+            else:
+               # I determine which site has datasets, not all sites may have all datasets
+               dDict,mDict = self.helper.datasetSummary(dataset)
             if html:
                if mDict:
                    if grid:
@@ -5150,7 +5166,7 @@ Save query as:
                if item.lower()=='created' or item.lower()=='creationdate':
                   item+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                th_class=""
-               item=item.replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
+               item=item.upper().replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
                if item==titleList[0]: th_class="th_left"
                head+="<th class=\"%s\">%s</th>"%(th_class,item)
            head = """<table width="100%%" class="dbs_table">\n<tr class="tr_th">%s</tr>"""%head
