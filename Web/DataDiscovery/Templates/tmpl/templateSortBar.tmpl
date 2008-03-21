@@ -24,22 +24,13 @@ View results:
 <table>
 <tr>
 <td>
+#set sortName=$titleList[0]
 <select id="sel_sortName" onchange="javascript:ReloadASearch();">
-<option value="CreationDate">Sort by creation date</option>
-<option value="LastModificationDate">Sort by modification date</option>
-<option value="Name">Sort by name</option>
-#*
-#if $out=="dataset" or $out=="block" or $out=="lfn"
-<option value="size">Sort by size</option>
-<option value="NumberOfEvents">Sort by # of events</option>
+#for item in $titleList
+#if not $excludeList.count($item)
+<option value="$item">Sort by $item</option>
 #end if
-#if $out=="dataset" or $out=="block"
-<option value="NumberOfFiles">Sort by # of files</option>
-#end if
-#if $out=="run"
-<option value="TotalLuminosity">Sort by total luminosity</option>
-#end if
-*#
+#end for
 </select>
 </td>
 <td>
@@ -98,10 +89,10 @@ function UpdateSortOrder() {
            }
        }
        if(!found) {
-          SetCookie('DBSDD_sortName','CreationDate');
+          SetCookie('DBSDD_sortName','$sortName');
        }
    } else {
-       SetCookie('DBSDD_sortName','CreationDate');
+       SetCookie('DBSDD_sortName','$sortName');
    }
    Update_aSearchForm();
 }
