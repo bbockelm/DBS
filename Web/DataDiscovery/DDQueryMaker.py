@@ -410,8 +410,20 @@ class DDQueryMaker(DDLogger):
          print self.extractBindParams(sel)
       return sel
 
-  def executeQuery_new(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
-#      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
+  def executeQuery(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
+      if not sortName:
+         t,c   = tabCol.split(".") 
+         sortName=c
+      dbTables = self.dbManager.getTableNames(self.dbsInstance)
+      tName    = output+"summary"
+      if dbTables.count(tName.lower()):
+         return self.executeQueryFromView(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+      else:
+         return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+      
+      
+  def executeQueryFromView(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
+#      print "\n\n+++executeQueryFromView",output,tabCol,sortName,sortOrder,query,fromRow,limit
       con  = self.connectToDB()
       sel  = ""
       try:
@@ -419,13 +431,12 @@ class DDQueryMaker(DDLogger):
           # ORACLE need special way to fetch fromRow/limit, so we wrap query into
           # select * from (SELECT x.*, rownum as rnum FROM (query) x) where rnum between min and max;
           t,c    = tabCol.split(".")
-          tab    = self.dbManager.getTable(self.dbsInstance,output+"summary")
+          tName  = output+"Summary"
+          tab    = self.dbManager.getTable(self.dbsInstance,tName)
           oBy    = self.sortOrder(self.col(tab,sortName),sortOrder)
           obj    = tab
           sortCol= self.col(tab,sortName)
           oSel   = ['*']
-#          if self.dbManager.dbType[self.dbsInstance]=='oracle':
-#             gBy = gBy+['rownum']
           sel = sqlalchemy.select(oSel,from_obj=[obj],order_by=oBy)
           sel.distinct=True
           sel.user_labels=True
@@ -449,15 +460,24 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
-          raise "Fail in executeQuery"
+          raise "Fail in executeQueryFromView"
       oList=[]
+      tList=[]
       for item in result:
-          oList.append(item)
+          # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             oList.append(item.values()[:-1]) # last element is rownum
+             if not tList:
+                tList=list(item.keys()[:-1])
+          else:
+             oList.append(item.values())
+             if not tList:
+                tList=list(item.keys())
       self.closeConnection(con)
-      return oList
+      return oList,tList
 
-  def executeQuery(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
-#      print "\n\n+++executeQuery",output,tabCol,sortName,sortOrder,query,fromRow,limit
+  def executeQueryFromTable(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
+#      print "\n\n+++executeQueryFromTable",output,tabCol,sortName,sortOrder,query,fromRow,limit
       con  = self.connectToDB()
       sel  = ""
       try:
@@ -504,10 +524,19 @@ class DDQueryMaker(DDLogger):
           traceback.print_exc()
           raise "Fail in executeQuery"
       oList=[]
+      tList=[]
       for item in result:
-          oList.append(item)
+          # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             oList.append(item.values()[:-1]) # last element is rownum
+             if not tList:
+                tList=list(item.keys()[:-1])
+          else:
+             oList.append(item.values())
+             if not tList:
+                tList=list(item.keys())
       self.closeConnection(con)
-      return oList
+      return oList,tList
 
   def getSummary(self,tabCol,value):
       con  = self.connectToDB()
