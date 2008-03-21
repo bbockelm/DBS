@@ -1,14 +1,16 @@
 /**
  * 
- $Revision: 1.37 $"
- $Id: DBSServlet.java,v 1.37 2007/11/16 21:29:32 sekhri Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSServlet.java,v 1.38 2007/11/28 17:06:42 sekhri Exp $"
 
  */
 package dbs;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Properties;
 import java.sql.Connection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,9 +34,35 @@ public class DBSServlet extends HttpServlet{
 	public void init(ServletConfig config) throws ServletException {
     		try {
        			super.init(config);
+						
+			/*System.out.println ("Config name " + config.getServletName());
+			String tomcatHome = System.getProperty("CATALINA_HOME");
+			System.out.println("HOME is " + tomcatHome);
+			Properties props = System.getProperties();
+			Enumeration<Object> keys =  props.keys();
+			while(keys.hasMoreElements()){
+				String key = (String) keys.nextElement();
+				String prop = System.getProperty(key);
+				System.out.println(key +" : " + prop);
+			}*/
        			ServletContext context = getServletContext();
-       			//context.log("DBS Servlet Initializing..");
+			DBSUtil u = new DBSUtil();
+			u.addRegistration(context);
+
 			System.out.println("DBS Servlet INIT is CALLED");
+			/*Object[] o = context.getResourcePaths("/").toArray();
+			for (int i =0 ; i!= o.length; ++i) {
+				System.out.println(" obj " + o[i]);
+			}
+			
+       			//context.log("DBS Servlet Initializing..");
+			URL url = context.getResource("/WEB-INF");
+			System.out.println("URL is " + url);
+			System.out.println("Host is " + url.getHost() );
+			System.out.println(" is " + url.getPort());
+			System.out.println(" is " + url.getUserInfo());
+			*/
+			
        			//FIXME: WE must checks the Schema version here
 			//Verify why can't we make DBSApi object here ??\
 	                //Lets get serever parameters here
@@ -90,6 +118,8 @@ public class DBSServlet extends HttpServlet{
                 DBSApi api = null; 
 
 		try {
+			StringBuffer url = request.getRequestURL();
+			System.out.println("URL is ------------- > "  + url);
 
 			Hashtable userDN = new Hashtable();
 			String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
@@ -150,5 +180,6 @@ public class DBSServlet extends HttpServlet{
 		}
 		return table;
 	}
+																	
 	
 }

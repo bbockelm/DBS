@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.15 $"
- $Id: DBSUtil.java,v 1.15 2007/12/10 23:10:11 afaq Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSUtil.java,v 1.16 2007/12/12 22:31:12 sekhri Exp $"
  *
 */
 
@@ -10,17 +10,31 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.StringTokenizer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.io.Writer;
+import java.io.File;
+import java.net.URL;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
+
+import xml.DBSXMLParser;
+import xml.Element;
+import db.DBManagement;
 import dbs.DBSConstants;
+
 import java.util.ArrayList;
 /**
 * A util class that has a few utility menthods. All of the methods are static methods and do not need instance of this class to be called.
 * @author sekhri
 */
 public class DBSUtil {
+	public DBSUtil(){}
 	
 	/**
 	 * a static method that takes a <code>java.util.Hashtable</code> and a <code>java.lang.String</code> as parameters and attemps to fetch the given key value from the given table. If key or the table given are null then it does not return null, rather it retuns an empty string. Also if the key is not found in the table, it returns an empty string
@@ -208,6 +222,76 @@ public class DBSUtil {
 	}
 	public static void add(ArrayList attributes, String value) {
 		if(!isNull(value)) attributes.add(value);
+	}
+
+	private boolean isSame(Hashtable table, String key, String val){
+		if(!table.containsKey(key)) return false;
+		if(val.toLowerCase().equals(((String)(table.get(key))).toLowerCase())) return true;
+		return false;
+	}
+	public String makeUrl(Hashtable table) {
+		if(isSame(table, "protocol", "AJP/1.3")) return "";
+		String proto = "http";
+		if(isSame(table, "mode", "ssl") ||
+			isSame(table, "sslProtocol", "TLS") ||
+			isSame(table, "scheme", "https") ||
+			isSame(table, "secure", "true")) proto = "https";
+		String port = (String)table.get("port");
+		return (proto + "://" +  getLocalHost() + ":" + port);
+	}
+
+	public String getLocalHost() {
+		String hostName = "";
+   		try {
+			InetAddress addr = InetAddress.getLocalHost();
+			byte[] ipAddr = addr.getAddress();
+			hostName = addr.getHostName();
+		} catch (UnknownHostException e) {
+			System.out.println(e.getMessage());
+		}
+		return hostName;
+	}
+
+	public void addRegistration(ServletContext context){
+		try {
+			String home = System.getProperty("catalina.base");
+			//System.out.println("HOME is " + home);
+			String fileName = home + "/conf/server.xml";
+			File file = new File(fileName);
+			if (file.exists()) {
+				DBSXMLParser dbsParser = new DBSXMLParser();
+				dbsParser.parseFile(fileName);
+				Vector allElement = dbsParser.getElements();
+				for (int i=0; i<allElement.size(); ++i) {
+					Element e = (Element)allElement.elementAt(i);
+					String name = e.name;
+					//System.out.println("NAME is " + name);
+					if(name.equals("Connector")) {
+						Hashtable table = e.attributes;
+						String tmpUrl =  makeUrl(table);
+						if(!isNull(tmpUrl)) {
+							//System.out.println("URL is " + tmpUrl);
+							URL url = context.getResource("/WEB-INF");
+							String relPath = url.getPath();
+							//System.out.println("relPath is " + relPath);
+							relPath = relPath.substring(0, relPath.indexOf("/WEB-INF"));
+							//System.out.println("relPath is " + relPath);
+							StringTokenizer st = new StringTokenizer(relPath, "/");
+							String baseName = "";
+							while (st.hasMoreTokens()) baseName = st.nextToken();
+							//System.out.println("BaseName  is " + baseName);
+							String finalUrl = tmpUrl + "/" + baseName + "/servlet/DBSServlet";
+							System.out.println("FINALURL is " +  finalUrl);
+						}
+
+					}
+				}
+																
+
+			}
+		} catch(Exception e) {
+			System.out.println("ERROR " + e.getMessage());
+		}
 	}
 
 }

@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.8 $"
- $Id: DBSXMLParser.java,v 1.8 2006/12/05 19:39:40 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSXMLParser.java,v 1.9 2007/12/10 23:10:11 afaq Exp $"
 *
 */
 
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.StringReader;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import dbs.util.DBSUtil;
 
 /**
@@ -134,22 +135,55 @@ public class DBSXMLParser extends DefaultHandler {
 				"</test-parent-element>"+
 				"</dbs>";
 		try {
-			dbsParser.parseString(xml_string); 
+			//dbsParser.parseString(xml_string); 
+			dbsParser.parseFile("/home/sekhri/tomcat/apache-tomcat-5.5.15/conf/server.xml"); 
     			Vector allElement = dbsParser.getElements();
 			for (int i=0; i<allElement.size(); ++i) {
 				Element e = (Element)allElement.elementAt(i);
 				String name = e.name;
-				if (name == "primary-dataset" ) {
+				System.out.println("NAME is " + name);
+				if(name.equals("Connector")) {
+					Hashtable atttrs = e.attributes;
+					Enumeration en = atttrs.keys();
+					while (en.hasMoreElements()) {
+						String key = (String)en.nextElement();
+						System.out.println(" Key is  " + key + "  value is " + atttrs.get(key));
+					}
+
+
+				}
+				/*if (name == "primary-dataset" ) {
 					System.out.println("Found a primary dataset: "+name);  
 					Hashtable atribs = e.attributes;
 					String primary_name = (String)atribs.get("primary_name");
 					System.out.println("Name of primarydataset: "+primary_name);
-				} 
+				} */
+
+				
 			}
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}
+
+	/*private boolean isSame(Hashtable table, String key, String val){
+		if(!table.containsKey(key)) return false;
+		if(val.toLowerCase().equals(table.get(key).toLowerCase())) return true;
+		return false;
+	}
+	public String makeUrl(Hashtable table) {
+		if(isSame(table, "protocol", "AJP/1.3") return "";
+		String proto = "http";
+		if(isSame(table, "mode", "ssl") || 
+				isSame(table, "sslProtocol", "TLS") ||
+				isSame(table, "scheme", "https") ||
+				isSame(table, "secure", "true")) proto = "https";
+		String port = table.get("port");
+
+		return (proto + host + ":" + port)
+			
+		
+	}*/
 
 }
 
