@@ -780,7 +780,7 @@ class DDServer(DDLogger,Controller):
             dbsList=[dbsInst]+dbsList
             if msg: userHelp=0
             else:   userHelp=1
-            nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode}
+            nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':''}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
             page+= str(t)
             if msg:
@@ -5054,7 +5054,7 @@ Save query as:
             if html and grid:
                # add more links column
                more ="""<select style="width:100px" onchange="javascript:load(this.options[this.selectedIndex].value)">\n"""
-               more+="""<option value="">More Infooption>\n"""
+               more+="""<option value="">More Info</option>\n"""
                for key in self.ddrules.tableName.keys():
                    if key==output: continue
                    ref  = urllib.quote("find %s where %s=%s"%(key,output,firstElem))
@@ -5065,7 +5065,7 @@ Save query as:
                page+="</tr>\n"
             if not html: page+="\n"
             counter+=1
-        if grid and html:
+        if grid and html and result:
            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
            titleList+=['LINKS']
            for t in titleList:
@@ -5077,8 +5077,11 @@ Save query as:
                tab+="<th class=\"%s\">%s</th>"%(th_class,t)
            tab+="</tr>"
            page=tab+page+"</table>\n"
-        t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':''}]).respond()
-        page = str(t)+page
+        if html and result:
+           t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':''}]).respond()
+           page = str(t)+page
+        if not result:
+           page+="No results"
         return page
 
     def blockSummary(self,**kwargs):
@@ -5239,7 +5242,7 @@ Save query as:
            dbsList=list(self.dbsList)
            dbsList.remove(dbsInst)
            dbsList=[dbsInst]+dbsList
-           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode}
+           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput}
            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
            page+=str(t)
         else:
