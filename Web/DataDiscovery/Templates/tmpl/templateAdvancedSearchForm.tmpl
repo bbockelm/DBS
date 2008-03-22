@@ -41,8 +41,13 @@ Case-sensitivity:
 </tr>
 </table>
 
+#if len($userInput)
+<input type="text" size="80" name="userInput" id="userInput" value="$userInput" />
+#else
 <input type="text" size="80" name="userInput" id="userInput" />
+#end if
 <input type="submit" value="Search" onclick="javascript:SetTagCookie('DBSDD_ainput','userInput')" />
+<input type="reset" />
 ###<input type="reset" value="Reset" />
 
 </form>
@@ -202,7 +207,11 @@ MakeTooltip("t_","lumiDef",tooltip);
 tooltip="<p>SE's name or pattern, e.g. srm.cern.ch.</p>";
 MakeTooltip("t_","seDef",tooltip);
 #end if
+#if $len($userInput)
+SetCookie('DBSDD_ainput',$userInput)
+#else
 SetTagValue('DBSDD_ainput','userInput');
+#end if
 function UpdateCaseSens() {
   if(GetCookie('DBSDD_caseSensitive')=='off') {
      CaseSensitiveOff();
