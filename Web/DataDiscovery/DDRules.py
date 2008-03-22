@@ -229,10 +229,8 @@ class DDRules:
           selKey = "dataset"
        iList = input.split()
        if self.verbose:
-          print "\nParser input",input,iList,selKey
+          print "\nParser input='%s', iList='%s', selKey=%s"%(input,iList,selKey)
        msg   = "Fail to parse your input"
-       if len(iList)<3:
-          raise msg+" '%s', please check if you supplied correct keyword(s) and/or operator(s)."%input
        words = []
        pDict = {}
        pattern = ""
