@@ -5033,6 +5033,8 @@ Save query as:
                     page+="""<hr class="dbs"/>\n"""
             for jdx in xrange(0,len(item)):
                 elem = item[jdx]
+                if elem==item[0]:
+                   firstElem=elem
                 if cDateIdx!=-1 and jdx==cDateIdx:
                    elem=timeGMTshort(elem)
                 elif sizeIdx!=-1 and jdx==sizeIdx:
@@ -5050,12 +5052,13 @@ Save query as:
                 else:
                     page+="%s %s,"%(titleList[jdx],elem)
             if html and grid:
-               more ="""<select style="width:100px"><option value="">Find ...</option>\n"""
-               where=userInput[userInput.lower().find("where"):]
+               # add more links column
+               more ="""<select style="width:100px" onchange="javascript:load(this.options[this.selectedIndex].value)">\n"""
+               more+="""<option value="">More Infooption>\n"""
                for key in self.ddrules.tableName.keys():
                    if key==output: continue
-                   ref  = urllib.quote("find %s where %s"%(key,where))
-                   aref = """aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s"""%(ref,userMode,dbsInst,case,sortOrder)
+                   ref  = urllib.quote("find %s where %s=%s"%(key,output,firstElem))
+                   aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,sortOrder,grid)
                    more+="""<option value='%s'>%s</option>\n"""%(aref,"Find %s"%self.ddrules.longName[key])
                more+="</select>\n"
                page+="<td %s>%s</td>\n"%(td_style,more) # for LINKS, see adding to titleList
