@@ -4942,6 +4942,7 @@ Save query as:
             int_lumi= api.getIntegratedLuminosity(dataset)
             page+="""<span>%s&177;%s</span>"""%(int_lumi.integrated_luminosity,int_lumi.error)
         except:
+            page+="N/A"
             traceback.print_exc()
             pass
         page+="</response>"
@@ -5137,17 +5138,21 @@ Save query as:
         oname    = kwargs['oname']
         link     = kwargs['link']
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        if len(titleList)==1: # no view found
+           titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
+        print titleList,eList
         page     = ""
         counter  = 0
         cDate=cBy=size=nblks=nfiles=nevts=nsites=""
         for item in result:
             try:
                 dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
+                excludeList=list(eList)
             except:
                 # no view found
                 dataset=item[0]
-                eList  = titleList[1:]+eList
+                excludeList = list(titleList[1:])+eList
                 pass
             run=appPath=site="*"
             dbsInstURL=DBS_INST_URL[dbsInst]
@@ -5165,6 +5170,8 @@ Save query as:
             else:
                # I determine which site has datasets, not all sites may have all datasets
                dDict,mDict = self.helper.datasetSummary(dataset)
+               if not mDict:
+                  mDict["N/A"]=("","",0,0,0,0)
             if html:
                if mDict:
                    if grid:
@@ -5188,15 +5195,15 @@ Save query as:
            head=""
            titleList+=eList
            for item in titleList:
-               if item.lower()=='created' or item.lower()=='creationdate':
-                  item+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                th_class=""
                item=item.upper().replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
                if item==titleList[0]: th_class="th_left"
+               if item.lower()=='created' or item.lower()=='creationdate':
+                  item+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                head+="<th class=\"%s\">%s</th>"%(th_class,item)
            head = """<table width="100%%" class="dbs_table">\n<tr class="tr_th">%s</tr>"""%head
            page=head+page+"</table>"
-        t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':eList}]).respond()
+        t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList}]).respond()
         page = str(t)+page
         return page
 
