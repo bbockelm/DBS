@@ -33,9 +33,9 @@ class DDOptionParser:
     self.parser.add_option("--case",action="store",default="on",type="string",dest="case",
          help="specify if your input is case sensitive of not, default is on.")
     self.parser.add_option("--page",action="store",type="string",default="0",dest="page",
-         help="specify output page, should come together with --limit")
+         help="specify output page, should come together with --limit and --details")
     self.parser.add_option("--limit",action="store",type="string",default="10",dest="limit",
-         help="specify a limit on output, e.g. 50 results, should come together with --pager")
+         help="specify a limit on output, e.g. 50 results, should come together with --page and --details")
   def getOpt(self):
     """
         Returns parse list of options
