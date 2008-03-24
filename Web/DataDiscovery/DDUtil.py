@@ -276,10 +276,20 @@ def sizeFormat(i):
         num /=1024.
 
 def formatLumi(int_lumi,html=1):
+    try:
+       lumi= int_lumi['integrated_luminosity']
+       err = int_lumi['error']
+       if type(lumi) is types.StringType or type(lumi) is types.UnicodeType:
+          lumi=eval(lumi)
+       if type(err) is types.StringType or type(err) is types.UnicodeType:
+          err =eval(err)
+    except:
+       pass
+       return "N/A"
     if html:
-       return """<span>%.2e &177; %.2f</span>"""%(int_lumi.integrated_luminosity,int_lumi.error)
+       return """<span>%.2e &#177; %.2f</span>"""%(lumi,err)
     else:
-       return "%.2e +- %.2f"%(int_lumi.integrated_luminosity,int_lumi.error)
+       return "%.2e +- %.2f"%(lumi,err)
 
 def splitString(s,size,separator=' '):
     _size=size
