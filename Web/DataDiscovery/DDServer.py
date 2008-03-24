@@ -4973,6 +4973,7 @@ Save query as:
         output   = kwargs['output']
         self.qmaker.initDBS(dbsInst)
         sel      = self.ddrules.parser(urllib.unquote(userInput),sortName,sortOrder,case)
+        print "\n\n+++aSearchShowAll",kwargs
         try:
             query= self.qmaker.processQuery(sel)
         except:
@@ -4981,7 +4982,7 @@ Save query as:
             msg ="<pre>%s</pre>"%getExcMessage(userMode)
             page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
             return page
-        result   = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit=0)
+        result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit=0)
         if html:
            page  = self.genTopHTML(userMode=userMode)
            page += "<p>%s sorted by %s in %s order</p>"%(self.ddrules.longName[output].capitalize(),sortName,sortOrder.upper())
@@ -4997,7 +4998,7 @@ Save query as:
             if html:
                page+="%s<br/>"%item[0]
             else:
-               page+="%s\n"%item[0]
+               page+="%s \n"%item[0]
         if html:
            page+=self.genBottomHTML()
         elif xml:
@@ -5006,6 +5007,7 @@ Save query as:
     aSearchShowAll.exposed=True
 
     def aSearchSummary(self,**kwargs):
+        print "\n\n+++aSearchSummary",kwargs
         tabCol   = kwargs['tabCol']
         sortName = kwargs['sortName']
         sortOrder= kwargs['sortOrder']
@@ -5055,13 +5057,18 @@ Save query as:
                     page+="\n<tr %s>\n"%style
                 else:
                     page+="""<hr class="dbs"/>\n"""
+            if  xml:
+                page+="<%s>\n"%output
             for jdx in xrange(0,len(item)):
                 elem = item[jdx]
                 if elem==item[0]:
                    firstElem=elem
                 if cDateIdx!=-1 and jdx==cDateIdx:
-                   elem=timeGMTshort(elem)
-                elif sizeIdx!=-1 and jdx==sizeIdx:
+                   if xml:
+                      elem=timeGMT(elem)
+                   else:
+                      elem=timeGMTshort(elem)
+                elif  sizeIdx!=-1 and jdx==sizeIdx:
                    elem=colorSizeHTMLFormat(elem)
                 if cByIdx!=-1 and jdx==cByIdx:
                    elem=parseCreatedBy(elem)
@@ -5074,7 +5081,10 @@ Save query as:
                        if elem==item[0]: page+="""<b>%s</b><br/>\n"""%elem
                        else:             page+="""%s %s\n"""%(titleList[jdx],elem)
                 else:
-                    page+="%s %s,"%(titleList[jdx],elem)
+                    if xml:
+                       page+="  <%s>%s<%s>\n"%(titleList[jdx].lower(),elem,titleList[jdx].lower())
+                    else:
+                       page+="%s %s \n"%(titleList[jdx],elem)
             if html and grid:
                # add more links column
                more ="""<select style="width:100px" onchange="javascript:load(this.options[this.selectedIndex].value)">\n"""
@@ -5087,7 +5097,10 @@ Save query as:
                more+="</select>\n"
                page+="<td %s>%s</td>\n"%(td_style,more) # for LINKS, see adding to titleList
                page+="</tr>\n"
-            if not html: page+="\n"
+            if not html:
+               if xml:
+                  page+="</%s>"%output
+               page+="\n"
             counter+=1
         if grid and html and result:
            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
@@ -5146,7 +5159,6 @@ Save query as:
         if len(titleList)==1: # no view found
            titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
-        print titleList,eList
         page     = ""
         counter  = 0
         cDate=cBy=size=nblks=nfiles=nevts=nsites=""
@@ -5208,8 +5220,9 @@ Save query as:
                head+="<th class=\"%s\">%s</th>"%(th_class,item)
            head = """<table width="100%%" class="dbs_table">\n<tr class="tr_th">%s</tr>"""%head
            page=head+page+"</table>"
-        t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList}]).respond()
-        page = str(t)+page
+        if html:
+           t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList}]).respond()
+           page = str(t)+page
         return page
 
     def aSearchCLI(self):
@@ -5315,19 +5328,18 @@ Save query as:
               return "No data found for this request"
 
            page+=self.whereMsg('Adv. search :: Results',userMode)
-           # create a link for show all.
-           link=""
-           for key in kDict:
-               if key=='query': continue
-               if link: link+="&amp;"
-               link+="%s=%s"%(key,kDict[key])
-           link="aSearchShowAll?"+link
-           kDict['num']=nResults
-           kDict['oname']=_out
-           kDict['link']=link
 
-#           t = templateSortBar(searchList=[{'num':nResults,'out':output,'oname':_out,'link':link}]).respond()
-#           page+=str(t)
+        # create a link for show all.
+        link=""
+        for key in kDict:
+            if key=='query': continue
+            if link: link+="&amp;"
+            link+="%s=%s"%(key,kDict[key])
+        link="aSearchShowAll?"+link
+        kDict['num']=nResults
+        kDict['oname']=_out
+        kDict['link']=link
+
         try:
             if userMode=='dbsExpert':
                page+="<pre>%s</pre>"%query
