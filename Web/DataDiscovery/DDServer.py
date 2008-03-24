@@ -4933,6 +4933,20 @@ Save query as:
         return page
     getRunDBInfo.exposed=True 
 
+    def getIntegratedLumi(self,dbsInst,dataset):
+        self.setContentType('xml')
+        page="""<ajax-response>"""
+        page+="""<response type='element' id="intLumi_%s">"""%dataset
+        try:
+            api = self.makeDbsApi(DBS_INST_URL[dbsInst])
+            int_lumi= api.getIntegratedLuminosity(dataset)
+            page+="""<span>%s&177;%s</span>"""%(int_lumi.integrated_luminosity,int_lumi.error)
+        except:
+            pass
+        page+="</response>"
+        page+="</ajax-response>"
+    getIntergratedLumi.exposed=True
+
     # helper functions to decorate output
     def aSearchShowAll(self,**kwargs):
         tabCol   = kwargs['tabCol']
@@ -5160,7 +5174,7 @@ Save query as:
                 else:
                    page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
             counter+=1
-        eList=['CRAB','LINKS']
+        eList=['CRAB','&8747;<em>L</em>','LINKS']
         if grid:
            head=""
         

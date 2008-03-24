@@ -93,6 +93,10 @@ cfg
 </td>
 
 <td>
+<span id="intLumi_$path"></span>
+</td>
+
+<td>
 <select id="moreInfo_$idPath" onchange="javascript:LoadSelected('moreInfo_$idPath');" style="width:100px">
 <option value="">More info</option>
 <option value="$host/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">Run info</option>
@@ -124,5 +128,7 @@ cfg
 <script type="text/javascript">
 var tooltip='$tt';
 MakeTooltip('$tag','$idPath',tooltip,5000,'200px');
+ajaxEngine.registerAjaxElement('intLumi_$path');
+ajaxGetIntegratedLumi($dbsInst,$path);
 </script>
 <!-- end of templateProcessedDatasetsGrid.tmpl -->

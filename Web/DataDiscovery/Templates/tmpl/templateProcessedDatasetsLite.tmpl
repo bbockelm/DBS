@@ -64,6 +64,7 @@ LFNs:
 <br />
 All data provided for full dataset, while LFNs links given wrt run=$run
 #end if
+&8747;<em>L</em>=<span id="intLumi_$path"></span>
 <br/>
 <a href="$host/getBlocksInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">
 Block info
@@ -183,4 +184,8 @@ ShowPhedexStatusOutput();
 </script>
 #end if
 
+<script type="text/javascript">
+ajaxEngine.registerAjaxElement('intLumi_$path')
+ajaxGetIntegratedLumi($dbsInst,$path);
+</script>
 <!-- end of templateProcessedDatasetsLite.tmpl -->

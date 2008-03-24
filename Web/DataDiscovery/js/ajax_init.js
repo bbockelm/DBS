@@ -498,6 +498,9 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetLFNs','getLFNs');
     ajaxEngine.registerRequest('ajaxGetLFNs_Runs','getLFNs_Runs');
     ajaxEngine.registerAjaxElement('blockLFNs');
+
+    ajaxEngine.registerRequest('ajaxGetIntegratedLumi','genIntegratedLumi');
+//    ajaxEngine.registerAjaxElement('intLumi');
 }
 function registerAjaxUserMenuCalls() {
     ajaxEngine.registerRequest('ajaxGetPrimDSTypes','getPrimaryDSTypes');
@@ -537,6 +540,9 @@ function registerAjaxUserMenuCalls() {
 
 }
 
+function ajaxGetIntegratedLumi(dbsInst,dataset) {
+  ajaxEngine.sendRequest('ajaxGetIntegratedLumi','dbsInst='+dbsInst,'dataset='+dataset);
+}
 function ajaxGetLFNs_Runs(dbsInst,blockName,ajaxId,blockId,js) {
   ajaxEngine.sendRequest('ajaxGetLFNs_Runs','dbsInst='+dbsInst,'blockName='+blockName,'ajaxId='+ajaxId,'blockId='+blockId,'onchange='+js);
 }
