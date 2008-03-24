@@ -7077,7 +7077,7 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetLFNs_Runs','getLFNs_Runs');
     ajaxEngine.registerAjaxElement('blockLFNs');
 
-    ajaxEngine.registerRequest('ajaxGetIntegratedLumi','genIntegratedLumi');
+    ajaxEngine.registerRequest('ajaxGetIntegratedLumi','getIntegratedLumi');
 //    ajaxEngine.registerAjaxElement('intLumi');
 }
 function registerAjaxUserMenuCalls() {

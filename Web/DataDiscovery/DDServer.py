@@ -4933,19 +4933,23 @@ Save query as:
         return page
     getRunDBInfo.exposed=True 
 
-    def getIntegratedLumi(self,dbsInst,dataset):
+    def getIntegratedLumi(self,dbsInst,dataset,**kwargs):
         self.setContentType('xml')
         page="""<ajax-response>"""
-        page+="""<response type='element' id="intLumi_%s">"""%dataset
+        page+="""<response type='element' id="intLumi%s">"""%dataset.replace("/","___")
         try:
             api = self.makeDbsApi(DBS_INST_URL[dbsInst])
             int_lumi= api.getIntegratedLuminosity(dataset)
             page+="""<span>%s&177;%s</span>"""%(int_lumi.integrated_luminosity,int_lumi.error)
         except:
+            traceback.print_exc()
             pass
         page+="</response>"
         page+="</ajax-response>"
-    getIntergratedLumi.exposed=True
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getIntegratedLumi.exposed=True
 
     # helper functions to decorate output
     def aSearchShowAll(self,**kwargs):
@@ -5136,9 +5140,14 @@ Save query as:
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         page     = ""
         counter  = 0
+        cDate=cBy=size=nblks=nfiles=nevts=nsites=""
         for item in result:
-#            dataset=item[0]
-            dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
+            try:
+                dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
+            except:
+                # no view found
+                dataset=item[0]
+                pass
             run=appPath=site="*"
             dbsInstURL=DBS_INST_URL[dbsInst]
             phedex=0
@@ -5174,7 +5183,7 @@ Save query as:
                 else:
                    page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
             counter+=1
-        eList=['CRAB','&8747;<em>L</em>','LINKS']
+        eList=['CRAB','&#8747;<em>L</em>','LINKS']
         if grid:
            head=""
         

@@ -93,7 +93,7 @@ cfg
 </td>
 
 <td>
-<span id="intLumi_$path"></span>
+<span id="intLumi$idPath"></span>
 </td>
 
 <td>
@@ -128,7 +128,8 @@ cfg
 <script type="text/javascript">
 var tooltip='$tt';
 MakeTooltip('$tag','$idPath',tooltip,5000,'200px');
-ajaxEngine.registerAjaxElement('intLumi_$path');
-ajaxGetIntegratedLumi($dbsInst,$path);
+ajaxEngine.registerRequest('ajaxGetIntegratedLumi','getIntegratedLumi');
+ajaxEngine.registerAjaxElement('intLumi$idPath');
+ajaxGetIntegratedLumi('$dbsInst','$path');
 </script>
 <!-- end of templateProcessedDatasetsGrid.tmpl -->

@@ -208,7 +208,7 @@ tooltip="<p>SE's name or pattern, e.g. srm.cern.ch.</p>";
 MakeTooltip("t_","seDef",tooltip);
 #end if
 #if $len($userInput)
-SetCookie('DBSDD_ainput',$userInput)
+SetCookie('DBSDD_ainput','$userInput')
 #else
 SetTagValue('DBSDD_ainput','userInput');
 #end if
