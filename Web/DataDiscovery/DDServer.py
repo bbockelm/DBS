@@ -5136,8 +5136,8 @@ Save query as:
         num      = kwargs['num']
         oname    = kwargs['oname']
         link     = kwargs['link']
-#        titleList=['Path','Created','Creator','Size','Blocks','Files','Events','Sites']
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        eList=['CRAB','&#8747;<em>L</em>','LINKS']
         page     = ""
         counter  = 0
         cDate=cBy=size=nblks=nfiles=nevts=nsites=""
@@ -5147,6 +5147,7 @@ Save query as:
             except:
                 # no view found
                 dataset=item[0]
+                eList  = titleList[1:]+eList
                 pass
             run=appPath=site="*"
             dbsInstURL=DBS_INST_URL[dbsInst]
@@ -5155,7 +5156,7 @@ Save query as:
                style='class="zebra"'
             else:
                style=""
-            if grid:
+            if grid and cDate:
                sList = self.helper.getSiteList(dataset)
                dDict = {}
                for site in sList:
@@ -5183,13 +5184,8 @@ Save query as:
                 else:
                    page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
             counter+=1
-        eList=['CRAB','&#8747;<em>L</em>','LINKS']
         if grid:
            head=""
-        
-#           titleList=['PATH','CREATED','SIZE','BLOCKS','FILES','EVENTS','SITES','CRAB','LINKS']
-#           titleList=['PATH', 'CREATIONDATE', 'CREATEDBY', 'TOTALSIZE', 'NUMBEROFBLOCKS', 'NUMBEROFFILES', 'NUMBEROFEVENTS', 'NUMBEROFSITES']
-#           titleList=['PATH', 'CREATIONDATE', 'TOTALSIZE', 'NUMBEROFBLOCKS', 'NUMBEROFFILES', 'NUMBEROFEVENTS', 'NUMBEROFSITES']
            titleList+=eList
            for item in titleList:
                if item.lower()=='created' or item.lower()=='creationdate':
