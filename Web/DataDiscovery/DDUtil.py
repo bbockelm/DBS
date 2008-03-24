@@ -275,6 +275,12 @@ def sizeFormat(i):
             return "%3.1f%s" % (num, x)
         num /=1024.
 
+def formatLumi(int_lumi,html=1):
+    if html:
+       return """<span>%.2e &177; %.2f</span>"""%(int_lumi.integrated_luminosity,int_lumi.error)
+    else:
+       return "%.2e +- %.2f"%(int_lumi.integrated_luminosity,int_lumi.error)
+
 def splitString(s,size,separator=' '):
     _size=size
     # take care of HTML symbols, like &amp; by looking around for & and ;

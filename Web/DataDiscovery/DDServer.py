@@ -4935,20 +4935,25 @@ Save query as:
 
     def getIntegratedLumi(self,dbsInst,dataset,**kwargs):
         self.setContentType('xml')
-        page="""<ajax-response>"""
-        page+="""<response type='element' id="intLumi%s">"""%dataset.replace("/","___")
+        ajax=getArg(kwargs,'ajax',1)
+        if ajax:
+            page="""<ajax-response>"""
+            page+="""<response type='element' id="intLumi%s">"""%dataset.replace("/","___")
+        else:
+            page=""
         try:
             api = self.makeDbsApi(DBS_INST_URL[dbsInst])
             int_lumi= api.getIntegratedLuminosity(dataset)
-            page+="""<span>%s&177;%s</span>"""%(int_lumi.integrated_luminosity,int_lumi.error)
+            page+=formatLumi(int_lumi)
         except:
             page+="N/A"
             traceback.print_exc()
             pass
-        page+="</response>"
-        page+="</ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
+        if  ajax:
+            page+="</response>"
+            page+="</ajax-response>"
+        if  self.verbose==2:
+            self.writeLog(page)
         return page
     getIntegratedLumi.exposed=True
 
