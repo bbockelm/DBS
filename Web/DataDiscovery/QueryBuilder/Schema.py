@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.5 2008/03/18 16:01:14 valya Exp $
+# $Id: Schema.py,v 1.6 2008/03/19 00:59:48 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.5 $"
+__revision__ = "$Revision: 1.6 $"
 
 
 import unittest
@@ -61,11 +61,12 @@ class Schema(object):
         tableDict={}
         for tableName in tables:
             table=tables[tableName]
-            tableDict[table.name]=table
+#            tableDict[table.name]=table
+            tableDict[table.fullname]=table
         self._schema = MySchema(tableDict)
         self._ordered = None
         if owner:
-           self._owner=owner.upper()
+           self._owner=owner.lower()
         else:
            self._owner=owner
         self._foreignTables = {}
@@ -204,12 +205,6 @@ class Schema(object):
                     if fk.column.table in exclude: continue
     
                     searchName=fk.column.table
-#                    print "old searchName",searchName.__dict__
-                    if self._owner and not searchName.schema:
-                       searchName.schema=self._owner
-                       searchName.owner=self._owner
-                       searchName.fullname='%s.%s'%(self._owner,searchName.fullname)
-#                    print "new searchName",searchName.__dict__
                     if searchName.fullname in excludeNames: continue
 #                    fkIdx = self._ordered.index(searchName)
                     fkIdx = orderedNames.index(searchName.fullname)
@@ -265,7 +260,8 @@ def MakeViewWithoutTable(metadata,ridName,ridReplace):
         replaceAlias={}
         for fk in table.foreign_keys:
             if fk.column.table==ridTable:
-                replaceAlias[fk.parent.name]=(ridTable.alias(fk.parent.name),fk)
+#                replaceAlias[fk.parent.name]=(ridTable.alias(fk.parent.name),fk)
+                replaceAlias[fk.parent.fullname]=(ridTable.alias(fk.parent.fullname),fk)
     
         if replaceAlias:
             # make columns for new view
@@ -308,8 +304,10 @@ def MakeViewWithoutTable(metadata,ridName,ridReplace):
         table=md.tables[tableName]
         tableKeys=set()
         for fk in table.foreign_keys:
-            fro=table.c[fk.parent.name]
-            to=md.tables[fk.column.table.name+"View"].c[fk.column.name]
+#            fro=table.c[fk.parent.name]
+            fro=table.c[fk.parent.fullname]
+#            to=md.tables[fk.column.table.name+"View"].c[fk.column.name]
+            to=md.tables[fk.column.table.fullname+"View"].c[fk.column.name]
             tableKeys.add(FK(to,fro))
         foreignKeys[table]=tableKeys
         
