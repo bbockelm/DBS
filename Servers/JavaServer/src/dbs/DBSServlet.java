@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.38 $"
- $Id: DBSServlet.java,v 1.38 2007/11/28 17:06:42 sekhri Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSServlet.java,v 1.39 2008/03/21 22:10:20 sekhri Exp $"
 
  */
 package dbs;
@@ -46,8 +46,8 @@ public class DBSServlet extends HttpServlet{
 				System.out.println(key +" : " + prop);
 			}*/
        			ServletContext context = getServletContext();
-			DBSUtil u = new DBSUtil();
-			u.addRegistration(context);
+			//DBSUtil u = new DBSUtil();
+			//u.addRegistration(context);
 
 			System.out.println("DBS Servlet INIT is CALLED");
 			/*Object[] o = context.getResourcePaths("/").toArray();
@@ -118,8 +118,8 @@ public class DBSServlet extends HttpServlet{
                 DBSApi api = null; 
 
 		try {
-			StringBuffer url = request.getRequestURL();
-			System.out.println("URL is ------------- > "  + url);
+			//StringBuffer url = request.getRequestURL();
+			//System.out.println("URL is ------------- > "  + url);
 
 			Hashtable userDN = new Hashtable();
 			String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
