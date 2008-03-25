@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiBlockLogic.java,v 1.51 2008/03/14 20:50:54 sekhri Exp $"
+ $Revision: 1.52 $"
+ $Id: DBSApiBlockLogic.java,v 1.52 2008/03/18 21:23:32 sekhri Exp $"
  *
  */
 
@@ -703,6 +703,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		(new DBSApiRecycleBin(this.data)).insertRecycleBin(conn, out, path, blockName, Base64.encodeBytes(sout.toString().getBytes()), lmbUserID, cbUserID, creationDate);
 		//Delete the actual Block
 		deleteName(conn, out, "Block", "Name", blockName);
+		if(this.data.getGlobalCache() != null) this.data.getGlobalCache().resetCache(conn);
+	
 		//Record history in TimeLog
 		insertTimeLog(conn, "deleteBlock", "Delete Block called By User",
 			"deleteBlock",
