@@ -722,8 +722,8 @@ getIntegratedLuminosity () {
 	out=`$CMD api=getIntegratedLuminosity path=/test_primary_001/TestProcessedDS001/GEN-SIM`
 	echo "$out"
 }
-#getIntegratedLuminosity	
-insertPrimaryDataset
+getIntegratedLuminosity	
+#insertPrimaryDataset
 #insertAlgorithm
 #insertTier
 #insertRun

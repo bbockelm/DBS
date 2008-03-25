@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.139 $"
- $Id: DBSSql.java,v 1.139 2008/03/18 21:23:32 sekhri Exp $"
+ $Revision: 1.140 $"
+ $Id: DBSSql.java,v 1.140 2008/03/20 22:22:06 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1601,13 +1601,13 @@ public class DBSSql {
 			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
 			"ps.Hash as PS_HASH \n" +
 			"FROM "+owner()+"AlgorithmConfig algo \n" +
-			"JOIN AppVersion av \n" +
+			"JOIN "+owner()+"AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
-			"JOIN AppFamily af \n" +
+			"JOIN "+owner()+"AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
-			"JOIN AppExecutable ae \n" +
+			"JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
-			"JOIN QueryableParameterSet ps \n" +
+			"JOIN "+owner()+"QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -1630,13 +1630,13 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"AlgorithmConfig algo \n" +
-			"JOIN AppVersion av \n" +
+			"JOIN "+owner()+"AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
-			"JOIN AppFamily af \n" +
+			"JOIN "+owner()+"AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
-			"JOIN AppExecutable ae \n" +
+			"JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
-			"JOIN QueryableParameterSet ps \n" +
+			"JOIN "+owner()+"QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
@@ -1679,15 +1679,15 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"AlgorithmConfig algo\n" +
-			"JOIN ProcAlgo pa \n" +
+			"JOIN "+owner()+"ProcAlgo pa \n" +
 				"ON pa.Algorithm = algo.id \n" +
-			"JOIN AppVersion av \n" +
+			"JOIN "+owner()+"AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
-			"JOIN AppFamily af \n" +
+			"JOIN"+owner()+"AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
-			"JOIN AppExecutable ae \n" +
+			"JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
-			"JOIN QueryableParameterSet ps \n" +
+			"JOIN "+owner()+"QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
@@ -1716,7 +1716,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Runs run \n" +
-			"JOIN ProcDSRuns pdsr \n" +
+			"JOIN "+owner()+"ProcDSRuns pdsr \n" +
 				"ON pdsr.Run = run.id \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = run.CreatedBy \n" +
@@ -1779,7 +1779,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"DataTier dt \n" +
-			"JOIN ProcDSTier pdst \n" +
+			"JOIN "+owner()+"ProcDSTier pdst \n" +
 				"ON pdst.DataTier = dt.id \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = dt.CreatedBy \n" +
@@ -1800,7 +1800,7 @@ public class DBSSql {
 	public static PreparedStatement listProcDSStatus(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT DISTINCT pds.Status as STATUS \n " +
 			"FROM "+owner()+"ProcDSStatus pds \n" +
-			"JOIN ProcessedDataset pd \n" +
+			"JOIN "+owner()+"ProcessedDataset pd \n" +
 				"ON pd.Status = pds.id \n";
 
 		if(procDSID != null) {
@@ -2050,7 +2050,7 @@ public class DBSSql {
  		String sql = "SELECT f.ID as ID, \n " +
 			"b.ID as BLOCK_ID \n"+
 			"FROM "+owner()+"Files f \n" +
-			"JOIN Block b \n" +
+			"JOIN "+owner()+"Block b \n" +
 				"ON b.id = f.Block \n "+
 			"WHERE f.LogicalFileName = ?\n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -2236,25 +2236,25 @@ public class DBSSql {
 					"ON b.id = f.Block \n ";
 		}
 		if(DBSUtil.contains(attributes, "retrive_type")) 
-			sql += "JOIN FileType ty \n" +
+			sql += "JOIN "+owner()+"FileType ty \n" +
 					"ON ty.id = f.FileType \n" ;
 		if(DBSUtil.contains(attributes, "retrive_status") || !DBSUtil.contains(attributes, "retrive_invalid_files")) 
-			sql += "JOIN FileStatus st \n" +
+			sql += "JOIN "+owner()+"FileStatus st \n" +
 					"ON st.id = f.FileStatus \n" +
-				"JOIN FileValidStatus vst \n" +
+				"JOIN "+owner()+"FileValidStatus vst \n" +
 					"ON vst.id = f.ValidationStatus \n" ;
 		if(DBSUtil.contains(attributes, "retrive_person")) 
-			sql += "JOIN Person percb \n" +
+			sql += "JOIN "+owner()+"Person percb \n" +
 					"ON percb.id = f.CreatedBy \n" +
-				"JOIN Person perlm \n" +
+				"JOIN "+owner()+"Person perlm \n" +
 					"ON perlm.id = f.LastModifiedBy \n";
 		if(!DBSUtil.isNull(aDSID)) 
-			sql += "JOIN AnalysisDSFileLumi adfl \n" +
+			sql += "JOIN "+owner()+"AnalysisDSFileLumi adfl \n" +
 					"ON adfl.fileid = f.ID \n";
 		if(!DBSUtil.isNull(runID)) 
-			sql += "JOIN FileRunLumi fr \n" + 
+			sql += "JOIN "+owner()+"FileRunLumi fr \n" + 
 					"ON fr.Fileid = f.id \n" +
-				"JOIN Runs r \n" +
+				"JOIN "+owner()+"Runs r \n" +
 					"ON r.ID = fr.Run \n";
 
 		for(int i = 0 ; i != tierIDList.size(); ++i) {
@@ -2354,7 +2354,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Files f \n" +
-			"JOIN FileParentage fp \n" +
+			"JOIN "+owner()+"FileParentage fp \n" +
 				joinStr +
 			"LEFT OUTER JOIN "+owner()+"Block b \n" +
 				"ON b.id = f.Block \n "+  
@@ -2390,7 +2390,7 @@ public class DBSSql {
 			
 		String sql = "SELECT DISTINCT f.ID as ID \n " +
 			"FROM "+owner()+"Files f \n" +
-			"JOIN FileParentage fp \n" +
+			"JOIN "+owner()+"FileParentage fp \n" +
 				"ON fp.ThisFile = f.ID \n" +
 			" WHERE\n" +
 			"fp.ItsParent IN (SELECT ID from Files where Block = ?)\n";
@@ -2409,7 +2409,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"DataTier dt \n" +
-			"JOIN FileTier ft \n" +
+			"JOIN "+owner()+"FileTier ft \n" +
 				"ON ft.DataTier = dt.id \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = dt.CreatedBy \n" +
@@ -2491,7 +2491,7 @@ public class DBSSql {
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
                         "FROM "+owner()+"Files f \n" +
-                        "JOIN FileAssoc fa \n" +
+                        "JOIN "+owner()+"FileAssoc fa \n" +
 				"ON fa.ItsAssoc = f.ID \n" +
                         "LEFT OUTER JOIN "+owner()+"Block b \n" +
                                 "ON b.id = f.Block \n "+
@@ -2528,15 +2528,15 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"AlgorithmConfig algo \n" +
-			"JOIN FileAlgo fa \n" +
+			"JOIN "+owner()+"FileAlgo fa \n" +
 				"ON fa.Algorithm = algo.id \n" +
-			"JOIN AppVersion av \n" +
+			"JOIN "+owner()+"AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
-			"JOIN AppFamily af \n" +
+			"JOIN "+owner()+"AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
-			"JOIN AppExecutable ae \n" +
+			"JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
-			"JOIN QueryableParameterSet ps \n" +
+			"JOIN "+owner()+"QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
@@ -2566,9 +2566,9 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"LumiSection lumi \n" +
-			"JOIN FileRunLumi fl \n" +
+			"JOIN "+owner()+"FileRunLumi fl \n" +
 				"ON fl.Lumi = lumi.id \n" +
-			"JOIN Runs r \n" +
+			"JOIN "+owner()+"Runs r \n" +
 				"ON r.ID = fl.Run \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = lumi.CreatedBy \n" +
@@ -2599,7 +2599,7 @@ public class DBSSql {
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Runs run \n" +
-                        "JOIN FileRunLumi fl \n" +
+                        "JOIN "+owner()+"FileRunLumi fl \n" +
                                 "ON run.ID = fl.Run \n" +
                         "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = run.CreatedBy \n" +
@@ -2746,7 +2746,7 @@ public class DBSSql {
                         "adsdefpercb.DistinguishedName as ADD_CREATED_BY, \n" +
                         "adsdefperlm.DistinguishedName as ADD_LAST_MODIFIED_BY \n" +
                         "FROM "+owner()+"AnalysisDataset ads \n" +
-                        "JOIN AnalysisDSDef adsdef \n"+
+                        "JOIN "+owner()+"AnalysisDSDef adsdef \n"+
                                 "ON adsdef.ID = ads.Definition \n"+
                         "LEFT OUTER JOIN "+owner()+"Person adsdefpercb \n" +
                                 "ON adsdefpercb.id = adsdef.CreatedBy \n" +
@@ -2849,7 +2849,7 @@ public class DBSSql {
 	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String proc) throws SQLException {
 		String sql = "SELECT DISTINCT procds.ID as ID \n" +
 				"FROM "+owner()+"ProcessedDataset procds \n" +
-				"JOIN PrimaryDataset primds \n" +
+				"JOIN "+owner()+"PrimaryDataset primds \n" +
 					"ON primds.id = procds.PrimaryDataset \n" ;
 		if(DBSUtil.isNull(prim) || DBSUtil.isNull(proc)) {
 			return DBManagement.getStatement(conn, sql);
@@ -2893,13 +2893,13 @@ public class DBSSql {
 	public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash) throws SQLException {
 		String sql = "SELECT DISTINCT algo.id \n" +
 			"FROM "+owner()+"AlgorithmConfig algo \n" +
-			"JOIN AppVersion av \n" +
+			"JOIN "+owner()+"AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
-			"JOIN AppFamily af \n" +
+			"JOIN "+owner()+"AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
-			"JOIN AppExecutable ae \n" +
+			"JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
-			"JOIN QueryableParameterSet ps \n" +
+			"JOIN "+owner()+"QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
 			"WHERE av.Version = ? \n" +
 			"and af.FamilyName = ? \n" +
@@ -2918,7 +2918,7 @@ public class DBSSql {
 
 	public static PreparedStatement getIntegratedLuminosity(Connection conn, String procDSID, String aDSID, String run, String runRange, String tag) throws SQLException {
 		String lumiSO = "CMS_LUMI_PROD_OFFLINE";
-		String dbsSO = "cms_dbs_prod_local_10_reader";
+		//String dbsSO = "cms_dbs_prod_local_10_reader";
 		String sql = "SELECT \n" +
 			//r.RunNumber, ls.LumiSectionNumber, ldblt.TAG_NAME,
 			"ldblsum.INSTANT_LUMI AS INSTANT_LUMI, \n" +
@@ -2932,15 +2932,15 @@ public class DBSSql {
 				"ON ldblvtm.LUMI_SUMMARY_ID = ldblsum.LUMI_SUMMARY_ID \n" +
 			"JOIN " + lumiSO + ".LUMI_TAGS ldblt \n" +
 				"ON ldblt.LUMI_TAG_ID =  ldblvtm.LUMI_TAG_ID \n" +
-			"JOIN  " + dbsSO + ".Runs r \n" +
+			"JOIN  " + owner() + "Runs r \n" +
 				"ON r.RunNumber = ldbls.RUN_NUMBER \n" +
-			"JOIN " + dbsSO + ".LumiSection ls \n" +
+			"JOIN " + owner() + "LumiSection ls \n" +
 				"ON ls.RunNumber = r.ID AND ls.LumiSectionNumber = ldbls.LUMI_SECTION_NUMBER \n";
 		if (! DBSUtil.isNull(procDSID)) 
-			sql +="JOIN " + dbsSO + ".ProcDSRuns pdr \n" +
+			sql +="JOIN " + owner() + "ProcDSRuns pdr \n" +
 				"ON pdr.Run = r.ID \n";
 		if (! DBSUtil.isNull(aDSID)) 
-			sql +="JOIN " + dbsSO + ".AnalysisDSFileLumi adsfl \n" +
+			sql +="JOIN " + owner() + "AnalysisDSFileLumi adsfl \n" +
 				"ON adsfl.Lumi = ls.ID \n";
 
 		sql += "WHERE \n" +
