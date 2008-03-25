@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.140 $"
- $Id: DBSSql.java,v 1.140 2008/03/20 22:22:06 afaq Exp $"
+ $Revision: 1.141 $"
+ $Id: DBSSql.java,v 1.141 2008/03/25 16:54:47 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1683,7 +1683,7 @@ public class DBSSql {
 				"ON pa.Algorithm = algo.id \n" +
 			"JOIN "+owner()+"AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
-			"JOIN"+owner()+"AppFamily af \n" +
+			"JOIN "+owner()+"AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
 			"JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
