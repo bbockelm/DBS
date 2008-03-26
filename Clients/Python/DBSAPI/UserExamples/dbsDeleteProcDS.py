@@ -17,7 +17,8 @@ try:
   
   print ""
   print "deleting proc dataset and moving it into recycle bin."
-  print api.deleteProcDS("/This_is_a_test_primary_63424b0a-7986-4e5a-85d6-70eb4b91e8e7/CHILD_This_is_a_test_processed_63424b0a-7986-4e5a-85d6-70eb4b91e8e7/SIM")
+  #print api.deleteProcDS("/This_is_a_test_primary_63424b0a-7986-4e5a-85d6-70eb4b91e8e7/CHILD_This_is_a_test_processed_63424b0a-7986-4e5a-85d6-70eb4b91e8e7/SIM")
+  print api.deleteProcDS("/tW_inclusive/CMSSW_1_6_9-2l2nu_SkimPres-tW_inclusive/USER")
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
