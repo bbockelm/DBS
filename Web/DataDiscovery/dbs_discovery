@@ -11,7 +11,7 @@ fi
 
 RETVAL=$?
 
-port=`cat DBSDD.conf | grep -i "port=" | sed "s/PORT=//g"`
+port=`cat DBSDD.conf | grep -i "port=" | tail -1 | sed "s/PORT=//g"`
 pid=`ps auxw | grep DDServer | grep -v grep | awk '{print $2}'`
 base=dbs_discovery
 
