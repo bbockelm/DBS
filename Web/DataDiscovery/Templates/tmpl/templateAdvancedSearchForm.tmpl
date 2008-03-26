@@ -41,11 +41,14 @@ Case-sensitivity:
 </tr>
 </table>
 
+#*
 #if len($userInput)
-<input type="text" size="80" name="userInput" id="userInput" value="$userInput" />
+<input type="text" size="80" name="userInput" id="userInput" />
 #else
 <input type="text" size="80" name="userInput" id="userInput" />
 #end if
+*#
+<input type="text" size="80" name="userInput" id="userInput" />
 <input type="submit" value="Search" onclick="javascript:SetTagCookie('DBSDD_ainput','userInput')" />
 <input type="reset" />
 ###<input type="reset" value="Reset" />
@@ -244,6 +247,16 @@ function UpdateUserView() {
    }
 }
 UpdateUserView();
+function UpdateUserInput() {
+   var input=GetCookie('DBSDD_ainput');
+   if (input) {
+      var id=document.getElementById('userInput');
+      if (id) {
+         id.value=input;
+      }
+   }
+}
+UpdateUserInput();
 </script>
 <p></p>
 
