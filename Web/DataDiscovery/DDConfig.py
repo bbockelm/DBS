@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','loggerdir','masthead','mastfooter','admin_url','admin_ver','ns','global_dd','dbsprimary']
+    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','ns','global_dd','dbsprimary']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -46,11 +46,11 @@ class DDConfig:
                self.configDict[item] = iConfig[item]
   def dbsprimary(self):
     if not self.configDict.has_key('dbsprimary'):
-       raise DDException(args="DBS configuration missing DBSPRIMARY parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing DBSPRIMARY parameter")
     return self.configDict['dbsprimary']
   def global_dd(self):
     if not self.configDict.has_key('global_dd'):
-       raise DDException(args="DBS configuration missing GLOBAL_DD parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing GLOBAL_DD parameter")
     return self.configDict['global_dd']
   def ns(self):
     if not self.configDict.has_key('ns'):
@@ -66,43 +66,47 @@ class DDConfig:
     return self.configDict['admin_ver']
   def masthead(self):
     if not self.configDict.has_key('masthead'):
-       raise DDException(args="DBS configuration missing MASTHEAD parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing MASTHEAD parameter")
     return self.configDict['masthead']
   def mastfooter(self):
     if not self.configDict.has_key('mastfooter'):
-       raise DDException(args="DBS configuration missing MASTFOOTER parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing MASTFOOTER parameter")
     return self.configDict['mastfooter']
   def loggerDir(self):
     if not self.configDict.has_key('loggerdir'):
-       raise DDException(args="DBS configuration missing LOGGERDIR parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing LOGGERDIR parameter")
     return self.configDict['loggerdir']
   def queryLimit(self):
     if not self.configDict.has_key('querylimit'):
-       raise DDException(args="DBS configuration missing QUERYLIMIT parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing QUERYLIMIT parameter")
     return self.configDict['querylimit']
+  def queryThreshold(self):
+    if not self.configDict.has_key('querythreshold'):
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing QUERYTHRESHOLD parameter")
+    return self.configDict['querythreshold']
   def iface(self):
     if not self.configDict.has_key('iface'):
-       raise DDException(args="DBS configuration missing IFACE parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing IFACE parameter")
     return self.configDict['iface']
   def url(self):
     if not self.configDict.has_key('url'):
-       raise DDException(args="DBS configuration missing URL parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing URL parameter")
     return self.configDict['url']
   def user(self):
     if not self.configDict.has_key('user'):
-       raise DDException(args="DBS configuration missing USER parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing USER parameter")
     return self.configDict['user']
   def password(self):
     if not self.configDict.has_key('password'):
-       raise DDException(args="DBS configuration missing PASSWORD parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing PASSWORD parameter")
     return self.configDict['password']
   def dbname(self):
     if not self.configDict.has_key('dbname'):
-       raise DDException(args="DBS configuration missing DBNAME parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing DBNAME parameter")
     return self.configDict['dbname']
   def engine(self):
     if not self.configDict.has_key('engine'):
-       raise DDException(args="DBS configuration missing ENGINE parameter")
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing ENGINE parameter")
     return self.configDict['engine']
   def verbose(self):
     if not self.configDict.has_key('verbose'):
