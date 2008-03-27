@@ -375,7 +375,7 @@ class DDQueryMaker(DDLogger):
       selList = sel_txt.lower().split()
       nJoins  = selList.count('join')
       # find all tables involved in a query and calculate their weight
-      weight  = 0
+      tWeight = 0
       tList   = []
       findInString(sel_txt.lower(),'from','where',tList)
       tableList = []
@@ -387,7 +387,7 @@ class DDQueryMaker(DDLogger):
          print "+++ QUERY ANALYZER, TABLES\n",tableList
       for table in tableList:
           try:
-             weight+=self.ddrules.tableWeights[table]
+             tWeight+=self.ddrules.tableWeights[table]
           except: pass
       # find all occurences of where ... select and count how many conditions we have
       condWeight=0
@@ -416,9 +416,9 @@ class DDQueryMaker(DDLogger):
                  break
       nInter=sel_txt.lower().count('intersect')
       nUnion=sel_txt.lower().count('union')
-      threshold=nJoins+nInter-nUnion+weight-condWeight
-      th_str="nJoins+nInter-nUnion+weight-condWeight"
-      report="Number of joins=%s, conditions=%s, tables weight=%s, # intersect=%s, # union=%s\n"%(nJoins,condWeight,weight,nInter,nUnion)
+      threshold=nJoins+nInter-nUnion+tWeight-condWeight
+      th_str="nJoins+nInter-nUnion+tWeight-condWeight"
+      report="Number of joins=%s, conditions=%s, tables weight=%s, # intersect=%s, # union=%s\n"%(nJoins,condWeight,tWeight,nInter,nUnion)
       if self.verbose:
          print "\n+++ QUERY ANALYZER\n"
          print report
