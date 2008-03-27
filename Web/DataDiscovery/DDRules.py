@@ -33,7 +33,10 @@ class DDRules:
            'prim'   :'primary dataset',
            'proc'   :'processed dataset',
            'tier'   :'data tier',
-           'date'   :'creation date',
+           'createdate'   :'creation date',
+           'modifydate'   :'last modification date',
+           'createdby'   :'created date',
+           'modifyby'   :'last modified by',
        }
        # associate between keyword-names and DBS tables
        self.tableName={
@@ -47,6 +50,10 @@ class DDRules:
            'prim'   :'PrimaryDataset',
            'proc'   :'ProcessedDataset',
            'tier'   :'DataTier',
+           'adsname':'AnalisisDataset',
+           'adspath':'AnalisisDataset',
+           'adsversion':'AnalisisDataset',
+           'physicsgroup':'PhysicsGroup',
        }
        self.tableWeights={
            'Block':5,
@@ -58,6 +65,7 @@ class DDRules:
            'PrimaryDataset':1,
            'ProcessedDataset':1,
            'DataTier':1,
+           'PhysicsGroup':1,
        }
        self.colName={
            'dataset':'Path',
@@ -70,7 +78,14 @@ class DDRules:
            'prim'   :'Name',
            'proc'   :'Name',
            'tier'   :'Name',
-           'date'   :'CreationDate',
+           'adsname':'Name',
+           'adspath':'Path',
+           'adsversion':'Version',
+           'physicsgroup':'Name',
+           'createdate' :'CreationDate',
+           'modifydate' :'LastModificationDate',
+           'createby'   :'CreatedBy',
+           'modifyby'   :'LastModifiedBy',
        }
        # mapping from keyword to keyword pairs and DBS DB paths
        self.dbs_map={
