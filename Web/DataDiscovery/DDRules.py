@@ -13,8 +13,24 @@ Data Discovery search module
 import os, string, logging, types, time, traceback, new
 import DDUtil
 
+def constrainDict():
+    """Dictionary of constrain operators with their weight as values"""
+    cDict = {
+       '>=':1,
+       '>':1,
+       '<=':1,
+       '<':1,
+       '=':1,
+       'not_like':0.5,
+       'not like':0.5,
+       'like':0.5,
+       'in':1,
+       'between':1
+    }
+    return cDict
 def constrainList():
-    return ['>=','>','<=','<','=','not_like','not like','like','in','between']
+    return constrainDict().keys()
+#    return ['>=','>','<=','<','=','not_like','not like','like','in','between']
 #    return ['>=','>','<=','<','=','not like','like','in','between','is not null','is null']
 
 class DDRules:
@@ -33,10 +49,14 @@ class DDRules:
            'prim'   :'primary dataset',
            'proc'   :'processed dataset',
            'tier'   :'data tier',
-           'createdate'   :'creation date',
-           'modifydate'   :'last modification date',
+           'createdate'  :'creation date',
+           'modifydate'  :'last modification date',
            'createdby'   :'created date',
-           'modifyby'   :'last modified by',
+           'modifyby'    :'last modified by',
+           'adsname'     :'analisis dataset name',
+           'adspath'     :'analisis dataset path',
+           'adsversion'  :'analisis dataset version',
+           'physicsgroup':'physics group name',
        }
        # associate between keyword-names and DBS tables
        self.tableName={
@@ -55,17 +75,18 @@ class DDRules:
            'adsversion':'AnalisisDataset',
            'physicsgroup':'PhysicsGroup',
        }
+       # use lowercase table names since SQLAlchemy returns them in lower-case
        self.tableWeights={
-           'Block':5,
-           'Files':5,
-           'AppVersion':1,
-           'Runs':5,
-           'LumiSection':5,
-           'StorageElement':1,
-           'PrimaryDataset':1,
-           'ProcessedDataset':1,
-           'DataTier':1,
-           'PhysicsGroup':1,
+           'block':3,
+           'files':3,
+           'appversion':1,
+           'runs':3,
+           'lumisection':3,
+           'storageelement':1,
+           'primarydataset':1,
+           'processeddataset':1,
+           'datatier':1,
+           'physicsgroup':1,
        }
        self.colName={
            'dataset':'Path',
