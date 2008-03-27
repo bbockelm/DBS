@@ -398,12 +398,21 @@ class DDQueryMaker(DDLogger):
           print "+++ QUERY ANALYZER, CONDITIONS\n",cList
       for cond in cList:
           if not cond: continue
-#          cond=cond.replace('union','').replace('intersect','')
+          cond=cond.replace('union','').replace('intersect','').replace(")"," ) ")
+          factor=1
+          for elem in cond.split()[2:]:
+              if elem[0]==":": # found bind parameter
+                 val=bindDict[elem[1:]] # remove ":" find the name
+                 if val[0]=="%": # rvalue starts with %
+                    factor=5
+                    break
+          print cond
+          print val,factor
           for op in cDict.keys():
               if op=='in' or op=='between' or op=='like' or op=='not like': _op=" %s "%op
               else: _op=op
               if cond.find(_op)!=-1:
-                 condWeight+=cDict[op]
+                 condWeight+=cDict[op]/factor
                  break
       nInter=sel_txt.lower().count('intersect')
       nUnion=sel_txt.lower().count('union')
