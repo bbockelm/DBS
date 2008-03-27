@@ -5007,7 +5007,7 @@ Save query as:
     aSearchShowAll.exposed=True
 
     def aSearchSummary(self,**kwargs):
-        print "\n\n+++aSearchSummary",kwargs
+#        print "\n\n+++aSearchSummary",kwargs
         tabCol   = kwargs['tabCol']
         sortName = kwargs['sortName']
         sortOrder= kwargs['sortOrder']
