@@ -309,6 +309,17 @@ def splitString_orig(s,size,separator=' '):
     else:
        return s
 
+def findInString(s,pat1,pat2,oList=[]):
+    idx1 = s.find(pat1)
+    idx2 = s.find(pat2)
+    if idx1==-1:
+       return
+    if idx2==-1:
+       oList.append(s[idx1+len(pat1):])
+       return
+    oList.append(s[idx1+len(pat1):idx2])
+    return findInString(s[idx2+len(pat2):],pat1,pat2,oList)
+
 def printDictForJS(dict,space=""):
     """
 Print the dictionary
