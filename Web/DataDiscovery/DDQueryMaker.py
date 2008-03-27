@@ -367,20 +367,57 @@ class DDQueryMaker(DDLogger):
       return res
 
   def queryAnalyzer(self,query,userMode="user"):
+      bindDict= self.extractBindParams(query)
       sel_txt = str(query)
-      selList = sel_txt.lower().split()
-      nJoins  = selList.count('join')
-      weight  = 0
-      for table in self.ddrules.tableName.values():
-          if selList.count(" %s "%table.lower()):
-             weight+=self.ddrules.tableWeights[table]
-      if sel_txt.lower().find("like %")!=-1:
-         weight+=2
       if self.verbose:
          print "\n+++ QUERY ANALYZER\n",sel_txt
-         print "number of joins=%s, total weight=%s"%(nJoins,weight)
+         print bindDict
+      selList = sel_txt.lower().split()
+      nJoins  = selList.count('join')
+      # find all tables involved in a query and calculate their weight
+      weight  = 0
+      tList   = []
+      findInString(sel_txt.lower(),'from','where',tList)
+      tableList = []
+      for item in tList:
+          for o in item.split():
+              if o=='join' or o.find('on')!=-1 or o.find(".")!=-1 or o.find('=')!=-1 or tableList.count(o): continue
+              tableList.append(o) 
+      if self.verbose:
+         print "+++ QUERY ANALYZER, TABLES\n",tableList
+      for table in tableList:
+          try:
+             weight+=self.ddrules.tableWeights[table]
+          except: pass
+      # find all occurences of where ... select and count how many conditions we have
+      condWeight=0
+      cDict=constrainDict()
+      cList=[]
+      findInString(sel_txt.lower(),'where','select',cList)
+      if  self.verbose:
+          print "+++ QUERY ANALYZER, CONDITIONS\n",cList
+      for cond in cList:
+          if not cond: continue
+#          cond=cond.replace('union','').replace('intersect','')
+          for op in cDict.keys():
+              if op=='in' or op=='between' or op=='like' or op=='not like': _op=" %s "%op
+              else: _op=op
+              if cond.find(_op)!=-1:
+                 condWeight+=cDict[op]
+                 break
+      nInter=sel_txt.lower().count('intersect')
+      nUnion=sel_txt.lower().count('union')
+      threshold=nJoins+nInter-nUnion+weight-condWeight
+      th_str="nJoins+nInter-nUnion+weight-condWeight"
+      report="Number of joins=%s, conditions=%s, tables weight=%s, # intersect=%s, # union=%s\n"%(nJoins,condWeight,weight,nInter,nUnion)
+      if self.verbose:
+         print "\n+++ QUERY ANALYZER\n"
+         print report
+         print "%s=%s\n"%(th_str,threshold)
          print sel_txt
-      if nJoins>5 or weight>7 or (nJoins+weight)>10:
+         print
+      qth = self.ddConfig.queryThreshold()
+      if threshold>=qth:
          msg ="Your request cannot be efficiently fulfilled due to large amount of processing data.\n"
          msg+="Please revise your search criterias and try again.\n"
          msg+="Hints:\n"
@@ -393,21 +430,21 @@ class DDQueryMaker(DDLogger):
          msg+="   Example:\n"
          msg+="       (much better) find dataset where release like CMSSW_1_7* and prim GlobalNov07-A\n"
          if userMode!='user':
-            msg+="Number of joins=%s, total query weight=%s\n"%(nJoins,weight)
+            msg+=report
          if userMode=='dbsExpert':
             msg+=sel_txt
-         print "\n+++ QUERY ANALYZER\n",sel_txt
-         print "number of joins=%s, total weight=%s"%(nJoins,weight)
+         print "\n+++ QUERY ANALYZER ALERT +++"
+         if not self.verbose:
+            print sel_txt
+         print "%s=%s above threshold %s\n"%(th_str,threshold,qth)
          raise msg
 
   def processQuery(self,iList,userMode="user"):
       """Take input list of path-functions and construct out of them SQL and process it"""
-      sel = self.processSelExp(iList)
-      self.queryAnalyzer(sel,userMode)
       if self.verbose:
          print "\n\n+++ProcessQuery",str(iList)
-         print self.printQuery(sel)
-         print self.extractBindParams(sel)
+      sel = self.processSelExp(iList)
+      self.queryAnalyzer(sel,userMode)
       return sel
 
   def executeQuery(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
