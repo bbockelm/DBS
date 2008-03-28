@@ -85,7 +85,8 @@ Url                     servlet URL
           if not len(lines): continue
           if lines[0][0]=="#": continue
           if lines[0]=="Section":
-             if not self.dbsInst.count(lines[1]) and lines[1].find("cms_dbs")!=-1:
+#             if not self.dbsInst.count(lines[1]) and lines[1].find("cms_dbs")!=-1:
+             if not self.dbsInst.count(lines[1]):
                 self.dbsInst.append(lines[1])
                 dbs=lines[1]
 
