@@ -4942,9 +4942,10 @@ Save query as:
         else:
             page=""
         try:
-            api = self.makeDbsApi(DBS_INST_URL[dbsInst])
-            int_lumi= api.getIntegratedLuminosity(dataset)
-            page+=formatLumi(int_lumi)
+#            api = self.makeDbsApi(DBS_INST_URL[dbsInst])
+#            int_lumi= api.getIntegratedLuminosity(dataset)
+#            page+=formatLumi(int_lumi)
+            page+="N/A"
         except:
             page+="N/A"
             traceback.print_exc()
