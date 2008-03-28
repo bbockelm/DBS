@@ -120,8 +120,11 @@ class DDQueryMaker(DDLogger):
       res = []
       try:
           if idx>-1:
-             sel.limit=self.ddConfig.queryLimit()
-             sel.offset=idx
+             if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                 sel.limit=self.ddConfig.queryLimit()
+                 sel.offset=idx
+             else: # SQLAlchemy 0.4 and above
+                 sel=sel.offset(idx).limit(self.ddConfig.queryLimit())
           res = con.execute(sel)
       except:
           msg="While connecting to %s exception was thrown:\n"%self.dbsInstance
@@ -148,11 +151,14 @@ class DDQueryMaker(DDLogger):
 
   def extractBindParams(self,query):
       cq=self.compileQuery(query)
-      bindparams=cq.__dict__['binds']
-      bparams={}
-      for key in bindparams.keys():
-          bparams[key]=bindparams[key].value
-      return bparams
+      if  sqlalchemy.__version__.find("(not installed)")!=-1:
+          bindparams=cq.__dict__['binds']
+          bparams={}
+          for key in bindparams.keys():
+              bparams[key]=bindparams[key].value
+          return bparams
+      else: # SQLAlchemy 0.4 and above
+          return cq.params
 
   def sortOrder(self,sortName,sortOrder):
       if sortOrder=="desc":
@@ -181,8 +187,8 @@ class DDQueryMaker(DDLogger):
           else:
              md     = self.dbManager.metaDict[self.dbsInstance]
              _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
-             qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
-#             qb     = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
+#             qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
+             qb     = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
              query  = qb.BuildQueryWithSel(_oSel,_Sel)
           query.distinct=True
           query.use_labels=True
@@ -369,8 +375,9 @@ class DDQueryMaker(DDLogger):
   def queryAnalyzer(self,query,userMode="user"):
       bindDict= self.extractBindParams(query)
       sel_txt = str(query)
+      print query.__dict__
       if self.verbose:
-         print "\n+++ QUERY ANALYZER\n",sel_txt
+         print "\n+++ QUERY ANALYZER\n",self.printQuery(query)
          print bindDict
       selList = sel_txt.lower().split()
       nJoins  = selList.count('join')
@@ -379,8 +386,10 @@ class DDQueryMaker(DDLogger):
       tList   = []
       findInString(sel_txt.lower(),'from','where',tList)
       tableList = []
+      # walk through string between from/where and identify involved tables
       for item in tList:
           for o in item.split():
+              o=o.replace("\n","").strip().replace("%s."%self.dbsInstance,"") # strip off schema owner
               if o=='join' or o.find('on')!=-1 or o.find(".")!=-1 or o.find('=')!=-1 or tableList.count(o): continue
               tableList.append(o) 
       if self.verbose:
@@ -400,6 +409,7 @@ class DDQueryMaker(DDLogger):
           if not cond: continue
           cond=cond.replace('union','').replace('intersect','').replace(")"," ) ")
           factor=1
+          val=None
           for elem in cond.split()[2:]:
               if elem[0]==":": # found bind parameter
                  val=bindDict[elem[1:]] # remove ":" find the name
@@ -498,7 +508,7 @@ class DDQueryMaker(DDLogger):
                      sel.limit=limit
                      sel.offset=fromRow
                  else: # SQLAlchemy 0.4 and above
-                     sel.offset(fromRow).limit(limit)
+                     sel=sel.offset(fromRow).limit(limit)
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
@@ -559,8 +569,11 @@ class DDQueryMaker(DDLogger):
                  sel = sqlalchemy.select(['*'],from_obj=[q])
                  sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
               else:
-                 sel.limit=limit
-                 sel.offset=fromRow
+                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                     sel.limit=limit
+                     sel.offset=fromRow
+                 else: # SQLAlchemy 0.4 and above
+                     sel=sel.offset(fromRow).limit(limit)
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)

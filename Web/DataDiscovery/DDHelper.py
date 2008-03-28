@@ -96,11 +96,14 @@ class DDHelper(DDLogger):
 
   def extractBindParams(self,query):
       cq=self.compileQuery(query)
-      bindparams=cq.__dict__['binds']
-      bparams={}
-      for key in bindparams.keys():
-          bparams[key]=bindparams[key].value
-      return bparams
+      if  sqlalchemy.__version__.find("(not installed)")!=-1:
+          bindparams=cq.__dict__['binds']
+          bparams={}
+          for key in bindparams.keys():
+              bparams[key]=bindparams[key].value
+          return bparams
+      else: # SQLAlchemy 0.4 and above
+          return cq.params
 
   def addOracleLimits(self,sel,min,max):
       bindparams=[]
@@ -130,8 +133,11 @@ class DDHelper(DDLogger):
           bindparams.append(sqlalchemy.bindparam(key='r_2',value=fromRow+limit))
           query = sqlalchemy.text(nq,bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
       else:
-          query.limit=long(limit)
-          query.offset=long(offset)
+          if  sqlalchemy.__version__.find("(not installed)")!=-1:
+              sel.limit=long(limit)
+              sel.offset=long(offset)
+          else: # SQLAlchemy 0.4 and above
+              sel=sel.offset(offset).limit(limit)
       return query
   
   def printExcept(self,msg=None):
@@ -555,6 +561,7 @@ class DDHelper(DDLogger):
       return oList
 
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",date="*",userMode="user",fromRow=0,limit=0,count=0):
+      print "\n\n+++ listProcessedDataset",fromRow,limit
       if group.lower()=='any': group="*"
       app=app.replace("Any","*")
       app=app.replace("any","*")
@@ -679,8 +686,11 @@ class DDHelper(DDLogger):
                  #sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
                  self.addOracleLimits(sel,fromRow,fromRow+limit)
              else:
-                 sel.limit=limit
-                 sel.offset=fromRow
+                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                     sel.limit=limit
+                     sel.offset=fromRow
+                 else: # SQLAlchemy 0.4 and above
+                     sel=sel.offset(fromRow).limit(limit)
           result = self.getSQLAlchemyResult(con,sel)
           if self.verbose:
              print self.printQuery(sel)
@@ -761,8 +771,11 @@ class DDHelper(DDLogger):
           if rel and rel!="*":
              sel.append_whereclause(self.col(tapv,'Version')==rel)
           if limit:
-             sel.limit=limit
-             sel.offset=fromRow
+             if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                 sel.limit=limit
+                 sel.offset=fromRow
+             else: # SQLAlchemy 0.4 and above
+                 sel=sel.offset(fromRow).limit(limit)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
@@ -1590,8 +1603,11 @@ MCDescription:      %s
       res = []
       try:
           if idx>-1:
-             sel.limit=self.ddConfig.queryLimit()
-             sel.offset=idx
+             if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                 sel.limit=self.ddConfig.queryLimit()
+                 sel.offset=idx
+             else: # SQLAlchemy 0.4 and above
+                 sel=sel.offset(idx).limit(self.ddConfig.queryLimit())
 #          if not con:
 #             con = self.connectToDB()
           res = con.execute(sel)
@@ -1635,10 +1651,14 @@ MCDescription:      %s
 
   def getTableContent(self,con,tableName,iList=['*'],fromRow=0,limit=0,whereDict={}):
 #      print "\n\ngetTableContent",tableName,iList,whereDict
+      sel=""
       try:
           tableObj=self.dbManager.getTable(self.dbsInstance,tableName)
           if limit:
-             sel = sqlalchemy.select(iList, from_obj=[tableObj], limit=limit, offset=fromRow)
+             if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                 sel = sqlalchemy.select(iList, from_obj=[tableObj], limit=limit, offset=fromRow)
+             else: # SQLAlchemy 0.4 and above
+                 sel = sqlalchemy.select(iList, from_obj=[tableObj]).offset(fromRow).limit(limit)
           else:
              sel = sqlalchemy.select(iList, from_obj=[tableObj])
           t=self.dbManager.getTable(self.dbsInstance,tableName)
@@ -2556,8 +2576,11 @@ MCDescription:      %s
                  condDict['r_2']=maxRow
                  result=con.execute(s,condDict)
              else:
-                 sel.limit=limit
-                 sel.offset=fromRow
+                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                     sel.limit=limit
+                     sel.offset=fromRow
+                 else: # SQLAlchemy 0.4 and above
+                     sel=sel.offset(fromRow).limit(limit)
                  result = self.getSQLAlchemyResult(con,sel)
           else:       
               result = self.getSQLAlchemyResult(con,sel)
@@ -2915,8 +2938,11 @@ MCDescription:      %s
           if not cDict.has_key('max'):
              sel.use_labels=True
              if limit:
-                sel.limit=limit
-                sel.offset=fromRow
+                if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                    sel.limit=limit
+                    sel.offset=fromRow
+                else: # SQLAlchemy 0.4 and above
+                    sel=sel.offset(fromRow).limit(limit)
 #          print self.printQuery(sel)
 #          print str(sel).replace("\n","")
           result = self.getSQLAlchemyResult(con,sel)
@@ -2981,8 +3007,11 @@ MCDescription:      %s
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
           if int(iLimit):
-             sel.limit=int(iLimit)
-             sel.offset=int(iOffset)
+             if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                 sel.limit=int(iLimit)
+                 sel.offset=int(iOffset)
+             else: # SQLAlchemy 0.4 and above
+                 sel=sel.offset(int(iOffset)).limit(int(iLimit))
           sel.use_labels=True
           result = self.getSQLAlchemyResult(con,sel)
       except:

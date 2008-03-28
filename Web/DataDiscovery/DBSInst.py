@@ -189,13 +189,13 @@ class DBManager(DDLogger):
               tName = t[0].lower()
               if self.verbose:
                  print "DBS Tables|Views",tName
-# since SQLAlchemy 0.4
-#              tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.upper())
-              if eType=='oracle':
-                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False)
-#                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
-              else:
-                 tables[t[0]]=sqlalchemy.Table(t[0],dbsMeta,autoload=True,case_sensitive=False)
+              if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                  if eType=='oracle':
+                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False)
+                  else:
+                     tables[t[0]]=sqlalchemy.Table(t[0],dbsMeta,autoload=True,case_sensitive=False)
+              else: ## SQLAlchemy 0.4.x
+                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
               if self.verbose>1:
                  print tables[tName].__dict__
           if  eType=='oracle': # read views separately
@@ -204,8 +204,10 @@ class DBManager(DDLogger):
                   tName=v[0].lower()
                   if self.verbose:
                      print "DBS Views",tName
-                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
-#                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+                  if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                      tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
+                  else: ## SQLAlchemy 0.4.x
+                      tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
                   if self.verbose>1:
                      print tables[tName].__dict__
           self.dbTables[dbsInst]=tables
@@ -224,8 +226,14 @@ class DBManager(DDLogger):
          @return: SQLAlchemy table object
       """
       tables = self.dbTables[dbsInst]
-      if self.dbType[dbsInst]=='oracle':
-         tableName=string.lower(tableName)
+      if  sqlalchemy.__version__.find("(not installed)")!=-1:
+          if self.dbType[dbsInst]=='oracle':
+             tableName=string.lower(tableName)
+      else: ## SQLAlchemy 0.4.x
+          tableName=string.lower(tableName)
+      if not tables.has_key(tableName):
+         if tables.has_key(tableName.lower()):
+            tableName=tableName.lower()
       if tableAlias:
          # return alias to the table
          return tables[tableName].alias(tableAlias)
@@ -265,16 +273,22 @@ class DBManager(DDLogger):
 
   def getForeignKeys(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
-      if self.dbType[dbsInst]=='oracle':
-         table=string.lower(table)
+      if  sqlalchemy.__version__.find("(not installed)")!=-1:
+          if self.dbType[dbsInst]=='oracle':
+             table=string.lower(table)
+      else: ## SQLAclehmy 0.4.x
+          table=string.lower(table)
       if tDict.has_key(table):
          return tDict[table].foreign_keys
       raise "No table '%s' found"%table
 
   def getColumns(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
-      if self.dbType[dbsInst]=='oracle':
-         table=string.lower(table)
+      if  sqlalchemy.__version__.find("(not installed)")!=-1:
+          if self.dbType[dbsInst]=='oracle':
+             table=string.lower(table)
+      else: ## SQLAlchemy 0.4.x
+          table=string.lower(table)
       if tDict.has_key(table):
          return tDict[table]._columns.keys()
       raise "No table '%s' found"%table
