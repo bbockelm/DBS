@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.141 $"
- $Id: DBSSql.java,v 1.141 2008/03/25 16:54:47 sekhri Exp $"
+ $Revision: 1.142 $"
+ $Id: DBSSql.java,v 1.142 2008/03/25 19:35:40 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -162,10 +162,8 @@ public class DBSSql {
                 String sql = "INSERT INTO "+owner()+tableName+" \n"+
                                 "("+key1+","+key2+", \n"+
                                 " CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                " select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n";
-                                //" WHERE not exists \n" +
-                                //" (select * from " + tableName + " \n" +
-                                //" where " + key1 + "=? AND " + key2 + "=?) \n" ;
+                                " select ?, ?, ?, ?, ? FROM DUAL \n";
+                                //" select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 for (int j = 0; j < values.size(); ++j) {
@@ -175,24 +173,14 @@ public class DBSSql {
                         ps.setString(columnIndx++, mapTo);
                         ps.setString(columnIndx++, value);
 
-                        //For the WHERE not exists Clause
-                        //ps.setString(columnIndx++, mapTo);
-                        //ps.setString(columnIndx++, value);
+			ps.setString(columnIndx++, cbUserID);
+			ps.setString(columnIndx++, lmbUserID);
+			ps.setString(columnIndx++, cDate);
+
                         ps.addBatch();
                 }
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
-                return ps;
-        }
-
-
-	public static PreparedStatement insertMapBatch_OLD(Connection conn, String tableName,
-                                String key1, String key2, String cbUserID, String lmbUserID, String cDate) throws SQLException {
-                String sql = "INSERT INTO "+owner()+tableName+" \n"+
-                        "("+key1+","+key2+", \n"+
-                                "CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                "values (?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+") \n";
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 return ps;
         }
 
@@ -203,7 +191,7 @@ public class DBSSql {
                 String sql = "INSERT INTO "+owner()+tableName+" \n"+
                         "("+key1+","+key2+","+key3+", \n"+
                                 " CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                " select ?, ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n" +
+                                " select ?, ?, ?, ?, ?, ? FROM DUAL \n" +
 				" WHERE not exists \n" +
                                 " (select * from " + tableName + " \n" +
                                 " where " + key1 + "=? AND " + key2 + "=? AND " + key3 + "=?) \n" ;
@@ -217,6 +205,9 @@ public class DBSSql {
                         ps.setString(columnIndx++, (String)values.get(j));
                         ps.setString(columnIndx++, mapK3);
 
+			ps.setString(columnIndx++, cbUserID);
+			ps.setString(columnIndx++, lmbUserID);
+			ps.setString(columnIndx++, cDate);
 
                        //For the WHERE not exists Clause
 			ps.setString(columnIndx++, mapTo);
