@@ -83,10 +83,10 @@ function addLoginObject (item){
 	        }
 	        else
 	        {
-    	        var loginObject = "<span class='LoginObject'>Welcome back, " + dn + ". ";
+    	        var loginObject = "<span class='LoginObject'>" + dn + " &#187; <span>";
     	        loginObject += "<a href=\"https://cmsweb.cern.ch/sitedb/SecurityModule/logout?redirect=";
     	        loginObject += redirectionLocation;
-    	        loginObject += "\">Logout</a></span>";
+    	        loginObject += "\">logout</a>";
                 item.innerHTML = loginObject;
             }
 	    },
