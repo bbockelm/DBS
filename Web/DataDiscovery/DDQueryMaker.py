@@ -187,8 +187,10 @@ class DDQueryMaker(DDLogger):
           else:
              md     = self.dbManager.metaDict[self.dbsInstance]
              _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
-#             qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
-             qb     = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
+             if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                 qb = Schema(self.dbManager.dbTables[self.dbsInstance])
+             else:
+                 qb = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
              query  = qb.BuildQueryWithSel(_oSel,_Sel)
           query.distinct=True
           query.use_labels=True

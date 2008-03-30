@@ -191,7 +191,8 @@ class DBManager(DDLogger):
                  print "DBS Tables|Views",tName
               if  sqlalchemy.__version__.find("(not installed)")!=-1:
                   if eType=='oracle':
-                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False)
+#                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False)
+                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True,owner=dbsInst.lower())
                   else:
                      tables[t[0]]=sqlalchemy.Table(t[0],dbsMeta,autoload=True,case_sensitive=False)
               else: ## SQLAlchemy 0.4.x
