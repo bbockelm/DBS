@@ -320,6 +320,16 @@ def findInString(s,pat1,pat2,oList=[]):
     oList.append(s[idx1+len(pat1):idx2])
     return findInString(s[idx2+len(pat2):],pat1,pat2,oList)
 
+def createImage():
+    import Image, ImageDraw, ImageFont
+    i = Image.new("RGB", (50,50))
+    d = ImageDraw.Draw(i)
+    #f = ImageFont.truetype("Arial.ttf", 8)
+    #d.text((0,0), "hello world", font=f)
+    d.text((0,0), "hello world")
+    i.save(open("helloworld.png", "wb"), "PNG")
+
+
 def printDictForJS(dict,space=""):
     """
 Print the dictionary
