@@ -377,7 +377,7 @@ class DDQueryMaker(DDLogger):
   def queryAnalyzer(self,query,userMode="user"):
       bindDict= self.extractBindParams(query)
       sel_txt = str(query)
-      print query.__dict__
+#      print query.__dict__
       if self.verbose:
          print "\n+++ QUERY ANALYZER\n",self.printQuery(query)
          print bindDict
