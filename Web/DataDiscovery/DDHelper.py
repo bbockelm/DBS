@@ -3593,6 +3593,11 @@ MCDescription:      %s
       else:
          return self.processSelSeq(input)
 
+  def SE2CMSName(self,sename):
+      """ https://cmsweb.cern.ch/sitedb/sitedb/json/index/SEtoCMSName?name=cmssrm.hep.wisc.edu """
+      cmsName="TODO: SE2CMSName"
+      return cmsName
+      
   def FindDatasets(self,iList,fromRow=0,limit=0,count=0):
       """Take input list of path-functions and construct out of them SQL and process it"""
       # NOTE: INTERSECT works ONLY in ORACLE
