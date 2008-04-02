@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.6 2008/03/19 00:59:48 valya Exp $
+# $Id: Schema.py,v 1.7 2008/03/25 16:29:13 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.6 $"
+__revision__ = "$Revision: 1.7 $"
 
 
 import unittest
@@ -65,12 +65,15 @@ class Schema(object):
             tableDict[table.fullname]=table
         self._schema = MySchema(tableDict)
         self._ordered = None
+        personTable='person'
         if owner:
            self._owner=owner.lower()
+           personTable='%s.person'%self._owner
         else:
            self._owner=owner
         self._foreignTables = {}
-        self._personTable=FindTable(self._schema,'person')
+#        self._personTable=FindTable(self._schema,'person')
+        self._personTable=FindTable(self._schema,personTable)
 
         if self._personTable:
             toExclude=set([self._personTable])
