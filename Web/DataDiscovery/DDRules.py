@@ -24,7 +24,7 @@ def constrainDict():
        'not_like':0.5,
        'not like':0.5,
        'like':0.5,
-       'in':1,
+       ' in ':1,
        'between':1
     }
     return cDict
@@ -169,7 +169,7 @@ class DDRules:
            ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('block','lumi'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('file','lumi'):['Files_LogicalFileName2LumiSection_LumiSectionNumber'],
-           ('release','lumi'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
+           ('release','lumi'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
            ('run','lumi'):['Runs_RunNumber2LumiSection_LumiSectionNumber'],
            ('lumi','lumi'):['LumiSection_LumiSectionNumber2LumiSection_LumiSectionNumber'],
            ('site','lumi'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
