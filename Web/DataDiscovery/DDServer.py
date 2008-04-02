@@ -935,6 +935,7 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _help.exposed=True
 
+    @is_authenticated (onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def _contact(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -954,7 +955,7 @@ class DDServer(DDLogger,Controller):
     _contact.exposed=True
 
     @is_authorized (Role("Global Admin"), Group("DBS"), 
-		    onFail=RedirectToLocalPage ("/redirectPage"))
+		    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
     def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -4961,10 +4962,17 @@ Save query as:
     # helper functions to decorate output
     def aSearchShowAll(self,**kwargs):
         tabCol   = kwargs['tabCol']
+        tableName,colName=tabCol.split(".")
+        tableName= tableName.lower()
+        colName  = colName.lower()
         sortName = kwargs['sortName']
         sortOrder= kwargs['sortOrder']
-        fromRow  = kwargs['fromRow']
-        limit    = kwargs['limit']
+        fromRow  = int(kwargs['fromRow'])
+        limit    = int(kwargs['limit'])
+        # if user pass limit/fromRow as -1 we should not apply the limit
+        if limit==-1 or fromRow==-1:
+           limit = 0
+           fromRow=0
         userInput= kwargs['userInput']
         dbsInst  = kwargs['dbsInst']
         html     = kwargs['html']
@@ -4974,6 +4982,7 @@ Save query as:
         output   = kwargs['output']
         self.qmaker.initDBS(dbsInst)
         sel      = self.ddrules.parser(urllib.unquote(userInput),sortName,sortOrder,case)
+        page     = ""
         print "\n\n+++aSearchShowAll",kwargs
         try:
             query= self.qmaker.processQuery(sel)
@@ -4983,27 +4992,27 @@ Save query as:
             msg ="<pre>%s</pre>"%getExcMessage(userMode)
             page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
             return page
-        result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit=0)
+        result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if html:
            page  = self.genTopHTML(userMode=userMode)
            page += "<p>%s sorted by %s in %s order</p>"%(self.ddrules.longName[output].capitalize(),sortName,sortOrder.upper())
         else:
            if xml:
-              page="""<?xml version="1.0" encoding="utf-8"?>\n<ddresponse>\n"""
-              page+="<query>\n  <input>%s</input>\n  <timeStamp>%s</timeStamp>\n</query>\n"%(urllib.unquote(userInput),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
-              page+="    <sortName>%s</sortName>\n"%sortName
-              page+="    <sortOrder>%s</sortOrder>\n"%sortOrder
+              page+="\n<%s>\n"%tableName
            else:
               page ="\n"
         for item in result:
             if html:
                page+="%s<br/>"%item[0]
             else:
-               page+="%s \n"%item[0]
+               if xml:
+                  page+="<%s>%s</%s>\n"%(colName,item[0],colName)
+               else:
+                  page+="%s \n"%item[0]
         if html:
            page+=self.genBottomHTML()
         elif xml:
-           page+="</ddresponse>"
+             page+="</%s>\n"%tableName
         return page
     aSearchShowAll.exposed=True
 
@@ -5014,6 +5023,10 @@ Save query as:
         sortOrder= kwargs['sortOrder']
         fromRow  = kwargs['fromRow']
         limit    = kwargs['limit']
+        # if user pass limit/fromRow as -1 we should not apply the limit
+        if limit==-1 or fromRow==-1:
+           limit = 0
+           fromRow=0
         query    = kwargs['query']
         dbsInst  = kwargs['dbsInst']
         html     = kwargs['html']
@@ -5146,6 +5159,10 @@ Save query as:
         sortOrder= kwargs['sortOrder']
         fromRow  = kwargs['fromRow']
         limit    = kwargs['limit']
+        # if user pass limit/fromRow as -1 we should not apply the limit
+        if limit==-1 or fromRow==-1:
+           limit = 0
+           fromRow=0
         query    = kwargs['query']
         dbsInst  = kwargs['dbsInst']
         html     = kwargs['html']
@@ -5293,7 +5310,12 @@ Save query as:
         else:
            if xml:
               page="""<?xml version="1.0" encoding="utf-8"?>\n<ddresponse>\n"""
-              page+="<query>\n  <input>%s</input>\n  <timeStamp>%s</timeStamp>\n</query>\n"%(urllib.unquote(userInput),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
+              page+="<userinput>\n  <input>%s</input>\n  <timeStamp>%s</timeStamp>\n</userinput>\n"%(urllib.unquote(userInput),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
+              bParams=self.qmaker.extractBindParams(query)
+              bindParams="\n"
+              for key in bParams:
+                  bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
+              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s</bindparams>\n</query>\n"""%(query,bindParams)
            else:
               if details:
                  page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
@@ -5355,6 +5377,7 @@ Save query as:
             else:
                if xml:
                   page+="Server experience a problem processing your request"
+                  page+=getExcept()
                else:
                   page+=getExcept()
         if html:
