@@ -13,6 +13,7 @@ public class KeyMap {
 		map.put("primds.name", "PrimaryDataset.Name");
 		map.put("block", "Block");
 		map.put("block.name", "Block.Name");
+		map.put("block.path", "Block.Path");
 	}
 	public String getMappedValue(String key) {
 		if(!map.containsKey(key.toLowerCase())) return key;

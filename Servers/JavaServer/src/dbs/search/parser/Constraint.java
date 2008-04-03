@@ -1,5 +1,6 @@
-package dbs.search.parser;
 
+
+package dbs.search.parser;
 public class Constraint {
     	private String key;
     	private String op;

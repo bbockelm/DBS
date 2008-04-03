@@ -56,7 +56,7 @@ or	:('or' | 'OR');
 in	:('in' | 'IN');
 not	:('not' | 'NOT');
 like	:('like' | 'LIKE');
-VALUE	:('a'..'z'|'A'..'Z'|'0'..'9')+ ;
+VALUE	:('a'..'z'|'A'..'Z'|'0'..'9'|'/')+ ;
 COMMA	:(',');
 SPACE	:(' ')  ;
 DOT	:('.');

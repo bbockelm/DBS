@@ -6,11 +6,13 @@ public class Route {
 	private ArrayList routes = new ArrayList();
 	public Route() {
 		String[] obj1 = {"Block", "Files"};
-		String[] obj2 = {"PrimaryDataset", "ProcessedDataset", "Files"};
-		String[] obj3 = {"PrimaryDataset", "ProcessedDataset", "Block", "Files"};
+		String[] obj2 = {"PrimaryDataset", "ProcessedDataset"};
+		String[] obj3 = {"PrimaryDataset", "ProcessedDataset", "Files"};
+		String[] obj4 = {"PrimaryDataset", "ProcessedDataset", "Block", "Files"};
 		routes.add(obj1);
 		routes.add(obj2);
 		routes.add(obj3);
+		routes.add(obj4);
 		
 	}
 	public List<String[]> getAllRoutes() {
