@@ -255,6 +255,7 @@ class DDServer(DDLogger,Controller):
         self.topUrl=self.baseUrl+"DDServer/"
         # I only need this if webtools force to use a new URL structure.
         self.dbsdd=self.dbsdd+"/DDServer/"
+#        self.dbsdd=self.dbsdd
         try:
            self.verbose=opts.verbose
            self.helper.setVerbose(self.verbose)
@@ -2318,9 +2319,9 @@ class DDServer(DDLogger,Controller):
                 ref=index+1
                 if index==_idx:
                    ref="""<span class="gray_box">%s</span>"""%(index+1)
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,primD,primType,minRun,maxRun,index,userMode,pagerStep,ref)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,primD,primType,minRun,maxRun,index,userMode,pagerStep,ref)
             if  nResults>(_idx+1)*pagerStep:
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,primD,primType,minRun,maxRun,_idx+1,userMode,pagerStep)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,primD,primType,minRun,maxRun,_idx+1,userMode,pagerStep)
 
             if _idx and (_idx*pagerStep)>nResults:
                return "No data found for this request"
@@ -5176,6 +5177,7 @@ Save query as:
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if len(titleList)==1: # no view found
            titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
+        excludeList=[]
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
         page     = ""
         counter  = 0
