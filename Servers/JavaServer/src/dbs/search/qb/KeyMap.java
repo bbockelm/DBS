@@ -14,6 +14,14 @@ public class KeyMap {
 		map.put("block", "Block");
 		map.put("block.name", "Block.Name");
 		map.put("block.path", "Block.Path");
+		map.put("run", "Runs");
+		map.put("run.number", "Runs.RunNumber");
+		map.put("run.starttime", "Runs.StartOfRun");
+		map.put("run.endtime", "Runs.EndOfRun");
+		map.put("ls", "LumiSection");
+		map.put("ls.number", "LumiSection.LumiSectionNumber");
+		map.put("ls.starttime", "LumiSection.LumiStartTime");
+		map.put("ls.endtime", "LumiSection.LumiEndTime");
 	}
 	public String getMappedValue(String key) {
 		if(!map.containsKey(key.toLowerCase())) return key;

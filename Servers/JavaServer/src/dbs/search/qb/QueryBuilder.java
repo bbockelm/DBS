@@ -22,9 +22,13 @@ public class QueryBuilder {
 				allKws.add("block");
 				query += km.getMappedValue("block.path");
 			} else {
+
 				StringTokenizer st = new StringTokenizer(aKw, ".");
-				allKws.add(km.getMappedValue(st.nextToken()));
-				query += km.getMappedValue(aKw);
+				int count = st.countTokens();
+				String token = st.nextToken();
+				allKws.add(km.getMappedValue(token));
+				if(count == 1) query += km.getMappedValue(token) + ".*";
+				else query += km.getMappedValue(aKw);
 			}
 		}
 		for (int i =0 ; i!= cs.size(); ++i) {
@@ -60,6 +64,7 @@ public class QueryBuilder {
 					if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
 					query += "\tProcessedDataset.ID " + handlePath(val);
 				} else {
+					if(key.indexOf(".") == -1) throw new Exception("In specifying constraints qualify keys with dot operater. Invalid key " + key);
 					query += "\t" + km.getMappedValue(key) + " " ;
 					if(Util.isSame(op, "in")) query += handleIn(val);
 					else query += op + " '" + val + "'";

@@ -9,10 +9,14 @@ public class Route {
 		String[] obj2 = {"PrimaryDataset", "ProcessedDataset"};
 		String[] obj3 = {"PrimaryDataset", "ProcessedDataset", "Files"};
 		String[] obj4 = {"PrimaryDataset", "ProcessedDataset", "Block", "Files"};
+		String[] obj5 = {"Runs", "FileRunLumi", "Files"};
+		String[] obj6 = {"Runs", "LumiSection", "FileRunLumi", "Files"};
 		routes.add(obj1);
 		routes.add(obj2);
 		routes.add(obj3);
 		routes.add(obj4);
+		routes.add(obj5);
+		routes.add(obj6);
 		
 	}
 	public List<String[]> getAllRoutes() {
