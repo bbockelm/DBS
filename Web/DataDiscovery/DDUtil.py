@@ -41,6 +41,11 @@ def inputParser(input,keys):
            words.append(w.strip())
     return words
 
+def findKeyInAList(_list,_key):
+    for item in _list:
+        idx=_key.find(item)
+        if idx!=-1: return item
+    return ""
 def getArg(kwargs,key,default):
     arg=default
     if kwargs.has_key(key):
