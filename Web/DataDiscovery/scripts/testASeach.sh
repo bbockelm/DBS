@@ -1,7 +1,7 @@
 #!/bin/sh
 export PATH=$PWD:$PATH
 cmd=DDSearchCLI.py
-host=https://cmsweb.cern.ch/dbs_discovery_test/DDServer
+host=https://cmsweb.cern.ch/dbs_discovery_test
 for input in \
 "find path where path like *" \
 "find path where path like *Online* and site=srm.cern.ch " \
