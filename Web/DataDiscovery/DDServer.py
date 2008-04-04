@@ -5241,8 +5241,9 @@ Save query as:
            head = """<table width="100%%" class="dbs_table">\n<tr class="tr_th">%s</tr>"""%head
            page=head+page+"</table>"
         if html:
-           t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList}]).respond()
-           page = str(t)+page
+           if titleList:
+              t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList}]).respond()
+              page = str(t)+page
         return page
 
     def aSearchCLI(self):
