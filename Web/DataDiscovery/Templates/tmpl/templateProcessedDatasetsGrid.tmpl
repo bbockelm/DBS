@@ -120,23 +120,28 @@ cfg
 #for site in $siteList
 ####set tt=$tt+"<li>"+$site+"</li>";
 #if $site
-#set tt=$tt+"&nbsp;"+$site+"<br/>"
+#set cmsName=""
+#if $cmsNames.has_key($site)
+#set cmsName=$cmsNames[$site]
+#end if
+#set tt=$tt+"<div>"+$cmsName+":&nbsp;"+$site+"</div>"
+####set tt=$tt+"<div>"+$site+"</div>"
 #if len($site)>$longestSEName
 #set longestSEName=len($site)+5
 #end if
 #else
-#set tt="<span class=\"box_red\">N/A</span>"
+#set tt="<div class=\"box_red\">N/A</div>"
 #end if
 #end for
 #if not len($siteList)
-#set tt="<span class=\"box_red\">no sites</span>"
+#set tt="<div class=\"box_red\">no sites</div>"
 #end if
 ####set tt="<ul>"+$tt+"</ul>"
 #set tag="t_"+$idPath
 
 <script type="text/javascript">
 var tooltip='$tt';
-MakeTooltip('$tag','$idPath',tooltip,5000,'200px');
+MakeTooltip('$tag','$idPath',tooltip,5000,'300px');
 ajaxEngine.registerRequest('ajaxGetIntegratedLumi','getIntegratedLumi');
 ajaxEngine.registerAjaxElement('intLumi$idPath');
 ajaxGetIntegratedLumi('$dbsInst','$path');

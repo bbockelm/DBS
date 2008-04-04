@@ -164,6 +164,7 @@ class DDServer(DDLogger,Controller):
         self.app  = ""
         self.primD= ""
         self.tier = ""
+        self.cmsNames   = {}
         self.helper     = DDHelper(self.dbs,self.ddConfig.iface(),verbose,html=1)
         self.asearch    = DDSearch(dbsHelper=self.helper)
         self.ddrules    = DDRules(verbose)
@@ -493,6 +494,15 @@ class DDServer(DDLogger,Controller):
         msg+="%s: %s\n"%("dlsEndpoint    ",self.helper.endpoint)
         sendEmail(msg)
         
+    def getCMSNames(self):
+        if not self.cmsNames:
+           self.cmsNames=DDUtil.getCMSNames()
+        else:
+           lastTime=self.cmsNames['time']
+           if (time.time()-lastTime)>(24*60*60): # more then a day
+              self.cmsNames=DDUtil.getCMSNames()
+        return self.cmsNames
+
     def helperInit(self,dbsInst):
         """
            Initialize L{DBSHelper} with given DBS instances
@@ -5212,7 +5222,7 @@ Save query as:
             if html:
                if mDict:
                    if grid:
-                      t = templateProcessedDatasetsGrid(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style}]).respond()
+                      t = templateProcessedDatasetsGrid(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style,'cmsNames':self.getCMSNames()}]).respond()
                    else:
                       t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL}]).respond()
                    page+=str(t)
