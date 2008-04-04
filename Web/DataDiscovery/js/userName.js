@@ -1,31 +1,3 @@
-/*
- HTML code example:
-
-    <form>
-    Please enter your name: <input type="text" name="nameinput">
-    <br><br>
-    <input type="button" value="Save to Cookie" onclick="set_name(this.form)">
-    </form>
-
-or even better to make a greeting and remember form value
-
-<html>
-<script type="text/javascript" src="userName.js"></script>
-<body onload="setGreeting()">
-
-<span id="Greeting"></span>
-
-    <form>
-    Login: <span id="formInputName"></span>
-    <script type="text/javascript">formRequest()</script>
-    <br><br>
-    <input type="button" value="Save to Cookie" onclick="set_name(this.form)">
-    </form>
-
-</body>
-</html>
-*/
-
 function setGreeting() {
    var cookie_user=GetCookie("DBSDD_username");
    var greeting;
