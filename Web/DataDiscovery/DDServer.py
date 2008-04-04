@@ -5148,9 +5148,9 @@ Save query as:
         return self.aSearchSummary(**kwargs)
     def siteSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
-    def primSummary(self,**kwargs):
+    def primdsSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
-    def procSummary(self,**kwargs):
+    def procdsSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def tierSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)

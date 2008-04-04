@@ -489,7 +489,8 @@ class DDQueryMaker(DDLogger):
           # ORACLE need special way to fetch fromRow/limit, so we wrap query into
           # select * from (SELECT x.*, rownum as rnum FROM (query) x) where rnum between min and max;
           t,c    = tabCol.split(".")
-          tName  = output+"Summary"
+#          tName  = output+"Summary"
+          tName  = self.ddrules.dbView[output]
           tab    = self.dbManager.getTable(self.dbsInstance,tName)
           oBy    = self.sortOrder(self.col(tab,sortName),sortOrder)
           obj    = tab

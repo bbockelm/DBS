@@ -78,7 +78,7 @@ Constrain operators:
 <br/>
 words FIND,WHERE,AND,OR can be upper or lower case. 
 <br/>
-<b>FIND dataset WHERE ...</b> is default and can be skipped.
+<b>FIND path WHERE ...</b> is default and can be skipped.
 <br/>
 Expressions can be
 groupped together using brackets, e.g. ((a and b) or c)
@@ -94,15 +94,15 @@ groupped together using brackets, e.g. ((a and b) or c)
 <td>
 <b>
 <span id="dsetDef">
-dataset
+path
 </span>
 ,
 <span id="primDef">
-prim
+primds
 </span>
 ,
 <span id="procDef">
-proc
+procds
 </span>
 ,
 <span id="tierDef">
@@ -147,27 +147,27 @@ Hover over keywords for <span class="box_red">info</span>.
 </td>
 <td>
 <em class="box_blue">
-find dataset where dataset like *Online* and site=srm.cern.ch
+find path where path like *Online* and site=srm.cern.ch
 </em>
 <br/>
-look-up datasets with dataset name like Online, located at srm.cern.ch.
+look-up datasets with dataset path matched pattern *Online* and located at srm.cern.ch.
 <br/><br/>
 <em class="box_blue">
-find dataset where run between 34850-36000 or run in 34850,34890
+find path where run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
 look-up dataset with runs within a given run ranges.
 <br/><br/>
 
 <em class="box_blue">
-find run where dataset like *Online*
+find run where path like *Online*
 </em>
 <br/>
-look-up runs who belong to dataset like *Online* 
+look-up runs who belong to dataset with path pattern *Online* 
 <br/><br/>
 
 <em class="box_blue">
-find prim where (dataset like *Online* or dataset not like *RelVal* ) and release>CMSSW_1_7
+find primds where (path like *Online* or path not like *RelVal* ) and release>CMSSW_1_7
 </em>
 <br/>
 look-up primary datasets whose dataset path pattern either Online or not like RelVal which<br/>

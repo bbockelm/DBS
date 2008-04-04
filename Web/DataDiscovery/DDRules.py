@@ -37,18 +37,36 @@ class DDRules:
    def __init__(self,verbose=0):
        self.verbose=verbose
        self.boolwords=['and','or','(',')','not','like']
+       self.functions=['total','sum','count']
+       # mapping between keyword-names and DB views
+       self.dbView ={
+           'path'        :'datasetsummary',
+           'block'       :'',
+           'file'        :'filesummary',
+           'release'     :'releasesummary',
+           'run'         :'runsummary',
+           'lumi'        :'',
+           'site'        :'sitesummary',
+           'primds'      :'primsummary',
+           'procds'      :'procsummary',
+           'tier'        :'tiersummary',
+           'adsname'     :'',
+           'adspath'     :'',
+           'adsversion'  :'',
+           'physicsgroup':'',
+       }
        # association between keyword-names and human readble meaning
        self.longName={
-           'dataset':'processed dataset',
-           'block'  :'block',
-           'file'   :'logical file name',
-           'release':'software release',
-           'run'    :'run',
-           'lumi'   :'luminosity section',
-           'site'   :'storage element',
-           'prim'   :'primary dataset',
-           'proc'   :'processed dataset',
-           'tier'   :'data tier',
+           'path'        :'processed dataset',
+           'block'       :'block',
+           'file'        :'logical file name',
+           'release'     :'software release',
+           'run'         :'run',
+           'lumi'        :'luminosity section',
+           'site'        :'storage element',
+           'primds'      :'primary dataset',
+           'procds'      :'processed dataset',
+           'tier'        :'data tier',
            'createdate'  :'creation date',
            'modifydate'  :'last modification date',
            'createdby'   :'created date',
@@ -60,19 +78,19 @@ class DDRules:
        }
        # associate between keyword-names and DBS tables
        self.tableName={
-           'dataset':'Block',
-           'block'  :'Block',
-           'file'   :'Files',
-           'release':'AppVersion',
-           'run'    :'Runs',
-           'lumi'   :'LumiSection',
-           'site'   :'StorageElement',
-           'prim'   :'PrimaryDataset',
-           'proc'   :'ProcessedDataset',
-           'tier'   :'DataTier',
-           'adsname':'AnalisisDataset',
-           'adspath':'AnalisisDataset',
-           'adsversion':'AnalisisDataset',
+           'path'        :'Block',
+           'block'       :'Block',
+           'file'        :'Files',
+           'release'     :'AppVersion',
+           'run'         :'Runs',
+           'lumi'        :'LumiSection',
+           'site'        :'StorageElement',
+           'primds'      :'PrimaryDataset',
+           'procds'      :'ProcessedDataset',
+           'tier'        :'DataTier',
+           'adsname'     :'AnalisisDataset',
+           'adspath'     :'AnalisisDataset',
+           'adsversion'  :'AnalisisDataset',
            'physicsgroup':'PhysicsGroup',
        }
        # use lowercase table names since SQLAlchemy returns them in lower-case
@@ -89,136 +107,136 @@ class DDRules:
            'physicsgroup':1,
        }
        self.colName={
-           'dataset':'Path',
-           'block'  :'Name',
-           'file'   :'LogicalFileName',
-           'release':'Version',
-           'run'    :'RunNumber',
-           'lumi'   :'LumiSectionNumber',
-           'site'   :'SEName',
-           'prim'   :'Name',
-           'proc'   :'Name',
-           'tier'   :'Name',
-           'adsname':'Name',
-           'adspath':'Path',
-           'adsversion':'Version',
+           'path'        :'Path',
+           'block'       :'Name',
+           'file'        :'LogicalFileName',
+           'release'     :'Version',
+           'run'         :'RunNumber',
+           'lumi'        :'LumiSectionNumber',
+           'site'        :'SEName',
+           'primds'      :'Name',
+           'procds'      :'Name',
+           'tier'        :'Name',
+           'adsname'     :'Name',
+           'adspath'     :'Path',
+           'adsversion'  :'Version',
            'physicsgroup':'Name',
-           'createdate' :'CreationDate',
-           'modifydate' :'LastModificationDate',
-           'createby'   :'CreatedBy',
-           'modifyby'   :'LastModifiedBy',
+           'createdate'  :'CreationDate',
+           'modifydate'  :'LastModificationDate',
+           'createby'    :'CreatedBy',
+           'modifyby'    :'LastModifiedBy',
        }
        # mapping from keyword to keyword pairs and DBS DB paths
        self.dbs_map={
            # to dataset
-           ('dataset','dataset'):['Block_Path2Block_Path'],
-           ('block','dataset'):['Block_Name2Block_Path'],
-           ('file','dataset'):['Files_LogicalFileName2Block_Path'],
-           ('release','dataset'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
-           ('run','dataset'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
-           ('lumi','dataset'):['LumiSection_LumiSectionNumber2Runs_ID','Runs_ID2ProcessedDataset_ID2Block_Path'],
-           ('site','dataset'):['StorageElement_SEName2Block_Path'],
-           ('prim','dataset'):['PrimaryDataset_Name2Block_Path'],
-           ('proc','dataset'):['ProcessedDataset_Name2Block_Path'],
-           ('tier','dataset'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
+           ('path','path'):['Block_Path2Block_Path'],
+           ('block','path'):['Block_Name2Block_Path'],
+           ('file','path'):['Files_LogicalFileName2Block_Path'],
+           ('release','path'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
+           ('run','path'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
+           ('lumi','path'):['LumiSection_LumiSectionNumber2Runs_ID','Runs_ID2ProcessedDataset_ID2Block_Path'],
+           ('site','path'):['StorageElement_SEName2Block_Path'],
+           ('primds','path'):['PrimaryDataset_Name2Block_Path'],
+           ('procds','path'):['ProcessedDataset_Name2Block_Path'],
+           ('tier','path'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
            # to block
-           ('dataset','block'):['Block_Path2Block_Name'],
+           ('path','block'):['Block_Path2Block_Name'],
            ('block','block'):['Block_Name2Block_Name'],
            ('file','block'):['Files_LogicalFileName2Block_Name'],
            ('release','block'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
            ('run','block'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
            ('lumi','block'):['LumiSection_LumiSectionNumber2Runs_ID','Runs_ID2ProcessedDataset_ID2Block_Name'],
            ('site','block'):['StorageElement_SEName2Block_Name'],
-           ('prim','block'):['PrimaryDataset_Name2Block_Name'],
-           ('proc','block'):['ProcessedDataset_Name2Block_Name'],
+           ('primds','block'):['PrimaryDataset_Name2Block_Name'],
+           ('procds','block'):['ProcessedDataset_Name2Block_Name'],
            ('tier','block'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
            # to file
-           ('dataset','file'):['Block_Path2Files_LogicalFileName'],
+           ('path','file'):['Block_Path2Files_LogicalFileName'],
            ('block','file'):['Block_Name2Files_LogicalFileName'],
            ('file','file'):['Files_LogicalFileName2Files_LogicalFileName'],
            ('release','file'):['AppVersion_Version2Files_LogicalFileName'],
            ('run','file'):['Runs_RunNumber2Files_LogicalFileName'],
            ('lumi','file'):['LumiSection_LumiSectionNumber2Files_LogicalFileName'],
            ('site','file'):['StorageElement_SEName2Files_LogicalFileName'],
-           ('prim','file'):['PrimaryDatset_Name2Files_LogicalFileName'],
-           ('proc','file'):['ProcessedDataset_Name2Files_LogicalFileName'],
+           ('primds','file'):['PrimaryDatset_Name2Files_LogicalFileName'],
+           ('procds','file'):['ProcessedDataset_Name2Files_LogicalFileName'],
            ('tier','file'):['DataTier_Name2Files_LogicalFileName'],
            # to release
-           ('dataset','release'):['Block_Path2AppVersion_Version'],
+           ('path','release'):['Block_Path2AppVersion_Version'],
            ('block','release'):['Block_Name2AppVersion_Version'],
            ('file','release'):['Files_LogicalFileName2AppVersion_Version'],
            ('release','release'):['AppVersion_Version2AppVersion_Version'],
            ('run','release'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
            ('lumi','release'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
            ('site','release'):['StorageElement_SEName2AppVersion_Version'],
-           ('prim','release'):['PrimaryDataset_Name2AppVersion_Version'],
-           ('proc','release'):['ProcessedDataset_Name2AppVersion_Version'],
+           ('primds','release'):['PrimaryDataset_Name2AppVersion_Version'],
+           ('procds','release'):['ProcessedDataset_Name2AppVersion_Version'],
            ('tier','release'):['DataTier_Name2AppVersion_Version'],
            # to run
-           ('dataset','run'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
+           ('path','run'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            ('block','run'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            ('file','run'):['Files_LogicalFileName2Runs_RunNumber'],
            ('release','run'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            ('run','run'):['Runs_RunNumber2Runs_RunNumber'],
            ('lumi','run'):['LumiSection_LumiSectionNumber2Runs_RunNumber'],
            ('site','run'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('prim','run'):['PrimaryDataset_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('proc','run'):['ProcessedDataset_Name2Runs_RunNumber'],
+           ('primds','run'):['PrimaryDataset_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
+           ('procds','run'):['ProcessedDataset_Name2Runs_RunNumber'],
            ('tier','run'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            # to lumi
-           ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
+           ('path','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('block','lumi'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            ('file','lumi'):['Files_LogicalFileName2LumiSection_LumiSectionNumber'],
            ('release','lumi'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
            ('run','lumi'):['Runs_RunNumber2LumiSection_LumiSectionNumber'],
            ('lumi','lumi'):['LumiSection_LumiSectionNumber2LumiSection_LumiSectionNumber'],
            ('site','lumi'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
-           ('prim','lumi'):['PrimaryDatset_Name2LumiSection_LumiSectionNumber'],
-           ('proc','lumi'):['ProcessedDataset_Name2LumiSection_LumiSectionNumber'],
+           ('primds','lumi'):['PrimaryDatset_Name2LumiSection_LumiSectionNumber'],
+           ('procds','lumi'):['ProcessedDataset_Name2LumiSection_LumiSectionNumber'],
            ('tier','lumi'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
            # to site
-           ('dataset','site'):['Block_Path2StorageElement_SEName'],
+           ('path','site'):['Block_Path2StorageElement_SEName'],
            ('block','site'):['Block_Name2StorageElement_SEName'],
            ('file','site'):['Files_LogicalFileName2StorageElement_SEName'],
            ('release','site'):['AppVersion_Version2StorageElement_SEName'],
            ('run','site'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
            ('lumi','site'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
            ('site','site'):['StorageElement_SEName2StorageElement_SEName'],
-           ('prim','site'):['PrimaryDataset_Name2StorageElement_SEName'],
-           ('proc','site'):['ProcessedDataset_Name2StorageElement_SEName'],
+           ('primds','site'):['PrimaryDataset_Name2StorageElement_SEName'],
+           ('procds','site'):['ProcessedDataset_Name2StorageElement_SEName'],
            ('tier','site'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
-           # to prim
-           ('dataset','prim'):['Block_Path2PrimaryDataset_Name'],
-           ('block','prim'):['Block_Name2PrimaryDataset_Name'],
-           ('file','prim'):['Files_LogicalFileName2PrimaryDataset_Name'],
-           ('release','prim'):['AppVersion_Version2PrimaryDataset_Name'],
-           ('run','prim'):['Runs_RunNumber2PrimaryDataset_Name'],
-           ('lumi','prim'):['LumiSection_LumiSectionNumber2PrimaryDataset_Name'],
-           ('site','prim'):['StorageElement_SEName2PrimaryDataset_Name'],
-           ('prim','prim'):['PrimaryDataset_Name2PrimaryDataset_Name'],
-           ('proc','prim'):['ProcessedDataset_Name2PrimaryDataset_Name'],
-           ('tier','prim'):['DataTier_Name2PrimaryDataset_Name'],
-           # to proc
-           ('dataset','proc'):['Block_Path2ProcessedDataset_Name'],
-           ('block','proc'):['Block_Name2ProcessedDataset_Name'],
-           ('file','proc'):['Files_LogicalFileName2ProcessedDataset_Name'],
-           ('release','proc'):['AppVersion_Version2ProcessedDataset_Name'],
-           ('run','proc'):['Runs_RunNumber2ProcessedDataset_Name'],
-           ('lumi','proc'):['LumiSection_LumiSectionNumber2ProcessedDataset_Name'],
-           ('site','proc'):['StorageElement_SEName2ProcessedDataset_Name'],
-           ('prim','proc'):['PrimaryDataset_Name2ProcessedDataset_Name'],
-           ('proc','proc'):['ProcessedDataset_Name2ProcessedDataset_Name'],
-           ('tier','proc'):['DataTier_Name2ProcessedDataset_Name'],
+           # to primds
+           ('path','primds'):['Block_Path2PrimaryDataset_Name'],
+           ('block','primds'):['Block_Name2PrimaryDataset_Name'],
+           ('file','primds'):['Files_LogicalFileName2PrimaryDataset_Name'],
+           ('release','primds'):['AppVersion_Version2PrimaryDataset_Name'],
+           ('run','primds'):['Runs_RunNumber2PrimaryDataset_Name'],
+           ('lumi','primds'):['LumiSection_LumiSectionNumber2PrimaryDataset_Name'],
+           ('site','primds'):['StorageElement_SEName2PrimaryDataset_Name'],
+           ('primds','primds'):['PrimaryDataset_Name2PrimaryDataset_Name'],
+           ('procds','primds'):['ProcessedDataset_Name2PrimaryDataset_Name'],
+           ('tier','primds'):['DataTier_Name2PrimaryDataset_Name'],
+           # to procds
+           ('path','procds'):['Block_Path2ProcessedDataset_Name'],
+           ('block','procds'):['Block_Name2ProcessedDataset_Name'],
+           ('file','procds'):['Files_LogicalFileName2ProcessedDataset_Name'],
+           ('release','procds'):['AppVersion_Version2ProcessedDataset_Name'],
+           ('run','procds'):['Runs_RunNumber2ProcessedDataset_Name'],
+           ('lumi','procds'):['LumiSection_LumiSectionNumber2ProcessedDataset_Name'],
+           ('site','procds'):['StorageElement_SEName2ProcessedDataset_Name'],
+           ('primds','procds'):['PrimaryDataset_Name2ProcessedDataset_Name'],
+           ('procds','procds'):['ProcessedDataset_Name2ProcessedDataset_Name'],
+           ('tier','procds'):['DataTier_Name2ProcessedDataset_Name'],
            # to tier
-           ('dataset','tier'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
+           ('path','tier'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
            ('block','tier'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
            ('file','tier'):['Files_LogicalFileName2DataTier_Name'],
            ('release','tier'):['AppVersion_Version2DataTier_Name'],
            ('run','tier'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
            ('lumi','tier'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
            ('site','tier'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
-           ('prim','tier'):['PrimaryDataset_Name2DataTier_Name'],
-           ('proc','tier'):['ProcessedDataset_Name2DataTier_Name'],
+           ('primds','tier'):['PrimaryDataset_Name2DataTier_Name'],
+           ('procds','tier'):['ProcessedDataset_Name2DataTier_Name'],
            ('tier','tier'):['DataTier_Name2DataTier_Name'],
        }
        # list of supported constrain operator, order is matter, since we walk through
@@ -253,7 +271,31 @@ class DDRules:
 
    def preParseInput(self,input):
        input=input.replace(")"," ) ").replace("("," ( ")
-       return input
+       # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
+       isplit=input.split()
+       for i in xrange(0,len(isplit)):
+           item  = isplit[i]
+           if item=='<=' or item=='>=' or item=='!=':
+              item=' %s '%item
+              isplit[i]=item
+           elif len(item)==1 and (item=='=' or item=='<' or item=='>'):
+              item=' %s '%item
+              isplit[i]=item
+           else:
+              for op in ['<=','>=','!=','=','<','>']:
+                  idx = item.find(op)
+                  if idx!=-1:
+                     if not ['=','<','>'].count(op):
+                        item=item.replace(op," %s "%op)
+                     else:
+                        if op=="=" and (item[idx-1]=='<' or item[idx-1]=='>'):
+                           continue
+                        elif (op=="<" or op==">") and item[idx+1]=='=':
+                           continue
+                        else:
+                           item=item.replace(op," %s "%op)
+              isplit[i]=item
+       return ' '.join(isplit)
     
    def parseInput(self,input,sortName,sortOrder,case):
        idx=input.lower().find('where')
@@ -262,7 +304,7 @@ class DDRules:
           input   = input[idx+len('where')+1:]
           selKey = what.lower().replace('find','').strip()
        else:
-          selKey = "dataset"
+          selKey = "path"
        iList = input.split()
        if self.verbose:
           print "\nParser input='%s', iList='%s', selKey=%s"%(input,iList,selKey)
@@ -320,6 +362,9 @@ class DDRules:
               if v.find('not like')==0:
                  v='not_like'+v[len('not like'):]
               try:
+                 funcFound=DDUtil.findKeyInAList(self.functions,selKey)
+                 if funcFound:
+                    selKey=selKey.replace("(","").replace(")","").replace(funcFound,"").strip()
                  fList = self.dbs_map[(f,selKey)]
                  _call = ""
                  count = 0
@@ -329,6 +374,8 @@ class DDRules:
                      _call+= "self.makeQuery('%s',rval="%func
                      count+=1
                  _call+="'%s',case='%s'"%(v,case)
+                 if funcFound:
+                    _call+=",func=%s"%funcFound
                  for i in xrange(0,count):
                      if i==count-1:
                         _call+=",sortName='%s',sortOrder='%s')"%(sortName,sortOrder)
@@ -351,8 +398,10 @@ class DDRules:
 #
 if __name__ == "__main__":
     aSearch = DDRules(verbose=1)
-    aSearch.parser("(dataset like *bla* and block>=123) or run=12345")
-    aSearch.parser("run=12345")
-    aSearch.parser("run not like 12345")
+    aSearch.parser("(path=/a/b/c and block=123) or run >= 12345 path =bla or (path= /c/d/e or run=123)")
+#    aSearch.parser("find total(run) where (path like *bla* and block>=123) or run=12345")
+#    aSearch.parser("find run where (path like *bla* and block>=123) or run=12345")
+#    aSearch.parser("run=12345")
+#    aSearch.parser("run not like 12345")
 #    aSearch.parser("run no like 12345")
 #    aSearch.parser("run 12345")
