@@ -120,11 +120,7 @@ class DDQueryMaker(DDLogger):
       res = []
       try:
           if idx>-1:
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 sel.limit=self.ddConfig.queryLimit()
-                 sel.offset=idx
-             else: # SQLAlchemy 0.4 and above
-                 sel=sel.offset(idx).limit(self.ddConfig.queryLimit())
+             sel=sel.offset(idx).limit(self.ddConfig.queryLimit())
           res = con.execute(sel)
       except:
           msg="While connecting to %s exception was thrown:\n"%self.dbsInstance
@@ -151,14 +147,7 @@ class DDQueryMaker(DDLogger):
 
   def extractBindParams(self,query):
       cq=self.compileQuery(query)
-      if  sqlalchemy.__version__.find("(not installed)")!=-1:
-          bindparams=cq.__dict__['binds']
-          bparams={}
-          for key in bindparams.keys():
-              bparams[key]=bindparams[key].value
-          return bparams
-      else: # SQLAlchemy 0.4 and above
-          return cq.params
+      return cq.params
 
   def sortOrder(self,sortName,sortOrder):
       if sortOrder=="desc":
@@ -187,17 +176,10 @@ class DDQueryMaker(DDLogger):
           else:
              md     = self.dbManager.metaDict[self.dbsInstance]
              _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 qb = Schema(self.dbManager.dbTables[self.dbsInstance])
-             else:
-                 qb = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
+             qb = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
              query  = qb.BuildQueryWithSel(_oSel,_Sel)
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              query.distinct=True
-              query.use_labels=True
-          else: # SQLAlchemy 0.4
-              query=query.distinct()
-              query=query.apply_labels()
+          query=query.distinct()
+          query=query.apply_labels()
           if kwargs.has_key('rval'):
              rval   = kwargs['rval']
              if  type(rval) is types.StringType:
@@ -422,8 +404,8 @@ class DDQueryMaker(DDLogger):
                  if val[0]=="%": # rvalue starts with %
                     factor=5
                     break
-          print cond
-          print val,factor
+#          print cond
+#          print val,factor
           for op in cDict.keys():
               if op=='in' or op=='between' or op=='like' or op=='not like': _op=" %s "%op
               else: _op=op
@@ -509,12 +491,7 @@ class DDQueryMaker(DDLogger):
                  sel = sqlalchemy.select(['*'],from_obj=[q])
                  sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
               else:
-                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                     sel.limit=limit
-                     sel.offset=fromRow
-                     sel.use_labels=True
-                 else: # SQLAlchemy 0.4 and above
-                     sel=sel.offset(fromRow).limit(limit).apply_labels()
+                 sel=sel.offset(fromRow).limit(limit).apply_labels()
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
@@ -573,12 +550,7 @@ class DDQueryMaker(DDLogger):
                  sel = sqlalchemy.select(['*'],from_obj=[q])
                  sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
               else:
-                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                     sel.use_labels=True
-                     sel.limit=limit
-                     sel.offset=fromRow
-                 else: # SQLAlchemy 0.4 and above
-                     sel=sel.offset(fromRow).limit(limit).apply_labels()
+                 sel=sel.offset(fromRow).limit(limit).apply_labels()
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)

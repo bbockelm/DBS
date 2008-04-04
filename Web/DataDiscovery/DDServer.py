@@ -246,16 +246,16 @@ class DDServer(DDLogger,Controller):
         self.helper.setVerbose(opts.verbose)
         self.ddrules.setVerbose(opts.verbose)
         self.baseUrl = opts.baseUrl
-#        self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
         self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
         self.footerUrl=self.baseUrl+"sitedb/Common/footer"
 #        self.mastheadUrl=self.baseUrl+"Common/masthead"
 #        self.footerUrl=self.baseUrl+"Common/footer"
-        self.topUrl=self.baseUrl+"DDServer/"
+#        self.topUrl=self.baseUrl+"DDServer/"
+        self.topUrl=self.baseUrl
         # I only need this if webtools force to use a new URL structure.
-        self.dbsdd=self.dbsdd+"/DDServer/"
-#        self.dbsdd=self.dbsdd
+#        self.dbsdd=self.dbsdd+"/DDServer/"
+        self.dbsdd=self.dbsdd
         try:
            self.verbose=opts.verbose
            self.helper.setVerbose(self.verbose)
@@ -936,7 +936,7 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _help.exposed=True
 
-    @is_authenticated (onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
+    @is_authenticated (onFail=RedirectToLocalPage ("/redirectPage"))
     def _contact(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -956,7 +956,7 @@ class DDServer(DDLogger,Controller):
     _contact.exposed=True
 
     @is_authorized (Role("Global Admin"), Group("DBS"), 
-		    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
+		    onFail=RedirectToLocalPage ("/redirectPage"))
     def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -1148,7 +1148,7 @@ class DDServer(DDLogger,Controller):
     #################### ADMIN FORMS #######################
 #    @is_authorized (Role("Global Admin"), Group("DBS"), 
     @is_authorized (Role("DBSExpert"), Group("DBS"), 
-                    onFail=RedirectToLocalPage ("/DDServer/redirectPage"))
+                    onFail=RedirectToLocalPage ("/redirectPage"))
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
 #        page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""

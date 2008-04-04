@@ -30,6 +30,22 @@ from DDAuth       import *
 from DDConfig     import *
 from DDExceptions import *
 
+def checkSQLAlchemyVersion():
+    ver=None
+    rel=None
+    max=None
+    try:
+       ver=sqlalchemy.__version__
+       rel,max,min=ver.split(".")
+    except:
+       print "##### DD ERROR: Cannot determine SQLAlchemy version"
+       sys.__stdout__.flush()
+       traceback.print_exc()
+    if not (int(rel)>=0 and int(max)>=4 and int(min)>=5):
+       msg="##### DD ERROR: Wrong SQLAlchemy version='%s', DD depends on 0.4.5 and higher"%ver
+       sys.__stdout__.flush()
+       raise msg
+checkSQLAlchemyVersion()
 ################################################################################################
 # DBS1, CGI server
 DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
@@ -189,14 +205,7 @@ class DBManager(DDLogger):
               tName = t[0].lower()
               if self.verbose:
                  print "DBS Tables|Views",tName
-              if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                  if eType=='oracle':
-#                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False)
-                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True,owner=dbsInst.lower())
-                  else:
-                     tables[t[0]]=sqlalchemy.Table(t[0],dbsMeta,autoload=True,case_sensitive=False)
-              else: ## SQLAlchemy 0.4.x
-                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+              tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
               if self.verbose>1:
                  print tables[tName].__dict__
           if  eType=='oracle': # read views separately
@@ -205,10 +214,7 @@ class DBManager(DDLogger):
                   tName=v[0].lower()
                   if self.verbose:
                      print "DBS Views",tName
-                  if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                      tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,case_sensitive=False,schema=dbsInst.upper())
-                  else: ## SQLAlchemy 0.4.x
-                      tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
                   if self.verbose>1:
                      print tables[tName].__dict__
           self.dbTables[dbsInst]=tables
@@ -227,11 +233,7 @@ class DBManager(DDLogger):
          @return: SQLAlchemy table object
       """
       tables = self.dbTables[dbsInst]
-      if  sqlalchemy.__version__.find("(not installed)")!=-1:
-          if self.dbType[dbsInst]=='oracle':
-             tableName=string.lower(tableName)
-      else: ## SQLAlchemy 0.4.x
-          tableName=string.lower(tableName)
+      tableName=string.lower(tableName)
       if not tables.has_key(tableName):
          if tables.has_key(tableName.lower()):
             tableName=tableName.lower()
@@ -274,22 +276,14 @@ class DBManager(DDLogger):
 
   def getForeignKeys(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
-      if  sqlalchemy.__version__.find("(not installed)")!=-1:
-          if self.dbType[dbsInst]=='oracle':
-             table=string.lower(table)
-      else: ## SQLAclehmy 0.4.x
-          table=string.lower(table)
+      table=string.lower(table)
       if tDict.has_key(table):
          return tDict[table].foreign_keys
       raise "No table '%s' found"%table
 
   def getColumns(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
-      if  sqlalchemy.__version__.find("(not installed)")!=-1:
-          if self.dbType[dbsInst]=='oracle':
-             table=string.lower(table)
-      else: ## SQLAlchemy 0.4.x
-          table=string.lower(table)
+      table=string.lower(table)
       if tDict.has_key(table):
          return tDict[table]._columns.keys()
       raise "No table '%s' found"%table

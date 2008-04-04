@@ -96,14 +96,7 @@ class DDHelper(DDLogger):
 
   def extractBindParams(self,query):
       cq=self.compileQuery(query)
-      if  sqlalchemy.__version__.find("(not installed)")!=-1:
-          bindparams=cq.__dict__['binds']
-          bparams={}
-          for key in bindparams.keys():
-              bparams[key]=bindparams[key].value
-          return bparams
-      else: # SQLAlchemy 0.4 and above
-          return cq.params
+      return cq.params
 
   def addOracleLimits(self,sel,min,max):
       bindparams=[]
@@ -120,10 +113,7 @@ class DDHelper(DDLogger):
           # have the same values we need to do
           # select path from (select distinct path from Block where path)
           #        group by rownum,path having rownum between 1 and 5;
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              query.use_labels=True
-          else: # SQLAlchemy 0.4 and above
-              query=query.apply_labels()
+          query=query.apply_labels()
           sel=query.select()
           bindparams=query.__dict__['whereclause'].__dict__['bindparams'].values()
           s=str(sel).replace("\n","")
@@ -136,11 +126,7 @@ class DDHelper(DDLogger):
           bindparams.append(sqlalchemy.bindparam(key='r_2',value=fromRow+limit))
           query = sqlalchemy.text(nq,bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
       else:
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              sel.limit=long(limit)
-              sel.offset=long(offset)
-          else: # SQLAlchemy 0.4 and above
-              sel=sel.offset(offset).limit(limit)
+          query=query.offset(offset).limit(limit)
       return query
   
   def printExcept(self,msg=None):
@@ -503,11 +489,7 @@ class DDHelper(DDLogger):
           # supply distinct and order while dealing with ORACLE
           # http://forums.bea.com/bea/message.jspa?messageID=202461255&tstart=0
           if self.dbManager.dbType[self.dbsInstance]!='oracle':
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 sel.distinct=True
-                 sel.order_by=oSel
-             else: # SQLAlchemy 0.4 and above
-                 sel=sel.orber_by(*oSel).distinct()
+             sel=sel.orber_by(*oSel).distinct()
           if procPath and procPath!="*":
              sel.append_whereclause(self.col(tblk,'Path')==procPath)
           if appPath and appPath!="*":
@@ -685,21 +667,14 @@ class DDHelper(DDLogger):
                  # on ORACLE there is no LIMIT/OFFSET and in order to make it with column who may
                  # have the same values we need to do
                  # select rownum, path from (select distinct path from Block where path is not null order by path desc) group by rownum,path having rownum between 1 and 5;
-                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                     sel.use_labels=True
-                 else: # SQLAlchemy 0.4 and above
-                     sel=sel.apply_labels()
+                 sel=sel.apply_labels()
                  s=sel
                  oSel=[s.c.tblk_path,s.c.tprd_creationdate]
                  sel = sqlalchemy.select(oSel,group_by=['rownum']+oSel,order_by=[sqlalchemy.desc(s.c.tprd_creationdate)])
                  #sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
                  self.addOracleLimits(sel,fromRow,fromRow+limit)
              else:
-                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                     sel.limit=limit
-                     sel.offset=fromRow
-                 else: # SQLAlchemy 0.4 and above
-                     sel=sel.offset(fromRow).limit(limit)
+                 sel=sel.offset(fromRow).limit(limit)
           result = self.getSQLAlchemyResult(con,sel)
           if self.verbose:
              print self.printQuery(sel)
@@ -780,11 +755,7 @@ class DDHelper(DDLogger):
           if rel and rel!="*":
              sel.append_whereclause(self.col(tapv,'Version')==rel)
           if limit:
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 sel.limit=limit
-                 sel.offset=fromRow
-             else: # SQLAlchemy 0.4 and above
-                 sel=sel.offset(fromRow).limit(limit)
+             sel=sel.offset(fromRow).limit(limit)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
@@ -877,8 +848,8 @@ MCDescription:      %s
           oBy  = [sqlalchemy.desc(self.col(tblk,'LastModificationDate'))]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                          tblk.join(tseb,onclause=self.col(tblk,'ID')==self.col(tseb,'BlockID'))
-                          .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                          tblk.outerjoin(tseb,onclause=self.col(tblk,'ID')==self.col(tseb,'BlockID'))
+                          .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                           .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
                             ],distinct=True,order_by=oBy
@@ -1207,10 +1178,7 @@ MCDescription:      %s
                  from_obj=[
                  tpm.join(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
                      ],distinct=True)
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              sel.use_labels=True
-          else: # SQLAlchemy 0.4 and above
-              sel=sel.apply_labels()
+          sel=sel.apply_labels()
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           result = self.getSQLAlchemyResult(con,sel)
@@ -1235,10 +1203,7 @@ MCDescription:      %s
                      .outerjoin(tp2,onclause=self.col(tpdd,'LastModifiedBy')==self.col(tp2,'ID'))
                      ],distinct=True,
                   order_by=desc )
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              sel.use_labels=True
-          else: # SQLAlchemy 0.4 and above
-              sel=sel.apply_labels()
+          sel=sel.apply_labels()
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if prim and prim!="*":
@@ -1530,29 +1495,20 @@ MCDescription:      %s
           oSel = [self.col(tprd,'ID')]
           obj  = tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
           sel1 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              sel1.use_labels=True
-          else: # SQLAlchemy 0.4 and above
-              sel1=sel.apply_labels()
+          sel1 = sel2.apply_labels()
           if dataset and dataset!="*":
              sel1.append_whereclause(self.col(tblk,'Path')==dataset)
           # find ID's of children
           oSel = [self.col(tpdp,'ThisDataset')]
           obj  = tprd.outerjoin(tpdp,onclause=self.col(tpdp,'ThisDataset')==self.col(tprd,'ID'))
           sel2 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              sel2.use_labels=True
-          else: # SQLAlchemy 0.4 and above
-              sel2=sel.apply_labels()
+          sel2 = sel2.apply_labels()
           sel2.append_whereclause(self.col(tpdp,'ItsParent').in_(sel1))
           # find path name of children
           oSel = [self.col(tblk,'Path')]
           obj  = tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
           sel3 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              sel3.use_labels=True
-          else: # SQLAlchemy 0.4 and above
-              sel3=sel.apply_labels()
+          sel3 = sel3.apply_labels()
           sel3.append_whereclause(self.col(tprd,'ID').in_(sel2))
           sel  = sel3
           if self.verbose:
@@ -1632,11 +1588,7 @@ MCDescription:      %s
       res = []
       try:
           if idx>-1:
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 sel.limit=self.ddConfig.queryLimit()
-                 sel.offset=idx
-             else: # SQLAlchemy 0.4 and above
-                 sel=sel.offset(idx).limit(self.ddConfig.queryLimit())
+             sel=sel.offset(idx).limit(self.ddConfig.queryLimit())
 #          if not con:
 #             con = self.connectToDB()
           res = con.execute(sel)
@@ -1684,10 +1636,7 @@ MCDescription:      %s
       try:
           tableObj=self.dbManager.getTable(self.dbsInstance,tableName)
           if limit:
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 sel = sqlalchemy.select(iList, from_obj=[tableObj], limit=limit, offset=fromRow)
-             else: # SQLAlchemy 0.4 and above
-                 sel = sqlalchemy.select(iList, from_obj=[tableObj]).offset(fromRow).limit(limit)
+             sel = sqlalchemy.select(iList, from_obj=[tableObj]).offset(fromRow).limit(limit)
           else:
              sel = sqlalchemy.select(iList, from_obj=[tableObj])
           t=self.dbManager.getTable(self.dbsInstance,tableName)
@@ -1915,10 +1864,7 @@ MCDescription:      %s
           textClause=self.bindWhereClause(whereClause)
           query.append_whereclause(textClause)
 
-      if  sqlalchemy.__version__.find("(not installed)")!=-1:
-          sel.distinct=True
-      else: # SQLAlchemy 0.4 and above
-          sel=sel.distinct()
+      sel=sel.distinct()
       if long(limit):
          query=self.addQueryLimits(query,offset,limit)
 #      print "\n\n###queryMaker",self.printQuery(query),query.__dict__,type(query)
@@ -2006,10 +1952,7 @@ MCDescription:      %s
       con = self.connectToDB()
       res = ""
       if type(query) is sqlalchemy.sql.Select:
-          if  sqlalchemy.__version__.find("(not installed)")!=-1:
-              query.use_labels=True
-          else: # SQLAlchemy 0.4 and above
-              query=query.apply_labels()
+         query=query.apply_labels()
       try:
          res = con.execute(query)
       except:
@@ -2602,7 +2545,6 @@ MCDescription:      %s
           result=""
 #          print sel
           if not count and limit:
-#             sel.use_labels=True
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
                  minRow,maxRow=fromRow,fromRow+limit
                  #s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
@@ -2611,11 +2553,7 @@ MCDescription:      %s
                  condDict['r_2']=maxRow
                  result=con.execute(s,condDict)
              else:
-                 if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                     sel.limit=limit
-                     sel.offset=fromRow
-                 else: # SQLAlchemy 0.4 and above
-                     sel=sel.offset(fromRow).limit(limit)
+                 sel=sel.offset(fromRow).limit(limit)
                  result = self.getSQLAlchemyResult(con,sel)
           else:       
               result = self.getSQLAlchemyResult(con,sel)
@@ -2968,19 +2906,10 @@ MCDescription:      %s
           # supply distinct and order while dealing with ORACLE
           # http://forums.bea.com/bea/message.jspa?messageID=202461255&tstart=0
           if self.dbManager.dbType[self.dbsInstance]!='oracle':
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 sel.distinct=True
-                 sel.order_by=[sqlalchemy.desc(self.col(tp2,'LastModifiedBy'))]
-             else: # SQLAlchemy 0.4 and above
-                 sel=sel.order_by(sqlalchemy.desc(self.col(tp2,'LastModifiedBy'))).distinct()
+             sel=sel.order_by(sqlalchemy.desc(self.col(tp2,'LastModifiedBy'))).distinct()
           if not cDict.has_key('max'):
              if limit:
-                if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                    sel.limit=limit
-                    sel.offset=fromRow
-                    sel.use_labels=True
-                else: # SQLAlchemy 0.4 and above
-                    sel=sel.offset(fromRow).limit(limit).apply_labels()
+                sel=sel.offset(fromRow).limit(limit).apply_labels()
 #          print self.printQuery(sel)
 #          print str(sel).replace("\n","")
           result = self.getSQLAlchemyResult(con,sel)
@@ -3045,12 +2974,7 @@ MCDescription:      %s
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
           if int(iLimit):
-             if  sqlalchemy.__version__.find("(not installed)")!=-1:
-                 sel.limit=int(iLimit)
-                 sel.offset=int(iOffset)
-                 sel.use_labels=True
-             else: # SQLAlchemy 0.4 and above
-                 sel=sel.offset(int(iOffset)).limit(int(iLimit)).apply_labels()
+             sel=sel.offset(int(iOffset)).limit(int(iLimit)).apply_labels()
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
