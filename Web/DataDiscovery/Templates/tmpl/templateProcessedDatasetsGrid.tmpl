@@ -1,4 +1,7 @@
 <!-- templateProcessedDatasetsGrid.tmpl -->
+#import time
+#set tstr="%s"%$time.time()
+#set id=$tstr.replace(".","")
 #set siteList=$dDict.keys()
 #set empty,prim,proc,tier=$path.split("/")
 #set idPath=$path.replace("/","___")
@@ -84,7 +87,8 @@ $nblks
 $nEvts
 </td>
 <td>
-<span id="$idPath">
+###<span id="$idPath">
+<span id="$id">
 <u>$nSites</u>
 </span>
 </td>
@@ -124,7 +128,7 @@ cfg
 #if $cmsNames.has_key($site)
 #set cmsName=$cmsNames[$site]
 #end if
-#set tt=$tt+"<div>"+$cmsName+":&nbsp;"+$site+"</div>"
+#set tt=$tt+"<div>"+$cmsName+" : "+$site+"</div>"
 ####set tt=$tt+"<div>"+$site+"</div>"
 #if len($site)>$longestSEName
 #set longestSEName=len($site)+5
@@ -137,11 +141,15 @@ cfg
 #set tt="<div class=\"box_red\">no sites</div>"
 #end if
 ####set tt="<ul>"+$tt+"</ul>"
-#set tag="t_"+$idPath
+####set tag="t_"+$idPath
+#set tag="t_"+$id
 
 <script type="text/javascript">
-var tooltip='$tt';
-MakeTooltip('$tag','$idPath',tooltip,5000,'300px');
+//var tooltip='$tt';
+var $tag='$tt';
+//MakeTooltip('$tag','$idPath',tooltip,5000,'300px');
+//MakeTooltip('$tag','$id',tooltip,5000,'300px');
+MakeTooltip('$tag','$id',$tag,5000,'300px');
 ajaxEngine.registerRequest('ajaxGetIntegratedLumi','getIntegratedLumi');
 ajaxEngine.registerAjaxElement('intLumi$idPath');
 ajaxGetIntegratedLumi('$dbsInst','$path');
