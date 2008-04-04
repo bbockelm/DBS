@@ -124,8 +124,13 @@ cfg
 #if len($site)>$longestSEName
 #set longestSEName=len($site)+5
 #end if
+#else
+#set tt="<span class=\"box_red\">N/A</span>"
 #end if
 #end for
+#if not len($siteList)
+#set tt="<span class=\"box_red\">no sites</span>"
+#end if
 ####set tt="<ul>"+$tt+"</ul>"
 #set tag="t_"+$idPath
 
