@@ -196,11 +196,13 @@ class DDQueryMaker(DDLogger):
       
   ### Implementation for DDSearch
   def buildNotLikeExp(self,sel,tc,val,case='on'):
+      val=val.replace("_","\_")
       if case=='on':
          return sel.append_whereclause( ~tc.like(val.replace("*","%"),escape='\\') )
       else:
          return sel.append_whereclause( ~sqlalchemy.func.upper(tc).like(val.upper().replace("*","%"),escape='\\') )
   def buildLikeExp(self,sel,tc,val,case='on'):
+      val=val.replace("_","\_")
       if case=='on':
          return sel.append_whereclause( tc.like(val.replace("*","%"),escape='\\') )
       else:
@@ -237,7 +239,6 @@ class DDQueryMaker(DDLogger):
       else:
          return sel.append_whereclause(sqlalchemy.func.upper(tc).in_(*iList))
   def buildExp(self,sel,tc,val,case):
-      val=val.replace("_","\_")
       try:
          for co in constrainList():
              idx=val.lower().find(co)
