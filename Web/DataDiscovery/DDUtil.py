@@ -9,8 +9,9 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import os, string, sys, time, types, traceback, random, difflib, urllib, re
+import os, string, sys, time, types, traceback, random, difflib, httplib, urllib, re
 import logging, logging.handlers
+import elementtree.ElementTree as ET
 
 # import DBS modules
 import DDOptions
@@ -839,6 +840,31 @@ def textDiff(a, b, th_a="", th_b="", title=""):
         out.append(s)
     out.append('</table></p>\n')
     return ''.join(out)
+
+def getCMSNames():
+    """ https://cmsweb.cern.ch/sitedb/sitedb/reports/showXMLReport/?reportid=se_cmsname_map.ini """
+    conn     = httplib.HTTPSConnection("cmsweb.cern.ch:443")
+    path     = "/sitedb/sitedb/reports/showXMLReport"
+    params   = urllib.urlencode({'reportid':'se_cmsname_map.ini'})
+    headers  = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
+    conn.request("POST", path, params, headers)
+    response = conn.getresponse()
+    data     = response.read()
+    oDict    = {}
+    if response.status==200:
+       elem  = ET.fromstring(data)
+       for i in elem:
+           if i.tag=="result":
+              for j in i:
+                  for k in j.getchildren():
+                      if k.tag=='se':
+                         key=k.text
+                      elif k.tag=='name':
+                         val=k.text
+                         oDict[key]=val
+    conn.close()
+    oDict['time']=time.time()
+    return oDict
 #
 # main
 #
@@ -847,4 +873,5 @@ if __name__ == "__main__":
 #   print formattingDictPrint({'test':[1,2,3,4,5,6,7,8,9,10],'vk':[21,22,23,24]})
 #   print getDictOfSites()
 #   print convertListToString([1,2,3,4,5,6,7,8,9,10])
-   print tip()
+#   print tip()
+   data=getCMSNames()
