@@ -197,14 +197,14 @@ class DDQueryMaker(DDLogger):
   ### Implementation for DDSearch
   def buildNotLikeExp(self,sel,tc,val,case='on'):
       if case=='on':
-         return sel.append_whereclause( ~tc.like(val.replace("*","%")) )
+         return sel.append_whereclause( ~tc.like(val.replace("*","%"),escape='\\') )
       else:
-         return sel.append_whereclause( ~sqlalchemy.func.upper(tc).like(val.upper().replace("*","%")) )
+         return sel.append_whereclause( ~sqlalchemy.func.upper(tc).like(val.upper().replace("*","%"),escape='\\') )
   def buildLikeExp(self,sel,tc,val,case='on'):
       if case=='on':
-         return sel.append_whereclause( tc.like(val.replace("*","%")) )
+         return sel.append_whereclause( tc.like(val.replace("*","%"),escape='\\') )
       else:
-         return sel.append_whereclause( sqlalchemy.func.upper(tc).like(val.upper().replace("*","%")) )
+         return sel.append_whereclause( sqlalchemy.func.upper(tc).like(val.upper().replace("*","%"),escape='\\') )
   def buildEqExp(self,sel,tc,val,case='on'):
       if case=='on':
          return sel.append_whereclause(tc==val)
@@ -237,6 +237,7 @@ class DDQueryMaker(DDLogger):
       else:
          return sel.append_whereclause(sqlalchemy.func.upper(tc).in_(*iList))
   def buildExp(self,sel,tc,val,case):
+      val=val.replace("_","\_")
       try:
          for co in constrainList():
              idx=val.lower().find(co)
@@ -489,7 +490,7 @@ class DDQueryMaker(DDLogger):
                  tmp = sel.alias('tmp')
                  q   = sqlalchemy.select(['tmp.*','rownum as rnum'],from_obj=[tmp])
                  sel = sqlalchemy.select(['*'],from_obj=[q])
-                 sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
+                 sel.append_whereclause("rnum between %s and %s"%(fromRow,fromRow+limit) )
               else:
                  sel=sel.offset(fromRow).limit(limit).apply_labels()
           if self.verbose:
@@ -548,7 +549,7 @@ class DDQueryMaker(DDLogger):
                  tmp = sel.alias('tmp')
                  q   = sqlalchemy.select(['tmp.*','rownum as rnum'],from_obj=[tmp])
                  sel = sqlalchemy.select(['*'],from_obj=[q])
-                 sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
+                 sel.append_whereclause("rnum between %s and %s"%(fromRow,fromRow+limit) )
               else:
                  sel=sel.offset(fromRow).limit(limit).apply_labels()
           if self.verbose:
