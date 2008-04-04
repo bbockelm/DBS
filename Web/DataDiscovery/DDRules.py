@@ -24,14 +24,12 @@ def constrainDict():
        'not_like':0.5,
        'not like':0.5,
        'like':0.5,
-       ' in ':1,
+       'in':1,
        'between':1
     }
     return cDict
 def constrainList():
     return constrainDict().keys()
-#    return ['>=','>','<=','<','=','not_like','not like','like','in','between']
-#    return ['>=','>','<=','<','=','not like','like','in','between','is not null','is null']
 
 class DDRules:
    def __init__(self,verbose=0):
@@ -273,28 +271,32 @@ class DDRules:
        input=input.replace(")"," ) ").replace("("," ( ")
        # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
        isplit=input.split()
-       for i in xrange(0,len(isplit)):
-           item  = isplit[i]
-           if item=='<=' or item=='>=' or item=='!=':
-              item=' %s '%item
-              isplit[i]=item
-           elif len(item)==1 and (item=='=' or item=='<' or item=='>'):
-              item=' %s '%item
-              isplit[i]=item
-           else:
-              for op in ['<=','>=','!=','=','<','>']:
-                  idx = item.find(op)
-                  if idx!=-1:
-                     if not ['=','<','>'].count(op):
-                        item=item.replace(op," %s "%op)
-                     else:
-                        if op=="=" and (item[idx-1]=='<' or item[idx-1]=='>'):
-                           continue
-                        elif (op=="<" or op==">") and item[idx+1]=='=':
-                           continue
-                        else:
-                           item=item.replace(op," %s "%op)
-              isplit[i]=item
+       try:
+           for i in xrange(0,len(isplit)):
+               item  = isplit[i]
+               if item=='<=' or item=='>=' or item=='!=':
+                  item=' %s '%item
+                  isplit[i]=item
+               elif len(item)==1 and (item=='=' or item=='<' or item=='>'):
+                  item=' %s '%item
+                  isplit[i]=item
+               else:
+                  for op in ['<=','>=','!=','=','<','>']:
+                      idx = item.find(op)
+                      if idx!=-1:
+                         if not ['=','<','>'].count(op):
+                            item=item.replace(op," %s "%op)
+                         else:
+                            if op=="=" and (item[idx-1]=='<' or item[idx-1]=='>'):
+                               continue
+                            elif (op=="<" or op==">") and len(item)>idx+1 and item[idx+1]=='=':
+                               continue
+                            else:
+                               item=item.replace(op," %s "%op)
+                  isplit[i]=item
+       except:
+           traceback.print_exc()
+           raise "prePraseInput: fail to parse your input='%s'"%input
        return ' '.join(isplit)
     
    def parseInput(self,input,sortName,sortOrder,case):
@@ -337,18 +339,23 @@ class DDRules:
    def parsePattern(self,selKey,sortName,sortOrder,pattern,case):
        co_idx=-1
        words=[]
-       for co in self.sList:
-           j=pattern.find(co)
-           if j!=-1:
-              key = pattern[:j]
-              k   = pattern.rfind(co)
-              val = pattern[j+len(co):]
-              words.append("%s:"%key.strip())
-              words.append(co)
-              words.append(val.strip())
-              break
+       msg="Fail to parse '%s', no constrain operator found"%pattern
+       try:
+           for co in self.sList:
+               j=pattern.find(co)
+               # look-up operator, find itx index in a pattern and see that neighboors should be ' '.
+               if j!=-1 and pattern[j-1]==' ' and pattern[j+len(co)]==' ':
+                  key = pattern[:j]
+                  k   = pattern.rfind(co)
+                  val = pattern[j+len(co):]
+                  words.append("%s:"%key.strip())
+                  words.append(co)
+                  words.append(val.strip())
+                  break
+       except:
+          raise msg
        if not words:
-          raise "Fail to parse '%s', no constrain operator found"%pattern
+          raise msg
        return self.parseObject(selKey,sortName,sortOrder,[''.join(words)],case)
 
    def parseObject(self,selKey,sortName,sortOrder,input,case):
@@ -399,6 +406,7 @@ class DDRules:
 if __name__ == "__main__":
     aSearch = DDRules(verbose=1)
     aSearch.parser("(path=/a/b/c and block=123) or run >= 12345 path =bla or (path= /c/d/e or run=123)")
+    aSearch.parser("find primds where (path like *Online* or path not like *RelVal* ) and release> CMSSW_1_7 ")
 #    aSearch.parser("find total(run) where (path like *bla* and block>=123) or run=12345")
 #    aSearch.parser("find run where (path like *bla* and block>=123) or run=12345")
 #    aSearch.parser("run=12345")
