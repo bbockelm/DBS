@@ -192,8 +192,12 @@ class DDQueryMaker(DDLogger):
              else:
                  qb = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
              query  = qb.BuildQueryWithSel(_oSel,_Sel)
-          query.distinct=True
-          query.use_labels=True
+          if  sqlalchemy.__version__.find("(not installed)")!=-1:
+              query.distinct=True
+              query.use_labels=True
+          else: # SQLAlchemy 0.4
+              query=query.distinct()
+              query=query.apply_labels()
           if kwargs.has_key('rval'):
              rval   = kwargs['rval']
              if  type(rval) is types.StringType:
@@ -359,7 +363,7 @@ class DDQueryMaker(DDLogger):
       oSel = [sqlalchemy.func.count('*')]
       sel  = sqlalchemy.select(oSel,from_obj=[query])
       sel  = sel.alias('sel')
-      sel.use_labels=True
+#      sel.use_labels=True
       if self.verbose:
          print self.printQuery(sel)
       try:
@@ -496,9 +500,7 @@ class DDQueryMaker(DDLogger):
           obj    = tab
           sortCol= self.col(tab,sortName)
           oSel   = ['*']
-          sel = sqlalchemy.select(oSel,from_obj=[obj],order_by=oBy)
-          sel.distinct=True
-          sel.user_labels=True
+          sel = sqlalchemy.select(oSel,from_obj=[obj],order_by=oBy,distinct=True)
           sel.append_whereclause(self.col(tab,c).in_(query))
           if  limit:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
@@ -510,8 +512,9 @@ class DDQueryMaker(DDLogger):
                  if  sqlalchemy.__version__.find("(not installed)")!=-1:
                      sel.limit=limit
                      sel.offset=fromRow
+                     sel.use_labels=True
                  else: # SQLAlchemy 0.4 and above
-                     sel=sel.offset(fromRow).limit(limit)
+                     sel=sel.offset(fromRow).limit(limit).apply_labels()
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
@@ -561,9 +564,7 @@ class DDQueryMaker(DDLogger):
           gBy = oSel
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              gBy = gBy+['rownum']
-          sel = sqlalchemy.select(oSel,from_obj=[obj],group_by=gBy,order_by=oBy)
-          sel.distinct=True
-          sel.user_labels=True
+          sel = sqlalchemy.select(oSel,from_obj=[obj],group_by=gBy,order_by=oBy,distinct=True)
           sel.append_whereclause(self.col(tab,c).in_(query))
           if  limit:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
@@ -573,10 +574,11 @@ class DDQueryMaker(DDLogger):
                  sel.append_whereclause( 'rnum between %s and %s'%(fromRow,fromRow+limit) )
               else:
                  if  sqlalchemy.__version__.find("(not installed)")!=-1:
+                     sel.use_labels=True
                      sel.limit=limit
                      sel.offset=fromRow
                  else: # SQLAlchemy 0.4 and above
-                     sel=sel.offset(fromRow).limit(limit)
+                     sel=sel.offset(fromRow).limit(limit).apply_labels()
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
