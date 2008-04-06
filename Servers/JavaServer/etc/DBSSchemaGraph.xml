@@ -15,28 +15,28 @@
 	<node id="AppVersion"			user="release" 		real="AppVersion" 			default="Version"/>
 	<node id="AppExecutable" 		user="exe" 		real="AppExecutable" 			default="ExecutableName"/>
 	<node id="QueryableParameterSet"	user="ps" 		real="QueryableParameterSet" 		default="Hash"/>
-	<node id="FileTier" 			user="ftier" 		real="FileTier" 			default="Fileid,DataTier"/>
-	<node id="FileParentage" 		user="fparent" 		real="FileParentage" 			default="ThisFile,ItsParent"/>
+	<node id="FileTier" 			user="file.tier"	real="FileTier" 			default="Fileid,DataTier"/>
+	<node id="FileParentage" 		user="file.parent"	real="FileParentage" 			default="ThisFile,ItsParent"/>
 	<node id="FileRunLumi" 			user="frl" 		real="FileRunLumi" 			default="Fileid,Lumi,Run"/>
-	<node id="FileAlgo" 			user="falgo" 		real="FileAlgo" 			default="Fileid,Algorithm"/>
-	<node id="FileStatus" 			user="fstatus" 		real="FileStatus" 			default="Status"/>
-	<node id="FileType" 			user="ftype" 		real="FileType" 			default="Type"/>
-	<node id="FileValidStatus" 		user="fvstatus" 	real="FileValidStatus" 			default="Status"/>
+	<node id="FileAlgo" 			user="file.algo" 	real="FileAlgo" 			default="Fileid,Algorithm"/>
+	<node id="FileStatus" 			user="file.status" 	real="FileStatus" 			default="Status"/>
+	<node id="FileType" 			user="file.type" 	real="FileType" 			default="Type"/>
+	<node id="FileValidStatus" 		user="file.vstatus" 	real="FileValidStatus" 			default="Status"/>
 	<node id="FileTriggerTag" 		user="ftrigger" 	real="FileTriggerTag" 			default="Fileid,TriggerTag"/>
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
-	<node id="ProcDSTier" 			user="pdtier" 		real="ProcDSTier" 			default="Dataset,DataTier"/>
-	<node id="ProcDSParent" 		user="pdparent"		real="ProcDSParent" 			default="ThisDataset,ItsParent"/>
-	<node id="ProcAlgo" 			user="palgo" 		real="ProcAlgo" 			default="Dataset,Algorithm"/>
+	<node id="ProcDSTier" 			user="procds.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
+	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent"/>
+	<node id="ProcAlgo" 			user="procds.algo" 	real="ProcAlgo" 			default="Dataset,Algorithm"/>
 	<node id="AnalysisDataset" 		user="ads" 		real="AnalysisDataset" 			default="Name,Version"/>
-	<node id="AnalysisDSType" 		user="adstype" 		real="AnalysisDSType" 			default="Type"/>
-	<node id="AnalysisDSStatus" 		user="adsstatus" 	real="AnalysisDSStatus" 		default="Status"/>
+	<node id="AnalysisDSType" 		user="ads.type" 	real="AnalysisDSType" 			default="Type"/>
+	<node id="AnalysisDSStatus" 		user="ads.status" 	real="AnalysisDSStatus" 		default="Status"/>
 	<node id="AnalysisDSFileLumi" 		user="adsfl" 		real="AnalysisDSFileLumi" 		default="AnalysisDataset,Lumi,Fileid"/>
-	<node id="AnalysisDSDef" 		user="adsdef" 		real="AnalysisDSDef" 			default="Name"/>
+	<node id="AnalysisDSDef" 		user="ads.def" 		real="AnalysisDSDef" 			default="Name"/>
 	<node id="SEBlock" 			user="seblock" 		real="SEBlock" 				default="SEID,BlockID"/>
 	<node id="StorageElement" 		user="site" 		real="StorageElement" 			default="SEName"/>
 	<node id="Block" 			user="block" 		real="Block" 				default="Name"/>
-	<node id="ProcDSStatus" 		user="pdstatus" 	real="ProcDSStatus" 			default="Status"/>
-	<node id="PrimaryDSType" 		user="primdstype" 	real="PrimaryDSType" 			default="Type"/>
+	<node id="ProcDSStatus" 		user="procds.status" 	real="ProcDSStatus" 			default="Status"/>
+	<node id="PrimaryDSType" 		user="primds.type" 	real="PrimaryDSType" 			default="Type"/>
 	<node id="QualityValues" 		user="qlty" 		real="QualityValues" 			default="Value"/>
 	<node id="SubSystem" 			user="subsystem" 	real="SubSystem" 			default="Name"/>
 	<node id="RunLumiQuality" 		user="runlsqlty" 	real="RunLumiQuality" 			default="Run,Lumi,SubSystem"/>

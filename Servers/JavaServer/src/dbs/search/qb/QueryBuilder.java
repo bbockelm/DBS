@@ -3,12 +3,18 @@ import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.List;
 import dbs.search.parser.Constraint;
+import dbs.search.graph.GraphUtil;
 import dbs.util.Validate;
+import edu.uci.ics.jung.graph.Vertex;
+import edu.uci.ics.jung.graph.Edge;
 
 public class QueryBuilder {
 	KeyMap km = new KeyMap();
 	RelationMap rm = new RelationMap();
-	public QueryBuilder() {}
+	GraphUtil u = null;
+	public QueryBuilder() {
+		u = new GraphUtil("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
+	}
 
 	public String genQuery(ArrayList kws, ArrayList cs) throws Exception{
 		//Store all the keywors both from select and where in allKws
@@ -19,16 +25,28 @@ public class QueryBuilder {
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
 			if(Util.isSame(aKw, "path")) {
-				allKws.add("block");
+				allKws = addUniqueInList(allKws, "block");
 				query += km.getMappedValue("block.path");
 			} else {
 
 				StringTokenizer st = new StringTokenizer(aKw, ".");
 				int count = st.countTokens();
 				String token = st.nextToken();
-				allKws.add(km.getMappedValue(token));
-				if(count == 1) query += km.getMappedValue(token) + ".*";
-				else query += km.getMappedValue(aKw);
+				Vertex vFirst = u.getMappedVertex(token);
+				allKws = addUniqueInList(allKws,u.getRealFromVertex(vFirst));
+				if(count == 1) {
+					//Get default from vertex
+					query += makeQueryFromDefaults(vFirst);
+				} else {
+					Vertex vCombined = u.getMappedVertex(aKw);
+					if(vCombined == null) {
+						query += km.getMappedValue(aKw); 
+					} else {
+						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
+						query += makeQueryFromDefaults(vCombined);			
+						
+					}
+				}
 			}
 		}
 		for (int i =0 ; i!= cs.size(); ++i) {
@@ -38,7 +56,14 @@ public class QueryBuilder {
 				String key = (String)o.getKey();
 				if(!Util.isSame(key, "path")) {
 					StringTokenizer st = new StringTokenizer(key, ".");
-					allKws.add(km.getMappedValue(st.nextToken()));
+					int count = st.countTokens();
+					String token = st.nextToken();
+					Vertex vFirst = u.getMappedVertex(token);
+					allKws = addUniqueInList(allKws, u.getRealFromVertex(vFirst));
+					if(count != 1) {
+						Vertex vCombined = u.getMappedVertex(key);
+						if(vCombined != null) allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
+					}
 				}
 			}
 		}
@@ -79,6 +104,19 @@ public class QueryBuilder {
 		return query;
 	}
 
+	private String makeQueryFromDefaults(Vertex v){
+		String realVal = u.getRealFromVertex(v);
+		StringTokenizer st = new StringTokenizer(u.getDefaultFromVertex(v), ",");
+		int countDefTokens = st.countTokens();
+		String query = "";
+		for (int j = 0; j != countDefTokens; ++j) {
+			if(j != 0) query += ",";
+			query += realVal + "." + st.nextToken();
+		}
+		return query;
+
+	}
+	
 	private String genJoins(String[] routes) {
 		String prev = "";
 		String query = "\nFROM\n\t";
@@ -124,6 +162,36 @@ public class QueryBuilder {
 			"\tProcessedDataset.Name = '" + data[2] + "'" +
 			")";
 		return query;
+	}
+	private ArrayList addUniqueInList(ArrayList keyWords, String aKw) {
+		for(Object kw: keyWords) {
+			if(((String)kw).equals(aKw))return keyWords;
+		}
+		keyWords.add(aKw);
+		return keyWords;
+	}
+
+	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords) {
+			int len = lKeywords.size();
+			for(int i = 0 ; i != len ; ++i ) {
+				boolean isEdge = false;
+				for(int j = 0 ; j != len ; ++j ) {
+					if(i != j) {
+						if(u.doesEdgeExist((String)lKeywords.get(i), (String)lKeywords.get(j)))	{
+							isEdge = true;
+							break;
+						}
+					}
+				}
+				if(!isEdge) {
+					List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(i), (String)lKeywords.get((i+1)%len));
+					for (Edge e: lEdges) {
+						lKeywords = addUniqueInList(lKeywords, u.getFirstNameFromEdge(e));
+					}
+					return makeCompleteListOfVertexs (lKeywords);
+				}
+			}
+		return lKeywords;
 	}
 
 }

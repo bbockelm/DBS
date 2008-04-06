@@ -41,13 +41,57 @@ public class GraphUtil{
 		}
 		return null;
 	}
+
+	public String getRealFromVertex(Vertex v){
+		return (String) v.getUserDatum("real");
+	}
+	public String getDefaultFromVertex(Vertex v){
+		return (String) v.getUserDatum("default");
+	}
+
+	public String getMappedRealName(String userName){
+		return getRealFromVertex(getMappedVertex(userName));
+	}
+	
+	public Vertex getMappedVertex(String userName){
+		Set s = g.getVertices();
+		for (Iterator eIt = s.iterator(); eIt.hasNext(); ) {
+			Vertex v = (Vertex) eIt.next();
+			String vNameFromGraph =  (String) v.getUserDatum("user");
+			if (userName.equals(vNameFromGraph)) return v;
+		}
+		return null;
+	}
+
 	public List<Edge> getShortestPath( Vertex v1, Vertex v2){
 		return  (new DijkstraShortestPath(g)).getPath(v1,v2);
 	}
 	public List<Edge> getShortestPath(String v1, String v2){
 		return  (new DijkstraShortestPath(g)).getPath(getVertex(v1), getVertex(v2));
 	}
+	public String getRealtionFromEdge(Edge e) {
+		return (String)e.getUserDatum("relation");
+	}
+
+	public boolean doesEdgeExist(String vStr1, String vStr2) {
+		for (Iterator eIt = g.getEdges().iterator(); eIt.hasNext(); ) {
+			Pair p = ((Edge) eIt.next()).getEndpoints();
+			String v1FromGraphStr = getRealFromVertex((Vertex) p.getFirst());
+			String v2FromGraphStr = getRealFromVertex((Vertex) p.getSecond());
+			if( (vStr1.equals(v1FromGraphStr) && vStr2.equals(v2FromGraphStr)) 
+					|| (vStr1.equals(v2FromGraphStr) && vStr2.equals(v1FromGraphStr))
+					)  return true;
+		}
+		return false;
+	}
 
 
+	public String getFirstNameFromEdge(Edge e) {
+		return getRealFromVertex((Vertex) e.getEndpoints().getFirst());
+	}
+
+	public String getSecondNameFromEdge(Edge e) {
+		return getRealFromVertex((Vertex) e.getEndpoints().getSecond());
+	}
 
 }
