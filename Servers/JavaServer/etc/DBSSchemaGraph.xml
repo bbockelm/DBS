@@ -65,54 +65,54 @@
 	<edge source="Block" 			target="Person" 		relation="Block.LastModifiedBy = Person.ID"/>
 	<edge source="ProcDSStatus" 		target="Person" 		relation="ProcDSStatus.LastModifiedBy = Person.ID"/>
 
-	<edge source="PrimaryDataset" 		target="PrimaryDSType" 		relation="PrimaryDSType.ID = PrimaryDataset.Type"/>
-	<edge source="PrimaryDataset" 		target="ProcessedDataset"	relation="PrimaryDataset.ID = ProcessedDataset.PrimaryDataset"/>
-	<edge source="ProcessedDataset" 	target="ProcDSParent" 		relation="ProcessedDataset.ID = ProcDSParent.ThisDataset"/>
-	<edge source="ProcessedDataset" 	target="ProcAlgo" 		relation="ProcessedDataset.ID = ProcAlgo.Dataset"/>
-	<edge source="ProcessedDataset" 	target="ProcDSRuns" 		relation="ProcessedDataset.ID = ProcDSRuns.Dataset"/>
-	<edge source="ProcessedDataset" 	target="ProcDSTier" 		relation="ProcessedDataset.ID = ProcDSTier.Dataset"/>
-	<edge source="ProcessedDataset"	 	target="AnalysisDataset"	relation="ProcessedDataset.ID = AnalysisDataset.ProcessedDS"/>
-	<edge source="ProcessedDataset"	 	target="Block"			relation="ProcessedDataset.ID = Block.Dataset"/>
-	<edge source="ProcessedDataset"	 	target="Files"			relation="ProcessedDataset.ID = Files.Dataset"/>
-	<edge source="ProcessedDataset"	 	target="PhysicsGroup"		relation="ProcessedDataset.PhysicsGroup = PhysicsGroup.ID"/>
+	<edge directed="false"	source="PrimaryDataset" 		target="PrimaryDSType" 		relation="PrimaryDSType.ID = PrimaryDataset.Type"/>
+	<edge directed="false"	source="PrimaryDataset" 		target="ProcessedDataset"	relation="PrimaryDataset.ID = ProcessedDataset.PrimaryDataset"/>
+	<edge directed="false"	source="ProcessedDataset" 	target="ProcDSParent" 		relation="ProcessedDataset.ID = ProcDSParent.ThisDataset"/>
+	<edge directed="false"	source="ProcessedDataset" 	target="ProcAlgo" 		relation="ProcessedDataset.ID = ProcAlgo.Dataset"/>
+	<edge directed="false"	source="ProcessedDataset" 	target="ProcDSRuns" 		relation="ProcessedDataset.ID = ProcDSRuns.Dataset"/>
+	<edge directed="false"	source="ProcessedDataset" 	target="ProcDSTier" 		relation="ProcessedDataset.ID = ProcDSTier.Dataset"/>
+	<edge directed="false"	source="ProcessedDataset"	 	target="AnalysisDataset"	relation="ProcessedDataset.ID = AnalysisDataset.ProcessedDS"/>
+	<edge directed="false"	source="ProcessedDataset"	 	target="Block"			relation="ProcessedDataset.ID = Block.Dataset"/>
+	<edge directed="false"	source="ProcessedDataset"	 	target="Files"			relation="ProcessedDataset.ID = Files.Dataset"/>
+	<edge directed="false"	source="ProcessedDataset"	 	target="PhysicsGroup"		relation="ProcessedDataset.PhysicsGroup = PhysicsGroup.ID"/>
 	
-	<edge source="Block"		 	target="Files"			relation="Block.ID = Files.Block"/>
-	<edge source="Block"		 	target="SEBlock"		relation="Block.ID = SEBlock.BlockID"/>
-	<edge source="SEBlock"		 	target="StorageElement"		relation="SEBlock.SEID = StorageElement.ID"/>
+	<edge directed="false"	source="Block"		 	target="Files"			relation="Block.ID = Files.Block"/>
+	<edge directed="false"	source="Block"		 	target="SEBlock"		relation="Block.ID = SEBlock.BlockID"/>
+	<edge directed="false"	source="SEBlock"		 	target="StorageElement"		relation="SEBlock.SEID = StorageElement.ID"/>
 
-	<edge source="ProcDSTier" 		target="DataTier" 		relation="ProcDSTier.DataTier = DataTier.ID"/>
+	<edge directed="false"	source="ProcDSTier" 		target="DataTier" 		relation="ProcDSTier.DataTier = DataTier.ID"/>
 	
-	<edge source="ProcDSRuns" 		target="Runs"	 		relation="ProcDSRuns.Run = Runs.ID"/>
-	<edge source="Runs" 			target="LumiSection"		relation="Runs.ID = LumiSection.RunNumber"/>
-	<edge source="Runs" 			target="FileRunLumi"		relation="Runs.ID = FileRunLumi.Run"/>
-	<edge source="LumiSection" 		target="FileRunLumi"		relation="LumiSection.ID = FileRunLumi.Lumi"/>
-	<edge source="FileRunLumi" 		target="Files"			relation="FileRunLumi.Fileid = Files.ID"/>
+	<edge directed="false"	source="ProcDSRuns" 		target="Runs"	 		relation="ProcDSRuns.Run = Runs.ID"/>
+	<edge directed="false"	source="Runs" 			target="LumiSection"		relation="Runs.ID = LumiSection.RunNumber"/>
+	<edge directed="false"	source="Runs" 			target="FileRunLumi"		relation="Runs.ID = FileRunLumi.Run"/>
+	<edge directed="false"	source="LumiSection" 		target="FileRunLumi"		relation="LumiSection.ID = FileRunLumi.Lumi"/>
+	<edge directed="false"	source="FileRunLumi" 		target="Files"			relation="FileRunLumi.Fileid = Files.ID"/>
 	
-	<edge source="AnalysisDataset" 		target="AnalysisDSFileLumi"	relation="AnalysisDataset.ID = AnalysisDSFileLumi.AnalysisDataset"/>
-	<edge source="AnalysisDataset" 		target="AnalysisDSType"		relation="AnalysisDataset.Type = AnalysisDSType.ID"/>
-	<edge source="AnalysisDataset" 		target="AnalysisDSStatus"	relation="AnalysisDataset.Status = AnalysisDSStatus.ID"/>
-	<edge source="AnalysisDataset" 		target="AnalysisDSDef"		relation="AnalysisDataset.Definition = AnalysisDSDef.ID"/>
-	<edge source="AnalysisDataset"	 	target="PhysicsGroup"		relation="AnalysisDataset.PhysicsGroup = PhysicsGroup.ID"/>
+	<edge directed="false"	source="AnalysisDataset" 		target="AnalysisDSFileLumi"	relation="AnalysisDataset.ID = AnalysisDSFileLumi.AnalysisDataset"/>
+	<edge directed="false"	source="AnalysisDataset" 		target="AnalysisDSType"		relation="AnalysisDataset.Type = AnalysisDSType.ID"/>
+	<edge directed="false"	source="AnalysisDataset" 		target="AnalysisDSStatus"	relation="AnalysisDataset.Status = AnalysisDSStatus.ID"/>
+	<edge directed="false"	source="AnalysisDataset" 		target="AnalysisDSDef"		relation="AnalysisDataset.Definition = AnalysisDSDef.ID"/>
+	<edge directed="false"	source="AnalysisDataset"	 	target="PhysicsGroup"		relation="AnalysisDataset.PhysicsGroup = PhysicsGroup.ID"/>
 	
-	<edge source="AnalysisDSFileLumi" 	target="LumiSection"		relation="AnalysisDSFileLumi.Lumi = LumiSection.ID"/>
-	<edge source="AnalysisDSFileLumi" 	target="Files"			relation="AnalysisDSFileLumi.Fileid = Files.ID"/>
+	<edge directed="false"	source="AnalysisDSFileLumi" 	target="LumiSection"		relation="AnalysisDSFileLumi.Lumi = LumiSection.ID"/>
+	<edge directed="false"	source="AnalysisDSFileLumi" 	target="Files"			relation="AnalysisDSFileLumi.Fileid = Files.ID"/>
 	
 	
-	<edge source="ProcAlgo" 		target="AlgorithmConfig" 	relation="ProcAlgo.Algorithm = AlgorithmConfig.ID"/>
-	<edge source="AlgorithmConfig" 		target="AppExecutable"		relation="AppExecutable.ID = AlgorithmConfig.ExecutableName"/>
-	<edge source="AlgorithmConfig" 		target="AppVersion" 		relation="AppVersion.ID = AlgorithmConfig.ApplicationVersion"/>
-	<edge source="AlgorithmConfig" 		target="AppFamily" 		relation="AppFamily.ID = AlgorithmConfig.ApplicationFamily"/>
-	<edge source="AlgorithmConfig" 		target="QueryableParameterSet"	relation="QueryableParameterSet.ID = AlgorithmConfig.ParameterSetID"/>
-	<edge source="Files"	 		target="FileParentage" 		relation="Files.ID = FileParentage.ThisFile"/>
-	<edge source="Files"	 		target="BranchHash" 		relation="Files.FileBranch = BranchHash.ID"/>
-	<edge source="Files"	 		target="FileStatus" 		relation="Files.FileStatus = FileStatus.ID"/>
-	<edge source="Files"	 		target="FileType" 		relation="Files.FileType = FileType.ID"/>
-	<edge source="Files"	 		target="FileValidStatus"	relation="Files.ValidationStatus = FileValidStatus.ID"/>
-	<edge source="Files"	 		target="FileTriggerTag" 	relation="Files.ID = FileTriggerTag.Fileid"/>
-	<edge source="Files"	 		target="FileTier" 		relation="Files.ID = FileTier.Fileid"/>
-	<edge source="Files"	 		target="FileAlgo" 		relation="Files.ID = FileAlgo.Fileid"/>
-	<edge source="FileAlgo"	 		target="AlgorithmConfig"	relation="FileAlgo.Algorithm = AlgorithmConfig.ID"/>
+	<edge directed="false"	source="ProcAlgo" 		target="AlgorithmConfig" 	relation="ProcAlgo.Algorithm = AlgorithmConfig.ID"/>
+	<edge directed="false"	source="AlgorithmConfig" 		target="AppExecutable"		relation="AppExecutable.ID = AlgorithmConfig.ExecutableName"/>
+	<edge directed="false"	source="AlgorithmConfig" 		target="AppVersion" 		relation="AppVersion.ID = AlgorithmConfig.ApplicationVersion"/>
+	<edge directed="false"	source="AlgorithmConfig" 		target="AppFamily" 		relation="AppFamily.ID = AlgorithmConfig.ApplicationFamily"/>
+	<edge directed="false"	source="AlgorithmConfig" 		target="QueryableParameterSet"	relation="QueryableParameterSet.ID = AlgorithmConfig.ParameterSetID"/>
+	<edge directed="false"	source="Files"	 		target="FileParentage" 		relation="Files.ID = FileParentage.ThisFile"/>
+	<edge directed="false"	source="Files"	 		target="BranchHash" 		relation="Files.FileBranch = BranchHash.ID"/>
+	<edge directed="false"	source="Files"	 		target="FileStatus" 		relation="Files.FileStatus = FileStatus.ID"/>
+	<edge directed="false"	source="Files"	 		target="FileType" 		relation="Files.FileType = FileType.ID"/>
+	<edge directed="false"	source="Files"	 		target="FileValidStatus"	relation="Files.ValidationStatus = FileValidStatus.ID"/>
+	<edge directed="false"	source="Files"	 		target="FileTriggerTag" 	relation="Files.ID = FileTriggerTag.Fileid"/>
+	<edge directed="false"	source="Files"	 		target="FileTier" 		relation="Files.ID = FileTier.Fileid"/>
+	<edge directed="false"	source="Files"	 		target="FileAlgo" 		relation="Files.ID = FileAlgo.Fileid"/>
+	<edge directed="false"	source="FileAlgo"	 		target="AlgorithmConfig"	relation="FileAlgo.Algorithm = AlgorithmConfig.ID"/>
 	
-	<edge source="FileTier"	 		target="DataTier" 		relation="FileTier.DataTier = DataTier.ID"/>
+	<edge directed="false"	source="FileTier"	 		target="DataTier" 		relation="FileTier.DataTier = DataTier.ID"/>
 
 </graph> 

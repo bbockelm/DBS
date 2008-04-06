@@ -69,10 +69,8 @@ public class QueryBuilder {
 		}
 		
 		//Get the route which determines the join table
-		Route r = new Route();
-		Object o =  r.getRoute(allKws);
-		if(o != null) query += genJoins((String[])o);
-		else throw new Exception("Routes are null");
+		allKws = makeCompleteListOfVertexs(allKws);
+		query += genJoins(allKws);
 		
 		query += "WHERE\n";
 		
@@ -91,6 +89,20 @@ public class QueryBuilder {
 				} else {
 					if(key.indexOf(".") == -1) throw new Exception("In specifying constraints qualify keys with dot operater. Invalid key " + key);
 					query += "\t" + km.getMappedValue(key) + " " ;
+
+					StringTokenizer st = new StringTokenizer(key, ".");
+					int count = st.countTokens();
+					String token = st.nextToken();
+					Vertex vFirst = u.getMappedVertex(token);
+					Vertex vCombined = u.getMappedVertex(key);
+					if(vCombined == null) {
+						query += "\t" + km.getMappedValue(key) + " " ;
+					} else {
+					        query += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
+						//FIXME default can be list
+					}
+
+
 					if(Util.isSame(op, "in")) query += handleIn(val);
 					else query += op + " '" + val + "'";
 				}
@@ -117,7 +129,40 @@ public class QueryBuilder {
 
 	}
 	
-	private String genJoins(String[] routes) {
+	private String genJoins(ArrayList lKeywords) {
+		ArrayList uniquePassed = new ArrayList();
+		String prev = "";
+		String query = "\nFROM\n\t" + (String)lKeywords.get(0) + "\n";
+		int len = lKeywords.size();
+		for(int i = 1 ; i != len ; ++i ) {
+			for(int j = 0 ; j != len ; ++j ) {
+				if(i != j) {
+					String v1 = (String)lKeywords.get(i);
+					String v2 = (String)lKeywords.get(j);
+					if(! (isIn(uniquePassed, v1 + "," + v2 )) && !(isIn(uniquePassed, v2 + "," + v1))) {
+						if(u.doesEdgeExist(v1, v2)) {
+							System.out.println("Relation bwteen " + v1 + " and " + v2 + " is " + u.getRealtionFromVertex(v1, v2));
+							String tmp = u.getRealtionFromVertex(v1, v2);
+							query += "\tJOIN " + v1 + "\n";
+							query += "\t\tON " + tmp + "\n";
+							uniquePassed.add(v1 + "," + v2);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return query;
+	}
+	
+	private boolean isIn(ArrayList aList, String key) {
+		for (int i = 0 ; i != aList.size(); ++i) {
+			if( ((String)(aList.get(i) )).equals(key)) return true;
+		}
+		return false;
+	}
+	/*private String genJoins(String[] routes) {
 		String prev = "";
 		String query = "\nFROM\n\t";
 		for(String s: routes) {
@@ -131,7 +176,7 @@ public class QueryBuilder {
 			prev = s;
 		}
 		return query;
-	}
+	}*/
 
 
 	private String handleIn(String val) {
@@ -152,7 +197,9 @@ public class QueryBuilder {
 		if(data.length != 4) {
 			throw new Exception("Invalid path " + path);
 		}
-		String[] route = {"PrimaryDataset", "ProcessedDataset"};
+		ArrayList route = new ArrayList();
+		route.add("PrimaryDataset");
+		route.add("ProcessedDataset");
 		String query = "IN ( \n" +
 			"SELECT \n" +
 			"\tProcessedDataset.ID " + genJoins(route) +
@@ -177,6 +224,7 @@ public class QueryBuilder {
 				boolean isEdge = false;
 				for(int j = 0 ; j != len ; ++j ) {
 					if(i != j) {
+						//System.out.println("Checking " + lKeywords.get(i) + " with " + lKeywords.get(j) );
 						if(u.doesEdgeExist((String)lKeywords.get(i), (String)lKeywords.get(j)))	{
 							isEdge = true;
 							break;
@@ -184,14 +232,32 @@ public class QueryBuilder {
 					}
 				}
 				if(!isEdge) {
+					//System.out.println("Shoertest edge in " + (String)lKeywords.get(i) + " --- " + (String)lKeywords.get((i+1)%len));
 					List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(i), (String)lKeywords.get((i+1)%len));
 					for (Edge e: lEdges) {
+						System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
 						lKeywords = addUniqueInList(lKeywords, u.getFirstNameFromEdge(e));
+						lKeywords = addUniqueInList(lKeywords, u.getSecondNameFromEdge(e));
 					}
+					//System.out.println("No edge callin again ---------> \n");
 					return makeCompleteListOfVertexs (lKeywords);
 				}
 			}
 		return lKeywords;
+	}
+
+	public static void main(String args[]) {
+		QueryBuilder qb = new QueryBuilder();
+		ArrayList tmp = new ArrayList();
+		tmp.add("PrimaryDataset");
+		tmp.add("FileType");
+		tmp.add("Runs");
+		//tmp.add("ProcessedDataset");
+		//tmp.add("Files");
+		tmp = qb.makeCompleteListOfVertexs(tmp);
+		for (int i =0 ; i!=tmp.size() ;++i ) {
+			System.out.println("ID " + tmp.get(i));
+		}
 	}
 
 }

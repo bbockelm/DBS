@@ -73,6 +73,10 @@ public class GraphUtil{
 		return (String)e.getUserDatum("relation");
 	}
 
+	public String getRealtionFromVertex(String vStr1, String vStr2) {
+		return getRealtionFromEdge(getEdgeBetweenVertex(vStr1, vStr2));
+	}
+	
 	public boolean doesEdgeExist(String vStr1, String vStr2) {
 		for (Iterator eIt = g.getEdges().iterator(); eIt.hasNext(); ) {
 			Pair p = ((Edge) eIt.next()).getEndpoints();
@@ -83,6 +87,19 @@ public class GraphUtil{
 					)  return true;
 		}
 		return false;
+	}
+
+	public Edge getEdgeBetweenVertex(String vStr1, String vStr2) {
+		for (Iterator eIt = g.getEdges().iterator(); eIt.hasNext(); ) {
+			Edge e = (Edge) eIt.next();
+			Pair p = e.getEndpoints();
+			String v1FromGraphStr = getRealFromVertex((Vertex) p.getFirst());
+			String v2FromGraphStr = getRealFromVertex((Vertex) p.getSecond());
+			if( (vStr1.equals(v1FromGraphStr) && vStr2.equals(v2FromGraphStr)) 
+					|| (vStr1.equals(v2FromGraphStr) && vStr2.equals(v1FromGraphStr))
+					)  return e;
+		}
+		return null;
 	}
 
 
