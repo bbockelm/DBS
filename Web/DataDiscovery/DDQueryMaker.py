@@ -208,7 +208,7 @@ class DDQueryMaker(DDLogger):
 
   def makeQuery(self,_name,**kwargs):
       try:
-          print "DDQueryMaker::makerQuery",_name,kwargs
+#          print "DDQueryMaker::makerQuery",_name,kwargs
           funcDict  = getArg(kwargs,"funcDict",{})
           nameIn,nameOut =_name.split("2")
           table,col = nameOut.split("_")
@@ -542,7 +542,7 @@ class DDQueryMaker(DDLogger):
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       
   def executeSingleQuery(self,sel):
-      print "\n\n+++ executeSingleQuery",sel,self.extractBindParams(sel)
+#      print "\n\n+++ executeSingleQuery\n",sel,self.extractBindParams(sel)
       con  = self.connectToDB()
       try:
           result = self.getSQLAlchemyResult(con,sel)
@@ -616,7 +616,7 @@ class DDQueryMaker(DDLogger):
       return oList,tList
 
   def executeQueryFromTable(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
-      print "\n\n+++executeQueryFromTable",output,tabCol,sortName,sortOrder,query,fromRow,limit
+#      print "\n\n+++ executeQueryFromTable\n",output,tabCol,sortName,sortOrder,query,self.extractBindParams(query)
       con  = self.connectToDB()
       sel  = ""
       try:
@@ -640,6 +640,8 @@ class DDQueryMaker(DDLogger):
               else:
                  oSel= [self.col(tab,c),sortCol]
               gBy = oSel
+              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                 gBy = gBy+['rownum']
           except:
               # multi select case
               oSel = ['*']
@@ -653,8 +655,6 @@ class DDQueryMaker(DDLogger):
                  oBy  = []
               gBy  = []
               pass
-          if self.dbManager.dbType[self.dbsInstance]=='oracle':
-             gBy = gBy+['rownum']
           sel = sqlalchemy.select(oSel,from_obj=[obj],group_by=gBy,order_by=oBy,distinct=True)
           if tab:
              sel.append_whereclause(self.col(tab,c).in_(query))

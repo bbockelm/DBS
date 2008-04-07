@@ -268,7 +268,7 @@ class DDRules:
        return words
 
    def preParseInput(self,input):
-       input=input.replace(")"," ) ").replace("("," ( ").replace(" dataset "," path ")
+       input=input.replace(")"," ) ").replace("("," ( ")
        # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
        isplit=input.split()
        try:
@@ -297,6 +297,8 @@ class DDRules:
        except:
            traceback.print_exc()
            raise "prePraseInput: fail to parse your input='%s'"%input
+       input = ' '.joint(isplit)
+       input = input.replace(" dataset "," path ")
        return ' '.join(isplit)
     
    def parseInput(self,input,sortName,sortOrder,case):

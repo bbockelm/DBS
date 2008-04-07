@@ -5036,7 +5036,7 @@ Save query as:
     aSearchShowAll.exposed=True
 
     def aSearchSummary(self,**kwargs):
-        print "\n\n+++aSearchSummary",kwargs
+#        print "\n\n+++aSearchSummary",kwargs
         tabCol   = kwargs['tabCol']
         if not tabCol:
            tabCol= "Table.Column"

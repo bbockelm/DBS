@@ -875,3 +875,7 @@ if __name__ == "__main__":
 #   print convertListToString([1,2,3,4,5,6,7,8,9,10])
 #   print tip()
    data=getCMSNames()
+   cmsNames=data.keys()
+   cmsNames.sort()
+   for item in cmsNames: print item
+
