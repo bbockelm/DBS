@@ -156,16 +156,73 @@ class DDQueryMaker(DDLogger):
          oBy = [sqlalchemy.asc(sortName)]
       return oBy
 
+  def makeJoinQuery(self,toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict={}):
+#      print "\n\n+++makeJoinQuery",toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict
+      try:
+          oSel   = []
+          gBy    = []
+          for tabCol in toSelect.split(","):
+              tab,col = tabCol.split(".")
+              tabOut  = self.dbManager.getTable(self.dbsInstance,tab)
+              tcObj   = self.col(tabOut,col)
+              if funcDict and funcDict.has_key(tabCol):
+                 func = getattr(sqlalchemy.func,funcDict[tabCol])
+                 oSel.append(func(tcObj.distinct()))
+              else:
+                 oSel.append(tcObj)
+                 gBy.append(tcObj)
+          _oSel  = sqlalchemy.select(oSel,distinct=True)
+          iSel   = []
+          for tabCol in toJoin.split(","):
+              tab,col = tabCol.split(".")
+              tabOut  = self.dbManager.getTable(self.dbsInstance,tab)
+              iSel.append(self.col(tabOut,col))
+          _Sel   = sqlalchemy.select(iSel,distinct=True)
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             qb  = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
+          else:
+             qb  = Schema(self.dbManager.dbTables[self.dbsInstance])
+          if toSelect==toJoin:
+             query =_oSel
+          else:
+             query  = qb.BuildQueryWithSel(_oSel,_Sel)
+          if gBy:
+             query=query.group_by(*gBy)
+          bparams=[]
+          wList  = wClause.split()
+          for idx in xrange(0,len(wList)):
+              item = wList[idx]
+              if constrainList().count(item):
+                 rval=wList[idx+1]
+                 rval=rval.replace("*","%")
+                 bParam="p%s"%idx
+                 key=":%s"%bParam
+                 wList[idx+1]=key
+                 bparams.append(sqlalchemy.bindparam(key=bParam,value=rval))
+          sel=sqlalchemy.text(' '.join(wList),bind=self.dbManager.engine[self.dbsInstance],bindparams=bparams)
+          query.append_whereclause(sel)
+          return query
+      except:
+          traceback.print_exc()
+          raise "Fail in DDQueryMaker::makeJoinQuery"+traceback.format_exc()
+
   def makeQuery(self,_name,**kwargs):
       try:
-#          print "DDQueryMaker::makerQuery",_name,kwargs
+          print "DDQueryMaker::makerQuery",_name,kwargs
+          funcDict  = getArg(kwargs,"funcDict",{})
           nameIn,nameOut =_name.split("2")
           table,col = nameOut.split("_")
           tabOut    = self.dbManager.getTable(self.dbsInstance,table)
-          table,col = nameOut.split("_")
-          tabOut    = self.dbManager.getTable(self.dbsInstance,table)
           colOut    = col
-          oSel      = [self.col(tabOut,col)]
+#          oSel      = [self.col(tabOut,col)]
+          tcObj     = self.col(tabOut,colOut)
+          gBy       = []
+          if funcDict and funcDict.has_key(colOut):
+             func = getattr(sqlalchemy.func,funcDict[colOut])
+             oSel=[func(tcObj.distinct())]
+          else:
+             oSel=[tcObj]
+             gBy.append(tcObj)
           table,col = nameIn.split("_")
           tabIn     = self.dbManager.getTable(self.dbsInstance,table)
           colIn     = col
@@ -174,12 +231,18 @@ class DDQueryMaker(DDLogger):
           if nameIn==nameOut:
              query  =_oSel 
           else:
-             md     = self.dbManager.metaDict[self.dbsInstance]
+#             md     = self.dbManager.metaDict[self.dbsInstance]
              _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
              qb = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
+             if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                qb  = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
+             else:
+                qb  = Schema(self.dbManager.dbTables[self.dbsInstance])
              query  = qb.BuildQueryWithSel(_oSel,_Sel)
           query=query.distinct()
           query=query.apply_labels()
+          if gBy:
+             query=query.group_by(*gBy)
           if kwargs.has_key('rval'):
              rval   = kwargs['rval']
              if  type(rval) is types.StringType:
@@ -187,26 +250,32 @@ class DDQueryMaker(DDLogger):
                  self.buildExp(query,self.col(tabIn,colIn),rval,case)
              else:
                  query.append_whereclause(self.col(tabIn,colIn).in_(rval))
-#          print query
-#          print
           return query
       except:
           traceback.print_exc()
-          raise "Fail in DDQueryMaker::makerQuery"+traceback.format_exc()
+          raise "Fail in DDQueryMaker::makeQuery"+traceback.format_exc()
       
   ### Implementation for DDSearch
   def buildNotLikeExp(self,sel,tc,val,case='on'):
+      if self.dbManager.dbType[self.dbsInstance]=='oracle':
+         esc='\\'
+      else:
+         esc=None
       val=val.replace("_","\_")
       if case=='on':
-         return sel.append_whereclause( ~tc.like(val.replace("*","%"),escape='\\') )
+         return sel.append_whereclause( ~tc.like(val.replace("*","%"),escape=esc) )
       else:
-         return sel.append_whereclause( ~sqlalchemy.func.upper(tc).like(val.upper().replace("*","%"),escape='\\') )
+         return sel.append_whereclause( ~sqlalchemy.func.upper(tc).like(val.upper().replace("*","%"),escape=esc) )
   def buildLikeExp(self,sel,tc,val,case='on'):
+      if self.dbManager.dbType[self.dbsInstance]=='oracle':
+         esc='\\'
+      else:
+         esc=None
       val=val.replace("_","\_")
       if case=='on':
-         return sel.append_whereclause( tc.like(val.replace("*","%"),escape='\\') )
+         return sel.append_whereclause( tc.like(val.replace("*","%"),escape=esc) )
       else:
-         return sel.append_whereclause( sqlalchemy.func.upper(tc).like(val.upper().replace("*","%"),escape='\\') )
+         return sel.append_whereclause( sqlalchemy.func.upper(tc).like(val.upper().replace("*","%"),escape=esc) )
   def buildEqExp(self,sel,tc,val,case='on'):
       if case=='on':
          return sel.append_whereclause(tc==val)
@@ -342,8 +411,8 @@ class DDQueryMaker(DDLogger):
   def countSel(self,query,tabCol):
       con  = self.connectToDB()
       query= query.alias('query')
-      t,c  = tabCol.split(".")
-      tc   = self.col(self.dbManager.getTable(self.dbsInstance,t),c)
+#      t,c  = tabCol.split(".")
+#      tc   = self.col(self.dbManager.getTable(self.dbsInstance,t),c)
       oSel = [sqlalchemy.func.count('*')]
       sel  = sqlalchemy.select(oSel,from_obj=[query])
       sel  = sel.alias('sel')
@@ -448,16 +517,21 @@ class DDQueryMaker(DDLogger):
          print "%s=%s above threshold %s\n"%(th_str,threshold,qth)
          raise msg
 
-  def processQuery(self,iList,userMode="user"):
+  def processQuery(self,input,userMode="user"):
       """Take input list of path-functions and construct out of them SQL and process it"""
       if self.verbose:
-         print "\n\n+++ProcessQuery",str(iList)
-      sel = self.processSelExp(iList)
+         print "\n\n+++ProcessQuery",str(input)
+      if input.find("makeJoinQuery"):
+         sel = eval(input)
+      else:
+         sel = self.processSelExp(input)
       self.queryAnalyzer(sel,userMode)
       return sel
 
   def executeQuery(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
-      if not sortName:
+      if output.find("total")!=-1 and output.find(",")==-1: # ex: find total(run) where ...
+         return self.executeSingleQuery(query)
+      if not sortName and output.find(",")==-1:
          t,c   = tabCol.split(".") 
          sortName=c
       dbTables = self.dbManager.getTableNames(self.dbsInstance)
@@ -467,7 +541,31 @@ class DDQueryMaker(DDLogger):
       else:
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       
-      
+  def executeSingleQuery(self,sel):
+      print "\n\n+++ executeSingleQuery",sel,self.extractBindParams(sel)
+      con  = self.connectToDB()
+      try:
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          print msg
+          traceback.print_exc()
+          raise "Fail in executeSingleQuery"
+      oList=[]
+      tList=[]
+      for item in result:
+          # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             oList.append(item.values()[:-1]) # last element is rownum
+             if not tList:
+                tList=list(item.keys()[:-1])
+          else:
+             oList.append(item.values())
+             if not tList:
+                tList=list(item.keys())
+      self.closeConnection(con)
+      return oList,tList
+
   def executeQueryFromView(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
 #      print "\n\n+++executeQueryFromView",output,tabCol,sortName,sortOrder,query,fromRow,limit
       con  = self.connectToDB()
@@ -518,7 +616,7 @@ class DDQueryMaker(DDLogger):
       return oList,tList
 
   def executeQueryFromTable(self,output,tabCol,sortName,sortOrder,query,fromRow,limit):
-#      print "\n\n+++executeQueryFromTable",output,tabCol,sortName,sortOrder,query,fromRow,limit
+      print "\n\n+++executeQueryFromTable",output,tabCol,sortName,sortOrder,query,fromRow,limit
       con  = self.connectToDB()
       sel  = ""
       try:
@@ -526,25 +624,40 @@ class DDQueryMaker(DDLogger):
           # ORACLE need special way to fetch fromRow/limit, so we wrap query into
           # select * from (SELECT x.*, rownum as rnum FROM (query) x) where rnum between min and max;
           t,c    = tabCol.split(".")
-          tab    = self.dbManager.getTable(self.dbsInstance,t)
-          if t.lower()=='block' and c=='Path' and sortName.find('Date')!=-1:
-             tprd    = self.alias('ProcessedDataset','tprd')
-             oBy     = self.sortOrder(self.col(tprd,sortName),sortOrder)
-             obj     = tprd.join(tab,onclause=self.col(tprd,'ID')==self.col(tab,'Dataset'))
-             sortCol = self.col(tprd,sortName)
-          else:
-             oBy     = self.sortOrder(self.col(tab,sortName),sortOrder)
-             obj     = tab
-             sortCol = self.col(tab,sortName)
-          if c==sortName:
-             oSel= [self.col(tab,c)]
-          else:
-             oSel= [self.col(tab,c),sortCol]
-          gBy = oSel
+          try:
+              tab    = self.dbManager.getTable(self.dbsInstance,t)
+              if t.lower()=='block' and c=='Path' and sortName.find('Date')!=-1:
+                 tprd    = self.alias('ProcessedDataset','tprd')
+                 oBy     = self.sortOrder(self.col(tprd,sortName),sortOrder)
+                 obj     = tprd.join(tab,onclause=self.col(tprd,'ID')==self.col(tab,'Dataset'))
+                 sortCol = self.col(tprd,sortName)
+              else:
+                 oBy     = self.sortOrder(self.col(tab,sortName),sortOrder)
+                 obj     = tab
+                 sortCol = self.col(tab,sortName)
+              if c==sortName:
+                 oSel= [self.col(tab,c)]
+              else:
+                 oSel= [self.col(tab,c),sortCol]
+              gBy = oSel
+          except:
+              # multi select case
+              oSel = ['*']
+              qobj = query.alias('qobj')
+              tab  = None
+              obj  = qobj
+              if sortName and sortName.find(".")!=-1:
+                 tab,col = sortName.split(".")
+                 oBy  = self.sortOrder(self.col(tab,col),sortOrder)
+              else:
+                 oBy  = []
+              gBy  = []
+              pass
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              gBy = gBy+['rownum']
           sel = sqlalchemy.select(oSel,from_obj=[obj],group_by=gBy,order_by=oBy,distinct=True)
-          sel.append_whereclause(self.col(tab,c).in_(query))
+          if tab:
+             sel.append_whereclause(self.col(tab,c).in_(query))
           if  limit:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
                  tmp = sel.alias('tmp')
@@ -560,7 +673,7 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
-          raise "Fail in executeQuery"
+          raise "Fail in executeQueryFromTable"
       oList=[]
       tList=[]
       for item in result:

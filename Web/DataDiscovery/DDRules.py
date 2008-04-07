@@ -268,7 +268,7 @@ class DDRules:
        return words
 
    def preParseInput(self,input):
-       input=input.replace(")"," ) ").replace("("," ( ")
+       input=input.replace(")"," ) ").replace("("," ( ").replace(" dataset "," path ")
        # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
        isplit=input.split()
        try:
@@ -300,6 +300,7 @@ class DDRules:
        return ' '.join(isplit)
     
    def parseInput(self,input,sortName,sortOrder,case):
+       _input="%s"%input
        idx=input.lower().find('where')
        if idx!=-1:
           what=input[:idx]
@@ -332,6 +333,58 @@ class DDRules:
                words.append(key)
        except:
            raise msg
+       # check if user made multiple select, if so, check where clause for provided operators
+       if not self.colName.keys().count(selKey) and (selKey.find(",")!=-1 or selKey.find("total")!=-1):
+          if self.verbose:
+             print "\n+++ Found multiple selection, stop parsing\n",_input
+          if input.find(" = ")==-1 and selKey.find("total")==-1:
+             msg ="In order to query multiple fields you MUST provide at least one equal constrain\n"
+             msg+="Example: find file,run where path=/a/b/c\n"
+             raise msg
+          sList=[]
+          fDict={}
+          for key in selKey.split(","):
+              key=key.strip()
+              # look for functions
+              funcFound=DDUtil.findKeyInAList(self.functions,key)
+              if funcFound:
+                 sKey=key.replace("(","").replace(")","").replace(funcFound,"").strip()
+                 if not self.colName.keys().count(sKey):
+                    raise "Fail to parse select expression, invalid key='%s'"%sKey
+                 tabName=self.tableName[sKey]
+                 colName=self.colName[sKey]
+                 if funcFound=="total":
+                    if colName.lower().find("numberof")!=-1 or colName.lower().find("size")!=-1:
+                       fDict["%s.%s"%(tabName,colName)]="sum"
+                    else:
+                       fDict["%s.%s"%(tabName,colName)]="count"
+                 else:
+                    fDict["%s.%s"%(tabName,colName)]=funcFound
+                 key=sKey
+              if not self.colName.keys().count(key):
+                 raise "Fail to parse select expression, invalid key='%s'"%key
+              sKey="%s.%s"%(self.tableName[key],self.colName[key])
+              sList.append(sKey)
+
+          toSelect=','.join(sList)
+          for val in pDict.values():
+              key,op,rval=val.split()
+              if not self.colName.keys().count(key):
+                 raise "Fail to parse where clause expression, invalid key='%s'"%key
+              input=input.replace(key,"%s.%s"%(self.tableName[key],self.colName[key]))
+              _select="%s.%s"%(self.tableName[key],self.colName[key])
+              if not sList.count(_select):
+                 sList.append(_select)
+          toJoin=','.join(sList)
+          if self.colName.keys().count(sortName):
+             sortName="%s.%s"%(self.tableName[sortName],self.colName[sortName])
+          else:
+             sortName=sList[0]
+          fCall="self.makeJoinQuery(toSelect='%s',toJoin='%s',wClause='%s',sortName='%s',sortOrder='%s',case='%s',funcDict=%s)"%(toSelect,toJoin,input,sortName,sortOrder,case,fDict)
+          if self.verbose:
+             print fCall
+          return fCall
+       # proceed with parsing
        for key in pDict.keys():
            words[words.index(key)]=self.parsePattern(selKey,sortName,sortOrder,pDict[key],case)
        return ' '.join(words)
@@ -361,6 +414,7 @@ class DDRules:
    def parseObject(self,selKey,sortName,sortOrder,input,case):
        words = input
        _words= []
+       _fDict= {}
        f=""
        v=""
        for w in words:
@@ -372,6 +426,14 @@ class DDRules:
                  funcFound=DDUtil.findKeyInAList(self.functions,selKey)
                  if funcFound:
                     selKey=selKey.replace("(","").replace(")","").replace(funcFound,"").strip()
+                    colName=self.colName[selKey]
+                    if funcFound=="total":
+                       if colName.lower().find("numberof")!=-1 or colName.lower().find("size")!=-1:
+                          _fDict[colName]="sum"
+                       else:
+                          _fDict[colName]="count"
+                    else:
+                       _fDict[colName]=funcFound
                  fList = self.dbs_map[(f,selKey)]
                  _call = ""
                  count = 0
@@ -382,7 +444,7 @@ class DDRules:
                      count+=1
                  _call+="'%s',case='%s'"%(v,case)
                  if funcFound:
-                    _call+=",func=%s"%funcFound
+                    _call+=",funcDict=%s"%_fDict
                  for i in xrange(0,count):
                      if i==count-1:
                         _call+=",sortName='%s',sortOrder='%s')"%(sortName,sortOrder)
@@ -405,9 +467,17 @@ class DDRules:
 #
 if __name__ == "__main__":
     aSearch = DDRules(verbose=1)
+    aSearch.parser("find dataset where path like *Online*")
     aSearch.parser("(path=/a/b/c and block=123) or run >= 12345 path =bla or (path= /c/d/e or run=123)")
     aSearch.parser("find primds where (path like *Online* or path not like *RelVal* ) and release> CMSSW_1_7 ")
-#    aSearch.parser("find total(run) where (path like *bla* and block>=123) or run=12345")
+    try:
+        aSearch.parser("find file,run where path like *Online*")
+    except:
+        traceback.print_exc()
+        pass
+    aSearch.parser("find file,run where path=/CSA07AllEvents/CMSSW_1_6_7-CSA07-Tier0-AOD-A2-Gumbo/AODSIM and run=123")
+    aSearch.parser("find file,total(run) where path=/CSA07AllEvents/CMSSW_1_6_7-CSA07-Tier0-AOD-A2-Gumbo/AODSIM and run=123")
+    aSearch.parser("find total(run) where (path like *bla* and block>=123) or run=12345")
 #    aSearch.parser("find run where (path like *bla* and block>=123) or run=12345")
 #    aSearch.parser("run=12345")
 #    aSearch.parser("run not like 12345")

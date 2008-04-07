@@ -495,12 +495,16 @@ class DDServer(DDLogger,Controller):
         sendEmail(msg)
         
     def getCMSNames(self):
-        if not self.cmsNames:
-           self.cmsNames=DDUtil.getCMSNames()
-        else:
-           lastTime=self.cmsNames['time']
-           if (time.time()-lastTime)>(24*60*60): # more then a day
-              self.cmsNames=DDUtil.getCMSNames()
+        try:
+            if not self.cmsNames:
+               self.cmsNames=DDUtil.getCMSNames()
+            else:
+               lastTime=self.cmsNames['time']
+               if (time.time()-lastTime)>(24*60*60): # more then a day
+                  self.cmsNames=DDUtil.getCMSNames()
+        except:
+             self.cmsName=[]
+             pass
         return self.cmsNames
 
     def helperInit(self,dbsInst):
@@ -4973,6 +4977,8 @@ Save query as:
     # helper functions to decorate output
     def aSearchShowAll(self,**kwargs):
         tabCol   = kwargs['tabCol']
+        if not tabCol:
+           tabCol= "Table.Column"
         tableName,colName=tabCol.split(".")
         tableName= tableName.lower()
         colName  = colName.lower()
@@ -5006,7 +5012,9 @@ Save query as:
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if html:
            page  = self.genTopHTML(userMode=userMode)
-           page += "<p>%s sorted by %s in %s order</p>"%(self.ddrules.longName[output].capitalize(),sortName,sortOrder.upper())
+           try:
+              page += "<p>%s sorted by %s in %s order</p>"%(self.ddrules.longName[output].capitalize(),sortName,sortOrder.upper())
+           except: pass
         else:
            if xml:
               page+="\n<%s>\n"%tableName
@@ -5028,8 +5036,10 @@ Save query as:
     aSearchShowAll.exposed=True
 
     def aSearchSummary(self,**kwargs):
-#        print "\n\n+++aSearchSummary",kwargs
+        print "\n\n+++aSearchSummary",kwargs
         tabCol   = kwargs['tabCol']
+        if not tabCol:
+           tabCol= "Table.Column"
         sortName = kwargs['sortName']
         sortOrder= kwargs['sortOrder']
         fromRow  = kwargs['fromRow']
@@ -5047,12 +5057,21 @@ Save query as:
         output   = kwargs['output']
         grid     = int(getArg(kwargs,'grid',0))
         userInput= kwargs['userInput']
-        result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        # only take table column names from view's table, otherwise use what was provided by user
+        if output.find(",")!=-1:
+           titleList=output.split(",")
+        elif output.find("total")!=-1 and len(titleList)==1:
+           titleList=[output]
+
         page     = ""
         num      = kwargs['num']
         oname    = kwargs['oname']
         link     = kwargs['link']
-        longName = self.ddrules.longName[output].capitalize()
+        if output.find(",")!=-1 or output.find("total")!=-1:
+           longName=""
+        else:
+           longName = self.ddrules.longName[output].capitalize()
         counter  = 0
         func     = lambda x: [i.lower() for i in x]
         try:
@@ -5110,7 +5129,7 @@ Save query as:
                        page+="  <%s>%s<%s>\n"%(titleList[jdx].lower(),elem,titleList[jdx].lower())
                     else:
                        page+="%s %s \n"%(titleList[jdx],elem)
-            if html and grid:
+            if html and grid and output.find(",")==-1 and output.find("total")==-1: # no multiple select
                # add more links column
                more ="""<select style="width:100px" onchange="javascript:load(this.options[this.selectedIndex].value)">\n"""
                more+="""<option value="">More Info</option>\n"""
@@ -5129,13 +5148,15 @@ Save query as:
             counter+=1
         if grid and html and result:
            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
-           titleList+=['LINKS']
+           if output.find(",")==-1 and output.find("total")==-1: # no multi select and total(x)
+              titleList+=['LINKS']
            for t in titleList:
-               t=t.upper().replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
-               if t.lower()=='created' or t.lower()=='creationdate':
-                  t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                th_class=""
                if t==titleList[0]: th_class="th_left"
+               if output.find("total")==-1:
+                  t=t.upper().replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
+               if t.lower()=='created' or t.lower()=='creationdate':
+                  t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
                tab+="<th class=\"%s\">%s</th>"%(th_class,t)
            tab+="</tr>"
            page=tab+page+"</table>\n"
@@ -5278,10 +5299,21 @@ Save query as:
         except:
             traceback.print_exc()
             raise "aSearch require input query"
+        userInput = userInput.replace(" dataset "," path ")
+        for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
+            userInput=userInput.replace(pair[0],pair[1])
         output    = "path"
         if userInput.lower().find(" where ")!=-1:
            output=userInput.lower().split(" where ")[0].split("find")[1].strip()
-        _out     = self.ddrules.longName[output]
+        try:
+            if output.find(",")!=-1:
+               for item in output.split(","):
+                   _out = self.ddrules.longName[item.strip()]
+            else:
+               _out     = self.ddrules.longName[output]
+        except:
+            _out=output
+            pass
         if sortName.lower()=="name":
            sortName = self.ddrules.colName[output]
         sortOrder = getArg(kwargs,'sortOrder','desc')
@@ -5296,8 +5328,17 @@ Save query as:
 
         fromRow  =_idx*pagerStep
         limit    = pagerStep
-        oTable   = self.ddrules.tableName[output]
-        tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
+        oTable   = ""
+        tabCol   = ""
+        if output.find(",")==-1:
+           if output.find("total")!=-1:
+              o  = output.replace("(","").replace(")","").replace("total","")
+              oTable   = self.ddrules.tableName[o]
+              tabCol   = "%s.%s"%(oTable,self.ddrules.colName[o])
+           else:
+              oTable   = self.ddrules.tableName[output]
+              tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
+              
         self.qmaker.initDBS(dbsInst)
         try:
             query= self.qmaker.processQuery(sel,userMode)
@@ -5380,8 +5421,11 @@ Save query as:
             if userMode=='dbsExpert':
                page+="<pre>%s</pre>"%query
             if details:
-               method=getattr(self,output+'Summary')
-               page+=method(**kDict)
+               if output.find(",")!=-1 or output.find("total")!=-1:
+                  page+=self.aSearchSummary(**kDict)
+               else:
+                  method=getattr(self,output+'Summary')
+                  page+=method(**kDict)
             else:
                page+=self.aSearchShowAll(**kDict)
         except:    
