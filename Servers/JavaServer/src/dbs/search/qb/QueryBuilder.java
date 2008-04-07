@@ -2,6 +2,9 @@ package dbs.search.qb;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
+
 import dbs.search.parser.Constraint;
 import dbs.search.graph.GraphUtil;
 import dbs.util.Validate;
@@ -25,7 +28,7 @@ public class QueryBuilder {
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
 			if(Util.isSame(aKw, "path")) {
-				allKws = addUniqueInList(allKws, "block");
+				allKws = addUniqueInList(allKws, "Block");
 				query += km.getMappedValue("block.path");
 			} else {
 
@@ -70,6 +73,7 @@ public class QueryBuilder {
 		
 		//Get the route which determines the join table
 		allKws = makeCompleteListOfVertexs(allKws);
+		allKws = sortVertexs(allKws);
 		query += genJoins(allKws);
 		
 		query += "WHERE\n";
@@ -88,7 +92,6 @@ public class QueryBuilder {
 					query += "\tProcessedDataset.ID " + handlePath(val);
 				} else {
 					if(key.indexOf(".") == -1) throw new Exception("In specifying constraints qualify keys with dot operater. Invalid key " + key);
-					query += "\t" + km.getMappedValue(key) + " " ;
 
 					StringTokenizer st = new StringTokenizer(key, ".");
 					int count = st.countTokens();
@@ -130,6 +133,32 @@ public class QueryBuilder {
 	}
 	
 	private String genJoins(ArrayList lKeywords) {
+		//ArrayList uniquePassed = new ArrayList();
+		String prev = "";
+		String query = "\nFROM\n\t" + (String)lKeywords.get(0) + "\n";
+		int len = lKeywords.size();
+		for(int i = 1 ; i != len ; ++i ) {
+			
+			for(int j = (i-1) ; j != -1 ; --j ) {
+					String v1 = (String)lKeywords.get(i);
+					String v2 = (String)lKeywords.get(j);
+					//if(! (isIn(uniquePassed, v1 + "," + v2 )) && !(isIn(uniquePassed, v2 + "," + v1))) {
+						if(u.doesEdgeExist(v1, v2)) {
+							//System.out.println("Relation bwteen " + v1 + " and " + v2 + " is " + u.getRealtionFromVertex(v1, v2));
+							String tmp = u.getRealtionFromVertex(v1, v2);
+							query += "\tJOIN " + v1 + "\n";
+							query += "\t\tON " + tmp + "\n";
+							//uniquePassed.add(v1 + "," + v2);
+							break;
+						}
+					//}
+			}
+		}
+
+		return query;
+	}
+	
+	/*private String genJoins(ArrayList lKeywords) {
 		ArrayList uniquePassed = new ArrayList();
 		String prev = "";
 		String query = "\nFROM\n\t" + (String)lKeywords.get(0) + "\n";
@@ -154,14 +183,15 @@ public class QueryBuilder {
 		}
 
 		return query;
-	}
-	
+	}*/
+
 	private boolean isIn(ArrayList aList, String key) {
 		for (int i = 0 ; i != aList.size(); ++i) {
 			if( ((String)(aList.get(i) )).equals(key)) return true;
 		}
 		return false;
 	}
+	
 	/*private String genJoins(String[] routes) {
 		String prev = "";
 		String query = "\nFROM\n\t";
@@ -219,42 +249,99 @@ public class QueryBuilder {
 	}
 
 	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords) {
-			int len = lKeywords.size();
-			for(int i = 0 ; i != len ; ++i ) {
-				boolean isEdge = false;
-				for(int j = 0 ; j != len ; ++j ) {
-					if(i != j) {
-						//System.out.println("Checking " + lKeywords.get(i) + " with " + lKeywords.get(j) );
-						if(u.doesEdgeExist((String)lKeywords.get(i), (String)lKeywords.get(j)))	{
-							isEdge = true;
-							break;
+		int len = lKeywords.size();
+		for(int i = 0 ; i != len ; ++i ) {
+			boolean isEdge = false;
+			for(int j = 0 ; j != len ; ++j ) {
+				if(i != j) {
+					//System.out.println("Checking " + lKeywords.get(i) + " with " + lKeywords.get(j) );
+					if(u.doesEdgeExist((String)lKeywords.get(i), (String)lKeywords.get(j)))	{
+						isEdge = true;
+						break;
+					}
+				}
+			}
+			if(!isEdge) {
+				//System.out.println("Shoertest edge in " + (String)lKeywords.get(i) + " --- " + (String)lKeywords.get((i+1)%len));
+				List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(i), (String)lKeywords.get((i+1)%len));
+				for (Edge e: lEdges) {
+					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
+					lKeywords = addUniqueInList(lKeywords, u.getFirstNameFromEdge(e));
+					lKeywords = addUniqueInList(lKeywords, u.getSecondNameFromEdge(e));
+				}
+				//System.out.println("No edge callin again ---------> \n");
+				return makeCompleteListOfVertexs (lKeywords);
+			}
+		}
+		return lKeywords;
+	}
+	public ArrayList sortVertexs(ArrayList lKeywords) {
+		//System.out.println("INSIDE sortVertexs");
+		int len = lKeywords.size();
+		String leaf = "";
+		for(int i = 0 ; i != len ; ++i ) {
+			String aVertex = (String)lKeywords.get(i);
+			if(isLeaf(aVertex, lKeywords)) {
+				leaf = aVertex;
+				break;
+			}
+		}
+		if(leaf.equals("")) leaf = (String)lKeywords.get(0);
+		ArrayList toReturn = new ArrayList();
+		toReturn.add(leaf);
+		
+		int reps = -1;
+		while( toReturn.size() != len) {
+			++reps;
+			for(int j = 0 ; j != len ; ++j ) {
+				String aVertex = (String)lKeywords.get(j);
+				if(!aVertex.equals(leaf)) {
+					if(!isIn(toReturn, aVertex)) {
+						if(isLeaf(aVertex, lKeywords)) {
+							//System.out.println(aVertex + " is a leaf toreturn size " + toReturn.size() + " len -1 " + (len - 1));
+							if(toReturn.size() == (len - 1)) toReturn.add(aVertex);
+							else if(reps > len) toReturn.add(aVertex);
+						} else {
+							for (int k = (toReturn.size() - 1) ; k != -1 ; --k) {
+								//System.out.println("Cheking edge between " + (String)toReturn.get(k) + " and " + aVertex);
+								if(u.doesEdgeExist((String)toReturn.get(k), aVertex)) {
+									toReturn.add(aVertex);
+									break;
+								}
+							}
 						}
 					}
 				}
-				if(!isEdge) {
-					//System.out.println("Shoertest edge in " + (String)lKeywords.get(i) + " --- " + (String)lKeywords.get((i+1)%len));
-					List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(i), (String)lKeywords.get((i+1)%len));
-					for (Edge e: lEdges) {
-						System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
-						lKeywords = addUniqueInList(lKeywords, u.getFirstNameFromEdge(e));
-						lKeywords = addUniqueInList(lKeywords, u.getSecondNameFromEdge(e));
-					}
-					//System.out.println("No edge callin again ---------> \n");
-					return makeCompleteListOfVertexs (lKeywords);
-				}
 			}
-		return lKeywords;
+		}
+		
+		return toReturn;
+	}
+	private boolean isLeaf(String aVertex, ArrayList lKeyword) {
+		int count = 0;
+		Set s = u.getVertex(aVertex).getNeighbors();
+		for (Iterator eIt = s.iterator(); eIt.hasNext(); ) {
+			String neighbor = u.getRealFromVertex((Vertex) eIt.next());
+			if(isIn(lKeyword, neighbor)) ++count;
+		}
+		if(count == 1) return true;
+		return false;
+
 	}
 
 	public static void main(String args[]) {
 		QueryBuilder qb = new QueryBuilder();
 		ArrayList tmp = new ArrayList();
-		tmp.add("PrimaryDataset");
-		tmp.add("FileType");
+		//tmp.add("PrimaryDataset");
+		tmp.add("Files");
+		tmp.add("LumiSection");
 		tmp.add("Runs");
+		tmp.add("FileRunLumi");
 		//tmp.add("ProcessedDataset");
-		//tmp.add("Files");
-		tmp = qb.makeCompleteListOfVertexs(tmp);
+		//tmp.add("FileType");
+		//tmp.add("ProcDSRuns");
+		tmp = qb.sortVertexs(tmp);
+		//tmp = qb.makeCompleteListOfVertexs(tmp);
 		for (int i =0 ; i!=tmp.size() ;++i ) {
 			System.out.println("ID " + tmp.get(i));
 		}

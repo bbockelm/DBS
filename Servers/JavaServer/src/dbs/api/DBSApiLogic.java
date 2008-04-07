@@ -1,12 +1,13 @@
 /**
- $Revision: 1.121 $"
- $Id: DBSApiLogic.java,v 1.121 2008/01/11 18:07:14 afaq Exp $"
+ $Revision: 1.122 $"
+ $Id: DBSApiLogic.java,v 1.122 2008/04/03 19:50:20 sekhri Exp $"
  *
  */
 
 package dbs.api;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 import java.io.Writer;
@@ -20,6 +21,7 @@ import dbs.util.Validate;
 import dbs.DBSException;
 import java.sql.SQLException;
 import dbs.DBSConstants;
+import dbs.search.parser.Wrapper;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -129,6 +131,34 @@ public class DBSApiLogic {
 			writeWarning(out, "Already Exists", "1020", "Run " + runNumber + " Already Exists");
 		}
 
+	}
+
+	public void executeQuery(Connection conn, Writer out, String userQuery) throws Exception {
+		String finalQuery = (new Wrapper()).getQuery(userQuery);
+		System.out.println("Query Generated is " + finalQuery);
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.getQuery(conn, finalQuery);
+			rs = ps.executeQuery();
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int numberOfColumns = rsmd.getColumnCount();
+			String[] colNames =new String[numberOfColumns];
+			for (int i = 0; i != numberOfColumns; ++i) {
+				colNames[i] = rsmd.getColumnName(i + 1);
+			}
+			while(rs.next()) {
+				out.write(((String) "<result "));
+				for (int i = 0; i != numberOfColumns; ++i) {
+					out.write(((String) colNames[i] + "='" + get(rs, colNames[i] ) +"' "));
+				}
+				out.write(((String) "/>\n"));
+			}
+
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
 	}
 
 

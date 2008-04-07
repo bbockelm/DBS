@@ -722,7 +722,15 @@ getIntegratedLuminosity () {
 	out=`$CMD api=getIntegratedLuminosity path=/test_primary_001/TestProcessedDS001/GEN-SIM`
 	echo "$out"
 }
-getIntegratedLuminosity	
+executeQuery () {
+	message="Executing executeQuery API..."
+	echo $message
+	out=`$CMD api=executeQuery query="select file.name where run.number=35672"`
+	echo "$out"
+}
+
+executeQuery
+#getIntegratedLuminosity	
 #insertPrimaryDataset
 #insertAlgorithm
 #insertTier

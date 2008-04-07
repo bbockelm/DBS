@@ -1,6 +1,6 @@
 /**
- $Revision: 1.123 $"
- $Id: DBSApi.java,v 1.123 2008/03/07 23:06:50 sekhri Exp $"
+ $Revision: 1.124 $"
+ $Id: DBSApi.java,v 1.124 2008/03/18 21:23:32 sekhri Exp $"
  *
 */
 
@@ -696,6 +696,8 @@ public class DBSApi {
 						get(table, "runRange", false),
 						get(table, "tag", false)
 						);
+			} else if (apiStr.equals("executeQuery")) {
+                                (new DBSApiLogic(this.data)).executeQuery(conn, out, get(table, "query", true));
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;
