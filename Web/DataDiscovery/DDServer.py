@@ -5021,13 +5021,25 @@ Save query as:
            else:
               page ="\n"
         for item in result:
+            if output.find(",")==-1:
+               res=item[0]
+            else:
+               res = str(item).replace("(","").replace(")","").replace("[","").replace("]","")
             if html:
-               page+="%s<br/>"%item[0]
+               page+="%s<br/>"%res
             else:
                if xml:
-                  page+="<%s>%s</%s>\n"%(colName,item[0],colName)
+                  if output.find(",")==-1:
+                     page+="<%s>%s</%s>\n"%(colName,res,colName)
+                  else:
+                     tList=output.split(",")
+                     oList=res.split(",")
+                     for idx in xrange(0,len(tList)):
+                         tag=tList[idx]
+                         tag=tag.replace(" ","").replace("(","_").replace(")","")
+                         page+="<%s>%s</%s>\n"%(tag,oList[idx],tag)
                else:
-                  page+="%s \n"%item[0]
+                  page+="%s \n"%res
         if html:
            page+=self.genBottomHTML()
         elif xml:
@@ -5102,7 +5114,7 @@ Save query as:
                 else:
                     page+="""<hr class="dbs"/>\n"""
             if  xml:
-                page+="<%s>\n"%output
+                page+="<%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
             for jdx in xrange(0,len(item)):
                 elem = item[jdx]
                 if elem==item[0]:
@@ -5126,7 +5138,8 @@ Save query as:
                        else:             page+="""%s %s\n"""%(titleList[jdx],elem)
                 else:
                     if xml:
-                       page+="  <%s>%s<%s>\n"%(titleList[jdx].lower(),elem,titleList[jdx].lower())
+                       tag=titleList[jdx].lower().replace(" ","").replace("(","_").replace(")","")
+                       page+="  <%s>%s</%s>\n"%(tag,elem,tag)
                     else:
                        page+="%s %s \n"%(titleList[jdx],elem)
             if html and grid and output.find(",")==-1 and output.find("total")==-1: # no multiple select
@@ -5143,7 +5156,7 @@ Save query as:
                page+="</tr>\n"
             if not html:
                if xml:
-                  page+="</%s>"%output
+                  page+="</%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
                page+="\n"
             counter+=1
         if grid and html and result:
@@ -5307,8 +5320,9 @@ Save query as:
            output=userInput.lower().split(" where ")[0].split("find")[1].strip()
         try:
             if output.find(",")!=-1:
-               for item in output.split(","):
-                   _out = self.ddrules.longName[item.strip()]
+               _out = output
+#               for item in output.split(","):
+#                   _out+= self.ddrules.longName[item.strip()]
             else:
                _out     = self.ddrules.longName[output]
         except:
