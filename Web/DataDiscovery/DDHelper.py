@@ -549,7 +549,7 @@ class DDHelper(DDLogger):
       return oList
 
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",date="*",userMode="user",fromRow=0,limit=0,count=0):
-      print "\n\n+++ listProcessedDataset",fromRow,limit
+#      print "\n\n+++ listProcessedDataset",fromRow,limit
       if group.lower()=='any': group="*"
       app=app.replace("Any","*")
       app=app.replace("any","*")
