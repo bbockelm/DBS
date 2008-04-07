@@ -297,9 +297,9 @@ class DDRules:
        except:
            traceback.print_exc()
            raise "prePraseInput: fail to parse your input='%s'"%input
-       input = ' '.joint(isplit)
+       input = ' '.join(isplit)
        input = input.replace(" dataset "," path ")
-       return ' '.join(isplit)
+       return input
     
    def parseInput(self,input,sortName,sortOrder,case):
        _input="%s"%input
