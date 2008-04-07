@@ -94,6 +94,10 @@ groupped together using brackets, e.g. ((a and b) or c)
 <td>
 <b>
 <span id="dsetDef">
+dataset
+</span>
+,
+<span id="pathDef">
 path
 </span>
 ,
@@ -147,13 +151,13 @@ Hover over keywords for <span class="box_red">info</span>.
 </td>
 <td>
 <em class="box_blue">
-find path where path like *Online* and site=srm.cern.ch
+find dataset where path like *Online* and site=srm.cern.ch
 </em>
 <br/>
 look-up datasets with dataset path matched pattern *Online* and located at srm.cern.ch.
 <br/><br/>
 <em class="box_blue">
-find path where run between 34850-36000 or run in 34850,34890
+find dataset where run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
 look-up dataset with runs within a given run ranges.
@@ -191,6 +195,8 @@ Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 var tooltip;
 tooltip="<p>Full qualified dataset path or pattern, e.g. /DaqTest-A/Online/RAW.</p>";
 MakeTooltip("t_dset","dsetDef",tooltip);
+tooltip="<p>Full qualified dataset path or pattern, synonym to dataset</p>";
+MakeTooltip("t_dset","pathDef",tooltip);
 tooltip="<p>Full qualified processed dataset name or pattern, e.g. Online.</p>";
 MakeTooltip("t_proc","procDef",tooltip);
 tooltip="<p>Full qualified primary dataset name or pattern, e.g. DaqTest-A.</p>";
