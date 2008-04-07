@@ -205,7 +205,10 @@ class DBManager(DDLogger):
               tName = t[0].lower()
               if self.verbose:
                  print "DBS Tables|Views",tName
-              tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+              if eType=='oracle':
+                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+              else:
+                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True)
               if self.verbose>1:
                  print tables[tName].__dict__
           if  eType=='oracle': # read views separately
@@ -214,7 +217,10 @@ class DBManager(DDLogger):
                   tName=v[0].lower()
                   if self.verbose:
                      print "DBS Views",tName
-                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+                  if eType=='oralce':
+                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+                  else:
+                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True)
                   if self.verbose>1:
                      print tables[tName].__dict__
           self.dbTables[dbsInst]=tables
