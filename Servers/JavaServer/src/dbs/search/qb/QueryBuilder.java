@@ -36,7 +36,9 @@ public class QueryBuilder {
 				int count = st.countTokens();
 				String token = st.nextToken();
 				Vertex vFirst = u.getMappedVertex(token);
-				allKws = addUniqueInList(allKws,u.getRealFromVertex(vFirst));
+				String real = u.getRealFromVertex(vFirst);
+				allKws = addUniqueInList(allKws, real);
+				if(Util.isSame(real, "LumiSection")) allKws = addUniqueInList(allKws, "Runs");
 				if(count == 1) {
 					//Get default from vertex
 					query += makeQueryFromDefaults(vFirst);
@@ -67,6 +69,9 @@ public class QueryBuilder {
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined != null) allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 					}
+				} else {
+					allKws = addUniqueInList(allKws, "ProcessedDataset");
+					
 				}
 			}
 		}
@@ -115,7 +120,7 @@ public class QueryBuilder {
 				query += "\n" + ((String)obj).toUpperCase() + "\n";
 			}
 		}
-		System.out.println("\n\nFINAL query is \n\n" + query);
+		//System.out.println("\n\nFINAL query is \n\n" + query);
 		return query;
 	}
 
@@ -250,6 +255,7 @@ public class QueryBuilder {
 
 	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords) {
 		int len = lKeywords.size();
+		if(len <= 1) return lKeywords;
 		for(int i = 0 ; i != len ; ++i ) {
 			boolean isEdge = false;
 			for(int j = 0 ; j != len ; ++j ) {
@@ -332,8 +338,14 @@ public class QueryBuilder {
 	public static void main(String args[]) {
 		QueryBuilder qb = new QueryBuilder();
 		ArrayList tmp = new ArrayList();
+		GraphUtil u = new GraphUtil("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
+		List<Edge> lEdges =  u.getShortestPath("ProcessedDataset", "LumiSection");
+		for (Edge e: lEdges) {
+			System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
+		}
+
 		//tmp.add("PrimaryDataset");
-		tmp.add("Files");
+		/*tmp.add("Files");
 		tmp.add("LumiSection");
 		tmp.add("Runs");
 		tmp.add("FileRunLumi");
@@ -344,7 +356,7 @@ public class QueryBuilder {
 		//tmp = qb.makeCompleteListOfVertexs(tmp);
 		for (int i =0 ; i!=tmp.size() ;++i ) {
 			System.out.println("ID " + tmp.get(i));
-		}
+		}*/
 	}
 
 }

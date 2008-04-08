@@ -27,6 +27,7 @@ executeQuery () {
 	echo $message
 	#out=`$CMD api=executeQuery query="select file.name where run.number=35672"`
 	out=`$CMD api=executeQuery query="select file,file.size,path where procds.name=Online and file.size>546294916"`
+	#out=`$CMD api=executeQuery query="select ls where path=/CalPrivateGlobal-default/Online/RAW"`
 	echo "$out"
 }
 

@@ -64,10 +64,10 @@ public class GraphUtil{
 	}
 
 	public List<Edge> getShortestPath( Vertex v1, Vertex v2){
-		return  (new DijkstraShortestPath(g)).getPath(v1,v2);
+		return  (new DijkstraShortestPath(g, new MyWeightValue("wt")).getPath(v1,v2));
 	}
 	public List<Edge> getShortestPath(String v1, String v2){
-		return  (new DijkstraShortestPath(g)).getPath(getVertex(v1), getVertex(v2));
+		return getShortestPath(getVertex(v1), getVertex(v2));
 	}
 	public String getRealtionFromEdge(Edge e) {
 		return (String)e.getUserDatum("relation");
