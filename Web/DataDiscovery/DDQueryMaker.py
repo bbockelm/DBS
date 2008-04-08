@@ -521,7 +521,7 @@ class DDQueryMaker(DDLogger):
       """Take input list of path-functions and construct out of them SQL and process it"""
       if self.verbose:
          print "\n\n+++ProcessQuery",str(input)
-      if input.find("makeJoinQuery"):
+      if input.find("makeJoinQuery")!=-1:
          sel = eval(input)
       else:
          sel = self.processSelExp(input)
