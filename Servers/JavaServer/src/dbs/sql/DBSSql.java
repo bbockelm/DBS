@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.143 $"
- $Id: DBSSql.java,v 1.143 2008/03/28 15:22:55 afaq Exp $"
+ $Revision: 1.144 $"
+ $Id: DBSSql.java,v 1.144 2008/04/07 20:26:30 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -408,7 +408,7 @@ public class DBSSql {
 
 		//sql += "order by LASTMODIFICATIONDATE, RUN_NUMBER desc "; 
 		//sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE desc "; 
-		sql += "ORDER BY r.RunNumber, qh.HistoryOf, qh.LastModificationDate DESC"; 
+		sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC";
 		//Order by is very important, Change it ONLY if BUSH becomes president third times!
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
