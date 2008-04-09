@@ -1,4 +1,4 @@
-// $ANTLR 3.0.1 Sql.g 2008-04-03 14:48:12
+// $ANTLR 3.0.1 Sql.g 2008-04-09 11:37:43
 
 
 package dbs.search.parser;
@@ -165,7 +165,7 @@ public class SqlParser extends Parser {
                     if ( ((LA2_2>=42 && LA2_2<=49)) ) {
                         alt2=3;
                     }
-                    else if ( (LA2_2==19||(LA2_2>=28 && LA2_2<=41)) ) {
+                    else if ( ((LA2_2>=19 && LA2_2<=20)||(LA2_2>=28 && LA2_2<=41)) ) {
                         alt2=2;
                     }
                     else {
@@ -368,7 +368,7 @@ public class SqlParser extends Parser {
                             throw nvae;
                         }
                     }
-                    else if ( (LA4_2==19||(LA4_2>=28 && LA4_2<=41)) ) {
+                    else if ( ((LA4_2>=19 && LA4_2<=20)||(LA4_2>=28 && LA4_2<=41)) ) {
                         int LA4_6 = input.LA(4);
 
                         if ( ((LA4_6>=EQ && LA4_6<=GT)) ) {
@@ -791,13 +791,13 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start attr
-    // Sql.g:51:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' ) ;
+    // Sql.g:51:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' ) ;
     public final void attr() throws RecognitionException {
         try {
-            // Sql.g:51:6: ( ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' ) )
-            // Sql.g:51:7: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' )
+            // Sql.g:51:6: ( ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' ) )
+            // Sql.g:51:7: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' )
             {
-            if ( input.LA(1)==19||(input.LA(1)>=28 && input.LA(1)<=41) ) {
+            if ( (input.LA(1)>=19 && input.LA(1)<=20)||(input.LA(1)>=28 && input.LA(1)<=41) ) {
                 input.consume();
                 errorRecovery=false;
             }
@@ -836,7 +836,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct566);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct569);    throw mse;
             }
 
 
@@ -868,7 +868,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select603);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select606);    throw mse;
             }
 
 
@@ -900,7 +900,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and615);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and618);    throw mse;
             }
 
 
@@ -932,7 +932,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or627);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or630);    throw mse;
             }
 
 
@@ -969,7 +969,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in639);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in642);    throw mse;
             }
 
 
@@ -1003,7 +1003,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not651);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not654);    throw mse;
             }
 
 
@@ -1040,7 +1040,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like663);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like666);    throw mse;
             }
 
 
@@ -1075,7 +1075,7 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_keyword_in_selectList72 = new BitSet(new long[]{0x0000000000000042L});
     public static final BitSet FOLLOW_entity_in_keyword97 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_entity_in_keyword103 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DOT_in_keyword105 = new BitSet(new long[]{0x000003FFF0080000L});
+    public static final BitSet FOLLOW_DOT_in_keyword105 = new BitSet(new long[]{0x000003FFF0180000L});
     public static final BitSet FOLLOW_attr_in_keyword107 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_entity_in_keyword112 = new BitSet(new long[]{0x0000000000000080L});
     public static final BitSet FOLLOW_DOT_in_keyword114 = new BitSet(new long[]{0x0003FC0000000000L});
@@ -1109,12 +1109,12 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_or_in_logicalOp396 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_entity404 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_attr448 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_funct566 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_select603 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_and615 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_or627 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_in639 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_not651 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_like663 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_funct569 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_select606 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_and618 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_or630 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_in642 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_not654 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_like666 = new BitSet(new long[]{0x0000000000000002L});
 
 }

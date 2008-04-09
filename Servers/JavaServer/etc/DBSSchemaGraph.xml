@@ -12,13 +12,13 @@
 	<node id="LumiSection" 			user="ls" 		real="LumiSection" 			default="LumiSectionNumber"/>
 	<node id="AlgorithmConfig" 		user="algo" 		real="AlgorithmConfig" 			default="ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID"/>
 	<node id="AppFamily" 			user="family" 		real="AppFamily" 			default="FamilyName"/>
-	<node id="AppVersion"			user="release" 		real="AppVersion" 			default="Version"/>
+	<node id="AppVersion"			user="release"		real="AppVersion" 			default="Version"/>
 	<node id="AppExecutable" 		user="exe" 		real="AppExecutable" 			default="ExecutableName"/>
 	<node id="QueryableParameterSet"	user="ps" 		real="QueryableParameterSet" 		default="Hash"/>
 	<node id="FileTier" 			user="file.tier"	real="FileTier" 			default="Fileid,DataTier"/>
 	<node id="FileParentage" 		user="file.parent"	real="FileParentage" 			default="ThisFile,ItsParent"/>
 	<node id="FileRunLumi" 			user="frl" 		real="FileRunLumi" 			default="Fileid,Lumi,Run"/>
-	<node id="FileAlgo" 			user="file.algo" 	real="FileAlgo" 			default="Fileid,Algorithm"/>
+	<node id="FileAlgo" 			user="file.release" 	real="FileAlgo" 			default="Fileid,Algorithm"/>
 	<node id="FileStatus" 			user="file.status" 	real="FileStatus" 			default="Status"/>
 	<node id="FileType" 			user="file.type" 	real="FileType" 			default="Type"/>
 	<node id="FileValidStatus" 		user="file.vstatus" 	real="FileValidStatus" 			default="Status"/>
@@ -26,7 +26,7 @@
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
 	<node id="ProcDSTier" 			user="procds.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
 	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent"/>
-	<node id="ProcAlgo" 			user="procds.algo" 	real="ProcAlgo" 			default="Dataset,Algorithm"/>
+	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"/>
 	<node id="AnalysisDataset" 		user="ads" 		real="AnalysisDataset" 			default="Name,Version"/>
 	<node id="AnalysisDSType" 		user="ads.type" 	real="AnalysisDSType" 			default="Type"/>
 	<node id="AnalysisDSStatus" 		user="ads.status" 	real="AnalysisDSStatus" 		default="Status"/>

@@ -22,7 +22,7 @@ public class QueryBuilder {
 	public String genQuery(ArrayList kws, ArrayList cs) throws Exception{
 		//Store all the keywors both from select and where in allKws
 		ArrayList allKws = new ArrayList();
-		String query = "SELECT \n\t";
+		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
 			String aKw = (String)kws.get(i);
 			if (i!=0) query += "\n\t,";
@@ -38,17 +38,38 @@ public class QueryBuilder {
 				Vertex vFirst = u.getMappedVertex(token);
 				String real = u.getRealFromVertex(vFirst);
 				allKws = addUniqueInList(allKws, real);
-				if(Util.isSame(real, "LumiSection")) allKws = addUniqueInList(allKws, "Runs");
+				//if(Util.isSame(real, "LumiSection")) allKws = addUniqueInList(allKws, "Runs");
 				if(count == 1) {
 					//Get default from vertex
 					query += makeQueryFromDefaults(vFirst);
 				} else {
+
+					boolean addQuery = true;
+					String token2 = st.nextToken();
+					/*if(Util.isSame(token2, "algo")) {
+						allKws = addUniqueInList(allKws, "AppFamily");
+						allKws = addUniqueInList(allKws, "AppVersion");
+						allKws = addUniqueInList(allKws, "AppExecutable");
+						allKws = addUniqueInList(allKws, "QueryableParameterSet");
+						query += makeQueryFromDefaults(u.getVertex("AppFamily"));			
+						query += makeQueryFromDefaults(u.getVertex("AppVersion"));			
+						query += makeQueryFromDefaults(u.getVertex("AppExecutable"));			
+						query += makeQueryFromDefaults(u.getVertex("QueryableParameterSet"));
+						adQuery = false;
+					}*/
+					if(Util.isSame(token2, "release")) {
+						String realName = u.getMappedRealName(token2);//AppVersion
+						allKws = addUniqueInList(allKws, realName);
+						query += makeQueryFromDefaults(u.getVertex(realName));			
+						addQuery = false;
+					}
+					
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
-						query += km.getMappedValue(aKw); 
+						if(addQuery) query += km.getMappedValue(aKw); 
 					} else {
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
-						query += makeQueryFromDefaults(vCombined);			
+						if(addQuery) query += makeQueryFromDefaults(vCombined);			
 						
 					}
 				}
@@ -66,8 +87,14 @@ public class QueryBuilder {
 					Vertex vFirst = u.getMappedVertex(token);
 					allKws = addUniqueInList(allKws, u.getRealFromVertex(vFirst));
 					if(count != 1) {
+						String token2 = st.nextToken();
+						if(Util.isSame(token2, "release")) {
+							//allKws = addUniqueInList(allKws,  u.getMappedRealName(token2));//AppVersion
+							//Do nothing
+						} 
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined != null) allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
+							
 					}
 				} else {
 					allKws = addUniqueInList(allKws, "ProcessedDataset");
@@ -95,7 +122,15 @@ public class QueryBuilder {
 					// If path is given in where clause it should op should always be =
 					if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
 					query += "\tProcessedDataset.ID " + handlePath(val);
+				} else if(Util.isSame(key, "file.release")) {
+					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
+					query += "\tFileAlgo.Algorithm" + handleRelease(val);
+				} else if(Util.isSame(key, "procds.release")) {
+					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
+					query += "\tProcAlgo.Algorithm " + handleRelease(val);
 				} else {
+
+
 					if(key.indexOf(".") == -1) throw new Exception("In specifying constraints qualify keys with dot operater. Invalid key " + key);
 
 					StringTokenizer st = new StringTokenizer(key, ".");
@@ -163,33 +198,6 @@ public class QueryBuilder {
 		return query;
 	}
 	
-	/*private String genJoins(ArrayList lKeywords) {
-		ArrayList uniquePassed = new ArrayList();
-		String prev = "";
-		String query = "\nFROM\n\t" + (String)lKeywords.get(0) + "\n";
-		int len = lKeywords.size();
-		for(int i = 1 ; i != len ; ++i ) {
-			for(int j = 0 ; j != len ; ++j ) {
-				if(i != j) {
-					String v1 = (String)lKeywords.get(i);
-					String v2 = (String)lKeywords.get(j);
-					if(! (isIn(uniquePassed, v1 + "," + v2 )) && !(isIn(uniquePassed, v2 + "," + v1))) {
-						if(u.doesEdgeExist(v1, v2)) {
-							System.out.println("Relation bwteen " + v1 + " and " + v2 + " is " + u.getRealtionFromVertex(v1, v2));
-							String tmp = u.getRealtionFromVertex(v1, v2);
-							query += "\tJOIN " + v1 + "\n";
-							query += "\t\tON " + tmp + "\n";
-							uniquePassed.add(v1 + "," + v2);
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		return query;
-	}*/
-
 	private boolean isIn(ArrayList aList, String key) {
 		for (int i = 0 ; i != aList.size(); ++i) {
 			if( ((String)(aList.get(i) )).equals(key)) return true;
@@ -245,6 +253,21 @@ public class QueryBuilder {
 			")";
 		return query;
 	}
+
+	private String handleRelease(String version) throws Exception {
+		Validate.checkWord("AppVersion", version);
+		ArrayList route = new ArrayList();
+		route.add("AlgorithmConfig");
+		route.add("AppVersion");
+		String query = "IN ( \n" +
+			"SELECT \n" +
+			"\tAlgorithmConfig.ID " + genJoins(route) +
+			"WHERE \n" + 
+			"\tAppVersion.Version = '" + version + "'\n" +
+			")";
+		return query;
+	}
+
 	private ArrayList addUniqueInList(ArrayList keyWords, String aKw) {
 		for(Object kw: keyWords) {
 			if(((String)kw).equals(aKw))return keyWords;

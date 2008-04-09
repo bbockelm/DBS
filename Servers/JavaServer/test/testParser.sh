@@ -25,9 +25,12 @@ CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/con
 executeQuery () {
 	message="Executing executeQuery API..."
 	echo $message
-	#out=`$CMD api=executeQuery query="select file.name where run.number=35672"`
-	out=`$CMD api=executeQuery query="select file,file.size,path where procds.name=Online and file.size>546294916"`
-	#out=`$CMD api=executeQuery query="select ls where path=/CalPrivateGlobal-default/Online/RAW"`
+	#out=`$CMD api=executeQuery query="select file.name,file.createdate where run.number=35672 and run.moddate>2"`
+	#out=`$CMD api=executeQuery query="select file,file.size,path where procds.name=Online and file.size>546294916"`
+	#out=`$CMD api=executeQuery query="select ls,file.release,procds.release where path=/CalPrivateGlobal-default/Online/RAW"`
+	#out=`$CMD api=executeQuery query="select ls where path=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
+	out=`$CMD api=executeQuery query="select file.release,file where path=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
+	#out=`$CMD api=executeQuery query="select file.release where path=/CalPrivateGlobal-default/Online/RAW"`
 	echo "$out"
 }
 
