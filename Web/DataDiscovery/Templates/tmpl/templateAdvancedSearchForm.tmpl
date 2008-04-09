@@ -79,7 +79,9 @@ Constrain operators:
 <br/>
 words FIND,WHERE,AND,OR can be upper or lower case. 
 <br/>
-<b>FIND path WHERE ...</b> is default and can be skipped.
+<span class="box_blue">
+<b>FIND dataset WHERE ...</b> is default and can be skipped.
+</span>
 <br/>
 Expressions can be
 groupped together using brackets, e.g. ((a and b) or c)
@@ -152,7 +154,14 @@ Hover over keywords for <span class="box_red">info</span>.
 </td>
 <td>
 <em class="box_blue">
-find dataset where path like *Online* and site=srm.cern.ch
+*QCD*
+</em>
+<br/>
+look-up all datasets whose name matched QCD pattern.
+<br/><br/>
+
+<em class="box_blue">
+dataset like *Online* and site=srm.cern.ch
 </em>
 <br/>
 look-up datasets with dataset path matched pattern *Online* and located at srm.cern.ch.
@@ -161,21 +170,22 @@ look-up datasets with dataset path matched pattern *Online* and located at srm.c
 find dataset where run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
-look-up dataset with runs within a given run ranges.
+look-up dataset with runs within a given run ranges. Please note 
+<span class="box_blue"><em>find dataset where</em></span> is optional here, which is default.
 <br/><br/>
 
 <em class="box_blue">
-find run where path like *Online*
+find run where dataset like *Online*
 </em>
 <br/>
-look-up runs who belong to dataset with path pattern *Online* 
+look-up runs whose dataset name match the pattern *Online* 
 <br/><br/>
 
 <em class="box_blue">
-find primds where (path like *Online* or path not like *RelVal* ) and release>CMSSW_1_7
+find primds where (dataset like *Online* or dataset not like *RelVal* ) and release>CMSSW_1_7
 </em>
 <br/>
-look-up primary datasets whose dataset path pattern either Online or not like RelVal which<br/>
+look-up primary datasets whose dataset name match either Online or not RelVal which<br/>
 are processed with release greater them CMSSW_1_7
 <br/><br/>
 
@@ -194,9 +204,9 @@ Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 <script type="text/javascript">
 #if $userHelp
 var tooltip;
-tooltip="<p>Full qualified dataset path or pattern, e.g. /DaqTest-A/Online/RAW.</p>";
+tooltip="<p>Full qualified dataset name or pattern, e.g. /DaqTest-A/Online/RAW.</p>";
 MakeTooltip("t_dset","dsetDef",tooltip);
-tooltip="<p>Full qualified dataset path or pattern, synonym to dataset</p>";
+tooltip="<p>Full qualified dataset name or pattern, synonym to dataset</p>";
 MakeTooltip("t_dset","pathDef",tooltip);
 tooltip="<p>Full qualified processed dataset name or pattern, e.g. Online.</p>";
 MakeTooltip("t_proc","procDef",tooltip);

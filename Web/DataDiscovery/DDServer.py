@@ -5193,7 +5193,7 @@ Save query as:
         return self.aSearchSummary(**kwargs)
     def tierSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
-    def pathSummary(self,**kwargs):
+    def datasetSummary(self,**kwargs):
         tabCol   = kwargs['tabCol']
         sortName = kwargs['sortName']
         sortOrder= kwargs['sortOrder']
@@ -5307,10 +5307,10 @@ Save query as:
         except:
             traceback.print_exc()
             raise "aSearch require input query"
-        userInput = userInput.replace(" dataset "," path ")
+        userInput = userInput.replace(" path "," dataset ")
         for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
             userInput=userInput.replace(pair[0],pair[1])
-        output    = "path"
+        output    = "dataset"
         if userInput.lower().find(" where ")!=-1:
            output=userInput.lower().split(" where ")[0].split("find")[1].strip()
         try:
