@@ -29,7 +29,7 @@ public class QueryBuilder {
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
 			if(Util.isSame(aKw, "path")) {
 				allKws = addUniqueInList(allKws, "Block");
-				query += km.getMappedValue("block.path");
+				query += "Block.Path";
 			} else {
 
 				StringTokenizer st = new StringTokenizer(aKw, ".");
@@ -63,7 +63,11 @@ public class QueryBuilder {
 						query += makeQueryFromDefaults(u.getVertex(realName));			
 						addQuery = false;
 					}
-					
+					if(Util.isSame(token2, "count")) {
+						query += "COUNT(*)";			
+						addQuery = false;
+					}
+
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
 						if(addQuery) query += km.getMappedValue(aKw); 
