@@ -1,4 +1,6 @@
 <!-- templateUserNav.tmpl -->
+<span id="defaultPage"></span>
+
 #import time
 <!-- begin outer most table -->
 <table class="lfn" width="90%">
@@ -521,6 +523,7 @@ function SetNavigatorCookies() {
     tag=document.getElementById('kw_date');
     SetCookie('DBSDD_date',tag.value);
 }
+SetDefaultPageMessage('Navigator');
 </script>
 
 <!-- end of templateUserNav.tmpl -->

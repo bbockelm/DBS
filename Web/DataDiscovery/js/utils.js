@@ -1662,3 +1662,15 @@ function SetTagCookie(cName,tag) {
        SetCookie(cName,id.value);
    }
 }
+function SetDefaultPageMessage(cVal) {
+   var cookie=GetCookie('DBSDD_defaultPage');
+   if(!cookie) {
+      var id=document.getElementById('defaultPage');
+      id.innerHTML='<span class="box_red">To make this page as default, click <a href="javascript:PrintDefaultPageMessage(\''+cVal+'\')">here</a></span>';
+   }
+}
+function PrintDefaultPageMessage(cVal) {
+   SetCookie('DBSDD_defaultPage',cVal);
+   var id=document.getElementById('defaultPage');
+   id.innerHTML='<span class="box_blue">Your default page is set to '+cVal+'. To change this setting clear up DBSDD_defaultPage cookie in your browser.</span>';
+}

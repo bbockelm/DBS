@@ -1,5 +1,6 @@
 <!-- templateAdvancedSearchForm.tmpl -->
 
+<span id="defaultPage"></span>
 <div align="center">
 <form action="aSearch" method="get">
 <input type="hidden" name="caseSensitive" value="on" id="caseSensitive" />
@@ -263,6 +264,7 @@ function UpdateUserInput() {
    }
 }
 UpdateUserInput();
+SetDefaultPageMessage('aSearch');
 </script>
 <p></p>
 

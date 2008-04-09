@@ -576,22 +576,17 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
-        return self._advanced(dbsInst,userMode)
-#        try:
-#            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
-#            page+= self.whereMsg('Navigator',userMode)
-#            auto=0
-#            if kwargs.has_key('auto') and kwargs['auto']=='on':
-#               auto=1
-#            userNav = self.genEmptyUserNavigator(dbsInst,userMode,auto)
-#            t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
-#            page+= str(t)
-#            page+= self.genBottomHTML()
-#            return page
-#        except:
-#            t=self.errorReport("Fail in index function")
-#            pass
-#            return str(t)
+        cookie = cherrypy.request.cookie
+        if cookie.has_key('DBSDD_defaultPage'):
+           print "DBSDD_defaultPage",cookie['DBSDD_defaultPage'].value
+           val = cookie['DBSDD_defaultPage'].value
+           if val=="aSearch":
+              return self._advanced(dbsInst,userMode)
+           elif val=="Navigator":
+              return self._navigator(dbsInst,userMode)
+           else:
+              return self._navigator(dbsInst,userMode)
+        return self._navigator(dbsInst,userMode)
     index.exposed = True 
 
     def errorReport(self,msg):
