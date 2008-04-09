@@ -268,6 +268,8 @@ class DDRules:
        return words
 
    def preParseInput(self,input):
+       if len(input.split())==1:
+          input="find path where path like %s"%input
        input=input.replace(")"," ) ").replace("("," ( ")
        # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
        isplit=input.split()
