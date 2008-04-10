@@ -25,6 +25,8 @@
   background: #ffffff;
   color: #000000;
   text-decoration: none;
+  margin: 0;
+  padding: 0;
 }
 
 .enabled {
@@ -1137,6 +1139,29 @@ table.sortable span.sortarrow {
   border-collapse: separate;
   background-color: rgb(255, 250, 250);
   color: #000000;
+
+/*  filter:alpha(opacity=80);   |+ Internet Explorer       +|*/
+/*  -moz-opacity:0.8;           |+ Mozilla 1.6 and below   +|*/
+/*  opacity: 0.8;               |+ newer Mozilla and CSS-3 +|*/
+}
+.float_aSearch_help {
+  position: absolute; 
+  left: 15%;
+  top: 80px; 
+  height: 400px; 
+/*  width: 400pt; |+ on Safari better use pt, then px which doesn't work +|*/
+  width: 75%;
+  padding: 1em;
+  overflow:auto;
+
+  border-width: 1px 1px 1px 1px;
+  border-spacing: 4px;
+  /* border-style: top right bottom left */
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  border-collapse: separate;
+  color: #000000;
+  background-color: #FFFFCC;
 
 /*  filter:alpha(opacity=80);   |+ Internet Explorer       +|*/
 /*  -moz-opacity:0.8;           |+ Mozilla 1.6 and below   +|*/
