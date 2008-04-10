@@ -10,7 +10,7 @@ Data Discovery search module
 """
 
 # system modules
-import os, string, logging, types, time, traceback, new
+import os, string, logging, types, time, traceback, new, re
 import DDUtil
 
 def constrainDict():
@@ -34,6 +34,7 @@ def constrainList():
 class DDRules:
    def __init__(self,verbose=0):
        self.verbose=verbose
+       self.cmsNames ={}
        self.boolwords=['and','or','(',')','not','like']
        self.functions=['total','sum','count']
        # mapping between keyword-names and DB views
@@ -261,11 +262,53 @@ class DDRules:
    def setVerbose(self,v):
        self.verbose=v
 
-   def parser(self,input,sortName='CreationDate',sortOrder='desc',case='on'):
+   def getCMSNames(self):
+       try:
+           if not self.cmsNames:
+              self.cmsNames=DDUtil.getCMSNames()
+           else:
+              lastTime=self.cmsNames['time']
+              if (time.time()-lastTime)>(24*60*60): # more then a day
+                 self.cmsNames=DDUtil.getCMSNames()
+       except:
+            self.cmsName=[]
+            pass
+       return self.cmsNames
+
+   def parser(self,input,backEnd="oracle",sortName='CreationDate',sortOrder='desc',case='on'):
        if not DDUtil.validator(input):
           raise "Input '%s' does not contain equal number of open/closed brackets"%input
-       words=self.parseInput(self.preParseInput(input),sortName,sortOrder,case)
+       words=self.parseInput(self.preParseInput(input),backEnd,sortName,sortOrder,case)
        return words
+
+   def preParseCMSNames(self,input):
+       print "preParseCMSNames, input=",input
+       if input.find("site ")==-1: return input
+       cmsNames=self.getCMSNames()
+       swapedDict=DDUtil.swapDict(cmsNames)
+       iList=input.split()
+       for idx in xrange(2,len(iList)):
+           item=iList[idx].replace("*","")
+           for i in [0,1,2,3]:
+               t=re.search("T%s"%i,item)
+               kw=iList[idx-2]
+               op=iList[idx-1]
+               if t and kw.lower()=="site":
+                  i1=' '.join(iList[:idx-2])
+                  # look-up sites out of cmsNames
+                  i2=""
+                  for name in cmsNames.values():
+                      if type(name) is types.StringType and name.find(item)!=-1:
+                         if not i2:
+                            i2+=" site %s %s "%(op,swapedDict[name])
+                         else:
+                            i2+=" or site %s %s "%(op,swapedDict[name])
+                  input=i1+i2
+                  if len(iList)>idx:
+                     input+=' '.join(iList[idx+1:])
+                     return self.preParseCMSNames(input)
+       print "preParseCMSNames, output=",input
+       return input
 
    def preParseInput(self,input):
        if len(input.split())==1:
@@ -301,9 +344,10 @@ class DDRules:
            raise "prePraseInput: fail to parse your input='%s'"%input
        input = ' '.join(isplit)
        input = input.replace(" path "," dataset ")
+       input = self.preParseCMSNames(input)
        return input
     
-   def parseInput(self,input,sortName,sortOrder,case):
+   def parseInput(self,input,backEnd,sortName,sortOrder,case):
        _input="%s"%input
        idx=input.lower().find('where')
        if idx!=-1:
@@ -338,9 +382,12 @@ class DDRules:
        except:
            raise msg
        # check if user made multiple select, if so, check where clause for provided operators
-       if not self.colName.keys().count(selKey) and (selKey.find(",")!=-1 or selKey.find("total")!=-1):
+       if (not self.colName.keys().count(selKey) and (selKey.find(",")!=-1 or selKey.find("total")!=-1)) or backEnd.lower()=="mysql":
           if self.verbose:
-             print "\n+++ Found multiple selection, stop parsing\n",_input
+             if backEnd.lower()=="mysql":
+                print "\n+++ Found MySQL backend, no INTERSECT, will do JOIN queires\n",_input
+             else:
+                print "\n+++ Found multiple selection, stop parsing\n",_input
           if input.find(" = ")==-1 and selKey.find("total")==-1:
              msg ="In order to query multiple fields you MUST provide at least one equal constrain\n"
              msg+="Example: find file,run where dataset=/a/b/c\n"
@@ -482,6 +529,8 @@ if __name__ == "__main__":
     aSearch.parser("find file,run where dataset=/CSA07AllEvents/CMSSW_1_6_7-CSA07-Tier0-AOD-A2-Gumbo/AODSIM and run=123")
     aSearch.parser("find file,total(run) where dataset=/CSA07AllEvents/CMSSW_1_6_7-CSA07-Tier0-AOD-A2-Gumbo/AODSIM and run=123")
     aSearch.parser("find total(run) where (dataset like *bla* and block>=123) or run=12345")
+    print "\n\n### site = T2_UK ===>",aSearch.preParseCMSNames("site = T2_UK")
+    aSearch.parser("run=12345 and site like T2_UK*")
 #    aSearch.parser("find run where (dataset like *bla* and block>=123) or run=12345")
 #    aSearch.parser("run=12345")
 #    aSearch.parser("run not like 12345")

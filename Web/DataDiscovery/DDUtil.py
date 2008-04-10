@@ -81,6 +81,17 @@ def genMartList(kwargs,key,extra_idx=-1):
                oList.append((idx,kwargs[key]))
     return oList
 
+def swapDict(original_dict):
+    return dict([(v, k) for (k, v) in original_dict.iteritems()])
+def swapDict2(d):
+    new = {}
+    for key, value in d.items():
+        if value in new.keys():
+            new[value].append(key)
+        else:
+            new[value] = [key]
+    return new
+
 def normUrl(url):
     try:
         path = url.split("http://")[1]

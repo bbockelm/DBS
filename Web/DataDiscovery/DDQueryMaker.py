@@ -358,7 +358,7 @@ class DDQueryMaker(DDLogger):
          I got input list ( a and b or c ... ), with optional brackets. Will transform it into SQL
          The a,b,c in this example are path-functions.
       """
-#      print "\n\n+++processSelSeq input",iList
+#      print "\n\n+++processSelSeq input\n",iList
       if len(iList)==1:
          sel = iList[0]
          return sel
@@ -369,11 +369,14 @@ class DDQueryMaker(DDLogger):
       i1 = iList[0]
       i2 = iList[1]
       i3 = iList[2]
-#      print "\n\n+++processSelSeq",i1,i2,i3
       qList=[i1,i3]
       # NOTE: INTERSECT works ONLY in ORACLE
       if i2.lower()=="and":
-         sel = sqlalchemy.intersect(*qList)
+         if self.dbManager.dbType[self.dbsInstance]=='oracle':
+            sel = sqlalchemy.intersect(*qList)
+         else:
+            sel=i1
+            sel.append_whereclause(list(i1.inner_columns)[0].in_(i3))
       elif i2.lower()=="or":
          sel = sqlalchemy.union(*qList)
       else:
@@ -520,7 +523,7 @@ class DDQueryMaker(DDLogger):
   def processQuery(self,input,userMode="user"):
       """Take input list of path-functions and construct out of them SQL and process it"""
       if self.verbose:
-         print "\n\n+++ProcessQuery",str(input)
+         print "\n\n+++ProcessQuery:\n",str(input)
       if input.find("makeJoinQuery")!=-1:
          sel = eval(input)
       else:

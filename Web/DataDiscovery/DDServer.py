@@ -576,17 +576,18 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
-        cookie = cherrypy.request.cookie
-        if cookie.has_key('DBSDD_defaultPage'):
-           print "DBSDD_defaultPage",cookie['DBSDD_defaultPage'].value
-           val = cookie['DBSDD_defaultPage'].value
-           if val=="aSearch":
-              return self._advanced(dbsInst,userMode)
-           elif val=="Navigator":
-              return self._navigator(dbsInst,userMode)
-           else:
-              return self._navigator(dbsInst,userMode)
-        return self._navigator(dbsInst,userMode)
+#        cookie = cherrypy.request.cookie
+#        if cookie.has_key('DBSDD_defaultPage'):
+#           print "DBSDD_defaultPage",cookie['DBSDD_defaultPage'].value
+#           val = cookie['DBSDD_defaultPage'].value
+#           if val=="aSearch":
+#              return self._advanced(dbsInst,userMode)
+#           elif val=="Navigator":
+#              return self._navigator(dbsInst,userMode)
+#           else:
+#              return self._navigator(dbsInst,userMode)
+#        return self._navigator(dbsInst,userMode)
+        return self._advanced(dbsInst,userMode)
     index.exposed = True 
 
     def errorReport(self,msg):
@@ -4993,7 +4994,8 @@ Save query as:
         userMode = kwargs['userMode']
         output   = kwargs['output']
         self.qmaker.initDBS(dbsInst)
-        sel      = self.ddrules.parser(urllib.unquote(userInput),sortName,sortOrder,case)
+        backEnd  = self.helper.dbManager.dbType[dbsInst]
+        sel      = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
         page     = ""
         print "\n\n+++aSearchShowAll",kwargs
         try:
@@ -5326,8 +5328,9 @@ Save query as:
         if sortName.lower()=="name":
            sortName = self.ddrules.colName[output]
         sortOrder = getArg(kwargs,'sortOrder','desc')
+        backEnd  = self.helper.dbManager.dbType[dbsInst]
         try :
-            sel = self.ddrules.parser(urllib.unquote(userInput),sortName,sortOrder,case)
+            sel = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
         except:
             if not html:
                return traceback.format_exc()
