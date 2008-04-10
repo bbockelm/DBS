@@ -290,7 +290,7 @@ class DDRules:
        for idx in xrange(2,len(iList)):
            item=iList[idx].replace("*","")
            for i in [0,1,2,3]:
-               t=re.search("T%s"%i,item)
+               t=re.search("T%s_"%i,item)
                kw=iList[idx-2]
                op=iList[idx-1]
                if t and kw.lower()=="site":
