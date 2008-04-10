@@ -498,7 +498,7 @@ class DDQueryMaker(DDLogger):
          print sel_txt
          print
       qth = self.ddConfig.queryThreshold()
-      if threshold>=qth:
+      if int(threshold)>=int(qth):
          msg ="Your request cannot be efficiently fulfilled due to large amount of processing data.\n"
          msg+="Please revise your search criterias and try again.\n"
          msg+="Hints:\n"
