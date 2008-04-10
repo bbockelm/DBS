@@ -388,7 +388,7 @@ class DDRules:
                 print "\n+++ Found MySQL backend, no INTERSECT, will do JOIN queires\n",_input
              else:
                 print "\n+++ Found multiple selection, stop parsing\n",_input
-          if input.find(" = ")==-1 and selKey.find("total")==-1:
+          if input.find(" = ")==-1 and selKey.find("total")==-1 and selKey.find(",")!=-1:
              msg ="In order to query multiple fields you MUST provide at least one equal constrain\n"
              msg+="Example: find file,run where dataset=/a/b/c\n"
              raise msg
