@@ -3486,6 +3486,7 @@ All LFNs in a block
         page = str(t)
         return page
 
+    @is_authenticated (onFail=RedirectToLocalPage ("/redirectPage"))
     def sendFeedback(self,userEmail,feedbackText,userMode='user'):
         """
            Generates feedback form.
