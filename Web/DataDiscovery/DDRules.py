@@ -282,7 +282,7 @@ class DDRules:
        return words
 
    def preParseCMSNames(self,input):
-       print "preParseCMSNames, input=",input
+#       print "preParseCMSNames, input=",input
        if input.find("site ")==-1: return input
        cmsNames=self.getCMSNames()
        swapedDict=DDUtil.swapDict(cmsNames)
@@ -307,7 +307,7 @@ class DDRules:
                   if len(iList)>idx:
                      input+=' '.join(iList[idx+1:])
                      return self.preParseCMSNames(input)
-       print "preParseCMSNames, output=",input
+#       print "preParseCMSNames, output=",input
        return input
 
    def preParseInput(self,input):
