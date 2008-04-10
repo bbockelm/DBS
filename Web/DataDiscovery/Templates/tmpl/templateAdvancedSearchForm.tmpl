@@ -68,8 +68,8 @@ Case-sensitivity:
 </td>
 <td>
 <b>
-FIND &lt;keyword&gt; WHERE &lt;keyword&gt; &lt;operator&gt; &lt;value&gt; AND | OR 
-&lt;keyword&gt; &lt;operator&gt; &lt;value&gt;
+FIND &lt;keyword&gt; WHERE &lt;keyword&gt; &lt;op&gt; &lt;value&gt; AND | OR 
+&lt;keyword&gt; &lt;op&gt; &lt;value&gt;
 </b>
 <br/>
 Constrain operators: 
@@ -80,7 +80,7 @@ Constrain operators:
 words FIND,WHERE,AND,OR can be upper or lower case. 
 <br/>
 <span class="box_blue">
-<b>FIND dataset WHERE ...</b> is default and can be skipped.
+<b>FIND dataset WHERE </b> expression is default and can be skipped.
 </span>
 <br/>
 Expressions can be
@@ -170,8 +170,8 @@ look-up datasets with dataset path matched pattern *Online* and located at srm.c
 find dataset where run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
-look-up dataset with runs within a given run ranges. Please note 
-<span class="box_blue"><em>find dataset where</em></span> is optional here, which is default.
+look-up dataset with runs within a given run ranges. The
+<span class="box_blue"><em>find dataset where</em></span> is optional here (default).
 <br/><br/>
 
 <em class="box_blue">
@@ -187,6 +187,13 @@ find primds where (dataset like *Online* or dataset not like *RelVal* ) and rele
 <br/>
 look-up primary datasets whose dataset name match either Online or not RelVal and who<br/>
 are processed with release greater them CMSSW_1_7
+<br/><br/>
+
+<em class="box_blue">
+find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW
+</em>
+<br/>
+look-up files and runs for given dataset name
 <br/><br/>
 
 </td>
@@ -274,7 +281,7 @@ function UpdateUserInput() {
    }
 }
 UpdateUserInput();
-SetDefaultPageMessage('aSearch');
+//SetDefaultPageMessage('aSearch');
 </script>
 <p></p>
 
