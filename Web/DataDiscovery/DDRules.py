@@ -311,7 +311,7 @@ class DDRules:
        return input
 
    def preParseInput(self,input):
-       if len(input.split())==1:
+       if len(input.split())==1 and not re.match("dataset=",input):
           input="find dataset where dataset like %s"%input
        input=input.replace(")"," ) ").replace("("," ( ")
        # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
