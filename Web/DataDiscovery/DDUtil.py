@@ -482,9 +482,12 @@ def getExcMessage(userMode='user'):
     if userMode=='dbsExpert': return traceback.format_exc()
     counter=0
     msg=""
+    exStr="%s"%sys.exc_type
+    ex=exStr.split(".")[1]
     for m in  traceback.format_exc().split("\n"):
-        if m.find(" raise ")!=-1:
+        if m.find(ex)!=-1:
            counter=1
+           msg+="%s\n"%m
            continue
         if counter: msg+="%s\n"%m
     if not msg: return traceback.format_exc()
