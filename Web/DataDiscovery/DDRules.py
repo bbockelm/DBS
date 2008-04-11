@@ -278,6 +278,8 @@ class DDRules:
    def parser(self,input,backEnd="oracle",sortName='CreationDate',sortOrder='desc',case='on'):
        if not DDUtil.validator(input):
           raise "Input '%s' does not contain equal number of open/closed brackets"%input
+       if input.find("'")!=-1 or input.find("\"")!=-1:
+          raise "Quotes are not allowed"
        words=self.parseInput(self.preParseInput(input),backEnd,sortName,sortOrder,case)
        return words
 
