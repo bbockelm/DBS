@@ -150,18 +150,26 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
      <th>LFNs</th>
   </tr>
 #for site in $dDict.keys()
+
+#if $site
+#set cmsName="N/A"
+#if $cmsNames.has_key($site)
+#set cmsName=$cmsNames[$site]
+#end if
+#end if
+
 #set val=$dDict[$site]
 #set siteTotEvt=$val[5]
 #set siteTotFiles=$val[4]
 #set siteTotSize=$val[3]
   <tr valign="top" class="sortable_yellow">
 #if $long($nEvts)!=$long($siteTotEvt) or $long($nFiles)!=$long($siteTotFiles)
-     <td><div class="dbs_cell_warmred">$site</div></td>
+     <td><div class="dbs_cell_warmred">$cmsName : $site</div></td>
 #else
 #if $site
-     <td><div class="dbs_cell">$site</div></td>
+     <td><div class="dbs_cell">$cmsName : $site</div></td>
 #else
-     <td class="dbs_cell_r"><div>$site</div></td>
+     <td class="dbs_cell_r"><div>$cmsName : $site</div></td>
 #end if
 #end if
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
