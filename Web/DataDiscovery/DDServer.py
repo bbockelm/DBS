@@ -5228,8 +5228,7 @@ Save query as:
             try:
                 dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
                 excludeList=list(eList)
-            except:
-                # no view found
+            except: # no view found
                 dataset=item[0]
                 excludeList = list(titleList[1:])+eList
                 pass
@@ -5240,17 +5239,22 @@ Save query as:
                style='class="zebra"'
             else:
                style=""
-            if grid and cDate:
-               sList = self.helper.getSiteList(dataset)
-               dDict = {}
-               for site in sList:
-                   dDict[site]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
-               mDict = dDict
-            else:
-               # I determine which site has datasets, not all sites may have all datasets
-               dDict,mDict = self.helper.datasetSummary(dataset)
-               if not mDict:
-                  mDict["N/A"]=("","",0,0,0,0)
+# uncomment back, once datasetSummary view will be fixed
+#            if grid and cDate:
+#               sList = self.helper.getSiteList(dataset)
+#               dDict = {}
+#               for site in sList:
+#                   dDict[site]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
+#               mDict = dDict
+#            else:
+#               dDict,mDict = self.helper.datasetSummary(dataset)
+#               if not mDict:
+#                  mDict["N/A"]=("","",0,0,0,0)
+# should go away, see above
+            dDict,mDict = self.helper.datasetSummary(dataset)
+            if not mDict:
+# end of temp fix
+               mDict["N/A"]=("","",0,0,0,0)
             if html:
                if mDict:
                    tempDict={'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style,'cmsNames':self.
