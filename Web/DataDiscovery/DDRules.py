@@ -185,7 +185,7 @@ class DDRules:
            # to lumi
            ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
            ('block','lumi'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
-           ('file','lumi'):['Files_LogicalFileName2FileRunLumi_ID','FileRunLumi_ID2LumiSection_LumiSectionNumber'],
+           ('file','lumi'):['Files_LogicalFileName2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
            ('release','lumi'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
            ('run','lumi'):['Runs_RunNumber2LumiSection_LumiSectionNumber'],
            ('lumi','lumi'):['LumiSection_LumiSectionNumber2LumiSection_LumiSectionNumber'],
@@ -396,6 +396,7 @@ class DDRules:
              raise msg
           sList=[]
           fDict={}
+          _toJoin="%s"%selKey
           for key in selKey.split(","):
               key=key.strip()
               # look for functions
@@ -426,9 +427,15 @@ class DDRules:
                  raise "Fail to parse where clause expression, invalid key='%s'"%key
               input=input.replace(key,"%s.%s"%(self.tableName[key],self.colName[key]))
               _select="%s.%s"%(self.tableName[key],self.colName[key])
+              _toJoin+=",%s"%key
               if not sList.count(_select):
                  sList.append(_select)
           toJoin=','.join(sList)
+          # resolve ambiguity, File,Lumi should go through runs
+          _toJoinKeys=_toJoin.strip().split(",")
+          if _toJoinKeys.count('file') and _toJoinKeys.count('lumi') and not _toJoinKeys.count('run'):
+             toJoin+=",FileRunLumi.ID"
+
           if self.colName.keys().count(sortName):
              sortName="%s.%s"%(self.tableName[sortName],self.colName[sortName])
           else:
