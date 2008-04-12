@@ -183,9 +183,9 @@ class DDRules:
            ('procds','run'):['ProcessedDataset_Name2Runs_RunNumber'],
            ('tier','run'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
            # to lumi
-           ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
+           ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
            ('block','lumi'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
-           ('file','lumi'):['Files_LogicalFileName2LumiSection_LumiSectionNumber'],
+           ('file','lumi'):['Files_LogicalFileName2FileRunLumi_ID','FileRunLumi_ID2LumiSection_LumiSectionNumber'],
            ('release','lumi'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
            ('run','lumi'):['Runs_RunNumber2LumiSection_LumiSectionNumber'],
            ('lumi','lumi'):['LumiSection_LumiSectionNumber2LumiSection_LumiSectionNumber'],
