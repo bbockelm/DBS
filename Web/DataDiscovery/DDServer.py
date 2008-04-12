@@ -1917,7 +1917,7 @@ class DDServer(DDLogger,Controller):
                 dataset=datasetsList[id]
                 dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
                 if mDict:
-                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL}]).respond()
+                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'cmsNames':self.getCMSNames()}]).respond()
                     page+=str(t)
                 else:
                     page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
@@ -5257,8 +5257,7 @@ Save query as:
                mDict["N/A"]=("","",0,0,0,0)
             if html:
                if mDict:
-                   tempDict={'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style,'cmsNames':self.
-getCMSNames()}
+                   tempDict={'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style,'cmsNames':self.getCMSNames()}
                    if grid:
                       t = templateProcessedDatasetsGrid(searchList=[tempDict]).respond()
                    else:
