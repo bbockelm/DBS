@@ -151,8 +151,8 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
   </tr>
 #for site in $dDict.keys()
 
-#if $site
 #set cmsName="N/A"
+#if $site
 #if $cmsNames.has_key($site)
 #set cmsName=$cmsNames[$site]
 #end if
