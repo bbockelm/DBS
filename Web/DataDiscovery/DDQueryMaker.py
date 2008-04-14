@@ -622,6 +622,7 @@ class DDQueryMaker(DDLogger):
 #      print "\n\n+++ executeQueryFromTable\n",output,tabCol,sortName,sortOrder,query,self.extractBindParams(query)
       con  = self.connectToDB()
       sel  = ""
+      selRowNum=None
       try:
           # see http://progcookbook.blogspot.com/2006/02/using-rownum-properly-for-pagination.html
           # ORACLE need special way to fetch fromRow/limit, so we wrap query into
@@ -667,6 +668,7 @@ class DDQueryMaker(DDLogger):
                  q   = sqlalchemy.select(['tmp.*','rownum as rnum'],from_obj=[tmp])
                  sel = sqlalchemy.select(['*'],from_obj=[q])
                  sel.append_whereclause("rnum between %s and %s"%(fromRow,fromRow+limit) )
+                 selRowNum=True
               else:
                  sel=sel.offset(fromRow).limit(limit).apply_labels()
           if self.verbose:
@@ -681,7 +683,7 @@ class DDQueryMaker(DDLogger):
       tList=[]
       for item in result:
           # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
-          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+          if self.dbManager.dbType[self.dbsInstance]=='oracle' and selRowNum:
              oList.append(item.values()[:-1]) # last element is rownum
              if not tList:
                 tList=list(item.keys()[:-1])
