@@ -4998,7 +4998,7 @@ Save query as:
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         sel      = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
         page     = ""
-        print "\n\n+++aSearchShowAll",kwargs
+#        print "\n\n+++aSearchShowAll",kwargs
         try:
             query= self.qmaker.processQuery(sel)
         except:
