@@ -38,6 +38,11 @@ import signal, os
 
 import pprint 
 
+
+import httplib, urllib
+
+
+
 # Importing a dynamically generated module
 def importCode(code,name,add_to_sys_modules=0):
     """
@@ -532,6 +537,9 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--storequery", action="store", type="string", dest="storequery",
            help="Store the search query as ADS Definition (must be used with --search)")
+
+      self.add_option("--query", action="store", type="string", dest="query",
+           help="Search query used to perform data serach, create ADS Definitions etc ")
 
       self.add_option("--createADS", action="store", type="string", dest="createADS",
            help="Create Analysis Dataset for the search query (must be used with --search, or --usequery)")
@@ -1286,7 +1294,63 @@ class ApiDispatcher:
 		return
 	self.handleCreateADSCall()
 
+
   def handleSearchCall(self):
+        if self.optdict.has_key('want_help'):
+                self.helper._help_search()
+                return
+	#host="https://cmsweb.cern.ch/dbs_discovery_test/"
+        host= "https://cmsweb.cern.ch/dbs_discovery/"
+	#host= "https://cmsweb.cern.ch/dbs_discovery_test/DDServer/"
+	port= 443
+	dbsInst="cms_dbs_prod_global"
+        userInput=self.optdict.get('query') or ''
+	if userInput in ('', None):
+		print "Use --query= to specify a serach query"
+		return
+ 	print userInput, type(userInput)
+	data=self.sendMessage2DD(host,port,dbsInst,userInput)
+#,page='0',limit=10,xml=0,case='on',details=0,debug=0)
+	print data
+        print "done"
+        """
+    try:
+      # DbsExecutionError message would arrive in XML, if any
+      class Handler (xml.sax.handler.ContentHandler):
+           def startElement(self, name, attrs):
+             if name =='info':
+                info = "\n DBS Info Message: %s " %attrs['message']
+                info += "\n Detail: %s " %attrs['detail']+"\n"
+                logging.log(DBSINFO, info)
+
+      xml.sax.parseString (data, Handler ())
+
+    except SAXParseException, ex:
+      msg = "Unable to parse XML response from DBS Server"
+      msg += "\n  Server not responding as desired %s" % self.Url
+      raise DbsConnectionError (args=msg, code="505")
+ 
+
+
+        storequery=self.optdict.get('storequery') or ''
+        createADS=self.optdict.get('createADS') or ''
+
+        if storequery not in ('', None):
+                if len(datasetPaths) > 1:
+                        self.printRED("Cannot create ADS, more than one matching Paths found for query, limit to ONE Path")
+                        return
+                canstore=self.storeQuery(aPath, query, storequery)
+                if (canstore) and createADS not in ('', None):
+                        self.handleCreateADSCall(aPath, adsfileslist)
+
+        if createADS not in ('', None) and storequery in ('', None):
+                self.printRED("You cannot use --createADS without --storequery (see --doc)")
+                self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
+
+	return
+        """
+
+  def handleSearchCall_ORIG(self):
 
         if self.optdict.has_key('want_help'):
 		self.helper._help_search()
@@ -1429,6 +1493,63 @@ class ApiDispatcher:
 
 	mart.write(safestr)
 	mart.close()
+
+  def sendMessage2DD(self, host,port,dbsInst,userInput,page='0',limit=10000,xml=1,case='on',details=0,debug=0):
+    """
+       Send message to server, message should be an well formed XML document.
+    """
+    print host,port,dbsInst, userInput,page,limit,xml,case,details,debug
+    if xml:
+       xml=1
+    else:
+       xml=0
+    input=urllib.quote(userInput)
+    if debug:
+       httplib.HTTPConnection.debuglevel = 1
+       print "Contact",host,port
+    _port=443
+    if host.find("http://")!=-1:
+       _port=80
+    if host.find("https://")!=-1:
+       _port=443
+    host=host.replace("http://","").replace("https://","")
+    if host.find(":")==-1:
+       port=_port
+    prefix_path=""
+    if host.find("/")!=-1:
+       hs=host.split("/")
+       host=hs[0]
+       prefix_path='/'.join(hs[1:])
+    port=int(port)
+    if port==443:
+       http_conn = httplib.HTTPS(host,port)
+    else:
+       http_conn = httplib.HTTP(host,port)
+    if details: details=1
+    else:       details=0
+    path='/aSearch?dbsInst=%s&html=0&caseSensitive=%s&_idx=%s&pagerStep=%s&userInput=%s&xml=%s&details=%s'%(dbsInst,case,page,limit,input,xml,details)
+    if prefix_path:
+       path="/"+prefix_path+path[1:]
+    http_conn.putrequest('POST',path)
+    http_conn.putheader('Host',host)
+    http_conn.putheader('Content-Type','text/html; charset=utf-8')
+    http_conn.putheader('Content-Length',str(len(input)))
+    http_conn.endheaders()
+    http_conn.send(input)
+
+    (status_code,msg,reply)=http_conn.getreply()
+    data=http_conn.getfile().read()
+    if debug or msg!="OK":
+       print
+       print http_conn.headers
+       print "*** Send message ***"
+       print input
+       print "************************************************************************"
+       print "status code:",status_code
+       print "message:",msg
+       print "************************************************************************"
+       print reply
+    return data
 
 
 # main
