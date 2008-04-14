@@ -5022,7 +5022,7 @@ Save query as:
             if output.find(",")==-1:
                res=item[0]
             else:
-               res = str(item).replace("(","").replace(")","").replace("[","").replace("]","")
+               res = str(item).strip().replace("'","").replace("(","").replace(")","").replace("[","").replace("]","")
             if html:
                page+="%s<br/>"%res
             else:
@@ -5035,7 +5035,7 @@ Save query as:
                      for idx in xrange(0,len(tList)):
                          tag=tList[idx]
                          tag=tag.replace(" ","").replace("(","_").replace(")","")
-                         page+="<%s>%s</%s>\n"%(tag,oList[idx],tag)
+                         page+="<%s>%s</%s>\n"%(tag,oList[idx].strip(),tag)
                else:
                   page+="%s \n"%res
         if html:
@@ -5303,6 +5303,7 @@ Save query as:
             oDict[key]=kwargs[key]
         return oDict
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+        t0=time.time()
         _idx=int(_idx)
         pagerStep = int(pagerStep)
         html      = getArg(kwargs,'html',1)
@@ -5387,7 +5388,7 @@ Save query as:
               bindParams="\n"
               for key in bParams:
                   bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
-              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s</bindparams>\n</query>\n"""%(query,bindParams)
+              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s  </bindparams>\n   <executiontime>__time__</executiontime>\n   <asearchtime>__fulltime__</asearchtime>\n</query>\n"""%(query,bindParams)
            else:
               if details:
                  page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
@@ -5435,7 +5436,9 @@ Save query as:
         kDict['oname']=_out
         kDict['link']=link
 
+        queryTime=0
         try:
+            t1=time.time()
             if userMode=='dbsExpert':
                page+="<pre>%s</pre>"%query
             if details:
@@ -5446,6 +5449,7 @@ Save query as:
                   page+=method(**kDict)
             else:
                page+=self.aSearchShowAll(**kDict)
+            queryTime=time.time()-t1
         except:    
             if html:
                page+="<verbatim>"+getExcept()+"</verbatim>"
@@ -5473,6 +5477,8 @@ Save query as:
            page+=self.genBottomHTML()
         elif xml:
            page+="</ddresponse>"
+           page=page.replace("__time__","%f sec"%queryTime)
+           page=page.replace("__fulltime__","%f sec"%(time.time()-t0))
         return page
     aSearch.exposed=True
 
