@@ -48,7 +48,7 @@ valueList	:VALUE (COMMA VALUE)*;
 likeValue 	:(VALUE| STAR)+;
 logicalOp	:(and|or);
 entity	: ('ads' | 'path' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'ls' );
-attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' );
+attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' );
 funct	:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
 select	:('select' | 'SELECT');
 and	:('and' | 'AND');

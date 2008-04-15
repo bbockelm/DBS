@@ -263,7 +263,7 @@ public class QueryBuilder {
 		ArrayList route = new ArrayList();
 		route.add("AlgorithmConfig");
 		route.add("AppVersion");
-		String query = "IN ( \n" +
+		String query = " IN ( \n" +
 			"SELECT \n" +
 			"\tAlgorithmConfig.ID " + genJoins(route) +
 			"WHERE \n" + 
