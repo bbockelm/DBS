@@ -27,7 +27,7 @@ public class QueryBuilder {
 			String aKw = (String)kws.get(i);
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
-			if(Util.isSame(aKw, "path")) {
+			if(Util.isSame(aKw, "dataset")) {
 				allKws = addUniqueInList(allKws, "Block");
 				query += "Block.Path";
 			} else {
@@ -70,7 +70,8 @@ public class QueryBuilder {
 
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
-						if(addQuery) query += km.getMappedValue(aKw); 
+						String mapVal =  km.getMappedValue(aKw);
+						if(addQuery) query += mapVal + makeAs(mapVal); 
 					} else {
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 						if(addQuery) query += makeQueryFromDefaults(vCombined);			
@@ -84,35 +85,53 @@ public class QueryBuilder {
 			if(i%2 == 0) {
 				Constraint o = (Constraint)obj;
 				String key = (String)o.getKey();
-				if(!Util.isSame(key, "path")) {
+				if(!Util.isSame(key, "dataset")) {
 					StringTokenizer st = new StringTokenizer(key, ".");
 					int count = st.countTokens();
-					String token = st.nextToken();
-					Vertex vFirst = u.getMappedVertex(token);
-					allKws = addUniqueInList(allKws, u.getRealFromVertex(vFirst));
+					allKws = addUniqueInList(allKws, u.getMappedRealName(st.nextToken()));
 					if(count != 1) {
 						String token2 = st.nextToken();
-						if(Util.isSame(token2, "release")) {
+						/*if(Util.isSame(token2, "release")) {
 							//allKws = addUniqueInList(allKws,  u.getMappedRealName(token2));//AppVersion
 							//Do nothing
-						} 
+						} */
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined != null) allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 							
 					}
-				} else {
-					allKws = addUniqueInList(allKws, "ProcessedDataset");
+				} /*else {
+					//allKws = addUniqueInList(allKws, "ProcessedDataset");
+					allKws = addUniqueInList(allKws, "Block");
 					
-				}
+				}*/
 			}
 		}
 		
 		//Get the route which determines the join table
 		allKws = makeCompleteListOfVertexs(allKws);
+
+		for (int i =0 ; i!= cs.size(); ++i) {
+			Object obj = cs.get(i);
+			if(i%2 == 0) {
+				Constraint o = (Constraint)obj;
+				String key = (String)o.getKey();
+				if(Util.isSame(key, "dataset")) {
+					if(!isIn(allKws, "Files")) allKws = addUniqueInList(allKws, "Block");
+				}
+			}
+		}
+		allKws = makeCompleteListOfVertexs(allKws);
+
+		/*int len = allKws.size();
+		for(int i = 0 ; i != len ; ++i ) {
+			System.out.println("kw " + (String)allKws.get(i));
+		}*/
+
+		
 		allKws = sortVertexs(allKws);
 		query += genJoins(allKws);
-		
-		query += "WHERE\n";
+
+		if (cs.size() > 0) query += "\nWHERE\n";
 		
 		for (int i =0 ; i!= cs.size(); ++i) {
 			Object obj = cs.get(i);
@@ -122,10 +141,13 @@ public class QueryBuilder {
 				String op = (String)co.getOp();
 				String val = (String)co.getValue();
 				
-				if(Util.isSame(key, "path")) {
+				if(Util.isSame(key, "dataset")) {
 					// If path is given in where clause it should op should always be =
-					if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
-					query += "\tProcessedDataset.ID " + handlePath(val);
+					//if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
+					//query += "\tProcessedDataset.ID " + handlePath(val);
+					if(isIn(allKws, "Files")) query += "\tFiles.Block ";
+					else query += "\tBlock.ID ";
+					query += handlePath(val, op);
 				} else if(Util.isSame(key, "file.release")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
 					query += "\tFileAlgo.Algorithm" + handleRelease(val);
@@ -163,6 +185,9 @@ public class QueryBuilder {
 		return query;
 	}
 
+	private String makeAs(String in) {
+		return " AS " + in.replace('.', '_') + " ";
+	}
 	private String makeQueryFromDefaults(Vertex v){
 		String realVal = u.getRealFromVertex(v);
 		StringTokenizer st = new StringTokenizer(u.getDefaultFromVertex(v), ",");
@@ -170,7 +195,8 @@ public class QueryBuilder {
 		String query = "";
 		for (int j = 0; j != countDefTokens; ++j) {
 			if(j != 0) query += ",";
-			query += realVal + "." + st.nextToken();
+			String token = st.nextToken();
+			query += realVal + "." + token + makeAs(realVal + "." + token);
 		}
 		return query;
 
@@ -247,13 +273,23 @@ public class QueryBuilder {
 		ArrayList route = new ArrayList();
 		route.add("PrimaryDataset");
 		route.add("ProcessedDataset");
-		String query = "IN ( \n" +
+		String query = " IN ( \n" +
 			"SELECT \n" +
 			"\tProcessedDataset.ID " + genJoins(route) +
 			"WHERE \n" + 
 			"\tPrimaryDataset.Name = '" + data[1] + "'\n" +
 			"\tAND\n" +
 			"\tProcessedDataset.Name = '" + data[2] + "'" +
+			")";
+		return query;
+	}
+
+	private String handlePath(String path, String op) throws Exception {
+		String query = " IN ( \n" +
+			"SELECT \n" +
+			"\tBlock.ID FROM Block" +
+			"\tWHERE \n" + 
+			"\tBlock.Path " + op + " '" + path + "'\n" +
 			")";
 		return query;
 	}
@@ -287,7 +323,7 @@ public class QueryBuilder {
 			boolean isEdge = false;
 			for(int j = 0 ; j != len ; ++j ) {
 				if(i != j) {
-					System.out.println("Checking " + lKeywords.get(i) + " with " + lKeywords.get(j) );
+					//System.out.println("Checking " + lKeywords.get(i) + " with " + lKeywords.get(j) );
 					if(u.doesEdgeExist((String)lKeywords.get(i), (String)lKeywords.get(j)))	{
 						isEdge = true;
 						break;
@@ -295,14 +331,14 @@ public class QueryBuilder {
 				}
 			}
 			if(!isEdge) {
-				System.out.println("Shoertest edge in " + (String)lKeywords.get(i) + " --- " + (String)lKeywords.get((i+1)%len));
+				//System.out.println("Shoertest edge in " + (String)lKeywords.get(i) + " --- " + (String)lKeywords.get((i+1)%len));
 				List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(i), (String)lKeywords.get((i+1)%len));
 				for (Edge e: lEdges) {
 					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
 					lKeywords = addUniqueInList(lKeywords, u.getFirstNameFromEdge(e));
 					lKeywords = addUniqueInList(lKeywords, u.getSecondNameFromEdge(e));
 				}
-				System.out.println("No edge callin again ---------> \n");
+				//System.out.println("No edge callin again ---------> \n");
 				lKeywords =  makeCompleteListOfVertexs (lKeywords);
 				return lKeywords;
 
@@ -382,15 +418,15 @@ public class QueryBuilder {
 					if(!isIn(toReturn, aVertex)) {
 						if(isLeaf(aVertex, lKeywords)) {
 							//System.out.println(aVertex + " is a leaf toreturn size " + toReturn.size() + " len -1 " + (len - 1));
-							if(toReturn.size() == (len - 1)) toReturn.add(aVertex);
-							else if(reps > len) toReturn.add(aVertex);
+							if(toReturn.size() == (len - 1)) toReturn = addUniqueInList(toReturn, aVertex);
+							else if(reps > len) toReturn = addUniqueInList(toReturn, aVertex); 
 						} else {
 							for (int k = (toReturn.size() - 1) ; k != -1 ; --k) {
 								//System.out.println("Cheking edge between " + (String)toReturn.get(k) + " and " + aVertex);
 								if(u.doesEdgeExist((String)toReturn.get(k), aVertex)) {
-									toReturn.add(aVertex);
+									toReturn = addUniqueInList(toReturn, aVertex);
 									break;
-								}
+								} //else System.out.println("no edge between " +   (String)toReturn.get(k) + " and " + aVertex);
 							}
 						}
 					}

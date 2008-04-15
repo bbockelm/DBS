@@ -6,6 +6,7 @@ public class KeyMap {
 	public KeyMap(){
 		map.put("file.name", "Files.LogicalFileName");
 		map.put("file.size", "Files.FileSize");
+		map.put("file.id", "Files.ID");
 		map.put("file.numevents", "Files.NumberOfEvents");
 		map.put("file.createdate", "Files.CreationDate");
 		map.put("file.moddate", "File.LastModificationDate");
@@ -33,6 +34,7 @@ public class KeyMap {
 		map.put("run.moddate", "Runs.LastModificationDate");
 		
 		map.put("ls.startevnum", "LumiSection.StartEventNumber");
+		map.put("ls.id", "LumiSection.ID");
 		map.put("ls.endevnum", "LumiSection.EndEventNumber");
 		map.put("ls.number", "LumiSection.LumiSectionNumber");
 		map.put("ls.starttime", "LumiSection.LumiStartTime");

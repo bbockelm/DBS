@@ -10,11 +10,20 @@ import java.util.ArrayList;
 ArrayList kws = new ArrayList();
 ArrayList constraints = new ArrayList();
 }
+@rulecatch {
+catch (RecognitionException e) {
+	throw e;
+}
+}
 
-stmt	: select SPACE  selectList   SPACE where  SPACE constraintList  NL;
+stmt	: select spaces selectList spaces where spaces constraintList  
+	| select spaces selectList;
+
+spaces	: (SPACE)*;
 		 
 selectList	:kw=	keyword 		{kws.add($kw.text);}
- 		(COMMA 
+ 		(COMMA
+		spaces
  	kw=	keyword  		{kws.add($kw.text);}
  		)*;		 
  		
@@ -22,35 +31,37 @@ keyword	: entity
 	| entity DOT attr
 	| entity DOT funct;
 	
-constraintList	: constraint ( SPACE 
+constraintList	: constraint ( spaces 
 	rel=	logicalOp 		{if(rel== null) System.out.println("REL is NULL"); constraints.add($rel.text);}
-		SPACE constraint)*;
+		spaces constraint)*;
 
 constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
+		spaces
 	 op=	(EQ | LT | GT) 	{c.setOp($op.text);}   
+		spaces
 	 val=	VALUE 		{c.setValue($val.text); constraints.add(c); 	}               
 		| 
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
-		SPACE 
+		spaces 
 	op1=	in 	 	{c.setOp($op1.text);}  
-		SPACE '(' 
+		spaces '(' 
 	val1=	valueList 		{c.setValue($val1.text); constraints.add(c);}
 		')'               
 		| 
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
-		SPACE 
+		spaces 
 	op2=	like 		{c.setOp($op2.text);} 
-		SPACE 
+		spaces 
 	val2=	likeValue 		{c.setValue($val2.text); constraints.add(c);};                  
 
 where	:('WHERE' | 'where');
 valueList	:VALUE (COMMA VALUE)*;
 likeValue 	:(VALUE| STAR)+;
 logicalOp	:(and|or);
-entity	: ('ads' | 'path' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'ls' );
-attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'path' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' );
+entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'ls' );
+attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' );
 funct	:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
-select	:('select' | 'SELECT');
+select	:('select' | 'SELECT' | 'find' | 'FIND');
 and	:('and' | 'AND');
 or	:('or' | 'OR');
 in	:('in' | 'IN');

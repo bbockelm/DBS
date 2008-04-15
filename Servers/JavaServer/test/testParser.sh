@@ -26,18 +26,26 @@ executeQuery () {
 	message="Executing executeQuery API..."
 	echo $message
 	#out=`$CMD api=executeQuery query="select file where file.release=CMSSW_2_1_0_pre1"`
-	out=`$CMD api=executeQuery query="select file,file.status,file.type where procds.release=CMSSW_1_7_1"`
+	#out=`$CMD api=executeQuery query="select file,file.status,file.type where procds.release=CMSSW_1_7_1"`
+	#out=`$CMD api=executeQuery query="find file.id,ls.id where procds.release=CMSSW_1_7_1"`
 	#out=`$CMD api=executeQuery query="select file.name,file.createdate where run.number=35672 and run.moddate>2"`
-	#out=`$CMD api=executeQuery query="select file,file.size,path where procds.name=Online and file.size>546294916"`
-	#out=`$CMD api=executeQuery query="select ls,file.release where path=/CalPrivateGlobal-default/Online/RAW"`
-	#out=`$CMD api=executeQuery query="select ls where path=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
-	#out=`$CMD api=executeQuery query="select file.release,file where path=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
+	#out=`$CMD api=executeQuery query="select file,file.size,dataset where procds.name=Online and file.size>546294916"`
+	#out=`$CMD api=executeQuery query="select  file,    ls    where    dataset  =   /CalPrivateGlobal-default/Online/RAW"`
+	#out=`$CMD api=executeQuery query="select ls where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
+	#out=`$CMD api=executeQuery query="select file.release,file where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
 	#out=`$CMD api=executeQuery query="select run where run.number>1 and run.number<100"`
-	#out=`$CMD api=executeQuery query="select run.count where run.number>1 and run.number<100"`
-	#out=`$CMD api=executeQuery query="select run.count where path=/CalPrivateGlobal-default/Online/RAW"`
-	#out=`$CMD api=executeQuery query="select file,run,ls where path=/GlobalMar08-Express/Online/RAW"`
-	#out=`$CMD api=executeQuery query="select file.release where path=/CalPrivateGlobal-default/Online/RAW"`
+	out=`$CMD api=executeQuery query="select run.count where run.number > 1 and run.number < 100"`
+	#out=`$CMD api=executeQuery query="select run.count where dataset=/CalPrivateGlobal-default/Online/RAW"`
+	#out=`$CMD api=executeQuery query="select file,run,ls where dataset=/GlobalMar08-Express/Online/RAW"`
+	#out=`$CMD api=executeQuery query="select file,run,ls where dataset like %Online%"`
+	#out=`$CMD api=executeQuery query="select run,ls where dataset like %Online%"`
+	#out=`$CMD api=executeQuery query="select run,ls,file where dataset  like  %Online%"`
+	#out=`$CMD api=executeQuery query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW"`
+	#out=`$CMD api=executeQuery query="select primds where primds.name like %"`
+	#out=`$CMD api=executeQuery query="select procds where procds.name like %"`
+	#out=`$CMD api=executeQuery query="select dataset where block.name like %"`
+	#out=`$CMD api=executeQuery query="select procds"`
 	echo "$out"
 }
-
+#$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery query="select run,ls where path like %Online%"
 executeQuery
