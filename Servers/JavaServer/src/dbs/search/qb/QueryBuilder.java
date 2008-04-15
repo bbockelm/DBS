@@ -280,14 +280,14 @@ public class QueryBuilder {
 		return keyWords;
 	}
 
-	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords) {
+	private ArrayList makeCompleteListOfVertexsOld(ArrayList lKeywords) {
 		int len = lKeywords.size();
 		if(len <= 1) return lKeywords;
 		for(int i = 0 ; i != len ; ++i ) {
 			boolean isEdge = false;
 			for(int j = 0 ; j != len ; ++j ) {
 				if(i != j) {
-					//System.out.println("Checking " + lKeywords.get(i) + " with " + lKeywords.get(j) );
+					System.out.println("Checking " + lKeywords.get(i) + " with " + lKeywords.get(j) );
 					if(u.doesEdgeExist((String)lKeywords.get(i), (String)lKeywords.get(j)))	{
 						isEdge = true;
 						break;
@@ -295,19 +295,69 @@ public class QueryBuilder {
 				}
 			}
 			if(!isEdge) {
-				//System.out.println("Shoertest edge in " + (String)lKeywords.get(i) + " --- " + (String)lKeywords.get((i+1)%len));
+				System.out.println("Shoertest edge in " + (String)lKeywords.get(i) + " --- " + (String)lKeywords.get((i+1)%len));
 				List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(i), (String)lKeywords.get((i+1)%len));
 				for (Edge e: lEdges) {
 					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
 					lKeywords = addUniqueInList(lKeywords, u.getFirstNameFromEdge(e));
 					lKeywords = addUniqueInList(lKeywords, u.getSecondNameFromEdge(e));
 				}
-				//System.out.println("No edge callin again ---------> \n");
-				return makeCompleteListOfVertexs (lKeywords);
+				System.out.println("No edge callin again ---------> \n");
+				lKeywords =  makeCompleteListOfVertexs (lKeywords);
+				return lKeywords;
+
 			}
 		}
 		return lKeywords;
 	}
+
+
+	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords) {
+		ArrayList myRoute = new ArrayList();
+		myRoute.add(lKeywords.get(0));
+		lKeywords.remove(0);
+		int len = lKeywords.size();
+		int prevLen = 0;
+		while(len != 0) {
+			boolean breakFree = false;
+			for(int i = 0 ; i != len ; ++i ) {
+				int lenRount = myRoute.size();
+				for(int j = 0 ; j != lenRount ; ++j ) {
+					String keyInMyRoute = (String)myRoute.get(j);
+					String keyInArray = (String)lKeywords.get(i);
+					if(keyInArray.equals(keyInMyRoute)) {
+						lKeywords.remove(i);
+						breakFree = true;
+						break;
+					} else if(u.doesEdgeExist(keyInMyRoute, keyInArray))	{
+						myRoute = addUniqueInList(myRoute, keyInArray);
+						lKeywords.remove(i);
+						breakFree = true;
+						break;
+					}
+				}
+				if(breakFree) break;
+				
+			}
+			if(prevLen == len) {
+				System.out.println("Shortest edge in " + (String)lKeywords.get(0) + " --- " + (String)myRoute.get(0));
+				List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(0), (String)myRoute.get(0));
+				for (Edge e: lEdges) {
+					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
+					myRoute = addUniqueInList(myRoute, u.getFirstNameFromEdge(e));
+					myRoute = addUniqueInList(myRoute, u.getSecondNameFromEdge(e));
+				}
+				if(lEdges.size() > 0) lKeywords.remove(0);
+			}
+			
+			prevLen = len;
+			len = lKeywords.size();
+		}
+		return myRoute;
+	}
+
+
+	
 	public ArrayList sortVertexs(ArrayList lKeywords) {
 		//System.out.println("INSIDE sortVertexs");
 		int len = lKeywords.size();
