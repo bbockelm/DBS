@@ -1,6 +1,6 @@
 /**
- $Revision: 1.7 $"
- $Id: DBSApiDQLogic.java,v 1.7 2007/06/25 15:59:05 afaq Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSApiDQLogic.java,v 1.8 2007/07/11 20:03:21 afaq Exp $"
  *
  */
 
@@ -77,7 +77,8 @@ public class DBSApiDQLogic extends DBSApiLogic {
 	{
 		//ONLY insert if its NOT already present, why the F*** the MySQL MUL-UQ doesn't work ?
 		String flagID =  null;
-		if ( ! isNull(flagID = getDQFlagID(conn, runID, lumiID, flag, value, false))) {
+		if ( ! isNull(flagID = getDQFlagID(conn, runID, lumiID, flag, "", false))) {
+		//if ( ! isNull(flagID = getDQFlagID(conn, runID, lumiID, flag, value, false))) {
 			DBSUtil.writeLog("FLAG:="+flag+" for This Run (LumiSection) already exixts with value:="+value);
 			writeWarning(out, "Already Exists", "1020", "FLAG:="+flag+
 							" for This Run (LumiSection) already exixts with value:="+value );
