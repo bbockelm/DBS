@@ -262,7 +262,6 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       print data
        logging.log(DBSDEBUG, data)
 
     except sslerror, ex:

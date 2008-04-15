@@ -81,7 +81,6 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
         
 
 	def startElement(self, name, attrs):
-	  print name
 	  if name == 'processed_dataset':
 	    self.procName = str(attrs['processed_datatset_name'])	  
 	    self.primName = str(attrs['primary_datatset_name'])	  
