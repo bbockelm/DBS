@@ -1,6 +1,6 @@
 /**
- $Revision: 1.55 $"
- $Id: DBSApiProcDSLogic.java,v 1.55 2008/03/20 22:22:06 afaq Exp $"
+ $Revision: 1.56 $"
+ $Id: DBSApiProcDSLogic.java,v 1.56 2008/03/25 22:46:45 sekhri Exp $"
  *
  */
 
@@ -219,7 +219,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
 		}
-		
+	
+
+/*
+	
 		try {
                         ps = DBSSql.listDatasetADSParent(conn, procDSID);
 			rs =  ps.executeQuery();
@@ -231,6 +234,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
                 }
+*/
+
 
 	 }
 
@@ -485,12 +490,14 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 						getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true), 
 						cbUserID, lmbUserID, creationDate);
 			}
+			/*
 			String analysisDatasetName = get(dataset, "analysis_datatset_parent", false);
 			if (!isNull(analysisDatasetName))
 	                        insertMap(conn, out, "ProcADSParent", "ThisDataset", "ItsParentADS",
                                                 procDSID,
 						(new DBSApiAnaDSLogic(this.data)).getADSID(conn, analysisDatasetName, true),
                                                 cbUserID, lmbUserID, creationDate);
+			*/
 		}
 
 		//Insert ProcDSRun table by fetching Run ID
