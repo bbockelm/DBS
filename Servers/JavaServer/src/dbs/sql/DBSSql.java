@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.144 $"
- $Id: DBSSql.java,v 1.144 2008/04/07 20:26:30 sekhri Exp $"
+ $Revision: 1.145 $"
+ $Id: DBSSql.java,v 1.145 2008/04/09 22:50:48 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1321,7 +1321,7 @@ public class DBSSql {
 				"ON percb.id = pd.CreatedBy \n" +
 			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = pd.LastModifiedBy \n" +
-			"WHERE pd.Name like ?\n" +
+			"WHERE pd.Name = ?\n" +
 				"ORDER BY pd.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, pattern);
