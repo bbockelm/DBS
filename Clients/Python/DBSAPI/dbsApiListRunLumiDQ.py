@@ -88,22 +88,26 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 			'dq_version':dqVersion }, 'POST')
     logging.log(DBSDEBUG, data)
 
-
     # Parse the resulting xml output.
     try:
       result = []
 
       class Handler (xml.sax.handler.ContentHandler):
 
+	def __init__(self):
+		self.SubSysFlags = []
+		self.SubSubFlags = []
+
         def startElement(self, name, attrs):
           if name == 'run':
+
                self.currRun = DbsRunLumiDQ (
 						RunNumber=getLong(attrs['run_number']),
 						LumiSectionNumber=getLong(attrs['lumi_section_number']),
 						DQFlagList=[]
 						)
           if name == 'dq_sub_system':
-                        currSubFlag = DbsDQFlag(
+                        aSubFlag = DbsDQFlag(
                                         Name=str(attrs['name']),
                                         Value=str(attrs['value']),
 					Parent=str(attrs['parent']),
@@ -112,39 +116,53 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
                                         #LastModificationDate=str(attrs['last_modification_date']),
                                         #LastModifiedBy=str(attrs['last_modified_by']),
                                         )
-			#if currSubFlag in self.currRun['DQFlagList']:
-			#	self.currRun['DQFlagList']
-			self.currRun['DQFlagList'].append(currSubFlag)
-
+			self.SubSysFlags.append(aSubFlag)
           if name == 'dq_sub_subsys':
-			parent=str(attrs['parent'])
                         subSubFlag = DbsDQFlag(
                                                 Name=str(attrs['name']),
                                                 Value=str(attrs['value']),
-						Parent=parent,
+						Parent=str(attrs['parent']),
                                                 #CreationDate=str(attrs['creation_date']),
                                                 #CreatedBy=str(attrs['created_by']),
                                                 #LastModificationDate=str(attrs['last_modification_date']),
                                                 #LastModifiedBy=str(attrs['last_modified_by']),
                                                 )
-			found = 0	
-			for aSubSys in self.currRun['DQFlagList']:
-				if aSubSys['Name'] == parent:
-					aSubSys['SubSysFlagList'].append(subSubFlag)
-					found = 1
-					break
-				else :
-					for aSubSubSys in aSubSys['SubSysFlagList']:
-						if aSubSubSys['Name'] == parent:
-							aSubSubSys['SubSysFlagList'].append(subSubFlag)
-							found = 1
-							break
-
-
+			self.SubSubFlags.append(subSubFlag)
         def endElement(self, name):
             if name == 'run':
-               result.append(self.currRun)
 
+
+		mark_for_removel=[]
+		#resolve Sub Sub System Parentage First
+		for asssys in self.SubSubFlags:
+			added = 0
+			
+			for apsssys in self.SubSubFlags:
+				#Name of a sub sub system is same as parent of sub system
+				if apsssys['Name'] == asssys['Parent']:
+					# Add it as child node
+					apsssys['SubSysFlagList'].append(asssys)
+					# And remove it from the master list
+					#self.SubSubFlags.remove(asssys)
+					mark_for_removel.append(asssys)
+					added = 1
+
+		for toDel in mark_for_removel:
+			self.SubSubFlags.remove(toDel)
+
+
+                for asssys in self.SubSubFlags:
+			for apsys in self.SubSysFlags:
+				#Name of a sub system is same as parent of sub sub system
+				if apsys['Name'] == asssys['Parent']:
+					# Add it as a child node
+					apsys['SubSysFlagList'].append(asssys)
+					
+		
+
+		#
+		self.currRun['DQFlagList'] = self.SubSysFlags
+		result.append(self.currRun)
 
       xml.sax.parseString (data, Handler ())
       return result
