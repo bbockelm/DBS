@@ -1,6 +1,6 @@
 /**
- $Revision: 1.124 $"
- $Id: DBSApi.java,v 1.124 2008/03/18 21:23:32 sekhri Exp $"
+ $Revision: 1.125 $"
+ $Id: DBSApi.java,v 1.125 2008/04/07 20:26:29 sekhri Exp $"
  *
 */
 
@@ -679,6 +679,11 @@ public class DBSApi {
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),
 						get(table, "time_stamp",false),
 						get(table, "dq_version", false) );
+                        } else if (apiStr.equals("listFilesForRunLumiDQ")) {
+                                (new DBSApiDQLogic(this.data)).listFilesForRunLumiDQ(conn, out,
+                                                DBSApiParser.parseDQRunLumi(getXml(table)),
+                                                get(table, "time_stamp",false),
+                                                get(table, "dq_version", false) );
 			} else if (apiStr.equals("versionDQ")) {
 				(new DBSApiDQLogic(this.data)).versionDQ(conn, out,
 						DBSApiParser.parse(getXml(table), "dq_version"),

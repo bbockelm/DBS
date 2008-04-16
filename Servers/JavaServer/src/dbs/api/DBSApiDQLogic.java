@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiDQLogic.java,v 1.8 2007/07/11 20:03:21 afaq Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiDQLogic.java,v 1.9 2008/04/15 21:24:47 afaq Exp $"
  *
  */
 
@@ -208,6 +208,37 @@ public class DBSApiDQLogic extends DBSApiLogic {
 				
 			} 
 		} finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+	}
+
+
+	public void listFilesForRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
+
+		PreparedStatement ps = null;
+                ResultSet rs =  null;
+
+                if (!isNull(timeStamp) && !isNull(dqVersion)) {
+                        throw new DBSException("Duplicate information supplied", "7006",
+                                                                "You have provided both a TimeStamp:="+timeStamp+" and DQ Version:="+dqVersion);
+		}
+
+                if (!isNull(dqVersion)) {
+                        //Get the time stamp from the version table
+                        timeStamp = getDQVerTimeStamp(conn, dqVersion);
+                }
+
+                try {
+                        ps = DBSSql.listFilesForRunLumiDQ(conn, runDQList, timeStamp);
+                        rs =  ps.executeQuery();
+
+                        while(rs.next()) {
+				String lfn = get(rs, "LFN");
+				//System.out.println("LFN: "+ lfn );
+                                out.write( (String) "<file lfn='"+lfn+"' />" ); 
+			}
+                } finally {
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
                 }
