@@ -50,5 +50,5 @@ executeQuery () {
 	$CMD query="select file where file.modby like %sekhri%" 
 }
 #$CMD query="select ls.id,file.id where dataset = /CalPrivateGlobal-default/Online/RAW" 
-#$CMD query="select procds, procds.createdate,run,ls.moddate" 
-executeQuery
+$CMD query="select procds, procds.createdate,run,ls.moddate" 
+#executeQuery
