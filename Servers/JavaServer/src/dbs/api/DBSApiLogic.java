@@ -1,6 +1,6 @@
 /**
- $Revision: 1.122 $"
- $Id: DBSApiLogic.java,v 1.122 2008/04/03 19:50:20 sekhri Exp $"
+ $Revision: 1.123 $"
+ $Id: DBSApiLogic.java,v 1.123 2008/04/07 20:26:29 sekhri Exp $"
  *
  */
 
@@ -134,12 +134,13 @@ public class DBSApiLogic {
 	}
 
 	public void executeQuery(Connection conn, Writer out, String userQuery) throws Exception {
-		String finalQuery = (new Wrapper()).getQuery(userQuery);
+		Wrapper wr = new Wrapper();
+		String finalQuery = wr.getQuery(userQuery);
 		System.out.println("Query Generated is " + finalQuery);
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.getQuery(conn, finalQuery);
+			ps = DBSSql.getQuery(conn, finalQuery, wr.getBindValues());
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int numberOfColumns = rsmd.getColumnCount();

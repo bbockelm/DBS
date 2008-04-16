@@ -7,6 +7,10 @@ import java.util.StringTokenizer;
 import dbs.search.qb.QueryBuilder;
 
 public class Wrapper {
+	private ArrayList bindValues ;
+	public ArrayList getBindValues() {
+		return bindValues;
+	}
 	public String getQuery(String query) throws Exception {
 
 		ByteArrayInputStream bis = new ByteArrayInputStream(query.getBytes());
@@ -30,7 +34,9 @@ public class Wrapper {
 			}else System.out.println("REL " + (String)obj);
 		}
 		QueryBuilder qb = new QueryBuilder();
-		return qb.genQuery(kws, cs);
+		String queryToReturn = qb.genQuery(kws, cs);
+		bindValues = qb.getBindValues();
+		return queryToReturn;
  		
     }
 }

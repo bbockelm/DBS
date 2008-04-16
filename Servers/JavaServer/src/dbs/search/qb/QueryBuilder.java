@@ -12,13 +12,19 @@ import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.Edge;
 
 public class QueryBuilder {
-	KeyMap km = new KeyMap();
-	RelationMap rm = new RelationMap();
+	KeyMap km;
+	//RelationMap rm = new RelationMap();
+	private ArrayList bindValues;
 	GraphUtil u = null;
 	public QueryBuilder() {
-		u = new GraphUtil("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
+		bindValues = new ArrayList();
+		km = new KeyMap();
+		//u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
+		u = GraphUtil.getInstance("WEB-INF/DBSSchemaGraph.xml");
 	}
-
+	public ArrayList getBindValues() {
+		return bindValues;
+	}
 	public String genQuery(ArrayList kws, ArrayList cs) throws Exception{
 		//Store all the keywors both from select and where in allKws
 		ArrayList allKws = new ArrayList();
@@ -173,7 +179,11 @@ public class QueryBuilder {
 
 
 					if(Util.isSame(op, "in")) query += handleIn(val);
-					else query += op + " '" + val + "'";
+					else {
+						//query += op + " '" + val + "'";
+						query += op + " ?";
+						bindValues.add(val);
+					}
 				}
 
 			} else {
@@ -258,7 +268,9 @@ public class QueryBuilder {
 		int count =  st.countTokens();
 		for(int k = 0 ; k != count ; ++k) {
 			if(k != 0) query += ",";
-			query += "'" + st.nextToken() + "'";
+			//query += "'" + st.nextToken() + "'";
+			query += "?";
+			bindValues.add(st.nextToken());
 		}
 		query += ")";
 		return query;
@@ -277,10 +289,14 @@ public class QueryBuilder {
 			"SELECT \n" +
 			"\tProcessedDataset.ID " + genJoins(route) +
 			"WHERE \n" + 
-			"\tPrimaryDataset.Name = '" + data[1] + "'\n" +
+			//"\tPrimaryDataset.Name = '" + data[1] + "'\n" +
+			"\tPrimaryDataset.Name = ?\n" +
 			"\tAND\n" +
-			"\tProcessedDataset.Name = '" + data[2] + "'" +
+			//"\tProcessedDataset.Name = '" + data[2] + "'" +
+			"\tProcessedDataset.Name = ?" +
 			")";
+		bindValues.add(data[1]);
+		bindValues.add(data[2]);
 		return query;
 	}
 
@@ -289,8 +305,11 @@ public class QueryBuilder {
 			"SELECT \n" +
 			"\tBlock.ID FROM Block" +
 			"\tWHERE \n" + 
-			"\tBlock.Path " + op + " '" + path + "'\n" +
+			//"\tBlock.Path " + op + " '" + path + "'\n" +
+			"\tBlock.Path " + op + " ?\n" +
 			")";
+		
+		bindValues.add(path);
 		return query;
 	}
 
@@ -303,8 +322,10 @@ public class QueryBuilder {
 			"SELECT \n" +
 			"\tAlgorithmConfig.ID " + genJoins(route) +
 			"WHERE \n" + 
-			"\tAppVersion.Version = '" + version + "'\n" +
+			//"\tAppVersion.Version = '" + version + "'\n" +
+			"\tAppVersion.Version = ?\n" +
 			")";
+		bindValues.add(version);
 		return query;
 	}
 
@@ -451,7 +472,7 @@ public class QueryBuilder {
 	public static void main(String args[]) {
 		QueryBuilder qb = new QueryBuilder();
 		ArrayList tmp = new ArrayList();
-		GraphUtil u = new GraphUtil("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
+		GraphUtil u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
 		List<Edge> lEdges =  u.getShortestPath("ProcessedDataset", "LumiSection");
 		for (Edge e: lEdges) {
 			System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));

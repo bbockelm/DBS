@@ -21,31 +21,29 @@ CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 #echo "select file.name,ls.starttime,run.endtime where run.number=35672 or ls.number=2 or run.starttime=1"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
 
 
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
 executeQuery () {
-	message="Executing executeQuery API..."
-	echo $message
-	#out=`$CMD api=executeQuery query="select file where file.release=CMSSW_2_1_0_pre1"`
-	#out=`$CMD api=executeQuery query="select file,file.status,file.type where procds.release=CMSSW_1_7_1"`
-	#out=`$CMD api=executeQuery query="find file.id,ls.id where procds.release=CMSSW_1_7_1"`
-	#out=`$CMD api=executeQuery query="select file.name,file.createdate where run.number=35672 and run.moddate>2"`
-	#out=`$CMD api=executeQuery query="select file,file.size,dataset where procds.name=Online and file.size>546294916"`
-	#out=`$CMD api=executeQuery query="select  file,    ls    where    dataset  =   /CalPrivateGlobal-default/Online/RAW"`
-	#out=`$CMD api=executeQuery query="select ls where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
-	#out=`$CMD api=executeQuery query="select file.release,file where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"`
-	#out=`$CMD api=executeQuery query="select run where run.number>1 and run.number<100"`
-	out=`$CMD api=executeQuery query="select run.count where run.number > 1 and run.number < 100"`
-	#out=`$CMD api=executeQuery query="select run.count where dataset=/CalPrivateGlobal-default/Online/RAW"`
-	#out=`$CMD api=executeQuery query="select file,run,ls where dataset=/GlobalMar08-Express/Online/RAW"`
-	#out=`$CMD api=executeQuery query="select file,run,ls where dataset like %Online%"`
-	#out=`$CMD api=executeQuery query="select run,ls where dataset like %Online%"`
-	#out=`$CMD api=executeQuery query="select run,ls,file where dataset  like  %Online%"`
-	#out=`$CMD api=executeQuery query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW"`
-	#out=`$CMD api=executeQuery query="select primds where primds.name like %"`
-	#out=`$CMD api=executeQuery query="select procds where procds.name like %"`
-	#out=`$CMD api=executeQuery query="select dataset where block.name like %"`
-	#out=`$CMD api=executeQuery query="select procds"`
-	echo "$out"
+	echo "Executing executeQuery API..."
+	$CMD query="select file where file.release=CMSSW_2_1_0_pre1"
+	$CMD query="select file,file.status,file.type where procds.release=CMSSW_1_7_1"
+	$CMD query="find file.id,ls.id where procds.release=CMSSW_1_7_1"
+	$CMD query="select file.name,file.createdate where run.number=35672 and run.moddate>2"
+	$CMD query="select file,file.size,dataset where procds.name=Online and file.size>546294916"
+	$CMD query="select  file,    ls    where    dataset  =   /CalPrivateGlobal-default/Online/RAW"
+	$CMD query="select ls where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"
+	$CMD query="select file.release,file where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"
+	$CMD query="select run where run.number>1 and run.number<100"
+	$CMD query="select run.count where run.number > 1 and run.number < 100"
+	$CMD query="select run.count where dataset=/CalPrivateGlobal-default/Online/RAW"
+	$CMD query="select file,run,ls where dataset=/GlobalMar08-Express/Online/RAW"
+	$CMD query="select file,run,ls where dataset like %Online%"
+	$CMD query="select run,ls where dataset like %Online%"
+	$CMD query="select run,ls,file where dataset  like  %Online%"
+	$CMD query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW"
+	$CMD query="select primds where primds.name like %"
+	$CMD query="select procds where procds.name like %"
+	$CMD query="select dataset where block.name like %"
+	$CMD query="select procds"
 }
 #$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery query="select run,ls where path like %Online%"
 executeQuery

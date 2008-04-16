@@ -1,13 +1,14 @@
 
 /**
- $Revision: 1.146 $"
- $Id: DBSSql.java,v 1.146 2008/04/15 15:39:53 afaq Exp $"
+ $Revision: 1.147 $"
+ $Id: DBSSql.java,v 1.147 2008/04/16 16:22:56 sekhri Exp $"
  *
  */
 package dbs.sql;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.List;
 import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Connection;
@@ -54,9 +55,13 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
-	public static PreparedStatement getQuery(Connection conn, String query) throws SQLException {
+	public static PreparedStatement getQuery(Connection conn, String query, List<String> bindValues) throws SQLException {
 
 		PreparedStatement ps = DBManagement.getStatement(conn, query);
+		int columnIndx = 1;
+		for(String s: bindValues) {
+			ps.setString(columnIndx++, s);
+		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }

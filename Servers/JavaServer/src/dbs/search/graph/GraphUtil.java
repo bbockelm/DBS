@@ -14,16 +14,22 @@ import java.util.List;
 
 public class GraphUtil{
 	Graph g;
-	public GraphUtil(Graph g){
+	private static GraphUtil ref ;
+	public static synchronized GraphUtil getInstance(String fileName){
+		if (ref == null) ref = new GraphUtil(fileName);
+		return ref;
+	}
+								                                                
+	private GraphUtil(Graph g){
 		this.g = g;
 	}
-	public GraphUtil(){}
+	private GraphUtil(){}
 	
-	public GraphUtil(String fileName){	
+	private GraphUtil(String fileName){	
 		g = (new GraphMLFile()).load(fileName);
 	}
 
-	public Graph loadGraph(String fileName){	
+	private Graph loadGraph(String fileName){	
 		g = (new GraphMLFile()).load(fileName);
 		return g;
 	}

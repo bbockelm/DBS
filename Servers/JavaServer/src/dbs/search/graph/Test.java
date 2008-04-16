@@ -16,7 +16,7 @@ public class Test{
 
 
 	public static void main(String args[]) {
-		GraphUtil u = new GraphUtil("DBSSchemaGraph.xml");
+		GraphUtil u = GraphUtil.getInstance("DBSSchemaGraph.xml");
 		/*Graph g = u.getGraph();
 		
 		for (Iterator eIt = g.getEdges().iterator(); eIt.hasNext(); ) {
