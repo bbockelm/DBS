@@ -1,6 +1,6 @@
 /**
- $Revision: 1.123 $"
- $Id: DBSApiLogic.java,v 1.123 2008/04/07 20:26:29 sekhri Exp $"
+ $Revision: 1.124 $"
+ $Id: DBSApiLogic.java,v 1.124 2008/04/16 18:20:23 sekhri Exp $"
  *
  */
 
@@ -136,7 +136,12 @@ public class DBSApiLogic {
 	public void executeQuery(Connection conn, Writer out, String userQuery) throws Exception {
 		Wrapper wr = new Wrapper();
 		String finalQuery = wr.getQuery(userQuery);
-		System.out.println("Query Generated is " + finalQuery);
+		System.out.println("____________________________________ User Query ___________________________________");
+		System.out.println(userQuery);
+		System.out.println("___________________________________________________________________________________");
+		System.out.println("_________________________________ Generated Query _________________________________");
+		System.out.println(finalQuery);
+		System.out.println("___________________________________________________________________________________");
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
@@ -148,6 +153,7 @@ public class DBSApiLogic {
 			for (int i = 0; i != numberOfColumns; ++i) {
 				colNames[i] = rsmd.getColumnName(i + 1);
 			}
+			out.write("****************************** OUTPUT ***************************************\n");
 			while(rs.next()) {
 				out.write(((String) "<result "));
 				for (int i = 0; i != numberOfColumns; ++i) {
@@ -155,6 +161,7 @@ public class DBSApiLogic {
 				}
 				out.write(((String) "/>\n"));
 			}
+			out.write("****************************** OUTPUT ***************************************\n\n\n");
 
 		} finally {
 			if (rs != null) rs.close();

@@ -27,6 +27,7 @@ public class QueryBuilder {
 	}
 	public String genQuery(ArrayList kws, ArrayList cs) throws Exception{
 		//Store all the keywors both from select and where in allKws
+		String personJoinQuery = "";
 		ArrayList allKws = new ArrayList();
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
@@ -74,6 +75,17 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 
+					if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
+						String personField = "CreatedBy";
+						if(Util.isSame(token2, "modby")) personField = "LastModifiedBy";
+						String tmpTableName =  token + "_" + token2;
+						personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
+							"\t\tON " + real + "." + personField + " = " + tmpTableName + ".ID\n";
+						String fqName = tmpTableName + ".DistinguishedName";
+						query += fqName + makeAs(fqName);			
+						addQuery = false;
+					}
+					
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
 						String mapVal =  km.getMappedValue(aKw);
@@ -136,8 +148,10 @@ public class QueryBuilder {
 		
 		allKws = sortVertexs(allKws);
 		query += genJoins(allKws);
-
-		if (cs.size() > 0) query += "\nWHERE\n";
+		query += personJoinQuery;
+		personJoinQuery = "";
+		String queryWhere = "";
+		if (cs.size() > 0) queryWhere += "\nWHERE\n";
 		
 		for (int i =0 ; i!= cs.size(); ++i) {
 			Object obj = cs.get(i);
@@ -150,16 +164,16 @@ public class QueryBuilder {
 				if(Util.isSame(key, "dataset")) {
 					// If path is given in where clause it should op should always be =
 					//if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
-					//query += "\tProcessedDataset.ID " + handlePath(val);
-					if(isIn(allKws, "Files")) query += "\tFiles.Block ";
-					else query += "\tBlock.ID ";
-					query += handlePath(val, op);
+					//queryWhere += "\tProcessedDataset.ID " + handlePath(val);
+					if(isIn(allKws, "Files")) queryWhere += "\tFiles.Block ";
+					else queryWhere += "\tBlock.ID ";
+					queryWhere += handlePath(val, op);
 				} else if(Util.isSame(key, "file.release")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
-					query += "\tFileAlgo.Algorithm" + handleRelease(val);
+					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(val);
 				} else if(Util.isSame(key, "procds.release")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
-					query += "\tProcAlgo.Algorithm " + handleRelease(val);
+					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(val);
 				} else {
 
 
@@ -168,31 +182,40 @@ public class QueryBuilder {
 					StringTokenizer st = new StringTokenizer(key, ".");
 					int count = st.countTokens();
 					String token = st.nextToken();
-					Vertex vFirst = u.getMappedVertex(token);
-					Vertex vCombined = u.getMappedVertex(key);
-					if(vCombined == null) {
-						query += "\t" + km.getMappedValue(key) + " " ;
+					String token2 = st.nextToken();
+
+					if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
+						String personField = "CreatedBy";
+						if(Util.isSame(token2, "modby")) personField = "LastModifiedBy";
+						String tmpTableName =  token + "_" + token2;
+						personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
+							"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
+						queryWhere += tmpTableName + ".DistinguishedName ";			
 					} else {
-					        query += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
-						//FIXME default can be list
+						//Vertex vFirst = u.getMappedVertex(token);
+						Vertex vCombined = u.getMappedVertex(key);
+						if(vCombined == null) {
+							queryWhere += "\t" + km.getMappedValue(key) + " " ;
+						} else {
+						        queryWhere += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
+							//FIXME default can be list
+						}
 					}
-
-
-					if(Util.isSame(op, "in")) query += handleIn(val);
+					if(Util.isSame(op, "in")) queryWhere += handleIn(val);
 					else {
-						//query += op + " '" + val + "'";
-						query += op + " ?";
+						//queryWhere += op + " '" + val + "'";
+						queryWhere += op + " ?";
 						bindValues.add(val);
 					}
 				}
 
 			} else {
 				//System.out.println("REL " + (String)obj);
-				query += "\n" + ((String)obj).toUpperCase() + "\n";
+				queryWhere += "\n" + ((String)obj).toUpperCase() + "\n";
 			}
 		}
 		//System.out.println("\n\nFINAL query is \n\n" + query);
-		return query;
+		return query + personJoinQuery + queryWhere;
 	}
 
 	private String makeAs(String in) {

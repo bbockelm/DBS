@@ -131,27 +131,27 @@ public class DBSDataCache {
 
 	public void resetCache(Connection conn) throws Exception {
 		if (DBSConstants.USECACHE) {
-			System.out.print("\nLoading Person information in cache ...... ");
+			//System.out.print("\nLoading Person information in cache ...... ");
 			refreshPersons(conn);
-			System.out.println("Done");
-			System.out.print("\nLoading Processed DS information in cache ...... ");
+			//System.out.println("Done");
+			//System.out.print("\nLoading Processed DS information in cache ...... ");
 			refreshProcDSs(conn);
-			System.out.println("Done");
+			//System.out.println("Done");
 			//System.out.print("\nLoading Algorithm information in cache ...... ");
 			//refreshAlgos(conn);
 			//System.out.println("Done");
-			System.out.print("\nLoading Tier information in cache ...... ");
+			//System.out.print("\nLoading Tier information in cache ...... ");
 			refreshTiers(conn);
-			System.out.println("Done");
-			System.out.print("\nLoading File Status information in cache ...... ");
+			//System.out.println("Done");
+			//System.out.print("\nLoading File Status information in cache ...... ");
 			refreshFileStatus(conn);
-			System.out.println("Done");
-			System.out.print("\nLoading File Type information in cache ...... ");
+			//System.out.println("Done");
+			//System.out.print("\nLoading File Type information in cache ...... ");
 			refreshFileTypes(conn);
-			System.out.println("Done");
-			System.out.print("\nLoading File ValStatus information in cache ...... ");
+			//System.out.println("Done");
+			//System.out.print("\nLoading File ValStatus information in cache ...... ");
 			refreshFileValStatus(conn);
-			System.out.println("Done\n");
+			//System.out.println("Done\n");
 		}
 
 	}
