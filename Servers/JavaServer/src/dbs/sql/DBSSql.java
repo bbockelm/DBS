@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.147 $"
- $Id: DBSSql.java,v 1.147 2008/04/16 16:22:56 sekhri Exp $"
+ $Revision: 1.148 $"
+ $Id: DBSSql.java,v 1.148 2008/04/16 18:20:25 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -421,6 +421,108 @@ public class DBSSql {
                 return ps;
 
 	}
+
+
+        public static PreparedStatement listFilesForRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
+        throws SQLException
+        {
+
+                //JUST for testing 
+                //timeStamp = "1182285735";
+
+                String sql = "SELECT distinct F.LogicalFilename as LFN \n" +
+                                "FROM  "+owner()+"RunLumiQuality rq \n"+
+                                "join "+owner()+"Runs r \n"+
+                                       "on rq.Run = r.ID \n"+
+                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
+                                       "on ls.ID = rq.Lumi \n"+
+                                "join "+owner()+"SubSystem ss \n"+
+                                        "on ss.ID = rq.SubSystem \n"+
+                                "join "+owner()+"QualityValues qv \n"+
+                                        "on qv.ID = rq.DQValue \n"+
+                                "join "+owner()+"FileRunLumi FLR \n"+
+                                        "on FLR.Run = rq.Run \n" +
+                                "join "+owner()+"Files F \n" +
+                                        "on FLR.Fileid = F.ID \n";
+
+                if (runDQList.size() > 0 || !DBSUtil.isNull(timeStamp)) sql += " WHERE ";
+                //MAKE THIS BIND Valriable LATERS !!
+                String tmpSql = "";
+                String rlsql = "";
+                if (runDQList.size() > 0) {
+                                        for (int i = 0; i < runDQList.size() ; ++i) {
+                                                Hashtable runDQ = (Hashtable) runDQList.get(i);
+                                                if (i==0) rlsql = " ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number") ;
+                                                else rlsql = " OR ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number");
+
+                                                String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
+                                                if (!DBSUtil.isNull(lumisec))
+                                                        rlsql += " AND ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number");
+                                                //Get the sub-system Vector
+                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+
+                                                //Loop over each item
+                                                for (int j = 0; j < subSys.size() ; ++j) {
+                                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
+                                                        String fvsql =  "";
+
+                                                        //Check for NULL
+                                                        if (j == 0) {
+                                                                fvsql = rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
+                                                        } else {
+                                                                fvsql = "OR "+rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
+                                                        }
+
+                                                        tmpSql += fvsql;
+                                                }
+                                                if (subSys.size() <= 0) sql +=  rlsql + ") ";
+                                                //else sql += rlsql;
+                                        }
+                                }
+
+                sql += tmpSql;
+                if (!DBSUtil.isNull(timeStamp)) {
+                                sql += " rq.CreationDate <= " +timeStamp+  "\n";
+                                sql += " and rq.LastModificationDate <= "+timeStamp+ "\n";
+                }
+
+               if (!DBSUtil.isNull(timeStamp)) {
+
+                                sql += "UNION \n"+
+                                "SELECT F.LogicalFilename as LFN \n"+
+                                "FROM  "+owner()+"QualityHistory qh \n"+
+                                "join "+owner()+"Runs r \n"+
+                                        "on qh.Run = r.ID \n"+
+                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
+                                        "on ls.ID = qh.Lumi \n"+
+                                "join "+owner()+"SubSystem ss \n"+
+                                        "on ss.ID = qh.SubSystem \n"+
+                                "join "+owner()+"QualityValues qv \n"+
+                                        "on qv.ID = qh.DQValue \n" +
+                                "join "+owner()+"FileRunLumi FLR \n"+
+                                        "on FLR.Run = rq.Run \n" +
+                                "join "+owner()+"Files F \n" +
+                                        "on FLR.Fileid = F.ID \n";
+
+                                        sql += "where qh.CreationDate <= "+timeStamp+" and \n"+
+                                        "qh.LastModificationDate <= "+timeStamp+" \n";
+
+                }
+
+                //sql += " order by LASTMODIFICATIONDATE, RUN_NUMBER desc ";
+                //sql += " order by RUN_NUMBER, ID, LASTMODIFICATIONDATE desc ";
+                //sql += " order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC";
+                //Order by is very important, Change it ONLY if BUSH becomes president third times!
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+        }
+
+
 
         public static PreparedStatement listRunLumiDQ_old(Connection conn, Vector runDQList, String timeStamp)
         throws SQLException
