@@ -64,7 +64,7 @@ display () {
 listPrimaryDatasets () {
 	message="Executing listPrimaryDatasets API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listPrimaryDatasets`
+	out=`$CMD api=listPrimaryDatasets pattern=test_primary__20080131_15h45m29s_179`
 	display "$out"
 	#$CMD api=listPrimaryDatasets pattern=*
 }
@@ -729,16 +729,16 @@ executeQuery () {
 	echo "$out"
 }
 
-executeQuery
+#executeQuery
 #getIntegratedLuminosity	
-#insertPrimaryDataset
-#insertAlgorithm
-#insertTier
-#insertRun
-#insertLumiSection
-#insertProcessedDataset
-#insertBlock
-#insertFiles
+insertPrimaryDataset
+insertAlgorithm
+insertTier
+insertRun
+insertLumiSection
+insertProcessedDataset
+insertBlock
+insertFiles
 #
 ##deleteBlock
 ##undeleteBlock
@@ -749,14 +749,14 @@ executeQuery
 ##listAnalysisDatasetDefinition
 ##listAnalysisDataset
 ##
-#listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
-#listLFNs
+listPrimaryDatasets
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
+listLFNs
 #listDatasetSummary
 ##listDatasetContents
 #listDatasetParents

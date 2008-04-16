@@ -137,9 +137,9 @@ public class DBSDataCache {
 			System.out.print("\nLoading Processed DS information in cache ...... ");
 			refreshProcDSs(conn);
 			System.out.println("Done");
-			System.out.print("\nLoading Algorithm information in cache ...... ");
-			refreshAlgos(conn);
-			System.out.println("Done");
+			//System.out.print("\nLoading Algorithm information in cache ...... ");
+			//refreshAlgos(conn);
+			//System.out.println("Done");
 			System.out.print("\nLoading Tier information in cache ...... ");
 			refreshTiers(conn);
 			System.out.println("Done");
