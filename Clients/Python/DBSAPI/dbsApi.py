@@ -767,6 +767,20 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+
+  def listFilesForRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
+     try:
+       #Calling the Implementation function
+       from dbsApiListFilesForRunLumiDQ import dbsApiImplListFilesForRunLumiDQ
+       return  dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp, dqVersion)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+
   def listRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
      try:
        #Calling the Implementation function
