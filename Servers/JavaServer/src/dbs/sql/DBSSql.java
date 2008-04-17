@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.148 $"
- $Id: DBSSql.java,v 1.148 2008/04/16 18:20:25 sekhri Exp $"
+ $Revision: 1.149 $"
+ $Id: DBSSql.java,v 1.149 2008/04/16 21:09:37 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -352,12 +352,23 @@ public class DBSSql {
                 if (runDQList.size() > 0) {
                                         for (int i = 0; i < runDQList.size() ; ++i) {
                                                 Hashtable runDQ = (Hashtable) runDQList.get(i);
-                                                if (i==0) rlsql = " ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number") ;
-                                                else rlsql = " OR ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number");
+
+						String runnumber = DBSUtil.get(runDQ, "run_number");
+						if (!DBSUtil.isNull(runnumber)) {
+
+                                                	if (i==0) rlsql = " ( r.RunNumber="+ runnumber  + " AND ";
+                                                	else rlsql = " OR ( r.RunNumber="+ runnumber + " AND ";
+						}
+
+						else {
+							if (i==0) rlsql = " ( ";
+							else rlsql = " OR ( ";
+						
+						}
 
                                                 String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
                                                 if (!DBSUtil.isNull(lumisec))
-                                                        rlsql += " AND ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number");
+                                                        rlsql += " ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number") + " AND ";
                                                 //Get the sub-system Vector
                                                 Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
 
@@ -368,10 +379,11 @@ public class DBSSql {
 
                                                         //Check for NULL
                                                         if (j == 0) {
-                                                                fvsql = rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+								
+                                                                fvsql = rlsql + " ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
                                                                         " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
                                                         } else {
-                                                                fvsql = "OR "+rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                fvsql = "OR "+rlsql + " ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
                                                                         " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
                                                         }
 
@@ -452,12 +464,22 @@ public class DBSSql {
                 if (runDQList.size() > 0) {
                                         for (int i = 0; i < runDQList.size() ; ++i) {
                                                 Hashtable runDQ = (Hashtable) runDQList.get(i);
-                                                if (i==0) rlsql = " ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number") ;
-                                                else rlsql = " OR ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number");
+						String runnumber = DBSUtil.get(runDQ, "run_number");
+                                                if (!DBSUtil.isNull(runnumber)) {
+
+                                                        if (i==0) rlsql = " ( r.RunNumber="+ runnumber + " AND ";
+                                                        else rlsql = " OR ( r.RunNumber="+ runnumber + " AND ";
+                                                }
+
+                                                else {
+                                                        if (i==0) rlsql = " ( ";
+                                                        else rlsql = " OR ( ";
+
+                                                }
 
                                                 String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
                                                 if (!DBSUtil.isNull(lumisec))
-                                                        rlsql += " AND ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number");
+                                                        rlsql += " ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number")  + " AND ";
                                                 //Get the sub-system Vector
                                                 Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
 
@@ -468,10 +490,11 @@ public class DBSSql {
 
                                                         //Check for NULL
                                                         if (j == 0) {
-                                                                fvsql = rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                fvsql = rlsql + " ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
                                                                         " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
                                                         } else {
-                                                                fvsql = "OR "+rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+								//THIS OR is correct here
+                                                                fvsql = "OR "+rlsql + " ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
                                                                         " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
                                                         }
 
