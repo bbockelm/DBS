@@ -20,8 +20,8 @@ def constrainDict():
        '>':1,
        '<=':1,
        '<':1,
-       '!=':10,
-       '=':10,
+       '!=':2,
+       '=':2,
        'not_like':0.5,
        'not like':0.5,
        'like':0.5,
@@ -309,9 +309,11 @@ class DDRules:
                   for name in cmsNames.values():
                       if type(name) is types.StringType and name.find(item)!=-1:
                          if not i2:
-                            i2+=" site %s %s "%(op,swapedDict[name])
+#                            i2+=" site %s %s "%(op,swapedDict[name])
+                            i2+=" site = %s "%swapedDict[name]
                          else:
-                            i2+=" or site %s %s "%(op,swapedDict[name])
+                            i2+=" or site = %s "%swapedDict[name]
+#                            i2+=" or site %s %s "%(op,swapedDict[name])
                   input=i1+i2
                   if len(iList)>idx:
                      input+=' '.join(iList[idx+1:])
@@ -357,7 +359,7 @@ class DDRules:
               return self.checkConditions(input,conditions[i+3:])
 
    def preParseInput(self,input):
-       if len(input.split())==1 and not re.match("dataset=",input):
+       if len(input.split())==1 and input.find("=")==-1 and input.find(">")==-1 and input.find("<")==-1:
           input="find dataset where dataset like %s"%input
        input=input.replace(")"," ) ").replace("("," ( ")
         
@@ -386,10 +388,12 @@ class DDRules:
                             elif op=="=" and item[idx-1]=='!':
                                continue
                             else:
-                                if len(item)>idx+1 and re.match("[a-zA-Z/ ]",item[idx+1]):
-                                   item=item.replace(op," %s "%op)
-                                elif re.match("[a-zA-Z/ ]",item[idx-1]):
-                                   item=item.replace(op," %s "%op)
+                               j1=item.find(op)
+                               j2=item.rfind(op)
+                               if j1!=j2:
+                                  item=item[:j1]+' '+item[j1:j2+len(op)]+' '+item[j2+len(op):]
+                               else:
+                                  item=item.replace(op," %s "%op)
 #                            else:
 #                               item=item.replace(op," %s "%op)
                   isplit[i]=item
@@ -398,7 +402,6 @@ class DDRules:
            raise "prePraseInput: fail to parse your input='%s'"%input
        input = ' '.join(isplit)
        input = input.replace(" path "," dataset ")
-       input = self.preParseCMSNames(input)
        try:
            # check if used provided input with key=bla* or key=1-2 and 
            # replace '=' with appropriate synatx
@@ -435,6 +438,7 @@ class DDRules:
           conditions=input[widx+len(" where "):].split()
        self.checkConditions(input,conditions)
 
+       input = self.preParseCMSNames(input)
        return input
     
    def parseInput(self,input,backEnd,sortName,sortOrder,case):
@@ -657,6 +661,13 @@ if __name__ == "__main__":
         pass
     try:
         aSearch.parser("run=12345-56789 and dataset == Online*")
+    except:
+        traceback.print_exc()
+        pass
+    aSearch.parser("site=T2*")
+    aSearch.parser("*QCD*")
+    try:
+        aSearch.parser("site==T2*")
     except:
         traceback.print_exc()
         pass
