@@ -20,12 +20,13 @@ def constrainDict():
        '>':1,
        '<=':1,
        '<':1,
-       '=':1,
+       '!=':10,
+       '=':10,
        'not_like':0.5,
        'not like':0.5,
        'like':0.5,
        'in':1,
-       'between':1
+       'between':1,
     }
     return cDict
 def constrainList():
@@ -39,7 +40,7 @@ class DDRules:
        self.functions=['total','sum','count']
        # mapping between keyword-names and DB views
        self.dbView ={
-           'dataset'        :'datasetsummary',
+           'dataset'     :'datasetsummary',
            'block'       :'',
            'file'        :'filesummary',
            'release'     :'releasesummary',
@@ -56,7 +57,7 @@ class DDRules:
        }
        # association between keyword-names and human readble meaning
        self.longName={
-           'dataset'        :'processed dataset',
+           'dataset'     :'processed dataset',
            'block'       :'block',
            'file'        :'logical file name',
            'release'     :'software release',
@@ -77,7 +78,7 @@ class DDRules:
        }
        # associate between keyword-names and DBS tables
        self.tableName={
-           'dataset'        :'Block',
+           'dataset'     :'Block',
            'block'       :'Block',
            'file'        :'Files',
            'release'     :'AppVersion',
@@ -106,7 +107,7 @@ class DDRules:
            'physicsgroup':1,
        }
        self.colName={
-           'dataset'        :'Path',
+           'dataset'     :'Path',
            'block'       :'Name',
            'file'        :'LogicalFileName',
            'release'     :'Version',
@@ -239,12 +240,13 @@ class DDRules:
            ('procds','tier'):['ProcessedDataset_Name2DataTier_Name'],
            ('tier','tier'):['DataTier_Name2DataTier_Name'],
        }
+       self.keywords=self.colName.keys()
+       self.operators=constrainList()
        # list of supported constrain operator, order is matter, since we walk through
        # the list to find a match. Example, if pattern is '<=' and order is <,<= we will
        # find first match to <, which is wrong, while if order is <=,< first match will be correct.
-       self.sList=constrainList()
        self.oList=['and','or','minus','(',')']
-       self.kLIst=self.dbs_map.keys()
+       self.kList=self.dbs_map.keys()
 
        self.runsum_map={}
        self.lumi_map={}
@@ -277,6 +279,10 @@ class DDRules:
        return self.cmsNames
 
    def parser(self,input,backEnd="oracle",sortName='CreationDate',sortOrder='desc',case='on'):
+       if self.verbose:
+          print "-"*len(input)
+          print input
+          print "-"*len(input)
        if not DDUtil.validator(input):
           raise "Input '%s' does not contain equal number of open/closed brackets"%input
        if input.find("'")!=-1 or input.find("\"")!=-1:
@@ -313,12 +319,50 @@ class DDRules:
 #       print "preParseCMSNames, output=",input
        return input
 
+   def formatErrorInInput(self,input,where,mmm):
+       marker="-"*input.find(where)
+       marker+="^"
+       msg ="\nFail to parse your conditions:\n\n"
+       msg+=input+"\n"
+       msg+=marker+"\n"
+       msg+="\nERROR: "+mmm+"\n"
+       msg+="\nPlease consult Query Language syntax in HELP section on Data Discovery page"
+       return msg
+
+   def checkConditions(self,input,conditions):
+#       print conditions
+       for i in xrange(0,len(conditions)):
+           if ['and','or','(',')'].count(conditions[i]):
+              return self.checkConditions(input,conditions[i+1:])
+           if len(conditions)==1 or len(conditions)==2:
+              msg="No valid condition found, expect <key> <op> <value>"
+              raise self.formatErrorInInput(input,conditions[i],msg)
+           key = conditions[i]
+           if not self.keywords.count(key): 
+              msg="Unknown keyword '%s'"%key
+              raise self.formatErrorInInput(input,conditions[i],msg)
+           op  = conditions[i+1]
+           if op=="not":
+              op+=" %s"%conditions[i+2]
+              if not self.operators.count(op): 
+                 msg="Unknown operator '%s'"%op
+                 raise self.formatErrorInInput(input,conditions[i+1],msg)
+              val= conditions[i+3]
+              return self.checkConditions(input,conditions[i+4:])
+           else:
+              if not self.operators.count(op): 
+                 msg="Unknown operator '%s'"%op
+                 raise self.formatErrorInInput(input,conditions[i+1],msg)
+              val = conditions[i+2]
+              return self.checkConditions(input,conditions[i+3:])
+
    def preParseInput(self,input):
        if len(input.split())==1 and not re.match("dataset=",input):
           input="find dataset where dataset like %s"%input
        input=input.replace(")"," ) ").replace("("," ( ")
-       # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
+        
        isplit=input.split()
+       # wrap operator ['<=','>=','!=','=','<','>'] with spaces for better parsing
        try:
            for i in xrange(0,len(isplit)):
                item  = isplit[i]
@@ -339,8 +383,15 @@ class DDRules:
                                continue
                             elif (op=="<" or op==">") and len(item)>idx+1 and item[idx+1]=='=':
                                continue
+                            elif op=="=" and item[idx-1]=='!':
+                               continue
                             else:
-                               item=item.replace(op," %s "%op)
+                                if len(item)>idx+1 and re.match("[a-zA-Z/ ]",item[idx+1]):
+                                   item=item.replace(op," %s "%op)
+                                elif re.match("[a-zA-Z/ ]",item[idx-1]):
+                                   item=item.replace(op," %s "%op)
+#                            else:
+#                               item=item.replace(op," %s "%op)
                   isplit[i]=item
        except:
            traceback.print_exc()
@@ -348,6 +399,42 @@ class DDRules:
        input = ' '.join(isplit)
        input = input.replace(" path "," dataset ")
        input = self.preParseCMSNames(input)
+       try:
+           # check if used provided input with key=bla* or key=1-2 and 
+           # replace '=' with appropriate synatx
+           runrange= re.compile("^\d*-\d*")
+           runlist = re.compile("^\d*,\d*")
+           isplit  = input.split()
+           for idx in xrange(0,len(isplit)):
+               if isplit[idx].find("*")!=-1 and isplit[idx-1]=="=":
+                  isplit[idx-1]="like"
+               elif isplit[idx].find("*")!=-1 and isplit[idx-1]=="!=":
+                  isplit[idx-1]="not like"
+               elif runrange.search(isplit[idx]):
+                  if isplit[idx-1]=="=":
+                     isplit[idx-1]="between"
+                  elif isplit[idx-1]=="!=":
+                     isplit[idx-1]="not between"
+                     raise "Operator != is not supported for ranges"
+               elif runlist.search(isplit[idx]):
+                  if isplit[idx-1]=="=":
+                     isplit[idx-1]="in"
+                  elif isplit[idx-1]=="!=":
+                     isplit[idx-1]="not in"
+                     raise "Operator != is not supported for list"
+           input = ' '.join(isplit)
+       except Exception, ex:
+           raise ex
+
+       # check user conditions
+       input=input.strip()
+       widx=input.find(" where ")
+       if widx==-1:
+          conditions=input.split()
+       else:
+          conditions=input[widx+len(" where "):].split()
+       self.checkConditions(input,conditions)
+
        return input
     
    def parseInput(self,input,backEnd,sortName,sortOrder,case):
@@ -385,7 +472,7 @@ class DDRules:
        except:
            raise msg
        # check if user made multiple select, if so, check where clause for provided operators
-       if (not self.colName.keys().count(selKey) and (selKey.find(",")!=-1 or selKey.find("total")!=-1)) or backEnd.lower()=="mysql":
+       if (not self.keywords.count(selKey) and (selKey.find(",")!=-1 or selKey.find("total")!=-1)) or backEnd.lower()=="mysql":
           if self.verbose:
              if backEnd.lower()=="mysql":
                 print "\n+++ Found MySQL backend, no INTERSECT, will do JOIN queires\n",_input
@@ -404,7 +491,7 @@ class DDRules:
               funcFound=DDUtil.findKeyInAList(self.functions,key)
               if funcFound:
                  sKey=key.replace("(","").replace(")","").replace(funcFound,"").strip()
-                 if not self.colName.keys().count(sKey):
+                 if not self.keywords.count(sKey):
                     raise "Fail to parse select expression, invalid key='%s'"%sKey
                  tabName=self.tableName[sKey]
                  colName=self.colName[sKey]
@@ -416,7 +503,7 @@ class DDRules:
                  else:
                     fDict["%s.%s"%(tabName,colName)]=funcFound
                  key=sKey
-              if not self.colName.keys().count(key):
+              if not self.keywords.count(key):
                  raise "Fail to parse select expression, invalid key='%s'"%key
               sKey="%s.%s"%(self.tableName[key],self.colName[key])
               sList.append(sKey)
@@ -424,7 +511,7 @@ class DDRules:
           toSelect=','.join(sList)
           for val in pDict.values():
               key,op,rval=val.split()
-              if not self.colName.keys().count(key):
+              if not self.keywords.count(key):
                  raise "Fail to parse where clause expression, invalid key='%s'"%key
               input=input.replace(key,"%s.%s"%(self.tableName[key],self.colName[key]))
               _select="%s.%s"%(self.tableName[key],self.colName[key])
@@ -437,7 +524,7 @@ class DDRules:
           if _toJoinKeys.count('file') and _toJoinKeys.count('lumi') and not _toJoinKeys.count('run'):
              toJoin+=",FileRunLumi.ID"
 
-          if self.colName.keys().count(sortName):
+          if self.keywords.count(sortName):
              sortName="%s.%s"%(self.tableName[sortName],self.colName[sortName])
           else:
              sortName=sList[0]
@@ -455,7 +542,7 @@ class DDRules:
        words=[]
        msg="Fail to parse '%s', no constrain operator found"%pattern
        try:
-           for co in self.sList:
+           for co in self.operators:
                j=pattern.find(co)
                # look-up operator, find itx index in a pattern and see that neighboors should be ' '.
                if j!=-1 and pattern[j-1]==' ' and pattern[j+len(co)]==' ':
@@ -514,7 +601,7 @@ class DDRules:
                  _words.append(_call)
               except:
                  traceback.print_exc()
-                 raise "Unable to parse your input, selKey='%s', parse it as '%s', list of known keywords %s, list of supported operators %s"%(selKey,words,str(self.dbs_map.keys()),self.sList)
+                 raise "Unable to parse your input, selKey='%s', parse it as '%s', list of known keywords %s, list of supported operators %s"%(selKey,words,str(self.dbs_map.keys()),self.operators)
            else:
                  traceback.print_exc()
                  raise "Keyword '%s' does not contain separator \":\"."%w
@@ -541,8 +628,35 @@ if __name__ == "__main__":
     aSearch.parser("find total(run) where (dataset like *bla* and block>=123) or run=12345")
     print "\n\n### site = T2_UK ===>",aSearch.preParseCMSNames("site = T2_UK")
     aSearch.parser("run=12345 and site like T2_UK*")
-#    aSearch.parser("find run where (dataset like *bla* and block>=123) or run=12345")
-#    aSearch.parser("run=12345")
-#    aSearch.parser("run not like 12345")
-#    aSearch.parser("run no like 12345")
-#    aSearch.parser("run 12345")
+    aSearch.parser("run=12345 and dataset=Online*")
+    aSearch.parser("run=12345-56789 and run=1,2,3 or dataset!=Online*")
+    try:
+        aSearch.parser("run!=12345-56789")
+    except:
+        traceback.print_exc()
+        pass
+    try:
+        aSearch.parser("run=12345-56789 Online* Test")
+    except:
+        traceback.print_exc()
+        pass
+    try:
+        aSearch.parser("run=12345-56789 and dataset Online* ")
+    except:
+        traceback.print_exc()
+        pass
+    try:
+        aSearch.parser("run=12345-56789 and dataset ")
+    except:
+        traceback.print_exc()
+        pass
+    try:
+        aSearch.parser("run=12345-56789 and dataset =")
+    except:
+        traceback.print_exc()
+        pass
+    try:
+        aSearch.parser("run=12345-56789 and dataset == Online*")
+    except:
+        traceback.print_exc()
+        pass
