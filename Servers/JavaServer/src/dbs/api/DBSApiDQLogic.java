@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiDQLogic.java,v 1.9 2008/04/15 21:24:47 afaq Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiDQLogic.java,v 1.10 2008/04/16 20:19:14 afaq Exp $"
  *
  */
 
@@ -236,7 +236,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                         while(rs.next()) {
 				String lfn = get(rs, "LFN");
 				//System.out.println("LFN: "+ lfn );
-                                out.write( (String) "<file lfn='"+lfn+"' />" ); 
+                                out.write( (String) "<file lfn='"+lfn+"' run_number='"+get(rs, "RUN")+"' />" ); 
 			}
                 } finally {
                         if (rs != null) rs.close();

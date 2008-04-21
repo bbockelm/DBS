@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.150 $"
- $Id: DBSSql.java,v 1.150 2008/04/17 21:21:15 afaq Exp $"
+ $Revision: 1.151 $"
+ $Id: DBSSql.java,v 1.151 2008/04/21 19:28:12 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -501,7 +501,7 @@ public class DBSSql {
 		}
 
 		String file_sql = "SELECT distinct F.LogicalFilename as LFN \n" +
-					" ,R.RunNumber \n" +
+					" ,R.RunNumber as RUN \n" +
 					" FROM "+owner()+"Files F \n" +  
 					" join "+owner()+"FileRunLumi FLR \n"+
                                         " on FLR.Fileid = F.id \n" +
