@@ -26,6 +26,8 @@ def print_flags_nice(dqHierarchyList):
                 print "      ", aSubDQ['Name'], aSubDQ['Value']
                 for aSubSubDQ in aSubDQ['SubSysFlagList']:
                         print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
+			for abSubSubDQ in aSubSubDQ['SubSysFlagList'] :
+				print "                ", abSubSubDQ['Name'], abSubSubDQ['Value']
 
 
 #-------------------------------------------------------------------------------
@@ -54,9 +56,9 @@ flag3 = DbsDQFlag (
 run_dq_search_criteria = DbsRunLumiDQ (
         RunNumber=1,
 	#LumiSectionNumber can be part of this serach criteria
-        LumiSectionNumber=123,
+        #LumiSectionNumber=123,
         #DQFlagList = [flag1]
-        DQFlagList = [flag1, flag2, flag3]
+        #DQFlagList = [flag1, flag2, flag3]
         )
 
 try:
@@ -71,9 +73,11 @@ try:
     # So you must pass it as list
 
     #dqHierarchyList =  api.listRunLumiDQ(  runLumiDQList=[run_dq_search_criteria]  )
+    #print_flags_nice(dqHierarchyList)
  
     # ALL of them, ARE U CRAZY ?
     print "\n-------------------CURRENT...."
+
     dqHierarchyList =  api.listRunLumiDQ(   )
     print_flags_nice(dqHierarchyList)
 

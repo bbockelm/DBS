@@ -19,7 +19,7 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
+def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion=""):
 
     """
     
@@ -30,16 +30,32 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVers
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
 
-    for aRunLumiDQ in runLumiDQList:
-        xmlinput += "<run run_number='"+str(get_run(aRunLumiDQ.get('RunNumber'))) + "'"
-        xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
-        xmlinput += " />"
+    if type(runLumiDQList) == str:
+	first=1
+ 	print "str_input", runLumiDQList
+	tag_val_list=runLumiDQList.strip().split('&')
+	for atag_val in tag_val_list:
+		tag, val = atag_val.split('=')
+		if (first):
+			xmlinput += "<run run_number='' lumi_section_number='' />"
+			first=0
+		xmlinput += "<dq_sub_system name='" + tag + "' value='" + val + "' />"
 
-        for aFlag in aRunLumiDQ.get('DQFlagList'):
-                xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
-                # Sub sub system list
-                for aSubFlag in aFlag.get('SubSysFlagList'):
-                        xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+    else :
+    	for aRunLumiDQ in runLumiDQList:
+        	xmlinput += "<run run_number='"+str(get_run(aRunLumiDQ.get('RunNumber'))) + "'"
+        	xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
+        	xmlinput += " />"
+
+        	for aFlag in aRunLumiDQ.get('DQFlagList'):
+                	xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
+                	# Sub sub system list
+                	for aSubFlag in aFlag.get('SubSysFlagList'):
+                        	xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+
+
+
+
 
     xmlinput += "</dbs>"
 
