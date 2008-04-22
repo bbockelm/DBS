@@ -41,6 +41,8 @@ public class KeyMap {
 		map.put("ls.endtime", "LumiSection.LumiEndTime");
 		map.put("ls.createdate", "LumiSection.CreationDate");
 		map.put("ls.moddate", "LumiSection.LastModificationDate");
+		
+		map.put("dq", "Runs");
 	}
 	public String getMappedValue(String key) {
 		if(!map.containsKey(key.toLowerCase())) return key;

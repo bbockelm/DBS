@@ -10,11 +10,11 @@ import java.util.ArrayList;
 ArrayList kws = new ArrayList();
 ArrayList constraints = new ArrayList();
 }
-@rulecatch {
-catch (RecognitionException e) {
-	throw e;
-}
-}
+//@rulecatch {
+//catch (RecognitionException e) {
+//	throw e;
+//}
+//}
 
 stmt	: select spaces selectList spaces where spaces constraintList  
 	| select spaces selectList;
@@ -39,7 +39,7 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 		spaces
 	 op=	(EQ | LT | GT) 	{c.setOp($op.text);}   
 		spaces
-	 val=	VALUE 		{c.setValue($val.text); constraints.add(c); 	}               
+	 val=	genValue	{c.setValue($val.text); constraints.add(c); 	}               
 		| 
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces 
@@ -56,9 +56,11 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 
 where	:('WHERE' | 'where');
 valueList	:VALUE (COMMA VALUE)*;
+genValue	:VALUE|
+		VALUE EQ VALUE (AMP VALUE EQ VALUE)*;
 likeValue 	:(VALUE| STAR)+;
 logicalOp	:(and|or);
-entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'ls' );
+entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'ls' | 'dq');
 attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' );
 funct	:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
 select	:('select' | 'SELECT' | 'find' | 'FIND');
@@ -74,6 +76,7 @@ DOT	:('.');
 GT	:('>');
 LT	:('<');
 EQ	:('=');
+AMP	:('&');
 STAR	:('*'|'%');
 NL	:('\n');
 WS 	: ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ 	{ $channel = HIDDEN; } ;

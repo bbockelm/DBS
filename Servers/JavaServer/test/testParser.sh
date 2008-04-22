@@ -49,6 +49,8 @@ executeQuery () {
 	$CMD query="select file, procds.createby, file.modby, procds.createdate" 
 	$CMD query="select file where file.modby like %sekhri%" 
 }
+#$CMD query="select ls.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW, /GlobalMar08-Express/Online/RAW)" 
 #$CMD query="select ls.id,file.id where dataset = /CalPrivateGlobal-default/Online/RAW" 
-$CMD query="select procds, procds.createdate,run,ls.moddate" 
+$CMD query="select ls.id,file.id where dq = trigg=/CalPrivateGlobal-default/Online/RAW&abc=sec and dataset = /CalPrivateGlobal-default/Online/RAW" 
+#$CMD query="select procds, procds.createdate,run,ls.moddate where run.number in (1, 2,3)" 
 #executeQuery

@@ -103,12 +103,15 @@ public class QueryBuilder {
 			if(i%2 == 0) {
 				Constraint o = (Constraint)obj;
 				String key = (String)o.getKey();
-				if(!Util.isSame(key, "dataset")) {
+				if(Util.isSame(key, "dataset")) {
+				}else if(Util.isSame(key, "dq")) {
+					allKws = addUniqueInList(allKws, km.getMappedValue(key));
+				}else {
 					StringTokenizer st = new StringTokenizer(key, ".");
 					int count = st.countTokens();
 					allKws = addUniqueInList(allKws, u.getMappedRealName(st.nextToken()));
 					if(count != 1) {
-						String token2 = st.nextToken();
+						//String token2 = st.nextToken();
 						/*if(Util.isSame(token2, "release")) {
 							//allKws = addUniqueInList(allKws,  u.getMappedRealName(token2));//AppVersion
 							//Do nothing
@@ -128,6 +131,8 @@ public class QueryBuilder {
 		//Get the route which determines the join table
 		allKws = makeCompleteListOfVertexs(allKws);
 
+		//If File is not there then add Block
+		//Otherwise
 		for (int i =0 ; i!= cs.size(); ++i) {
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
@@ -168,6 +173,9 @@ public class QueryBuilder {
 					if(isIn(allKws, "Files")) queryWhere += "\tFiles.Block ";
 					else queryWhere += "\tBlock.ID ";
 					queryWhere += handlePath(val, op);
+				} else if(Util.isSame(key, "dq")) {
+					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operater should be = . Invalid operater given " + op);
+					queryWhere += "\tRuns.ID" + handleDQ(val);
 				} else if(Util.isSame(key, "file.release")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(val);
@@ -299,7 +307,7 @@ public class QueryBuilder {
 		return query;
 	}
 
-	private String handlePath(String path) throws Exception {
+	/*private String handlePath(String path) throws Exception {
 		Validate.checkPath(path);
 		String[] data = path.split("/");
 		if(data.length != 4) {
@@ -321,7 +329,7 @@ public class QueryBuilder {
 		bindValues.add(data[1]);
 		bindValues.add(data[2]);
 		return query;
-	}
+	}*/
 
 	private String handlePath(String path, String op) throws Exception {
 		String query = " IN ( \n" +
@@ -329,10 +337,23 @@ public class QueryBuilder {
 			"\tBlock.ID FROM Block" +
 			"\tWHERE \n" + 
 			//"\tBlock.Path " + op + " '" + path + "'\n" +
-			"\tBlock.Path " + op + " ?\n" +
-			")";
-		
-		bindValues.add(path);
+			"\tBlock.Path ";// + op + " ?\n" +
+			//")";
+		if(Util.isSame(op, "in")) query += handleIn(path);
+		else {
+			query += op + " ?\n";
+			bindValues.add(path);
+		}
+		query += ")";
+		return query;
+	}
+
+	private String handleDQ(String val) throws Exception {
+		System.out.println("VAL is " + val);
+		String dqQuery = "";//call DQ function
+		//List<String> bindValuesFromDQ = ; //Get from DQ function
+		//for(String s: bindValues) bindValues.add(s);
+		String query = " IN ( \n" + dqQuery + ")";
 		return query;
 	}
 
