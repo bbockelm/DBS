@@ -360,7 +360,10 @@ class DDRules:
 
    def preParseInput(self,input):
        if len(input.split())==1 and input.find("=")==-1 and input.find(">")==-1 and input.find("<")==-1:
-          input="find dataset where dataset like %s"%input
+          if input.find("*")!=-1:
+             input="find dataset where dataset like %s"%input
+          else:
+             input="find dataset where dataset = %s"%input
        input=input.replace(")"," ) ").replace("("," ( ")
         
        isplit=input.split()
