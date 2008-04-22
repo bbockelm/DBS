@@ -1,8 +1,8 @@
 #!/bin/sh
 export PATH=$PWD:$PATH
 cmd=DDSearchCLI.py
-#host=https://cmsweb.cern.ch/dbs_discovery_test
-host=https://cmsweb.cern.ch/dbs_discovery_new
+host=https://cmsweb.cern.ch/dbs_discovery_test
+#host=https://cmsweb.cern.ch/dbs_discovery_new
 #host=https://cmsweb.cern.ch/dbs_discovery
 echo
 echo "Using host=$host"
