@@ -19,7 +19,8 @@ for input in \
 "find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW" \
 "find total(file),run where dataset=/Commissioning2008Ecal-A/Online/RAW" \
 "find dataset where site like T2_*" \
-"find dataset where site like T2_UK*"
+"find dataset where site like T2_UK*" \
+"find file where release>CMSSW_1_6_7 and site=T2_UK"
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input"
