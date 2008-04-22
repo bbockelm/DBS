@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.151 $"
- $Id: DBSSql.java,v 1.151 2008/04/21 19:28:12 afaq Exp $"
+ $Revision: 1.152 $"
+ $Id: DBSSql.java,v 1.152 2008/04/21 20:01:14 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -353,12 +353,15 @@ public class DBSSql {
                 if (runDQList.size() > 0) {
                                         for (int i = 0; i < runDQList.size() ; ++i) {
                                                 Hashtable runDQ = (Hashtable) runDQList.get(i);
+                                                //Get the sub-system Vector
+                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
 
 						String runnumber = DBSUtil.get(runDQ, "run_number");
 						if (!DBSUtil.isNull(runnumber)) {
-                                                	if (i==0) rlsql = " ( r.RunNumber = ? AND ";
-                                                	else	rlsql = " OR ( r.RunNumber = ? AND ";
-							bindvals.add(runnumber);
+                                                	if (i==0) rlsql = " ( r.RunNumber = ? ";
+                                                	else	rlsql = " OR ( r.RunNumber = ? ";
+							if ( subSys.size() <= 0) bindvals.add(runnumber);
+							else rlsql += " AND ";
 						}
 
 						else {
@@ -369,11 +372,11 @@ public class DBSSql {
 
                                                 String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
                                                 if (!DBSUtil.isNull(lumisec)) {
-                                                        rlsql += " ls.LumiSectionNumber=? AND ";
-							bindvals.add(lumisec);
-						}
-                                                //Get the sub-system Vector
-                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+							if (!DBSUtil.isNull(runnumber) && subSys.size() <= 0 ) rlsql += " AND ";
+                                                        rlsql += "ls.LumiSectionNumber=? ";
+							if ( subSys.size() <= 0) bindvals.add(lumisec);
+							else rlsql += " AND ";
+						}	
 
                                                 //Loop over each item
                                                 for (int j = 0; j < subSys.size() ; ++j) {
@@ -382,16 +385,23 @@ public class DBSSql {
 
                                                         //Check for NULL
                                                         if (j == 0) {
+								if (!DBSUtil.isNull(runnumber)) bindvals.add(runnumber);
+                	                                        if (!DBSUtil.isNull(lumisec)) bindvals.add(lumisec);
+                        	                                bindvals.add(DBSUtil.get(dqFlag, "name"));
+                                	                        bindvals.add(DBSUtil.get(dqFlag, "value"));
+
                                                                 fvsql = rlsql + " ss.Name=? "+
                                                                         " AND qv.Value=? ) ";
-			                                        bindvals.add(DBSUtil.get(dqFlag, "name"));
-			                                        bindvals.add(DBSUtil.get(dqFlag, "value"));
-
+							
                                                         } else {
                                                                 fvsql = "OR "+rlsql + " ss.Name=? "+
                                                                         " AND qv.Value=? ) ";
-		                                                bindvals.add(DBSUtil.get(dqFlag, "name"));
-                   			                        bindvals.add(DBSUtil.get(dqFlag, "value"));
+								if (!DBSUtil.isNull(runnumber)) bindvals.add(runnumber);
+                                                        	if (!DBSUtil.isNull(lumisec)) bindvals.add(lumisec);
+                                                        	bindvals.add(DBSUtil.get(dqFlag, "name"));
+                                                        	bindvals.add(DBSUtil.get(dqFlag, "value"));
+		                                                //bindvals.add(DBSUtil.get(dqFlag, "name"));
+                   			                        //bindvals.add(DBSUtil.get(dqFlag, "value"));
                                                         }
 
                                                         tmpSql += fvsql;
@@ -436,18 +446,43 @@ public class DBSSql {
 
 		//sql += "order by LASTMODIFICATIONDATE, RUN_NUMBER desc "; 
 		//sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE desc "; 
-		sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC";
+		sql += " order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC";
 		//Order by is very important, Change it ONLY if BUSH becomes president third times!
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
+
+
+		System.out.println("\nSQL: "+sql);
+
+		System.out.println("\n\nbindvals.size():="+bindvals.size() );
+
                 for (int i=0; i != bindvals.size(); ++i)
+
+			//System.out.println("WHATS in bind: "+bindvals.elementAt(i) );
+
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+
+		System.out.println("\nQUERY: "+ps);
+
                 return ps;
 
 	}
 
 
+
+
+        public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
+
+
+		String sql = "";
+
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+
+		return ps;
+	}
 
 
 
