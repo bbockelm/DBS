@@ -100,22 +100,30 @@ Constrain operators:
 <br/>
 words FIND,WHERE,AND,OR can be upper or lower case. 
 <br/>
-<span class="box_blue">
-<b>FIND dataset WHERE </b> expression is default and can be skipped.
-</span>
-<br/>
 Expressions can be
 groupped together using brackets, e.g. ((a and b) or c)
 <br/><br/>
 <div class="sectionhead">KEYWORDS</div>
 <b>dataset, primds , procds , tier , block , file , release , run , lumi , site. </b>
 <br/><br/>
+<div class="sectionhead">SHORTCUTS</div>
+<b>FIND dataset WHERE </b> expression is default and can be skipped.
+<br/>
+If you type single word, e.g. <span class="box_blue">QCD</span> your look-up will be:
+<span class="box_blue">find dataset where dataset=QCD</span>.
+<br/>
+If you type word with asterisk, e.g. <span class="box_blue">QCD*</span> your look-up will be:
+<span class="box_blue">find dataset where dataset like QCD*</span>.
+<br/>
+You can use <span class="box_blue">=</span> instead of <span class="box_blue">like</span>,
+e.g. <span class="box_blue">find run where dataset=/Commissioning2008Ecal-A/*</span>
+<br/><br/>
 <div class="sectionhead">EXAMPLES</div>
 <em class="box_blue">
 *QCD*
 </em>
 <br/>
-look-up all datasets whose name matched QCD pattern.
+shortcut for look-up all datasets whose name matched QCD pattern.
 <br/><br/>
 <em class="box_blue">
 dataset like *
@@ -160,6 +168,12 @@ find run where dataset like *Online*
 look-up runs whose dataset name match the pattern *Online* 
 <br/><br/>
 <em class="box_blue">
+find file where release>CMSSW_1_6_7 and site=T2_UK
+</em>
+<br/>
+find files located on T2_UK sites which were processed with release CMSSW_1_6_7 and above.
+<br/><br/>
+<em class="box_blue">
 find primds where (dataset like *Online* or dataset not like *RelVal* ) and release>CMSSW_1_7
 </em>
 <br/>
@@ -180,6 +194,7 @@ look-up total number of files and list runs for given dataset name
 <br/>
 </td>
 </tr>
+
 </table>
 </div>
 
@@ -205,10 +220,6 @@ Constrain operators:
 </b>
 <br/>
 words FIND,WHERE,AND,OR can be upper or lower case. 
-<br/>
-<span class="box_blue">
-<b>FIND dataset WHERE </b> expression is default and can be skipped.
-</span>
 <br/>
 Expressions can be
 groupped together using brackets, e.g. ((a and b) or c)
@@ -286,7 +297,8 @@ Hover over keywords for <span class="box_red">info</span>.
 *QCD*
 </em>
 <br/>
-look-up all datasets whose name matched QCD pattern.
+<span class="red_box">shortcut</span> for
+look-up all datasets whose name matched QCD pattern 
 <br/><br/>
 
 <em class="box_blue">
@@ -302,24 +314,18 @@ in order to get all primary dataset, runs, respectively
 <br/><br/>
 
 <em class="box_blue">
-dataset like *Online* and site=srm.cern.ch
-</em>
-<br/>
-look-up datasets with dataset path matched pattern *Online* and located at srm.cern.ch.
-<br/><br/>
-<em class="box_blue">
-find dataset where run between 34850-36000 or run in 34850,34890
+run between 34850-36000 or run in 34850,34890
 </em>
 <br/>
 look-up dataset with runs within a given run ranges. The
-<span class="box_blue"><em>find dataset where</em></span> is optional here (default).
+<span class="box_blue"><em>find dataset where</em></span> was optional here and skipped (default).
 <br/><br/>
 
 <em class="box_blue">
-find run where dataset like *Online*
+find file where release>CMSSW_1_6_7 and site=T2_UK
 </em>
 <br/>
-look-up runs whose dataset name match the pattern *Online* 
+find files located on T2_UK sites which were processed with release CMSSW_1_6_7 and above.
 <br/><br/>
 
 <em class="box_blue">
@@ -337,6 +343,25 @@ find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW
 look-up files and runs for given dataset name
 <br/><br/>
 
+</td>
+</tr>
+
+<tr valign="top">
+<td align="right">
+<b>Shortcuts:</b>
+</td>
+<td>
+<b>FIND dataset WHERE </b> expression is default and can be skipped.
+<br/>
+If you type single word, e.g. <span class="box_blue">QCD</span> your look-up will be:
+<span class="box_blue">find dataset where dataset=QCD</span>. 
+<br/>
+If you type word with asterisk, e.g. <span class="box_blue">QCD*</span> your look-up will be:
+<span class="box_blue">find dataset where dataset like QCD*</span>. 
+<br/>
+You can use <span class="box_blue">=</span> instead of <span class="box_blue">like</span>,
+e.g. <span class="box_blue">find run where dataset=/Commissioning2008Ecal-A/*
+<br/>
 </td>
 </tr>
 
