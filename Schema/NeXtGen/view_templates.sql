@@ -119,16 +119,17 @@ PROMPT CREATE VIEW DatasetSummary
 drop VIEW DatasetSummary
 /
 
-CREATE VIEW DatasetSummary (Path, CreationDate, CreatedBy, TotalSize, NumberOfBlocks, NumberOfFiles, 
+CREATE VIEW DatasetSummary (Path, CreationDate, CreatedBy, TotalSize,  NumberOfBlocks, NumberOfFiles,
 NumberOfEvents, NumberOfSites) 
-AS SELECT DISTINCT tblk.Path, tprd.CreationDate, tp.DistinguishedName, sum(tblk.BlockSize), count(tblk.Name), 
-sum(tblk.NumberOfFiles), sum(tblk.NumberOfEvents), count(tse.SEName) 
-FROM processeddataset tprd 
-JOIN block tblk ON tblk.Dataset = tprd.ID 
-JOIN primarydataset tpm ON tprd.PrimaryDataset = tpm.ID 
-LEFT OUTER JOIN seblock tseb ON tseb.BlockID = tblk.ID 
-LEFT OUTER JOIN storageelement tse ON tseb.SEID = tse.ID 
-JOIN person tp ON tprd.CreatedBy = tp.ID GROUP BY tblk.Path, tprd.CreationDate, tp.DistinguishedName
+AS SELECT DISTINCT tblk.Path, tprd.CreationDate, tp.DistinguishedName,  sum(tblk.BlockSize),
+count(tblk.Name), sum(tblk.NumberOfFiles), sum(tblk.NumberOfEvents),
+(SELECT COUNT(DISTINCT tse.SEName) FROM storageelement tse JOIN  seblock tseb ON tseb.SEID = tse.ID
+LEFT OUTER JOIN block tblk2 ON tseb.BlockID = tblk2.ID WHERE  tblk2.path=tblk.path
+)
+FROM processeddataset tprd JOIN block tblk ON tblk.Dataset = tprd.ID
+JOIN primarydataset tpm ON tprd.PrimaryDataset = tpm.ID
+JOIN person tp ON tprd.CreatedBy = tp.ID
+GROUP BY tblk.Path, tprd.CreationDate, tp.DistinguishedName
 /
 
 PROMPT Grant select on FileSummary to  '@build.schema.owner.name@_READER'
