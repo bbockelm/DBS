@@ -49,8 +49,14 @@ executeQuery () {
 	$CMD query="select file, procds.createby, file.modby, procds.createdate" 
 	$CMD query="select file where file.modby like %sekhri%" 
 }
+#$CMD query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW  or dataset=/abc/Online/RAW"
 #$CMD query="select ls.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW, /GlobalMar08-Express/Online/RAW)" 
-#$CMD query="select ls.id,file.id where dataset = /CalPrivateGlobal-default/Online/RAW" 
-$CMD query="select ls.id,file.id where dq = trigg=/CalPrivateGlobal-default/Online/RAW&abc=sec and dataset = /CalPrivateGlobal-default/Online/RAW" 
+#$CMD query="select ls.id,ls.id,file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
+#$CMD query="select file.parent,file where file.name = NEW_TEST0005" 
+#$CMD query="select file.parent,file.parent, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
+$CMD query="select file where file.parent like %NEW%" 
+#$CMD query="select file.createby,file.modby,file.modby where file.createby like %sekhri% or file.modby like %sekhri% and file.createby like %sek%"
+#$CMD query="select file where file.createby like %sekhri% or file.createby = abc"
+#$CMD query="select ls.id,file.id where dq = trigg=/CalPrivateGlobal-default/Online/RAW&abc=sec and dataset = /CalPrivateGlobal-default/Online/RAW" 
 #$CMD query="select procds, procds.createdate,run,ls.moddate where run.number in (1, 2,3)" 
 #executeQuery

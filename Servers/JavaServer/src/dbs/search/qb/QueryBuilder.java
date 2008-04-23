@@ -28,6 +28,11 @@ public class QueryBuilder {
 	public String genQuery(ArrayList kws, ArrayList cs) throws Exception{
 		//Store all the keywors both from select and where in allKws
 		String personJoinQuery = "";
+		String parentJoinQuery = "";
+		boolean modByAdded = false;
+		boolean createByAdded = false;
+		boolean fileParentAdded = false;
+		boolean datasetParentAdded = false;
 		ArrayList allKws = new ArrayList();
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
@@ -76,16 +81,40 @@ public class QueryBuilder {
 					}
 
 					if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
+						boolean dontJoin = false;
 						String personField = "CreatedBy";
-						if(Util.isSame(token2, "modby")) personField = "LastModifiedBy";
+						if(Util.isSame(token2, "modby")) {
+							if(modByAdded) dontJoin = true;
+							modByAdded = true;
+							personField = "LastModifiedBy";
+						} else {
+							if(createByAdded) dontJoin = true;
+							createByAdded = true;
+						}
 						String tmpTableName =  token + "_" + token2;
-						personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
-							"\t\tON " + real + "." + personField + " = " + tmpTableName + ".ID\n";
+						if(!dontJoin) {
+							personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
+								"\t\tON " + real + "." + personField + " = " + tmpTableName + ".ID\n";
+						}
 						String fqName = tmpTableName + ".DistinguishedName";
 						query += fqName + makeAs(fqName);			
 						addQuery = false;
 					}
 					
+					if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
+						boolean dontJoin = false;
+						if(fileParentAdded) dontJoin = true;
+						fileParentAdded = true;
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin){
+							parentJoinQuery += "\tJOIN Files " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = FileParentage.ItsParent\n";
+						}
+						String fqName = tmpTableName + ".LogicalFileName";
+						query += fqName + makeAs(fqName);			
+						addQuery = false;
+					}
+
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
 						String mapVal =  km.getMappedValue(aKw);
@@ -154,6 +183,7 @@ public class QueryBuilder {
 		allKws = sortVertexs(allKws);
 		query += genJoins(allKws);
 		query += personJoinQuery;
+		query += parentJoinQuery;
 		personJoinQuery = "";
 		String queryWhere = "";
 		if (cs.size() > 0) queryWhere += "\nWHERE\n";
@@ -193,12 +223,33 @@ public class QueryBuilder {
 					String token2 = st.nextToken();
 
 					if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
+						boolean dontJoin = false;
 						String personField = "CreatedBy";
-						if(Util.isSame(token2, "modby")) personField = "LastModifiedBy";
+						if(Util.isSame(token2, "modby")) {
+							if(modByAdded) dontJoin = true;
+							personField = "LastModifiedBy";
+							modByAdded = true;
+						} else {
+							if(createByAdded) dontJoin = true;
+							createByAdded = true;
+						}
 						String tmpTableName =  token + "_" + token2;
-						personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
-							"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
+						if(!dontJoin)
+							personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
+								"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
 						queryWhere += tmpTableName + ".DistinguishedName ";			
+					} else	if(Util.isSame(token2, "parent") || Util.isSame(token, "file")) {
+						boolean dontJoin = false;
+						System.out.println("dontJoin " + dontJoin);
+						System.out.println("fileParentAdded " + fileParentAdded);
+						if(fileParentAdded) dontJoin = true;
+						System.out.println("2 dontJoin " + dontJoin);
+						fileParentAdded = true;
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin)
+							parentJoinQuery += "\tJOIN Files " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = FileParentage.ItsParent\n";
+						queryWhere += tmpTableName + ".LogicalFileName ";			
 					} else {
 						//Vertex vFirst = u.getMappedVertex(token);
 						Vertex vCombined = u.getMappedVertex(key);
@@ -223,7 +274,7 @@ public class QueryBuilder {
 			}
 		}
 		//System.out.println("\n\nFINAL query is \n\n" + query);
-		return query + personJoinQuery + queryWhere;
+		return query + personJoinQuery + parentJoinQuery + queryWhere;
 	}
 
 	private String makeAs(String in) {

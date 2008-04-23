@@ -10,11 +10,11 @@ import java.util.ArrayList;
 ArrayList kws = new ArrayList();
 ArrayList constraints = new ArrayList();
 }
-//@rulecatch {
-//catch (RecognitionException e) {
-//	throw e;
-//}
-//}
+@rulecatch {
+catch (RecognitionException e) {
+	throw e;
+}
+}
 
 stmt	: select spaces selectList spaces where spaces constraintList  
 	| select spaces selectList;
@@ -61,7 +61,7 @@ genValue	:VALUE|
 likeValue 	:(VALUE| STAR)+;
 logicalOp	:(and|or);
 entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'ls' | 'dq');
-attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' );
+attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent');
 funct	:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
 select	:('select' | 'SELECT' | 'find' | 'FIND');
 and	:('and' | 'AND');
