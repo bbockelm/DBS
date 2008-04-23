@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.153 $"
- $Id: DBSSql.java,v 1.153 2008/04/22 22:22:53 afaq Exp $"
+ $Revision: 1.154 $"
+ $Id: DBSSql.java,v 1.154 2008/04/23 18:35:07 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -451,21 +451,9 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 
-
-		System.out.println("\nSQL: "+sql);
-
-		System.out.println("\n\nbindvals.size():="+bindvals.size() );
-
                 for (int i=0; i != bindvals.size(); ++i)
-
-			//System.out.println("WHATS in bind: "+bindvals.elementAt(i) );
-
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
-
-
-		System.out.println("\nQUERY: "+ps);
-
                 return ps;
 
 	}
@@ -479,14 +467,27 @@ public class DBSSql {
 	}
 */
 
+	/*********
+				//select Run from RunLumiQuality where DQValue=1 and 
+				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5 
+				//union  select Run from RunLumiQuality where DQValue=2 and 
+				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5; 	
+
+	********/
         public static PreparedStatement listFilesForRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
         throws SQLException
         {
-                String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()+"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
+                String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
+					+"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
+
 		String good_clause="";
+		String bad_clause="";
+		String unknown_clause="";
 		String rlsql="";
 
 		java.util.Vector bindvals = new java.util.Vector();
+		java.util.Vector rbindvals = new java.util.Vector();
+		java.util.Vector subSys = new java.util.Vector();	
 
 		int goodSysCount = 0;
 		int badSysCount = 0;
@@ -494,30 +495,32 @@ public class DBSSql {
 
 		if (runDQList.size() > 0) {
                         for (int i = 0; i < runDQList.size() ; ++i) {
-
-
 				//ADD RUN and LUMI to the Query as well, make life so simple
-
                                 Hashtable runDQ = (Hashtable) runDQList.get(i);
-                                       String runnumber = DBSUtil.get(runDQ, "run_number");
+                                String runnumber = DBSUtil.get(runDQ, "run_number");
+                                if (!DBSUtil.isNull(runnumber)) {
+                                	if (i==0) {
+                                        	//rlsql += " RQ.Run in (select ID from Runs where RunNumber in (?";   
+                                        	rlsql += " (select ID from Runs where RunNumber in (?";   
+                                                rbindvals.add(runnumber);
+                                        }
+                                        else {
+                                        	rlsql += " ,?";
+                                                rbindvals.add(runnumber);
+                                        }
+                                }
 
-                                      if (!DBSUtil.isNull(runnumber)) {
-                                                        if (i==0) {
-                                                                        rlsql += " RQ.Run in (select ID from Runs where RunNumber in (?";   
-                                                                        bindvals.add(runnumber);
-                                                        }
-                                                        else {
-                                                                rlsql += " ,?";
-                                                                bindvals.add(runnumber);
-                                                        }
-                                       }
-
-                                //Get the sub-system Vector
-                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
-				//select Run from RunLumiQuality where DQValue=1 and 
-				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5 
-				//union  select Run from RunLumiQuality where DQValue=2 and 
-				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5; 	
+				Vector thisrunSubSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+				//subSys.addAll(thisrunSubSys);
+				// for some reason cannot avoid duplication here, and what the heck
+				for (int j = 0; j < thisrunSubSys.size() ; ++j) {
+                                        Hashtable dqFlag = (Hashtable) thisrunSubSys.get(j);
+					if (!subSys.contains(dqFlag))
+						subSys.add(dqFlag);
+				}
+			}
+			if (!DBSUtil.isNull(rlsql)) rlsql += ") )";
+		}
 
 				//Loop over each item and make good, bad, unknown queries
                                 for (int j = 0; j < subSys.size() ; ++j) {
@@ -530,25 +533,63 @@ public class DBSSql {
                                                 run_sql += " where ";
                                         }
 
+					if (value.equals("GOOD")) {
+						if ( goodSysCount == 0 ) {
+							if (!DBSUtil.isNull(rlsql))  {
+								good_clause += " RQ.Run in " + rlsql + " AND ";
+								bindvals.addAll(rbindvals);
+							}
+							good_clause += " QV.Value='GOOD' and SS.Name in (?";
+							bindvals.add(subsys);
+							goodSysCount++;
 
-					if ( j == 0 && value.equals("GOOD") ) {
-						good_clause +=" QV.Value='GOOD' and SS.Name in (?";
-						bindvals.add(subsys);
-						goodSysCount++;
-
-					} else {
-						good_clause += ",?";
-						bindvals.add(subsys);
-						goodSysCount++;
+						} else {
+							good_clause += ",?";
+							bindvals.add(subsys);
+							goodSysCount++;
+						}
 					}
-					
+
+
+
+                                        if (value.equals("BAD")) {
+                                                if ( badSysCount == 0 ) {
+                                                        if (!DBSUtil.isNull(rlsql))  {
+                                                                bad_clause += " RQ.Run in " + rlsql + " AND ";
+                                                                bindvals.addAll(rbindvals);
+                                                        }
+                                                        bad_clause += " QV.Value='BAD' and SS.Name in (?";
+                                                        bindvals.add(subsys);
+                                                        badSysCount++;
+
+                                                } else {
+                                                        bad_clause += ",?";
+                                                        bindvals.add(subsys);
+                                                        badSysCount++;
+                                                }
+                                        }
+
+                                        if (value.equals("UNKNOWN")) {
+                                                if ( unknownSysCount == 0 ) {
+                                                        if (!DBSUtil.isNull(rlsql))  {
+                                                                unknown_clause += " RQ.Run in " + rlsql + " AND ";
+                                                                bindvals.addAll(rbindvals);
+                                                        }
+                                                        unknown_clause += " QV.Value='UNKNOWN' and SS.Name in (?";
+                                                        bindvals.add(subsys);
+                                                        unknownSysCount++;
+
+                                                } else {
+                                                        unknown_clause += ",?";
+                                                        bindvals.add(subsys);
+                                                        unknownSysCount++;
+                                                }
+                                        }
+
 				}
-				if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)="+goodSysCount;
-			}
-			if (!DBSUtil.isNull(rlsql)) rlsql += ") )";
-			if (subSys.size() > 0 rlsql) += " AND ";
-			run_sql += rlsql + good_clause; 
-		}
+			if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)="+goodSysCount;
+			if (!DBSUtil.isNull(bad_clause)) bad_clause+=") group by RQ.Run having count(*)="+badSysCount;
+			if (!DBSUtil.isNull(unknown_clause)) unknown_clause+=") group by RQ.Run having count(*)="+unknownSysCount;
 
                 String file_sql = "SELECT distinct F.LogicalFilename as LFN \n" +
                                         " ,R.RunNumber as RUN \n" +
@@ -559,8 +600,24 @@ public class DBSSql {
                                         " on FLR.Run = R.ID \n" +
                                         " WHERE FLR.Run in (";
 
-                //String sql = file_sql + run_sql + good_clause  + ")";
-		String sql = file_sql + run_sql +  ")";
+
+		String sql = "";
+		if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause) 
+				&& !DBSUtil.isNull(rlsql) )  {
+			sql += file_sql + rlsql + ")" ;
+			bindvals.addAll(rbindvals);
+		}
+
+                else {
+			sql += file_sql;
+			if (!DBSUtil.isNull(good_clause)) sql += run_sql + good_clause ;
+			if (!DBSUtil.isNull(bad_clause)) sql += " UNION "+ run_sql + bad_clause ;
+			if (!DBSUtil.isNull(unknown_clause)) sql += " UNION "+ run_sql + unknown_clause;
+		}
+
+		if ( !DBSUtil.isNull(good_clause) || !DBSUtil.isNull(bad_clause) || !DBSUtil.isNull(unknown_clause) ) sql += ")";
+
+		//String sql = file_sql + run_sql +  ")";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
 
@@ -573,12 +630,7 @@ public class DBSSql {
 	}
 
 
-
-
-
-
-
-
+/*
         public static PreparedStatement listFilesForRunLumiDQ_OLDER(Connection conn, Vector runDQList, String timeStamp)
         throws SQLException
         {
@@ -650,6 +702,7 @@ public class DBSSql {
 //mysql> select RQ.Run from RunLumiQuality RQ join SubSystem SS on SS.ID = RQ.SubSystem JOIN QualityValues QV on RQ.DQValue=QV.ID, RunLumiQuality RQ1 join SubSystem SS1 on SS1.ID = RQ1.SubSystem JOIN QualityValues QV1 on RQ1.DQValue=QV1.ID where RQ.Run = RQ1.Run AND (SS.Name = 'Tracker_Global' AND QV.Value='GOOD' ) AND ( SS1.Name='TIB_DCS' AND QV1.Value='GOOD' );
 
 	}
+****/
 
 
 	/* AA

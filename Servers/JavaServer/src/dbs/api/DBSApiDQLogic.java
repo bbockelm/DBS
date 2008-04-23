@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApiDQLogic.java,v 1.10 2008/04/16 20:19:14 afaq Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSApiDQLogic.java,v 1.11 2008/04/21 20:01:13 afaq Exp $"
  *
  */
 
@@ -212,7 +212,6 @@ public class DBSApiDQLogic extends DBSApiLogic {
                         if (ps != null) ps.close();
                 }
 	}
-
 
 	public void listFilesForRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
 

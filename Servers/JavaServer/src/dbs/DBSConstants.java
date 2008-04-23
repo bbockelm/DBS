@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.55 $"
- $Id: DBSConstants.java,v 1.55 2008/04/21 19:35:50 afaq Exp $"
+ $Revision: 1.56 $"
+ $Id: DBSConstants.java,v 1.56 2008/04/21 20:01:13 afaq Exp $"
  *
 */
 package dbs;
@@ -14,16 +14,16 @@ public class DBSConstants {
 
         //Specify the Global debug flag, if set to True DEBUG Messages wil be displayed. 
 
-	public static boolean DEBUG = false;
+	//public static boolean DEBUG = false;
 	public static boolean DEBUGCACHE = false;
 	public static boolean ERROR = false;
-	//public static boolean USECACHE = false;
+	public static boolean USECACHE = false;
 
 
 	//public static boolean DEBUGCACHE = true;
-	//public static boolean DEBUG = true;
+	public static boolean DEBUG = true;
 	//public static boolean ERROR = true;
-	public static boolean USECACHE = true;//If this parameter is set to true, the server will use the cache
+	//public static boolean USECACHE = true;//If this parameter is set to true, the server will use the cache
 
 	public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
 	public static String XML_FOOTER = "</dbs>\n";
