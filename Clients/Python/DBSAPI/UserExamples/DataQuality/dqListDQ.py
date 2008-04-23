@@ -33,18 +33,18 @@ def print_flags_nice(dqHierarchyList):
 #-------------------------------------------------------------------------------
 # Sub-Sub System Flag
 flag1 = DbsDQFlag (
-        Name = "HCAL+",
+        Name = "TIB_Local",
         Value = "GOOD",
         )
 # Sub-Sub System Flag
 flag2 = DbsDQFlag (
-        Name = "HCAL-",
+        Name = "TIB_DCS",
         Value = "GOOD",
         )
 
 # Sub System Flag (Including sub-sub system flags)
 flag3 = DbsDQFlag (
-        Name = "HCAL",
+        Name = "Tracker_Global",
         Value = "GOOD",
 	#Well no one stops you from specifying Sub Flags
 	#SubSysFlagList = [flag11, flag12]
@@ -54,11 +54,11 @@ flag3 = DbsDQFlag (
 #Create RunDQ Object, for RunNumber , RunNumber  already exists in DBS
 
 run_dq_search_criteria = DbsRunLumiDQ (
-        RunNumber=1,
+        #RunNumber=1,
 	#LumiSectionNumber can be part of this serach criteria
         #LumiSectionNumber=123,
         #DQFlagList = [flag1]
-        #DQFlagList = [flag1, flag2, flag3]
+        DQFlagList = [flag1, flag2, flag3]
         )
 
 try:
@@ -72,14 +72,14 @@ try:
     # Mind that run_dq_search_criteria is just one object, API takes a LIST of such objects
     # So you must pass it as list
 
-    #dqHierarchyList =  api.listRunLumiDQ(  runLumiDQList=[run_dq_search_criteria]  )
-    #print_flags_nice(dqHierarchyList)
+    dqHierarchyList =  api.listRunLumiDQ(  runLumiDQList=[run_dq_search_criteria]  )
+    print_flags_nice(dqHierarchyList)
  
     # ALL of them, ARE U CRAZY ?
     print "\n-------------------CURRENT...."
 
-    dqHierarchyList =  api.listRunLumiDQ(   )
-    print_flags_nice(dqHierarchyList)
+    #dqHierarchyList =  api.listRunLumiDQ(   )
+    #print_flags_nice(dqHierarchyList)
 
     """ 
     # List a specific Version DQ_00_00_00

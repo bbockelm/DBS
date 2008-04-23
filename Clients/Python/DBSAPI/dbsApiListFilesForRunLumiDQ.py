@@ -36,9 +36,14 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
 	tag_val_list=runLumiDQList.strip().split('&')
 	for atag_val in tag_val_list:
 		tag, val = atag_val.split('=')
-		if (first):
-			xmlinput += "<run run_number='' lumi_section_number='' />"
-			first=0
+		if tag=='RunNumber':
+			xmlinput += "<run run_number='"+val+ "' lumi_section_number='' />"
+			continue
+		#if tag=='LumiSection':
+		else: 
+			if (first):
+				xmlinput += "<run run_number='' lumi_section_number='' />"
+				first=0
 		xmlinput += "<dq_sub_system name='" + tag + "' value='" + val + "' />"
 
     else :
@@ -52,8 +57,6 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
                 	# Sub sub system list
                 	for aSubFlag in aFlag.get('SubSysFlagList'):
                         	xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
-
-
 
 
 

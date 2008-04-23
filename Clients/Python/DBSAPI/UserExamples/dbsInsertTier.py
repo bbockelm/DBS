@@ -15,18 +15,21 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-                            
-print "Adding a TIER"
-
 try:
 
-    api.insertTier ('GEN')
-    api.insertTier ('SIM')
-    api.insertTier ('DIGI')
-    api.insertTier ('RECO')
-    api.insertTier ('RAW')
-
-    print "Result: %s" % 'GEN' 
+    api.insertTier ('GEN-SIM')
+    api.insertTier ('GEN-SIM-DIGI')
+    api.insertTier ('GEN-SIM-RAW')
+    api.insertTier ('GEN-SIM-DIGI-RAW')
+    api.insertTier ('GEN-SIM-DIGI-HLTDEBUG')
+    api.insertTier ('GEN-SIM-RAW-HLTDEBUG')
+    api.insertTier ('GEN-SIM-DIGI-RAW-HLTDEBUG')
+    api.insertTier ('GEN-SIM-RECO')
+    api.insertTier ('GEN-SIM-RAW-RECO')
+    api.insertTier ('GEN-SIM-DIGI-RAW-RECO')
+    api.insertTier ('GEN-SIM-DIGI-HLTDEBUG-RECO')
+    api.insertTier ('GEN-SIM-RAW-HLTDEBUG-RECO')
+    api.insertTier ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO')
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
