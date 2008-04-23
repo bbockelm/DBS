@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.152 $"
- $Id: DBSSql.java,v 1.152 2008/04/21 20:01:14 afaq Exp $"
+ $Revision: 1.153 $"
+ $Id: DBSSql.java,v 1.153 2008/04/22 22:22:53 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -472,21 +472,114 @@ public class DBSSql {
 
 
 
-
+/*
         public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
 
 
-		String sql = "";
+	}
+*/
 
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+        public static PreparedStatement listFilesForRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
+        throws SQLException
+        {
+                String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()+"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
+		String good_clause="";
+		String rlsql="";
+
+		java.util.Vector bindvals = new java.util.Vector();
+
+		int goodSysCount = 0;
+		int badSysCount = 0;
+		int unknownSysCount = 0;
+
+		if (runDQList.size() > 0) {
+                        for (int i = 0; i < runDQList.size() ; ++i) {
+
+
+				//ADD RUN and LUMI to the Query as well, make life so simple
+
+                                Hashtable runDQ = (Hashtable) runDQList.get(i);
+                                       String runnumber = DBSUtil.get(runDQ, "run_number");
+
+                                      if (!DBSUtil.isNull(runnumber)) {
+                                                        if (i==0) {
+                                                                        rlsql += " RQ.Run in (select ID from Runs where RunNumber in (?";   
+                                                                        bindvals.add(runnumber);
+                                                        }
+                                                        else {
+                                                                rlsql += " ,?";
+                                                                bindvals.add(runnumber);
+                                                        }
+                                       }
+
+                                //Get the sub-system Vector
+                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+				//select Run from RunLumiQuality where DQValue=1 and 
+				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5 
+				//union  select Run from RunLumiQuality where DQValue=2 and 
+				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5; 	
+
+				//Loop over each item and make good, bad, unknown queries
+                                for (int j = 0; j < subSys.size() ; ++j) {
+                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
+
+					String subsys=DBSUtil.get(dqFlag, "name");
+					String value=DBSUtil.get(dqFlag, "value");
+
+					if (j == 0) {
+                                                run_sql += " where ";
+                                        }
+
+
+					if ( j == 0 && value.equals("GOOD") ) {
+						good_clause +=" QV.Value='GOOD' and SS.Name in (?";
+						bindvals.add(subsys);
+						goodSysCount++;
+
+					} else {
+						good_clause += ",?";
+						bindvals.add(subsys);
+						goodSysCount++;
+					}
+					
+				}
+				if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)="+goodSysCount;
+			}
+			if (!DBSUtil.isNull(rlsql)) rlsql += ") )";
+			if (subSys.size() > 0 rlsql) += " AND ";
+			run_sql += rlsql + good_clause; 
+		}
+
+                String file_sql = "SELECT distinct F.LogicalFilename as LFN \n" +
+                                        " ,R.RunNumber as RUN \n" +
+                                        " FROM "+owner()+"Files F \n" +
+                                        " join "+owner()+"FileRunLumi FLR \n"+
+                                        " on FLR.Fileid = F.id \n" +
+                                        " join "+owner()+"Runs R \n" +
+                                        " on FLR.Run = R.ID \n" +
+                                        " WHERE FLR.Run in (";
+
+                //String sql = file_sql + run_sql + good_clause  + ")";
+		String sql = file_sql + run_sql +  ")";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+
                 int columnIndx = 1;
+                for (int i=0; i != bindvals.size(); ++i)
+                        ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
 
-		return ps;
 	}
 
 
 
-        public static PreparedStatement listFilesForRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
+
+
+
+
+
+        public static PreparedStatement listFilesForRunLumiDQ_OLDER(Connection conn, Vector runDQList, String timeStamp)
         throws SQLException
         {
 		String vtable = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()+"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
