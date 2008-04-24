@@ -233,13 +233,6 @@ class DDQueryMaker(DDLogger):
           table,col = nameOut.split(".")
           tabOut    = self.dbManager.getTable(self.dbsInstance,table)
           colOut    = col
-          # special case for createby/modifyby
-          if col.lower().find('createdby')!=-1 or \
-             col.lower().find('creationdate')!=-1 or \
-             col.lower().find('lastmodifiedby')!=-1 or \
-             col.lower().find('lastmodificationdate')!=-1:
-             personJoin.append( ( person,self.col(tabOut,'CreatedBy'),self.col(person,'ID') ) )
-          # end of special case
           tcObj     = self.col(tabOut,colOut)
           gBy       = []
           if funcDict and funcDict.has_key(colOut):
@@ -260,14 +253,18 @@ class DDQueryMaker(DDLogger):
           # end of special case
           iSel      = [self.col(tabIn,colIn)]
           _oSel     = sqlalchemy.select(oSel,distinct=True)
-          if nameIn==nameOut:
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             qb     = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
+          else:
+             qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
+          if tabIn==tabOut:
              query  =_oSel 
+             if colIn!=colOut and personJoin:
+                tabJoin,leftCol,rightCol=personJoin[0]
+                pJoin=tabIn.join(tabJoin,onclause=leftCol==rightCol)
+                query.append_from(pJoin)
           else:
              _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
-             if self.dbManager.dbType[self.dbsInstance]=='oracle':
-                qb  = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
-             else:
-                qb  = Schema(self.dbManager.dbTables[self.dbsInstance])
              query  = qb.BuildQueryWithSel(_oSel,_Sel,personJoin)
           query=query.distinct()
           query=query.apply_labels()
@@ -280,7 +277,7 @@ class DDQueryMaker(DDLogger):
                 colIn.lower().find('creationdate')!=-1 or \
                 colIn.lower().find('lastmodifiedby')!=-1 or \
                 colIn.lower().find('lastmodificationdate')!=-1:
-                tabIn=self.dbManager.getTable(self.dbsInstance,"Person") 
+                tabIn=person
              # end of special case
              if  type(rval) is types.StringType:
                  case   = getArg(kwargs,'case','on')
