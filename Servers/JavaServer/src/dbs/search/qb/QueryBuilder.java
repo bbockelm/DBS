@@ -114,6 +114,22 @@ public class QueryBuilder {
 						query += fqName + makeAs(fqName);			
 						addQuery = false;
 					}
+					
+					if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
+						boolean dontJoin = false;
+						if(datasetParentAdded) dontJoin = true;
+						datasetParentAdded = true;
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin){
+							parentJoinQuery += "\tJOIN ProcessedDataset " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = ProcDSParent.ItsParent\n";
+						}
+						String fqName = tmpTableName + ".Name";
+						query += fqName + makeAs(fqName);			
+						addQuery = false;
+					}
+
+
 
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
@@ -174,17 +190,19 @@ public class QueryBuilder {
 		}
 		allKws = makeCompleteListOfVertexs(allKws);
 
-		/*int len = allKws.size();
-		for(int i = 0 ; i != len ; ++i ) {
-			System.out.println("kw " + (String)allKws.get(i));
-		}*/
 
 		
 		allKws = sortVertexs(allKws);
+		int len = allKws.size();
+		for(int i = 0 ; i != len ; ++i ) {
+			System.out.println("kw " + (String)allKws.get(i));
+		}
+
 		query += genJoins(allKws);
 		query += personJoinQuery;
 		query += parentJoinQuery;
 		personJoinQuery = "";
+		parentJoinQuery = "";
 		String queryWhere = "";
 		if (cs.size() > 0) queryWhere += "\nWHERE\n";
 		
@@ -238,19 +256,27 @@ public class QueryBuilder {
 							personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
 								"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
 						queryWhere += tmpTableName + ".DistinguishedName ";			
-					} else	if(Util.isSame(token2, "parent") || Util.isSame(token, "file")) {
+					} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
 						boolean dontJoin = false;
-						System.out.println("dontJoin " + dontJoin);
-						System.out.println("fileParentAdded " + fileParentAdded);
 						if(fileParentAdded) dontJoin = true;
-						System.out.println("2 dontJoin " + dontJoin);
 						fileParentAdded = true;
 						String tmpTableName =  token + "_" + token2;
 						if(!dontJoin)
 							parentJoinQuery += "\tJOIN Files " + tmpTableName + "\n" +
 								"\t\tON " + tmpTableName + ".ID = FileParentage.ItsParent\n";
 						queryWhere += tmpTableName + ".LogicalFileName ";			
-					} else {
+					} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
+						boolean dontJoin = false;
+						if(datasetParentAdded) dontJoin = true;
+						datasetParentAdded = true;
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin)
+							parentJoinQuery += "\tJOIN ProcessedDataset " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = ProcDSParent.ItsParent\n";
+						queryWhere += tmpTableName + ".Name ";			
+
+					
+					}else {
 						//Vertex vFirst = u.getMappedVertex(token);
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined == null) {
@@ -495,11 +521,16 @@ public class QueryBuilder {
 				System.out.println("Shortest edge in " + (String)lKeywords.get(0) + " --- " + (String)myRoute.get(0));
 				List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(0), (String)myRoute.get(0));
 				for (Edge e: lEdges) {
-					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
+					System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getFirstNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getSecondNameFromEdge(e));
 				}
 				if(lEdges.size() > 0) lKeywords.remove(0);
+				else {
+					myRoute = addUniqueInList(myRoute, (String)lKeywords.get(0));
+					lKeywords.remove(0);
+					//System.out.println("Path length is 0");
+				}
 			}
 			
 			prevLen = len;
@@ -511,7 +542,7 @@ public class QueryBuilder {
 
 	
 	public ArrayList sortVertexs(ArrayList lKeywords) {
-		//System.out.println("INSIDE sortVertexs");
+		System.out.println("INSIDE sortVertexs");
 		int len = lKeywords.size();
 		String leaf = "";
 		for(int i = 0 ; i != len ; ++i ) {
@@ -521,7 +552,9 @@ public class QueryBuilder {
 				break;
 			}
 		}
+		//System.out.println("leaf " + leaf);
 		if(leaf.equals("")) leaf = (String)lKeywords.get(0);
+		//System.out.println("leaf again " + leaf);
 		ArrayList toReturn = new ArrayList();
 		toReturn.add(leaf);
 		
@@ -534,15 +567,22 @@ public class QueryBuilder {
 					if(!isIn(toReturn, aVertex)) {
 						if(isLeaf(aVertex, lKeywords)) {
 							//System.out.println(aVertex + " is a leaf toreturn size " + toReturn.size() + " len -1 " + (len - 1));
+							//if(toReturn.size() ==1) System.out.println("toReturn.0 " + (String)toReturn.get(0));
 							if(toReturn.size() == (len - 1)) toReturn = addUniqueInList(toReturn, aVertex);
-							else if(reps > len) toReturn = addUniqueInList(toReturn, aVertex); 
+							else if(reps > len) {
+								toReturn = addUniqueInList(toReturn, aVertex); 
+								//System.out.println("adding " + aVertex);
+							}
 						} else {
 							for (int k = (toReturn.size() - 1) ; k != -1 ; --k) {
 								//System.out.println("Cheking edge between " + (String)toReturn.get(k) + " and " + aVertex);
 								if(u.doesEdgeExist((String)toReturn.get(k), aVertex)) {
 									toReturn = addUniqueInList(toReturn, aVertex);
 									break;
-								} //else System.out.println("no edge between " +   (String)toReturn.get(k) + " and " + aVertex);
+								} else {
+									if(reps > len) toReturn = addUniqueInList(toReturn, aVertex);
+									//System.out.println("no edge between " +   (String)toReturn.get(k) + " and " + aVertex);
+								}
 							}
 						}
 					}
@@ -557,6 +597,7 @@ public class QueryBuilder {
 		Set s = u.getVertex(aVertex).getNeighbors();
 		for (Iterator eIt = s.iterator(); eIt.hasNext(); ) {
 			String neighbor = u.getRealFromVertex((Vertex) eIt.next());
+			//System.out.println("neighbour " + neighbor);
 			if(isIn(lKeyword, neighbor)) ++count;
 		}
 		if(count == 1) return true;

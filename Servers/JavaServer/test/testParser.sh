@@ -8,55 +8,47 @@ cd $BASE/lib
 CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.1.7.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
-#echo $i | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo ""select file where path=abc"" | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo "select file.name where block.name=abc and procds.name=2" | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo "select file.name,file.size where procds.name=Online and file.size>546294916"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo "select file.name,file.size,path where procds.name=Online and file.size>546294916"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo "select file,file.size,path where procds.name=Online and file.size>546294916 or path=/CalPrivateGlobal-default/Online/RAW"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo "select file,file.size,path where procds.name=Online and file.size>546294916"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo "select file.name where run.number=35672"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-#echo "select file.name,file.size where procds.name=Online and file.size in (546294916,546580510)"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-
-#echo "select file.name,ls.starttime,run.endtime where run.number=35672 or ls.number=2 or run.starttime=1"  | $JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.parser.Test
-
 
 CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
 executeQuery () {
 	echo "Executing executeQuery API..."
-	$CMD query="select file where file.release=CMSSW_1_7_1"
-	$CMD query="select file,file.status,file.type where procds.release=CMSSW_1_7_1"
+	$CMD query="find file where file.release=CMSSW_1_7_1"
+	$CMD query="find file,file.status,file.type where procds.release=CMSSW_1_7_1"
 	$CMD query="find file.id,ls.id   where procds.release=CMSSW_1_7_1"
-	$CMD query="select file.name, file.createdate where run.number=35672 and run.moddate>2"
-	$CMD query="select file,file.size,dataset where procds.name=Online and file.size>546294916"
-	$CMD query="select  file,    ls    where    dataset  =   /CalPrivateGlobal-default/Online/RAW"
-	$CMD query="select ls where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"
-	$CMD query="select file.release,file where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"
-	$CMD query="select run where run.number>1 and run.number<100"
-	$CMD query="select run.count where run.number > 1 and run.number < 100"
-	$CMD query="select run.count where dataset=/CalPrivateGlobal-default/Online/RAW"
-	$CMD query="select file,run,ls  where dataset=/GlobalMar08-Express/Online/RAW and file.type = STREAMER"
-	$CMD query="select file, run,ls where dataset like %Online%"
-	$CMD query="select run,ls where dataset like %Online%"
-	$CMD query="select run,ls,file where dataset  like  %Online%"
+	$CMD query="find file.name, file.createdate where run.number=35672 and run.moddate>2"
+	$CMD query="find file,file.size,dataset where procds.name=Online and file.size>546294916"
+	$CMD query="find  file,    ls    where    dataset  =   /CalPrivateGlobal-default/Online/RAW"
+	$CMD query="find ls where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"
+	$CMD query="find file.release,file where dataset=/CalPrivateGlobal-default/Online/RAW and procds.release=CMSSW_1_7_1"
+	$CMD query="find ls.id,ls.id,file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
+	$CMD query="find run where run.number>1 and run.number<100"
+	$CMD query="find run.count where run.number > 1 and run.number < 100"
+	$CMD query="find run.count where dataset=/CalPrivateGlobal-default/Online/RAW"
+	$CMD query="find file,run,ls  where dataset=/GlobalMar08-Express/Online/RAW and file.type = STREAMER"
+	$CMD query="find file, run,ls where dataset like %Online%"
+	$CMD query="find run,ls where dataset like %Online%"
+	$CMD query="find run,ls,file where dataset  like  %Online%"
 	$CMD query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW"
-	$CMD query="select primds where primds.name like %test%"
-	$CMD query="select dataset"
-	$CMD query="select procds, procds.createdate"
-	$CMD query="select primds"
-	$CMD query="select procds.createby, run.modby" 
-	$CMD query="select file, procds.createby where  file.modby like %sekhri% and dataset = /CalPrivateGlobal-default/Online/RAW" 
-	$CMD query="select file, procds.createby, file.modby, procds.createdate" 
-	$CMD query="select file where file.modby like %sekhri%" 
+	$CMD query="find primds where primds.name like %test%"
+	$CMD query="find dataset"
+	$CMD query="find procds, procds.createdate"
+	$CMD query="find primds"
+	$CMD query="find procds.createby, run.modby" 
+	$CMD query="find file, procds.createby where  file.modby like %sekhri% and dataset = /CalPrivateGlobal-default/Online/RAW" 
+	$CMD query="find file, procds.createby, file.modby, procds.createdate" 
+	$CMD query="find file where file.modby like %sekhri%" 
+	$CMD query="find procds.parent,procds.name,file,file.parent  where procds.parent like %"
+	$CMD query="find file where file.createby like %sekhri% or file.createby = abc"
+	$CMD query="find file.parent,file where file.name = NEW_TEST0005" 
+	$CMD query="find ls.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW, /GlobalMar08-Express/Online/RAW)" 
+	$CMD query="find file,file.parent,run,dataset where file.parent like %NEW% or file.parent like %" 
+	$CMD query="find file.id,ls.id,dataset   where procds.release=CMSSW_1_7_1"
+	$CMD query="find file.createby,file.modby,file.modby where file.createby like %sekhri% or file.modby like %sekhri% and file.createby like %sek%"
+	$CMD query="find procds, procds.createdate,run,ls.moddate where run.number in (1, 2,3)" 
+	$CMD query="find procds.status  where dataset = /CalPrivateGlobal-default/Online/RAW"
+	$CMD query="find file.parent,file.parent, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
+	$CMD query="find procds.parent,procds.name  where procds.name like %Test% or procds.parent like %"
+	$CMD query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW  or dataset=/abc/Online/RAW"
 }
-#$CMD query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW  or dataset=/abc/Online/RAW"
-#$CMD query="select ls.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW, /GlobalMar08-Express/Online/RAW)" 
-#$CMD query="select ls.id,ls.id,file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
-#$CMD query="select file.parent,file where file.name = NEW_TEST0005" 
-#$CMD query="select file.parent,file.parent, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
-$CMD query="select file where file.parent like %NEW%" 
-#$CMD query="select file.createby,file.modby,file.modby where file.createby like %sekhri% or file.modby like %sekhri% and file.createby like %sek%"
-#$CMD query="select file where file.createby like %sekhri% or file.createby = abc"
-#$CMD query="select ls.id,file.id where dq = trigg=/CalPrivateGlobal-default/Online/RAW&abc=sec and dataset = /CalPrivateGlobal-default/Online/RAW" 
-#$CMD query="select procds, procds.createdate,run,ls.moddate where run.number in (1, 2,3)" 
-#executeQuery
+#$CMD query="find ls.id,file.id where dq = trigg=/CalPrivateGlobal-default/Online/RAW&abc=sec and dataset = /CalPrivateGlobal-default/Online/RAW" 
+executeQuery

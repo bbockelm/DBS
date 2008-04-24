@@ -74,6 +74,7 @@
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="AnalysisDataset"	relation="ProcessedDataset.ID = AnalysisDataset.ProcessedDS"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="Block"			relation="ProcessedDataset.ID = Block.Dataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="Files"			relation="ProcessedDataset.ID = Files.Dataset"/>
+	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="ProcDSStatus"		relation="ProcessedDataset.Status = ProcDSStatus.ID"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="PhysicsGroup"		relation="ProcessedDataset.PhysicsGroup = PhysicsGroup.ID"/>
 	
 	<edge directed="false"	wt="1.5"	source="Block"		 	target="Files"			relation="Block.ID = Files.Block"/>
