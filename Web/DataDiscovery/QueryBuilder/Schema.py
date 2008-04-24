@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.8 2008/04/02 13:24:19 valya Exp $
+# $Id: Schema.py,v 1.9 2008/04/24 18:12:02 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.8 $"
+__revision__ = "$Revision: 1.9 $"
 
 
 import unittest
@@ -101,7 +101,6 @@ class Schema(object):
     def BuildQueryWithSel(self,sel,query,addJoin=None):
         rootJoin = self.RootJoin(query)
         if addJoin:
-           print "\n\n### addJoin",addJoin
            for item in addJoin:
                table,leftColumn,rightColumn=item
                rootJoin=rootJoin.join(table, leftColumn==rightColumn)
