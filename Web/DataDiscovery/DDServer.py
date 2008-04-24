@@ -791,7 +791,7 @@ class DDServer(DDLogger,Controller):
             dbsList=[dbsInst]+dbsList
             if msg: userHelp=0
             else:   userHelp=1
-            nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':''}
+            nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':'','aSearchKeys':self.aSearchKeys()}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
             page+= str(t)
             if msg:
@@ -5297,6 +5297,17 @@ Save query as:
         return serve_file(os.path.join(os.getcwd(),'DDSearchCLI.py'),content_type='text/plain')
     aSearchCLI.exposed=True
 
+    def aSearchKeys(self):
+        allKeys=self.ddrules.keywords
+        sKeys  =""
+        for key in allKeys:
+            if key.find(".")!=-1:
+               k1,k2 = key.split(".")
+               sKeys+="<p><b>%s</b>: composed key, %s for %s</p>"%(key,self.ddrules.longName[k2],self.ddrules.longName[k1])
+            else:
+               sKeys+="<p><b>%s</b>: %s</p>"%(key,self.ddrules.tooltip[key])
+        return sKeys
+
     def update_kwargs(self,kDict,**kwargs):
         oDict=dict(kDict)
         for key in kwargs.keys():
@@ -5377,7 +5388,7 @@ Save query as:
            dbsList=list(self.dbsList)
            dbsList.remove(dbsInst)
            dbsList=[dbsInst]+dbsList
-           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput}
+           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput,'aSearchKeys':self.aSearchKeys()}
            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
            page+=str(t)
         else:
@@ -5468,7 +5479,8 @@ Save query as:
                         'rPage'    : rPage,
                         'pagerStep': pagerStep,
                         'pagerId'  : pagerId,
-                        'nameForPager': _out+"s",
+#                        'nameForPager': _out+"s",
+                        'nameForPager': "results",
                         'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,userInput)
                        }
            t = templatePagerStep(searchList=[_nameSpace]).respond()

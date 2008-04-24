@@ -157,7 +157,7 @@ class DDQueryMaker(DDLogger):
       return oBy
 
   def makeJoinQuery(self,toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict={}):
-#      print "\n\n+++makeJoinQuery",toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict
+      print "\n\n+++makeJoinQuery",toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict
       try:
           oSel   = []
           gBy    = []
@@ -173,10 +173,19 @@ class DDQueryMaker(DDLogger):
                  gBy.append(tcObj)
           _oSel  = sqlalchemy.select(oSel,distinct=True)
           iSel   = []
+          person = self.dbManager.getTable(self.dbsInstance,'Person')
+          personJoin=[]
           for tabCol in toJoin.split(","):
               tab,col = tabCol.split(".")
               tabOut  = self.dbManager.getTable(self.dbsInstance,tab)
               iSel.append(self.col(tabOut,col))
+              # special case for createby/modifyby
+              if col.lower().find('createdby')!=-1 or \
+                 col.lower().find('creationdate')!=-1 or \
+                 col.lower().find('lastmodifiedby')!=-1 or \
+                 col.lower().find('lastmodificationdate')!=-1:
+                 personJoin.append( ( person,self.col(tabOut,'CreatedBy'),self.col(person,'ID') ) )
+              # end of special case
           _Sel   = sqlalchemy.select(iSel,distinct=True)
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              qb  = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
@@ -185,13 +194,21 @@ class DDQueryMaker(DDLogger):
           if toSelect==toJoin:
              query =_oSel
           else:
-             query  = qb.BuildQueryWithSel(_oSel,_Sel)
+             query  = qb.BuildQueryWithSel(_oSel,_Sel,personJoin)
           if gBy:
              query=query.group_by(*gBy)
           bparams=[]
           wList  = wClause.split()
           for idx in xrange(0,len(wList)):
               item = wList[idx]
+              if item.lower().find("creationdate")!=-1:
+                 wList[idx]="Person.CreationDate"
+              elif item.lower().find("lastmodificationdate")!=-1:
+                 wList[idx]="Person.LastModificationDate"
+              elif item.lower().find("createdby")!=-1:
+                 wList[idx]="Person.CreatedBy"
+              elif item.lower().find("modifyby")!=-1:
+                 wList[idx]="Person.LastModifiedBy"
               if constrainList().count(item):
                  rval=wList[idx+1]
                  rval=rval.replace("*","%")
@@ -209,12 +226,20 @@ class DDQueryMaker(DDLogger):
   def makeQuery(self,_name,**kwargs):
       try:
 #          print "DDQueryMaker::makerQuery",_name,kwargs
+          person = self.dbManager.getTable(self.dbsInstance,'Person')
+          personJoin=[]
           funcDict  = getArg(kwargs,"funcDict",{})
           nameIn,nameOut =_name.split("2")
-          table,col = nameOut.split("_")
+          table,col = nameOut.split(".")
           tabOut    = self.dbManager.getTable(self.dbsInstance,table)
           colOut    = col
-#          oSel      = [self.col(tabOut,col)]
+          # special case for createby/modifyby
+          if col.lower().find('createdby')!=-1 or \
+             col.lower().find('creationdate')!=-1 or \
+             col.lower().find('lastmodifiedby')!=-1 or \
+             col.lower().find('lastmodificationdate')!=-1:
+             personJoin.append( ( person,self.col(tabOut,'CreatedBy'),self.col(person,'ID') ) )
+          # end of special case
           tcObj     = self.col(tabOut,colOut)
           gBy       = []
           if funcDict and funcDict.has_key(colOut):
@@ -223,28 +248,40 @@ class DDQueryMaker(DDLogger):
           else:
              oSel=[tcObj]
              gBy.append(tcObj)
-          table,col = nameIn.split("_")
+          table,col = nameIn.split(".")
           tabIn     = self.dbManager.getTable(self.dbsInstance,table)
           colIn     = col
+          # special case for createby/modifyby
+          if col.lower().find('createdby')!=-1 or \
+             col.lower().find('creationdate')!=-1 or \
+             col.lower().find('lastmodifiedby')!=-1 or \
+             col.lower().find('lastmodificationdate')!=-1:
+             personJoin.append( ( person,self.col(tabIn,'CreatedBy'),self.col(person,'ID') ) )
+          # end of special case
           iSel      = [self.col(tabIn,colIn)]
           _oSel     = sqlalchemy.select(oSel,distinct=True)
           if nameIn==nameOut:
              query  =_oSel 
           else:
-#             md     = self.dbManager.metaDict[self.dbsInstance]
              _Sel   = sqlalchemy.select(iSel+oSel,distinct=True)
-             qb = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
              if self.dbManager.dbType[self.dbsInstance]=='oracle':
                 qb  = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
              else:
                 qb  = Schema(self.dbManager.dbTables[self.dbsInstance])
-             query  = qb.BuildQueryWithSel(_oSel,_Sel)
+             query  = qb.BuildQueryWithSel(_oSel,_Sel,personJoin)
           query=query.distinct()
           query=query.apply_labels()
           if gBy:
              query=query.group_by(*gBy)
           if kwargs.has_key('rval'):
              rval   = kwargs['rval']
+             # special case for createby/modifyby, use Person table to look-up the value
+             if colIn.lower().find('createdby')!=-1 or \
+                colIn.lower().find('creationdate')!=-1 or \
+                colIn.lower().find('lastmodifiedby')!=-1 or \
+                colIn.lower().find('lastmodificationdate')!=-1:
+                tabIn=self.dbManager.getTable(self.dbsInstance,"Person") 
+             # end of special case
              if  type(rval) is types.StringType:
                  case   = getArg(kwargs,'case','on')
                  self.buildExp(query,self.col(tabIn,colIn),rval,case)

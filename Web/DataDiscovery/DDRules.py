@@ -10,7 +10,7 @@ Data Discovery search module
 """
 
 # system modules
-import os, string, logging, types, time, traceback, new, re
+import sys, os, string, logging, types, time, traceback, new, re
 import DDUtil
 
 def constrainDict():
@@ -38,6 +38,7 @@ class DDRules:
        self.cmsNames ={}
        self.boolwords=['and','or','(',')','not','like']
        self.functions=['total','sum','count']
+       self.yyyymmdd=re.compile('^\d{8}$')
        # mapping between keyword-names and DB views
        self.dbView ={
            'dataset'     :'datasetsummary',
@@ -50,10 +51,8 @@ class DDRules:
            'primds'      :'primsummary',
            'procds'      :'procsummary',
            'tier'        :'tiersummary',
-           'adsname'     :'',
-           'adspath'     :'',
-           'adsversion'  :'',
-           'physicsgroup':'',
+           'ads'         :'',
+           'group'       :'',
        }
        # association between keyword-names and human readble meaning
        self.longName={
@@ -67,14 +66,39 @@ class DDRules:
            'primds'      :'primary dataset',
            'procds'      :'processed dataset',
            'tier'        :'data tier',
+           'ads'         :'analisis dataset',
+           'group'       :'physics group name',
+           # additions to above keywords
            'createdate'  :'creation date',
            'modifydate'  :'last modification date',
-           'createdby'   :'created date',
-           'modifyby'    :'last modified by',
-           'adsname'     :'analisis dataset name',
-           'adspath'     :'analisis dataset path',
-           'adsversion'  :'analisis dataset version',
-           'physicsgroup':'physics group name',
+           'createby'    :'creator name',
+           'modifyby'    :'person name of last modified entity',
+           'name'        :'name of entity',
+           'path'        :'path of entity',
+           'number'      :'number of entity',
+           'version'     :'version of entity',
+           'numevents'   :'number of events',
+           'numlumi'     :'number of lumi sections',
+           'starttime'   :'start time of entity',
+           'endtime'     :'end time of entity',
+           'size'        :'size of entity',
+           'type'        :'type of entity',
+           'convener'    :'convener name',
+       }
+       # user help
+       self.tooltip={
+           'dataset'     :'fully qualified dataset path or pattern, e.g. /DaqTest-A/Online/RAW.',
+           'block'       :'block name, including block UID',
+           'file'        :'logical file name name or pattern',
+           'release'     :'software release, e.g. CMSSW_1_7_1',
+           'run'         :'run number or run range, e.g. 34850-34860',
+           'lumi'        :'luminosity section number or range of lumi section numbers',
+           'site'        :'storage element name or pattern, e.g. srm.cern.ch',
+           'primds'      :'primary dataset name or pattern, e.g. DaqTest-A',
+           'procds'      :'processed dataset name or pattern, e.g. Online.',
+           'tier'        :'data tier name or pattern, e.g. RAW',
+           'ads'         :'analysis dataset name, e.g. MyTopAnalysis',
+           'group'       :'physics group name, e.g. Higgs',
        }
        # associate between keyword-names and DBS tables
        self.tableName={
@@ -88,10 +112,8 @@ class DDRules:
            'primds'      :'PrimaryDataset',
            'procds'      :'ProcessedDataset',
            'tier'        :'DataTier',
-           'adsname'     :'AnalisisDataset',
-           'adspath'     :'AnalisisDataset',
-           'adsversion'  :'AnalisisDataset',
-           'physicsgroup':'PhysicsGroup',
+           'ads'         :'AnalisisDataset',
+           'group'       :'PhysicsGroup',
        }
        # use lowercase table names since SQLAlchemy returns them in lower-case
        self.tableWeights={
@@ -104,7 +126,8 @@ class DDRules:
            'primarydataset':1,
            'processeddataset':1,
            'datatier':1,
-           'physicsgroup':1,
+           'group':1,
+           'ads':1,
        }
        self.colName={
            'dataset'     :'Path',
@@ -117,130 +140,207 @@ class DDRules:
            'primds'      :'Name',
            'procds'      :'Name',
            'tier'        :'Name',
-           'adsname'     :'Name',
-           'adspath'     :'Path',
-           'adsversion'  :'Version',
-           'physicsgroup':'Name',
+           'ads'         :'Name',
+           'group'       :'PhysicsGroupName',
+       }
+       # mapping of member functions to real DBS col names, if dict is provided in a value
+       # its keys specify the key for DBS table to whcih member function is applicable
+       self.colMember = {
+           'name'        :{'dataset':'Name','primds':'Name','procds':'Name','ads':'Name','block':'Name','file':'LogicalFileName','tier':'Name','group':'PhysicsGroupName'},
+           'number'      :{'run':'RunNumber','lumi':'LumiSectionNumber'},
            'createdate'  :'CreationDate',
            'modifydate'  :'LastModificationDate',
            'createby'    :'CreatedBy',
            'modifyby'    :'LastModifiedBy',
+           'size'        :{'file':'FileSize','block':'BlockSize'},
+           'numevents'   :{'file':'NumberOfEvents','run':'NumberOfEvents'},
+           'starttime'   :{'run':'StartOfRun','lumi':'LumiStartTime'},
+           'endtime'     :{'run':'EndOfRun','lumi':'LumiEndTime'},
+           'numlumi'     :{'lumi':'NumberOfLumiSections'},
+           'type'        :{'file':'FileType.Type','primds':'PrimDSType.Type','ads':'AnalysisDSType.Type'},
+           'convener'    :'PhysicsGroupConvener',
+       }
+       self.colFunc = {
+           'latestrelease' :['file'],
+           'parentrelease' :['file'],
+           'childrelease'  :['file'],
+           'intluminosity' :['lumi','run','procds','dataset'],
+           'dataquality'   :['run','lumi'],
+           'numruns'       :['ads','procds','dataset'],
+           'numfiles'      :['ads','procds','dataset','block','run'],
+           'numblocks'     :['ads','procds','dataset','run'],
+           'findevent'     :['lumi'],
+           'today'         :['primds','procds','ads','block','file','release'],
        }
        # mapping from keyword to keyword pairs and DBS DB paths
        self.dbs_map={
            # to dataset
-           ('dataset','dataset'):['Block_Path2Block_Path'],
-           ('block','dataset'):['Block_Name2Block_Path'],
-           ('file','dataset'):['Files_LogicalFileName2Block_Path'],
-           ('release','dataset'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
-           ('run','dataset'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
-           ('lumi','dataset'):['LumiSection_LumiSectionNumber2Runs_ID','Runs_ID2ProcessedDataset_ID2Block_Path'],
-           ('site','dataset'):['StorageElement_SEName2Block_Path'],
-           ('primds','dataset'):['PrimaryDataset_Name2Block_Path'],
-           ('procds','dataset'):['ProcessedDataset_Name2Block_Path'],
-           ('tier','dataset'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Block_Path'],
+           ('dataset','dataset'):['Block.Path2Block.Path'],
+           ('block','dataset'):['Block.Name2Block.Path'],
+           ('file','dataset'):['Files.LogicalFileName2Block.Path'],
+           ('release','dataset'):['AppVersion.Version2ProcessedDataset.ID','ProcessedDataset.ID2Block.Path'],
+           ('run','dataset'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2Block.Path'],
+           ('lumi','dataset'):['LumiSection.LumiSectionNumber2Runs.ID','Runs.ID2ProcessedDataset.ID2Block.Path'],
+           ('site','dataset'):['StorageElement.SEName2Block.Path'],
+           ('primds','dataset'):['PrimaryDataset.Name2Block.Path'],
+           ('procds','dataset'):['ProcessedDataset.Name2Block.Path'],
+           ('tier','dataset'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2Block.Path'],
+           ('ads','dataset'):['AnalysisDataset.Name2Block.Path'],
+           ('group','dataset'):['PhysicsGroup.PhysicsGroupName2Block.Path'],
            # to block
-           ('dataset','block'):['Block_Path2Block_Name'],
-           ('block','block'):['Block_Name2Block_Name'],
-           ('file','block'):['Files_LogicalFileName2Block_Name'],
-           ('release','block'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
-           ('run','block'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
-           ('lumi','block'):['LumiSection_LumiSectionNumber2Runs_ID','Runs_ID2ProcessedDataset_ID2Block_Name'],
-           ('site','block'):['StorageElement_SEName2Block_Name'],
-           ('primds','block'):['PrimaryDataset_Name2Block_Name'],
-           ('procds','block'):['ProcessedDataset_Name2Block_Name'],
-           ('tier','block'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Block_Name'],
+           ('dataset','block'):['Block.Path2Block.Name'],
+           ('block','block'):['Block.Name2Block.Name'],
+           ('file','block'):['Files.LogicalFileName2Block.Name'],
+           ('release','block'):['AppVersion.Version2ProcessedDataset.ID','ProcessedDataset.ID2Block.Name'],
+           ('run','block'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2Block.Name'],
+           ('lumi','block'):['LumiSection.LumiSectionNumber2Runs.ID','Runs.ID2ProcessedDataset.ID2Block.Name'],
+           ('site','block'):['StorageElement.SEName2Block.Name'],
+           ('primds','block'):['PrimaryDataset.Name2Block.Name'],
+           ('procds','block'):['ProcessedDataset.Name2Block.Name'],
+           ('tier','block'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2Block.Name'],
+           ('ads','block'):['AnalysisDataset.Name2Block.Name'],
+           ('group','block'):['PhysicsGroup.PhysicsGroupName2Block.Name'],
            # to file
-           ('dataset','file'):['Block_Path2Files_LogicalFileName'],
-           ('block','file'):['Block_Name2Files_LogicalFileName'],
-           ('file','file'):['Files_LogicalFileName2Files_LogicalFileName'],
-           ('release','file'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Files_LogicalFileName'],
-#           ('release','file'):['AppVersion_Version2Files_LogicalFileName'],
-           ('run','file'):['Runs_RunNumber2Files_LogicalFileName'],
-           ('lumi','file'):['LumiSection_LumiSectionNumber2Files_LogicalFileName'],
-           ('site','file'):['StorageElement_SEName2Files_LogicalFileName'],
-           ('primds','file'):['PrimaryDatset_Name2Files_LogicalFileName'],
-           ('procds','file'):['ProcessedDataset_Name2Files_LogicalFileName'],
-           ('tier','file'):['DataTier_Name2Files_LogicalFileName'],
+           ('dataset','file'):['Block.Path2Files.LogicalFileName'],
+           ('block','file'):['Block.Name2Files.LogicalFileName'],
+           ('file','file'):['Files.LogicalFileName2Files.LogicalFileName'],
+           ('release','file'):['AppVersion.Version2ProcessedDataset.ID','ProcessedDataset.ID2Files.LogicalFileName'],
+           ('run','file'):['Runs.RunNumber2Files.LogicalFileName'],
+           ('lumi','file'):['LumiSection.LumiSectionNumber2Files.LogicalFileName'],
+           ('site','file'):['StorageElement.SEName2Files.LogicalFileName'],
+           ('primds','file'):['PrimaryDatset.Name2Files.LogicalFileName'],
+           ('procds','file'):['ProcessedDataset.Name2Files.LogicalFileName'],
+           ('tier','file'):['DataTier.Name2Files.LogicalFileName'],
+           ('ads','file'):['AnalysisDataset.Name2Files.LogicalFileName'],
+           ('group','file'):['PhysicsGroup.PhysicsGroupName2Files.LogicalFileName'],
            # to release
-           ('dataset','release'):['Block_Path2AppVersion_Version'],
-           ('block','release'):['Block_Name2AppVersion_Version'],
-           ('file','release'):['Files_LogicalFileName2AppVersion_Version'],
-           ('release','release'):['AppVersion_Version2AppVersion_Version'],
-           ('run','release'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
-           ('lumi','release'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2AppVersion_Version'],
-           ('site','release'):['StorageElement_SEName2AppVersion_Version'],
-           ('primds','release'):['PrimaryDataset_Name2AppVersion_Version'],
-           ('procds','release'):['ProcessedDataset_Name2AppVersion_Version'],
-           ('tier','release'):['DataTier_Name2AppVersion_Version'],
+           ('dataset','release'):['Block.Path2AppVersion.Version'],
+           ('block','release'):['Block.Name2AppVersion.Version'],
+           ('file','release'):['Files.LogicalFileName2AppVersion.Version'],
+           ('release','release'):['AppVersion.Version2AppVersion.Version'],
+           ('run','release'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2AppVersion.Version'],
+           ('lumi','release'):['LumiSection.LumiSectionNumber2ProcessedDataset.ID','ProcessedDataset.ID2AppVersion.Version'],
+           ('site','release'):['StorageElement.SEName2AppVersion.Version'],
+           ('primds','release'):['PrimaryDataset.Name2AppVersion.Version'],
+           ('procds','release'):['ProcessedDataset.Name2AppVersion.Version'],
+           ('tier','release'):['DataTier.Name2AppVersion.Version'],
+           ('ads','release'):['AnalysisDataset.Name2AppVersion.Version'],
+           ('group','release'):['PhysicsGroup.PhysicsGroupName2AppVersion.Version'],
            # to run
-           ('dataset','run'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('block','run'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('file','run'):['Files_LogicalFileName2Runs_RunNumber'],
-           ('release','run'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('run','run'):['Runs_RunNumber2Runs_RunNumber'],
-           ('lumi','run'):['LumiSection_LumiSectionNumber2Runs_RunNumber'],
-           ('site','run'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('primds','run'):['PrimaryDataset_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
-           ('procds','run'):['ProcessedDataset_Name2Runs_RunNumber'],
-           ('tier','run'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2Runs_RunNumber'],
+           ('dataset','run'):['Block.Path2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
+           ('block','run'):['Block.Name2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
+           ('file','run'):['Files.LogicalFileName2Runs.RunNumber'],
+           ('release','run'):['AppVersion.Version2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
+           ('run','run'):['Runs.RunNumber2Runs.RunNumber'],
+           ('lumi','run'):['LumiSection.LumiSectionNumber2Runs.RunNumber'],
+           ('site','run'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
+           ('primds','run'):['PrimaryDataset.Name2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
+           ('procds','run'):['ProcessedDataset.Name2Runs.RunNumber'],
+           ('tier','run'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
+           ('ads','run'):['AnalysisDataset.Name2Runs.RunNumber'],
+           ('group','run'):['PhysicsGroup.PhysicsGroupName2Runs.RunNumber'],
            # to lumi
-           ('dataset','lumi'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
-           ('block','lumi'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
-           ('file','lumi'):['Files_LogicalFileName2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
-           ('release','lumi'):['AppVersion_Version2ProcessedDataset_ID','ProcessedDataset_ID2Runs_ID','Runs_ID2LumiSection_LumiSectionNumber'],
-           ('run','lumi'):['Runs_RunNumber2LumiSection_LumiSectionNumber'],
-           ('lumi','lumi'):['LumiSection_LumiSectionNumber2LumiSection_LumiSectionNumber'],
-           ('site','lumi'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
-           ('primds','lumi'):['PrimaryDatset_Name2LumiSection_LumiSectionNumber'],
-           ('procds','lumi'):['ProcessedDataset_Name2LumiSection_LumiSectionNumber'],
-           ('tier','lumi'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2LumiSection_LumiSectionNumber'],
+           ('dataset','lumi'):['Block.Path2ProcessedDataset.ID','ProcessedDataset.ID2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
+           ('block','lumi'):['Block.Name2ProcessedDataset.ID','ProcessedDataset.ID2LumiSection.LumiSectionNumber'],
+           ('file','lumi'):['Files.LogicalFileName2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
+           ('release','lumi'):['AppVersion.Version2ProcessedDataset.ID','ProcessedDataset.ID2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
+           ('run','lumi'):['Runs.RunNumber2LumiSection.LumiSectionNumber'],
+           ('lumi','lumi'):['LumiSection.LumiSectionNumber2LumiSection.LumiSectionNumber'],
+           ('site','lumi'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2LumiSection.LumiSectionNumber'],
+           ('primds','lumi'):['PrimaryDatset.Name2LumiSection.LumiSectionNumber'],
+           ('procds','lumi'):['ProcessedDataset.Name2LumiSection.LumiSectionNumber'],
+           ('tier','lumi'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2LumiSection.LumiSectionNumber'],
+           ('ads','lumi'):['AnalysisDataset.Name2LumiSection.LumiSectionNumber'],
+           ('group','lumi'):['PhysicsGroup.PhysicsGroupName2LumiSection.LumiSectionNumber'],
            # to site
-           ('dataset','site'):['Block_Path2StorageElement_SEName'],
-           ('block','site'):['Block_Name2StorageElement_SEName'],
-           ('file','site'):['Files_LogicalFileName2StorageElement_SEName'],
-           ('release','site'):['AppVersion_Version2StorageElement_SEName'],
-           ('run','site'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
-           ('lumi','site'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
-           ('site','site'):['StorageElement_SEName2StorageElement_SEName'],
-           ('primds','site'):['PrimaryDataset_Name2StorageElement_SEName'],
-           ('procds','site'):['ProcessedDataset_Name2StorageElement_SEName'],
-           ('tier','site'):['DataTier_Name2ProcessedDataset_ID','ProcessedDataset_ID2StorageElement_SEName'],
+           ('dataset','site'):['Block.Path2StorageElement.SEName'],
+           ('block','site'):['Block.Name2StorageElement.SEName'],
+           ('file','site'):['Files.LogicalFileName2StorageElement.SEName'],
+           ('release','site'):['AppVersion.Version2StorageElement.SEName'],
+           ('run','site'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2StorageElement.SEName'],
+           ('lumi','site'):['LumiSection.LumiSectionNumber2ProcessedDataset.ID','ProcessedDataset.ID2StorageElement.SEName'],
+           ('site','site'):['StorageElement.SEName2StorageElement.SEName'],
+           ('primds','site'):['PrimaryDataset.Name2StorageElement.SEName'],
+           ('procds','site'):['ProcessedDataset.Name2StorageElement.SEName'],
+           ('tier','site'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2StorageElement.SEName'],
+           ('ads','site'):['AnalysisDataset.Name2StorageElement.SEName'],
+           ('group','site'):['PhysicsGroup.PhysicsGroupName2StorageElement.SEName'],
            # to primds
-           ('dataset','primds'):['Block_Path2PrimaryDataset_Name'],
-           ('block','primds'):['Block_Name2PrimaryDataset_Name'],
-           ('file','primds'):['Files_LogicalFileName2PrimaryDataset_Name'],
-           ('release','primds'):['AppVersion_Version2PrimaryDataset_Name'],
-           ('run','primds'):['Runs_RunNumber2PrimaryDataset_Name'],
-           ('lumi','primds'):['LumiSection_LumiSectionNumber2PrimaryDataset_Name'],
-           ('site','primds'):['StorageElement_SEName2PrimaryDataset_Name'],
-           ('primds','primds'):['PrimaryDataset_Name2PrimaryDataset_Name'],
-           ('procds','primds'):['ProcessedDataset_Name2PrimaryDataset_Name'],
-           ('tier','primds'):['DataTier_Name2PrimaryDataset_Name'],
+           ('dataset','primds'):['Block.Path2PrimaryDataset.Name'],
+           ('block','primds'):['Block.Name2PrimaryDataset.Name'],
+           ('file','primds'):['Files.LogicalFileName2PrimaryDataset.Name'],
+           ('release','primds'):['AppVersion.Version2PrimaryDataset.Name'],
+           ('run','primds'):['Runs.RunNumber2PrimaryDataset.Name'],
+           ('lumi','primds'):['LumiSection.LumiSectionNumber2PrimaryDataset.Name'],
+           ('site','primds'):['StorageElement.SEName2PrimaryDataset.Name'],
+           ('primds','primds'):['PrimaryDataset.Name2PrimaryDataset.Name'],
+           ('procds','primds'):['ProcessedDataset.Name2PrimaryDataset.Name'],
+           ('tier','primds'):['DataTier.Name2PrimaryDataset.Name'],
+           ('ads','primds'):['AnalysisDataset.Name2PrimaryDataset.Name'],
+           ('group','primds'):['PhysicsGroup.PhysicsGroupName2PrimaryDataset.Name'],
            # to procds
-           ('dataset','procds'):['Block_Path2ProcessedDataset_Name'],
-           ('block','procds'):['Block_Name2ProcessedDataset_Name'],
-           ('file','procds'):['Files_LogicalFileName2ProcessedDataset_Name'],
-           ('release','procds'):['AppVersion_Version2ProcessedDataset_Name'],
-           ('run','procds'):['Runs_RunNumber2ProcessedDataset_Name'],
-           ('lumi','procds'):['LumiSection_LumiSectionNumber2ProcessedDataset_Name'],
-           ('site','procds'):['StorageElement_SEName2ProcessedDataset_Name'],
-           ('primds','procds'):['PrimaryDataset_Name2ProcessedDataset_Name'],
-           ('procds','procds'):['ProcessedDataset_Name2ProcessedDataset_Name'],
-           ('tier','procds'):['DataTier_Name2ProcessedDataset_Name'],
+           ('dataset','procds'):['Block.Path2ProcessedDataset.Name'],
+           ('block','procds'):['Block.Name2ProcessedDataset.Name'],
+           ('file','procds'):['Files.LogicalFileName2ProcessedDataset.Name'],
+           ('release','procds'):['AppVersion.Version2ProcessedDataset.Name'],
+           ('run','procds'):['Runs.RunNumber2ProcessedDataset.Name'],
+           ('lumi','procds'):['LumiSection.LumiSectionNumber2ProcessedDataset.Name'],
+           ('site','procds'):['StorageElement.SEName2ProcessedDataset.Name'],
+           ('primds','procds'):['PrimaryDataset.Name2ProcessedDataset.Name'],
+           ('procds','procds'):['ProcessedDataset.Name2ProcessedDataset.Name'],
+           ('tier','procds'):['DataTier.Name2ProcessedDataset.Name'],
+           ('ads','procds'):['AnalysisDataset.Name2ProcessedDataset.Name'],
+           ('group','procds'):['PhysicsGroup.PhysicsGroupName2ProcessedDataset.Name'],
            # to tier
-           ('dataset','tier'):['Block_Path2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
-           ('block','tier'):['Block_Name2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
-           ('file','tier'):['Files_LogicalFileName2DataTier_Name'],
-           ('release','tier'):['AppVersion_Version2DataTier_Name'],
-           ('run','tier'):['Runs_RunNumber2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
-           ('lumi','tier'):['LumiSection_LumiSectionNumber2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
-           ('site','tier'):['StorageElement_SEName2ProcessedDataset_ID','ProcessedDataset_ID2DataTier_Name'],
-           ('primds','tier'):['PrimaryDataset_Name2DataTier_Name'],
-           ('procds','tier'):['ProcessedDataset_Name2DataTier_Name'],
-           ('tier','tier'):['DataTier_Name2DataTier_Name'],
+           ('dataset','tier'):['Block.Path2ProcessedDataset.ID','ProcessedDataset.ID2DataTier.Name'],
+           ('block','tier'):['Block.Name2ProcessedDataset.ID','ProcessedDataset.ID2DataTier.Name'],
+           ('file','tier'):['Files.LogicalFileName2DataTier.Name'],
+           ('release','tier'):['AppVersion.Version2DataTier.Name'],
+           ('run','tier'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2DataTier.Name'],
+           ('lumi','tier'):['LumiSection.LumiSectionNumber2ProcessedDataset.ID','ProcessedDataset.ID2DataTier.Name'],
+           ('site','tier'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2DataTier.Name'],
+           ('primds','tier'):['PrimaryDataset.Name2DataTier.Name'],
+           ('procds','tier'):['ProcessedDataset.Name2DataTier.Name'],
+           ('tier','tier'):['DataTier.Name2DataTier.Name'],
+           ('ads','tier'):['AnalysisDataset.Name2DataTier.Name'],
+           ('group','tier'):['PhysicsGroup.PhysicsGroupName2DataTier.Name'],
+           # to ads
+           ('dataset','ads'):['Block.Path2AnalysisDataset.Name'],
+           ('block','ads'):['Block.Name2AnalysisDataset.Name'],
+           ('file','ads'):['Files.LogicalFileName2AnalysisDataset.Name'],
+           ('release','ads'):['AppVersion.Version2AnalysisDataset.Name'],
+           ('run','ads'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2AnalysisDataset.Name'],
+           ('lumi','ads'):['LumiSection.LumiSectionNumber2AnalysisDataset.Name'],
+           ('site','ads'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2AnalysisDataset.Name'],
+           ('primds','ads'):['PrimaryDataset.Name2AnalysisDataset.Name'],
+           ('procds','ads'):['ProcessedDataset.Name2AnalysisDataset.Name'],
+           ('ads','ads'):['AnalysisDataset.Name2AnalysisDataset.Name'],
+           ('group','ads'):['PhysicsGroup.PhysicsGroupName2AnalysisDataset.Name'],
+           # to group
+           ('dataset','group'):['Block.Path2PhysicsGroup.PhysicsGroupName'],
+           ('block','group'):['Block.Name2PhysicsGroup.PhysicsGroupName'],
+           ('file','group'):['Files.LogicalFileName2PhysicsGroup.PhysicsGroupName'],
+           ('release','group'):['AppVersion.Version2PhysicsGroup.PhysicsGroupName'],
+           ('run','group'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2PhysicsGroup.PhysicsGroupName'],
+           ('lumi','group'):['LumiSection.LumiSectionNumber2PhysicsGroup.PhysicsGroupName'],
+           ('site','group'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2PhysicsGroup.PhysicsGroupName'],
+           ('primds','group'):['PrimaryDataset.Name2PhysicsGroup.PhysicsGroupName'],
+           ('procds','group'):['ProcessedDataset.Name2PhysicsGroup.PhysicsGroupName'],
+           ('group','group'):['PhysicsGroup.PhysicsGroupName2PhysicsGroup.PhysicsGroupName'],
+           ('group','group'):['PhysicsGroup.PhysicsGroupName2PhysicsGroup.PhysicsGroupName'],
        }
-       self.keywords=self.colName.keys()
+       self.keywords=list(self.colName.keys())
+       keywords=[]
+       for m in self.colMember.keys():
+           if type(self.colMember[m]) is types.DictType:
+              for k in self.colMember[m].keys():
+                  newKey = "%s.%s"%(k,m)
+                  keywords.append(newKey)
+           else:
+              for key in self.keywords:
+                  newKey = "%s.%s"%(key,m)
+                  keywords.append(newKey)
+       self.keywords+=keywords
        self.operators=constrainList()
        # list of supported constrain operator, order is matter, since we walk through
        # the list to find a match. Example, if pattern is '<=' and order is <,<= we will
@@ -309,11 +409,9 @@ class DDRules:
                   for name in cmsNames.values():
                       if type(name) is types.StringType and name.find(item)!=-1:
                          if not i2:
-#                            i2+=" site %s %s "%(op,swapedDict[name])
                             i2+=" site = %s "%swapedDict[name]
                          else:
                             i2+=" or site = %s "%swapedDict[name]
-#                            i2+=" or site %s %s "%(op,swapedDict[name])
                   input=i1+i2
                   if len(iList)>idx:
                      input+=' '.join(iList[idx+1:])
@@ -350,12 +448,18 @@ class DDRules:
                  msg="Unknown operator '%s'"%op
                  raise self.formatErrorInInput(input,conditions[i+1],msg)
               val= conditions[i+3]
+              if key.find("createdate")!=-1 and not self.yyyymmdd.match(val):
+                 msg="Creation date should be supplied in a form of YYYYMMDD"
+                 raise self.formatErrorInInput(input,conditions[i+3],msg)
               return self.checkConditions(input,conditions[i+4:])
            else:
               if not self.operators.count(op): 
                  msg="Unknown operator '%s'"%op
                  raise self.formatErrorInInput(input,conditions[i+1],msg)
               val = conditions[i+2]
+              if key.find("createdate")!=-1 and not self.yyyymmdd.match(val):
+                 msg="Creation date should be supplied in a form of YYYYMMDD"
+                 raise self.formatErrorInInput(input,conditions[i+2],msg)
               return self.checkConditions(input,conditions[i+3:])
 
    def preParseInput(self,input):
@@ -397,8 +501,6 @@ class DDRules:
                                   item=item[:j1]+' '+item[j1:j2+len(op)]+' '+item[j2+len(op):]
                                else:
                                   item=item.replace(op," %s "%op)
-#                            else:
-#                               item=item.replace(op," %s "%op)
                   isplit[i]=item
        except:
            traceback.print_exc()
@@ -444,6 +546,26 @@ class DDRules:
        input = self.preParseCMSNames(input)
        return input
     
+   def getTabCol(self,key):
+       if key.find(".")!=-1:
+          k,m = key.split(".")
+          tab = self.tableName[k]
+          if self.colMember.keys().count(m):
+             col = self.colMember[m]
+             if type(col) is types.DictType:
+                col = col[k]
+          elif self.colFunc.keys().count(m) and self.colFunc.values().count(k):
+             col = "self.makeFunc(%s)"%m
+          else:
+             raise "ERROR: unknown attribute member '%s'"%key
+       else:
+          tab = self.tableName[key]
+          col = self.colName[key]
+       # exception, in case of type, I used full tab.col notation in colMember
+       if col.find(".")!=-1:
+          tab,col=col.split(".")
+       return "%s.%s"%(tab,col)
+
    def parseInput(self,input,backEnd,sortName,sortOrder,case):
        _input="%s"%input
        idx=input.lower().find('where')
@@ -500,19 +622,19 @@ class DDRules:
                  sKey=key.replace("(","").replace(")","").replace(funcFound,"").strip()
                  if not self.keywords.count(sKey):
                     raise "Fail to parse select expression, invalid key='%s'"%sKey
-                 tabName=self.tableName[sKey]
-                 colName=self.colName[sKey]
+                 _tabCol=self.getTabCol(sKey)
+                 tabName,colName=_tabCol.split(".")
                  if funcFound=="total":
                     if colName.lower().find("numberof")!=-1 or colName.lower().find("size")!=-1:
-                       fDict["%s.%s"%(tabName,colName)]="sum"
+                       fDict[_tabCol]="sum"
                     else:
-                       fDict["%s.%s"%(tabName,colName)]="count"
+                       fDict[_tabCol]="count"
                  else:
-                    fDict["%s.%s"%(tabName,colName)]=funcFound
+                    fDict[_tabCol]=funcFound
                  key=sKey
               if not self.keywords.count(key):
                  raise "Fail to parse select expression, invalid key='%s'"%key
-              sKey="%s.%s"%(self.tableName[key],self.colName[key])
+              sKey=self.getTabCol(key)
               sList.append(sKey)
 
           toSelect=','.join(sList)
@@ -520,8 +642,8 @@ class DDRules:
               key,op,rval=val.split()
               if not self.keywords.count(key):
                  raise "Fail to parse where clause expression, invalid key='%s'"%key
-              input=input.replace(key,"%s.%s"%(self.tableName[key],self.colName[key]))
-              _select="%s.%s"%(self.tableName[key],self.colName[key])
+              input=input.replace(key,self.getTabCol(key))
+              _select=self.getTabCol(key)
               _toJoin+=",%s"%key
               if not sList.count(_select):
                  sList.append(_select)
@@ -532,7 +654,7 @@ class DDRules:
              toJoin+=",FileRunLumi.ID"
 
           if self.keywords.count(sortName):
-             sortName="%s.%s"%(self.tableName[sortName],self.colName[sortName])
+             sortName=self.getTabCol(sortName)
           else:
              sortName=sList[0]
           fCall="self.makeJoinQuery(toSelect='%s',toJoin='%s',wClause='%s',sortName='%s',sortOrder='%s',case='%s',funcDict=%s)"%(toSelect,toJoin,input,sortName,sortOrder,case,fDict)
@@ -567,6 +689,13 @@ class DDRules:
        return self.parseObject(selKey,sortName,sortOrder,[''.join(words)],case)
 
    def parseObject(self,selKey,sortName,sortOrder,input,case):
+       """
+          Create a function call for DDQueryMaker. selKey is an input set of keys which we will
+          look-up. The input is a list of conditions which will be applied to the query in a
+          form of key:rval. Here rval will contain operator to be used, e.g. >200.
+          Either look-up keys or conditions keys can be in form of a.b (table.col) or just
+          keywords known to DD, e.g. dataset, file, run, etc.
+       """
        words = input
        _words= []
        _fDict= {}
@@ -581,15 +710,35 @@ class DDRules:
                  funcFound=DDUtil.findKeyInAList(self.functions,selKey)
                  if funcFound:
                     selKey=selKey.replace("(","").replace(")","").replace(funcFound,"").strip()
-                    colName=self.colName[selKey]
+                    cName=self.getTabCol[selKey]
                     if funcFound=="total":
-                       if colName.lower().find("numberof")!=-1 or colName.lower().find("size")!=-1:
-                          _fDict[colName]="sum"
+                       if cName.lower().find("numberof")!=-1 or cName.lower().find("size")!=-1:
+                          _fDict[cName]="sum"
                        else:
-                          _fDict[colName]="count"
+                          _fDict[cName]="count"
                     else:
-                       _fDict[colName]=funcFound
-                 fList = self.dbs_map[(f,selKey)]
+                       _fDict[cName]=funcFound
+                 if selKey.find(".")!=-1:
+                    sKey,keyOut = selKey.split(".")
+                 else:
+                    sKey=selKey
+                 ################ 
+                 # TODO: if f is in form a.b I need to check for functions
+                 if f.find(".")!=-1:
+                    fTabCol = self.getTabCol(f)
+                    fTab,fCol = fTabCol.split(".")
+                    fList = self.dbs_map[(fTab.lower(),sKey)]
+                    firstEl= fList[0]
+                    firstEl= '2'.join([fTabCol]+firstEl.split("2")[1:])
+                    fList[0]=firstEl
+                 else:
+                    fList = self.dbs_map[(f,sKey)]
+                 if selKey.find(".")!=-1:
+                    sKey,keyOut = selKey.split(".")
+                    lastEl= fList[-1]
+                    lastEl= '2'.join(lastEl.split("2")[:-1]+[self.getTabCol(selKey)])
+                    fList[-1]=lastEl
+                 ################ 
                  _call = ""
                  count = 0
                  _fList=list(fList)
@@ -608,13 +757,13 @@ class DDRules:
                  _words.append(_call)
               except:
                  traceback.print_exc()
-                 raise "Unable to parse your input, selKey='%s', parse it as '%s', list of known keywords %s, list of supported operators %s"%(selKey,words,str(self.dbs_map.keys()),self.operators)
+                 raise "ERROR: unable to parse your input: '%s'\nparse it as '%s'\n### List of known keywords %s\n### List of supported operators %s"%(selKey,words,str(self.keywords),self.operators)
            else:
                  traceback.print_exc()
                  raise "Keyword '%s' does not contain separator \":\"."%w
        eString = ' '.join(_words)
        if self.verbose:
-          print "\n+++ Translate user input:\n%s\n+++ into the following expression:\n%s\n"%(input,eString)
+          print "\n+++ Translate iList:\n%s\n\n%s\n"%(input,eString)
        return eString
 
 #
@@ -622,7 +771,14 @@ class DDRules:
 #
 if __name__ == "__main__":
     aSearch = DDRules(verbose=1)
+    print aSearch.keywords
     aSearch.parser("find dataset where dataset like *Online*")
+    aSearch.parser("find dataset.createby where dataset=QCD*")
+    aSearch.parser("find dataset where dataset.createby>20080423")
+    try:
+        aSearch.parser("find dataset where dataset.createdate>200804238")
+    except: pass
+    aSearch.parser("find dataset.createby where dataset.createdate>20080423")
     aSearch.parser("(dataset=/a/b/c and block=123) or run >= 12345 dataset =bla or (dataset= /c/d/e or run=123)")
     aSearch.parser("find primds where (dataset like *Online* or dataset not like *RelVal* ) and release> CMSSW_1_7 ")
     try:
