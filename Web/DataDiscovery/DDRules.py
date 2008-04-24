@@ -430,7 +430,7 @@ class DDRules:
        return msg
 
    def checkConditions(self,input,conditions):
-#       print conditions
+#       print "###CONDITIONS",input,conditions
        for i in xrange(0,len(conditions)):
            if ['and','or','(',')'].count(conditions[i]):
               return self.checkConditions(input,conditions[i+1:])
@@ -448,19 +448,26 @@ class DDRules:
                  msg="Unknown operator '%s'"%op
                  raise self.formatErrorInInput(input,conditions[i+1],msg)
               val= conditions[i+3]
-              if key.find("createdate")!=-1 and not self.yyyymmdd.match(val):
-                 msg="Creation date should be supplied in a form of YYYYMMDD"
-                 raise self.formatErrorInInput(input,conditions[i+3],msg)
+              if key.find("createdate")!=-1:
+                 if not self.yyyymmdd.match(val):
+                    msg="Creation date should be supplied in a form of YYYYMMDD"
+                    raise self.formatErrorInInput(input,conditions[i+3],msg)
+                 else:
+                    input=input.replace(val,str(DDUtil.convertTimeToEpoch(val)))
               return self.checkConditions(input,conditions[i+4:])
            else:
               if not self.operators.count(op): 
                  msg="Unknown operator '%s'"%op
                  raise self.formatErrorInInput(input,conditions[i+1],msg)
               val = conditions[i+2]
-              if key.find("createdate")!=-1 and not self.yyyymmdd.match(val):
-                 msg="Creation date should be supplied in a form of YYYYMMDD"
-                 raise self.formatErrorInInput(input,conditions[i+2],msg)
+              if key.find("createdate")!=-1:
+                 if not self.yyyymmdd.match(val):
+                    msg="Creation date should be supplied in a form of YYYYMMDD"
+                    raise self.formatErrorInInput(input,conditions[i+2],msg)
+                 else:
+                    input=input.replace(val,str(DDUtil.convertTimeToEpoch(val)))
               return self.checkConditions(input,conditions[i+3:])
+       return input
 
    def preParseInput(self,input):
        if len(input.split())==1 and input.find("=")==-1 and input.find(">")==-1 and input.find("<")==-1:
@@ -541,7 +548,7 @@ class DDRules:
           conditions=input.split()
        else:
           conditions=input[widx+len(" where "):].split()
-       self.checkConditions(input,conditions)
+       input = self.checkConditions(input,conditions)
 
        input = self.preParseCMSNames(input)
        return input

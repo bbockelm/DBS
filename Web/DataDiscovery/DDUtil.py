@@ -42,6 +42,13 @@ def inputParser(input,keys):
            words.append(w.strip())
     return words
 
+def convertTimeToEpoch(tStamp):
+    #http://www.epochconverter.com/
+    yyyymmdd=re.compile("^\d{8}$")
+    if not yyyymmdd.match(tStamp):
+       raise "convertTimeToEpoch: date should be supplied in a form of YYYYMMDD"
+    return int(time.mktime(time.strptime(tStamp, '%Y%m%d')))
+
 def findKeyInAList(_list,_key):
     for item in _list:
         idx=_key.find(item)
