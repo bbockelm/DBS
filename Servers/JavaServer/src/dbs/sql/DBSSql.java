@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.154 $"
- $Id: DBSSql.java,v 1.154 2008/04/23 18:35:07 afaq Exp $"
+ $Revision: 1.155 $"
+ $Id: DBSSql.java,v 1.155 2008/04/23 22:22:47 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -460,12 +460,142 @@ public class DBSSql {
 
 
 
-/*
         public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
+
+                String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
+                                        +"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
+
+                String good_clause="";
+                String bad_clause="";
+                String unknown_clause="";
+                String rlsql="";
+
+                java.util.Vector bindvals = new java.util.Vector();
+                java.util.Vector rbindvals = new java.util.Vector();
+                java.util.Vector subSys = new java.util.Vector();
+
+                int goodSysCount = 0;
+                int badSysCount = 0;
+                int unknownSysCount = 0;
+		int firstrun=0;
+
+
+		String[] key_vals = query.split("&");
+     		for (int i=0; i<key_vals.length; i++) {
+			String[] key_val = key_vals[i].split("=");
+			if (key_val[0].equals("RunNumber")) {
+				if (firstrun==0) {
+                                                rlsql += " (select ID from Runs where RunNumber in (?";
+                                                rbindvals.add(key_val[1]);
+						firstrun=1;
+                                        }
+                                        else {
+                                                rlsql += " ,?";
+                                                rbindvals.add(key_val[1]);
+                                        }
+			}
+			
+			if (!subSys.contains(key_vals[i]))
+				subSys.add(key_vals[i]);
+		}
+		
+                if (!DBSUtil.isNull(rlsql)) rlsql += ") )";
+
+                                //Loop over each item and make good, bad, unknown queries
+                                for (int j = 0; j < subSys.size() ; ++j) {
+					String[] key_val = key_vals[j].split("=");
+                                        String subsys=key_val[0];
+                                        String value=key_val[1];
+
+                                        if (j == 0) {
+                                                run_sql += " where ";
+                                        }
+
+                                        if (value.equals("GOOD")) {
+                                                if ( goodSysCount == 0 ) {
+                                                        if (!DBSUtil.isNull(rlsql))  {
+                                                                good_clause += " RQ.Run in " + rlsql + " AND ";
+                                                                bindvals.addAll(rbindvals);
+                                                        }
+                                                        good_clause += " QV.Value='GOOD' and SS.Name in (?";
+                                                        bindvals.add(subsys);
+                                                        goodSysCount++;
+
+                                                } else {
+                                                        good_clause += ",?";
+                                                        bindvals.add(subsys);
+                                                        goodSysCount++;
+                                                }
+                                        }
+
+
+
+                                        if (value.equals("BAD")) {
+                                                if ( badSysCount == 0 ) {
+                                                        if (!DBSUtil.isNull(rlsql))  {
+                                                                bad_clause += " RQ.Run in " + rlsql + " AND ";
+                                                                bindvals.addAll(rbindvals);
+                                                        }
+                                                        bad_clause += " QV.Value='BAD' and SS.Name in (?";
+                                                        bindvals.add(subsys);
+                                                        badSysCount++;
+
+                                                } else {
+                                                        bad_clause += ",?";
+                                                        bindvals.add(subsys);
+                                                        badSysCount++;
+                                                }
+                                        }
+
+                                        if (value.equals("UNKNOWN")) {
+                                                if ( unknownSysCount == 0 ) {
+                                                        if (!DBSUtil.isNull(rlsql))  {
+                                                                unknown_clause += " RQ.Run in " + rlsql + " AND ";
+                                                                bindvals.addAll(rbindvals);
+                                                        }
+                                                        unknown_clause += " QV.Value='UNKNOWN' and SS.Name in (?";
+                                                        bindvals.add(subsys);
+                                                        unknownSysCount++;
+
+                                                } else {
+                                                        unknown_clause += ",?";
+                                                        bindvals.add(subsys);
+                                                        unknownSysCount++;
+                                                }
+                                        }
+
+                                }
+
+                        if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)="+goodSysCount;
+                        if (!DBSUtil.isNull(bad_clause)) bad_clause+=") group by RQ.Run having count(*)="+badSysCount;
+                        if (!DBSUtil.isNull(unknown_clause)) unknown_clause+=") group by RQ.Run having count(*)="+unknownSysCount;
+
+                String sql = "";
+                if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause)
+                                && !DBSUtil.isNull(rlsql) )  {
+                        sql += rlsql + ")" ;
+                        bindvals.addAll(rbindvals);
+                }
+
+                else {
+                        if (!DBSUtil.isNull(good_clause)) sql += run_sql + good_clause ;
+                        if (!DBSUtil.isNull(bad_clause)) sql += " UNION "+ run_sql + bad_clause ;
+                        if (!DBSUtil.isNull(unknown_clause)) sql += " UNION "+ run_sql + unknown_clause;
+                }
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+
+                int columnIndx = 1;
+                for (int i=0; i != bindvals.size(); ++i)
+                        ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+
+
 
 
 	}
-*/
 
 	/*********
 				//select Run from RunLumiQuality where DQValue=1 and 
