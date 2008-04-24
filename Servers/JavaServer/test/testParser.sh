@@ -49,6 +49,8 @@ executeQuery () {
 	$CMD query="find file.parent,file.parent, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
 	$CMD query="find procds.parent,procds.name  where procds.name like %Test% or procds.parent like %"
 	$CMD query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW  or dataset=/abc/Online/RAW"
+	$CMD query="find file where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
 }
-#$CMD query="find ls.id,file.id where dq = trigg=/CalPrivateGlobal-default/Online/RAW&abc=sec and dataset = /CalPrivateGlobal-default/Online/RAW" 
+#$CMD query="find ls.id,file.id where dq = Tracker_Global=GOOD&TIB_Local=BAD&TIB_DCS=UNKNOWN and dataset = /CalPrivateGlobal-default/Online/RAW" 
+#$CMD query="find file where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
 executeQuery

@@ -1,12 +1,14 @@
 package dbs.search.qb;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.Vector;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
 
 import dbs.search.parser.Constraint;
 import dbs.search.graph.GraphUtil;
+import dbs.sql.DBSSql;
 import dbs.util.Validate;
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.Edge;
@@ -427,7 +429,15 @@ public class QueryBuilder {
 
 	private String handleDQ(String val) throws Exception {
 		System.out.println("VAL is " + val);
-		String dqQuery = "";//call DQ function
+		ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, val);
+		String dqQuery = "";
+		if(sqlObj.size() == 2) {
+			dqQuery = (String)sqlObj.get(0);
+			Vector bindVals = (Vector)sqlObj.get(1);
+			
+			for(Object s: bindVals) bindValues.add((String)s);
+		}
+		//call DQ function
 		//List<String> bindValuesFromDQ = ; //Get from DQ function
 		//for(String s: bindValues) bindValues.add(s);
 		String query = " IN ( \n" + dqQuery + ")";

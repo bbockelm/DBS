@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.155 $"
- $Id: DBSSql.java,v 1.155 2008/04/23 22:22:47 afaq Exp $"
+ $Revision: 1.156 $"
+ $Id: DBSSql.java,v 1.156 2008/04/24 15:15:24 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -460,7 +460,8 @@ public class DBSSql {
 
 
 
-        public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
+        //public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
+        public static ArrayList listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
 
                 String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
                                         +"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
@@ -582,15 +583,19 @@ public class DBSSql {
                         if (!DBSUtil.isNull(bad_clause)) sql += " UNION "+ run_sql + bad_clause ;
                         if (!DBSUtil.isNull(unknown_clause)) sql += " UNION "+ run_sql + unknown_clause;
                 }
+		ArrayList toReturn = new ArrayList();
+		toReturn.add(sql);
+		toReturn.add(bindvals);
 
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                /*PreparedStatement ps = DBManagement.getStatement(conn, sql);
 
                 int columnIndx = 1;
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
-                return ps;
+                return ps;*/
+		return toReturn;
 
 
 
@@ -755,6 +760,9 @@ public class DBSSql {
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+		System.out.println("SQLLL"+sql);
+		
                 return ps;
 
 	}
