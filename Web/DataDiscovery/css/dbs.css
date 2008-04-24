@@ -1147,9 +1147,8 @@ table.sortable span.sortarrow {
 .float_aSearch_help {
   position: absolute; 
   left: 15%;
-  top: 80px; 
+  top: 140px; 
   height: 400px; 
-/*  width: 400pt; |+ on Safari better use pt, then px which doesn't work +|*/
   width: 75%;
   padding: 1em;
   overflow:auto;
@@ -1162,10 +1161,7 @@ table.sortable span.sortarrow {
   border-collapse: separate;
   color: #000000;
   background-color: #FFFFCC;
-
-/*  filter:alpha(opacity=80);   |+ Internet Explorer       +|*/
-/*  -moz-opacity:0.8;           |+ Mozilla 1.6 and below   +|*/
-/*  opacity: 0.8;               |+ newer Mozilla and CSS-3 +|*/
+  z-index: 3;
 }
 .float_yellow_box {
   position: absolute; 
