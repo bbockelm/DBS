@@ -33,14 +33,14 @@ public class KeyMap {
 		map.put("run.createdate", "Runs.CreationDate");
 		map.put("run.moddate", "Runs.LastModificationDate");
 		
-		map.put("ls.startevnum", "LumiSection.StartEventNumber");
-		map.put("ls.id", "LumiSection.ID");
-		map.put("ls.endevnum", "LumiSection.EndEventNumber");
-		map.put("ls.number", "LumiSection.LumiSectionNumber");
-		map.put("ls.starttime", "LumiSection.LumiStartTime");
-		map.put("ls.endtime", "LumiSection.LumiEndTime");
-		map.put("ls.createdate", "LumiSection.CreationDate");
-		map.put("ls.moddate", "LumiSection.LastModificationDate");
+		map.put("lumi.startevnum", "LumiSection.StartEventNumber");
+		map.put("lumi.id", "LumiSection.ID");
+		map.put("lumi.endevnum", "LumiSection.EndEventNumber");
+		map.put("lumi.number", "LumiSection.LumiSectionNumber");
+		map.put("lumi.starttime", "LumiSection.LumiStartTime");
+		map.put("lumi.endtime", "LumiSection.LumiEndTime");
+		map.put("lumi.createdate", "LumiSection.CreationDate");
+		map.put("lumi.moddate", "LumiSection.LastModificationDate");
 		
 		map.put("dq", "Runs");
 	}

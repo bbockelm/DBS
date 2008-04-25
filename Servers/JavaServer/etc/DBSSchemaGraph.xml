@@ -9,7 +9,7 @@
 	<node id="Runs" 			user="run" 		real="Runs" 				default="RunNumber"/>
 	<node id="Files" 			user="file" 		real="Files" 				default="LogicalFileName"/>
 	<node id="DataTier"	 		user="tier" 		real="DataTier" 			default="Name"/>
-	<node id="LumiSection" 			user="ls" 		real="LumiSection" 			default="LumiSectionNumber"/>
+	<node id="LumiSection" 			user="lumi" 		real="LumiSection" 			default="LumiSectionNumber"/>
 	<node id="AlgorithmConfig" 		user="algo" 		real="AlgorithmConfig" 			default="ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID"/>
 	<node id="AppFamily" 			user="family" 		real="AppFamily" 			default="FamilyName"/>
 	<node id="AppVersion"			user="release"		real="AppVersion" 			default="Version"/>
