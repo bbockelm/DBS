@@ -5327,6 +5327,12 @@ Save query as:
         except:
             traceback.print_exc()
             raise "aSearch require input query"
+        try:
+            self.ddrules.checkSyntax(userInput)
+        except:
+            msg ="<pre>%s</pre>"%getExcMessage(userMode)
+            page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+            return page
         userInput = userInput.replace(" path "," dataset ")
         for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
             userInput=userInput.replace(pair[0],pair[1])

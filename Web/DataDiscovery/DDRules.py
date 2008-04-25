@@ -429,6 +429,17 @@ class DDRules:
        msg+="\nPlease consult Query Language syntax in HELP section on Data Discovery page"
        return msg
 
+   def checkSyntax(self,input):
+       """QL syntax: find ... where ..."""
+       input=input.lower().strip()
+       msg="Your input doesn't match the QL syntax, please consult HELP section on Data Discovery page"
+       if input.find("find")==-1:
+          if input.find(" where ")!=-1:
+             raise msg
+       else:
+          if input[:4]!="find" or input.find(" where ")==-1:
+             raise msg
+          
    def checkConditions(self,input,conditions):
 #       print "###CONDITIONS",input,conditions
        for i in xrange(0,len(conditions)):
