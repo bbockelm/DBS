@@ -39,6 +39,7 @@ class DDRules:
        self.boolwords=['and','or','(',')','not','like']
        self.functions=['total','sum','count']
        self.yyyymmdd=re.compile('^\d{8}$')
+       self.pathMatch=re.compile("^\/[^/]+\/[^/]+\/[^/]+$")
        # mapping between keyword-names and DB views
        self.dbView ={
            'dataset'     :'datasetsummary',
@@ -482,6 +483,8 @@ class DDRules:
 
    def preParseInput(self,input):
        if len(input.split())==1 and input.find("=")==-1 and input.find(">")==-1 and input.find("<")==-1:
+          if not self.pathMatch.match(input) and input.find("*")==-1:
+             input="*%s*"%input
           if input.find("*")!=-1:
              input="find dataset where dataset like %s"%input
           else:
