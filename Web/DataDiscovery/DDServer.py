@@ -783,9 +783,10 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _analysis.exposed=True
 
-    def _advanced(self,dbsInst=DBSGLOBAL,userMode="user",msg=""):
+    def _advanced(self,dbsInst=DBSGLOBAL,userMode="user",msg="",**kwargs):
         try:
-            page = self.genTopHTML(intro=False,userMode=userMode)
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
+#            page = self.genTopHTML(intro=False,userMode=userMode)
             dbsList=list(self.dbsList)
             dbsList.remove(dbsInst)
             dbsList=[dbsInst]+dbsList
@@ -793,9 +794,18 @@ class DDServer(DDLogger,Controller):
             else:   userHelp=1
             nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':'','aSearchKeys':self.aSearchKeys()}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
+            page+="""<p class="sectionhead">ADVANCED KEYWORD SEARCH</p>"""
             page+= str(t)
             if msg:
                page+=msg
+            page+="""<hr class="dbs" />"""
+            # Navigator
+            auto=0
+            if kwargs.has_key('auto') and kwargs['auto']=='on':
+               auto=1
+            page+="""<p class="sectionhead">MENU-DRIVEN SEARCH</p>"""
+            page+= self.genEmptyUserNavigator(dbsInst,userMode,auto,navigator=1)
+            # end of Navigator
             page+= self.genBottomHTML()
             return page
         except:
@@ -1046,13 +1056,16 @@ class DDServer(DDLogger,Controller):
                     'dataTypes'   : emptyList,
                     'softReleases': emptyList,
                     'primTypes'   : emptyList,
-#                    'siteList'    : emptyList,
                     'siteDict'    : {},
                     'style'       : "width:200px",
                     'prdForm'     : prdForm,
                     'autocomplete': auto,
                    }
-        t = templateUserNav(searchList=[nameSearch]).respond()
+        nav = getArg(kwargs,'navigator','')
+        if nav:
+           t = templateNavigator(searchList=[nameSearch]).respond()
+        else:
+           t = templateUserNav(searchList=[nameSearch]).respond()
         page+= str(t)
         if self.verbose==2:
            self.writeLog(page)
@@ -5405,7 +5418,7 @@ Save query as:
               bindParams="\n"
               for key in bParams:
                   bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
-              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s  </bindparams>\n   <executiontime>__time__</executiontime>\n   <asearchtime>__fulltime__</asearchtime>\n</query>\n"""%(query,bindParams)
+              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s  </bindparams>\n   <executiontime>__time__</executiontime>\n   <asearchtime>__fulltime__</asearchtime>\n</query>\n"""%(formatQuery(str(query)),bindParams)
            else:
               if details:
                  page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
