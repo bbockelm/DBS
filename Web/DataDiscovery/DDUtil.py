@@ -56,16 +56,27 @@ def findKeyInAList(_list,_key):
     return ""
 
 def formatQuery(q):
+    q=q.replace("(","\n(\n").replace(")","\n)\n")
     q=q.replace(" FROM ","\nFROM ").replace(" GROUP BY ","\nGROUP BY ")
     q=q.replace(" ORDER BY ","\nORDER BY ").replace(" WHERE ","\nWHERE ")
     q=q.replace(" ON ","\n    ON ").replace(",","\n  ,").replace(" LEFT ","\n  LEFT ")
     q=q.replace(" AND ","\n  AND ").replace(" OR ","\n  OR ")
+    q=q.replace(" ESCAPE ","\n  ESCAPE ").replace(" IN ","\n  IN ")
+    q=q.replace(" INTERSECT ","\nINTERSECT\n").replace(" UNION ","\nUNION\n")
     qList=q.split("\n")
+    sep=""
+    nList=[]
     for idx in xrange(0,len(qList)):
         line=qList[idx]
+        if line.find("(")!=-1:
+           sep+=" "*3
         if line.find(" JOIN ")!=-1 and line.find("LEFT ")==-1:
-           qList[idx]=line.replace(" JOIN ","\n  JOIN ")
-    return '\n'.join(qList)
+           line=line.replace(" JOIN ","\n  %s"%sep+"JOIN ")
+        if line:
+           nList.append(sep+line)
+        if line.find(")")!=-1:
+           sep=sep[:-3]
+    return '\n'.join(nList)
 
 def getArg(kwargs,key,default):
     arg=default
