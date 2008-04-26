@@ -89,7 +89,7 @@ class DDHelper(DDLogger):
       return self.dbManager.col(self.dbsInstance,table,col)
 
   def printQuery(self,sel):
-      return self.dbManager.printQuery(self.dbsInstance,sel).replace("\n","")
+      return formatQuery(self.dbManager.printQuery(self.dbsInstance,sel).replace("\n",""))
 
   def compileQuery(self,sel):
       return self.dbManager.compileQuery(self.dbsInstance,sel)
