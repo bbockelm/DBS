@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.156 $"
- $Id: DBSSql.java,v 1.156 2008/04/24 15:15:24 afaq Exp $"
+ $Revision: 1.157 $"
+ $Id: DBSSql.java,v 1.157 2008/04/24 22:42:07 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -627,6 +627,7 @@ public class DBSSql {
 		int goodSysCount = 0;
 		int badSysCount = 0;
 		int unknownSysCount = 0;
+		int firstRun=0;
 
 		if (runDQList.size() > 0) {
                         for (int i = 0; i < runDQList.size() ; ++i) {
@@ -634,10 +635,10 @@ public class DBSSql {
                                 Hashtable runDQ = (Hashtable) runDQList.get(i);
                                 String runnumber = DBSUtil.get(runDQ, "run_number");
                                 if (!DBSUtil.isNull(runnumber)) {
-                                	if (i==0) {
-                                        	//rlsql += " RQ.Run in (select ID from Runs where RunNumber in (?";   
+                                	if (firstRun==0) {
                                         	rlsql += " (select ID from Runs where RunNumber in (?";   
                                                 rbindvals.add(runnumber);
+						firstRun=1;
                                         }
                                         else {
                                         	rlsql += " ,?";
@@ -646,7 +647,6 @@ public class DBSSql {
                                 }
 
 				Vector thisrunSubSys = DBSUtil.getVector(runDQ, "dq_sub_system");
-				//subSys.addAll(thisrunSubSys);
 				// for some reason cannot avoid duplication here, and what the heck
 				for (int j = 0; j < thisrunSubSys.size() ; ++j) {
                                         Hashtable dqFlag = (Hashtable) thisrunSubSys.get(j);
@@ -752,8 +752,6 @@ public class DBSSql {
 
 		if ( !DBSUtil.isNull(good_clause) || !DBSUtil.isNull(bad_clause) || !DBSUtil.isNull(unknown_clause) ) sql += ")";
 
-		//String sql = file_sql + run_sql +  ")";
-
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
 
                 int columnIndx = 1;
@@ -761,8 +759,6 @@ public class DBSSql {
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
-		System.out.println("SQLLL"+sql);
-		
                 return ps;
 
 	}
