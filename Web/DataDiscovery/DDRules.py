@@ -638,6 +638,7 @@ class DDRules:
              raise msg
           sList=[]
           fDict={}
+          selKey=selKey.replace(" ","")
           _toJoin="%s"%selKey
           for key in selKey.split(","):
               key=key.strip()
