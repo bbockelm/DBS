@@ -80,6 +80,7 @@ class DDRules:
            'version'     :'version of entity',
            'numevents'   :'number of events',
            'numlumi'     :'number of lumi sections',
+           'totlumi'     :'total luminosity',
            'starttime'   :'start time of entity',
            'endtime'     :'end time of entity',
            'size'        :'size of entity',
@@ -157,9 +158,10 @@ class DDRules:
            'numevents'   :{'file':'NumberOfEvents','run':'NumberOfEvents'},
            'starttime'   :{'run':'StartOfRun','lumi':'LumiStartTime'},
            'endtime'     :{'run':'EndOfRun','lumi':'LumiEndTime'},
-           'numlumi'     :{'lumi':'NumberOfLumiSections'},
+           'numlumi'     :{'run':'NumberOfLumiSections'},
+           'totlumi'     :{'run':'TotalLuminosity'},
            'type'        :{'file':'FileType.Type','primds':'PrimDSType.Type','ads':'AnalysisDSType.Type'},
-           'convener'    :'PhysicsGroupConvener',
+           'convener'    :{'group':'PhysicsGroupConvener'},
        }
        self.colFunc = {
            'latestrelease' :['file'],
@@ -342,6 +344,8 @@ class DDRules:
                   newKey = "%s.%s"%(key,m)
                   keywords.append(newKey)
        self.keywords+=keywords
+       self.keywords_sorted=list(self.keywords)
+       self.keywords_sorted.sort()
        self.operators=constrainList()
        # list of supported constrain operator, order is matter, since we walk through
        # the list to find a match. Example, if pattern is '<=' and order is <,<= we will
@@ -639,10 +643,12 @@ class DDRules:
               key=key.strip()
               # look for functions
               funcFound=DDUtil.findKeyInAList(self.functions,key)
-              if funcFound:
+              if funcFound and key.find("(")!=-1 and key.find(")")!=-1:
                  sKey=key.replace("(","").replace(")","").replace(funcFound,"").strip()
                  if not self.keywords.count(sKey):
-                    raise "Fail to parse select expression, invalid key='%s'"%sKey
+                    msg ="Fail to parse select expression, invalid key='%s'"%sKey
+                    msg+="\nList of known keys:\n%s"%str(self.keywords_sorted)
+                    raise msg
                  _tabCol=self.getTabCol(sKey)
                  tabName,colName=_tabCol.split(".")
                  if funcFound=="total":
@@ -654,7 +660,9 @@ class DDRules:
                     fDict[_tabCol]=funcFound
                  key=sKey
               if not self.keywords.count(key):
-                 raise "Fail to parse select expression, invalid key='%s'"%key
+                 msg ="Fail to parse select expression, invalid key='%s'"%key
+                 msg+="\nList of known keys:\n%s"%str(self.keywords_sorted)
+                 raise msg
               sKey=self.getTabCol(key)
               sList.append(sKey)
 
@@ -662,7 +670,9 @@ class DDRules:
           for val in pDict.values():
               key,op,rval=val.split()
               if not self.keywords.count(key):
-                 raise "Fail to parse where clause expression, invalid key='%s'"%key
+                 msg ="Fail to parse where clause expression, invalid key='%s'"%key
+                 msg+="\nList of known keys:\n%s"%str(self.keywords_sorted)
+                 raise msg
               input=input.replace(key,self.getTabCol(key))
               _select=self.getTabCol(key)
               _toJoin+=",%s"%key
