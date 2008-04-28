@@ -159,11 +159,18 @@ class DDQueryMaker(DDLogger):
   def makeJoinQuery(self,toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict={}):
       print "\n\n+++makeJoinQuery",toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict
       try:
+          person = self.dbManager.getTable(self.dbsInstance,'Person')
           oSel   = []
           gBy    = []
           for tabCol in toSelect.split(","):
               tab,col = tabCol.split(".")
               tabOut  = self.dbManager.getTable(self.dbsInstance,tab)
+              # special case for createby/modifyby
+              if col.lower().find('createdby')!=-1 or \
+                 col.lower().find('lastmodifiedby')!=-1:
+                 tabOut = person
+                 col = 'DistinguishedName'
+              # end of special case
               tcObj   = self.col(tabOut,col)
               if funcDict and funcDict.has_key(tabCol):
                  func = getattr(sqlalchemy.func,funcDict[tabCol])
@@ -173,19 +180,20 @@ class DDQueryMaker(DDLogger):
                  gBy.append(tcObj)
           _oSel  = sqlalchemy.select(oSel,distinct=True)
           iSel   = []
-          person = self.dbManager.getTable(self.dbsInstance,'Person')
           personJoin=[]
           for tabCol in toJoin.split(","):
               tab,col = tabCol.split(".")
               tabOut  = self.dbManager.getTable(self.dbsInstance,tab)
-              iSel.append(self.col(tabOut,col))
+              print tab,col
               # special case for createby/modifyby
               if col.lower().find('createdby')!=-1 or \
                  col.lower().find('creationdate')!=-1 or \
                  col.lower().find('lastmodifiedby')!=-1 or \
                  col.lower().find('lastmodificationdate')!=-1:
-                 personJoin.append( ( person,self.col(tabOut,'CreatedBy'),self.col(person,'ID') ) )
+                 if not personJoin:
+                    personJoin.append( ( person,self.col(tabOut,'CreatedBy'),self.col(person,'ID') ) )
               # end of special case
+              iSel.append(self.col(tabOut,col))
           _Sel   = sqlalchemy.select(iSel,distinct=True)
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              qb  = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
@@ -206,9 +214,9 @@ class DDQueryMaker(DDLogger):
               elif item.lower().find("lastmodificationdate")!=-1:
                  wList[idx]="Person.LastModificationDate"
               elif item.lower().find("createdby")!=-1:
-                 wList[idx]="Person.CreatedBy"
+                 wList[idx]="Person.DistinguishedName"
               elif item.lower().find("modifyby")!=-1:
-                 wList[idx]="Person.LastModifiedBy"
+                 wList[idx]="Person.DistinguishedName"
               if constrainList().count(item):
                  rval=wList[idx+1]
                  rval=rval.replace("*","%")
@@ -250,6 +258,9 @@ class DDQueryMaker(DDLogger):
              col.lower().find('lastmodifiedby')!=-1 or \
              col.lower().find('lastmodificationdate')!=-1:
              personJoin.append( ( person,self.col(tabIn,'CreatedBy'),self.col(person,'ID') ) )
+             tabIn  = person
+             if col.lower().find('createdby')!=-1 or col.lower().find('lastmodifiedby')!=-1:
+                colIn = 'DistinguishedName'
           # end of special case
           iSel      = [self.col(tabIn,colIn)]
           _oSel     = sqlalchemy.select(oSel,distinct=True)
@@ -642,13 +653,24 @@ class DDQueryMaker(DDLogger):
       for item in result:
           # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
-             oList.append(item.values()[:-1]) # last element is rownum
+             valList=item.values()[:-1] # last element is rownum
              if not tList:
                 tList=list(item.keys()[:-1])
           else:
-             oList.append(item.values())
+             valList=item.values()
              if not tList:
                 tList=list(item.keys())
+          try:
+             idx=tList.index('CREATIONDATE')
+             valList[idx]=timeGMT(valList[idx])
+          except:
+             pass
+          try:
+             idx=tList.index('LASTMODIFICATIONDATE')
+             valList[idx]=timeGMT(valList[idx])
+          except:
+             pass
+          oList.append(valList)
       self.closeConnection(con)
       return oList,tList
 
@@ -718,13 +740,24 @@ class DDQueryMaker(DDLogger):
       for item in result:
           # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
           if self.dbManager.dbType[self.dbsInstance]=='oracle' and selRowNum:
-             oList.append(item.values()[:-1]) # last element is rownum
+             valList=item.values()[:-1] # last element is rownum
              if not tList:
                 tList=list(item.keys()[:-1])
           else:
-             oList.append(item.values())
+             valList=item.values()
              if not tList:
                 tList=list(item.keys())
+          try:
+             idx=tList.index('CREATIONDATE')
+             valList[idx]=timeGMT(valList[idx])
+          except:
+             pass
+          try:
+             idx=tList.index('LASTMODIFICATIONDATE')
+             valList[idx]=timeGMT(valList[idx])
+          except:
+             pass
+          oList.append(valList)
       self.closeConnection(con)
       return oList,tList
 
