@@ -1,6 +1,6 @@
 /**
- $Revision: 1.56 $"
- $Id: DBSApiProcDSLogic.java,v 1.56 2008/03/25 22:46:45 sekhri Exp $"
+ $Revision: 1.57 $"
+ $Id: DBSApiProcDSLogic.java,v 1.57 2008/04/15 14:26:36 afaq Exp $"
  *
  */
 
@@ -220,9 +220,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	
-
-/*
-	
 		try {
                         ps = DBSSql.listDatasetADSParent(conn, procDSID);
 			rs =  ps.executeQuery();
@@ -234,11 +231,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
                 }
-*/
-
 
 	 }
-
 
 	 private void checkDatasetChildern(Connection conn, Writer out, String path) throws Exception {
 		PreparedStatement ps = null;
@@ -490,14 +484,14 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 						getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true), 
 						cbUserID, lmbUserID, creationDate);
 			}
-			/*
+			
 			String analysisDatasetName = get(dataset, "analysis_datatset_parent", false);
 			if (!isNull(analysisDatasetName))
 	                        insertMap(conn, out, "ProcADSParent", "ThisDataset", "ItsParentADS",
                                                 procDSID,
 						(new DBSApiAnaDSLogic(this.data)).getADSID(conn, analysisDatasetName, true),
                                                 cbUserID, lmbUserID, creationDate);
-			*/
+			
 		}
 
 		//Insert ProcDSRun table by fetching Run ID
