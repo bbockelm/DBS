@@ -27,7 +27,7 @@ def dbsApiImplInsertBranchInfo(self, branchInfo):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -42,13 +42,13 @@ def dbsApiImplInsertBranchInfo(self, branchInfo):
 
     print xmlinput
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertBranchInfo:, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertBranchInfo',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
 

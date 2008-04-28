@@ -41,7 +41,7 @@ def dbsApiImplListDatasetParents(self, dataset):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     path = get_path(dataset)
 
@@ -50,7 +50,7 @@ def dbsApiImplListDatasetParents(self, dataset):
                                  'path' : path  
 				}, 'GET')
 
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
     # Parse the resulting xml output.
     try:
       result = []

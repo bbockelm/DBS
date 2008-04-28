@@ -35,11 +35,11 @@ def dbsApiImplDeleteBlock(self, dataset, block):
     path = get_path(dataset)
     blockName = get_name(block)
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ####logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     data = self._server._call ({ 'api' : 'deleteBlock',
                          'path' : path ,
 			 'block_name' : blockName}, 'POST')
-    logging.log(DBSDEBUG, data)
+    ####logging.log(DBSDEBUG, data)
 
    # ------------------------------------------------------------
 
@@ -65,11 +65,11 @@ def dbsApiImplUndeleteBlock(self, dataset, block):
     path = get_path(dataset)
     blockName = get_name(block)
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ####logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     data = self._server._call ({ 'api' : 'undeleteBlock',
                          'path' : path ,
 			 'block_name' : blockName}, 'POST')
-    logging.log(DBSDEBUG, data)
+    ####logging.log(DBSDEBUG, data)
 
    # ------------------------------------------------------------
 

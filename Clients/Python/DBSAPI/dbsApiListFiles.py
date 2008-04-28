@@ -76,7 +76,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     #path = get_path(dataset)
     # Invoke Server.
@@ -130,7 +130,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                     #'pattern_lfn' : patternLFN, 'branchNTrig' : str(branchNTrig) }, 'GET')
                                     'pattern_lfn' : patternLFN, 
 				    'retrive_list' : retrive_list}, 'GET')
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
 
     # 
     #  Below contains HINTS as how to use DbsXmlBaseHandler to avoid "double parsing"

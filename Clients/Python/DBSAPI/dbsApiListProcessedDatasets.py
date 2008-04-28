@@ -54,7 +54,7 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
 
     # Lets get all tiers no matter what, otherwise Server puts unnecessary checks on the DataTier
@@ -72,7 +72,7 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
 		    'GET')
 
 
-    logging.log(DBSDEBUG, data)  
+    ##logging.log(DBSDEBUG, data)  
 
     # Parse the resulting xml output.
     try:

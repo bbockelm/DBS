@@ -43,7 +43,7 @@ def dbsApiImplCreateAnalysisDataset(self, analysisdataset, defName):
     """  
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     
     if defName in ("", None):
        raise DbsApiException(args="You must provide AnalysisDatasetDefinition (second parameter of this API call)")
@@ -60,7 +60,7 @@ def dbsApiImplCreateAnalysisDataset(self, analysisdataset, defName):
     xmlinput += " />"
     xmlinput += "</dbs>"
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
     #print xmlinput
 
     if self.verbose(): 
@@ -68,7 +68,7 @@ def dbsApiImplCreateAnalysisDataset(self, analysisdataset, defName):
 
     data = self._server._call ({ 'api' : 'createAnalysisDataset',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
 
     #-----------------------------------------------------------------------------

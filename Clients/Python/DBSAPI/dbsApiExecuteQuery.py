@@ -22,12 +22,12 @@ def dbsApiImplExecuteQuery(self, query="*"):
     """
     try: 
       funcInfo = inspect.getframeinfo(inspect.currentframe())
-      logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+      ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
       # Invoke Server.    
       data = self._server._call ({ 'api' : 'executeQuery', 'query' : query  }, 'GET')
 
-      #logging.log(DBSDEBUG, data)
+      ###logging.log(DBSDEBUG, data)
 
       # No parsing nothing at this point, lets just return the data.
       return data

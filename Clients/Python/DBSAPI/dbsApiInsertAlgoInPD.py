@@ -31,7 +31,7 @@ def dbsApiImplInsertAlgoInPD(self, dataset, algorithm):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     path = get_path(dataset)
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -46,13 +46,13 @@ def dbsApiImplInsertAlgoInPD(self, dataset, algorithm):
     xmlinput += "/>"
     xmlinput += "</dbs>"
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertParent, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertAlgoInPD', 
                          'xmlinput' : xmlinput }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
 
 

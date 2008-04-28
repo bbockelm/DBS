@@ -31,7 +31,7 @@ def dbsApiImplCreateCompADS(self, compADS):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -49,7 +49,7 @@ def dbsApiImplCreateCompADS(self, compADS):
 
     xmlinput += "</dbs>"
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
     print xmlinput
 
     if self.verbose():
@@ -62,6 +62,6 @@ def dbsApiImplCreateCompADS(self, compADS):
     #Just return the name of compADS if everything went fine.  
     return compADS 
 
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
 

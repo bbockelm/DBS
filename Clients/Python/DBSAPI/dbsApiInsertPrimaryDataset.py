@@ -32,7 +32,7 @@ def dbsApiImplInsertPrimaryDataset(self, dataset):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -47,12 +47,12 @@ def dbsApiImplInsertPrimaryDataset(self, dataset):
     xmlinput += " </primary_dataset>"
     xmlinput += "</dbs>"
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
 
     if self.verbose():
        print "insertPrimaryDataset, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertPrimaryDataset',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------

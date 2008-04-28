@@ -34,13 +34,13 @@ def dbsApiImplInsertMergedDataset(self, dataset, merege_ds_name, merge_algo):
 	raise DbsApiException(args="Dataset %s Not found in DBS" %path, code="1008")
     
     proc = orig_ds[0]
-    logging.log(DBSDEBUG, "proc fetched from DBS %s" %proc)
+    ##logging.log(DBSDEBUG, "proc fetched from DBS %s" %proc)
 
     proc['Name'] = merege_ds_name
     if merge_algo not in (None, ''):
 	#raise DbsApiException(args="You must provide an Algorithm object for the merged dataset")
 	#return
-        #logging.log(DBSDEBUG, "Algorithm object for the merged dataset is not provided")
+        ###logging.log(DBSDEBUG, "Algorithm object for the merged dataset is not provided")
         self.insertAlgorithm(merge_algo)  
         proc['AlgoList'].append(merge_algo) 
 

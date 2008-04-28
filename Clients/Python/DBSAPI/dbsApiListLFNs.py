@@ -42,7 +42,7 @@ def dbsApiImplListLFNs(self, path="", queryableMetaData=""):
           etc etc.
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     #path = get_path(dataset)
     # Invoke Server.
@@ -51,7 +51,7 @@ def dbsApiImplListLFNs(self, path="", queryableMetaData=""):
     data = self._server._call ({ 'api' : 'listLFNs', 
                                     'path' : path, 'pattern_meta_data' : queryableMetaData},
                                      'GET')
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:

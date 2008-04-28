@@ -60,7 +60,7 @@ def dbsApiImplInsertBlock(self, dataset, block=None, storage_element_list=None, 
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     path = get_path(dataset)
     name = get_name(block)
@@ -86,13 +86,13 @@ def dbsApiImplInsertBlock(self, dataset, block=None, storage_element_list=None, 
     xmlinput += "</block>"  
     xmlinput += "</dbs>"
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertBlock, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertBlock',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:

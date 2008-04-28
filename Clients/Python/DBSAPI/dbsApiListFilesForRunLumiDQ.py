@@ -26,7 +26,7 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
 
@@ -62,13 +62,13 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
 
     xmlinput += "</dbs>"
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'listFilesForRunLumiDQ',
                          'xmlinput' : xmlinput, 
 			'time_stamp':timeStamp, 
 			'dq_version':dqVersion }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:

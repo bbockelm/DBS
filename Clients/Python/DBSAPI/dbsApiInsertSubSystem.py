@@ -25,19 +25,19 @@ def dbsApiImplInsertSubSystem(self, name, parent="CMS"):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<sub_system name='"+str(name)+"' parent='"+parent+"' />"
     xmlinput += "</dbs>"
     
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'insertSubSystem',
                                         'xmlinput': xmlinput,
                                          }, 'GET')
 
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
   #-------------------------------------------------------------------
 

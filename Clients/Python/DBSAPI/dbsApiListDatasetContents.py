@@ -45,12 +45,12 @@ def dbsApiImplListDatasetContents(self, path, block_name):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     path = get_path(path)
     data = self._server._call ({ 'api' : 'listDatasetContents', 'path' : path, 'block_name' : block_name }, 'GET')
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
 
     return data
 

@@ -48,7 +48,7 @@ def dbsApiImplInsertAlgorithm(self, algorithm):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
 
     # Prepare XML description of the input
@@ -71,14 +71,14 @@ def dbsApiImplInsertAlgorithm(self, algorithm):
        xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
     xmlinput += "/>"
     xmlinput += "</dbs>"
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
 
     
     if self.verbose():
        print "insertAlgorithm, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertAlgorithm',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
 

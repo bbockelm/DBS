@@ -107,7 +107,7 @@ class DbsApi(DbsConfig):
         self.configDict['log'] = "STDOUT"
 
     DbsLogger(self.loglevel(), self.log()) 
-    logging.log(DBSDEBUG, "DBS Api initialized")
+    #logging.log(DBSDEBUG, "DBS Api initialized")
     
   def getServerUrl(self):
     """

@@ -32,10 +32,10 @@ def dbsApiImplDeleteProcDS(self, dataset):
 
     path = get_path(dataset)
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ####logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     data = self._server._call ({ 'api' : 'deleteProcDS',
                          'path' : path }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ####logging.log(DBSDEBUG, data)
 
    # ------------------------------------------------------------
 
@@ -57,10 +57,10 @@ def dbsApiImplUndeleteProcDS(self, dataset):
 
     path = get_path(dataset)
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ####logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     data = self._server._call ({ 'api' : 'undeleteProcDS',
                          'path' : path }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ####logging.log(DBSDEBUG, data)
 
    # ------------------------------------------------------------
 

@@ -36,7 +36,7 @@ def dbsApiImplDeleteReplicaFromBlock(self, block, storage_element):
     """   
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     bname = get_name(block)
     sename = get_name(storage_element)
@@ -46,13 +46,13 @@ def dbsApiImplDeleteReplicaFromBlock(self, block, storage_element):
     xmlinput += "<storage_element storage_element_name='"+ sename +"' block_name='"+ bname +"'/>"
     xmlinput += "</dbs>"
 
-    logging.log(DBSDEBUG, xmlinput)
+    ###logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "deleteReplicaFromBlock, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'deleteSEFromBlock',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
    # ------------------------------------------------------------
 

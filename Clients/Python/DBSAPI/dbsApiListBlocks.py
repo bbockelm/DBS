@@ -62,7 +62,7 @@ def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_nam
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     path = get_path(dataset)
@@ -70,7 +70,7 @@ def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_nam
 		    'block_name' : block_name, 
 		    'storage_element_name' : storage_element_name ,
 		    'user_type' : userType}, 'GET')
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
 
 
     # Parse the resulting xml output.

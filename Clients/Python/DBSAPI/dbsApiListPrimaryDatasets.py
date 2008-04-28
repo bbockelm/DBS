@@ -39,12 +39,12 @@ def dbsApiImplListPrimaryDatasets(self, pattern="*"):
              
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
 
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
 
     if self.verbose():
        print data
