@@ -18,7 +18,7 @@ try:
   # List all parameter sets
   print "Processed Datasets:"
   #for proc in api.listProcessedDatasets("test_primary_001", "*", "TestProcessedDS002"):
-  for proc in api.listDatasetParents("/test_primary_001/TestProcessedDSWithADSParent/GEN-SIM"):
+  for proc in api.listDatasetParents("/GlobalMar08-A/CMSSW_1_8_4-T0ReReco-Pass1/RECO")['PathList']:
      print "  %s" % proc
   
 except DbsApiException, ex:

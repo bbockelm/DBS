@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Revision: 1.3 $"
-# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+# Id: dqListFilesByDQ 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
 #
 import optparse
@@ -11,6 +11,7 @@ from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsDQFlag import DbsDQFlag
 from DBSAPI.dbsRunLumiDQ import DbsRunLumiDQ
+from DBSAPI.dbsConfig import DbsConfig
 
 class DbsDQOptionParser(optparse.OptionParser):
   """
@@ -23,10 +24,9 @@ class DbsDQOptionParser(optparse.OptionParser):
                 version="%prog 0.0.1", conflict_handler="resolve")
 
       self.add_option("--url=",action="store", type="string", dest="url", default="BADURL",
-		help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, \
-				If no url is provided default url from dbs.config is attempted")
+		help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
-      self.add_option("--query", action="store", type="string", dest="query", default="",
+      self.add_option("--query", action="store", type="string", dest="query",
 		help="query in tag1=value1&tag2=value2... format")
 
 
@@ -38,9 +38,13 @@ if __name__ == "__main__":
                 (opts,args) = optManager.parse_args()
                 opts = opts.__dict__
 
-                if opts['url'] in ('', None, 'BADURL'):
-                        print "You must specify a valid DBS URL, use --url= or --help"
-                        sys.exit(0)
+		if opts['url'] in ('', None, 'BADURL'):
+                        configDict = DbsConfig(opts)
+                        opts['url'] = str(configDict.url())
+
+                #if opts['url'] in ('', None, 'BADURL'):
+                #        print "You must specify a valid DBS URL, use --url= or --help"
+                #        sys.exit(0)
 
 		if opts['query'] in (None, ""):
 			print "You must specify a query, Use --query=, look at --help"
