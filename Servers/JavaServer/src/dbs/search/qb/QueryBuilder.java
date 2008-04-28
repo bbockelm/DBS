@@ -60,7 +60,6 @@ public class QueryBuilder {
 
 					boolean addQuery = true;
 					String token2 = st.nextToken();
-					String tmpTableName =  token + "_" + token2;
 					/*if(Util.isSame(token2, "algo")) {
 						allKws = addUniqueInList(allKws, "AppFamily");
 						allKws = addUniqueInList(allKws, "AppVersion");
@@ -94,7 +93,7 @@ public class QueryBuilder {
 							if(createByAdded) dontJoin = true;
 							createByAdded = true;
 						}
-						//String tmpTableName =  token + "_" + token2;
+						String tmpTableName =  token + "_" + token2;
 						if(!dontJoin) {
 							personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
 								"\t\tON " + real + "." + personField + " = " + tmpTableName + ".ID\n";
@@ -108,8 +107,11 @@ public class QueryBuilder {
 						boolean dontJoin = false;
 						if(fileParentAdded) dontJoin = true;
 						fileParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
-						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin){
+							parentJoinQuery += "\tJOIN Files " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = FileParentage.ItsParent\n";
+						}
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
 						addQuery = false;
@@ -119,8 +121,11 @@ public class QueryBuilder {
 						boolean dontJoin = false;
 						if(datasetParentAdded) dontJoin = true;
 						datasetParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
-						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin){
+							parentJoinQuery += "\tJOIN ProcessedDataset " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = ProcDSParent.ItsParent\n";
+						}
 						String fqName = tmpTableName + ".Name";
 						query += fqName + makeAs(fqName);			
 						addQuery = false;
@@ -153,6 +158,11 @@ public class QueryBuilder {
 					int count = st.countTokens();
 					allKws = addUniqueInList(allKws, u.getMappedRealName(st.nextToken()));
 					if(count != 1) {
+						//String token2 = st.nextToken();
+						/*if(Util.isSame(token2, "release")) {
+							//allKws = addUniqueInList(allKws,  u.getMappedRealName(token2));//AppVersion
+							//Do nothing
+						} */
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined != null) allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 							
@@ -186,9 +196,9 @@ public class QueryBuilder {
 		
 		allKws = sortVertexs(allKws);
 		int len = allKws.size();
-		/*for(int i = 0 ; i != len ; ++i ) {
+		for(int i = 0 ; i != len ; ++i ) {
 			System.out.println("kw " + (String)allKws.get(i));
-		}*/
+		}
 
 		query += genJoins(allKws);
 		query += personJoinQuery;
@@ -231,7 +241,7 @@ public class QueryBuilder {
 					int count = st.countTokens();
 					String token = st.nextToken();
 					String token2 = st.nextToken();
-					String tmpTableName =  token + "_" + token2;
+
 					if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
 						boolean dontJoin = false;
 						String personField = "CreatedBy";
@@ -243,7 +253,7 @@ public class QueryBuilder {
 							if(createByAdded) dontJoin = true;
 							createByAdded = true;
 						}
-						//String tmpTableName =  token + "_" + token2;
+						String tmpTableName =  token + "_" + token2;
 						if(!dontJoin)
 							personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
 								"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
@@ -252,15 +262,19 @@ public class QueryBuilder {
 						boolean dontJoin = false;
 						if(fileParentAdded) dontJoin = true;
 						fileParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
-						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin)
+							parentJoinQuery += "\tJOIN Files " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = FileParentage.ItsParent\n";
 						queryWhere += tmpTableName + ".LogicalFileName ";			
 					} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
 						boolean dontJoin = false;
 						if(datasetParentAdded) dontJoin = true;
 						datasetParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
-						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
+						String tmpTableName =  token + "_" + token2;
+						if(!dontJoin)
+							parentJoinQuery += "\tJOIN ProcessedDataset " + tmpTableName + "\n" +
+								"\t\tON " + tmpTableName + ".ID = ProcDSParent.ItsParent\n";
 						queryWhere += tmpTableName + ".Name ";			
 
 					
@@ -357,11 +371,6 @@ public class QueryBuilder {
 		return query;
 	}*/
 
-	private String handleParent(String tmpTableName, String table1, String table2){
-		return ( "\tJOIN " + table1 + " " + tmpTableName + "\n" +
-				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ItsParent\n" );
-
-	}
 
 	private String handleIn(String val) {
     		String query = "IN (";
@@ -419,7 +428,7 @@ public class QueryBuilder {
 	}
 
 	private String handleDQ(String val) throws Exception {
-		//System.out.println("VAL is " + val);
+		System.out.println("VAL is " + val);
 		ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, val);
 		String dqQuery = "";
 		if(sqlObj.size() == 2) {
@@ -519,10 +528,10 @@ public class QueryBuilder {
 				
 			}
 			if(prevLen == len) {
-				//System.out.println("Shortest edge in " + (String)lKeywords.get(0) + " --- " + (String)myRoute.get(0));
+				System.out.println("Shortest edge in " + (String)lKeywords.get(0) + " --- " + (String)myRoute.get(0));
 				List<Edge> lEdges =  u.getShortestPath((String)lKeywords.get(0), (String)myRoute.get(0));
 				for (Edge e: lEdges) {
-					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
+					System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getFirstNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getSecondNameFromEdge(e));
 				}
@@ -530,7 +539,7 @@ public class QueryBuilder {
 				else {
 					myRoute = addUniqueInList(myRoute, (String)lKeywords.get(0));
 					lKeywords.remove(0);
-					////System.out.println("Path length is 0");
+					//System.out.println("Path length is 0");
 				}
 			}
 			
@@ -543,7 +552,7 @@ public class QueryBuilder {
 
 	
 	public ArrayList sortVertexs(ArrayList lKeywords) {
-		//System.out.println("INSIDE sortVertexs");
+		System.out.println("INSIDE sortVertexs");
 		int len = lKeywords.size();
 		String leaf = "";
 		for(int i = 0 ; i != len ; ++i ) {

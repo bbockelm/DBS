@@ -44,10 +44,8 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces 
 	op1=	in 	 	{c.setOp($op1.text);}  
-		spaces '('
-		spaces
+		spaces '(' 
 	val1=	valueList 		{c.setValue($val1.text); constraints.add(c);}
-		spaces
 		')'               
 		| 
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
@@ -57,12 +55,12 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 	val2=	likeValue 		{c.setValue($val2.text); constraints.add(c);};                  
 
 where	:('WHERE' | 'where');
-valueList	:VALUE ( spaces COMMA spaces VALUE )*;
+valueList	:VALUE (COMMA VALUE)*;
 genValue	:VALUE|
 		VALUE EQ VALUE (AMP VALUE EQ VALUE)*;
 likeValue 	:(VALUE| STAR)+;
 logicalOp	:(and|or);
-entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq');
+entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'ls' | 'dq');
 attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent');
 funct	:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
 select	:('select' | 'SELECT' | 'find' | 'FIND');
