@@ -497,7 +497,8 @@ class DDQueryMaker(DDLogger):
       for item in tList:
           for o in item.split():
               o=o.replace("\n","").strip().replace("%s."%self.dbsInstance,"") # strip off schema owner
-              if o=='join' or o.find('on')!=-1 or o.find(".")!=-1 or o.find('=')!=-1 or tableList.count(o): continue
+              if o=='join' or o.find('on')!=-1 or o.find(".")!=-1 or o.find('=')!=-1 \
+              or o.find('left')!=-1 or o.find('outer')!=-1 or tableList.count(o): continue
               tableList.append(o) 
       if self.verbose:
          print "+++ QUERY ANALYZER, TABLES\n",tableList
@@ -660,16 +661,6 @@ class DDQueryMaker(DDLogger):
              valList=item.values()
              if not tList:
                 tList=list(item.keys())
-          try:
-             idx=tList.index('CREATIONDATE')
-             valList[idx]=timeGMT(valList[idx])
-          except:
-             pass
-          try:
-             idx=tList.index('LASTMODIFICATIONDATE')
-             valList[idx]=timeGMT(valList[idx])
-          except:
-             pass
           oList.append(valList)
       self.closeConnection(con)
       return oList,tList
@@ -747,16 +738,6 @@ class DDQueryMaker(DDLogger):
              valList=item.values()
              if not tList:
                 tList=list(item.keys())
-          try:
-             idx=tList.index('CREATIONDATE')
-             valList[idx]=timeGMT(valList[idx])
-          except:
-             pass
-          try:
-             idx=tList.index('LASTMODIFICATIONDATE')
-             valList[idx]=timeGMT(valList[idx])
-          except:
-             pass
           oList.append(valList)
       self.closeConnection(con)
       return oList,tList

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: Schema.py,v 1.9 2008/04/24 18:12:02 valya Exp $
+# $Id: Schema.py,v 1.10 2008/04/24 20:26:44 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision: 1.9 $"
+__revision__ = "$Revision: 1.10 $"
 
 
 import unittest
@@ -83,6 +83,7 @@ class Schema(object):
                                             self.MakeForeignKeys(foreignKeys,self._schema),
                                             toExclude)
         self.cq = constructquery.ConstructQuery(connectivity)
+        self.outers=[('seblock.blockid','block.id'),('block.id','seblock.blockid')]
         
         
     def PullOperatorSide(self,clause,tablesOfConcern):
@@ -168,7 +169,11 @@ class Schema(object):
                     (leftColumn,rightColumn) = self._foreignTables[parentIdx][nodeIdx]
                 elif parentIdx in self._foreignTables[nodeIdx]:
                     (rightColumn,leftColumn) = self._foreignTables[nodeIdx][parentIdx]
-                rootJoin = rootJoin.join(rightColumn.table, leftColumn==rightColumn)
+                if self.outers.count((str(leftColumn).lower(),str(rightColumn).lower())):
+                   rootJoin = rootJoin.outerjoin(rightColumn.table, leftColumn==rightColumn)
+                else:
+                   rootJoin = rootJoin.join(rightColumn.table, leftColumn==rightColumn)
+#                rootJoin = rootJoin.join(rightColumn.table, leftColumn==rightColumn)
                 
         return rootJoin
 #        query.append_from(rootJoin)

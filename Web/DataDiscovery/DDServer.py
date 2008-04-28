@@ -5021,6 +5021,19 @@ Save query as:
             page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
             return page
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        cDateIdx =-1
+        mDateIdx =-1
+        cByIdx   =-1
+        sizeIdx  =-1
+        func     = lambda x: [i.lower() for i in x]
+        ttList   = func(titleList)
+        for idx in xrange(0,len(ttList)):
+            item = ttList[idx]
+            if item.find('date')!=-1:
+               if item.find('creationdate')!=-1 or item.find('createdate')!=-1 or item.find('created')!=-1: cDateIdx=idx 
+               if item.find('mod')!=-1: mDateIdx=idx 
+            if item.find('size')!=-1: sizeIdx=idx
+            if item.find('createdby')!=-1 or item.find('distinguishedname')!=-1: cByIdx=idx
         if html:
            page  = self.genTopHTML(userMode=userMode)
            try:
@@ -5028,7 +5041,6 @@ Save query as:
            except: pass
         else:
            if xml:
-#              page+="\n<%s>\n"%tableName
               page+="\n<output>\n"
            else:
               page ="\n"
@@ -5050,7 +5062,12 @@ Save query as:
                      for idx in xrange(0,len(tList)):
                          tag=tList[idx]
                          tag=tag.replace(" ","").replace("(","_").replace(")","")
-                         page+="    <%s>%s</%s>\n"%(tag,oList[idx].strip(),tag)
+                         elem=oList[idx].strip()
+                         if (cDateIdx!=-1 and idx==cDateIdx) or (mDateIdx!=-1 and idx==mDateIdx):
+                            elem=timeGMT(long(elem))
+                         if cByIdx!=-1 and idx==cByIdx:
+                            elem=parseCreatedBy(elem)
+                         page+="    <%s>%s</%s>\n"%(tag,elem,tag)
                      page+="  </row>\n"
                else:
                   page+="%s \n"%res
@@ -5058,7 +5075,6 @@ Save query as:
            page+=self.genBottomHTML()
         elif xml:
              page+="</output>\n"
-#             page+="</%s>\n"%tableName
         return page
     aSearchShowAll.exposed=True
 
@@ -5102,24 +5118,19 @@ Save query as:
         else:
            longName = self.ddrules.longName[output].capitalize()
         counter  = 0
+        cDateIdx =-1
+        mDateIdx =-1
+        cByIdx   =-1
+        sizeIdx  =-1
         func     = lambda x: [i.lower() for i in x]
-        try:
-            cDateIdx= func(titleList).index('created')
-        except:
-            cDateIdx=-1
-        if cDateIdx==-1:
-           try:
-               cDateIdx= func(titleList).index('creationdate')
-           except:
-               cDateIdx=-1
-        try:
-            sizeIdx = func(titleList).index('size')
-        except:
-            sizeIdx =-1
-        try:
-            cByIdx= func(titleList).index('createdby')
-        except:
-            cByIdx=-1
+        ttList   = func(titleList)
+        for idx in xrange(0,len(ttList)):
+            item = ttList[idx]
+            if item.find('date')!=-1:
+               if item.find('creationdate')!=-1 or item.find('createdate')!=-1 or item.find('created')!=-1: cDateIdx=idx 
+               if item.find('mod')!=-1: mDateIdx=idx 
+            if item.find('size')!=-1: sizeIdx=idx
+            if item.find('createdby')!=-1: cByIdx=idx
         for item in result:
             if counter%2:
                style='class="zebra"'
@@ -5131,17 +5142,16 @@ Save query as:
                 else:
                     page+="""<hr class="dbs"/>\n"""
             if  xml:
-#                page+="<%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
                 page+="  <row>\n"
             for jdx in xrange(0,len(item)):
                 elem = item[jdx]
                 if elem==item[0]:
                    firstElem=elem
-                if cDateIdx!=-1 and jdx==cDateIdx:
+                if (cDateIdx!=-1 and jdx==cDateIdx) or (mDateIdx!=-1 and jdx==mDateIdx):
                    if xml:
-                      elem=timeGMT(elem)
+                      elem=timeGMT(long(elem))
                    else:
-                      elem=timeGMTshort(elem)
+                      elem=timeGMTshort(long(elem))
                 elif  sizeIdx!=-1 and jdx==sizeIdx:
                    elem=colorSizeHTMLFormat(elem)
                 if cByIdx!=-1 and jdx==cByIdx:
@@ -5174,7 +5184,6 @@ Save query as:
                page+="</tr>\n"
             if not html:
                if xml:
-#                  page+="</%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
                   page+="  </row>\n"
                else:
                   page+="\n"
