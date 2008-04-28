@@ -5028,7 +5028,8 @@ Save query as:
            except: pass
         else:
            if xml:
-              page+="\n<%s>\n"%tableName
+#              page+="\n<%s>\n"%tableName
+              page+="\n<output>\n"
            else:
               page ="\n"
         for item in result:
@@ -5045,16 +5046,19 @@ Save query as:
                   else:
                      tList=output.split(",")
                      oList=res.split(",")
+                     page+="  <row>\n"
                      for idx in xrange(0,len(tList)):
                          tag=tList[idx]
                          tag=tag.replace(" ","").replace("(","_").replace(")","")
-                         page+="<%s>%s</%s>\n"%(tag,oList[idx].strip(),tag)
+                         page+="    <%s>%s</%s>\n"%(tag,oList[idx].strip(),tag)
+                     page+="  </row>\n"
                else:
                   page+="%s \n"%res
         if html:
            page+=self.genBottomHTML()
         elif xml:
-             page+="</%s>\n"%tableName
+             page+="</output>\n"
+#             page+="</%s>\n"%tableName
         return page
     aSearchShowAll.exposed=True
 
@@ -5088,6 +5092,8 @@ Save query as:
            titleList=[output]
 
         page     = ""
+        if xml:
+           page += "<output>\n"
         num      = kwargs['num']
         oname    = kwargs['oname']
         link     = kwargs['link']
@@ -5125,7 +5131,8 @@ Save query as:
                 else:
                     page+="""<hr class="dbs"/>\n"""
             if  xml:
-                page+="<%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
+#                page+="<%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
+                page+="  <row>\n"
             for jdx in xrange(0,len(item)):
                 elem = item[jdx]
                 if elem==item[0]:
@@ -5150,7 +5157,7 @@ Save query as:
                 else:
                     if xml:
                        tag=titleList[jdx].lower().replace(" ","").replace("(","_").replace(")","")
-                       page+="  <%s>%s</%s>\n"%(tag,elem,tag)
+                       page+="    <%s>%s</%s>\n"%(tag,elem,tag)
                     else:
                        page+="%s %s \n"%(titleList[jdx],elem)
             if html and grid and output.find(",")==-1 and output.find("total")==-1: # no multiple select
@@ -5167,9 +5174,13 @@ Save query as:
                page+="</tr>\n"
             if not html:
                if xml:
-                  page+="</%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
-               page+="\n"
+#                  page+="</%s>\n"%output.replace(" ","").replace(",","_").replace("(","_").replace(")","")
+                  page+="  </row>\n"
+               else:
+                  page+="\n"
             counter+=1
+        if xml:
+           page+="</output>\n"
         if grid and html and result:
            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
            if output.find(",")==-1 and output.find("total")==-1: # no multi select and total(x)
