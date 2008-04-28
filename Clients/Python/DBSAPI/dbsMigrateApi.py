@@ -54,14 +54,14 @@ class DbsMigrateApi:
 
 	def doesPathExist(self, api, path):
 		if (self.force):
-			logging.log(DBSWARNING, "The dataset path " + path + " will not be checked for existance in the destination DBS.\n If you want to enforce the checking of path existance before transefrring, use force=False option in this API")
+			##logging.log(DBSWARNING, "The dataset path " + path + " will not be checked for existance in the destination DBS.\n If you want to enforce the checking of path existance before transefrring, use force=False option in this API")
 			return False
 		tokens = path.split('/')
 		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
 		if datasets in [[], None] :
 			return False;
 		else:
-			logging.log(DBSWARNING, "The dataset path " + path + " already exists in the destination DBS and will NOT be transferred. If you want to  remove the existance check before transferring, use force=True option in this API")
+			##logging.log(DBSWARNING, "The dataset path " + path + " already exists in the destination DBS and will NOT be transferred. If you want to  remove the existance check before transferring, use force=True option in this API")
 			return True;
 			
 	def migratePath(self, path):

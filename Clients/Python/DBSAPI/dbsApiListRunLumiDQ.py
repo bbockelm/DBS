@@ -146,8 +146,6 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 					#self.SubSubFlags.remove(asssys)
 					mark_for_removel.append(asssys)
 					added = 1
-		import pdb
-		pdb.set_trace()
 
 		for toDel in mark_for_removel:
 			self.SubSubFlags.remove(toDel)

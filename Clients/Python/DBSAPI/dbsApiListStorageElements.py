@@ -39,11 +39,11 @@ def dbsApiImplListStorageElements(self, storage_element_name="*"):
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listStorageElements', 'storage_element_name' : storage_element_name }, 'GET')
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
 
 
     # Parse the resulting xml output.

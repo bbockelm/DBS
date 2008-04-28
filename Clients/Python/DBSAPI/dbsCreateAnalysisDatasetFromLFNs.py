@@ -17,12 +17,12 @@ def dbsApiImplCreateAnalysisDatasetFromLFNs(self, adsxml):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ###logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
-    logging.log(DBSDEBUG, adsxml)
+    ###logging.log(DBSDEBUG, adsxml)
 
     data = self._server._call ({ 'api' : 'createAnalysisDatasetFromLFNs',
                          'xmlinput' : adsxml }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ###logging.log(DBSDEBUG, data)
 
 

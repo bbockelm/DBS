@@ -205,7 +205,7 @@ Examples
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    #logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     try:
        # Invoke Server.

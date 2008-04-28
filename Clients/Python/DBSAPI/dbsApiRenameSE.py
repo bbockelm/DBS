@@ -31,7 +31,7 @@ def dbsApiImplRenameSE(self, storage_element_from, storage_element_to):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     seNameFrom = get_name(storage_element_from)
     seNameTo = get_name(storage_element_to)
@@ -39,6 +39,6 @@ def dbsApiImplRenameSE(self, storage_element_from, storage_element_to):
     data = self._server._call ({ 'api' : 'updateSEName',
 		    'storage_element_name_from' : seNameFrom,
 		    'storage_element_name_to' : seNameTo }, 'POST')
-    logging.log(DBSDEBUG, data)
+    ##logging.log(DBSDEBUG, data)
  # ------------------------------------------------------------
 

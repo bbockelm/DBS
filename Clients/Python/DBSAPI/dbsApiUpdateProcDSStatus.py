@@ -24,7 +24,7 @@ def dbsApiImplUpdateProcDSStatus(self, dataset, status):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    #logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     data = self._server._call ({ 'api' : 'updateProcDSStatus',
                          'path' : get_path(dataset),

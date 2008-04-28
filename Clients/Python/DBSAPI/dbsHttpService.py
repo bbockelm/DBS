@@ -226,7 +226,7 @@ class DbsHttpService:
 		key, cert = self.getKeyCert()
 		self.conn = httplib.HTTPSConnection(self.Host, int(self.Port), key, cert)
 
-       logging.log(DBSINFO, self.conto)	
+       #####logging.log(DBSINFO, self.conto)	
  
        params = urllib.urlencode(args)
 
@@ -238,7 +238,7 @@ class DbsHttpService:
        else:
           result = self.conn.request(typ, request_string, {}, headers )
 
-       logging.log(DBSINFO, request_string)
+       #####logging.log(DBSINFO, request_string)
 
        response = self.conn.getresponse() 
 
@@ -262,7 +262,7 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       logging.log(DBSDEBUG, data)
+       #####logging.log(DBSDEBUG, data)
 
     except sslerror, ex:
 	msg  = "HTTPS Error, Unable to make API call"
@@ -323,12 +323,12 @@ class DbsHttpService:
                 warn  = "\n DBS Raised a warning message"
                 warn += "\n Waring Message: " + attrs['message']
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
-                logging.log(DBSWARNING, warn)
+                #####logging.log(DBSWARNING, warn)
 
 	     if name =='info':
                 info = "\n DBS Info Message: %s " %attrs['message']
 		info += "\n Detail: %s " %attrs['detail']+"\n"
-                logging.log(DBSINFO, info)
+                #####logging.log(DBSINFO, info)
 
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data

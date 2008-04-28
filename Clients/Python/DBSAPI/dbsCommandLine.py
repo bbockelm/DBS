@@ -461,20 +461,49 @@ class cmd_doc_writer:
                 print pre+"Search the Data known to this DBS, based on the search criteria"
                 print "   Arguments:"
                 print "         -c --search, or --command=--search or --command=search"
-                print "         optional: "
-                print "                     --path=<dataset path>, supports glob patterns"
-                print "                     --blockpattern=<Block_Name_Pattern> in the form /prim/proc/dt(n)#<GUID>, supports glob patterns"
-                print "                     --algopattern=</ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash>, supports glob patterns"
-                print "                     --sepattern=<Storage element name pattern> for glob search"
-                print "                     --report, if provided a report is generated"
+                print "         required: "
+                print "                     --query=<user supplied query as supported by Data Discovery Page"
+		print "         optional: "
 		print "                     --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
-                print "   examples:"
-                print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
-                print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/*/RAW --report"
-                print "         python dbsCommandLine.py -c search --sepattern=*fnal*      (come on you really want to list all data for these SEs ?)"
-                print "         python dbsCommandLine.py -c search --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
-                print "         python dbsCommandLine.py -c lsb --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
+                print "   Simple Example:"
+                print "         python dbsCommandLine.py -c search --dbs search --query=\"find dataset where dataset like *Online*\""
+		detail_help="""
+			Syntax: 	FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
+					Constrain operators: <=, <, >=, >, =, not like, like, in, between
+					words FIND,WHERE,AND,OR can be upper or lower case.
+					Expressions can be groupped together using brackets, e.g. ((a and b) or c)
+
+			Keywords: 	dataset primds , procds , tier , block , file , release , run , lumi , site.
+
+			Examples: 	*QCD*
+				shortcut for look-up all datasets whose name matched QCD pattern
+
+				find release where release like *
+				look-up all releases in DBS, NOTE: replace release with any other keyword, 
+				like primds, run, etc. in order to get all primary dataset, runs, respectively
+
+				run between 34850-36000 or run in 34850,34890
+				look-up dataset with runs within a given run ranges. 
+				The find dataset where was optional here and skipped (default).
+
+				find file where release>CMSSW_1_6_7 and site=T2_UK
+				find files located on T2_UK sites which were processed with release CMSSW_1_6_7 and above.
+
+				find primds where (dataset like *Online* or dataset not like *RelVal* ) and release>CMSSW_1_7
+				look-up primary datasets whose dataset name match either Online or not RelVal and who
+				are processed with release greater them CMSSW_1_7
+
+				find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW
+				look-up files and runs for given dataset name
+
+			Shortcuts: 	FIND dataset WHERE expression is default and can be skipped.
+				If you type single word, e.g. QCD your look-up will be: find dataset where dataset=QCD.
+				If you type word with asterisk, e.g. QCD* your look-up will be: find dataset where dataset like QCD*.
+				You can use = instead of like, e.g. find run where dataset=/Commissioning2008Ecal-A/* 
+				"""
+		print detail_help
+                print "DBS SEARCH ALWAYS CONNECTS TO DBS GLOBAL ONLY FOR THE TIME BEING"
 		if self.wiki_help: print "</verbatim>"
 
 
@@ -1321,7 +1350,7 @@ class ApiDispatcher:
              if name =='info':
                 info = "\n DBS Info Message: %s " %attrs['message']
                 info += "\n Detail: %s " %attrs['detail']+"\n"
-                logging.log(DBSINFO, info)
+                #logging.log(DBSINFO, info)
 
       xml.sax.parseString (data, Handler ())
 

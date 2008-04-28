@@ -106,13 +106,13 @@ class DbsExecService:
                 warn  = "\n DBS Raised a warning message"
                 warn += "\n Waring Message: " + attrs['message']
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
-                logging.log(DBSWARNING, warn)
+                ##logging.log(DBSWARNING, warn)
 
 
 	     if name =='info':
                 info = "\n DBS Info Message: %s " %attrs['message']
 		info += "\n Detail: %s " %attrs['detail']+"\n"
-                logging.log(DBSINFO, info)
+                ##logging.log(DBSINFO, info)
 
         #print data
         xml.sax.parseString (data, Handler ())
