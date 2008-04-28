@@ -789,7 +789,7 @@ class DDRules:
                  _words.append(_call)
               except:
                  traceback.print_exc()
-                 raise "ERROR: unable to parse your input: '%s'\nparse it as '%s'\n### List of known keywords %s\n### List of supported operators %s"%(selKey,words,str(self.keywords),self.operators)
+                 raise "ERROR: unable to parse your input: '%s'\nparse it as '%s'\n### List of known keywords %s\n### List of supported operators %s"%(selKey,words,str(self.keywords_sorted),self.operators)
            else:
                  traceback.print_exc()
                  raise "Keyword '%s' does not contain separator \":\"."%w
