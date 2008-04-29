@@ -26,6 +26,8 @@ class DDOptionParser:
          help="specify input for your request.")
     self.parser.add_option("--xml",action="store_true",dest="xml",
          help="request output in XML format")
+    self.parser.add_option("--cff",action="store_true",dest="cff",
+         help="request output for files in CMS cff format")
     self.parser.add_option("--host",action="store",type="string",dest="host",
          help="specify a host name of Data Discovery service, e.g. https://cmsweb.cern.ch/dbs_discovery/")
     self.parser.add_option("--details",action="store_true",dest="details",
@@ -35,21 +37,21 @@ class DDOptionParser:
     self.parser.add_option("--page",action="store",type="string",default="0",dest="page",
          help="specify output page, should come together with --limit and --details")
     self.parser.add_option("--limit",action="store",type="string",default="10",dest="limit",
-         help="specify a limit on output, e.g. 50 results, should come together with --page and --details")
+         help="specify a limit on output, e.g. 50 results, the --limit=-1 will list all results")
   def getOpt(self):
     """
         Returns parse list of options
     """
     return self.parser.parse_args()
 
-def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',details=0,debug=0):
+def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',details=0,cff=0,debug=0):
     """
        Send message to server, message should be an well formed XML document.
     """
-    if xml:
-       xml=1
-    else:
-       xml=0
+    if xml: xml=1
+    else:   xml=0
+    if cff: cff=1
+    else:   cff=0
     input=urllib.quote(userInput)
     if debug:
        httplib.HTTPConnection.debuglevel = 1
@@ -74,7 +76,7 @@ def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',details=0
        http_conn = httplib.HTTP(host,port)
     if details: details=1
     else:       details=0
-    path='/aSearch?dbsInst=%s&html=0&caseSensitive=%s&_idx=%s&pagerStep=%s&userInput=%s&xml=%s&details=%s'%(dbsInst,case,page,limit,input,xml,details)
+    path='/aSearch?dbsInst=%s&html=0&caseSensitive=%s&_idx=%s&pagerStep=%s&userInput=%s&xml=%s&details=%s&cff=%s'%(dbsInst,case,page,limit,input,xml,details,cff)
     if prefix_path:
        path="/"+prefix_path+path[1:]
     http_conn.putrequest('POST',path)
@@ -121,5 +123,5 @@ if __name__ == "__main__":
     else:
        print "\nUsage: DDSearchCLI.py --help"
        sys.exit(0)
-    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.xml,opts.case,opts.details,opts.verbose)
+    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.xml,opts.case,opts.details,opts.cff,opts.verbose)
     print result
