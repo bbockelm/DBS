@@ -1,14 +1,15 @@
 <!-- templateAdvancedSearchForm.tmpl -->
 
 <span id="defaultPage"></span>
-<!-- <a name="HOME" /> -->
 <div align="center">
 <form action="aSearch" method="get">
+<div>
 <input type="hidden" name="caseSensitive" value="on" id="caseSensitive" />
 <input type="hidden" name="userMode" id="userMode" value="$userMode" />
 <input type="hidden" name="sortOrder" id="sortOrder" value="desc" />
 <input type="hidden" name="sortName" id="sortName" value="" />
 <input type="hidden" name="grid" id="grid" value="0" />
+</div>
 
 ## add table with case sensitivity and choice of dbs instance (in expert mode)
 <table cellpadding="2" cellspacing="2">
@@ -16,7 +17,9 @@
 #if $userMode=='user'
 <td>
 ##<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+<div>
 <input type="hidden" name="dbsInst" value="$dbsInst" id="dbsInst" />
+</div>
 </td>
 <td>
 </td>
@@ -42,14 +45,16 @@ Case-sensitivity:
 </td>
 <td align="right">
 &nbsp;&nbsp;&nbsp;
-<u><b class="yellow_box" onclick="javascript:aSearchHelp()">HELP</b></u>
+<b class="yellow_box" style="text-decoration:underline" onclick="javascript:aSearchHelp()">HELP</b>
 </td>
 </tr>
 </table>
 
+<div>
 <input type="text" size="80" name="userInput" id="userInput" />
 <input type="submit" value="Search" onclick="javascript:SetTagCookie('DBSDD_ainput','userInput')" />
 <input type="reset" />
+</div>
 
 </form>
 
@@ -94,13 +99,13 @@ it is still under development.
 <hr class="dbs"/>
 <br/>
 
-<a name="SYNTAX">
 <table width="100%"><tr><td align="left">
-<span class="sectionhead">SYNTAX</span>
+<a name="SYNTAX">
+<span class="sectionhead" style="text-decoration:underline">SYNTAX</span>
+</a>
 </td><td align="right">
 <a href="javascript:HideTag('aSearchHELP')">close &#8855;</a>
 </td></tr></table>
-</a>
 <b>
 FIND &lt;keyword&gt; WHERE &lt;keyword&gt; &lt;op&gt; &lt;value&gt; AND | OR  ...
 </b>
@@ -118,25 +123,25 @@ groupped together using brackets, e.g. ((a and b) or c)
 <hr class="dbs"/>
 <br/>
 
-<a name="KEYWORDS">
 <table width="100%"><tr><td align="left">
-<span class="sectionhead">KEYWORDS</span>
+<a name="KEYWORDS">
+<span class="sectionhead" style="text-decoration:underline">KEYWORDS</span>
+</a>
 </td><td align="right">
 <a href="javascript:HideTag('aSearchHELP')">close &#8855;</a>
 </td></tr></table>
-</a>
 $aSearchKeys
 <br/>
 <hr class="dbs"/>
 <br/>
 
-<a name="SHORTCUTS">
 <table width="100%"><tr><td align="left">
-<span class="sectionhead">SHORTCUTS</span>
+<a name="SHORTCUTS">
+<span class="sectionhead" style="text-decoration:underline">SHORTCUTS</span>
+</a>
 </td><td align="right">
 <a href="javascript:HideTag('aSearchHELP')">close &#8855;</a>
 </td></tr></table>
-</a>
 <b>FIND dataset WHERE </b> expression is default and can be skipped.
 <br/>
 If you type single word, e.g. <span class="box_blue">QCD</span> your look-up will be:
@@ -151,13 +156,13 @@ e.g. <span class="box_blue">find run where dataset=/Commissioning2008Ecal-A/*</s
 <hr class="dbs"/>
 <br/>
 
-<a name="EXAMPLES">
 <table width="100%"><tr><td align="left">
-<span class="sectionhead">EXAMPLES</span>
+<a name="EXAMPLES">
+<span class="sectionhead" style="text-decoration:underline">EXAMPLES</span>
+</a>
 </td><td align="right">
 <a href="javascript:HideTag('aSearchHELP')">close &#8855;</a>
 </td></tr></table>
-</a>
 <em class="box_blue">
 *QCD*
 </em>
