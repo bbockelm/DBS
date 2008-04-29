@@ -785,8 +785,8 @@ class DDServer(DDLogger,Controller):
 
     def _advanced(self,dbsInst=DBSGLOBAL,userMode="user",msg="",**kwargs):
         try:
-            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
-#            page = self.genTopHTML(intro=False,userMode=userMode)
+#            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
+            page = self.genTopHTML(intro=False,userMode=userMode)
             dbsList=list(self.dbsList)
             dbsList.remove(dbsInst)
             dbsList=[dbsInst]+dbsList
@@ -794,18 +794,15 @@ class DDServer(DDLogger,Controller):
             else:   userHelp=1
             nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':'','aSearchKeys':self.aSearchKeys()}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
-            page+="""<p class="sectionhead">ADVANCED KEYWORD SEARCH</p>"""
+#            page+="""<p class="sectionhead">ADVANCED KEYWORD SEARCH</p>"""
             page+= str(t)
             if msg:
                page+=msg
-            page+="""<hr class="dbs" />"""
-            # Navigator
-            auto=0
-            if kwargs.has_key('auto') and kwargs['auto']=='on':
-               auto=1
-            page+="""<p class="sectionhead">MENU-DRIVEN SEARCH</p>"""
-            page+= self.genEmptyUserNavigator(dbsInst,userMode,auto,navigator=1)
-            # end of Navigator
+            if userMode=="dbsExpert":
+               page+="""<hr class="dbs" />"""
+#               page+="""<p class="sectionhead">OTHER DATA DISCOVERY SERVICES:</p>"""
+               nameSpace = {'userMode':userMode,'ddList':self.ddUrls}
+               page+= templateRemoteDD(searchList=[nameSpace]).respond()
             page+= self.genBottomHTML()
             return page
         except:
@@ -4985,6 +4982,15 @@ Save query as:
     getIntegratedLumi.exposed=True
 
     # helper functions to decorate output
+    def aSearchAll(self,dbsInst,keyword,func=None):
+        what=keyword
+        if what=="primds.type": keyword="primds"
+        if func: what="%s(%s)"%(func,keyword)
+        input="find %s where %s like *"%(what,keyword)
+        res=self.aSearch(dbsInst,userMode='user',_idx=0,pagerStep=-1,userInput=input,html=0,caseSensitive='on',details=0)
+        results=res.splitlines()
+        return results
+
     def aSearchShowAll(self,**kwargs):
         tabCol   = kwargs['tabCol']
         if not tabCol:
@@ -5346,9 +5352,9 @@ Save query as:
         for key in allKeys:
             if key.find(".")!=-1:
                k1,k2 = key.split(".")
-               sKeys+="<p><b>%s</b>: composed key, %s for %s</p>"%(key,self.ddrules.longName[k2],self.ddrules.longName[k1])
+               sKeys+="\n<p><b>%s</b>: composed key, %s for %s</p>"%(key,self.ddrules.longName[k2],self.ddrules.longName[k1])
             else:
-               sKeys+="<p><b>%s</b>: %s</p>"%(key,self.ddrules.tooltip[key])
+               sKeys+="\n<p><b>%s</b>: %s</p>"%(key,self.ddrules.tooltip[key])
         return sKeys
 
     def update_kwargs(self,kDict,**kwargs):
@@ -5416,8 +5422,15 @@ Save query as:
               oTable   = self.ddrules.tableName[o]
               tabCol   = "%s.%s"%(oTable,self.ddrules.colName[o])
            else:
-              oTable   = self.ddrules.tableName[output]
-              tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
+              if output.find(".")!=-1:
+                 oTab,oCol=output.split(".")
+                 oTable   = self.ddrules.tableName[oTab]
+                 tabCol   = "%s.%s"%(oTable,oCol)
+              else:
+#              try:
+                 oTable   = self.ddrules.tableName[output]
+                 tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
+#              except: pass
               
         self.qmaker.initDBS(dbsInst)
         try:
@@ -5456,11 +5469,10 @@ Save query as:
                  page+="<show>%s-%s</show>\n"%(_idx*pagerStep,_idx*pagerStep+pagerStep)
               page+="</results>\n"
            else:
-              page ="\nFound %s %ss, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
-#              if details:
-#                 page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
-#              else:
-#                 page ="\nFound %s %ss\n"%(nResults,_out)
+              if pagerStep==-1:
+                 page ="\nFound %s %ss\n"%(nResults,_out)
+              else:
+                 page ="\nFound %s %ss, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
         if html:
            # Construct result page
