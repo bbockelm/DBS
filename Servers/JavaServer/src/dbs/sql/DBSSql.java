@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.157 $"
- $Id: DBSSql.java,v 1.157 2008/04/24 22:42:07 sekhri Exp $"
+ $Revision: 1.158 $"
+ $Id: DBSSql.java,v 1.158 2008/04/28 17:01:28 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -195,6 +195,42 @@ public class DBSSql {
                 return ps;
         }
 
+
+        public static PreparedStatement insertMultiMapBatch(Connection conn, String tableName, String key1, String key2,
+                        java.util.ArrayList values1, java.util.ArrayList values2, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+
+                String sql = "INSERT INTO "+owner()+tableName+" \n"+
+                                "("+key1+","+key2+", \n"+
+                                " CreatedBy, LastModifiedBy, CreationDate) \n"+
+                                " select ?, ?, ?, ?, ? FROM DUAL \n";
+                                //" select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if (values1.size() !=  values2.size()) {
+                        throw new SQLException("insertMultiMapBatch: Size mismatch");
+                }
+ 	
+                for (int j = 0; j < values1.size(); ++j) {
+                        int columnIndx = 1;
+                        String value1=(String)values1.get(j);
+			String value2=(String)values2.get(j);
+
+                        ps.setString(columnIndx++, value1);
+                        ps.setString(columnIndx++, value2);
+
+                        ps.setString(columnIndx++, cbUserID);
+                        ps.setString(columnIndx++, lmbUserID);
+                        ps.setString(columnIndx++, cDate);
+
+                        ps.addBatch();
+                }
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+        }
+
+
         //3-Key version
          public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String key3,
                         String mapTo, java.util.ArrayList values, String mapK3, String cbUserID, String lmbUserID, String cDate) throws SQLException {
@@ -275,7 +311,6 @@ public class DBSSql {
                                                         String flagID, String valueID,
                                                         String cbUserID, String lmbUserID, String cDate) throws SQLException
 	{
-
                 Hashtable table = new Hashtable();
                 table.put("Run", runID);
                 if (!DBSUtil.isNull(lumiID)) table.put("Lumi", lumiID);
@@ -285,6 +320,21 @@ public class DBSSql {
                 table.put("LastModifiedBy", lmbUserID);
                 table.put("CreationDate", cDate);
                 return getInsertSQL(conn, "RunLumiQuality", table);
+        }
+
+        public static PreparedStatement insertDQIntFlag(Connection conn, String runID, String lumiID,
+                                                        String flagID, String valueID,
+                                                        String cbUserID, String lmbUserID, String cDate) throws SQLException
+        {
+                Hashtable table = new Hashtable();
+                table.put("Run", runID);
+                if (!DBSUtil.isNull(lumiID)) table.put("Lumi", lumiID);
+                table.put("SubSystem", flagID);
+                table.put("IntDQValue", valueID);
+                table.put("CreatedBy", cbUserID);
+                table.put("LastModifiedBy", lmbUserID);
+                table.put("CreationDate", cDate);
+                return getInsertSQL(conn, "RunLumiDQInt", table);
         }
 
         public static PreparedStatement insertDQVersion(Connection conn, String versionName, String descrp,
@@ -1045,6 +1095,33 @@ public class DBSSql {
 
         }
 
+
+        public static PreparedStatement getDQIntFlag(Connection conn, String runID, String lumiID,
+                                                        String flagID,
+                                                        String value) throws SQLException
+        {
+                String sql = "SELECT DISTINCT ID \n " +
+                        "FROM "+owner()+"RunLumiDQInt \n " +
+                        "WHERE Run = ? \n";
+                if (!DBSUtil.isNull(flagID)) sql +=  "AND SubSystem = ? \n";
+                if (!DBSUtil.isNull(value))  sql +=  "AND IntDQValue = ? \n";
+                if (!DBSUtil.isNull(lumiID)) sql +=  "AND Lumi = ? \n";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, runID);
+                if (!DBSUtil.isNull(flagID)) ps.setString(columnIndx++, flagID);
+                if (!DBSUtil.isNull(value))  ps.setString(columnIndx++, value);
+
+                if (!DBSUtil.isNull(lumiID)) ps.setString(columnIndx++, lumiID);
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+        }
+
+
+
         public static PreparedStatement listDQVersions(Connection conn) throws SQLException
 	{
 		String sql = "SELECT Version as DQ_VERSION, VersionTimeStamp as TIME_STAMP from QualityVersion";
@@ -1248,13 +1325,15 @@ public class DBSSql {
 	// SQL for inserting ProcessedDatatset and its related tables.
 	// ____________________________________________________
 
-	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String aquisitionEra, String globalTag, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Name", name);
 		table.put("PrimaryDataset", primDSID);
 		//table.put("OpenForWriting", );OpenForWriting flag can be managed through Status why we duplicate
 		table.put("PhysicsGroup", phyGroupID);
 		table.put("Status", statusID);
+		if (!DBSUtil.isNull(aquisitionEra)) table.put("AquisitionEra", aquisitionEra);
+		if (!DBSUtil.isNull(globalTag)) table.put("GlobalTag", globalTag);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);
@@ -1887,6 +1966,8 @@ public class DBSSql {
                         //Could be managed by Status field
 			//"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"pds.Status as STATUS, \n" +
+			"pds.AcquisitionEra as ACQUISITION_ERA, \n" +
+			"pds.GlobalTag as GLOBAL_TAG, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +

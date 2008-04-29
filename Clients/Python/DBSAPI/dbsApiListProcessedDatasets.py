@@ -93,6 +93,8 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
 						PhysicsGroup=str(attrs['physics_group_name']),
 						PhysicsGroupConverner=str(attrs['physics_group_convener']),
 						Status=ds_status,
+						AcquisitionEra=str(attrs['acquisition_era']),
+						GlobalTag=str(attrs['global_tag']),
                                                 #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=self.primName),
                                                 CreationDate=str(attrs['creation_date']),

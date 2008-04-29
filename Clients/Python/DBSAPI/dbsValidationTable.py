@@ -71,6 +71,8 @@ ValidationTable = {
          "Status" : { "Comment" : "A required variable", "Validator" : isStringType },
          "OpenForWriting" : { "Comment" : "Not required (Defalted to 'y' when new Dataset is created)", "Validator" : isStringType },
          "PrimaryDataset" : { "Comment" : "A required variable", "Validator" : isDictType },
+         "AcquisitionEra" : { "Comment" : "An optional variable", "Validator" : isStringType },
+         "GlobalTag" : { "Comment" : "An optional variable", "Validator" : isStringType },
          "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "PathList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },

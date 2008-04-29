@@ -1,6 +1,6 @@
 /**
- $Revision: 1.57 $"
- $Id: DBSApiProcDSLogic.java,v 1.57 2008/04/15 14:26:36 afaq Exp $"
+ $Revision: 1.58 $"
+ $Id: DBSApiProcDSLogic.java,v 1.58 2008/04/28 21:44:42 afaq Exp $"
  *
  */
 
@@ -112,6 +112,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
 							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
 							"' status='" +  get(rs, "STATUS") +
+							"' acquisition_era='" +  get(rs, "ACQUISITION_ERA") +
+							"' global_tag='" +  get(rs, "GLOBAL_TAG") +
 							"' creation_date='" + getTime(rs, "CREATION_DATE") +
 							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
@@ -422,6 +424,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					get(dataset, "open_for_writing", false),
 					getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 					getID(conn, "ProcDSStatus", "Status", status, true), 
+					get(dataset, "acquisition_era", false),
+					get(dataset, "global_tag", true),
 					cbUserID,
 					lmbUserID,
 					creationDate);
