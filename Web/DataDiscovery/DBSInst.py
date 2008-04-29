@@ -208,7 +208,7 @@ class DBManager(DDLogger):
               if eType=='oracle':
                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
               else:
-                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True)
+                 tables[tName]=sqlalchemy.Table(t[0],dbsMeta,autoload=True)
               if self.verbose>1:
                  print tables[tName].__dict__
           if  eType=='oracle': # read views separately
@@ -220,7 +220,7 @@ class DBManager(DDLogger):
                   if eType=='oracle':
                      tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
                   else:
-                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True)
+                     tables[tName]=sqlalchemy.Table(v[0],dbsMeta,autoload=True)
                   if self.verbose>1:
                      print tables[tName].__dict__
           self.dbTables[dbsInst]=tables
