@@ -42,6 +42,7 @@ public class KeyMap {
 		map.put("lumi.createdate", "LumiSection.CreationDate");
 		map.put("lumi.moddate", "LumiSection.LastModificationDate");
 		
+		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 	}
 	public String getMappedValue(String key) {

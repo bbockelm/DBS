@@ -225,46 +225,50 @@ public class QueryBuilder {
 				} else {
 
 
-					if(key.indexOf(".") == -1) throw new Exception("In specifying constraints qualify keys with dot operater. Invalid key " + key);
+					//if(key.indexOf(".") == -1) throw new Exception("In specifying constraints qualify keys with dot operater. Invalid key " + key);
 
 					StringTokenizer st = new StringTokenizer(key, ".");
 					int count = st.countTokens();
-					String token = st.nextToken();
-					String token2 = st.nextToken();
-					String tmpTableName =  token + "_" + token2;
-					if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
-						boolean dontJoin = false;
-						String personField = "CreatedBy";
-						if(Util.isSame(token2, "modby")) {
-							if(modByAdded) dontJoin = true;
-							personField = "LastModifiedBy";
-							modByAdded = true;
-						} else {
-							if(createByAdded) dontJoin = true;
-							createByAdded = true;
-						}
-						//String tmpTableName =  token + "_" + token2;
-						if(!dontJoin)
-							personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
-								"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
-						queryWhere += tmpTableName + ".DistinguishedName ";			
-					} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
-						boolean dontJoin = false;
-						if(fileParentAdded) dontJoin = true;
-						fileParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
-						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
-						queryWhere += tmpTableName + ".LogicalFileName ";			
-					} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
-						boolean dontJoin = false;
-						if(datasetParentAdded) dontJoin = true;
-						datasetParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
-						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
-						queryWhere += tmpTableName + ".Name ";			
-
+					boolean doGeneric = false;
+					if(count == 2) {
+						String token = st.nextToken();
+						String token2 = st.nextToken();
+						String tmpTableName =  token + "_" + token2;
+						if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
+							boolean dontJoin = false;
+							String personField = "CreatedBy";
+							if(Util.isSame(token2, "modby")) {
+								if(modByAdded) dontJoin = true;
+								personField = "LastModifiedBy";
+								modByAdded = true;
+							} else {
+								if(createByAdded) dontJoin = true;
+								createByAdded = true;
+							}
+							//String tmpTableName =  token + "_" + token2;
+							if(!dontJoin)
+								personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
+									"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
+							queryWhere += tmpTableName + ".DistinguishedName ";			
+						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
+							boolean dontJoin = false;
+							if(fileParentAdded) dontJoin = true;
+							fileParentAdded = true;
+							//String tmpTableName =  token + "_" + token2;
+							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
+							queryWhere += tmpTableName + ".LogicalFileName ";			
+						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
+							boolean dontJoin = false;
+							if(datasetParentAdded) dontJoin = true;
+							datasetParentAdded = true;
+							//String tmpTableName =  token + "_" + token2;
+							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
+							queryWhere += tmpTableName + ".Name ";			
+						} else doGeneric = true;
 					
-					}else {
+					}else doGeneric = true;
+						
+					if(doGeneric) {
 						//Vertex vFirst = u.getMappedVertex(token);
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined == null) {
@@ -275,6 +279,7 @@ public class QueryBuilder {
 						}
 					}
 					if(Util.isSame(op, "in")) queryWhere += handleIn(val);
+					else if(Util.isSame(op, "like")) queryWhere += handleLike(val);
 					else {
 						//queryWhere += op + " '" + val + "'";
 						queryWhere += op + " ?";
@@ -361,6 +366,10 @@ public class QueryBuilder {
 		return ( "\tJOIN " + table1 + " " + tmpTableName + "\n" +
 				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ItsParent\n" );
 
+	}
+	private String handleLike(String val) {
+		bindValues.add(val.replace('*','%'));
+		return "LIKE ?";
 	}
 
 	private String handleIn(String val) {

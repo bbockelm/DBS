@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-04-25 11:41:22
+// $ANTLR 3.0.1 Sql.g 2008-04-29 14:19:17
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -1148,10 +1148,10 @@ public class SqlLexer extends Lexer {
     public final void mVALUE() throws RecognitionException {
         try {
             int _type = VALUE;
-            // Sql.g:74:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' )+ )
-            // Sql.g:74:8: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' )+
+            // Sql.g:76:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' )+ )
+            // Sql.g:76:8: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' )+
             {
-            // Sql.g:74:8: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' )+
+            // Sql.g:76:8: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' )+
             int cnt1=0;
             loop1:
             do {
@@ -1204,11 +1204,11 @@ public class SqlLexer extends Lexer {
     public final void mCOMMA() throws RecognitionException {
         try {
             int _type = COMMA;
-            // Sql.g:75:7: ( ( ',' ) )
-            // Sql.g:75:8: ( ',' )
+            // Sql.g:77:7: ( ( ',' ) )
+            // Sql.g:77:8: ( ',' )
             {
-            // Sql.g:75:8: ( ',' )
-            // Sql.g:75:9: ','
+            // Sql.g:77:8: ( ',' )
+            // Sql.g:77:9: ','
             {
             match(','); 
 
@@ -1228,11 +1228,11 @@ public class SqlLexer extends Lexer {
     public final void mSPACE() throws RecognitionException {
         try {
             int _type = SPACE;
-            // Sql.g:76:7: ( ( ' ' ) )
-            // Sql.g:76:8: ( ' ' )
+            // Sql.g:78:7: ( ( ' ' ) )
+            // Sql.g:78:8: ( ' ' )
             {
-            // Sql.g:76:8: ( ' ' )
-            // Sql.g:76:9: ' '
+            // Sql.g:78:8: ( ' ' )
+            // Sql.g:78:9: ' '
             {
             match(' '); 
 
@@ -1252,11 +1252,11 @@ public class SqlLexer extends Lexer {
     public final void mDOT() throws RecognitionException {
         try {
             int _type = DOT;
-            // Sql.g:77:5: ( ( '.' ) )
-            // Sql.g:77:6: ( '.' )
+            // Sql.g:79:5: ( ( '.' ) )
+            // Sql.g:79:6: ( '.' )
             {
-            // Sql.g:77:6: ( '.' )
-            // Sql.g:77:7: '.'
+            // Sql.g:79:6: ( '.' )
+            // Sql.g:79:7: '.'
             {
             match('.'); 
 
@@ -1276,11 +1276,11 @@ public class SqlLexer extends Lexer {
     public final void mGT() throws RecognitionException {
         try {
             int _type = GT;
-            // Sql.g:78:4: ( ( '>' ) )
-            // Sql.g:78:5: ( '>' )
+            // Sql.g:80:4: ( ( '>' ) )
+            // Sql.g:80:5: ( '>' )
             {
-            // Sql.g:78:5: ( '>' )
-            // Sql.g:78:6: '>'
+            // Sql.g:80:5: ( '>' )
+            // Sql.g:80:6: '>'
             {
             match('>'); 
 
@@ -1300,11 +1300,11 @@ public class SqlLexer extends Lexer {
     public final void mLT() throws RecognitionException {
         try {
             int _type = LT;
-            // Sql.g:79:4: ( ( '<' ) )
-            // Sql.g:79:5: ( '<' )
+            // Sql.g:81:4: ( ( '<' ) )
+            // Sql.g:81:5: ( '<' )
             {
-            // Sql.g:79:5: ( '<' )
-            // Sql.g:79:6: '<'
+            // Sql.g:81:5: ( '<' )
+            // Sql.g:81:6: '<'
             {
             match('<'); 
 
@@ -1324,11 +1324,11 @@ public class SqlLexer extends Lexer {
     public final void mEQ() throws RecognitionException {
         try {
             int _type = EQ;
-            // Sql.g:80:4: ( ( '=' ) )
-            // Sql.g:80:5: ( '=' )
+            // Sql.g:82:4: ( ( '=' ) )
+            // Sql.g:82:5: ( '=' )
             {
-            // Sql.g:80:5: ( '=' )
-            // Sql.g:80:6: '='
+            // Sql.g:82:5: ( '=' )
+            // Sql.g:82:6: '='
             {
             match('='); 
 
@@ -1348,11 +1348,11 @@ public class SqlLexer extends Lexer {
     public final void mAMP() throws RecognitionException {
         try {
             int _type = AMP;
-            // Sql.g:81:5: ( ( '&' ) )
-            // Sql.g:81:6: ( '&' )
+            // Sql.g:83:5: ( ( '&' ) )
+            // Sql.g:83:6: ( '&' )
             {
-            // Sql.g:81:6: ( '&' )
-            // Sql.g:81:7: '&'
+            // Sql.g:83:6: ( '&' )
+            // Sql.g:83:7: '&'
             {
             match('&'); 
 
@@ -1372,8 +1372,8 @@ public class SqlLexer extends Lexer {
     public final void mSTAR() throws RecognitionException {
         try {
             int _type = STAR;
-            // Sql.g:82:6: ( ( '*' | '%' ) )
-            // Sql.g:82:7: ( '*' | '%' )
+            // Sql.g:84:6: ( ( '*' | '%' ) )
+            // Sql.g:84:7: ( '*' | '%' )
             {
             if ( input.LA(1)=='%'||input.LA(1)=='*' ) {
                 input.consume();
@@ -1399,11 +1399,11 @@ public class SqlLexer extends Lexer {
     public final void mNL() throws RecognitionException {
         try {
             int _type = NL;
-            // Sql.g:83:4: ( ( '\\n' ) )
-            // Sql.g:83:5: ( '\\n' )
+            // Sql.g:85:4: ( ( '\\n' ) )
+            // Sql.g:85:5: ( '\\n' )
             {
-            // Sql.g:83:5: ( '\\n' )
-            // Sql.g:83:6: '\\n'
+            // Sql.g:85:5: ( '\\n' )
+            // Sql.g:85:6: '\\n'
             {
             match('\n'); 
 
@@ -1423,10 +1423,10 @@ public class SqlLexer extends Lexer {
     public final void mWS() throws RecognitionException {
         try {
             int _type = WS;
-            // Sql.g:84:5: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
-            // Sql.g:84:7: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:86:5: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
+            // Sql.g:86:7: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             {
-            // Sql.g:84:7: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:86:7: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             int cnt2=0;
             loop2:
             do {

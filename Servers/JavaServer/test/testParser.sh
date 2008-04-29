@@ -23,6 +23,7 @@ executeQuery () {
 	$CMD query="find lumi.id,lumi.id,file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
 	$CMD query="find run where run.number>1 and run.number<100"
 	$CMD query="find run.count where run.number > 1 and run.number < 100"
+	$CMD query="find run.count where run > 1 and run < 100"
 	$CMD query="find run.count where dataset=/CalPrivateGlobal-default/Online/RAW"
 	$CMD query="find file,run,lumi  where dataset=/GlobalMar08-Express/Online/RAW and file.type = STREAMER"
 	$CMD query="find file, run,lumi where dataset like %Online%"
@@ -45,7 +46,10 @@ executeQuery () {
 	$CMD query="find file.id,lumi.id,dataset   where procds.release=CMSSW_1_7_1"
 	$CMD query="find file.createby,file.modby,file.modby where file.createby like %sekhri% or file.modby like %sekhri% and file.createby like %sek%"
 	$CMD query="find procds, procds.createdate,run,lumi.moddate where run.number in (1,2,3)" 
+	$CMD query="find dataset where site like %srm.cern*" 
+	$CMD query="find file where run > 1 and run < 1000000"
 	$CMD query="find procds.status  where dataset = /CalPrivateGlobal-default/Online/RAW"
+	$CMD query="find site" 
 	$CMD query="find file.parent,file.parent, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
 	$CMD query="find procds.parent,procds.name  where procds.name like %Test% or procds.parent like %"
 	$CMD query="find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW  or dataset=/abc/Online/RAW"
@@ -61,4 +65,6 @@ executeQuery () {
 #$CMD query="find procds.parent,procds.name,file,file.parent  where procds.parent like %"
 
 #$CMD query="find lumi.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW,/GlobalMar08-Express/Online/RAW)" 
+#$CMD query="find dataset where site.name like %srm.cern*" 
 executeQuery
+

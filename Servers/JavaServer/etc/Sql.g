@@ -57,10 +57,12 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 	val2=	likeValue 		{c.setValue($val2.text); constraints.add(c);};                  
 
 where	:('WHERE' | 'where');
-valueList	:VALUE ( spaces COMMA spaces VALUE )*;
-genValue	:VALUE|
-		VALUE EQ VALUE (AMP VALUE EQ VALUE)*;
-likeValue 	:(VALUE| STAR)+;
+dotValue        : VALUE 
+		| VALUE DOT VALUE;
+valueList	:dotValue ( spaces COMMA spaces dotValue )*;
+genValue	:dotValue|
+		dotValue EQ dotValue (AMP dotValue EQ dotValue)*;
+likeValue 	:(dotValue| STAR)+;
 logicalOp	:(and|or);
 entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq');
 attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent');
