@@ -3,6 +3,7 @@
 #import time
 At $time.strftime("%d %b %Y %H:%M:%S GMT",$time.gmtime()) the following
 data discovery services are available:
+<div id="dbs-list">
 <ul>
 #for dd in $ddList
 <li>
@@ -10,5 +11,6 @@ data discovery services are available:
 </li>
 #end for
 </ul>
+</div>
 
 <!-- end of templateRemoteDD.tmpl -->
