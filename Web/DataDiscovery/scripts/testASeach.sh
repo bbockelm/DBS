@@ -1,9 +1,11 @@
 #!/bin/sh
 export PATH=$PWD:$PATH
 cmd=DDSearchCLI.py
-host=https://cmsweb.cern.ch/dbs_discovery_test
-#host=https://cmsweb.cern.ch/dbs_discovery_new
-#host=https://cmsweb.cern.ch/dbs_discovery
+if [ $# -ne 1 ]; then
+   echo "\nUsage: testASearch.sh prod|test|new\n"
+   exit
+fi
+host=https://cmsweb.cern.ch/dbs_discovery_$1
 echo
 echo "Using host=$host"
 echo
@@ -31,10 +33,19 @@ for input in \
 "find dataset where dataset like *" \
 "find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW" \
 "find file,total(run) where dataset=/Commissioning2008Ecal-A/Online/RAW" \
-"find file,lumi where dataset=/GlobalMar08-Express/Online/RAW"
+"find file,lumi where dataset=/GlobalMar08-Express/Online/RAW" \
+"find run,run.numevents,run.numlumi,run.totlumi,run.createby,run.createdate where dataset=/GlobalMar08-Express/Online/RAW"
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input" --details --xml
+done
+
+echo "### TEST cff output ###"
+for input in \
+"find file where release=CMSSW_1_6_7"
+do
+    echo "input=\"$input\""
+    $cmd --host=$host --input="$input" --cff
 done
 
 echo "### TEST xml output ###"
