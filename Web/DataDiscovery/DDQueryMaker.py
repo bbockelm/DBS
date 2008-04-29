@@ -157,7 +157,7 @@ class DDQueryMaker(DDLogger):
       return oBy
 
   def makeJoinQuery(self,toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict={}):
-      print "\n\n+++makeJoinQuery",toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict
+#      print "\n\n+++makeJoinQuery",toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict
       try:
           person = self.dbManager.getTable(self.dbsInstance,'Person')
           oSel   = []
@@ -184,7 +184,6 @@ class DDQueryMaker(DDLogger):
           for tabCol in toJoin.split(","):
               tab,col = tabCol.split(".")
               tabOut  = self.dbManager.getTable(self.dbsInstance,tab)
-              print tab,col
               # special case for createby/modifyby
               if col.lower().find('createdby')!=-1 or \
                  col.lower().find('creationdate')!=-1 or \
@@ -585,7 +584,7 @@ class DDQueryMaker(DDLogger):
          sortName=c
       dbTables = self.dbManager.getTableNames(self.dbsInstance)
       tName    = output+"summary"
-      if dbTables.count(tName.lower()):
+      if dbTables.count(tName.lower()) and limit:
          return self.executeQueryFromView(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       else:
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
