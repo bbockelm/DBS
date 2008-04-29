@@ -1147,7 +1147,7 @@ table.sortable span.sortarrow {
 .float_aSearch_help {
   position: absolute; 
   left: 15%;
-  top: 160px; 
+  top: 140px; 
   height: 400px; 
   width: 75%;
   padding: 1em;
@@ -1443,3 +1443,15 @@ a.submenu:hover
 {
     text-decoration: underline;
 }
+/* Styles for lists */
+#dbs-list ul {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 1em;
+    text-indent: -1em;
+    }
+
+#dbs-list ul li:before {
+    content: "\00BB \0020";
+    }
+
