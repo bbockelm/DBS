@@ -5007,6 +5007,7 @@ Save query as:
         case     = kwargs['caseSensitive']
         userMode = kwargs['userMode']
         output   = kwargs['output']
+        cff      = int(getArg(kwargs,'cff',0))
         self.qmaker.initDBS(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         sel      = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
@@ -5044,6 +5045,8 @@ Save query as:
               page+="\n<output>\n"
            else:
               page ="\n"
+              if cff and output=="file":
+                 page+="replace PoolSource.fileNames = {\n"
         for item in result:
             if output.find(",")==-1:
                res=item[0]
@@ -5070,11 +5073,18 @@ Save query as:
                          page+="    <%s>%s</%s>\n"%(tag,elem,tag)
                      page+="  </row>\n"
                else:
-                  page+="%s \n"%res
+                  if cff and output=="file":
+                     page+="'%s',\n"%res
+                  else:
+                     page+="%s \n"%res
         if html:
            page+=self.genBottomHTML()
         elif xml:
              page+="</output>\n"
+        else:
+            if cff and output=="file":
+               idx=page.rfind(",")
+               page=page[:idx]+"\n}\n"
         return page
     aSearchShowAll.exposed=True
 
@@ -5355,6 +5365,7 @@ Save query as:
         case      = getArg(kwargs,'caseSensitive','on')
         sortName  = getArg(kwargs,'sortName','')
         details   = getArg(kwargs,'details',1)
+        cff       = getArg(kwargs,'cff',0)
         try:
             userInput = kwargs['userInput']
         except:
@@ -5420,7 +5431,7 @@ Save query as:
         nResults = self.qmaker.countSel(query,tabCol)
 
         # construct output kwargs
-        kDict=self.update_kwargs(kwargs,query=query,output=output,tabCol=tabCol,sortName=sortName,sortOrder=sortOrder,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,case=case)
+        kDict=self.update_kwargs(kwargs,query=query,output=output,tabCol=tabCol,sortName=sortName,sortOrder=sortOrder,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,case=case,cff=cff)
 
         if html:
            page = self.genTopHTML(userMode=userMode)
@@ -5439,11 +5450,17 @@ Save query as:
               for key in bParams:
                   bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
               page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s  </bindparams>\n   <executiontime>__time__</executiontime>\n   <asearchtime>__fulltime__</asearchtime>\n</query>\n"""%(formatQuery(str(query)),bindParams)
+              page+="<results>\n"
+              page+="<total>%s</total>\n"%nResults
+              if pagerStep!=-1:
+                 page+="<show>%s-%s</show>\n"%(_idx*pagerStep,_idx*pagerStep+pagerStep)
+              page+="</results>\n"
            else:
-              if details:
-                 page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
-              else:
-                 page ="\nFound %s %ss\n"%(nResults,_out)
+              page ="\nFound %s %ss, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
+#              if details:
+#                 page ="\nFound %s %ss, showing results from %s-%s\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
+#              else:
+#                 page ="\nFound %s %ss\n"%(nResults,_out)
 
         if html:
            # Construct result page
