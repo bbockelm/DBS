@@ -2831,7 +2831,7 @@ END;
 /
 
 -- Set the Schema Version -- 
-INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_0_9', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_1_0', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 -- Pre Fill some information into tables ---------
 INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('VALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
