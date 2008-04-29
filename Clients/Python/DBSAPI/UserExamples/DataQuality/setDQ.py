@@ -29,8 +29,8 @@ class DbsDQOptionParser(optparse.OptionParser):
 
       self.add_option("--tag", action="store", type="string", dest="tag", help="Quality Information Mask")
 
-      self.add_option("--value", action="store", type="string", dest="value", default="UNKNOWN", 
-		help="Value can be GOOD, BAD and UNKNOWN (Defualt)")
+      self.add_option("--value", action="store", type="string", dest="value", 
+		help="Value can be GOOD, BAD and UNKNOWN or a INTEGER value")
 
 
 
