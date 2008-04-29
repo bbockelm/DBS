@@ -160,7 +160,7 @@ class DDRules:
            'endtime'     :{'run':'EndOfRun','lumi':'LumiEndTime'},
            'numlumi'     :{'run':'NumberOfLumiSections'},
            'totlumi'     :{'run':'TotalLuminosity'},
-           'type'        :{'file':'FileType.Type','primds':'PrimDSType.Type','ads':'AnalysisDSType.Type'},
+           'type'        :{'file':'FileType.Type','primds':'PrimaryDSType.Type','ads':'AnalysisDSType.Type'},
            'convener'    :{'group':'PhysicsGroupConvener'},
        }
        self.colFunc = {
