@@ -481,6 +481,24 @@ CREATE TABLE RunLumiQuality
 
 REM ======================================================================
 
+CREATE TABLE RunLumiDQInt
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    IntDQValue            INT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Run,Lumi,SubSystem)
+  ) ENGINE = InnoDB ;
+
+REM ======================================================================
+
 CREATE TABLE QualityHistory
   (
     ID                    BIGINT UNSIGNED,
@@ -616,6 +634,8 @@ CREATE TABLE ProcessedDataset
     PrimaryDataset        BIGINT UNSIGNED   not null,
     PhysicsGroup          BIGINT UNSIGNED   not null,
     Status                BIGINT UNSIGNED   not null,
+    AquisitionEra	  varchar(255),
+    GlobalTag             varchar(255),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -1525,5 +1545,21 @@ ALTER TABLE SEBlock ADD CONSTRAINT
 /
 ALTER TABLE SEBlock ADD CONSTRAINT 
     SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Run_FK foreign key(Run) references Runs(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQIntLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 

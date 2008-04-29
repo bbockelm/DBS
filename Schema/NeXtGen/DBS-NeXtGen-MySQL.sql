@@ -111,10 +111,13 @@ CREATE TABLE ProcessedDataset
     PrimaryDataset        BIGINT UNSIGNED   not null,
     PhysicsGroup          BIGINT UNSIGNED   not null,
     Status                BIGINT UNSIGNED   not null,
+    AquisitionEra          varchar(255),
+    GlobalTag             varchar(255),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
+    AqusitionEra          varchar(50),
 
     primary key(ID),
     unique(Name,PrimaryDataset)
@@ -886,6 +889,25 @@ CREATE TABLE RunLumiQuality
 
 -- ======================================================================
 
+CREATE TABLE RunLumiDQInt
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    IntDQValue            INT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Run,Lumi,SubSystem)
+  ) ENGINE = InnoDB ;
+
+
+-- ======================================================================
+
 CREATE TABLE QualityHistory
   (
     ID                    BIGINT UNSIGNED,
@@ -1589,5 +1611,21 @@ ALTER TABLE BranchHashMap ADD CONSTRAINT
 /
 ALTER TABLE BranchHashMap ADD CONSTRAINT 
     BranchHashMapLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Run_FK foreign key(Run) references Runs(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQIntLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 

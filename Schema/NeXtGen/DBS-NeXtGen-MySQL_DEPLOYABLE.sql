@@ -111,6 +111,8 @@ CREATE TABLE ProcessedDataset
     PrimaryDataset        BIGINT UNSIGNED   not null,
     PhysicsGroup          BIGINT UNSIGNED   not null,
     Status                BIGINT UNSIGNED   not null,
+    AquisitionEra	  varchar(255),
+    GlobalTag             varchar(255),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -884,6 +886,25 @@ CREATE TABLE RunLumiQuality
     unique(Run,Lumi,SubSystem)
   ) ENGINE = InnoDB ;
 
+
+-- ======================================================================
+    
+CREATE TABLE RunLumiDQInt
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    IntDQValue            INT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Run,Lumi,SubSystem)
+  ) ENGINE = InnoDB ;
+
 -- ======================================================================
 
 CREATE TABLE QualityHistory
@@ -1535,6 +1556,23 @@ ALTER TABLE RunLumiQuality ADD CONSTRAINT
     RunLumiQualityLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Run_FK foreign key(Run) references Runs(ID)
+;
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT   
+    RunLumiDQInt_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+;   
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT 
+    RunLumiDQInt_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+;
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQIntLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiQuality(ID)
 ;
@@ -1755,6 +1793,9 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_RunLumiQuality BEFORE INSERT ON RunLumiQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER TR_RunLumiDQInt BEFORE INSERT ON RunLumiDQInt
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 
 CREATE TRIGGER TR_QualityVersion BEFORE INSERT ON QualityVersion
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
@@ -1930,6 +1971,10 @@ CREATE TRIGGER UTR_SubSystem BEFORE UPDATE ON SubSystem
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_RunLumiQuality BEFORE UPDATE ON RunLumiQuality
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+
+CREATE TRIGGER UTR_RunLumiDQInt BEFORE UPDATE ON RunLumiDQInt
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 

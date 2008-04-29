@@ -486,6 +486,24 @@ CREATE TABLE RunLumiQuality
 
 REM ======================================================================
 
+CREATE TABLE RunLumiDQInt
+  ( 
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    IntDQValue            INT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Run,Lumi,SubSystem)
+  ) ENGINE = InnoDB ;
+
+REM ======================================================================
+
 CREATE TABLE QualityHistory
   (
     ID                    integer,
@@ -621,6 +639,8 @@ CREATE TABLE ProcessedDataset
     PrimaryDataset        integer   not null,
     PhysicsGroup          integer   not null,
     Status                integer   not null,
+    AquisitionEra         varchar(255),
+    GlobalTag             varchar(255),
     CreatedBy             integer,
     CreationDate          integer,
     LastModifiedBy        integer,
@@ -1170,6 +1190,24 @@ ALTER TABLE RunLumiQuality ADD CONSTRAINT
     RunLumiQualityLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Run_FK foreign key(Run) references Runs(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQIntLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiQuality(ID)
 /
@@ -1604,6 +1642,8 @@ PROMPT creating sequence seq_subsystem ;
 create sequence seq_subsystem ;
 PROMPT creating sequence seq_runlumiquality ;
 create sequence seq_runlumiquality ;
+PROMPT creating sequence seq_runlumidqint ;
+create sequence seq_runlumidqint ;
 PROMPT creating sequence seq_qualityhistory ;
 create sequence seq_qualityhistory ;
 PROMPT creating sequence seq_qualityversion ;
@@ -1888,6 +1928,14 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: subsystem
 
 PROMPT AUTO INC TRIGGER FOR Trigger for Table: runlumiquality
  CREATE OR REPLACE TRIGGER runlumiquality_TRIG before insert on runlumiquality    for each row begin     if inserting then       if :NEW.ID is null then          select seq_runlumiquality.nextval into :NEW.ID from dual;       end if;    end if; end;
+/
+
+RunLumiDQInt
+-- ====================================================
+-- AUTO INC TRIGGER FOR runlumidqint.ID using SEQ seq_runlumidqint
+
+PROMPT AUTO INC TRIGGER FOR Trigger for Table: runlumidqint
+ CREATE OR REPLACE TRIGGER runlumidqint_TRIG before insert on runlumidqint    for each row begin     if inserting then       if :NEW.ID is null then          select seq_runlumidqint.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
 -- ====================================================
@@ -2496,6 +2544,19 @@ END;
 
 PROMPT LastModified Time Stamp Trigger for Table: runlumiquality
 CREATE OR REPLACE TRIGGER TRTSrunlumiquality BEFORE INSERT OR UPDATE ON runlumiquality
+FOR EACH ROW declare
+  unixtime integer
+     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
+BEGIN
+  :NEW.LASTMODIFICATIONDATE := unixtime;
+END;
+/
+
+-- ====================================================
+-- LastModified Time Stamp Trigger
+
+PROMPT LastModified Time Stamp Trigger for Table: runlumidqint 
+CREATE OR REPLACE TRIGGER TRTSrunlumidqint BEFORE INSERT OR UPDATE ON runlumidqint
 FOR EACH ROW declare
   unixtime integer
      :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
