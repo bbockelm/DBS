@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.39 $"
- $Id: DBSServlet.java,v 1.39 2008/03/21 22:10:20 sekhri Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSServlet.java,v 1.40 2008/03/25 21:35:53 sekhri Exp $"
 
  */
 package dbs;
@@ -24,7 +24,7 @@ import dbs.util.DBSUtil;
 import dbs.util.DBSConfig;
 import dbs.data.DBSDataCache;
 import db.DBManagement;
-
+import dbs.search.graph.GraphUtil;
 
 /**
 * A Servlet that inherits from <code>javax.servlet.http.HttpServlet</code>. This is the gateway for invoking DBS API. All remote requets pass through this servlet. This class simple implements doPost and doGet method and involes the DBS api that handles the rest.
@@ -73,12 +73,17 @@ public class DBSServlet extends HttpServlet{
 			//System.out.println("supportedClientVersions: "+supportedClientVersions);
 
 			String configFilePath = context.getRealPath("META-INF/context.xml");
+			String graphFilePath = context.getRealPath("META-INF/DBSSchemaGraph.xml");
        			System.out.println("configFilePath : "+configFilePath);
        			System.out.println("SEREVER INFO: "+context.getServerInfo() );
        			System.out.println("---------------------------------------------------------------");
        			System.out.println("DBS reading configuration file");
        			DBSConfig dbsconfig = DBSConfig.getInstance(configFilePath);
        			System.out.println("DBS configuration file read successfully");
+       			System.out.println("DBS reading schema graph file " + graphFilePath);
+			GraphUtil.getInstance(graphFilePath);
+       			System.out.println("DBS read schema graph file successfully");
+			//ANTLRStringStream input = new ANTLRStringStream("find procds");
        			System.out.println("---------------------------------------------------------------\n");
        			System.out.println("DBS making database connection");
        			Connection conn = DBManagement.getDBConnManInstance().getConnection();

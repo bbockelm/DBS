@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.158 $"
- $Id: DBSSql.java,v 1.158 2008/04/28 17:01:28 afaq Exp $"
+ $Revision: 1.159 $"
+ $Id: DBSSql.java,v 1.159 2008/04/29 22:09:23 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1895,7 +1895,7 @@ public class DBSSql {
 			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
 			"procds.name as PROCESSED_DATATSET_NAME \n" +
 			"FROM "+owner()+"ProcessedDataset procds \n" +
-			"JOIN PrimaryDataset primds \n" +
+			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -1985,7 +1985,7 @@ public class DBSSql {
 			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
 			"blk.Path as PATH \n" +
 			"FROM "+owner()+"ProcessedDataset procds \n" +
-			"JOIN PrimaryDataset primds \n" +
+			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
 			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +

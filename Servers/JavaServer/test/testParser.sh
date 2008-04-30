@@ -56,6 +56,12 @@ executeQuery () {
 	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 
 	$CMD query="find dataset, procds.createdate where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
 	$CMD query="find file,lumi,dataset where dq = Tracker_Global=GOOD&TIB_Local=GOOD&TIB_DCS=UNKNOWN or file.size > 1000" 
+	$CMD query="find file, file.tier" 
+	$CMD query="find file where file.tier = GEN" 
+	$CMD query="find procds,file where procds.tier = GEN" 
+	$CMD query="find procds,file,file.tier where dataset like *" 
+	$CMD query="find procds,file where procds.tier in (GEN,SIM,RAW)" 
+
 }
 #$CMD query="find file,file.parent where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
 #$CMD query="find lumi.id,file.id where dq = Tracker_Global=GOOD&TIB_Local=BAD&TIB_DCS=UNKNOWN and dataset = /CalPrivateGlobal-default/Online/RAW" 
@@ -66,5 +72,16 @@ executeQuery () {
 
 #$CMD query="find lumi.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW,/GlobalMar08-Express/Online/RAW)" 
 #$CMD query="find dataset where site.name like %srm.cern*" 
-executeQuery
+#$CMD query="find file,lumi,site where dataset = /CalPrivateGlobal-default/Online/RAW" 
+#$CMD query="find file,file.parent where dataset = /CalPrivateGlobal-default/Online/RAW" 
+#$CMD query="find file,file.parent" 
+#$CMD query="find procds,procds.parent" 
+#$CMD query="find procds.tier, procds" 
+#$CMD query="find file, file.tier" 
+#$CMD query="find file where file.tier = GEN" 
+#$CMD query="find procds,file where procds.tier = GEN" 
+#$CMD query="find procds,file,file.tier where dataset like *" 
+#$CMD query="find procds.tier where procds.tier like *" 
+$CMD query="find file where file.release  like * or  dataset=/abc/Online/RAW"
+#executeQuery
 

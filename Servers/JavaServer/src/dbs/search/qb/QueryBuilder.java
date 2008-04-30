@@ -72,12 +72,14 @@ public class QueryBuilder {
 						query += makeQueryFromDefaults(u.getVertex("QueryableParameterSet"));
 						adQuery = false;
 					}*/
-					if(Util.isSame(token2, "release")) {
+					if(Util.isSame(token2, "release") ||
+							Util.isSame(token2, "tier")) {
 						String realName = u.getMappedRealName(token2);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
 						query += makeQueryFromDefaults(u.getVertex(realName));			
 						addQuery = false;
 					}
+
 					if(Util.isSame(token2, "count")) {
 						query += "COUNT(*)";			
 						addQuery = false;
@@ -217,11 +219,20 @@ public class QueryBuilder {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tRuns.ID" + handleDQ(val);
 				} else if(Util.isSame(key, "file.release")) {
-					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
-					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(val);
+					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
+					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(op, val);
+				} else if(Util.isSame(key, "file.tier")) {
+					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
+					queryWhere += "\tFileTier.DataTier" + handleTier(op, val);
+
 				} else if(Util.isSame(key, "procds.release")) {
-					if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
-					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(val);
+					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
+					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
+				} else if(Util.isSame(key, "procds.tier")) {
+					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
+					queryWhere += "\tProcDSTier.DataTier" + handleTier(op, val);
+
+
 				} else {
 
 
@@ -278,13 +289,14 @@ public class QueryBuilder {
 							//FIXME default can be list
 						}
 					}
-					if(Util.isSame(op, "in")) queryWhere += handleIn(val);
+					queryWhere += handleOp(op, val);
+					/*if(Util.isSame(op, "in")) queryWhere += handleIn(val);
 					else if(Util.isSame(op, "like")) queryWhere += handleLike(val);
 					else {
 						//queryWhere += op + " '" + val + "'";
 						queryWhere += op + " ?";
 						bindValues.add(val);
-					}
+					}*/
 				}
 
 			} else {
@@ -327,7 +339,10 @@ public class QueryBuilder {
 						if(u.doesEdgeExist(v1, v2)) {
 							//System.out.println("Relation bwteen " + v1 + " and " + v2 + " is " + u.getRealtionFromVertex(v1, v2));
 							String tmp = u.getRealtionFromVertex(v1, v2);
-							query += "\tJOIN " + v1 + "\n";
+							query += "\t";
+							if(Util.isSame(v1, "FileParentage") ||
+									Util.isSame(v1, "ProcDSParent")) query += "LEFT OUTER ";
+							query += "JOIN " + v1 + "\n";
 							query += "\t\tON " + tmp + "\n";
 							//uniquePassed.add(v1 + "," + v2);
 							break;
@@ -363,7 +378,7 @@ public class QueryBuilder {
 	}*/
 
 	private String handleParent(String tmpTableName, String table1, String table2){
-		return ( "\tJOIN " + table1 + " " + tmpTableName + "\n" +
+		return ( "\tLEFT OUTER JOIN " + table1 + " " + tmpTableName + "\n" +
 				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ItsParent\n" );
 
 	}
@@ -383,6 +398,16 @@ public class QueryBuilder {
 			bindValues.add(st.nextToken());
 		}
 		query += ")";
+		return query;
+	}
+	private String handleOp(String op, String val) {
+		String query = "";
+		if(Util.isSame(op, "in")) query += handleIn(val);
+		else if(Util.isSame(op, "like")) query += handleLike(val);
+		else {
+			query += op + " ?\n";
+			bindValues.add(val);
+		}
 		return query;
 	}
 
@@ -418,15 +443,15 @@ public class QueryBuilder {
 			//"\tBlock.Path " + op + " '" + path + "'\n" +
 			"\tBlock.Path ";// + op + " ?\n" +
 			//")";
-		if(Util.isSame(op, "in")) query += handleIn(path);
+		/*if(Util.isSame(op, "in")) query += handleIn(path);
+		else if(Util.isSame(op, "like")) query += handleLike(path);
 		else {
 			query += op + " ?\n";
 			bindValues.add(path);
-		}
-		query += ")";
+		}*/
+		query += handleOp(op, path) + ")";
 		return query;
 	}
-
 	private String handleDQ(String val) throws Exception {
 		//System.out.println("VAL is " + val);
 		ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, val);
@@ -444,7 +469,7 @@ public class QueryBuilder {
 		return query;
 	}
 
-	private String handleRelease(String version) throws Exception {
+	private String handleRelease(String op, String version) throws Exception {
 		Validate.checkWord("AppVersion", version);
 		ArrayList route = new ArrayList();
 		route.add("AlgorithmConfig");
@@ -454,9 +479,20 @@ public class QueryBuilder {
 			"\tAlgorithmConfig.ID " + genJoins(route) +
 			"WHERE \n" + 
 			//"\tAppVersion.Version = '" + version + "'\n" +
-			"\tAppVersion.Version = ?\n" +
+			"\tAppVersion.Version " + handleOp(op, version) + "\n" +
 			")";
-		bindValues.add(version);
+		return query;
+	}
+
+	private String handleTier(String op, String tier) throws Exception {
+		Validate.checkWord("DataTier", tier);
+		ArrayList route = new ArrayList();
+		String query = " IN ( \n" +
+			"SELECT \n" +
+			"\tDataTier.ID FROM DataTier "  +
+			"WHERE \n" + 
+			"\tDataTier.Name " + handleOp(op, tier) + "\n" +
+			")";
 		return query;
 	}
 
