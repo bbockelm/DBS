@@ -139,7 +139,9 @@ class DDServer(DDLogger,Controller):
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
         # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
-        self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8030",verbose=verbose)
+#        self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8030",verbose=verbose)
+#        self.prodRequestServer= DDParamServer(server="https://cmsweb.cern.ch/prodrequest",verbose=verbose)
+        self.prodRequestServer= DDParamServer(server="cmswt01.cern.ch:8030",verbose=verbose)
         self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
         self.PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
         self.dbs  = DBSGLOBAL
@@ -5384,8 +5386,10 @@ Save query as:
         for key in kwargs.keys():
             oDict[key]=kwargs[key]
         return oDict
+
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         t0=time.time()
+        self.helperInit(dbsInst)
         _idx=int(_idx)
         pagerStep = int(pagerStep)
         html      = getArg(kwargs,'html',1)
