@@ -160,6 +160,8 @@ class DDServer(DDLogger,Controller):
         self.globalDD = self.ddConfig.global_dd()
         self.ddUrls = []
         self.ddUrls.append(self.globalDD)
+        self.ddServices={} # e.g. {'url1':{'time':time,'nsets':nsets,...},}
+        self.ddServices[self.globalDD]={}
         self.site = ""
         self.app  = ""
         self.primD= ""
@@ -239,6 +241,8 @@ class DDServer(DDLogger,Controller):
         self.dbsdd=normUrl(self.dbsdd)
         if self.globalDD!=self.dbsdd:
            self.sendSOAP(self.globalDD,"wsAddUrl",{'url':self.dbsdd,'reply':self.dbsdd})
+           self.ddUrls.append(self.dbsdd)
+           self.ddServices[self.dbsdd]={}
         self.writeLog("DDServer init")
 
     def readyToRun(self):
@@ -423,6 +427,7 @@ class DDServer(DDLogger,Controller):
         url = xmlDict['url']
         if not self.ddUrls.count(url):
            self.ddUrls.append(url)
+           self.ddServices[url]={}
         if xmlDict.has_key('reply'):
            vlock = thread.allocate_lock()
            host=xmlDict['reply']
@@ -441,16 +446,28 @@ class DDServer(DDLogger,Controller):
         if xmlDict.has_key('url') and xmlDict.has_key('nsets'):
            url  = xmlDict['url']
            nsets= xmlDict['nsets']
-           print "\n\n### I got reply from '%s' it contains '%s'"%(url,nsets)
+           print "\n\n### I got update from '%s' it contains '%s'"%(url,nsets)
+           serviceDict=self.ddServices[url]
+           serviceDict['nsets']=nsets
+           if not serviceDict.has_key('time') or \
+             (time.time()-serviceDict['time'])>5*60: # less then 5 minutes
+               aDict={}
+               aDict['url']=self.dbsdd
+               aDict['nsets']=self.helper.nDatasets()
+               print "*** send update to '%s' with aDict=%s"%(url,aDict)
+               thread.start_new_thread(self.sendSOAP,(url,"wsUpdateSiteInfo",aDict))
+               serviceDict['time']=time.time()
+               self.ddServices[url]=serviceDict
+           print "+++ wsUpdateSiteInfo",self.ddServices
         # send my info to known sites
-        vlock = thread.allocate_lock()
-        for url in self.ddUrls:
-            if url==self.dbsdd: continue
-            aDict={}
-            aDict['url']=self.dbsdd
-            aDict['nsets']=self.helper.nDatasets()
-            print aDict
-#            thread.start_new_thread(self.sendSOAP,(url,"wsUpdateSiteInfo",aDict))
+#        vlock = thread.allocate_lock()
+#        for url in self.ddUrls:
+#            if url==self.dbsdd: continue
+#            aDict={}
+#            aDict['url']=self.dbsdd
+#            aDict['nsets']=self.helper.nDatasets()
+#            print aDict
+###            thread.start_new_thread(self.sendSOAP,(url,"wsUpdateSiteInfo",aDict))
 
     def sendErrorReport(self,iMsg=""):
         """
@@ -801,9 +818,14 @@ class DDServer(DDLogger,Controller):
             if userMode=="dbsExpert":
                page+="""<hr class="dbs" />"""
 #               page+="""<p class="sectionhead">OTHER DATA DISCOVERY SERVICES:</p>"""
-               nameSpace = {'userMode':userMode,'ddList':self.ddUrls}
+               nameSpace = {'userMode':userMode,'ddList':self.ddUrls,'dbsdd':self.dbsdd}
                page+= templateRemoteDD(searchList=[nameSpace]).respond()
             page+= self.genBottomHTML()
+            # Walk through all registered DD services and exchange update SOAP msg's
+#            nsets = self.helper.nDatasets()
+#            for url in self.ddUrls:
+#                if url!=self.dbsdd:
+#                   self.sendSOAP(url,"wsUpdateSiteInfo",{'url':self.dbsdd,'reply':self.dbsdd,'nsets':nsets})
             return page
         except:
             t=self.errorReport("Fail in advanced init function")
