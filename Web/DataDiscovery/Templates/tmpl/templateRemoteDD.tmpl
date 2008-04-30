@@ -9,7 +9,8 @@
 <ul>
 #for dd in $ddList
 <li>
-<a href="$dd">$dd+"/"</a>
+#set dd=$dd+"/"
+<a href="$dd">$dd</a>
 </li>
 #end for
 </ul>
