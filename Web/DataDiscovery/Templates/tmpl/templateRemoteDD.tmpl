@@ -8,10 +8,12 @@
 <div id="dbs-list">
 <ul>
 #for dd in $ddList
+#if $dd!=$dbsdd
 <li>
 #set dd=$dd+"/"
 <a href="$dd">$dd</a>
 </li>
+#end if
 #end for
 </ul>
 </div>
