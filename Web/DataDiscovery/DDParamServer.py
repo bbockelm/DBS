@@ -22,12 +22,28 @@ class DDParamServer(DDLogger):
         self.ddConfig   = DDConfig()
         DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDParamServer",verbose)
         self.verbose = verbose
-        self.server     = server
+        self.secure  = 0
+        if server.find("https://")!=-1:
+           server=server.replace("https://","")
+           self.secure=1
+        elif server.find("http://")!=-1:
+           server=server.replace("https://","")
+        self.path=""
+        self.server  = server
+        if server.find("/")!=-1:
+           url,path=server.split("/",1)
+           self.server=url
+           self.path=path
 
     def sendGetMessage(self,file="index.html",debug=0):
         if debug:
            httplib.HTTPConnection.debuglevel = 1
-        http_conn = httplib.HTTPConnection(self.server)
+        if self.secure:
+           http_conn = httplib.HTTPSConnection(self.server)
+        else:
+           http_conn = httplib.HTTPConnection(self.server)
+        if self.path:
+           file="/%s/%s"%(self.path,file)
         http_conn.request("GET", "/%s"%file)
         response = http_conn.getresponse()
         if response.reason!="OK":
@@ -61,7 +77,14 @@ class DDParamServer(DDLogger):
            print "Encode parameters",iParams,oParams
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/plain"}
-        conn = httplib.HTTPConnection(self.server)
+        if self.secure:
+           conn = httplib.HTTPSConnection(self.server)
+           print "Contact HTTPS",self.server
+        else:
+           conn = httplib.HTTPConnection(self.server)
+        if self.path:
+           method="/%s/%s"%(self.path,method)
+        print method,oParams,headers
         conn.request("POST",method, oParams, headers)
         response = conn.getresponse()
 
@@ -79,6 +102,14 @@ class DDParamServer(DDLogger):
 if __name__ == "__main__":
     optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
+
+    # test ProdRequest status response call
+    url="/ProdRequest/getRequestsByDataset"
+    server = DDParamServer(server="https://cmsweb.cern.ch/prodrequest",verbose=1)
+#    params={'primary_dataset':'PhotonJet_500-7000','id':'1'}
+    params={'primary_dataset':'PhotonJet_500-7000'}
+    page = server.sendPostMessage(url,params,debug=1)
+    print page
 
     # test Phedex status response call
     url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
