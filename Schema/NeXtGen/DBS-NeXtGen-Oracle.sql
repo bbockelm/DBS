@@ -492,10 +492,9 @@ CREATE TABLE RunLumiDQInt
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-
     primary key(ID),
     unique(Run,Lumi,SubSystem)
-  ) ENGINE = InnoDB ;
+  ) ;
 
 REM ======================================================================
 

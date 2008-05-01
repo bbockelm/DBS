@@ -1,8 +1,15 @@
 CREATE INDEX ix_PG_PhysicsGroupConvener ON PhysicsGroup(PhysicsGroupConvener);
 CREATE INDEX ix_LS_RunNumber ON LumiSection(RunNumber);
+
 CREATE INDEX ix_RLQ_Lumi ON RunLumiQuality(Lumi);
 CREATE INDEX ix_RLQ_SubSystem ON RunLumiQuality(SubSystem);
 CREATE INDEX ix_RLQ_DQValue ON RunLumiQuality(DQValue);
+CREATE INDEX ix_RLQ_Run ON RunLumiQuality(Run);
+
+CREATE INDEX ix_RLQI_RunNumber ON RunLumiDQInt(Run);
+CREATE INDEX ix_RLQI_Lumi ON RunLumiDQInt(Lumi);
+CREATE INDEX ix_RLQI_SubSystem ON RunLumiDQInt(SubSystem);
+
 CREATE INDEX ix_QH_HistoryOf ON QualityHistory(HistoryOf);
 CREATE INDEX ix_QH_Run ON QualityHistory(Run);
 CREATE INDEX ix_QH_Lumi ON QualityHistory(Lumi);

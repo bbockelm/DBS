@@ -488,19 +488,18 @@ REM ======================================================================
 
 CREATE TABLE RunLumiDQInt
   ( 
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Run                   BIGINT UNSIGNED   not null,
-    Lumi                  BIGINT UNSIGNED,
-    SubSystem             BIGINT UNSIGNED   not null,
-    IntDQValue            INT UNSIGNED   not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
+    ID                    integer,
+    Run                   integer  not null,
+    Lumi                  integer,
+    SubSystem             integer  not null,
+    IntDQValue            integer  not null,
+    CreationDate          integer,
+    CreatedBy             integer,
+    LastModificationDate  integer,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Run,Lumi,SubSystem)
-  ) ENGINE = InnoDB ;
+  );
 
 REM ======================================================================
 
@@ -508,7 +507,7 @@ CREATE TABLE QualityHistory
   (
     ID                    integer,
     HistoryOf             integer,
-    HistoryTimeStamp      integer            not null,
+    HistoryTimeStamp      integer   not null,
     Run                   integer   not null,
     Lumi                  integer,
     SubSystem             integer   not null,
@@ -1930,7 +1929,6 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: runlumiquality
  CREATE OR REPLACE TRIGGER runlumiquality_TRIG before insert on runlumiquality    for each row begin     if inserting then       if :NEW.ID is null then          select seq_runlumiquality.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
-RunLumiDQInt
 -- ====================================================
 -- AUTO INC TRIGGER FOR runlumidqint.ID using SEQ seq_runlumidqint
 
