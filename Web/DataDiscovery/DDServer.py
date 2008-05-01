@@ -811,7 +811,7 @@ class DDServer(DDLogger,Controller):
             dbsList=[dbsInst]+dbsList
             if msg: userHelp=0
             else:   userHelp=1
-            nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':'','aSearchKeys':self.aSearchKeys()}
+            nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':'','aSearchKeys':self.aSearchKeys(),'showHelp':1}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
 #            page+="""<p class="sectionhead">ADVANCED KEYWORD SEARCH</p>"""
             page+= str(t)
@@ -5376,7 +5376,8 @@ Save query as:
         for key in allKeys:
             if key.find(".")!=-1:
                k1,k2 = key.split(".")
-               sKeys+="\n<p><b>%s</b>: composed key, %s for %s</p>"%(key,self.ddrules.longName[k2],self.ddrules.longName[k1])
+               # TEMP, do not show composed keys until all details about key.attr will be sorted out
+#               sKeys+="\n<p><b>%s</b>: composed key, %s for %s</p>"%(key,self.ddrules.longName[k2],self.ddrules.longName[k1])
             else:
                sKeys+="\n<p><b>%s</b>: %s</p>"%(key,self.ddrules.tooltip[key])
         return sKeys
@@ -5477,7 +5478,7 @@ Save query as:
            dbsList=list(self.dbsList)
            dbsList.remove(dbsInst)
            dbsList=[dbsInst]+dbsList
-           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput,'aSearchKeys':self.aSearchKeys()}
+           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput,'aSearchKeys':self.aSearchKeys(),'showHelp':0}
            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
            page+=str(t)
         else:
