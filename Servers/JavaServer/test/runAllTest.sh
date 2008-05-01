@@ -731,14 +731,14 @@ executeQuery () {
 
 #executeQuery
 #getIntegratedLuminosity	
-#insertPrimaryDataset
-#insertAlgorithm
-#insertTier
-#insertRun
-#insertLumiSection
-#insertProcessedDataset
-#insertBlock
-#insertFiles
+insertPrimaryDataset
+insertAlgorithm
+insertTier
+insertRun
+insertLumiSection
+insertProcessedDataset
+insertBlock
+insertFiles
 #
 ##deleteBlock
 ##undeleteBlock
