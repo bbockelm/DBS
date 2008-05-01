@@ -32,10 +32,18 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
 
     if type(runLumiDQList) == str:
 	first=1
- 	print "str_input", runLumiDQList
 	tag_val_list=runLumiDQList.strip().split('&')
 	for atag_val in tag_val_list:
 		tag, val = atag_val.split('=')
+
+
+
+		print "\n\n\nSee if ( >, < , >=, <= ) operators are used and then pass them to the server which can store them.\n\n"
+
+
+
+
+
 		if tag=='RunNumber':
 			xmlinput += "<run run_number='"+val+ "' lumi_section_number='' />"
 			continue
@@ -84,6 +92,8 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
           if name == 'file':
 		aFile = DbsFile ( LogicalFileName=str(attrs['lfn']) )
 		result.append(aFile)
+	  if name == 'run':
+		print str(attrs['run']) 
 
       xml.sax.parseString (data, Handler ())
       return result

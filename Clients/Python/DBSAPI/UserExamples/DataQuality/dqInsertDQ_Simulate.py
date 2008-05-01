@@ -128,15 +128,44 @@ tagList=["Tracker_Global",
 "HF_Offline_DQM",
 ]
 
+tag_int_dqs=[
+"TIB_Percentage", 
+"TOB_Percentage", 
+"TEC_Percentage", 
+"TID_Percentage", 
+"PXB_Percentage", 
+"PXF_Percentage", 
+"CSC_Percentage", 
+"RPC_Percentage", 
+"DT_Percentage", 
+"EB_Percentage", 
+"EE_Percentage", 
+"ES_Percentage", 
+"HB_Percentage", 
+"HE_Percentage", 
+"HF_Percentage"
+]
+
 run_dq_list=[]
+run_dq_int_list=[]
+
+for aTag in tag_int_dqs:
+    flag_int=DbsDQFlag(
+           Name=aTag,
+           Value="99"
+         )
+    run_dq_list.append(flag_int)
+
 for aTag in tagList:
     flag=DbsDQFlag(
            Name=aTag,
            Value="GOOD"
          )
+
     run_dq_list.append(flag)
 
-for aRun in range (20000, 22000):
+for aRun in range (23201, 24000):
+
          run_dq = DbsRunLumiDQ (
                   RunNumber=aRun,
                   DQFlagList = run_dq_list
@@ -144,7 +173,6 @@ for aRun in range (20000, 22000):
 
          # Single Run, Multiple Flags (Some sub systems have sub-sub systems, some don't)
          api.insertRunLumiDQ( [run_dq] )
-	 #print "\n",run_dq
 	 print aRun
 
 

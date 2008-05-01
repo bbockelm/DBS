@@ -58,7 +58,7 @@ if __name__ == "__main__":
                         sys.exit(0)
 
                 if opts['value'] in ('', None):
-                        print "You must specify a valid value: GOOD, BAD, UNKNOWN (Defualt), use --value= or --help"
+                        print "You must specify a valid value: GOOD, BAD, UNKNOWN or a INTEGER value, use --value= or --help"
                         sys.exit(0)
 
 		flag = DbsDQFlag (

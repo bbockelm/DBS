@@ -18,22 +18,22 @@ if __name__ == "__main__":
     #Add a new SubSystem
     
 
-    api.insertSubSystem(name="ECAL", parent="CMS")
-    api.insertSubSystem(name="ECAL+", parent="ECAL")
-    api.insertSubSystem(name="ECAL-", parent="ECAL")
+    #api.insertSubSystem(name="ECAL", parent="CMS")
+    #api.insertSubSystem(name="ECAL+", parent="ECAL")
+    #api.insertSubSystem(name="ECAL-", parent="ECAL")
 
-    api.insertSubSystem(name="HCAL", parent="CMS")
-    api.insertSubSystem(name="HCAL+", parent="HCAL")
-    api.insertSubSystem(name="HCAL-", parent="HCAL")
+    #api.insertSubSystem(name="HCAL", parent="CMS")
+    #api.insertSubSystem(name="HCAL+", parent="HCAL")
+    #api.insertSubSystem(name="HCAL-", parent="HCAL")
 
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HF", parent="HCAL")
+    #api.insertSubSystem(name="HB", parent="HCAL")
+    #api.insertSubSystem(name="HF", parent="HCAL")
 
-    api.insertSubSystem(name="NOSUB", parent="CMS")
+    api.insertSubSystem(name="XYZ_Percentage", parent="CMS")
 
-    subSys = api.listSubSystems()
-    for aSub in subSys:
-	print "Name: %s, Parent: %s" %(aSub['Name'], aSub['Parent'])
+    #subSys = api.listSubSystems()
+    #for aSub in subSys:
+    #	print "Name: %s, Parent: %s" %(aSub['Name'], aSub['Parent'])
 
 
   except DbsApiException, ex:

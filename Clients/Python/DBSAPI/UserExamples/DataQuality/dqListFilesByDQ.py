@@ -23,7 +23,7 @@ class DbsDQOptionParser(optparse.OptionParser):
       optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]",
                 version="%prog 0.0.1", conflict_handler="resolve")
 
-      self.add_option("--url=",action="store", type="string", dest="url", default="BADURL",
+      self.add_option("--url=",action="store", type="string", dest="url", 
 		help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
       self.add_option("--query", action="store", type="string", dest="query",

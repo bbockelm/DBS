@@ -245,7 +245,7 @@ try:
 
     api.insertFiles(proc, [myfile44], block)  
 
-    #print "Result: %s" % myfile3
+    print "Result: %s" % myfile3
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

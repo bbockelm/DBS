@@ -29,6 +29,7 @@ def dbsApiImplInsertMergedFile(self, parents, outputFile):
     #Reset parents as REAL parents will be those that are 
     #from the Parent of Unmerged files
     outputFile['ParentList'] = []
+    import pdb
     for anInputLFN in parents:
        
 
@@ -68,6 +69,7 @@ def dbsApiImplInsertMergedFile(self, parents, outputFile):
 		if trig not in outputFile['FileTriggerMap']:
 			outputFile['FileTriggerMap'].append(trig) 
 
+    pdb.set_trace() 
     self.insertFiles(outputFile['Dataset'], [outputFile], outputFile['Block'])
 
   # ------------------------------------------------------------
