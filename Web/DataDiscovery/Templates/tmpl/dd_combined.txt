@@ -1,3 +1,4 @@
+js/masthead_footer.js
 js/userName.js
 js/utils.js
 js/yui_utils.js
