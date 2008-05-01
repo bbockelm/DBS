@@ -1,6 +1,6 @@
 /**
- $Revision: 1.89 $"
- $Id: DBSApiFileLogic.java,v 1.89 2008/02/07 19:44:43 afaq Exp $"
+ $Revision: 1.90 $"
+ $Id: DBSApiFileLogic.java,v 1.90 2008/02/21 23:30:38 sekhri Exp $"
  *
  */
 
@@ -998,19 +998,19 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         fileID,
                                                         getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true),
                                                         runID,
-                                                        cbUserID, lmbUserID, creationDate, false);
+                                                        cbUserID, lmbUserID, creationDate, true);
                                         }
                                         //Just add Run-Fileid map
                                         else {
                                                 insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
                                                         fileID,
                                                         runID,
-                                                        cbUserID, lmbUserID, creationDate, false);
+                                                        cbUserID, lmbUserID, creationDate, true);
                                         }
                                         // Insert ProcDS-Run Map, if its already not there
                                         insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
                                                         procDSID, runID,
-                                                        cbUserID, lmbUserID, creationDate);
+                                                        cbUserID, lmbUserID, creationDate, true);
                                 }
 
 

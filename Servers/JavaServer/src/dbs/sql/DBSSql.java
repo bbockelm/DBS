@@ -674,6 +674,16 @@ public class DBSSql {
 		java.util.Vector rbindvals = new java.util.Vector();
 		java.util.Vector subSys = new java.util.Vector();	
 
+
+		java.util.ArrayList intersects = new java.util.ArrayList();
+		java.util.ArrayList intersectBinds = new java.util.ArrayList();
+
+                //This should probably be loaded from database in the cache once !
+                java.util.ArrayList valueList = new java.util.ArrayList();
+                valueList.add("GOOD");
+                valueList.add("BAD");
+                valueList.add("UNKNOWN");
+
 		int goodSysCount = 0;
 		int badSysCount = 0;
 		int unknownSysCount = 0;
@@ -717,60 +727,71 @@ public class DBSSql {
 					if (j == 0) {
                                                 run_sql += " where ";
                                         }
-
-					if (value.equals("GOOD")) {
-						if ( goodSysCount == 0 ) {
-							if (!DBSUtil.isNull(rlsql))  {
-								good_clause += " RQ.Run in " + rlsql + " AND ";
-								bindvals.addAll(rbindvals);
+					if ( ! valueList.contains(value) ) {
+                                		//Probably its a number
+                                		//lets test that 
+                                		try {
+                                        		int i = Integer.valueOf(value).intValue();
+                                		} catch (java.lang.NumberFormatException e) {
+                                        		throw new SQLException("Incorrect Data, Invalid value: " + value + " For QIM " + subsys);
+                                		}
+						String query = "SELECT RQI.Run from "+owner()+"RunLumiDQInt RQI join "+owner()+"SubSystem SSI ";
+							query += " on SSI.ID = RQI.SubSystem where SSI.Name=? and IntDQValue=?";
+						intersectBinds.add(subsys);
+						intersectBinds.add(value);
+						if (!DBSUtil.isNull(rlsql))  {
+                                                                query += " AND RQI.Run in " + rlsql ;//+ " ) ";
+                                                                intersectBinds.addAll(rbindvals);
+                                                }
+						intersects.add(query);
+						//System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQuery: "+query);
+					} else {
+						if (value.equals("GOOD")) {
+							if ( goodSysCount == 0 ) {
+								if (!DBSUtil.isNull(rlsql))  {
+									good_clause += " RQ.Run in " + rlsql + " AND ";
+									bindvals.addAll(rbindvals);
+								}
+								good_clause += " QV.Value='GOOD' and SS.Name in (?";
+								bindvals.add(subsys);
+								goodSysCount++;
+							} else {
+								good_clause += ",?";
+								bindvals.add(subsys);
+								goodSysCount++;
 							}
-							good_clause += " QV.Value='GOOD' and SS.Name in (?";
-							bindvals.add(subsys);
-							goodSysCount++;
-
-						} else {
-							good_clause += ",?";
-							bindvals.add(subsys);
-							goodSysCount++;
 						}
+                                        	else if (value.equals("BAD")) {
+                                                	if ( badSysCount == 0 ) {
+                                                        	if (!DBSUtil.isNull(rlsql))  {
+                                                                	bad_clause += " RQ.Run in " + rlsql + " AND ";
+                                                                	bindvals.addAll(rbindvals);
+                                                        	}
+                                                        	bad_clause += " QV.Value='BAD' and SS.Name in (?";
+                                                        	bindvals.add(subsys);
+                                                        	badSysCount++;
+                                                	} else {
+                                                        	bad_clause += ",?";
+                                                        	bindvals.add(subsys);
+                                                        	badSysCount++;
+                                                	}
+                                        	}
+                                        	else if (value.equals("UNKNOWN")) {
+                                                	if ( unknownSysCount == 0 ) {
+                                                        	if (!DBSUtil.isNull(rlsql))  {
+                                                                	unknown_clause += " RQ.Run in " + rlsql + " AND ";
+                                                                	bindvals.addAll(rbindvals);
+                                                        	}
+                                                        	unknown_clause += " QV.Value='UNKNOWN' and SS.Name in (?";
+                                                        	bindvals.add(subsys);
+                                                        	unknownSysCount++;
+                                                	} else {
+                                                        	unknown_clause += ",?";
+                                                        	bindvals.add(subsys);
+                                                        	unknownSysCount++;
+                                                	}
+                                        	}
 					}
-
-
-
-                                        if (value.equals("BAD")) {
-                                                if ( badSysCount == 0 ) {
-                                                        if (!DBSUtil.isNull(rlsql))  {
-                                                                bad_clause += " RQ.Run in " + rlsql + " AND ";
-                                                                bindvals.addAll(rbindvals);
-                                                        }
-                                                        bad_clause += " QV.Value='BAD' and SS.Name in (?";
-                                                        bindvals.add(subsys);
-                                                        badSysCount++;
-
-                                                } else {
-                                                        bad_clause += ",?";
-                                                        bindvals.add(subsys);
-                                                        badSysCount++;
-                                                }
-                                        }
-
-                                        if (value.equals("UNKNOWN")) {
-                                                if ( unknownSysCount == 0 ) {
-                                                        if (!DBSUtil.isNull(rlsql))  {
-                                                                unknown_clause += " RQ.Run in " + rlsql + " AND ";
-                                                                bindvals.addAll(rbindvals);
-                                                        }
-                                                        unknown_clause += " QV.Value='UNKNOWN' and SS.Name in (?";
-                                                        bindvals.add(subsys);
-                                                        unknownSysCount++;
-
-                                                } else {
-                                                        unknown_clause += ",?";
-                                                        bindvals.add(subsys);
-                                                        unknownSysCount++;
-                                                }
-                                        }
-
 				}
 			if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)="+goodSysCount;
 			if (!DBSUtil.isNull(bad_clause)) bad_clause+=") group by RQ.Run having count(*)="+badSysCount;
@@ -787,27 +808,48 @@ public class DBSSql {
 
 
 		String sql = "";
-		if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause) 
+		if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause) && (intersects.size() <= 0)
 				&& !DBSUtil.isNull(rlsql) )  {
 			sql += file_sql + rlsql + ")" ;
 			bindvals.addAll(rbindvals);
 		}
 
                 else {
+			int put_first_intersect=0;
 			sql += file_sql;
-			if (!DBSUtil.isNull(good_clause)) sql += run_sql + good_clause ;
-			if (!DBSUtil.isNull(bad_clause)) sql += " UNION "+ run_sql + bad_clause ;
-			if (!DBSUtil.isNull(unknown_clause)) sql += " UNION "+ run_sql + unknown_clause;
+			if (!DBSUtil.isNull(good_clause)) { sql += run_sql + good_clause ; put_first_intersect=1; }
+			if (!DBSUtil.isNull(bad_clause)) { sql += " UNION "+ run_sql + bad_clause ; put_first_intersect=1; }
+			if (!DBSUtil.isNull(unknown_clause)) { sql += " UNION "+ run_sql + unknown_clause; put_first_intersect=1; }
+			for (int i=0; i!= intersects.size(); ++i) {
+				if (i==0 && put_first_intersect==1) sql += " INTERSECT ";
+				//if (i==0) sql +=  run_sql + intersects.get(i); 
+				if (i==0) sql +=  intersects.get(i); 
+				//else sql += " INTERSECT "+ run_sql + intersects.get(i);
+				else sql += " INTERSECT "+ intersects.get(i);
+			}
 		}
 
-		if ( !DBSUtil.isNull(good_clause) || !DBSUtil.isNull(bad_clause) || !DBSUtil.isNull(unknown_clause) ) sql += ")";
+		if ( !DBSUtil.isNull(good_clause) || 
+				!DBSUtil.isNull(bad_clause) || 
+					!DBSUtil.isNull(unknown_clause) 
+								|| intersects.size() > 0 ) sql += ")";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
+
+		//System.out.print ("PRE-BIND SQL:-\n"+sql);
 
                 int columnIndx = 1;
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
+
+		for (int i=0; i != intersectBinds.size(); ++i)
+			ps.setString(columnIndx++, (String)intersectBinds.get(i) );
+
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+
+		//for (int i=0; i!= intersects.size(); ++i)
+		//	System.out.println("intersects query: " + intersects.get(i));
 
                 return ps;
 
@@ -2134,7 +2176,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"ProcessedDataset procds \n" +
-			"JOIN PrimaryDataset primds \n" +
+			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
 			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
@@ -2180,7 +2222,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM ProcessedDataset procds \n" +
-			"JOIN PrimaryDataset primds \n" +
+			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
 			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
@@ -3484,12 +3526,12 @@ public class DBSSql {
 
 	/*public static PreparedStatement getProcessedDSID(Connection conn, String prim, String dt ,String proc) throws SQLException {
 		String sql = "SELECT DISTINCT procds.ID as ID \n" +
-				"FROM ProcessedDataset procds \n" +
-				"JOIN PrimaryDataset primds \n" +
+				"FROM "+owner()+"ProcessedDataset procds \n" +
+				"JOIN "+owner()+"PrimaryDataset primds \n" +
 					"ON primds.id = procds.PrimaryDataset \n" +
-				"JOIN ProcDSTier pdst \n" +
+				"JOIN "+owner()+"ProcDSTier pdst \n" +
 					"ON pdst.Dataset = procds.id \n" +
-				"JOIN DataTier dt \n" +
+				"JOIN "+owner()+"DataTier dt \n" +
 					"ON dt.id = pdst.DataTier \n";
 		if(prim == null || dt == null || proc == null) {
 			return DBManagement.getStatement(conn, sql);
@@ -3578,6 +3620,51 @@ public class DBSSql {
 
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
+	}
+
+
+        public static PreparedStatement getInsertSQLBatch (Connection conn, String tableName, ArrayList keys, ArrayList values) throws SQLException  {
+		String sql = "INSERT INTO " + owner()+tableName + " ( ";
+		int first=0;
+		String slct = "select ";
+		for (int i=0; i!=keys.size();++i) {
+			String k=(String)keys.get(i);
+			if (first==0) {	
+				sql += k;
+				slct += " ?";
+				first=1;
+			} else {
+			sql +=	", "+k;
+			slct += ", ?";
+			}
+			
+		}
+		sql += " ) " + slct + " from dual ";
+
+
+		//System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQlllllllllllllllll:\n"+sql);
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+
+		//System.out.println("Created ps");
+
+
+		for ( int j = 0; j < values.size(); j += keys.size() ) {
+                	int columnIndx = 1;
+			for (int k = 0; k != keys.size(); ++k) {
+                        	ps.setString(columnIndx++, (String)values.get(j+k));
+				//System.out.println("j: "+j+" (String)values.get(j)::::="+(String)values.get(j+k) );
+			}
+			//System.out.println("ps.addBatch()");
+                        ps.addBatch(); 
+		}
+
+                //DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		//System.out.println("MULTI QQQQQQQQQQQQQQQQQQ:::::::::::\n"+ps+"\n\n\n");
+
+		//System.out.println("RETURNING");
+
+                return ps;
 	}
 
 

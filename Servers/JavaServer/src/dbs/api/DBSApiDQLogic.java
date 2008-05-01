@@ -1,6 +1,6 @@
 /**
- $Revision: 1.11 $"
- $Id: DBSApiDQLogic.java,v 1.11 2008/04/21 20:01:13 afaq Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSApiDQLogic.java,v 1.12 2008/04/23 22:22:47 afaq Exp $"
  *
  */
 
@@ -69,7 +69,8 @@ public class DBSApiDQLogic extends DBSApiLogic {
         }
 
 	//Insert a FLAG and returns its ID (Even if it already exists)	
-	public String insertDQFlag(Connection conn, Writer out, String runID, String lumiID, 
+	//public String  AA-04/28-2008 no one need the ID back anymore
+	public void insertDQFlag(Connection conn, Writer out, String runID, String lumiID, 
 								String flag, String value,
 								String cbUserID, String creationDate,
 								String lmbUserID
@@ -78,12 +79,10 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		//ONLY insert if its NOT already present, why the F*** the MySQL MUL-UQ doesn't work ?
 		String flagID =  null;
 		if ( ! isNull(flagID = getDQFlagID(conn, runID, lumiID, flag, "", false))) {
-		//if ( ! isNull(flagID = getDQFlagID(conn, runID, lumiID, flag, value, false))) {
 			DBSUtil.writeLog("FLAG:="+flag+" for This Run (LumiSection) already exixts with value:="+value);
 			writeWarning(out, "Already Exists", "1020", "FLAG:="+flag+
-							" for This Run (LumiSection) already exixts with value:="+value );
-			return flagID;
-
+							" for This Run (LumiSection) already exixts with value:="+value );	
+			return;
 		}
 
                 PreparedStatement ps = null;
@@ -98,9 +97,42 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 }
 
 		//ID of latest insert, going tobe used right now        
-                flagID = getDQFlagID(conn, runID, lumiID, flag, value, true);
-		return flagID;
+                //flagID = getDQFlagID(conn, runID, lumiID, flag, value, true);
+		//return flagID;
         }
+
+	//Insert a DQ Flag with Integer value
+        public void insertDQIntFlag(Connection conn, Writer out, String runID, String lumiID,
+                                                                String flag, String value,
+                                                                String cbUserID, String creationDate,
+                                                                String lmbUserID
+                                                                ) throws Exception
+        {
+                //ONLY insert if its NOT already present, why the F*** the MySQL MUL-UQ doesn't work ?
+                String flagID =  null;
+                if ( ! isNull(flagID = getDQIntFlagID(conn, runID, lumiID, flag, "", false))) {
+                        DBSUtil.writeLog("FLAG:="+flag+" for This Run (LumiSection) already exixts with value:="+value);
+                        writeWarning(out, "Already Exists", "1020", "FLAG:="+flag+
+                                                        " for This Run (LumiSection) already exixts with value:="+value );
+			return;
+                }
+
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.insertDQIntFlag(conn, runID, lumiID,
+                                                        getIDNoCheck(conn, "SubSystem", "Name", flag, true),
+                                                        value,
+                                                        cbUserID, lmbUserID, creationDate);
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+
+                //ID of latest insert, going tobe used right now        
+                //flagID = getDQFlagID(conn, runID, lumiID, flag, value, true);
+                //return flagID;
+        }
+
 	
 
         /* In future we may like a functions like these
@@ -119,6 +151,8 @@ public class DBSApiDQLogic extends DBSApiLogic {
 	}
 	*/
 
+
+	
         private String getDQFlagID(Connection conn, String runID, String lumiID, String flag, String value, boolean excep)
                 throws Exception 
         {
@@ -153,7 +187,40 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		return id;	
 	}
 
-	
+        private String getDQIntFlagID(Connection conn, String runID, String lumiID, String flag, String value, boolean excep)
+                throws Exception
+        {
+
+                String id = null;
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+
+                //User of this method may chose to provide any of the values
+                String flagid = null;
+                String valueid = null;
+                if (!isNull(flag)) flagid = getIDNoCheck(conn, "SubSystem", "Name", flag, true);
+                if (!isNull(value)) valueid = getID(conn, "QualityValues", "Value", value, true);
+
+                try {
+                        ps = DBSSql.getDQIntFlag(conn, runID, lumiID, flagid,  valueid);
+                        rs =  ps.executeQuery();
+
+                        if(!rs.next()) {
+                                        if (excep)
+                                                throw new DBSException("Unavailable data", "7002", "No DQ entry for RunID:" + runID );
+                                        else return id;
+                        }
+                        id = get(rs, "ID");
+
+                } finally {
+
+                        if (ps != null) ps.close();
+                        if (rs != null) rs.close();
+                }
+                //Return the ID of recently inserted row, comes VERY HANDY
+                return id;
+        }  
+
 	public String getDQVerTimeStamp(Connection conn, String dqVersion) throws Exception {
 	
 		String timeStamp = null;
@@ -546,6 +613,121 @@ public class DBSApiDQLogic extends DBSApiLogic {
 	}
 
 
+	// AA - 04/28/2008 This was desperate attempt to do batch inserts, I'll pass on this at this moment
+	private void insertDQFlags(Connection conn, Writer out, String runID, String lumiID,
+                                                        Vector subSys, Hashtable dbsUser) throws Exception {
+
+                String cbUserID = null;
+                String creationDate = null;
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+
+                //This should probably be loaded from database in the cache once !
+                java.util.ArrayList valueList = new java.util.ArrayList();
+                valueList.add("GOOD");
+                valueList.add("BAD");
+                valueList.add("UNKNOWN");
+
+		//This can move into DBSSQL later on !!!
+		java.util.ArrayList keys = new java.util.ArrayList();
+		keys.add("Run");
+		keys.add("Lumi");
+		keys.add("SubSystem");
+		keys.add("DQValue");
+		keys.add("CreationDate");
+		keys.add("CreatedBy");
+		//keys.add("LastModificationDate");
+		keys.add("LastModifiedBy");
+	
+		//Add values in batch for each row
+		java.util.ArrayList values = new java.util.ArrayList();
+
+		//Loop over each item
+		for (int j = 0; j < subSys.size() ; ++j) {
+			Hashtable dqFlag = (Hashtable) subSys.get(j);				
+
+			if (j==0) {
+				creationDate = getTime(dqFlag, "creation_date", false);
+                        	cbUserID = personApi.getUserID(conn, get(dqFlag, "created_by"), dbsUser );
+			}
+
+			//Check for null yourself!	
+			String name = DBSUtil.get(dqFlag, "name");
+			String value = get(dqFlag, "value", true);
+
+                        if ( ! valueList.contains(value) ) {
+                                //Probably its a number
+                                //lets test that 
+                                try {
+                                        int i = Integer.valueOf(value).intValue();
+                                } catch (java.lang.NumberFormatException e) {
+                                        throw new DBSException("Incorrect Data", "7012", "Invalid value: " + value + " For QIM " + name );
+                                }
+                                //For the time being not using BATCH for INT type of Flags,
+				//Not expecting Too many, but Batch can be done easily later on.
+				// AA 05/01/2008
+                         	insertDQIntFlag(conn, out, runID, lumiID,
+                                                               name, value,
+                                                               cbUserID, creationDate,
+                                                               lmbUserID);
+			} else {
+				values.add(runID);
+				values.add(lumiID);
+				values.add(getIDNoCheck(conn, "SubSystem", "Name", name, true));
+				values.add(getID(conn, "QualityValues", "Value", value, true));
+				values.add(creationDate);	
+				values.add(cbUserID);
+				values.add(lmbUserID);
+			}
+
+			//It may have a sub-sub-system vector to itself 
+			Vector subsubSys = DBSUtil.getVector(dqFlag, "dq_sub_subsys");
+
+			for (int k = 0; k < subsubSys.size() ; ++k) {
+				Hashtable dqsubFlag = (Hashtable) subsubSys.get(k);
+				//Check for null yourself! 
+				String subname = DBSUtil.get(dqsubFlag, "name");
+                               	String subvalue = get(dqsubFlag, "value", true);
+
+                        	if ( ! valueList.contains(subvalue) ) {
+                                	//Probably its a number
+                                	//lets test that 
+                                	try {
+                                        	int i = Integer.valueOf(subvalue).intValue();
+                                	} catch (java.lang.NumberFormatException e) {
+                                        	throw new DBSException("Incorrect Data", "7012", "Invalid value: " + subvalue + " For QIM " + name );
+                                	}
+                                	//For the time being not using BATCH for INT type of Flags,
+                                	//Not expecting Too many, but Batch can be done easily later on.
+                                	// AA 05/01/2008
+                                	insertDQIntFlag(conn, out, runID, lumiID,
+                                                               name, subvalue,
+                                                               cbUserID, creationDate,
+                                                               lmbUserID);
+                        	} else {
+                        		values.add(runID);
+		                	values.add(lumiID);
+                        		values.add(getIDNoCheck(conn, "SubSystem", "Name", subname, true));
+                        		values.add(getID(conn, "QualityValues", "Value", subvalue, true));
+                        		values.add(creationDate); 
+                        		values.add(cbUserID);
+                        		values.add(lmbUserID);
+				}
+			}
+		}
+
+		if (values.size() > 0) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.getInsertSQLBatch (conn, "RunLumiQuality", keys, values);
+				//System.out.println("\n\nBATCH CREATED\n\n");
+				ps.executeBatch();
+                	} finally {
+                        	if (ps != null) ps.close();
+                	}
+		}
+	}
+
+/******
 	private void insertDQFlags(Connection conn, Writer out, String runID, String lumiID,
                                                         Vector subSys, Hashtable dbsUser) throws Exception {
 
@@ -554,14 +736,21 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 String creationDate = null;
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
 
+		//This should probably be loaded from database in the cache once !
+		java.util.ArrayList valueList = new java.util.ArrayList();
+		valueList.add("GOOD");
+		valueList.add("BAD");
+		valueList.add("UNKNOWN");
+
 		//Loop over each item
 		for (int j = 0; j < subSys.size() ; ++j) {
 			Hashtable dqFlag = (Hashtable) subSys.get(j);				
 
 			//Check for null yourself!	
 			String name = DBSUtil.get(dqFlag, "name");
-
 			String value = get(dqFlag, "value", true);
+			
+
 			DBSUtil.writeLog("Flag: Name..."+name);
 			DBSUtil.writeLog("Flag: Value..."+value);
 
@@ -569,7 +758,21 @@ public class DBSApiDQLogic extends DBSApiLogic {
                         cbUserID = personApi.getUserID(conn, get(dqFlag, "created_by"), dbsUser );
 
 			//Let us insert THIS FLAG
-			String subFlagID = insertDQFlag(conn, out, runID, lumiID,
+
+			if ( ! valueList.contains(value) ) {
+				//Probably its a number
+				//lets test that 
+				try {
+					int i = Integer.valueOf(value).intValue();
+				} catch (java.lang.NumberFormatException e) {
+					throw new DBSException("Incorrect Data", "7012", "Invalid value: " + value + " For QIM " + name );
+				}
+				
+				insertDQIntFlag(conn, out, runID, lumiID,
+                                                               name, value,
+                                                               cbUserID, creationDate,
+                                                               lmbUserID);
+			} else 	insertDQFlag(conn, out, runID, lumiID,
                                                                name, value,
                                                                cbUserID, creationDate,
                                                                lmbUserID);
@@ -590,7 +793,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                	DBSUtil.writeLog("      Flag: Sub Value..."+subvalue);
 
 				//Let us insert THIS FLAG
-                               	String subsubID = insertDQFlag(conn, out, runID, lumiID,
+                               	insertDQFlag(conn, out, runID, lumiID,
                                                                 subname, subvalue,
                                                                 cbUserID, creationDate,
                                                                 lmbUserID);
@@ -607,4 +810,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 			}
 		}
 	}
+
+*********/
+
 }

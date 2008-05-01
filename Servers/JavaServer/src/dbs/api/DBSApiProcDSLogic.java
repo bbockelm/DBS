@@ -1,6 +1,6 @@
 /**
- $Revision: 1.58 $"
- $Id: DBSApiProcDSLogic.java,v 1.58 2008/04/28 21:44:42 afaq Exp $"
+ $Revision: 1.59 $"
+ $Id: DBSApiProcDSLogic.java,v 1.59 2008/04/29 22:09:23 afaq Exp $"
  *
  */
 
@@ -425,7 +425,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 					getID(conn, "ProcDSStatus", "Status", status, true), 
 					get(dataset, "acquisition_era", false),
-					get(dataset, "global_tag", true),
+					get(dataset, "global_tag", false),
 					cbUserID,
 					lmbUserID,
 					creationDate);
