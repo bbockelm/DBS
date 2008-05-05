@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.161 $"
- $Id: DBSSql.java,v 1.161 2008/05/01 22:06:06 afaq Exp $"
+ $Revision: 1.162 $"
+ $Id: DBSSql.java,v 1.162 2008/05/05 19:04:13 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -735,8 +735,10 @@ public class DBSSql {
                                 		} catch (java.lang.NumberFormatException e) {
                                         		throw new SQLException("Incorrect Data, Invalid value: " + value + " For QIM " + subsys);
                                 		}
+
+						String oper=DBSUtil.get(dqFlag, "oper");
 						String query = "SELECT RQI.Run from "+owner()+"RunLumiDQInt RQI join "+owner()+"SubSystem SSI ";
-							query += " on SSI.ID = RQI.SubSystem where SSI.Name=? and IntDQValue=?";
+							query += " on SSI.ID = RQI.SubSystem where SSI.Name=? and IntDQValue"+oper+"?";
 						intersectBinds.add(subsys);
 						intersectBinds.add(value);
 						if (!DBSUtil.isNull(rlsql))  {

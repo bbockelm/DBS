@@ -34,16 +34,27 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
 	first=1
 	tag_val_list=runLumiDQList.strip().split('&')
 	for atag_val in tag_val_list:
-		tag, val = atag_val.split('=')
 
-
-
-		print "\n\n\nSee if ( >, < , >=, <= ) operators are used and then pass them to the server which can store them.\n\n"
-
-
-
-
-
+		if atag_val.find('>=') != -1: 
+			tag, val = atag_val.split('>=')
+			#oper='>='
+			oper='&gt;='
+		elif atag_val.find('<=') != -1: 
+			tag, val = atag_val.split('<=')
+			#oper='<='
+			oper='&lt;='
+		elif atag_val.find('>') != -1: 
+			tag, val = atag_val.split('>')
+			#oper='>'
+			oper='&gt;'
+		elif atag_val.find('<') != -1: 
+			tag, val = atag_val.split('<')
+			#oper='<'
+			oper='&lt;'
+		else : 
+			tag, val = atag_val.split('=')
+			oper='='
+		
 		if tag=='RunNumber':
 			xmlinput += "<run run_number='"+val+ "' lumi_section_number='' />"
 			continue
@@ -52,7 +63,7 @@ def dbsApiImplListFilesForRunLumiDQ(self, runLumiDQList, timeStamp="", dqVersion
 			if (first):
 				xmlinput += "<run run_number='' lumi_section_number='' />"
 				first=0
-		xmlinput += "<dq_sub_system name='" + tag + "' value='" + val + "' />"
+		xmlinput += "<dq_sub_system name='" + tag + "' value='" + val + "' oper='"+oper+"' />"
 
     else :
     	for aRunLumiDQ in runLumiDQList:
