@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.159 $"
- $Id: DBSSql.java,v 1.159 2008/04/29 22:09:23 afaq Exp $"
+ $Revision: 1.161 $"
+ $Id: DBSSql.java,v 1.161 2008/05/01 22:06:06 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2008,8 +2008,8 @@ public class DBSSql {
                         //Could be managed by Status field
 			//"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"pds.Status as STATUS, \n" +
-			"pds.AcquisitionEra as ACQUISITION_ERA, \n" +
-			"pds.GlobalTag as GLOBAL_TAG, \n" +
+			"procds.AquisitionEra as ACQUISITION_ERA, \n" +
+			"procds.GlobalTag as GLOBAL_TAG, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
