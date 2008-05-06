@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.163 $"
- $Id: DBSSql.java,v 1.163 2008/05/05 20:32:15 afaq Exp $"
+ $Revision: 1.164 $"
+ $Id: DBSSql.java,v 1.164 2008/05/06 14:55:12 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -516,9 +516,6 @@ public class DBSSql {
                 String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
                                         +"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
 
-
-System.out.println("run_sql: "+run_sql);
-
                 String good_clause="";
                 String bad_clause="";
                 String unknown_clause="";
@@ -566,20 +563,12 @@ System.out.println("run_sql: "+run_sql);
                                 for (int j = 0; j < subSys.size() ; ++j) {
 
 					String oper = null;
-					System.out.println("key_vals[j]: "+key_vals[j]);
-
 					String[] key_val = key_vals[j].split(">=");
-					System.out.println("Line 1"+ key_val.length);
-					if ( key_val.length == 1) { key_vals[j].split("<="); oper = " <= "; } 
-					System.out.println("Line 2"+ key_val.length);
-					if ( key_val.length == 1) { key_vals[j].split(">"); oper = " > "; }
-					System.out.println("Line 3"+ key_val.length);
-					if ( key_val.length == 1) { key_vals[j].split("<"); oper = " < "; }
-					System.out.println("Line 4"+ key_val.length);
-					if ( key_val.length == 1) { key_vals[j].split("="); oper = " = "; }
-					System.out.println("Line 5"+ key_val.length);
+					if ( key_val.length == 1) { key_val=key_vals[j].split("<="); oper = " <= "; } 
+					if ( key_val.length == 1) { key_val=key_vals[j].split(">"); oper = " > "; }
+					if ( key_val.length == 1) { key_val=key_vals[j].split("<"); oper = " < "; }
+					if ( key_val.length == 1) { key_val=key_vals[j].split("="); oper = " = "; }
 					if ( key_val.length == 1) throw new SQLException("Incorrect Data, Invalid operator used in : "+key_vals[j]);
-					System.out.println("Line 6"+ key_val.length);
 
                                         String subsys=key_val[0];
                                         String value=key_val[1];
@@ -698,16 +687,15 @@ System.out.println("run_sql: "+run_sql);
 		toReturn.add(sql);
 		bindvals.addAll(intersectBinds);
 		toReturn.add(bindvals);
+		return toReturn;
 
                 /*PreparedStatement ps = DBManagement.getStatement(conn, sql);
-
                 int columnIndx = 1;
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
-
                 return ps;*/
-		return toReturn;
+		
 
 	}
 
@@ -805,7 +793,6 @@ System.out.println("run_sql: "+run_sql);
                                                                 intersectBinds.addAll(rbindvals);
                                                 }
 						intersects.add(query);
-						//System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQuery: "+query);
 					} else {
 						if (value.equals("GOOD")) {
 							if ( goodSysCount == 0 ) {
@@ -897,8 +884,6 @@ System.out.println("run_sql: "+run_sql);
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
 
-		//System.out.print ("PRE-BIND SQL:-\n"+sql);
-
                 int columnIndx = 1;
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
@@ -907,10 +892,6 @@ System.out.println("run_sql: "+run_sql);
 			ps.setString(columnIndx++, (String)intersectBinds.get(i) );
 
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
-
-
-		//for (int i=0; i!= intersects.size(); ++i)
-		//	System.out.println("intersects query: " + intersects.get(i));
 
                 return ps;
 

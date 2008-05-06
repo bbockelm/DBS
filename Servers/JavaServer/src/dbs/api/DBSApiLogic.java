@@ -1,6 +1,6 @@
 /**
- $Revision: 1.125 $"
- $Id: DBSApiLogic.java,v 1.125 2008/04/16 22:00:20 sekhri Exp $"
+ $Revision: 1.126 $"
+ $Id: DBSApiLogic.java,v 1.126 2008/04/30 19:13:15 sekhri Exp $"
  *
  */
 
@@ -134,6 +134,8 @@ public class DBSApiLogic {
 	}
 
 	public void executeQuery(Connection conn, Writer out, String userQuery) throws Exception {
+		
+
 		Wrapper wr = new Wrapper();
 		String finalQuery = wr.getQuery(userQuery);
 		System.out.println("____________________________________ User Query ___________________________________");
@@ -162,6 +164,10 @@ public class DBSApiLogic {
 				out.write(((String) "/>\n"));
 			}
 			//out.write("****************************** OUTPUT ***************************************\n\n\n");
+
+		} catch (Exception ex) {
+			System.out.println("HEREEEEEEEEEEEEEEEEEEEEEEEE" + ex.getMessage() );
+			throw ex;
 
 		} finally {
 			if (rs != null) rs.close();
