@@ -60,8 +60,15 @@ where	:('WHERE' | 'where');
 dotValue        : VALUE 
 		| VALUE DOT VALUE;
 valueList	:dotValue ( spaces COMMA spaces dotValue )*;
-genValue	:dotValue|
-		dotValue EQ dotValue (AMP dotValue EQ dotValue)*;
+compOpt		:(EQ)
+		|(LT)
+		|(GT)
+		|(EQ)(GT)
+		|(EQ)(LT)
+		|(LT)(EQ)
+		|(GT)(EQ);
+genValue	:dotValue
+		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
 likeValue 	:(dotValue| STAR)+;
 logicalOp	:(and|or);
 entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq');
