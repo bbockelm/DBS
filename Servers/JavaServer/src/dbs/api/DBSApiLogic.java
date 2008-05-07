@@ -1,6 +1,6 @@
 /**
- $Revision: 1.126 $"
- $Id: DBSApiLogic.java,v 1.126 2008/04/30 19:13:15 sekhri Exp $"
+ $Revision: 1.127 $"
+ $Id: DBSApiLogic.java,v 1.127 2008/05/06 18:43:24 afaq Exp $"
  *
  */
 
@@ -19,6 +19,7 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.util.Validate;
 import dbs.DBSException;
+import dbs.util.DBSConfig;
 import java.sql.SQLException;
 import dbs.DBSConstants;
 import dbs.search.parser.Wrapper;
@@ -133,11 +134,11 @@ public class DBSApiLogic {
 
 	}
 
-	public void executeQuery(Connection conn, Writer out, String userQuery) throws Exception {
-		
-
+	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end) throws Exception {
+		String db = "oracle";
+		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
 		Wrapper wr = new Wrapper();
-		String finalQuery = wr.getQuery(userQuery);
+		String finalQuery = wr.getQuery(userQuery, begin, end, db);
 		System.out.println("____________________________________ User Query ___________________________________");
 		System.out.println(userQuery);
 		System.out.println("___________________________________________________________________________________");
@@ -147,7 +148,7 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.getQuery(conn, finalQuery, wr.getBindValues());
+			ps = DBSSql.getQuery(conn, finalQuery, wr.getBindValues(), wr.getBindIntValues());
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int numberOfColumns = rsmd.getColumnCount();

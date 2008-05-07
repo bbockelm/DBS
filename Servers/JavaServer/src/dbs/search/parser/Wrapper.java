@@ -8,10 +8,15 @@ import dbs.search.qb.QueryBuilder;
 
 public class Wrapper {
 	private ArrayList bindValues ;
+	private ArrayList bindIntValues ;
 	public ArrayList getBindValues() {
 		return bindValues;
 	}
-	public String getQuery(String query) throws Exception {
+	public ArrayList getBindIntValues() {
+		return bindIntValues;
+	}
+
+	public String getQuery(String query, String begin, String end, String db) throws Exception {
 
 		String queryToReturn ="";
 
@@ -37,9 +42,10 @@ public class Wrapper {
 	
 				}//else System.out.println("REL " + (String)obj);
 			}*/
-			QueryBuilder qb = new QueryBuilder();
-			queryToReturn = qb.genQuery(kws, cs);
+			QueryBuilder qb = new QueryBuilder(db);
+			queryToReturn = qb.genQuery(kws, cs, begin, end);
 			bindValues = qb.getBindValues();
+			bindIntValues = qb.getBindIntValues();
 		} catch (Exception e) {
                         throw new Exception (e.toString());
                 }		

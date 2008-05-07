@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.164 $"
- $Id: DBSSql.java,v 1.164 2008/05/06 14:55:12 afaq Exp $"
+ $Revision: 1.165 $"
+ $Id: DBSSql.java,v 1.165 2008/05/06 18:43:25 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -55,13 +55,12 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
-	public static PreparedStatement getQuery(Connection conn, String query, List<String> bindValues) throws SQLException {
+	public static PreparedStatement getQuery(Connection conn, String query, List<String> bindValues, List<Integer> bindIntValues) throws SQLException {
 
 		PreparedStatement ps = DBManagement.getStatement(conn, query);
 		int columnIndx = 1;
-		for(String s: bindValues) {
-			ps.setString(columnIndx++, s);
-		}
+		for(String s: bindValues) ps.setString(columnIndx++, s);
+		for(Integer i: bindIntValues) ps.setInt(columnIndx++, i.intValue());
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }

@@ -91,6 +91,6 @@ executeQuery () {
 #$CMD query="find procds,file where procds.tier = GEN" 
 #$CMD query="find procds,file,file.tier where dataset like *" 
 #$CMD query="find procds.tier where procds.tier like *" 
-#$CMD query="find file where file.release  like * or  dataset=/abc/Online/RAW"
-executeQuery
+$CMD query="find file where file.release  like * or  dataset=/abc/Online/RAW" begin=5 end=20
+#executeQuery
 

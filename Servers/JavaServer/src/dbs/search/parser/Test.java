@@ -25,7 +25,7 @@ public class Test {
 
 			}else System.out.println("REL " + (String)obj);
 		}
-		QueryBuilder qb = new QueryBuilder();
+		QueryBuilder qb = new QueryBuilder("mysql");
 		qb.genQuery(kws, cs);
  		
     }

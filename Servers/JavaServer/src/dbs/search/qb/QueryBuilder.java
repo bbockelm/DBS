@@ -17,9 +17,13 @@ public class QueryBuilder {
 	KeyMap km;
 	//RelationMap rm = new RelationMap();
 	private ArrayList bindValues;
+	private ArrayList bindIntValues;
 	GraphUtil u = null;
-	public QueryBuilder() {
+	private String db = "";
+	public QueryBuilder(String db) {
+		this.db = db;
 		bindValues = new ArrayList();
+		bindIntValues = new ArrayList();
 		km = new KeyMap();
 		//u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
 		u = GraphUtil.getInstance("WEB-INF/DBSSchemaGraph.xml");
@@ -27,7 +31,14 @@ public class QueryBuilder {
 	public ArrayList getBindValues() {
 		return bindValues;
 	}
+	public ArrayList getBindIntValues() {
+		return bindIntValues;
+	}
+
 	public String genQuery(ArrayList kws, ArrayList cs) throws Exception{
+		return genQuery(kws, cs, "", "");
+	}
+	public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
 		//Store all the keywors both from select and where in allKws
 		String personJoinQuery = "";
 		String parentJoinQuery = "";
@@ -305,7 +316,22 @@ public class QueryBuilder {
 			}
 		}
 		//System.out.println("\n\nFINAL query is \n\n" + query);
-		return query + personJoinQuery + parentJoinQuery + queryWhere;
+		query += personJoinQuery + parentJoinQuery + queryWhere;
+		if(!begin.equals("") && !end.equals("")) {
+			int bInt = Integer.parseInt(begin);
+			int eInt = Integer.parseInt(end);
+			bindIntValues.add(new Integer(bInt));
+			if(db.equals("mysql")) {
+				bindIntValues.add(new Integer(eInt - bInt));
+				query += "\n\tLIMIT ?, ?";
+			}
+			if(db.equals("oracle")) {
+				bindIntValues.add(new Integer(eInt));
+				query =  "SELECT * from (SELECT x.*, rownum as rnum FROM (\n" + query + "\n) x) where rnum between ? and ?";
+			}
+		}
+
+		return query;
 	}
 
 	private String makeAs(String in) {
@@ -651,24 +677,25 @@ public class QueryBuilder {
 
 	}
 
-	public static void main(String args[]) {
-		QueryBuilder qb = new QueryBuilder();
+	public static void main(String args[]) throws Exception{
+		QueryBuilder qb = new QueryBuilder("oracle");
 		ArrayList tmp = new ArrayList();
-		GraphUtil u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
+		/*GraphUtil u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
 		List<Edge> lEdges =  u.getShortestPath("ProcessedDataset", "LumiSection");
 		for (Edge e: lEdges) {
 			System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
-		}
+		}*/
 
 		//tmp.add("PrimaryDataset");
-		/*tmp.add("Files");
-		tmp.add("LumiSection");
-		tmp.add("Runs");
-		tmp.add("FileRunLumi");
+		tmp.add("file");
+		System.out.println(qb.genQuery(tmp, new ArrayList(), "4", "10"));		
+		//tmp.add("Runs");
+		//tmp.add("FileRunLumi");
+		
 		//tmp.add("ProcessedDataset");
 		//tmp.add("FileType");
 		//tmp.add("ProcDSRuns");
-		tmp = qb.sortVertexs(tmp);
+		/*tmp = qb.sortVertexs(tmp);
 		//tmp = qb.makeCompleteListOfVertexs(tmp);
 		for (int i =0 ; i!=tmp.size() ;++i ) {
 			System.out.println("ID " + tmp.get(i));
