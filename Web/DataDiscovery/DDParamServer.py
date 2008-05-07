@@ -11,7 +11,7 @@ DBS data discovery ParamSearch module
 
 # system modules
 import os, string, logging, types, time, socket
-import httplib, urllib, inspect
+import httplib, urllib, inspect, urllib2
 
 # DBS  modules
 from   DDUtil   import *
@@ -55,6 +55,16 @@ class DDParamServer(DDLogger):
         http_conn.close()
 
     def sendPostMessage(self,method,iParams,debug=0):
+        url=self.server+"/"+self.path+"/"+method
+        if self.secure:
+           url="https://"+os.path.normpath(url)
+        else:
+           url="http://"+os.path.normpath(url)
+        print url,iParams
+        data=urllib2.urlopen(url,urllib.urlencode(iParams)).read()
+        return data
+
+    def sendPostMessage_v1(self,method,iParams,debug=0):
         if debug:
            httplib.HTTPConnection.debuglevel = 1
         oParams=""
@@ -84,7 +94,8 @@ class DDParamServer(DDLogger):
            conn = httplib.HTTPConnection(self.server)
         if self.path:
            method="/%s/%s"%(self.path,method)
-        print method,oParams,headers
+        method=method.replace("//","/")
+        print self.server,method,oParams,headers
         conn.request("POST",method, oParams, headers)
         response = conn.getresponse()
 
@@ -106,39 +117,38 @@ if __name__ == "__main__":
     # test ProdRequest status response call
     url="/ProdRequest/getRequestsByDataset"
     server = DDParamServer(server="https://cmsweb.cern.ch/prodrequest",verbose=1)
-#    params={'primary_dataset':'PhotonJet_500-7000','id':'1'}
-    params={'primary_dataset':'PhotonJet_500-7000'}
+    params={'primary_dataset':'PhotonJet_500-7000','id':'1'}
     page = server.sendPostMessage(url,params,debug=1)
     print page
 
     # test Phedex status response call
     url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
     server = DDParamServer(server="cmsdoc.cern.ch")
-    params={'dataset':'/GlobalJun07-A/Online/RAW','se_name':['cmssrm.fnal.gov','cmssrc.cern.ch']}
+    params={'dataset':'/GlobalJun07-A/Online/RAW','se_name':['cmssrm.fnal.gov','cmssrm.cern.ch']}
     page = server.sendPostMessage(url,params,debug=1)
     print page
 
     # test configuration file server call
-    server = DDParamServer(server="edge.fnal.gov:8888")
-    data = server.sendGetMessage(debug=1)
-    print data
+#    server = DDParamServer(server="edge.fnal.gov:8888")
+#    data = server.sendGetMessage(debug=1)
+#    print data
 
-    param = {}
-    data = server.sendPostMessage("/DBSSearch/paramlist.jsp",param,debug=1)
-    print data
+#    param = {}
+#    data = server.sendPostMessage("/DBSSearch/paramlist.jsp",param,debug=1)
+#    print data
 
-    pList = []
-    pname0="caloTowers.minimumE"
-    ptype0=1 # 1 is numeric, 2 is a string
-    val0=0
-    op0=0 # <,>,<=,>=,=,!=,like,likeRight,likeLeft
-    param = {'num':1}
-    param['pname0']="caloTowers.minimumE"
-    param['ptype0']=1
-    param['val0']=0
-    param['op0']="<"
-    print "Sending",param
-    
-    data = server.sendPostMessage("/DBSSearch/query.jsp",param,debug=1)
-    print data
+#    pList = []
+#    pname0="caloTowers.minimumE"
+#    ptype0=1 # 1 is numeric, 2 is a string
+#    val0=0
+#    op0=0 # <,>,<=,>=,=,!=,like,likeRight,likeLeft
+#    param = {'num':1}
+#    param['pname0']="caloTowers.minimumE"
+#    param['ptype0']=1
+#    param['val0']=0
+#    param['op0']="<"
+#    print "Sending",param
+#    
+#    data = server.sendPostMessage("/DBSSearch/query.jsp",param,debug=1)
+#    print data
 
