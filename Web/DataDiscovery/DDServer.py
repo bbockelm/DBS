@@ -804,8 +804,6 @@ class DDServer(DDLogger,Controller):
 
     def _advanced(self,dbsInst=DBSGLOBAL,userMode="user",msg="",**kwargs):
         try:
-#            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
-            page = self.genTopHTML(intro=False,userMode=userMode)
             dbsList=list(self.dbsList)
             dbsList.remove(dbsInst)
             dbsList=[dbsInst]+dbsList
@@ -813,21 +811,34 @@ class DDServer(DDLogger,Controller):
             else:   userHelp=1
             nameSearch={'dbsInst':dbsInst,'userHelp':userHelp,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':'','aSearchKeys':self.aSearchKeys(),'showHelp':1}
             t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
-#            page+="""<p class="sectionhead">ADVANCED KEYWORD SEARCH</p>"""
+            if userMode=="user":
+               page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
+               page+="""<p class="sectionhead">ADVANCED KEYWORD SEARCH</p>"""
+            else:
+               page = self.genTopHTML(intro=False,userMode=userMode)
             page+= str(t)
             if msg:
                page+=msg
-            if userMode=="dbsExpert":
+            if userMode=="user":
                page+="""<hr class="dbs" />"""
-#               page+="""<p class="sectionhead">OTHER DATA DISCOVERY SERVICES:</p>"""
+               page+="""<p class="sectionhead">MENU-DRIVEN INTERFACE</p>"""
+               auto=0
+               if kwargs.has_key('auto') and kwargs['auto']=='on':
+                  auto=1
+               userNav = self.genEmptyUserNavigator(dbsInst,userMode,auto,navigator=1)
+               t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
+               page+= str(t)
+            elif userMode=="dbsExpert":
+               page+="""<hr class="dbs" />"""
+               page+="""<p class="sectionhead">OTHER DATA DISCOVERY SERVICES:</p>"""
                nameSpace = {'userMode':userMode,'ddList':self.ddUrls,'dbsdd':self.dbsdd}
                page+= templateRemoteDD(searchList=[nameSpace]).respond()
+               # Walk through all registered DD services and exchange update SOAP msg's
+               nsets = self.helper.nDatasets()
+               for url in self.ddUrls:
+                   if url!=self.dbsdd:
+                      self.sendSOAP(url,"wsUpdateSiteInfo",{'url':self.dbsdd,'reply':self.dbsdd,'nsets':nsets})
             page+= self.genBottomHTML()
-            # Walk through all registered DD services and exchange update SOAP msg's
-#            nsets = self.helper.nDatasets()
-#            for url in self.ddUrls:
-#                if url!=self.dbsdd:
-#                   self.sendSOAP(url,"wsUpdateSiteInfo",{'url':self.dbsdd,'reply':self.dbsdd,'nsets':nsets})
             return page
         except:
             t=self.errorReport("Fail in advanced init function")
