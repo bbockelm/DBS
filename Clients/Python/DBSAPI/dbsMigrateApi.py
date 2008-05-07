@@ -15,6 +15,7 @@ class DbsMigrateApi:
 	apiDst = None
 	force = False
 	pBranches = False
+	allPaths = []
 	#def __init__(self, srcURL, dstURL, force = False):
 	def __init__(self, apiSrc, apiDst, force = False, pBranches = False):
 		#self.apiSrc = self.makeAPI(srcURL)
@@ -38,6 +39,8 @@ class DbsMigrateApi:
 		return DbsApi(args)
 
 	def getParentPathList(self, api, path):
+		print 'getting parents for %s' %path
+		self.allPaths.append(path)
 		pathList = []
 		#print "listing parents for %s" %path
 		datasets = api.listDatasetParents(path)
@@ -48,8 +51,9 @@ class DbsMigrateApi:
 				#pdb.set_trace()
 				for proc in api.listProcessedDatasets(patternPrim = dataset['PrimaryDataset']['Name'],  patternProc = dataset['Name']):
 					for aPath in proc['PathList']:
-						pathList.append(aPath)
-		#print "parents %s " %pathList				
+						if(aPath not in self.allPaths):
+							pathList.append(aPath)
+		print "parents %s " %pathList				
 		return pathList
 
 	def doesPathExist(self, api, path):
@@ -65,6 +69,7 @@ class DbsMigrateApi:
 			return True;
 			
 	def migratePath(self, path):
+		
 		#Get the parents of the path
 		self.checkDatasetStatus(path)
 		datasets = self.getParentPathList(self.apiSrc, path)

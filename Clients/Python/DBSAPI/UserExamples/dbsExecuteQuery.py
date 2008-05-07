@@ -48,6 +48,7 @@ if __name__ == "__main__":
                         sys.exit(0)
 
                 api = DbsApi(opts)
+		print opts['query']
 		print api.executeQuery(opts['query'])
   		#print api.executeQuery("select file,ls where path=/GlobalMar08-Express/Online/RAW")
 
