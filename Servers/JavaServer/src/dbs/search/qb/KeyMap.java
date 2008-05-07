@@ -42,6 +42,14 @@ public class KeyMap {
 		map.put("lumi.createdate", "LumiSection.CreationDate");
 		map.put("lumi.moddate", "LumiSection.LastModificationDate");
 		
+		map.put("ads.name", "AnalysisDataset.Name");
+		map.put("ads.version", "AnalysisDataset.Version");
+		map.put("ads.dataset", "AnalysisDataset.Path");
+		map.put("ads.desc", "AnalysisDataset.Description");
+		map.put("ads.procds", "AnalysisDataset.ProcessedDS");
+		map.put("ads.createdate", "AnalysisDataset.CreationDate");
+		map.put("ads.moddate", "AnalysisDataset.LastModificationDate");
+		
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 	}

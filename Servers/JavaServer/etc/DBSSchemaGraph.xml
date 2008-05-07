@@ -95,7 +95,7 @@
 	<edge directed="false"	wt="1"	source="AnalysisDataset"	 	target="PhysicsGroup"		relation="AnalysisDataset.PhysicsGroup = PhysicsGroup.ID"/>
 	
 	<edge directed="false"	wt="2"	source="AnalysisDSFileLumi" 	target="LumiSection"		relation="AnalysisDSFileLumi.Lumi = LumiSection.ID"/>
-	<edge directed="false"	wt="1"	source="AnalysisDSFileLumi" 	target="Files"			relation="AnalysisDSFileLumi.Fileid = Files.ID"/>
+	<edge directed="false"	wt="0.4"	source="AnalysisDSFileLumi" 	target="Files"			relation="AnalysisDSFileLumi.Fileid = Files.ID"/>
 	
 	
 	<edge directed="false"	wt="1"	source="ProcAlgo" 		target="AlgorithmConfig" 	relation="ProcAlgo.Algorithm = AlgorithmConfig.ID"/>

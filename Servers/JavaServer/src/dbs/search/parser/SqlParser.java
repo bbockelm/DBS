@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-05-06 13:39:54
+// $ANTLR 3.0.1 Sql.g 2008-05-07 10:21:32
 
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class SqlParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "SPACE", "COMMA", "DOT", "EQ", "LT", "GT", "VALUE", "AMP", "STAR", "NL", "WS", "'('", "')'", "'WHERE'", "'where'", "'ads'", "'dataset'", "'release'", "'site'", "'block'", "'file'", "'primds'", "'procds'", "'run'", "'lumi'", "'dq'", "'createdate'", "'moddate'", "'starttime'", "'endtime'", "'createby'", "'modby'", "'name'", "'version'", "'number'", "'startevnum'", "'endevnum'", "'numevents'", "'numlss'", "'size'", "'count'", "'status'", "'type'", "'id'", "'parent'", "'tier'", "'numruns()'", "'numfiles()'", "'dataquality()'", "'latest()'", "'parentrelease()'", "'childrelease()'", "'intluminosity()'", "'findevents()'", "'select'", "'SELECT'", "'find'", "'FIND'", "'and'", "'AND'", "'or'", "'OR'", "'in'", "'IN'", "'not'", "'NOT'", "'like'", "'LIKE'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "SPACE", "COMMA", "DOT", "EQ", "LT", "GT", "VALUE", "AMP", "STAR", "NL", "WS", "'('", "')'", "'WHERE'", "'where'", "'ads'", "'dataset'", "'release'", "'site'", "'block'", "'file'", "'primds'", "'procds'", "'run'", "'lumi'", "'dq'", "'createdate'", "'moddate'", "'starttime'", "'endtime'", "'createby'", "'modby'", "'name'", "'version'", "'number'", "'startevnum'", "'endevnum'", "'numevents'", "'numlss'", "'size'", "'count'", "'status'", "'type'", "'id'", "'parent'", "'tier'", "'def'", "'numruns()'", "'numfiles()'", "'dataquality()'", "'latest()'", "'parentrelease()'", "'childrelease()'", "'intluminosity()'", "'findevents()'", "'select'", "'SELECT'", "'find'", "'FIND'", "'and'", "'AND'", "'or'", "'OR'", "'in'", "'IN'", "'not'", "'NOT'", "'like'", "'LIKE'"
     };
     public static final int LT=8;
     public static final int WS=14;
@@ -246,10 +246,10 @@ public class SqlParser extends Parser {
                 if ( (LA4_1==DOT) ) {
                     int LA4_2 = input.LA(3);
 
-                    if ( ((LA4_2>=20 && LA4_2<=21)||(LA4_2>=30 && LA4_2<=49)) ) {
+                    if ( ((LA4_2>=20 && LA4_2<=21)||(LA4_2>=30 && LA4_2<=50)) ) {
                         alt4=2;
                     }
-                    else if ( ((LA4_2>=50 && LA4_2<=57)) ) {
+                    else if ( ((LA4_2>=51 && LA4_2<=58)) ) {
                         alt4=3;
                     }
                     else {
@@ -259,7 +259,7 @@ public class SqlParser extends Parser {
                         throw nvae;
                     }
                 }
-                else if ( (LA4_1==EOF||(LA4_1>=SPACE && LA4_1<=COMMA)||(LA4_1>=EQ && LA4_1<=GT)||(LA4_1>=17 && LA4_1<=18)||(LA4_1>=66 && LA4_1<=67)||(LA4_1>=70 && LA4_1<=71)) ) {
+                else if ( (LA4_1==EOF||(LA4_1>=SPACE && LA4_1<=COMMA)||(LA4_1>=EQ && LA4_1<=GT)||(LA4_1>=17 && LA4_1<=18)||(LA4_1>=67 && LA4_1<=68)||(LA4_1>=71 && LA4_1<=72)) ) {
                     alt4=1;
                 }
                 else {
@@ -352,7 +352,7 @@ public class SqlParser extends Parser {
                 int alt5=2;
                 int LA5_0 = input.LA(1);
 
-                if ( (LA5_0==SPACE||(LA5_0>=62 && LA5_0<=65)) ) {
+                if ( (LA5_0==SPACE||(LA5_0>=63 && LA5_0<=66)) ) {
                     alt5=1;
                 }
 
@@ -588,7 +588,7 @@ public class SqlParser extends Parser {
                 if ( (LA7_1==DOT) ) {
                     alt7=2;
                 }
-                else if ( (LA7_1==EOF||(LA7_1>=SPACE && LA7_1<=COMMA)||(LA7_1>=EQ && LA7_1<=STAR)||LA7_1==16||(LA7_1>=62 && LA7_1<=65)) ) {
+                else if ( (LA7_1==EOF||(LA7_1>=SPACE && LA7_1<=COMMA)||(LA7_1>=EQ && LA7_1<=STAR)||LA7_1==16||(LA7_1>=63 && LA7_1<=66)) ) {
                     alt7=1;
                 }
                 else {
@@ -935,7 +935,7 @@ public class SqlParser extends Parser {
                         if ( ((LA11_5>=EQ && LA11_5<=GT)) ) {
                             alt11=2;
                         }
-                        else if ( (LA11_5==EOF||LA11_5==SPACE||(LA11_5>=62 && LA11_5<=65)) ) {
+                        else if ( (LA11_5==EOF||LA11_5==SPACE||(LA11_5>=63 && LA11_5<=66)) ) {
                             alt11=1;
                         }
                         else {
@@ -962,10 +962,10 @@ public class SqlParser extends Parser {
                     break;
                 case EOF:
                 case SPACE:
-                case 62:
                 case 63:
                 case 64:
                 case 65:
+                case 66:
                     {
                     alt11=1;
                     }
@@ -1154,10 +1154,10 @@ public class SqlParser extends Parser {
             int alt13=2;
             int LA13_0 = input.LA(1);
 
-            if ( ((LA13_0>=62 && LA13_0<=63)) ) {
+            if ( ((LA13_0>=63 && LA13_0<=64)) ) {
                 alt13=1;
             }
-            else if ( ((LA13_0>=64 && LA13_0<=65)) ) {
+            else if ( ((LA13_0>=65 && LA13_0<=66)) ) {
                 alt13=2;
             }
             else {
@@ -1240,13 +1240,13 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start attr
-    // Sql.g:75:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' ) ;
+    // Sql.g:75:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' | 'def' ) ;
     public final void attr() throws RecognitionException {
         try {
-            // Sql.g:75:6: ( ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' ) )
-            // Sql.g:75:7: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' )
+            // Sql.g:75:6: ( ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' | 'def' ) )
+            // Sql.g:75:7: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' | 'def' )
             {
-            if ( (input.LA(1)>=20 && input.LA(1)<=21)||(input.LA(1)>=30 && input.LA(1)<=49) ) {
+            if ( (input.LA(1)>=20 && input.LA(1)<=21)||(input.LA(1)>=30 && input.LA(1)<=50) ) {
                 input.consume();
                 errorRecovery=false;
             }
@@ -1278,14 +1278,14 @@ public class SqlParser extends Parser {
             // Sql.g:76:7: ( ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' ) )
             // Sql.g:76:8: ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' )
             {
-            if ( (input.LA(1)>=50 && input.LA(1)<=57) ) {
+            if ( (input.LA(1)>=51 && input.LA(1)<=58) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct700);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct704);    throw mse;
             }
 
 
@@ -1310,14 +1310,14 @@ public class SqlParser extends Parser {
             // Sql.g:77:8: ( ( 'select' | 'SELECT' | 'find' | 'FIND' ) )
             // Sql.g:77:9: ( 'select' | 'SELECT' | 'find' | 'FIND' )
             {
-            if ( (input.LA(1)>=58 && input.LA(1)<=61) ) {
+            if ( (input.LA(1)>=59 && input.LA(1)<=62) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select737);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select741);    throw mse;
             }
 
 
@@ -1342,14 +1342,14 @@ public class SqlParser extends Parser {
             // Sql.g:78:5: ( ( 'and' | 'AND' ) )
             // Sql.g:78:6: ( 'and' | 'AND' )
             {
-            if ( (input.LA(1)>=62 && input.LA(1)<=63) ) {
+            if ( (input.LA(1)>=63 && input.LA(1)<=64) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and757);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and761);    throw mse;
             }
 
 
@@ -1374,14 +1374,14 @@ public class SqlParser extends Parser {
             // Sql.g:79:4: ( ( 'or' | 'OR' ) )
             // Sql.g:79:5: ( 'or' | 'OR' )
             {
-            if ( (input.LA(1)>=64 && input.LA(1)<=65) ) {
+            if ( (input.LA(1)>=65 && input.LA(1)<=66) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or769);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or773);    throw mse;
             }
 
 
@@ -1411,14 +1411,14 @@ public class SqlParser extends Parser {
             // Sql.g:80:4: ( ( 'in' | 'IN' ) )
             // Sql.g:80:5: ( 'in' | 'IN' )
             {
-            if ( (input.LA(1)>=66 && input.LA(1)<=67) ) {
+            if ( (input.LA(1)>=67 && input.LA(1)<=68) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in781);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in785);    throw mse;
             }
 
 
@@ -1445,14 +1445,14 @@ public class SqlParser extends Parser {
             // Sql.g:81:5: ( ( 'not' | 'NOT' ) )
             // Sql.g:81:6: ( 'not' | 'NOT' )
             {
-            if ( (input.LA(1)>=68 && input.LA(1)<=69) ) {
+            if ( (input.LA(1)>=69 && input.LA(1)<=70) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not793);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not797);    throw mse;
             }
 
 
@@ -1482,14 +1482,14 @@ public class SqlParser extends Parser {
             // Sql.g:82:6: ( ( 'like' | 'LIKE' ) )
             // Sql.g:82:7: ( 'like' | 'LIKE' )
             {
-            if ( (input.LA(1)>=70 && input.LA(1)<=71) ) {
+            if ( (input.LA(1)>=71 && input.LA(1)<=72) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like805);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like809);    throw mse;
             }
 
 
@@ -1517,9 +1517,9 @@ public class SqlParser extends Parser {
     static final String DFA1_eofS =
         "\3\uffff\1\6\4\uffff\2\6\1\uffff\1\6\1\uffff\2\6";
     static final String DFA1_minS =
-        "\1\72\3\4\1\24\1\4\2\uffff\4\4\1\24\2\4";
+        "\1\73\3\4\1\24\1\4\2\uffff\4\4\1\24\2\4";
     static final String DFA1_maxS =
-        "\1\75\2\35\1\22\1\71\1\35\2\uffff\2\22\1\35\1\22\1\71\2\22";
+        "\1\76\2\35\1\22\1\72\1\35\2\uffff\2\22\1\35\1\22\1\72\2\22";
     static final String DFA1_acceptS =
         "\6\uffff\1\2\1\1\7\uffff";
     static final String DFA1_specialS =
@@ -1529,7 +1529,7 @@ public class SqlParser extends Parser {
             "\1\2\16\uffff\13\3",
             "\1\2\16\uffff\13\3",
             "\1\7\1\5\1\4\12\uffff\2\7",
-            "\2\11\10\uffff\24\11\10\10",
+            "\2\11\10\uffff\25\11\10\10",
             "\1\12\16\uffff\13\13",
             "",
             "",
@@ -1537,7 +1537,7 @@ public class SqlParser extends Parser {
             "\1\7\1\5\13\uffff\2\7",
             "\1\12\16\uffff\13\13",
             "\1\7\1\5\1\14\12\uffff\2\7",
-            "\2\16\10\uffff\24\16\10\15",
+            "\2\16\10\uffff\25\16\10\15",
             "\1\7\1\5\13\uffff\2\7",
             "\1\7\1\5\13\uffff\2\7"
     };
@@ -1582,21 +1582,21 @@ public class SqlParser extends Parser {
     static final String DFA6_minS =
         "\1\23\1\4\1\24\1\4\3\uffff\2\4";
     static final String DFA6_maxS =
-        "\1\35\1\107\1\71\1\107\3\uffff\2\107";
+        "\1\35\1\110\1\72\1\110\3\uffff\2\110";
     static final String DFA6_acceptS =
         "\4\uffff\1\2\1\1\1\3\2\uffff";
     static final String DFA6_specialS =
         "\11\uffff}>";
     static final String[] DFA6_transitionS = {
             "\13\1",
-            "\1\3\1\uffff\1\2\3\5\70\uffff\2\4\2\uffff\2\6",
-            "\2\10\10\uffff\24\10\10\7",
-            "\1\3\2\uffff\3\5\70\uffff\2\4\2\uffff\2\6",
+            "\1\3\1\uffff\1\2\3\5\71\uffff\2\4\2\uffff\2\6",
+            "\2\10\10\uffff\25\10\10\7",
+            "\1\3\2\uffff\3\5\71\uffff\2\4\2\uffff\2\6",
             "",
             "",
             "",
-            "\1\3\2\uffff\3\5\70\uffff\2\4\2\uffff\2\6",
-            "\1\3\2\uffff\3\5\70\uffff\2\4\2\uffff\2\6"
+            "\1\3\2\uffff\3\5\71\uffff\2\4\2\uffff\2\6",
+            "\1\3\2\uffff\3\5\71\uffff\2\4\2\uffff\2\6"
     };
 
     static final short[] DFA6_eot = DFA.unpackEncodedString(DFA6_eotS);
@@ -1703,23 +1703,23 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_keyword_in_selectList95 = new BitSet(new long[]{0x0000000000000022L});
     public static final BitSet FOLLOW_entity_in_keyword120 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_entity_in_keyword126 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_keyword128 = new BitSet(new long[]{0x0003FFFFC0300000L});
+    public static final BitSet FOLLOW_DOT_in_keyword128 = new BitSet(new long[]{0x0007FFFFC0300000L});
     public static final BitSet FOLLOW_attr_in_keyword130 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_entity_in_keyword135 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_keyword137 = new BitSet(new long[]{0x03FC000000000000L});
+    public static final BitSet FOLLOW_DOT_in_keyword137 = new BitSet(new long[]{0x07F8000000000000L});
     public static final BitSet FOLLOW_funct_in_keyword139 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_constraint_in_constraintList148 = new BitSet(new long[]{0xC000000000000012L,0x0000000000000003L});
-    public static final BitSet FOLLOW_spaces_in_constraintList152 = new BitSet(new long[]{0xC000000000000000L,0x0000000000000003L});
+    public static final BitSet FOLLOW_constraint_in_constraintList148 = new BitSet(new long[]{0x8000000000000012L,0x0000000000000007L});
+    public static final BitSet FOLLOW_spaces_in_constraintList152 = new BitSet(new long[]{0x8000000000000000L,0x0000000000000007L});
     public static final BitSet FOLLOW_logicalOp_in_constraintList159 = new BitSet(new long[]{0x000000003FF80010L});
     public static final BitSet FOLLOW_spaces_in_constraintList167 = new BitSet(new long[]{0x000000003FF80000L});
-    public static final BitSet FOLLOW_constraint_in_constraintList169 = new BitSet(new long[]{0xC000000000000012L,0x0000000000000003L});
+    public static final BitSet FOLLOW_constraint_in_constraintList169 = new BitSet(new long[]{0x8000000000000012L,0x0000000000000007L});
     public static final BitSet FOLLOW_keyword_in_constraint182 = new BitSet(new long[]{0x0000000000000390L});
     public static final BitSet FOLLOW_spaces_in_constraint191 = new BitSet(new long[]{0x0000000000000380L});
     public static final BitSet FOLLOW_set_in_constraint198 = new BitSet(new long[]{0x0000000000000410L});
     public static final BitSet FOLLOW_spaces_in_constraint218 = new BitSet(new long[]{0x0000000000000400L});
     public static final BitSet FOLLOW_genValue_in_constraint225 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keyword_in_constraint253 = new BitSet(new long[]{0x0000000000000010L,0x000000000000000CL});
-    public static final BitSet FOLLOW_spaces_in_constraint262 = new BitSet(new long[]{0x0000000000000000L,0x000000000000000CL});
+    public static final BitSet FOLLOW_keyword_in_constraint253 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000018L});
+    public static final BitSet FOLLOW_spaces_in_constraint262 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
     public static final BitSet FOLLOW_in_in_constraint269 = new BitSet(new long[]{0x0000000000008010L});
     public static final BitSet FOLLOW_spaces_in_constraint280 = new BitSet(new long[]{0x0000000000008000L});
     public static final BitSet FOLLOW_15_in_constraint282 = new BitSet(new long[]{0x0000000000000410L});
@@ -1727,8 +1727,8 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_valueList_in_constraint292 = new BitSet(new long[]{0x0000000000010010L});
     public static final BitSet FOLLOW_spaces_in_constraint300 = new BitSet(new long[]{0x0000000000010000L});
     public static final BitSet FOLLOW_16_in_constraint304 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keyword_in_constraint330 = new BitSet(new long[]{0x0000000000000010L,0x00000000000000C0L});
-    public static final BitSet FOLLOW_spaces_in_constraint339 = new BitSet(new long[]{0x0000000000000000L,0x00000000000000C0L});
+    public static final BitSet FOLLOW_keyword_in_constraint330 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000180L});
+    public static final BitSet FOLLOW_spaces_in_constraint339 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000180L});
     public static final BitSet FOLLOW_like_in_constraint346 = new BitSet(new long[]{0x0000000000001410L});
     public static final BitSet FOLLOW_spaces_in_constraint355 = new BitSet(new long[]{0x0000000000001400L});
     public static final BitSet FOLLOW_likeValue_in_constraint362 = new BitSet(new long[]{0x0000000000000002L});
@@ -1767,12 +1767,12 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_or_in_logicalOp552 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_entity560 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_attr608 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_funct700 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_select737 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_and757 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_or769 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_in781 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_not793 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_like805 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_funct704 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_select741 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_and761 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_or773 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_in785 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_not797 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_like809 = new BitSet(new long[]{0x0000000000000002L});
 
 }

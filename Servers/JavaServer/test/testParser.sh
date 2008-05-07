@@ -61,6 +61,15 @@ executeQuery () {
 	$CMD query="find procds,file where procds.tier = GEN" 
 	$CMD query="find procds,file,file.tier where dataset like *" 
 	$CMD query="find procds,file where procds.tier in (GEN,SIM,RAW)" 
+	$CMD query="find ads,file"
+	$CMD query="find ads"
+	$CMD query="find lumi,ads"
+	$CMD query="find ads, ads.type, ads.status, ads.createby"
+	$CMD query="find file,lumi where ads.name = /TestPrimary_001_20080501_10h06m06s/TestProcessed_20080501_10h06m06s/GEN-SIM/TestAnalysisDSDef_005_20080501_10h06m06s"
+	$CMD query="find ads, ads.dataset"
+	$CMD query="find ads,file where dataset = /TestPrimary_001_20080501_10h06m06s/TestProcessed_20080501_10h06m06s/GEN-SIM"
+	$CMD query="find ads, ads.def, file"
+
 
 }
 #$CMD query="find file,file.parent where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
@@ -82,6 +91,6 @@ executeQuery () {
 #$CMD query="find procds,file where procds.tier = GEN" 
 #$CMD query="find procds,file,file.tier where dataset like *" 
 #$CMD query="find procds.tier where procds.tier like *" 
-$CMD query="find file where file.release  like * or  dataset=/abc/Online/RAW"
-#executeQuery
+#$CMD query="find file where file.release  like * or  dataset=/abc/Online/RAW"
+executeQuery
 
