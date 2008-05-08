@@ -1,6 +1,6 @@
 /**
- $Revision: 1.128 $"
- $Id: DBSApiLogic.java,v 1.128 2008/05/07 17:41:42 sekhri Exp $"
+ $Revision: 1.129 $"
+ $Id: DBSApiLogic.java,v 1.129 2008/05/08 18:24:35 sekhri Exp $"
  *
  */
 
@@ -26,6 +26,7 @@ import dbs.search.parser.Wrapper;
 import java.util.Arrays;
 import java.util.Vector;
 import java.util.List;
+import java.util.ArrayList;
 
 
 
@@ -133,6 +134,20 @@ public class DBSApiLogic {
 			writeWarning(out, "Already Exists", "1020", "Run " + runNumber + " Already Exists");
 		}
 
+	}
+	public ArrayList executeQuery(Connection conn, Writer out, String userQuery, String begin, String end) throws Exception {
+		String db = "oracle";
+		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
+		Wrapper wr = new Wrapper();
+		String finalQuery = wr.getQuery(userQuery, begin, end, db);
+		List<String> bindValues = wr.getBindValues();
+		List<Integer> bindIntValues = wr.getBindIntValues();
+		ArrayList toReturn = new ArrayList();
+		toReturn.add(userQuery);
+		toReturn.add(finalQuery);
+		toReturn.add(bindValues);
+		toReturn.add(bindIntValues);
+		return toReturn;
 	}
 
 	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type) throws Exception {

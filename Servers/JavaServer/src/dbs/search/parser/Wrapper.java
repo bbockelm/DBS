@@ -29,6 +29,7 @@ public class Wrapper {
 	        	CommonTokenStream tokens = new CommonTokenStream(lexer);
 	        	SqlParser parser = new SqlParser(tokens);
 		        parser.stmt();
+	
 			ArrayList kws = parser.kws;
 			ArrayList cs = parser.constraints;
 			/*for (int i =0 ; i!= kws.size(); ++i) 
@@ -46,6 +47,9 @@ public class Wrapper {
 			queryToReturn = qb.genQuery(kws, cs, begin, end);
 			bindValues = qb.getBindValues();
 			bindIntValues = qb.getBindIntValues();
+		} catch (NoViableAltException nvae) {
+			System.out.println("TOKEN------->" + nvae.token);
+                        throw new Exception (nvae.toString());
 		} catch (Exception e) {
                         throw new Exception (e.toString());
                 }		

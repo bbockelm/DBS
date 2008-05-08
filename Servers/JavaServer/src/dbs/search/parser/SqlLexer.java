@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-05-07 10:21:33
+// $ANTLR 3.0.1 Sql.g 2008-05-08 13:43:50
 
 import org.antlr.runtime.*;
 import java.util.Stack;

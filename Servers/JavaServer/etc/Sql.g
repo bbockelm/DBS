@@ -10,11 +10,11 @@ import java.util.ArrayList;
 ArrayList kws = new ArrayList();
 ArrayList constraints = new ArrayList();
 }
-@rulecatch {
-catch (RecognitionException e) {
-	throw e;
-}
-}
+//@rulecatch {
+//catch (RecognitionException e) {
+//	throw e;
+//}
+//}
 
 stmt	: select spaces selectList spaces where spaces constraintList  
 	| select spaces selectList;

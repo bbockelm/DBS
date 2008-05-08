@@ -92,6 +92,7 @@ executeQuery () {
 #$CMD query="find procds,file,file.tier where dataset like *" 
 #$CMD query="find procds.tier where procds.tier like *" 
 #$CMD query="find file where file.release  like * or  dataset=/abc/Online/RAW" begin=5 end=20
-$CMD query="find file, file.createdate, file.moddate where file.createdate > 0" begin=5 end=20 type=quera
+#$CMD query="find file, file.createdate, file.moddate where file.createdate > 0" begin=5 end=20 type=quera
+$CMD query="find dataset, file.id, lumi.id where dataset like *" begin=5 end=20 type=querya
 #executeQuery
 
