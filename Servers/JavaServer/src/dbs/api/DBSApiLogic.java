@@ -1,6 +1,6 @@
 /**
- $Revision: 1.129 $"
- $Id: DBSApiLogic.java,v 1.129 2008/05/08 18:24:35 sekhri Exp $"
+ $Revision: 1.130 $"
+ $Id: DBSApiLogic.java,v 1.130 2008/05/08 19:06:34 sekhri Exp $"
  *
  */
 
@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
+import org.apache.commons.lang.StringEscapeUtils;
 
 
 
@@ -165,12 +166,12 @@ public class DBSApiLogic {
 		System.out.println("___________________________________________________________________________________");
 		out.write("<userinput>\n");
 		out.write("<input>\n");
-		out.write(userQuery + "\n");
+		out.write(StringEscapeUtils.escapeXml(userQuery) + "\n");
 		out.write("</input>\n");
 		out.write("</userinput>\n");
 		out.write("<query>\n");
 		out.write("<sql>\n");
-		out.write(finalQuery + "\n");
+		out.write(StringEscapeUtils.escapeXml(finalQuery) + "\n");
 		out.write("</sql>\n");
 		for(String s: bindValues)  out.write("<bp>" + s + "</bp>\n");
 		for(Integer i: bindIntValues)  out.write("<bp>" + i.toString() + "</bp>\n");
@@ -183,7 +184,7 @@ public class DBSApiLogic {
 		try {
 			ps = DBSSql.getQuery(conn, finalQuery, bindValues, bindIntValues);
 			out.write("<readable_query>\n");
-			out.write(ps + "\n");
+			out.write(StringEscapeUtils.escapeXml(ps.toString()) + "\n");
 			out.write("</readable_query>\n");
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();

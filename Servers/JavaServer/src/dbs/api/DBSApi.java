@@ -1,6 +1,6 @@
 /**
- $Revision: 1.127 $"
- $Id: DBSApi.java,v 1.127 2008/05/07 17:41:42 sekhri Exp $"
+ $Revision: 1.128 $"
+ $Id: DBSApi.java,v 1.128 2008/05/08 18:24:35 sekhri Exp $"
  *
 */
 
@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import dbs.data.DBSDataCache;
 import dbs.util.DBSConfig;
 import dbs.api.parser.DBSApiParser;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * This class encapsulate <code>dbs.api.DBSApiLogic</code> , handles database connection management,handle XML parsing for the input provided by the clients, checks the match between schema and api version and handles exceptions. This class works as the higher level dispatcher for DBS API. All the DBS API calls are invoked vias a public method call. The interface of this class is this call method which can take a hashtable of key value pairs. It invokes the API call depending upon the value of the api key in the hashtable. The reason for having this higher level class is to separate the lovel level business logic from database connection management and xml parsing.<br>
@@ -800,7 +801,7 @@ public class DBSApi {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER); 
 		//System.out.println("FINISHED " + this.apiStr + " !!!!!!!!!!!!!");
 		message = " ____________ API Invoked " + this.apiStr + "____________\n" + message;
-		message = message.replace('\'',' ');
+		/*message = message.replace('\'',' ');
 		message = message.replace('<',' ');
 		message = message.replace('>',' ');
                 detail= detail.replace('\'',' ');
@@ -808,10 +809,14 @@ public class DBSApi {
 		detail = detail.replace('>',' ');
 		code = code.replace('\'',' ');
 		code = code.replace('<',' ');
-		code = code.replace('>',' ');
-		out.write("<exception message='" + message + "' "); 
+		code = code.replace('>',' ');*/
+		String toWrite = "message='" + message + "'  code ='" + code + "' detail ='" + detail + "' ";
+		toWrite = StringEscapeUtils.escapeXml(toWrite);
+		out.write("<exception " + toWrite + "/>\n"); 
+		/*out.write("<exception message='" + message + "' "); 
 		out.write(" code ='" + code + "' "); 
-		out.write(" detail ='" + detail + "' />\n"); 
+		out.write(" detail ='" + detail + "' />\n"); */
+		
 		out.write(DBSConstants.XML_FOOTER);
 		out.flush();
 		//out.write(DBSConstants.XML_EXCEPTION_FOOTER); 

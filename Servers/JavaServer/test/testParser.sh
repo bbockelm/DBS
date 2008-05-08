@@ -5,7 +5,7 @@ if [ "${JAVA_HOME}" = "" ]; then
 fi
 savePWD=$PWD
 cd $BASE/lib
-CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.1.7.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar
+CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.1.7.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
@@ -93,6 +93,6 @@ executeQuery () {
 #$CMD query="find procds.tier where procds.tier like *" 
 #$CMD query="find file where file.release  like * or  dataset=/abc/Online/RAW" begin=5 end=20
 #$CMD query="find file, file.createdate, file.moddate where file.createdate > 0" begin=5 end=20 type=quera
-$CMD query="find dataset, file.id, lumi.id where dataseta like *" begin=5 end=20 type=querya
+$CMD query="find dataset, file.id, lumi.id where file.createdate > 0" begin=5 end=20 type=querya
 #executeQuery
 
