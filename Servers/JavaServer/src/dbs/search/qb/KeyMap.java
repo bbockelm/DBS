@@ -9,7 +9,7 @@ public class KeyMap {
 		map.put("file.id", "Files.ID");
 		map.put("file.numevents", "Files.NumberOfEvents");
 		map.put("file.createdate", "Files.CreationDate");
-		map.put("file.moddate", "File.LastModificationDate");
+		map.put("file.moddate", "Files.LastModificationDate");
 
 		map.put("procds.name", "ProcessedDataset.Name");
 		map.put("procds.createdate", "ProcessedDataset.CreationDate");

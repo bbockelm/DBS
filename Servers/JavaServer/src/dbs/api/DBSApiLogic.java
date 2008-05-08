@@ -1,6 +1,6 @@
 /**
- $Revision: 1.127 $"
- $Id: DBSApiLogic.java,v 1.127 2008/05/06 18:43:24 afaq Exp $"
+ $Revision: 1.128 $"
+ $Id: DBSApiLogic.java,v 1.128 2008/05/07 17:41:42 sekhri Exp $"
  *
  */
 
@@ -25,6 +25,7 @@ import dbs.DBSConstants;
 import dbs.search.parser.Wrapper;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.List;
 
 
 
@@ -134,21 +135,41 @@ public class DBSApiLogic {
 
 	}
 
-	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end) throws Exception {
+	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type) throws Exception {
 		String db = "oracle";
 		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
 		Wrapper wr = new Wrapper();
 		String finalQuery = wr.getQuery(userQuery, begin, end, db);
+		List<String> bindValues = wr.getBindValues();
+		List<Integer> bindIntValues = wr.getBindIntValues();
 		System.out.println("____________________________________ User Query ___________________________________");
 		System.out.println(userQuery);
 		System.out.println("___________________________________________________________________________________");
 		System.out.println("_________________________________ Generated Query _________________________________");
 		System.out.println(finalQuery);
 		System.out.println("___________________________________________________________________________________");
+		out.write("<userinput>\n");
+		out.write("<input>\n");
+		out.write(userQuery + "\n");
+		out.write("</input>\n");
+		out.write("</userinput>\n");
+		out.write("<query>\n");
+		out.write("<sql>\n");
+		out.write(finalQuery + "\n");
+		out.write("</sql>\n");
+		for(String s: bindValues)  out.write("<bp>" + s + "</bp>\n");
+		for(Integer i: bindIntValues)  out.write("<bp>" + i.toString() + "</bp>\n");
+		out.write("</query>\n");
+
+		if(type.equals("query")) return;
+			
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.getQuery(conn, finalQuery, wr.getBindValues(), wr.getBindIntValues());
+			ps = DBSSql.getQuery(conn, finalQuery, bindValues, bindIntValues);
+			out.write("<readable_query>\n");
+			out.write(ps + "\n");
+			out.write("</readable_query>\n");
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int numberOfColumns = rsmd.getColumnCount();
@@ -160,15 +181,23 @@ public class DBSApiLogic {
 			while(rs.next()) {
 				out.write(((String) "<result "));
 				for (int i = 0; i != numberOfColumns; ++i) {
-					out.write(((String) colNames[i] + "='" + get(rs, colNames[i] ) +"' "));
+					out.write(((String) colNames[i] + "='"));
+					if(colNames[i].indexOf("Date") != -1) {
+						out.write(((String) 
+									(new Timestamp(Long.valueOf( get(rs, colNames[i])) * 1000
+										       ).toString() +"' "
+									 ) 
+							));
+					}
+					else out.write(((String) get(rs, colNames[i] ) +"' "));
 				}
 				out.write(((String) "/>\n"));
 			}
 			//out.write("****************************** OUTPUT ***************************************\n\n\n");
 
-		} catch (Exception ex) {
-			System.out.println("HEREEEEEEEEEEEEEEEEEEEEEEEE" + ex.getMessage() );
-			throw ex;
+		//} catch (Exception ex) {
+		//	System.out.println("" + ex.getMessage() );
+		//	throw ex;
 
 		} finally {
 			if (rs != null) rs.close();
