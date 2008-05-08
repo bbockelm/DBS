@@ -38,10 +38,11 @@ import signal, os
 
 import pprint 
 
-
 import httplib, urllib
 
-
+import xml.sax, xml.sax.handler
+from xml.sax.saxutils import escape
+from xml.sax import SAXParseException
 
 # Importing a dynamically generated module
 def importCode(code,name,add_to_sys_modules=0):
@@ -469,14 +470,14 @@ class cmd_doc_writer:
                 print "   Simple Example:"
                 print "         python dbsCommandLine.py -c search --dbs search --query=\"find dataset where dataset like *Online*\""
 		detail_help="""
-			Syntax: 	FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
+			Query Syntax: 	FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
 					Constrain operators: <=, <, >=, >, =, not like, like, in, between
 					words FIND,WHERE,AND,OR can be upper or lower case.
 					Expressions can be groupped together using brackets, e.g. ((a and b) or c)
 
-			Keywords: 	dataset primds , procds , tier , block , file , release , run , lumi , site.
+			Query Keywords: 	dataset primds , procds , tier , block , file , release , run , lumi , site.
 
-			Examples: 	*QCD*
+			Query Examples: *QCD*
 				shortcut for look-up all datasets whose name matched QCD pattern
 
 				find release where release like *
@@ -504,6 +505,7 @@ class cmd_doc_writer:
 				"""
 		print detail_help
                 print "DBS SEARCH ALWAYS CONNECTS TO DBS GLOBAL ONLY FOR THE TIME BEING"
+                print "search can be used in conjuction with --storequery and --createADS operations, look at --doc for help"
 		if self.wiki_help: print "</verbatim>"
 
 
@@ -823,7 +825,7 @@ class ApiDispatcher:
                 else : self.mart_file = mart_file_name
         #Else use the DEFAULT Mart file
         else :
-                self.mart_file = os.path.join(self.adshome, "ImportedADS.dm")
+                self.mart_file = os.path.join(self.adshome, "Default.dm")
 
 	# LOAD the mart file if it already exits, otherwise create a new one
 	if os.path.exists(self.mart_file):
@@ -1031,6 +1033,7 @@ class ApiDispatcher:
 
 	    if self.optdict.get('report'):	
 		self.reportProcessedDatasets(anObj)
+		#print anObj
             else:  
 		  path_list = anObj['PathList']
 		  if len(path_list) == 0: 
@@ -1325,59 +1328,144 @@ class ApiDispatcher:
 
 
   def handleSearchCall(self):
-        if self.optdict.has_key('want_help'):
-                self.helper._help_search()
-                return
-	#host="https://cmsweb.cern.ch/dbs_discovery_test/"
-        host= "https://cmsweb.cern.ch/dbs_discovery/"
-	#host= "https://cmsweb.cern.ch/dbs_discovery_test/DDServer/"
-	port= 443
-	dbsInst="cms_dbs_prod_global"
-        userInput=self.optdict.get('query') or ''
-	if userInput in ('', None):
-		print "Use --query= to specify a serach query"
-		return
- 	print userInput, type(userInput)
-	data=self.sendMessage2DD(host,port,dbsInst,userInput)
-#,page='0',limit=10,xml=0,case='on',details=0,debug=0)
-	print data
-        print "done"
-        """
-    try:
-      # DbsExecutionError message would arrive in XML, if any
-      class Handler (xml.sax.handler.ContentHandler):
-           def startElement(self, name, attrs):
-             if name =='info':
-                info = "\n DBS Info Message: %s " %attrs['message']
-                info += "\n Detail: %s " %attrs['detail']+"\n"
-                #logging.log(DBSINFO, info)
 
-      xml.sax.parseString (data, Handler ())
+    """
+    	Interface to DBS Discovery Page
+
+    """
+
+    #import pdb
+    #pdb.set_trace()
+
+    if self.optdict.has_key('want_help'):
+         self.helper._help_search()
+         return
+    #host="https://cmsweb.cern.ch/dbs_discovery_test/"
+    host= "https://cmsweb.cern.ch/dbs_discovery/"
+    #host= "https://cmsweb.cern.ch/dbs_discovery_test/DDServer/"
+    port= 443
+    dbsInst="cms_dbs_prod_global"
+    userInput=self.optdict.get('query') or ''
+
+    if userInput in ('', None):
+	print "Use --query= to specify a serach query"
+	return
+
+    storequeryname=self.optdict.get('storequery') or ''
+    createADS=self.optdict.get('createADS') or ''
+
+    # ONLY do this if User needs to create an ADS
+    if createADS not in ('', None) :
+	userInput=userInput.replace('where','WHERE')
+    	criteria=userInput.split('WHERE')
+    	if len(criteria) <= 0:
+		print "Please provide a valid criteria for search, use where or WHERE clause"
+		print "Use --help, or refer to Twiki page"
+		return
+    	userInput="find dataset, file, lumi where "+criteria[1]
+    
+    data=self.sendMessage2DD(host,port,dbsInst,userInput)
+    #,page='0',limit=10,xml=0,case='on',details=0,debug=0)
+
+    print data
+
+    results={}
+    results['QUERY']=''
+    results['USERINPUT']=''
+    results['DATASETPATH']=''
+    results['ADSFileList']=[]
+
+    try:
+        # DbsExecutionError message would arrive in XML, if any
+        class Handler (xml.sax.handler.ContentHandler):
+
+	   def __init__(self):
+		xml.sax.handler.ContentHandler.__init__(self)
+	   	self.next_is_query=0
+		self.next_is_userinput=0
+		self.next_is_dataset=0
+		self.new_file=0
+		self.dataset_once=1
+		
+
+           def startElement(self, name, attrs):
+		if name == 'sql':
+			self.next_is_query=1
+		
+		if name == 'userinput':
+			self.next_is_userinput=1
+
+           	if name == 'dataset' and self.dataset_once==1:
+			self.next_is_dataset=1
+			self.dataset_once=0
+		if name == 'file':
+			self.new_file=1
+		# That sucks 
+		if name == 'timeStamp':
+			self.next_is_userinput=0
+
+	   def characters(self, s):
+
+		if str(escape(s)).strip() in ("\n", ""): return
+		elif self.next_is_query==1:
+			results['QUERY'] += str(escape(s))
+			return
+
+		elif self.next_is_userinput==1:
+                        results['USERINPUT']+=str(escape(s))
+                        return
+		elif self.next_is_dataset==1:
+			results['DATASETPATH']+=str(escape(s))
+			#return
+		elif self.new_file==1:
+			aFile={}
+			aFile['LogicalFileName']=str(escape(s))
+			results['ADSFileList'].append(aFile)
+			#return
+		else: pass
+		# It is worth printing
+		print (escape(s)).strip()
+
+	   def endElement(self, name):
+		if name=='sql':
+			self.next_is_query=0
+		if name == 'userinput':
+                        self.next_is_userinput=0
+		if name == 'dataset':
+                        self.next_is_dataset=0
+                if name == 'file':
+                        self.new_file=0
+
+
+        xml.sax.parseString (data, Handler ())
+
+
+	print results
+
+	datasetPath=results['DATASETPATH'].strip()
+	adsfileslist=results['ADSFileList']
+
+        if storequeryname not in ('', None):
+                #if len(datasetPaths) > 1:
+                #        self.printRED("Cannot create ADS, more than one matching Paths found for query, limit to ONE Path")
+                #        return
+                canstore=self.storeQuery(results['DATASETPATH'], results['USERINPUT'] + "SQLQUERY" + results['QUERY'], storequeryname)
+                if (canstore) and createADS not in ('', None):
+           		if datasetPath in ('', None) or len(adsfileslist) <= 0 :
+				self.printRED("Cannot create ADS, No matching Dataset found")
+				return
+                       	self.handleCreateADSCall(datasetPath, adsfileslist)
+
+        if createADS not in ('', None) and storequeryname in ('', None):
+                self.printRED("You cannot use --createADS without --storequery (see --doc)")
+                self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
 
     except SAXParseException, ex:
       msg = "Unable to parse XML response from DBS Server"
       msg += "\n  Server not responding as desired %s" % self.Url
       raise DbsConnectionError (args=msg, code="505")
- 
 
-
-        storequery=self.optdict.get('storequery') or ''
-        createADS=self.optdict.get('createADS') or ''
-
-        if storequery not in ('', None):
-                if len(datasetPaths) > 1:
-                        self.printRED("Cannot create ADS, more than one matching Paths found for query, limit to ONE Path")
-                        return
-                canstore=self.storeQuery(aPath, query, storequery)
-                if (canstore) and createADS not in ('', None):
-                        self.handleCreateADSCall(aPath, adsfileslist)
-
-        if createADS not in ('', None) and storequery in ('', None):
-                self.printRED("You cannot use --createADS without --storequery (see --doc)")
-                self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
-
-	return
-        """
+    return
 
   def handleSearchCall_ORIG(self):
 
@@ -1501,13 +1589,15 @@ class ApiDispatcher:
 		self.printRED("ERROR: Cannot create %s, An Analysis Dataset Definition (query) with same name already exists in the mart %s" \
 									% (queryname, self.mart_file))
 		if self.optdict.get('createADS') not in ('', None):
-			self.printRED("Try using --usequery=<QUERYNAME> with --createADS")
-		return False
+			self.printRED(".....Trying to use this existing query to create ADS.....")
+			#self.printRED("Try using --usequery=<QUERYNAME> with --createADS")
+		return True
 	else:
 		self.KnownQueries[queryname]=adsdef
-		print self.KnownQueries
+		#print self.KnownQueries
 
 	self.rewriteMart()
+	self.printBLUE("Query %s stored in the mart %s" % (queryname, self.mart_file))
         return True
 
   def rewriteMart(self):
