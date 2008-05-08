@@ -8,7 +8,7 @@ from dbsApiException import *
 from dbsExecHandler import DbsExecHandler
 
 import os, re, string, xml.sax, xml.sax.handler
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape, unescape
 from xml.sax import SAXParseException
 try:
   from socket import ssl, sslerror, error
@@ -299,8 +299,8 @@ class DbsHttpService:
              if name == 'exception':
                 statusCode = attrs['code']
 		statusCode_i = int(statusCode)
-                exmsg = "DBS Server Raised An Error: %s, %s" \
-                                 %(attrs['message'], attrs['detail'])
+		
+	        exmsg = unescape("DBS Server Raised An Error: " + attrs['message'] + "," +  attrs['detail'])
 		
 		if statusCode_i == 1018:
 		    raise DbsBadRequest (args=exmsg, code=statusCode)
@@ -329,7 +329,10 @@ class DbsHttpService:
                 info = "\n DBS Info Message: %s " %attrs['message']
 		info += "\n Detail: %s " %attrs['detail']+"\n"
                 #####logging.log(DBSINFO, info)
-
+		
+      data = data.replace("&apos;","")
+      data = unescape(data)
+      #print data
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data
       return data

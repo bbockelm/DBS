@@ -17,7 +17,7 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplExecuteQuery(self, query="*"):
+def dbsApiImplExecuteQuery(self, query="*", begin="", end="", type="exe"):
     """
     """
     try: 
@@ -25,7 +25,11 @@ def dbsApiImplExecuteQuery(self, query="*"):
       ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
       # Invoke Server.    
-      data = self._server._call ({ 'api' : 'executeQuery', 'query' : query  }, 'GET')
+      data = self._server._call ({ 'api' : 'executeQuery', 'query' : query , 
+		      'begin':str(begin),
+		      'end':str(end),
+		      'type':type,
+		      }, 'GET')
 
       ###logging.log(DBSDEBUG, data)
 
