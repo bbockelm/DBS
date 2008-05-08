@@ -48,8 +48,21 @@ public class Wrapper {
 			bindValues = qb.getBindValues();
 			bindIntValues = qb.getBindIntValues();
 		} catch (NoViableAltException nvae) {
-			System.out.println("TOKEN------->" + nvae.token);
-                        throw new Exception (nvae.toString());
+			Token t =  nvae.token;
+			String msg = "Invalid Token " + t.getText() + " on line " + t.getLine() + " at column " + t.getCharPositionInLine() + "\n";
+			msg += query + "\n";
+			for(int i = 0; i != t.getCharPositionInLine(); ++i) msg += " ";
+			msg += "^\n";
+			//System.out.println("col " + nvae.getColumn());
+			//System.out.println("file name " + nvae.getFilename());
+			//System.out.println("line " + t.getLine());
+			//System.out.println("col " + t.getColumn());
+			//System.out.println("index " + t.getTokenIndex());
+			//System.out.println("position " + t.getCharPositionInLine());
+			//System.out.println("type " + t.getType());
+			//System.out.println("msg " + t.getText());
+                        //throw new Exception (nvae.toString());
+                        throw new Exception (msg);
 		} catch (Exception e) {
                         throw new Exception (e.toString());
                 }		

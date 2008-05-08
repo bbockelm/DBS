@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-05-08 13:43:49
+// $ANTLR 3.0.1 Sql.g 2008-05-08 14:17:41
 
 
 import java.util.ArrayList;
@@ -105,9 +105,9 @@ public class SqlParser extends Parser {
 
             }
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -152,9 +152,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -216,9 +216,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -321,9 +321,9 @@ public class SqlParser extends Parser {
             retval.stop = input.LT(-1);
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -391,9 +391,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -531,9 +531,9 @@ public class SqlParser extends Parser {
 
             }
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -563,9 +563,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -624,9 +624,9 @@ public class SqlParser extends Parser {
 
             }
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -688,9 +688,9 @@ public class SqlParser extends Parser {
             retval.stop = input.LT(-1);
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -899,9 +899,9 @@ public class SqlParser extends Parser {
 
             }
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1055,9 +1055,9 @@ public class SqlParser extends Parser {
             retval.stop = input.LT(-1);
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1127,9 +1127,9 @@ public class SqlParser extends Parser {
             retval.stop = input.LT(-1);
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1196,9 +1196,9 @@ public class SqlParser extends Parser {
             retval.stop = input.LT(-1);
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1228,9 +1228,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1260,9 +1260,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1292,9 +1292,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1324,9 +1324,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1356,9 +1356,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1388,9 +1388,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1427,9 +1427,9 @@ public class SqlParser extends Parser {
             retval.stop = input.LT(-1);
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1459,9 +1459,9 @@ public class SqlParser extends Parser {
             }
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
@@ -1498,9 +1498,9 @@ public class SqlParser extends Parser {
             retval.stop = input.LT(-1);
 
         }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
+
+        catch (RecognitionException e) {
+        	throw e;
         }
         finally {
         }
