@@ -50,7 +50,7 @@ public class Wrapper {
 		} catch (NoViableAltException nvae) {
 			Token t =  nvae.token;
 			String msg = "Invalid Token " + t.getText() + " on line " + t.getLine() + " at column " + t.getCharPositionInLine() + "\n";
-			msg += query + "\n";
+			msg += "QUERY    " + query + "\nPOSITION ";
 			for(int i = 0; i != t.getCharPositionInLine(); ++i) msg += " ";
 			msg += "^\n";
 			//System.out.println("col " + nvae.getColumn());

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.130 $"
- $Id: DBSApiLogic.java,v 1.130 2008/05/08 19:06:34 sekhri Exp $"
+ $Revision: 1.131 $"
+ $Id: DBSApiLogic.java,v 1.131 2008/05/08 20:18:55 sekhri Exp $"
  *
  */
 
@@ -136,6 +136,8 @@ public class DBSApiLogic {
 		}
 
 	}
+	
+	
 	public ArrayList executeQuery(Connection conn, Writer out, String userQuery, String begin, String end) throws Exception {
 		String db = "oracle";
 		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
@@ -152,7 +154,7 @@ public class DBSApiLogic {
 	}
 
 	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type) throws Exception {
-		String db = "oracle";
+		/*String db = "oracle";
 		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
 		Wrapper wr = new Wrapper();
 		String finalQuery = wr.getQuery(userQuery, begin, end, db);
@@ -163,11 +165,35 @@ public class DBSApiLogic {
 		System.out.println("___________________________________________________________________________________");
 		System.out.println("_________________________________ Generated Query _________________________________");
 		System.out.println(finalQuery);
-		System.out.println("___________________________________________________________________________________");
+		System.out.println("___________________________________________________________________________________");*/
+		ArrayList objList = executeQuery(conn, out, userQuery, begin, end);
+		String finalQuery = (String)objList.get(1);
+		String valentinQuery = finalQuery;
+		List<String> bindValues = (List<String>)objList.get(2);
+		List<Integer> bindIntValues = (List<Integer>)objList.get(3);
+
+		int pCount = 0;
+		int sizeOfBindValues = bindValues.size();
+		String val = "";
+		String xmlBindValues = "";
+		while(valentinQuery.indexOf("?") != -1) {
+			String pName = ":p" + String.valueOf(pCount);
+			if(pCount >= sizeOfBindValues) val = String.valueOf(bindIntValues.get(pCount - sizeOfBindValues).intValue());
+			else val =  bindValues.get(pCount);
+			xmlBindValues += "<" + pName + ">" + val + "</" + pName + ">\n";
+			valentinQuery = valentinQuery.replaceFirst("[?]", pName);
+			++pCount;
+		}
+
+
+		
 		out.write("<userinput>\n");
 		out.write("<input>\n");
 		out.write(StringEscapeUtils.escapeXml(userQuery) + "\n");
 		out.write("</input>\n");
+		out.write("<timeStamp>");
+		out.write((new Date()).toString());
+		out.write("</timeStamp>\n");
 		out.write("</userinput>\n");
 		out.write("<query>\n");
 		out.write("<sql>\n");
@@ -176,6 +202,15 @@ public class DBSApiLogic {
 		for(String s: bindValues)  out.write("<bp>" + s + "</bp>\n");
 		for(Integer i: bindIntValues)  out.write("<bp>" + i.toString() + "</bp>\n");
 		out.write("</query>\n");
+		
+		out.write("<valentin_query>\n");
+		out.write("<sql>\n");
+		out.write(StringEscapeUtils.escapeXml(valentinQuery) + "\n");
+		out.write("</sql>\n");
+		out.write("<bindparams>\n");
+		out.write(xmlBindValues);
+		out.write("</bindparams>\n");
+		out.write("</valentin_query>\n");
 
 		if(type.equals("query")) return;
 			
@@ -183,9 +218,9 @@ public class DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.getQuery(conn, finalQuery, bindValues, bindIntValues);
-			out.write("<readable_query>\n");
-			out.write(StringEscapeUtils.escapeXml(ps.toString()) + "\n");
-			out.write("</readable_query>\n");
+			//out.write("<readable_query>\n");
+			//out.write(StringEscapeUtils.escapeXml(ps.toString()) + "\n");
+			//out.write("</readable_query>\n");
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int numberOfColumns = rsmd.getColumnCount();
