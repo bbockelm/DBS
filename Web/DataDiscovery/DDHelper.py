@@ -1459,7 +1459,12 @@ MCDescription:      %s
                      .outerjoin(tblk2,onclause=self.col(tblk2,'Dataset')==self.col(tprd2,'ID'))
                      ],distinct=True,order_by=oSel )
           if dataset and dataset!="*":
-             sel.append_whereclause(self.col(tblk,'Path')==dataset)
+             if dataset.find("*")!=-1:
+                sel.append_whereclause(self.col(tblk,'Path').like(dataset.replace("*","%"))
+             elif dataset.find("%")!=-1:
+                sel.append_whereclause(self.col(tblk,'Path').like(dataset)
+             else:
+                sel.append_whereclause(self.col(tblk,'Path')==dataset)
           if self.verbose:
              print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
