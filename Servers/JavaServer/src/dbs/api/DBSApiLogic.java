@@ -1,6 +1,6 @@
 /**
- $Revision: 1.131 $"
- $Id: DBSApiLogic.java,v 1.131 2008/05/08 20:18:55 sekhri Exp $"
+ $Revision: 1.132 $"
+ $Id: DBSApiLogic.java,v 1.132 2008/05/09 19:55:21 sekhri Exp $"
  *
  */
 
@@ -186,6 +186,8 @@ public class DBSApiLogic {
 		}
 
 
+		String countQuery = finalQuery;
+		countQuery = "SELECT COUNT(*) " + countQuery.substring(countQuery.indexOf("FROM"));
 		
 		out.write("<userinput>\n");
 		out.write("<input>\n");
@@ -195,22 +197,33 @@ public class DBSApiLogic {
 		out.write((new Date()).toString());
 		out.write("</timeStamp>\n");
 		out.write("</userinput>\n");
-		out.write("<query>\n");
+		out.write("<java_query>\n");
 		out.write("<sql>\n");
 		out.write(StringEscapeUtils.escapeXml(finalQuery) + "\n");
 		out.write("</sql>\n");
 		for(String s: bindValues)  out.write("<bp>" + s + "</bp>\n");
 		for(Integer i: bindIntValues)  out.write("<bp>" + i.toString() + "</bp>\n");
-		out.write("</query>\n");
+		out.write("</java_query>\n");
 		
-		out.write("<valentin_query>\n");
+		out.write("<python_query>\n");
 		out.write("<sql>\n");
 		out.write(StringEscapeUtils.escapeXml(valentinQuery) + "\n");
 		out.write("</sql>\n");
 		out.write("<bindparams>\n");
 		out.write(xmlBindValues);
 		out.write("</bindparams>\n");
-		out.write("</valentin_query>\n");
+		out.write("</python_query>\n");
+
+		out.write("<count_query>\n");
+		out.write("<sql>\n");
+		out.write(StringEscapeUtils.escapeXml(countQuery) + "\n");
+		out.write("</sql>\n");
+		out.write("<bindparams>\n");
+		out.write(xmlBindValues);
+		out.write("</bindparams>\n");
+		out.write("</count_query>\n");
+
+	
 
 		if(type.equals("query")) return;
 			
