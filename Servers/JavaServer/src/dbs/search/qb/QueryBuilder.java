@@ -28,6 +28,10 @@ public class QueryBuilder {
 		//u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
 		u = GraphUtil.getInstance("WEB-INF/DBSSchemaGraph.xml");
 	}
+	private String owner() throws Exception {
+		return DBSSql.owner();	
+	}
+	
 	public ArrayList getBindValues() {
 		return bindValues;
 	}
@@ -42,33 +46,41 @@ public class QueryBuilder {
 		//Store all the keywors both from select and where in allKws
 		String personJoinQuery = "";
 		String parentJoinQuery = "";
+		String pathParentWhereQuery = "";
 		boolean modByAdded = false;
 		boolean createByAdded = false;
 		boolean fileParentAdded = false;
 		boolean datasetParentAdded = false;
+		boolean procDsParentAdded = false;
 		ArrayList allKws = new ArrayList();
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
 			String aKw = (String)kws.get(i);
+			//System.out.println("line 1");
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
 			if(Util.isSame(aKw, "dataset")) {
 				allKws = addUniqueInList(allKws, "Block");
 				query += "Block.Path";
+			//System.out.println("line 2");
 			} else {
 
+			//System.out.println("line 3");
 				StringTokenizer st = new StringTokenizer(aKw, ".");
 				int count = st.countTokens();
 				String token = st.nextToken();
 				Vertex vFirst = u.getMappedVertex(token);
 				String real = u.getRealFromVertex(vFirst);
 				allKws = addUniqueInList(allKws, real);
+			//System.out.println("line 4");
 				//if(Util.isSame(real, "LumiSection")) allKws = addUniqueInList(allKws, "Runs");
 				if(count == 1) {
 					//Get default from vertex
+			//System.out.println("line 5");
 					query += makeQueryFromDefaults(vFirst);
 				} else {
 
+			//System.out.println("line 6");
 					boolean addQuery = true;
 					String token2 = st.nextToken();
 					String tmpTableName =  token + "_" + token2;
@@ -109,7 +121,7 @@ public class QueryBuilder {
 						}
 						//String tmpTableName =  token + "_" + token2;
 						if(!dontJoin) {
-							personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
+							personJoinQuery += "\tJOIN " + owner() + "Person " + tmpTableName + "\n" +
 								"\t\tON " + real + "." + personField + " = " + tmpTableName + ".ID\n";
 						}
 						String fqName = tmpTableName + ".DistinguishedName";
@@ -130,15 +142,25 @@ public class QueryBuilder {
 					
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
 						boolean dontJoin = false;
-						if(datasetParentAdded) dontJoin = true;
-						datasetParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
+						if(procDsParentAdded) dontJoin = true;
+						procDsParentAdded = true;
 						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
 						String fqName = tmpTableName + ".Name";
 						query += fqName + makeAs(fqName);			
 						addQuery = false;
 					}
 
+					if(Util.isSame(token2, "parent") && Util.isSame(token, "dataset")) {
+			//System.out.println("line 8");
+						allKws = addUniqueInList(allKws, "Block");
+						boolean dontJoin = false;
+						if(datasetParentAdded) dontJoin = true;
+						datasetParentAdded = true;
+						if(!dontJoin) pathParentWhereQuery += handlePathParent();
+						String fqName = "Block.Path AS Dataset_Parent";
+						query += fqName;			
+						addQuery = false;
+					}
 
 
 					Vertex vCombined = u.getMappedVertex(aKw);
@@ -220,12 +242,18 @@ public class QueryBuilder {
 				String val = (String)co.getValue();
 				
 				if(Util.isSame(key, "dataset")) {
-					// If path is given in where clause it should op should always be =
-					//if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
-					//queryWhere += "\tProcessedDataset.ID " + handlePath(val);
-					if(isIn(allKws, "Files")) queryWhere += "\tFiles.Block ";
-					else queryWhere += "\tBlock.ID ";
-					queryWhere += handlePath(val, op);
+					if(pathParentWhereQuery.length() > 0) {
+						queryWhere += pathParentWhereQuery + "";
+						bindValues.add(val);
+					}else {
+
+						// If path is given in where clause it should op should always be =
+						//if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
+						//queryWhere += "\tProcessedDataset.ID " + handlePath(val);
+						if(isIn(allKws, "Files")) queryWhere += "\tFiles.Block ";
+						else queryWhere += "\tBlock.ID ";
+						queryWhere += handlePath(val, op);
+					}
 				} else if(Util.isSame(key, "dq")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tRuns.ID" + handleDQ(val);
@@ -281,8 +309,8 @@ public class QueryBuilder {
 							queryWhere += tmpTableName + ".LogicalFileName ";			
 						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
 							boolean dontJoin = false;
-							if(datasetParentAdded) dontJoin = true;
-							datasetParentAdded = true;
+							if(procDsParentAdded) dontJoin = true;
+							procDsParentAdded = true;
 							//String tmpTableName =  token + "_" + token2;
 							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
 							queryWhere += tmpTableName + ".Name ";			
@@ -351,10 +379,10 @@ public class QueryBuilder {
 
 	}
 	
-	private String genJoins(ArrayList lKeywords) {
+	private String genJoins(ArrayList lKeywords) throws Exception {
 		//ArrayList uniquePassed = new ArrayList();
 		String prev = "";
-		String query = "\nFROM\n\t" + (String)lKeywords.get(0) + "\n";
+		String query = "\nFROM\n\t"  + owner() + (String)lKeywords.get(0) + "\n";
 		int len = lKeywords.size();
 		for(int i = 1 ; i != len ; ++i ) {
 			
@@ -368,7 +396,7 @@ public class QueryBuilder {
 							query += "\t";
 							if(Util.isSame(v1, "FileParentage") ||
 									Util.isSame(v1, "ProcDSParent")) query += "LEFT OUTER ";
-							query += "JOIN " + v1 + "\n";
+							query += "JOIN " + owner() +  v1 + "\n";
 							query += "\t\tON " + tmp + "\n";
 							//uniquePassed.add(v1 + "," + v2);
 							break;
@@ -403,10 +431,16 @@ public class QueryBuilder {
 		return query;
 	}*/
 
-	private String handleParent(String tmpTableName, String table1, String table2){
-		return ( "\tLEFT OUTER JOIN " + table1 + " " + tmpTableName + "\n" +
+	private String handleParent(String tmpTableName, String table1, String table2) throws Exception {
+		return ( "\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
 				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ItsParent\n" );
 
+	}
+	private String handlePathParent() throws Exception {
+		String sql = "Block.ID in  \n" +
+			"\t(" + DBSSql.listPathParent() + ")\n";
+		
+		return sql;
 	}
 	private String handleLike(String val) {
 		bindValues.add(val.replace('*','%'));
@@ -464,7 +498,7 @@ public class QueryBuilder {
 	private String handlePath(String path, String op) throws Exception {
 		String query = " IN ( \n" +
 			"SELECT \n" +
-			"\tBlock.ID FROM Block" +
+			"\tBlock.ID FROM " + owner() + "Block" +
 			"\tWHERE \n" + 
 			//"\tBlock.Path " + op + " '" + path + "'\n" +
 			"\tBlock.Path ";// + op + " ?\n" +
@@ -515,7 +549,7 @@ public class QueryBuilder {
 		ArrayList route = new ArrayList();
 		String query = " IN ( \n" +
 			"SELECT \n" +
-			"\tDataTier.ID FROM DataTier "  +
+			"\tDataTier.ID FROM " + owner() + "DataTier "  +
 			"WHERE \n" + 
 			"\tDataTier.Name " + handleOp(op, tier) + "\n" +
 			")";

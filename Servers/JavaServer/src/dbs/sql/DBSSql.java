@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.166 $"
- $Id: DBSSql.java,v 1.166 2008/05/07 17:41:43 sekhri Exp $"
+ $Revision: 1.167 $"
+ $Id: DBSSql.java,v 1.167 2008/05/09 16:29:06 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -2191,30 +2191,51 @@ public class DBSSql {
                 return ps;
 	}
 
-	public static String listPathParent() throws SQLException {
+	/*public static String listPathParent() throws SQLException {
 		String sql = "SELECT b.Path as PATH\n" +
-			"FROM Block b \n" +
+			"FROM " + owner() + "Block b \n" +
 			"WHERE b.ID in  \n" +
 				"\t(SELECT fl.Block \n" +
-				"\tFROM Files fl \n" +
+				"\tFROM " + owner() + "Files fl \n" +
 				"\tWHERE fl.ID in ( \n" +
 					"\t\tSELECT fp.ItsParent    \n" +
-					"\t\tFROM  FileParentage fp \n" +
+					"\t\tFROM  " + owner() + "FileParentage fp \n" +
 					"\t\tWHERE fp.ThisFile in ( \n" +
-						"\t\t\tSELECT f.ID from Files f  \n" +
+						"\t\t\tSELECT f.ID from " + owner() + "Files f  \n" +
 						"\t\t\tWHERE f.Block in ( \n" +
-							"\t\t\t\tSELECT bl.ID FROM Block   bl WHERE bl.Path = ? \n" +
+							"\t\t\t\tSELECT bl.ID FROM " + owner() + "Block   bl WHERE bl.Path = ? \n" +
 						") \n" +
 					") \n" +
 				") \n" +
 			")\n";
 		
 		return sql;
+	}*/
+
+	public static String listPathParent() throws SQLException {
+		String sql = "\tSELECT fl.Block \n" +
+				"\tFROM " + owner() + "Files fl \n" +
+				"\tWHERE fl.ID in ( \n" +
+					"\t\tSELECT fp.ItsParent    \n" +
+					"\t\tFROM  " + owner() + "FileParentage fp \n" +
+					"\t\tWHERE fp.ThisFile in ( \n" +
+						"\t\t\tSELECT f.ID from " + owner() + "Files f  \n" +
+						"\t\t\tWHERE f.Block in ( \n" +
+							"\t\t\t\tSELECT bl.ID FROM " + owner() + "Block   bl WHERE bl.Path = ? \n" +
+						") \n" +
+					") \n" +
+				") \n";
+		
+		return sql;
 	}
 
 
 	public static PreparedStatement listPathParent(Connection conn, String path) throws SQLException {
-		PreparedStatement ps = DBManagement.getStatement(conn, listPathParent());
+		String sql = "SELECT b.Path as PATH\n" +
+			"FROM " + owner() + "Block b \n" +
+			"WHERE b.ID in  \n" +
+				"\t(" + listPathParent() + ")\n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, path);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;

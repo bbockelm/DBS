@@ -11,6 +11,7 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class GraphUtil{
 	Graph g;
@@ -43,7 +44,8 @@ public class GraphUtil{
 		for (Iterator eIt = s.iterator(); eIt.hasNext(); ) {
 			Vertex v = (Vertex) eIt.next();
 			String vNameFromGraph =  (String) v.getUserDatum("real");
-			if (vName.equals(vNameFromGraph)) return v;
+			//if (vName.equals(vNameFromGraph)) return v;
+			if (isEqual(vName, vNameFromGraph)) return v;
 		}
 		return null;
 	}
@@ -64,9 +66,17 @@ public class GraphUtil{
 		for (Iterator eIt = s.iterator(); eIt.hasNext(); ) {
 			Vertex v = (Vertex) eIt.next();
 			String vNameFromGraph =  (String) v.getUserDatum("user");
-			if (userName.equals(vNameFromGraph)) return v;
+			if(isEqual(userName, vNameFromGraph)) return v;
+			//if (userName.equals(vNameFromGraph)) return v;
 		}
 		return null;
+	}
+	private boolean isEqual(String userName, String vNameFromGraph) {
+		StringTokenizer st = new StringTokenizer(vNameFromGraph, ",");
+		while(st.hasMoreTokens()) 
+			if (userName.equals(st.nextToken())) return true;
+		return false;
+
 	}
 
 	public List<Edge> getShortestPath( Vertex v1, Vertex v2){

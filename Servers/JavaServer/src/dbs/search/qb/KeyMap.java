@@ -50,6 +50,7 @@ public class KeyMap {
 		map.put("ads.createdate", "AnalysisDataset.CreationDate");
 		map.put("ads.moddate", "AnalysisDataset.LastModificationDate");
 		
+		map.put("dataset.parent", "Block.Path");
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 	}

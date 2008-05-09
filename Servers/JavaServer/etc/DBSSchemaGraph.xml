@@ -34,7 +34,7 @@
 	<node id="AnalysisDSDef" 		user="ads.def" 		real="AnalysisDSDef" 			default="Name"/>
 	<node id="SEBlock" 			user="seblock" 		real="SEBlock" 				default="SEID,BlockID"/>
 	<node id="StorageElement" 		user="site" 		real="StorageElement" 			default="SEName"/>
-	<node id="Block" 			user="block" 		real="Block" 				default="Name"/>
+	<node id="Block" 			user="block,dataset"	real="Block" 				default="Name"/>
 	<node id="ProcDSStatus" 		user="procds.status" 	real="ProcDSStatus" 			default="Status"/>
 	<node id="PrimaryDSType" 		user="primds.type" 	real="PrimaryDSType" 			default="Type"/>
 	<node id="QualityValues" 		user="qlty" 		real="QualityValues" 			default="Value"/>
