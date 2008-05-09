@@ -329,7 +329,7 @@ class DDRules:
            ('site','group'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2PhysicsGroup.PhysicsGroupName'],
            ('primds','group'):['PrimaryDataset.Name2PhysicsGroup.PhysicsGroupName'],
            ('procds','group'):['ProcessedDataset.Name2PhysicsGroup.PhysicsGroupName'],
-           ('group','group'):['PhysicsGroup.PhysicsGroupName2PhysicsGroup.PhysicsGroupName'],
+           ('ads','group'):['AnalysisDataset.Name2PhysicsGroup.PhysicsGroupName'],
            ('group','group'):['PhysicsGroup.PhysicsGroupName2PhysicsGroup.PhysicsGroupName'],
        }
        self.keywords=list(self.colName.keys())
