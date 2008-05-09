@@ -301,6 +301,9 @@ class DbsHttpService:
 		statusCode_i = int(statusCode)
 		
 	        exmsg = unescape("DBS Server Raised An Error: " + attrs['message'] + "," +  attrs['detail'])
+		exmsg = exmsg.replace("____________", "\n");
+		exmsg = exmsg.replace("QUERY    ", "\n");
+		exmsg = exmsg.replace("POSITION ", "\n");
 		
 		if statusCode_i == 1018:
 		    raise DbsBadRequest (args=exmsg, code=statusCode)
