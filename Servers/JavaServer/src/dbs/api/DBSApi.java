@@ -1,6 +1,6 @@
 /**
- $Revision: 1.128 $"
- $Id: DBSApi.java,v 1.128 2008/05/08 18:24:35 sekhri Exp $"
+ $Revision: 1.129 $"
+ $Id: DBSApi.java,v 1.129 2008/05/08 20:18:55 sekhri Exp $"
  *
 */
 
@@ -287,6 +287,10 @@ public class DBSApi {
 						);
 			} else if (apiStr.equals("listDatasetParents")) {
 				(new DBSApiProcDSLogic(this.data)).listDatasetParents(conn, out, 
+						get(table, "path", true)
+						);
+			} else if (apiStr.equals("listPathParents")) {
+				(new DBSApiBlockLogic(this.data)).listPathParents(conn, out, 
 						get(table, "path", true)
 						);
 
@@ -810,9 +814,14 @@ public class DBSApi {
 		code = code.replace('\'',' ');
 		code = code.replace('<',' ');
 		code = code.replace('>',' ');*/
-		String toWrite = "message='" + message + "'  code ='" + code + "' detail ='" + detail + "' ";
-		toWrite = StringEscapeUtils.escapeXml(toWrite);
-		out.write("<exception " + toWrite + "/>\n"); 
+		String toWrite = "<exception message='" + 
+			StringEscapeUtils.escapeXml(message) + 
+			"'  code ='" + 
+			StringEscapeUtils.escapeXml(code) + 
+			"' detail ='" + 
+			StringEscapeUtils.escapeXml(detail) + "'/>\n";
+		
+		out.write(toWrite ); 
 		/*out.write("<exception message='" + message + "' "); 
 		out.write(" code ='" + code + "' "); 
 		out.write(" detail ='" + detail + "' />\n"); */

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.165 $"
- $Id: DBSSql.java,v 1.165 2008/05/06 18:43:25 afaq Exp $"
+ $Revision: 1.166 $"
+ $Id: DBSSql.java,v 1.166 2008/05/07 17:41:43 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -2024,6 +2024,7 @@ public class DBSSql {
 				"ON perlm.id = pd.LastModifiedBy \n";
 			if(pattern.indexOf('%') == -1) sql += "WHERE pd.Name = ?\n";
 			else sql += "WHERE pd.Name like ?\n";
+			//else sql += "WHERE pd.Name like :abc\n";
 			sql += "ORDER BY pd.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, pattern);
@@ -2190,7 +2191,35 @@ public class DBSSql {
                 return ps;
 	}
 
+	public static String listPathParent() throws SQLException {
+		String sql = "SELECT b.Path as PATH\n" +
+			"FROM Block b \n" +
+			"WHERE b.ID in  \n" +
+				"\t(SELECT fl.Block \n" +
+				"\tFROM Files fl \n" +
+				"\tWHERE fl.ID in ( \n" +
+					"\t\tSELECT fp.ItsParent    \n" +
+					"\t\tFROM  FileParentage fp \n" +
+					"\t\tWHERE fp.ThisFile in ( \n" +
+						"\t\t\tSELECT f.ID from Files f  \n" +
+						"\t\t\tWHERE f.Block in ( \n" +
+							"\t\t\t\tSELECT bl.ID FROM Block   bl WHERE bl.Path = ? \n" +
+						") \n" +
+					") \n" +
+				") \n" +
+			")\n";
+		
+		return sql;
+	}
 
+
+	public static PreparedStatement listPathParent(Connection conn, String path) throws SQLException {
+		PreparedStatement ps = DBManagement.getStatement(conn, listPathParent());
+		ps.setString(1, path);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+
+	}
 
 	//public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
 	public static PreparedStatement listDatasetProvenence(Connection conn, String procDSID, boolean parentOrChild) throws SQLException {

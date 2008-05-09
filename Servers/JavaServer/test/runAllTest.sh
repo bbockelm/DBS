@@ -9,7 +9,7 @@ savePWD=$PWD
 outFile=$savePWD/result.txt
 rm -f $outFile
 cd $BASE/lib
-CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar
+CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/commons-lang-2.4.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7"
@@ -64,7 +64,8 @@ display () {
 listPrimaryDatasets () {
 	message="Executing listPrimaryDatasets API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listPrimaryDatasets pattern=test_primary__20080131_15h45m29s_179`
+	#out=`$CMD api=listPrimaryDatasets pattern=test_primary__20080131_15h45m29s_179`
+	out=`$CMD api=listPrimaryDatasets pattern=*`
 	display "$out"
 	#$CMD api=listPrimaryDatasets pattern=*
 }
@@ -237,6 +238,13 @@ listDatasetParents () {
 	message="Executing listDatasetParents API..."
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=listDatasetParents path=$path_child`
+	display "$out"
+}
+
+listPathParents () {
+	message="Executing listPathParents API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listPathParents path=/test_primary_001/TestProcessedDS002/GEN-SIM`
 	display "$out"
 }
 
@@ -749,14 +757,15 @@ executeQuery () {
 ##listAnalysisDatasetDefinition
 ##listAnalysisDataset
 ##
-listPrimaryDatasets
-listProcessedDatasets
-listAlgorithms
-listRuns
-listTiers
-listBlocks
-listFiles
-listLFNs
+#listPrimaryDatasets
+listPathParents
+#listProcessedDatasets
+#listAlgorithms
+#listRuns
+#listTiers
+#listBlocks
+#listFiles
+#listLFNs
 #listDatasetSummary
 ##listDatasetContents
 #listDatasetParents

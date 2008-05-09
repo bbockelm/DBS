@@ -1,6 +1,6 @@
 /**
- $Revision: 1.53 $"
- $Id: DBSApiBlockLogic.java,v 1.53 2008/03/25 22:17:56 sekhri Exp $"
+ $Revision: 1.54 $"
+ $Id: DBSApiBlockLogic.java,v 1.54 2008/05/08 18:24:35 sekhri Exp $"
  *
  */
 
@@ -750,23 +750,14 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				dbsUser);
 	}
 
-	 /*public void listPathParents(Connection conn, Writer out, String path) throws Exception {
+	 public void listPathParents(Connection conn, Writer out, String path) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
-
-		String procDSID = getProcessedDSID(conn, path, true);
 		try {
-			ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
+			ps = DBSSql.listPathParent(conn, path);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<processed_dataset_parent id='" + get(rs, "ID") + 
-						"' path='" +  "/" + get(rs, "PRIMARY_DATASET_NAME") + "/" + get(rs, "PROCESSED_DATASET_NAME") + "/TIER_DOES_NOT_MATTER" +
-						"' creation_date='" + getTime(rs, "CREATION_DATE") +
-						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-						"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
-						"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
-						"' created_by='" + get(rs, "CREATED_BY") +
-						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+				out.write(((String) "<processed_dataset_parent path='" +  get(rs, "PATH") + 
 						"'/>\n"));
 				}
 		} finally { 
@@ -774,6 +765,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	
-	 }*/
+	 }
 
 }
