@@ -38,7 +38,8 @@ class DbsMigrateApi:
 			args['mode'] = 'POST'
 		return DbsApi(args)
 
-	def getParentPathList(self, api, path):
+	"""
+	def getParentPathListOLD(self, api, path):
 		print 'getting parents for %s' %path
 		self.allPaths.append(path)
 		pathList = []
@@ -53,6 +54,21 @@ class DbsMigrateApi:
 					for aPath in proc['PathList']:
 						if(aPath not in self.allPaths):
 							pathList.append(aPath)
+		print "parents %s " %pathList				
+		return pathList
+	"""
+	def getParentPathList(self, api, path):
+		print 'getting parents for %s' %path
+		self.allPaths.append(path)
+		pathList = []
+		#print "listing parents for %s" %path
+		datasets = api.listPathParents(path)
+		#print "parents are %s " %datasets
+		if datasets not in [[], None] :
+			for dataset in datasets:
+				for aPath in dataset['PathList']:
+					if(aPath not in self.allPaths):
+						pathList.append(aPath)
 		print "parents %s " %pathList				
 		return pathList
 
