@@ -2,10 +2,20 @@
 # Revision: 1.3 $"
 # Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
-import os, re, string, httplib, urllib, urllib2, gzip, time, socket
 from dbsException import DbsException
 from dbsApiException import *
+try:
+        import httplib
+
+except Exception, ex:
+        if ex.__str__() == "'Random' object has no attribute 'getrandbits'":
+                exmsg ="\n\nDBS has detected a serious issue with your PYTHONPATH"
+                exmsg+="\nTHIS IS A KNOWN ISSUE with using gLite UI and CMSSW"
+                exmsg+="\nPlease remove lib-tk, and lib-dynload from PYTHONPATH and try again\n\n"
+                raise DbsToolError(args=exmsg, code="9999")
+
 from dbsExecHandler import DbsExecHandler
+import os, re, string, urllib, urllib2, gzip, time, socket
 
 import os, re, string, xml.sax, xml.sax.handler
 from xml.sax.saxutils import escape, unescape
