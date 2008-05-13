@@ -1446,7 +1446,9 @@ class ApiDispatcher:
 
         	else: userInput="find dataset, file, lumi where "+criteria[1]
 
-		results=self.getDataFromDDSearch( userInput )
+    		if self.optdict.get('useASearch') not in ('', None):
+        		results=self.getDataFromDDSearch(userInput)
+    		else: results=self.getDataFromDBSServer(userInput)
 
 	    	path=results['DATASETPATH'].strip()
     		files=results['ADSFileList']
@@ -1504,6 +1506,21 @@ class ApiDispatcher:
 		self.handleCreateADSCall()
 
 
+  def getDataFromDBSServer(self, userInput):
+
+	results={}
+	results['QUERY']=''
+	results['USERINPUT']=''
+	results['DATASETPATH']=''
+	results['ADSFileList']=[]
+	
+	import pdb
+	pdb.set_trace()
+
+	data=self.api.executeQuery(userInput)
+
+
+
   def getDataFromDDSearch(self, userInput):
  
     #host="https://cmsweb.cern.ch/dbs_discovery_test/"
@@ -1514,8 +1531,6 @@ class ApiDispatcher:
   
     data=self.sendMessage2DD(host,port,dbsInst,userInput)
     #,page='0',limit=10,xml=0,case='on',details=0,debug=0)
-
-    print data
 
     results={}
     results['QUERY']=''
@@ -1626,7 +1641,9 @@ class ApiDispatcher:
  
    	userInput="find dataset, file, lumi where "+criteria[1]
 
-    results=self.getDataFromDDSearch(userInput)
+    if self.optdict.get('useASearch') not in ('', None):
+	results=self.getDataFromDDSearch(userInput)
+    else: results=self.getDataFromDBSServer(userInput)
 
     datasetPath=results['DATASETPATH'].strip()
     adsfileslist=results['ADSFileList']

@@ -30,13 +30,9 @@ def dbsApiImplListDatasetPaths(self):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
-
-    # Lets get all tiers no matter what, otherwise Server puts unnecessary checks on the DataTier
-    patternDT='*'
-
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listDatasetPaths'}, 'GET')
-    print data
+
     ##logging.log(DBSDEBUG, data)  
 
     # Parse the resulting xml output.
@@ -47,7 +43,7 @@ def dbsApiImplListDatasetPaths(self):
 
         def startElement(self, name, attrs):
           if name == 'processed_dataset':
-		result.append(str(attrs('path')))
+		result.append(str(attrs['path']))
 		
       xml.sax.parseString (data, Handler ())
       return result
