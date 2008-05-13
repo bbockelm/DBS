@@ -1,6 +1,6 @@
 /**
- $Revision: 1.59 $"
- $Id: DBSApiProcDSLogic.java,v 1.59 2008/04/29 22:09:23 afaq Exp $"
+ $Revision: 1.60 $"
+ $Id: DBSApiProcDSLogic.java,v 1.60 2008/05/01 22:06:06 afaq Exp $"
  *
  */
 
@@ -199,10 +199,15 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
 	 public void listDatasetParents(Connection conn, Writer out, String path) throws Exception {
+		//if(clientVersion.compareTo("DBS_1_1_5") < 0) {
+		(new DBSApiBlockLogic(this.data)).listPathParents(conn, out, path);
+		//return;
+		//}
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 
 		String procDSID = getProcessedDSID(conn, path, true);
+		/*
 		try {
 			ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
 			rs =  ps.executeQuery();
@@ -220,7 +225,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		} finally { 
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
-		}
+		}*/
 	
 		try {
                         ps = DBSSql.listDatasetADSParent(conn, procDSID);

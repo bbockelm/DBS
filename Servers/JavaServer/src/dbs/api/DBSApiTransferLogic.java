@@ -1,6 +1,6 @@
 /**
- $Revision: 1.34 $"
- $Id: DBSApiTransferLogic.java,v 1.34 2007/12/14 22:32:06 afaq Exp $"
+ $Revision: 1.35 $"
+ $Id: DBSApiTransferLogic.java,v 1.35 2008/03/18 21:23:32 sekhri Exp $"
  *
  */
 
@@ -66,6 +66,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		pdApi.listProcessedDatasets(conn, out, data[1], "", data[2], null, null, null, null, all);
 		(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out, path, clientVersion);
 		pdApi.listDatasetParents(conn, out, path);
+		//bApi.listPathParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
 		bApi.listBlocks(conn, out, path, blockName, null, "SUPER");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, "", blockName, null, "true");

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.54 $"
- $Id: DBSApiBlockLogic.java,v 1.54 2008/05/08 18:24:35 sekhri Exp $"
+ $Revision: 1.55 $"
+ $Id: DBSApiBlockLogic.java,v 1.55 2008/05/09 16:29:05 sekhri Exp $"
  *
  */
 
@@ -758,6 +758,12 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset_parent path='" +  get(rs, "PATH") + 
+						"' physics_group_name='" +
+						"' physics_group_convener='" +
+						"' creation_date='" +
+						"' created_by='" +
+						"' last_modification_date='" +
+						"' last_modified_by='" +
 						"'/>\n"));
 				}
 		} finally { 
