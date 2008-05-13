@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.168 $"
- $Id: DBSSql.java,v 1.168 2008/05/09 21:15:37 sekhri Exp $"
+ $Revision: 1.169 $"
+ $Id: DBSSql.java,v 1.169 2008/05/13 21:00:13 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2187,7 +2187,7 @@ public class DBSSql {
 
 		String sql = "SELECT DISTINCT ads.Name as NAME \n" +
 				" FROM " +owner()+"AnalysisDataset ads \n" +
-				" LEFT OUTER JOIN "+owner()+"ProcADSParent padsp \n" +
+				" JOIN "+owner()+"ProcADSParent padsp \n" +
 					" ON ads.ID = padsp.ItsParentADS \n" +
 					" AND padsp.ThisDataset = ? \n";
 
@@ -2237,7 +2237,7 @@ public class DBSSql {
 
 
 	public static PreparedStatement listPathParent(Connection conn, String path) throws SQLException {
-		String sql = "SELECT b.Path as PATH\n" +
+		String sql = "SELECT DISTINCT b.Path as PATH\n" +
 			"FROM " + owner() + "Block b \n" +
 			"WHERE b.ID in  \n" +
 				"\t(" + listPathParent() + ")\n";
