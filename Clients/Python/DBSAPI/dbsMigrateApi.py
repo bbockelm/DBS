@@ -62,7 +62,7 @@ class DbsMigrateApi:
 		self.allPaths.append(path)
 		pathList = []
 		#print "listing parents for %s" %path
-		datasets = api.listPathParents(path)
+		datasets = api.listDatasetParents(path)
 		#print "parents are %s " %datasets
 		if datasets not in [[], None] :
 			for dataset in datasets:

@@ -32,16 +32,8 @@ algo = DbsAlgorithm (
 
 analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_001",
                                          ProcessedDatasetPath="/test_primary_001/TestProcessedDS001/SIM",
-                                         FileList=['NEW_TEST0001', 'NEW_TEST0001', 'NOTYETINFILE'],
-                                         #FileList=['NEW_TEST0001', 'NEW_TEST0001', 'NEW_TEST1111'],
-                                         #AlgoList=[algo],
-                                         #TierList=['SIM', 'GEN'],
-                                         #LumiList=['1', '2', '3'],
-                                         #RunsList=[1, 2],
-                                         #AnalysisDSList=[],
-                                         #LumiRangeList=[('3333', '4444'), ('1', '2000')],
-                                         RunRangeList=[('0', '9'), ('11', '21000')],
-                                         #UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
+                                         UserInput="find a datset blah ",
+					 SqlQuery="This is jus a place holder for test",
                                          Description="This is a test Analysis Dataset",
                                          )
 

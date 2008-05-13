@@ -24,43 +24,16 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-"""
-adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
-                ProcessedDatasetPath=path,
-                FileList=[file1['LogicalFileName'], file2['LogicalFileName']],
-                AlgoList = [algo1, algo2],
-                TierList= tierList,
-                AnalysisDSList=[],
-                LumiRangeList=[('1', '4444'), ('5000', '90000')],
-                RunRangeList=[('0', '5000'), ('6000', '99999')],
-                UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
-                Description="This is a test Analysis Dataset" + mytime,
-                )
-
 analysis=DbsAnalysisDataset(
-                            Type='TEST',
-                            Status='NEW',
-                            PhysicsGroup='RelVal',
-			    Path="/RelVal131QCD_pt600_800/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO",
-			    Description="This is a test Analysis Dataset for /RelVal131QCD_pt600_800/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO",
-                           )
-
-
-
-"""
-analysis=DbsAnalysisDataset(
-                            Type='TEST',
-                            Status='NEW',
-                            PhysicsGroup='RelVal',
-                            Path="/RelVal131QCD_pt15_20/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO",
-			    Description="This is a test Analysis Dataset for /RelVal131QCD_pt15_20/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO"
-			   )
-
-"""
+	Type='TEST',
+        Status='NEW',
+        PhysicsGroup='RelVal',
+        Path="/RelVal131QCD_pt15_20/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO",
+	Description="This is a test Analysis Dataset for /RelVal131QCD_pt15_20/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO"
+	)
 
 try:
-    #api.insertFiles (proc, [myfile1], block)
-    api.createAnalysisDataset(analysis, "ALLFILES")
+    api.createAnalysisDataset(analysis, "TestAnalysisDSDef")
     print "DONE", analysis
 
 except DbsApiException, ex:

@@ -38,13 +38,13 @@ algo = DbsAlgorithm (
 primary = DbsPrimaryDataset (Name = "test_primary_001")
 proc = DbsProcessedDataset (
                             PrimaryDataset=primary, 
-                            Name="TestProcessedDSWithADSParent", 
+                            Name="TestProcessedDS001", 
                             PhysicsGroup="BPositive",
                             Status="VALID",
                             TierList=['GEN', 'SIM'],
                             AlgoList=[algo],
-                            RunsList=[1],   # Provide a Run Number List that goes with this ProcDS
-			    ADSParent="/TestPrimary_001_20080320_13h37m20s/TestProcessed_20080320_13h37m20s/GEN-SIM/TestAnalysisDSDef_005_20080320_13h37m20s"
+                            #RunsList=[1],   # Provide a Run Number List that goes with this ProcDS
+			    #ADSParent="/TestPrimary_001_20080320_13h37m20s/TestProcessed_20080320_13h37m20s/GEN-SIM/TestAnalysisDSDef_005_20080320_13h37m20s"
                             )
                              
 print "Creating a processed dataset %s" % proc

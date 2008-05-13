@@ -749,15 +749,15 @@ class ApiDispatcher:
        return
 
     # Following are some weired possibilities, lets deal with'em first
-    elif apiCall.startswith('myAnalysisDataset=') or apiCall.startswith('myads=') or apiCall.startswith('--myads=') or \
-    	 	apiCall.startswith('myAnalysisDataset') or apiCall.startswith('myads') or apiCall.startswith('--myads'):
-	apiCall='myads'
-        self.optdict['myads']=self.getArgVal(args)
-
     elif apiCall.startswith('myAnalysisDatasetDef') or apiCall.startswith('myadsdef') or apiCall.startswith('--myadsdef') or \
 		apiCall.startswith('myAnalysisDatasetDef=') or apiCall.startswith('myadsdef=') or apiCall.startswith('--myadsdef=') :
 	apiCall='myadsdef'
 	self.optdict['myadsdef']=self.getArgVal(args)
+
+    elif apiCall.startswith('myAnalysisDataset=') or apiCall.startswith('myads=') or apiCall.startswith('--myads=') or \
+    	 	apiCall.startswith('myAnalysisDataset') or apiCall.startswith('myads') or apiCall.startswith('--myads'):
+	apiCall='myads'
+        self.optdict['myads']=self.getArgVal(args)
 
     elif apiCall.startswith('usequery') or apiCall.startswith('--usequery') or \
                         apiCall.startswith('usequery=') or apiCall.startswith('--usequery='):
@@ -817,9 +817,11 @@ class ApiDispatcher:
 
     elif apiCall in ('myads'):
 	self.handlelistMyADSCall()
+	print "myads"
 
     elif apiCall in ('myadsdef'):
 	self.handlelistMyADSDEFCall()
+	print "myadsdef"
 
     elif apiCall in ('usequery'):
 	self.handleUseQueryCall()
@@ -1292,24 +1294,95 @@ class ApiDispatcher:
                 self.helper._help_createads()
                 return
 
+	#adsname = self.optdict.get('createADS') or ''
+	#if adsname in ('', None):
+	#	self.printRED("Please provide a NAME for your Analysis Dataset --createADS=<NAME>")
+	#	return
+
 	usequery=self.optdict.get('usequery') or ''
+	#storequery=self.optdict.get('storequery') or ''
+
 	if usequery in ('', None):
 		self.printRED("You cannot use --createPADS without --usequery (see --doc)")
 		self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
+		return
 
-	if usequery not in ('', None) and storequery not in ('', None):
-                self.printRED("You cannot provide BOTH --storequery and --usequery (see --doc)")
-                return
+	#if usequery not in ('', None) and storequery not in ('', None):
+        #        self.printRED("You cannot provide BOTH --storequery and --usequery (see --doc)")
+        #        return
 	
 	if usequery not in self.KnownQueries.keys():
-                self.printRED("Query not found in the specified MART")
+                self.printRED("Query %s not found in the specified MART" % usequery)
                 return
 
-	self.printGREEN("Creating ADS based on query: ")
-	print self.KnownQueries['usequery']
+	self.printGREEN("Creating ADS based on query: %s " % usequery )
+	martQ=self.KnownQueries[usequery]
+	if martQ['PATH'] in ('', None):
+		martQ['PATH'] = self.optdict.get('path')	
+		if martQ['PATH'] in ('', None):
+			self.printRED("You must specify a dataset path for ADS, either when creating query, or use --path=")
+			return
 
-	print "THIS call is under development"
+	userq=martQ['USERINPUT']
+	self.printGREEN(userq)
 
+	#if self.api.url != martQ['HOSTURL']:
+	#	self.printRED("Query %s was created from DBS instance at %s " %(usequery, martQ['HOSTURL']) )
+	#	self.printRED("You cannot use the same query for another DBS instance")
+	#	return
+
+	# Verify the validity of query
+	userInput=userq.replace('where','WHERE')
+        criteria=userInput.split('WHERE')
+        if len(criteria) <= 0:
+        	self.printRED( "Not a valid criteria for creating ADS: %s " % userInput)
+        	self.printRED( "Use --help, or refer to Twiki page")
+        	return
+
+       	else: userInput="find dataset, file, lumi where "+criteria[1]
+	# Craete ADS Def
+	try :
+		from DBSAPI.dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
+
+		adsdef = DbsAnalysisDatasetDefinition(Name=usequery,
+                                         ProcessedDatasetPath=martQ['PATH'],
+                                         UserInput=escape(userInput),
+                                         SqlQuery=escape(martQ['QUERY']),
+                                         Description="ADS DEF Created by DBS Mart from MART query %s CreatedAt %s" \
+												% (usequery, martQ['CREATEDAT']),
+                                         )
+		self.api.createAnalysisDatasetDefinition (adsdef)
+	except DbsApiException, ex:
+		self.printRED ("WARNING : Unable to create ADS Definition")
+  		self.printRED ("Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ) )
+		self.printRED ("Existing Definition will be reused by the DBS instance");
+  		if ex.getErrorCode() not in (None, ""):
+    			self.printRED("DBS Exception Error Code: "+ex.getErrorCode() )
+		if ex.getErrorMessage().find("Already Exists") < 0:
+			return
+
+	# ALL OK !. Creat ADS now
+	try:
+		from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
+		ads=DbsAnalysisDataset(
+        		Type='TEST',
+                	Status='NEW',
+                	PhysicsGroup='RelVal',
+                	Path=martQ['PATH'],
+			Description="ADS Created by DBS Mart from MART query %s CreatedAt %s" \
+				% (usequery, martQ['CREATEDAT']),
+                )	
+
+		self.api.createAnalysisDataset(ads, usequery)		
+        except DbsApiException, ex:
+                self.printRED ("Unable to create ADS")
+                self.printRED ("Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ) )
+                if ex.getErrorCode() not in (None, ""):
+                        self.printRED("DBS Exception Error Code: "+ex.getErrorCode() )
+
+	self.printGREEN("Analysis Dataset Created")
+
+	return
 
   def handleCreatePADSCall(self, path="", files=[]):
 	self.setMartParams()
@@ -1375,7 +1448,7 @@ class ApiDispatcher:
 
 		results=self.getDataFromDDSearch( userInput )
 
-	    	datasetPath=results['DATASETPATH'].strip()
+	    	path=results['DATASETPATH'].strip()
     		files=results['ADSFileList']
 
 	# OK, Let there be an ADS

@@ -51,41 +51,15 @@ def dbsApiImplCreateAnalysisDatasetDefinition(self, analysisDatasetDefinition ):
     xmlinput += " path='"+analysisDatasetDefinition.get('ProcessedDatasetPath', '')+"'"
     xmlinput += " created_by='"+analysisDatasetDefinition.get('CreationDate', '')+"'"
     xmlinput += " creation_date='"+analysisDatasetDefinition.get('CreationDate', '')+"'"
-    xmlinput += " user_cut='"+analysisDatasetDefinition.get('UserCut', '')+"'"
+    xmlinput += " user_input='"+analysisDatasetDefinition.get('UserInput', '')+"'"
+    xmlinput += " sql_query='"+analysisDatasetDefinition.get('SqlQuery', '')+"'"
     xmlinput += " description='"+analysisDatasetDefinition.get('Description', '')+"'"
     xmlinput += "/>"
-
-    for aLumi in analysisDatasetDefinition.get('LumiList', []):
-       xmlinput += " <lumi_section lumi_section_number='"+aLumi+"'/>"
-
-    for lfn in analysisDatasetDefinition.get('FileList', []):
-       xmlinput += " <file lfn='"+lfn+"'/>"
-
-    for analysisds in  analysisDatasetDefinition.get('AnalysisDSList', []):
-        xmlinput += "<analysis_dataset analysis_dataset_name='"+analysisds+"'/>"
-
-    for algorithm in analysisDatasetDefinition.get('AlgoList',[]):
-        xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
-        xmlinput += " app_family_name='"+algorithm.get('ApplicationFamily', "")+"'"
-        xmlinput += " app_executable_name='"+algorithm.get('ExecutableName', "")+"'"
-        pset = algorithm.get('ParameterSetID')
-        if pset != None:
-           xmlinput += " ps_hash='"+pset.get('Hash', "")+"'"
-        xmlinput += "/>"
-
-    for run in analysisDatasetDefinition.get('RunsList',[]):
-        xmlinput += "<run run_number='"+str(get_run(run))+"'/>"
-
-    for alumiRange in analysisDatasetDefinition.get('LumiRangeList', []):
-        xmlinput += "<lumi_section lumi_section_range='"+ alumiRange[0] +','+alumiRange[1]+"'/>"
-
-    for arunRange in analysisDatasetDefinition.get('RunRangeList', []):
-        xmlinput += "<run run_range='"+ arunRange[0]+','+arunRange[1]+"'/>"
 
     xmlinput += "</dbs>"
 
     ###logging.log(DBSDEBUG, xmlinput)
-    #print xmlinput
+    print xmlinput
 
     if self.verbose():
        print "createAnalysisDatasetDefinition, xmlinput",xmlinput
