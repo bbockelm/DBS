@@ -129,6 +129,13 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 					
+					//if(Util.isSame(token2, "evnum") && Util.isSame(token, "file")) {
+					//	throw new Exception("You can find file based on file.evnum (find file where file.evenum = blah) but cannot find file.evnum");
+					//}
+					if(Util.isSame(token2, "evnum") && Util.isSame(token, "lumi")) {
+						throw new Exception("You can find lumi based on lumi.evnum (find lumi where lumi.evenum = blah) but cannot find lumi.evnum");
+					}
+
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
 						boolean dontJoin = false;
 						if(fileParentAdded) dontJoin = true;
@@ -258,17 +265,15 @@ public class QueryBuilder {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tRuns.ID" + handleDQ(val);
 				} else if(Util.isSame(key, "file.release")) {
-					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(op, val);
 				} else if(Util.isSame(key, "file.tier")) {
-					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tFileTier.DataTier" + handleTier(op, val);
-
+				} else if(Util.isSame(key, "lumi.evnum")) {
+					if(!Util.isSame(op, "=")) throw new Exception("When evnum is provided operater should be = . Invalid operater given " + op);
+					queryWhere += handleEvNum(val);
 				} else if(Util.isSame(key, "procds.release")) {
-					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
 				} else if(Util.isSame(key, "procds.tier")) {
-					//if(!Util.isSame(op, "=")) throw new Exception("When release is provided operater should be = . Invalid operater given " + op);
 					queryWhere += "\tProcDSTier.DataTier" + handleTier(op, val);
 
 
@@ -468,6 +473,15 @@ public class QueryBuilder {
 			query += op + " ?\n";
 			bindValues.add(val);
 		}
+		return query;
+	}
+
+	private String handleEvNum(String val) {
+		String query = "\tLumiSection.StartEventNumber <= ?\n" +
+				"\t AND \n" +
+				"\tLumiSection.EndEventNumber >= ?\n";
+		bindValues.add(val);
+		bindValues.add(val);
 		return query;
 	}
 
