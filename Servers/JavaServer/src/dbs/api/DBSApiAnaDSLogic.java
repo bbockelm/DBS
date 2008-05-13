@@ -1,6 +1,6 @@
 /**
- $Revision: 1.42 $"
- $Id: DBSApiAnaDSLogic.java,v 1.42 2008/03/03 22:00:08 afaq Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.43 2008/03/19 17:05:30 afaq Exp $"
  *
  */
 
@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
+import java.util.List;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
@@ -344,103 +345,33 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
          }
 
         public void createAnalysisDatasetDefinition(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
+
+		String sqlQuery = DBSUtil.get(table, "sql_query");
+		String userInput = DBSUtil.get(table, "user_input");
+		
+		if (isNull(userInput)) throw new DBSException("NULL value found", "9000", "No Select Criteria Supplied");
+
+		String desc = DBSUtil.get(table, "description");
 		String adsDefName = get(table, "analysisds_def_name", true);
-		String path = get(table, "path");
-		String userCut = get(table, "user_cut");
-		String desc = getStr(table, "description", true);
-		Vector lumiVector = DBSUtil.getVector(table, "lumi_section");
-		Vector runVector = DBSUtil.getVector(table, "run");
-		Vector algoVector = DBSUtil.getVector(table, "algorithm");
-		Vector fileVector = DBSUtil.getVector(table, "file");
+		String path = getPath(table, "path", false);
 
-		String lumiNumberList = "";
-		String lumiRangeList = "";
-		String runNumberList = "";
-		String runRangeList = "";
-		String algoList = "";
-		String fileList = "";
-
-		for (int j = 0; j < lumiVector.size(); ++j) {
-			Hashtable hashTable = (Hashtable)lumiVector.get(j);
-			String lumiNumber = get(hashTable, "lumi_section_number");
-			String lumiRange = get(hashTable, "lumi_section_range");
-			if(!isNull(lumiNumber)) {
-				if(!isNull(lumiNumberList)) lumiNumberList += ",";
-				lumiNumberList += lumiNumber;
-			}
-			if(!isNull(lumiRange)) {
-				if(!isNull(lumiRangeList)) lumiRangeList += ";";
-			       	//lumiRangeList += parseRange(lumiRange);
-			       	lumiRangeList += lumiRange;
-			}
-	 	}
-		for (int j = 0; j < runVector.size(); ++j) {
-			Hashtable hashTable = (Hashtable)runVector.get(j);
-			String runNumber = get(hashTable, "run_number");
-			String runRange = get(hashTable, "run_range");
-			if(!isNull(runNumber)) {
-				if(!isNull(runNumberList)) runNumberList += ",";
-			       	runNumberList += runNumber;
-			}
-			if(!isNull(runRange)) {
-				if(!isNull(runRangeList)) runRangeList += ";";
-				//runRangeList += parseRange(runRange);
-				runRangeList += runRange;
-			}
-	 	}
-		for (int j = 0; j < fileVector.size(); ++j) {
-			if(!isNull(fileList)) fileList += ",";
-			fileList += get((Hashtable)fileVector.get(j), "lfn", true);
-	 	}
-		for (int j = 0; j < algoVector.size(); ++j) {
-			Hashtable hashTable = (Hashtable)algoVector.get(j);
-			if(!isNull(algoList)) algoList += ",";
-			algoList +=  get(hashTable, "app_version", true) + 
-				";" + get(hashTable, "app_family_name", true) + 
-				";" + get(hashTable, "app_executable_name", true) + 
-				";" + get(hashTable, "ps_hash", true);
-	 	}
-		createAnalysisDatasetDefinition(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
-				runNumberList, runRangeList, fileList, algoList, userCut, desc,
-				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
-				personApi.getUserID(conn, dbsUser),
-				getTime(table, "creation_date", false) );
-
-	 }
-	 
-         private void createAnalysisDatasetDefinition(Connection conn, Writer out, 
-			 String adsDefName, String path,
-			 String lumiNumberList, String lumiRangeList, 
-			 String runNumberList, String runRangeList, 
-			 String fileList, String algoList,  
-			 String userCut, String desc,
-			 String cbUserID, String lmbUserID, 
-			 String creationDate) throws Exception { 
-		 //Check if ProcDS exists or not
+		//Check if ProcDS exists or not
 		if(!isNull(path))
 			(new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
-		//check if fileList is provided but path is not. Template defination
-		else if (!isNull(fileList))
-			throw new DBSException("Wrong Parameters", "1064", "Path from template definition is not provided and fileList is provided. In a template defination which do not have path fileList cannot be provided. The fileList is " + fileList);
-			
 		 
-		 if( getID(conn, "AnalysisDSDef", "Name", adsDefName, false) == null ) {
+		if( getID(conn, "AnalysisDSDef", "Name", adsDefName, false) == null ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertAnalysisDatasetDefinition(conn, 
 						adsDefName, 
 						path, 
-						lumiNumberList, 
-						lumiRangeList, 
-						runNumberList, 
-						runRangeList, 
-						fileList, 
-						algoList, 
-						userCut,
+						userInput,
+						sqlQuery,
 						desc,
-						cbUserID, 
-						lmbUserID, 
-						creationDate);
+						personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
+                                		personApi.getUserID(conn, dbsUser),
+                                		getTime(table, "creation_date", false)
+						);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -451,8 +382,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			//a definition and he/she needs to create a new one. Warnning can be ignored but exception cannot.
 			//writeWarning(out, "Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
 			throw new DBSException("Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
-		
-
 	 }
 
 	public void createAnalysisDatasetFromLFNs(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
@@ -574,28 +503,21 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(table, "created_by"), dbsUser );
 		String creationDate = getTime(table, "creation_date", false);
-		String logicalOp = "AND";
 
 		String anaDSDefID = ""; 
 		String procDSID = ""; 
-		String lumiNumberList =  ""; 
-		String runNumberList = "";
+
 		String path = "";
-                Vector lumiIDList = new Vector();
-                Vector runIDList = new Vector();
-		Vector fileList = new Vector(); 
-		String algoList = ""; 
-		Vector algoIDList = new Vector(); 
-		String userCut = "";
-		Vector lumiRangeList = new Vector(); 
-		Vector runRangeList = new Vector(); 
+		String userInput = "";
 
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listAnalysisDatasetDefinition(conn, analysisDatasetDefinitionName);
 			rs =  ps.executeQuery();
+
 			if(rs.next()) {
+
 				anaDSDefID = get(rs, "ID");
 				String pathFromDef = get(rs, "PATH");
 				//Check if both path from defination and path from dataset exists
@@ -610,16 +532,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				if(isNull(pathFromDef) && !isNull(pathFromDS)) 	path = pathFromDS;
 
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
-				lumiNumberList = get(rs, "LUMI_SECTIONS");
-				lumiRangeList = parseRangeList(get(rs, "LUMI_SECTION_RANGES"));
-				runNumberList = get(rs, "RUNS");
-				String abc = get(rs, "RUNS_RANGES");
-				runRangeList = parseRangeList(get(rs, "RUNS_RANGES"));
-				algoList = get(rs, "ALGORITHMS");
-				userCut = get(rs, "USER_CUT");
-				//FIXME insert it in definition first and change the query to fetch it
-				//logicalOp = get(rs, "LOGICAL_OP");
-				fileList = listToVector(get(rs, "LFNS"));
+				userInput = get(rs, "USER_INPUT");
+
+
 			
 			} else {
 				throw new DBSException("Unavailable data", "1021", "No such analysis dataset definition " + analysisDatasetDefinitionName );
@@ -627,32 +542,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		} finally { 
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
-		}
-
-                //get all lumi from lumiList
-                if(!isNull(lumiNumberList)) {
-                        String[] data = lumiNumberList.split(",");
-                        for (int i = 0; i != data.length ; ++i) {
-                                lumiIDList.add(getID(conn, "LumiSection", "LumiSectionNumber", data[i].trim(), true));
-                        }
-                }
-
-                //get all runs from runList
-                if(!isNull(runNumberList)) {
-                        String[] data = runNumberList.split(",");
-                        for (int i = 0; i != data.length ; ++i) {
-                                runIDList.add(getID(conn, "Runs", "RunNumber", data[i].trim(), true));
-                        } 
-                }
-
-		//Get all the algo IDs
-		if(!isNull(algoList)) {
-			String[] algo = algoList.split(",");
-			for (int i = 0; i != algo.length ; ++i) {
-				String data[] = algo[i].split(";");
-				if (data.length != 4) throw new DBSException("Invalid format", "1023", "Algorithm not stored in proper format in AnalysisDSDef Table. Proper format is version1;family1;exe1;pshash1,vrsion2;family2;exe2;pshash Given " + algo[i]);
-				algoIDList.add((new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, data[0].trim(), data[1].trim(), data[2].trim(),data[3].trim(), true));
-			}
 		}
 
 
@@ -672,23 +561,25 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		String aDSID = "";
 
-		//No prior version of this ADS exists
-
                 //NOW Lets get the Dataset TO BE's LUMIIDs and FILEIDs
+
+		//Use Vijay's function call to get List of Files, Lumi and Run
 		ps = null;
 		rs = null;
 		try {
-			ps = DBSSql.listAnalysisDSFileLumi(conn,
-					procDSID,
-					algoIDList,
-					fileList,
-					lumiIDList,
-					runIDList,
-					lumiRangeList,
-					runRangeList,
-					userCut,
-					logicalOp,
-					cbUserID, lmbUserID, creationDate);
+			String[] vals = null;
+			if (userInput.indexOf("WHERE") > 0) vals = userInput.split("WHERE");
+			else vals = userInput.split("where");
+				
+			userInput = "find dataset, file.id, lumi.id WHERE "+ vals[1];
+
+                	ArrayList objList = executeQuery(conn, out, userInput, "", "");
+                	String finalQuery = (String)objList.get(1);
+                	List<String> bindValues = (List<String>)objList.get(2);
+                	List<Integer> bindIntValues = (List<Integer>)objList.get(3);
+
+			ps = DBSSql.getQueryScrollable(conn, finalQuery, bindValues, bindIntValues);
+			
                         rs =  ps.executeQuery();
 
 			//if( isNull((aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false))) ) {
@@ -707,8 +598,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 						for (int j = 0 ; j!= numberOfRowsExisting ; ++j) {
 							rs1.next();
 							rs.next();
-							if(!(get(rs1, "LUMIID").equals(get(rs, "LUMIID"))) ||
-									!(get(rs1, "FILEID").equals(get(rs, "FILEID")))) {
+							if(!(get(rs1, "LUMIID").equals(get(rs, "LumiSection_ID"))) ||
+									!(get(rs1, "FILEID").equals(get(rs, "Files_ID")))) {
 								insert = true;
 								break;
 							}
@@ -760,8 +651,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));					
 					insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
 						aDSID,
-						get(rs, "LUMIID"),
-						get(rs, "FILEID"),
+						get(rs, "LumiSection_ID"),
+						get(rs, "Files_ID"),
 						cbUserID, lmbUserID, creationDate);
 				}
 	

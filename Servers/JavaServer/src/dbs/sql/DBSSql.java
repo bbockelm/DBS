@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.167 $"
- $Id: DBSSql.java,v 1.167 2008/05/09 16:29:06 sekhri Exp $"
+ $Revision: 1.168 $"
+ $Id: DBSSql.java,v 1.168 2008/05/09 21:15:37 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -64,6 +64,18 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
+
+
+        public static PreparedStatement getQueryScrollable(Connection conn, String query, List<String> bindValues, List<Integer> bindIntValues) throws SQLException {
+
+                PreparedStatement ps = DBManagement.getStatementScrollable(conn, query);
+                int columnIndx = 1;
+                for(String s: bindValues) ps.setString(columnIndx++, s);
+                for(Integer i: bindIntValues) ps.setInt(columnIndx++, i.intValue());
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
 
 	public static PreparedStatement updateValue(Connection conn, String tableName, String ID, String key, String value, String lmbUserID) throws SQLException {
 		String sql = "UPDATE " + owner() + tableName + " \n" +
@@ -1482,19 +1494,13 @@ public class DBSSql {
         }
 
 	public static PreparedStatement insertAnalysisDatasetDefinition(Connection conn, String adsDefName, 
-			String path, String lumiNumberList, String lumiRangeList, String runNumberList, String runRangeList, 
-			String fileList, String algoList, String userCut, String desc,
+			String path, String userInput, String sqlQuery, String desc,
 			String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Name", adsDefName);
 		table.put("Path", path);
-		table.put("LumiSections", lumiNumberList);
-		table.put("LumiSectionRanges", lumiRangeList);
-		table.put("Runs", runNumberList);
-		table.put("RunsRanges", runRangeList);
-		table.put("LFNs", fileList);
-		table.put("Algorithms", algoList);
-		table.put("UserCut", userCut);
+		table.put("UserInput", userInput);
+		table.put("SqlQuery", sqlQuery);
 		table.put("Description", desc);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
@@ -3371,14 +3377,9 @@ public class DBSSql {
 		//String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
 		String sql = "SELECT adsdef.ID as ID, \n " +
 			"adsdef.Name as ANALYSIS_DATASET_DEF_NAME, \n" +
-			"adsdef.LumiSections as LUMI_SECTIONS, \n" +
-			"adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
-			"adsdef.Runs as RUNS, \n" +
-			"adsdef.RunsRanges as RUNS_RANGES, \n" +
-			"adsdef.Algorithms as ALGORITHMS, \n" +
-			"adsdef.LFNs as LFNS, \n" +
 			"adsdef.Path as PATH, \n" +
-			"adsdef.UserCut as USER_CUT, \n" +
+			"adsdef.UserInput as USER_INPUT, \n" +
+			"adsdef.SQLQuery as SQL_QUERY, \n" +
 			"adsdef.Description as DESCRIPTION, \n" +
 			"adsdef.CreationDate as CREATION_DATE, \n" +
 			"adsdef.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -3391,7 +3392,7 @@ public class DBSSql {
 				"ON perlm.id = adsdef.LastModifiedBy \n" +
 			"WHERE adsdef.Name like  ? \n" +
 				"ORDER BY adsdef.Name DESC";
-		
+
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, patternName);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");

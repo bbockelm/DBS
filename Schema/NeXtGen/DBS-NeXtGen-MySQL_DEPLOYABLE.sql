@@ -4,9 +4,9 @@
 -- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_1_1_0;
-create database DBS_1_1_0;
-use DBS_1_1_0;
+drop database if exists DBS_1_1_0_ADSDEF;
+create database DBS_1_1_0_ADSDEF;
+use DBS_1_1_0_ADSDEF;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -714,13 +714,8 @@ CREATE TABLE AnalysisDSDef
     Name                  varchar(700)      unique not null,
     Path                  varchar(1000),
     Description           TEXT,
-    LumiSections          TEXT,
-    LumiSectionRanges     TEXT,
-    Runs                  TEXT,
-    RunsRanges            TEXT,
-    Algorithms            varchar(1000),
-    LFNs                  TEXT,
-    UserCut               TEXT,
+    UserInput             TEXT,
+    SQLQuery              TEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
