@@ -36,8 +36,7 @@ def dbsApiImplListDatasetPaths(self):
 
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listDatasetPaths'}, 'GET')
-
-
+    print data
     ##logging.log(DBSDEBUG, data)  
 
     # Parse the resulting xml output.
@@ -48,7 +47,7 @@ def dbsApiImplListDatasetPaths(self):
 
         def startElement(self, name, attrs):
           if name == 'processed_dataset':
-		results.append(str(attr('path')))
+		result.append(str(attrs('path')))
 		
       xml.sax.parseString (data, Handler ())
       return result
