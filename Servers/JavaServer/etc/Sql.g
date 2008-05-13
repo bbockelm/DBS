@@ -22,7 +22,9 @@ stmt	: select spaces selectList spaces where spaces constraintList
 spaces	: (SPACE)*;
 		 
 selectList	:kw=	keyword 		{kws.add($kw.text);}
- 		(COMMA
+ 		(
+		spaces
+		COMMA
 		spaces
  	kw=	keyword  		{kws.add($kw.text);}
  		)*;		 
