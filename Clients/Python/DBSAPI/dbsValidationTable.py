@@ -90,7 +90,7 @@ ValidationTable = {
          #"Status" : { "Comment" : "A required variable", "Validator" : isStringType },
          "ProcessedDatasetPath" : { "Comment" : "Not a required var, user can provide if desired", "Validator" : isStringType },
          "UserInput" : { "Comment" : "The selection criteria in user's format, Not a required var, user can provide if desired", "Validator" : isStringType },
-         "SqlQuery" : { "Comment" : "The selection criteria in user's format, Not a required var, user can provide if desired", "Validator" : isStringType },
+         "SQLQuery" : { "Comment" : "The selection criteria in user's format, Not a required var, user can provide if desired", "Validator" : isStringType },
          "Description" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },

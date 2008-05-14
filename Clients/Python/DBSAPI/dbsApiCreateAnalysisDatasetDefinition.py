@@ -52,7 +52,7 @@ def dbsApiImplCreateAnalysisDatasetDefinition(self, analysisDatasetDefinition ):
     xmlinput += " created_by='"+analysisDatasetDefinition.get('CreationDate', '')+"'"
     xmlinput += " creation_date='"+analysisDatasetDefinition.get('CreationDate', '')+"'"
     xmlinput += " user_input='"+analysisDatasetDefinition.get('UserInput', '')+"'"
-    xmlinput += " sql_query='"+analysisDatasetDefinition.get('SqlQuery', '')+"'"
+    xmlinput += " sql_query='"+analysisDatasetDefinition.get('SQLQuery', '')+"'"
     xmlinput += " description='"+analysisDatasetDefinition.get('Description', '')+"'"
     xmlinput += "/>"
 

@@ -33,7 +33,7 @@ algo = DbsAlgorithm (
 analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_001",
                                          ProcessedDatasetPath="/test_primary_001/TestProcessedDS001/SIM",
                                          UserInput="find a datset blah ",
-					 SqlQuery="This is jus a place holder for test",
+					 SQLQuery="This is jus a place holder for test",
                                          Description="This is a test Analysis Dataset",
                                          )
 

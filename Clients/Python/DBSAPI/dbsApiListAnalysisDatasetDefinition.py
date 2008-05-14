@@ -56,17 +56,10 @@ def dbsApiImplListAnalysisDatasetDefinition(self, pattern="*"):
           if name == 'analysis_dataset_definition':
                 curr_def = DbsAnalysisDatasetDefinition (
                         Name=str(attrs['analysis_dataset_definition_name']),
-                        RunsList=str(attrs['runs']).split(','),
-                        #TierList=str(attrs['tiers']).split(','),
-                        FileList=str(attrs['lfns']).split(','),
-                        LumiList=str(attrs['lumi_sections']).split(','),
-                        AlgoList=str(attrs['algorithms']).split(','),
                         ProcessedDatasetPath=str(attrs['path']),
-                        RunRangeList=str(attrs['runs_ranges']).split(','),
-                        #AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
-                        LumiRangeList=str(attrs['lumi_section_ranges']).split(','),
-                        UserCut=str(attrs['user_cut']),
                         #Description=str(attrs['name']),
+			UserInput=str(attrs['user_input']),
+                        SQLQuery=str(attrs['sql_query'])
                         CreationDate=str(attrs['creation_date']),
                         CreatedBy=str(attrs['created_by']),
                         LastModificationDate=str(attrs['last_modification_date']),
@@ -83,6 +76,4 @@ def dbsApiImplListAnalysisDatasetDefinition(self, pattern="*"):
       raise DbsBadXMLData(args=msg, code="5999")
 
 
-
-  #-------------------------------------------------------------------
 

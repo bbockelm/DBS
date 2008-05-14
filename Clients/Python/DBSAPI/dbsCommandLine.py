@@ -1350,7 +1350,7 @@ class ApiDispatcher:
 		adsdef = DbsAnalysisDatasetDefinition(Name=usequery,
                                          ProcessedDatasetPath=martQ['PATH'],
                                          UserInput=escape(userInput),
-                                         SqlQuery=escape(martQ['QUERY']),
+                                         SQLQuery=escape(martQ['QUERY']),
                                          Description="ADS DEF Created by DBS Mart from MART query %s CreatedAt %s" \
 												% (usequery, martQ['CREATEDAT']),
                                          )
