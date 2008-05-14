@@ -1,6 +1,6 @@
 /**
- $Revision: 1.43 $"
- $Id: DBSApiAnaDSLogic.java,v 1.43 2008/03/19 17:05:30 afaq Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.44 2008/05/13 21:00:13 afaq Exp $"
  *
  */
 
@@ -56,14 +56,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			while(rs.next()) {
 				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ID") +
 					"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
-					"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
-					"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
-					"' runs='" + get(rs, "RUNS") +
-					"' runs_ranges='" + get(rs, "RUNS_RANGES") +
-					"' algorithms='" + get(rs, "ALGORITHMS") +
-					"' lfns='" + get(rs, "LFNS") +
 					"' path='" + get(rs, "PATH") +
-					"' user_cut='" + get(rs, "USER_CUT") +
+					"' user_input='" + get(rs, "USER_INPUT") +
+					"' sql_query='" + get(rs, "SQL_QUERY") +
 					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
@@ -193,15 +188,10 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					//Add the details of definition also for this dataset
 					out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ADDID") +
 								"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
-								"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
-								"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
-								"' runs='" + get(rs, "RUNS") +
 								"' description='" + get(rs, "ADD_DESCRIPTION") +
-								"' runs_ranges='" + get(rs, "RUNS_RANGES") +
-								"' algorithms='" + get(rs, "ALGORITHMS") +
-								"' lfns='" + get(rs, "LFNS") +
 								"' path='" + get(rs, "ANALYSIS_DATASET_DEF_PATH") +
-								"' user_cut='" + get(rs, "USER_CUT") +
+								"' user_input='" + get(rs, "USER_INPUT") +
+			                                        "' sql_query='" + get(rs, "SQL_QUERY") +
 								"' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
 								"' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
 								"' created_by='" + get(rs, "ADD_CREATED_BY") +
