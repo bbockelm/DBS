@@ -596,6 +596,9 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--dbsmartfile", action="store", type="string", dest="dbsmartfile",
            help="Location of the dbs mart file, absolute path or relative to $ADSHOME")
 
+      self.add_option("--useASearch", action="store", type="string", dest="useASearch",
+           help="If supplied, ASearch (Search DBS Discovery Page) is used instead of DBS Server")
+
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
 
@@ -1514,12 +1517,73 @@ class ApiDispatcher:
 	results['DATASETPATH']=''
 	results['ADSFileList']=[]
 	
-	import pdb
-	pdb.set_trace()
-
 	data=self.api.executeQuery(userInput)
+	#print data
 
+        try:
+        # DbsExecutionError message would arrive in XML, if any
+         class Handler (xml.sax.handler.ContentHandler):
 
+           def __init__(self):
+                xml.sax.handler.ContentHandler.__init__(self)
+                self.next_is_query=0
+                self.next_is_userinput=0
+                self.next_is_dataset=0
+                self.new_file=0
+                self.dataset_once=1
+		self.sql_once=1
+
+           def startElement(self, name, attrs):
+                if name == 'sql':
+                        self.next_is_query=1
+
+                if name == 'userinput':
+                        self.next_is_userinput=1
+
+		if name == 'result':
+			#result FILES_LOGICALFILENAME 	PATH
+			out=""
+			for aval in attrs.values():
+				out += "    " +str(aval)
+			print out
+			if  attrs.has_key('FILES_LOGICALFILENAME'):
+				aFile={}
+				aFile['LogicalFileName']=str(attrs['FILES_LOGICALFILENAME'])
+                        	results['ADSFileList'].append(aFile)
+			if self.dataset_once==1:
+				if  attrs.has_key('PATH'):
+					results['DATASETPATH']+=str(escape(attrs['PATH']))
+					self.dataset_once=0
+
+           def characters(self, s):
+
+                if str(escape(s)).strip() in ("\n", ""): return
+                elif self.next_is_query==1 and self.sql_once==1:
+                        results['QUERY'] += str(escape(s))
+                        return
+
+                elif self.next_is_userinput==1:
+                        results['USERINPUT']+=str(escape(s))
+                        return
+                else: pass
+
+           def endElement(self, name):
+                if name=='sql':
+                        self.next_is_query=0
+			self.sql_once=0
+                if name == 'userinput':
+                        self.next_is_userinput=0
+
+         xml.sax.parseString (data, Handler ())
+
+        except SAXParseException, ex:
+         msg = "Unable to parse XML response from DBS Server"
+         msg += "\n  Server not responding as desired %s" % self.Url
+         raise DbsConnectionError (args=msg, code="505")
+
+        #print results
+
+        return results
 
   def getDataFromDDSearch(self, userInput):
  
@@ -1640,7 +1704,6 @@ class ApiDispatcher:
 		return
  
    	userInput="find dataset, file, lumi where "+criteria[1]
-
     if self.optdict.get('useASearch') not in ('', None):
 	results=self.getDataFromDDSearch(userInput)
     else: results=self.getDataFromDBSServer(userInput)
@@ -1655,7 +1718,8 @@ class ApiDispatcher:
                 canstore=self.storeQuery(results['DATASETPATH'], results['USERINPUT'], results['QUERY'], storequeryname)
                 if (canstore) and createPADS not in ('', None):
            		if datasetPath in ('', None) or len(adsfileslist) <= 0 :
-				self.printRED("Cannot create ADS, No matching Dataset found")
+				self.printRED("Cannot create ADS, No matching Dataset (With Files and LumiSections) found")
+				self.printRED("Used Query %s" % results['USERINPUT'])
 				return
                        	self.handleCreatePADSCall(datasetPath, adsfileslist)
 

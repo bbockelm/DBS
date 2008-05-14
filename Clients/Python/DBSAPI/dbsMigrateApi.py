@@ -48,8 +48,6 @@ class DbsMigrateApi:
 		#print "parents are %s " %datasets
 		if datasets not in [[], None] :
 			for dataset in datasets:
-				#import pdb
-				#pdb.set_trace()
 				for proc in api.listProcessedDatasets(patternPrim = dataset['PrimaryDataset']['Name'],  patternProc = dataset['Name']):
 					for aPath in proc['PathList']:
 						if(aPath not in self.allPaths):
@@ -62,8 +60,6 @@ class DbsMigrateApi:
 		self.allPaths.append(path)
 		pathList = []
 		#print "listing parents for %s" %path
-		import pdb
-		pdb.set_trace()
 
 		datasets = api.listDatasetParents(path)
 		#print "parents are %s " %datasets
@@ -78,7 +74,6 @@ class DbsMigrateApi:
                                                         		pathList.append(aPath)
 					else: 
 						if(aPath not in self.allPaths):
-							pdb.set_trace()
 							pathList.append(aPath)
 							self.allPaths.append(aPath)
 		print "parents %s " %pathList				
