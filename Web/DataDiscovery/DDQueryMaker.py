@@ -25,6 +25,7 @@ from   DDRules   import *
 # QueryBuilder
 from QueryBuilder.Schema import Schema
 
+
 # import DLS modules
 #try:
 #    import dlsClient
@@ -589,6 +590,16 @@ class DDQueryMaker(DDLogger):
       else:
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       
+  def executeDBSQuery(self,dbsApi,input):
+      print "\n\n+++ executeDBSQuery\n",input
+      res=dbsApi.executeQuery(input,type="query")
+      sql,bindDict=getDBSQuery(res)
+      bparams=[]
+      for key in bindDict:
+          bparams.append(sqlalchemy.bindparam(key=key,value=bindDict[key]))
+      sel=sqlalchemy.text(input,bind=self.dbManager.engine[self.dbsInstance],bindparams=bparams)
+      return self.executeSingleQuery(sel)
+
   def executeSingleQuery(self,sel):
 #      print "\n\n+++ executeSingleQuery\n",sel,self.extractBindParams(sel)
       con  = self.connectToDB()
