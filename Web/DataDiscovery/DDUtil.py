@@ -914,6 +914,28 @@ def getCMSNames():
     conn.close()
     oDict['time']=time.time()
     return oDict
+
+def getDBSQuery(data):
+    elem  = ET.fromstring(data)
+    sql   = ""
+    bDict = {}
+    for i in elem:
+        if i.tag=="query":
+           for k in i.getchildren():
+               name=""
+               rval=""
+               if k.tag=="sql":
+                  sql=k.text
+               if k.tag=="bindparams":
+                  for j in k:
+                      if j.tag=="name":
+                         name=j.text
+                      if j.tag=="value":
+                         rval=j.text
+                      if name and rval:
+                         bDict[name]=rval
+    return sql,bDict
+
 #
 # main
 #
@@ -923,8 +945,40 @@ if __name__ == "__main__":
 #   print getDictOfSites()
 #   print convertListToString([1,2,3,4,5,6,7,8,9,10])
 #   print tip()
-   data=getCMSNames()
-   cmsNames=data.keys()
-   cmsNames.sort()
-   for item in cmsNames: print item
 
+#   data=getCMSNames()
+#   cmsNames=data.keys()
+#   cmsNames.sort()
+#   for item in cmsNames: print item
+
+   input="""<?xml version='1.0' standalone='yes'?>
+<!-- DBS Version 1 -->
+<dbs>
+<userinput>
+<input>
+find dataset where dataset like *
+</input>
+</userinput>
+<query>
+<sql>
+SELECT DISTINCT 
+        Block.Path
+FROM
+        Block
+
+WHERE
+        Block.ID  IN ( 
+SELECT 
+        Block.ID FROM Block     WHERE 
+        Block.Path LIKE ?)
+</sql>
+<bindparams>
+  <name>test</name>
+  <value>rval</value>
+</bindparams>
+</query>
+<SUCCESS/>
+</dbs>
+"""
+   sql,bindDict=getDBSQuery(input)
+   print "Found",sql,bindDict
