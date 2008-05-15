@@ -1431,6 +1431,25 @@ MCDescription:      %s
 #      content = self.api.getDatasetContents(dataset)
 #      return content
 
+  def getParents(self,what,rval):
+      if what=='dataset':
+         return self.getDatasetProvenance(rval)
+      return []
+
+###########
+#SELECT b.Path
+#FROM Block b
+#WHERE b.ID in
+#SELECT fl.Block
+#FROM Files fl
+#WHERE fl.ID in (
+#SELECT fp.ItsParent
+#FROM FileParentage fp
+#WHERE
+#fp.ThisFile in (SELECT f.ID from Files f WHERE f.Block = 2)
+#)
+#)
+############
   def getDatasetProvenance(self,dataset):
       t1=time.time()
       prim=""
@@ -1460,9 +1479,9 @@ MCDescription:      %s
                      ],distinct=True,order_by=oSel )
           if dataset and dataset!="*":
              if dataset.find("*")!=-1:
-                sel.append_whereclause(self.col(tblk,'Path').like(dataset.replace("*","%"))
+                sel.append_whereclause(self.col(tblk,'Path').like(dataset.replace("*","%")) )
              elif dataset.find("%")!=-1:
-                sel.append_whereclause(self.col(tblk,'Path').like(dataset)
+                sel.append_whereclause(self.col(tblk,'Path').like(dataset))
              else:
                 sel.append_whereclause(self.col(tblk,'Path')==dataset)
           if self.verbose:

@@ -313,6 +313,8 @@ class DDServer(DDLogger,Controller):
                cherrypy.response.headers['Content-Type']='text/xml'
             elif type=="rss":
                cherrypy.response.headers['Content-Type']='application/rss+xml'
+            elif type=="plain":
+               cherrypy.response.headers['Content-Type']='text/plain'
             else:
                cherrypy.response.headers['Content-Type']='text/html'
         elif int(string.split(cherrypy.__version__,".")[0])==2:
@@ -320,6 +322,8 @@ class DDServer(DDLogger,Controller):
                cherrypy.response.headerMap['Content-Type'] = "text/xml"
             elif type=="rss":
                cherrypy.response.headerMap['Content-Type'] = "application/rss+xml"
+            elif type=="plain":
+               cherrypy.response.headerMap['Content-Type']='text/plain'
             else:
                cherrypy.response.headerMap['Content-Type'] = "text/html"
 
@@ -3338,7 +3342,8 @@ All LFNs in a block
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="kw_release_holder">"""
         self.helperInit(dbsInst)
-        relList=self.helper.getSoftwareReleases()
+#        relList=self.helper.getSoftwareReleases()
+        relList=natsort24(list( self.helper.getSoftwareReleases() ))
         relList.reverse()
         dList = ['Any']+relList
         cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
@@ -5048,6 +5053,7 @@ Save query as:
         case     = kwargs['caseSensitive']
         userMode = kwargs['userMode']
         output   = kwargs['output']
+        parents  = getArg(kwargs,'parents','')
         cff      = int(getArg(kwargs,'cff',0))
         self.qmaker.initDBS(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
@@ -5063,6 +5069,16 @@ Save query as:
             page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
             return page
         result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        if parents:
+           what,par = output.split(".")
+           print "orig. result",result
+           parList=[]
+           print "FOUND request for parents:",what,par
+           for res in result:
+               parList.append(self.helper.getParents(what,res[0]))
+           results=list(parList)
+           print "parents     ",result
+
         cDateIdx =-1
         mDateIdx =-1
         cByIdx   =-1
@@ -5405,7 +5421,11 @@ Save query as:
         _idx=int(_idx)
         pagerStep = int(pagerStep)
         html      = getArg(kwargs,'html',1)
+        if not int(html):
+           self.setContentType('plain') 
         xml       = getArg(kwargs,'xml',0)
+        if int(xml):
+           self.setContentType('xml') 
         case      = getArg(kwargs,'caseSensitive','on')
         sortName  = getArg(kwargs,'sortName','')
         details   = getArg(kwargs,'details',1)
@@ -5553,6 +5573,9 @@ Save query as:
         kDict['oname']=_out
         kDict['link']=link
 
+        if output.find("dataset.parents")!=-1:
+           kDict['parents']=output.split(".")[0]
+
         queryTime=0
         try:
             t1=time.time()
@@ -5561,6 +5584,8 @@ Save query as:
             if details:
                if output.find(",")!=-1 or output.find("total")!=-1:
                   page+=self.aSearchSummary(**kDict)
+               elif output.find("dataset.parents")!=-1: # TEMP
+                  page+=self.aSearchShowAll(**kDict)
                else:
                   method=getattr(self,output+'Summary')
                   page+=method(**kDict)

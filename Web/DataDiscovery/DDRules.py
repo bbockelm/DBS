@@ -162,6 +162,7 @@ class DDRules:
            'totlumi'     :{'run':'TotalLuminosity'},
            'type'        :{'file':'FileType.Type','primds':'PrimaryDSType.Type','ads':'AnalysisDSType.Type'},
            'convener'    :{'group':'PhysicsGroupConvener'},
+           'parents'     :{'dataset':'Block.Path'},
        }
        self.colFunc = {
            'latestrelease' :['file'],
