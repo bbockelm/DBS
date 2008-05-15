@@ -1,6 +1,6 @@
 /**
- $Revision: 1.132 $"
- $Id: DBSApiLogic.java,v 1.132 2008/05/09 19:55:21 sekhri Exp $"
+ $Revision: 1.133 $"
+ $Id: DBSApiLogic.java,v 1.133 2008/05/09 21:37:59 sekhri Exp $"
  *
  */
 
@@ -186,7 +186,7 @@ public class DBSApiLogic {
 		}
 
 
-		String countQuery = finalQuery;
+		String countQuery = valentinQuery;
 		countQuery = "SELECT COUNT(*) " + countQuery.substring(countQuery.indexOf("FROM"));
 		
 		out.write("<userinput>\n");
