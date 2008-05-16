@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.40 $"
- $Id: DBSServlet.java,v 1.40 2008/03/25 21:35:53 sekhri Exp $"
+ $Revision: 1.41 $"
+ $Id: DBSServlet.java,v 1.41 2008/04/30 19:13:15 sekhri Exp $"
 
  */
 package dbs;
@@ -22,6 +22,7 @@ import javax.servlet.ServletConfig;
 import dbs.api.DBSApi;
 import dbs.util.DBSUtil;
 import dbs.util.DBSConfig;
+import dbs.util.RegisterLock;
 import dbs.data.DBSDataCache;
 import db.DBManagement;
 import dbs.search.graph.GraphUtil;
@@ -104,6 +105,8 @@ public class DBSServlet extends HttpServlet{
        					conn.close();
        				}
 	       		}
+			RegisterLock.getRegisterLockInstance();
+
 			System.out.println("DBS READY");
     		} catch(Exception e) {
 			throw new ServletException(e);
@@ -119,6 +122,23 @@ public class DBSServlet extends HttpServlet{
 	 * {@inheritDoc}
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+		try {
+			RegisterLock rLock = RegisterLock.getRegisterLockInstance();
+			System.out.println("checking doneOnce");
+			if(!rLock.isDoneOnce()) {
+				System.out.println("addming register");
+				String url = request.getRequestURL().toString();
+				DBSUtil u = new DBSUtil();
+				u.addRegistration(url);
+				rLock.setDoneOnce(true);
+			}
+			System.out.println("DONE register");
+	 	} catch(Exception e) {
+			System.out.println(e);
+    		}
+	                        
+
+		
 		PrintWriter out = null;
                 DBSApi api = null; 
 

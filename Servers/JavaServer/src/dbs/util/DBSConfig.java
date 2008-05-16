@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.17 $"
- $Id: DBSConfig.java,v 1.17 2008/03/17 22:18:57 afaq Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSConfig.java,v 1.18 2008/03/18 17:15:17 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -33,6 +33,13 @@ public class DBSConfig {
         private String dbUserPasswd;
         private String dbDriver;
         private String dbURL;
+        private String regServiceURL;
+        private String alias;
+        private String adminEmail;
+        private String adminDN;
+        private String adminName;
+        private String critical;
+        private String phyLocation;
         private String supportedSchemaVersion;
         private String supportedClientVersions;
         private long maxBlockSize = 100000;
@@ -132,6 +139,17 @@ public class DBSConfig {
                        if ( name.equals("SupportedSchemaVersion") ) {
                           supportedSchemaVersion = (String)atribs.get("schemaversion");
                        }
+		       if ( name.equals("Register") ) {
+                          regServiceURL = (String)atribs.get("service");
+                          alias = (String)atribs.get("alias");
+                          critical = (String)atribs.get("critical");
+                          phyLocation = (String)atribs.get("phy_location");
+			  adminEmail = (String)atribs.get("admin_email");
+			  adminName = (String)atribs.get("admin_name");
+			  adminDN = (String)atribs.get("admin_dn");
+                       }
+
+
                        if ( name.equals("SupportedClientVersions") ){ 
                           supportedClientVersions = (String)atribs.get("clientversions");
                        } 
@@ -180,6 +198,13 @@ public class DBSConfig {
                     if (supportedSchemaVersion == null ) {
                       throw new DBSException("Configuration Error", "1056", "Database SCHEMA_VERSION not found in Config File");
                     }
+		    if (regServiceURL == null ) {
+                      throw new DBSException("Configuration Error", "1056", "Registration Service URL not found in Config File");
+                    }
+		    if (adminDN == null ) {
+                      throw new DBSException("Configuration Error", "1056", "Admin DN not found in Config File");
+                    }
+
                     if (supportedClientVersions == null ) {
                       throw new DBSException("Configuration Error", "1057", "Supported CLIENT_VERSIONS not found in Config File");
                     }
@@ -193,6 +218,8 @@ public class DBSConfig {
                     DBSUtil.writeLog("dbDriver: "+dbDriver);
                     DBSUtil.writeLog("dbURL: "+dbURL);
                     DBSUtil.writeLog("supportedSchemaVersion: "+supportedSchemaVersion);
+                    DBSUtil.writeLog("regServiceURL: "+regServiceURL);
+                    DBSUtil.writeLog("alias: "+alias);
                     DBSUtil.writeLog("supportedClientVersions: "+supportedClientVersions);
 
                 } catch (Exception ex) {
@@ -235,6 +262,30 @@ public class DBSConfig {
 
         public String getSupportedSchemaVersion() {
             return supportedSchemaVersion;
+        }
+
+	public String getRegServiceURL() {
+            return regServiceURL;
+        }
+
+	public String getAlias() {
+            return alias;
+        }
+	public String getCritical() {
+            return critical;
+        }
+	public String getPhyLocation() {
+            return phyLocation;
+        }
+
+	public String getAdminEmail() {
+            return adminEmail;
+        }
+	public String getAdminDN() {
+            return adminDN;
+        }
+	public String getAdminName() {
+            return adminName;
         }
 
         public String getSupportedClientVersions() {

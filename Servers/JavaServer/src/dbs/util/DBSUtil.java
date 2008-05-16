@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.16 $"
- $Id: DBSUtil.java,v 1.16 2007/12/12 22:31:12 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSUtil.java,v 1.17 2008/03/21 22:10:21 sekhri Exp $"
  *
 */
 
@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,8 +28,11 @@ import xml.DBSXMLParser;
 import xml.Element;
 import db.DBManagement;
 import dbs.DBSConstants;
+import dbs.util.DBSConfig;
 
-import java.util.ArrayList;
+import fnal.gov.rs.entity.Person;
+import fnal.gov.rs.entity.Registration;
+import fnal.gov.rs.client.api.RegApi;
 /**
 * A util class that has a few utility menthods. All of the methods are static methods and do not need instance of this class to be called.
 * @author sekhri
@@ -289,6 +293,37 @@ public class DBSUtil {
 																
 
 			}
+		} catch(Exception e) {
+			System.out.println("ERROR " + e.getMessage());
+		}
+	}
+	
+	public void addRegistration(String url){
+		try {
+			DBSConfig dbsConfig = DBSConfig.getInstance();
+			String alias = dbsConfig.getAlias();
+			if(isNull(alias)) alias = url;
+			Person p = new Person();
+			p.setContactInfo(dbsConfig.getAdminEmail());
+			p.setDistinguishedName(dbsConfig.getAdminDN());
+			p.setName(dbsConfig.getAdminName());
+			
+			Registration r = new Registration();
+			r.setUrl(url);
+			r.setAlias(alias);
+			r.setAccountName(dbsConfig.getSchemaOwner());
+			r.setCritical(dbsConfig.getCritical());
+			r.setDbName(dbsConfig.getDbURL());
+			//r.setDbPort(2222);
+			r.setNodeName(getLocalHost());
+			r.setPhysicalLocation(dbsConfig.getPhyLocation());
+			r.setSchemaVersion(dbsConfig.getSupportedSchemaVersion());
+			//r.setServerVersion("my_serverVersion");
+			r.setStatus("active");
+			r.setPerson(p);
+
+			RegApi rApi = new RegApi(dbsConfig.getRegServiceURL());
+			rApi.addRegistration(r);
 		} catch(Exception e) {
 			System.out.println("ERROR " + e.getMessage());
 		}

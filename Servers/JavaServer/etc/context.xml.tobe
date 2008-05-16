@@ -4,6 +4,14 @@
 	<SupportedSchemaVersion schemaversion="DBS_1_1_0" />
 	<SupportedClientVersions clientversions="DBS_1_0_1, DBS_1_0_5, DBS_1_0_7, DBS_1_0_8, DBS_1_0_9, DBS_1_1_2, DBS_1_1_3" />
 	<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
+	<Register service="jnp://plasma.dhcp.fnal.gov:1099"
+		phy_location="FNAL"	
+		critical="Y"
+		alias="TESTONCMSSRV48"	
+		admin_email="sekhri@fnal.gov"	
+		admin_dn="/DC=org/DC=doegrids/OU=People/CN=Vijay Sekhri 579120"
+		admin_name="Vijay Sekhri"
+			/>
 
 	<!--Loacl DBS MySQL Resource Parameter /-->
 
