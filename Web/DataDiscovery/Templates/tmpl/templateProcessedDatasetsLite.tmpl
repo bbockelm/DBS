@@ -1,5 +1,5 @@
 <!-- templateProcessedDatasetsLite.tmpl -->
-#set cmsName="N/A"
+#set cmsName="NO NAME"
 #set siteList=$dDict.keys()
 #set empty,prim,proc,tier=$path.split("/")
 #set idPath=$path.replace("/","___")
@@ -68,6 +68,10 @@ All data provided for full dataset, while LFNs links given wrt run=$run
 #end if
 , &#8747;<em>L</em>=<span id="intLumi$idPath"></span>
 <br/>
+<a href="$host/aSearch?dbsInst=$dbsInst&amp;userInput=find+release+where+dataset=$path&amp;userMode=$userMode&amp;caseSensitive=on">
+Release info
+</a>
+,
 <a href="$host/getBlocksInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">
 Block info
 </a>
@@ -153,7 +157,7 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
   </tr>
 #for site in $dDict.keys()
 
-#set cmsName="N/A"
+#set cmsName="NO NAME"
 #if $site
 #if $cmsNames.has_key($site)
 #set cmsName=$cmsNames[$site]
