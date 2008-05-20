@@ -915,26 +915,35 @@ def getCMSNames():
     oDict['time']=time.time()
     return oDict
 
-def getDBSQuery(data):
+def parseDBSQuery(i):
+    sql=""
+    bDict={}
+    for k in i.getchildren():
+        name=""
+        rval=""
+        if k.tag=="sql":
+           sql=k.text
+        if k.tag=="bindparams":
+           for j in k:
+               if j.tag=="name":
+                  name=j.text
+               if j.tag=="value":
+                  rval=j.text
+               if name and rval:
+                  bDict[name]=rval
+    return sql,bDict
+def getDBSQuery(data,tag="python_query"):
     elem  = ET.fromstring(data)
     sql   = ""
     bDict = {}
+    count_sql = ""
+    count_bDict = {}
     for i in elem:
-        if i.tag=="query":
-           for k in i.getchildren():
-               name=""
-               rval=""
-               if k.tag=="sql":
-                  sql=k.text
-               if k.tag=="bindparams":
-                  for j in k:
-                      if j.tag=="name":
-                         name=j.text
-                      if j.tag=="value":
-                         rval=j.text
-                      if name and rval:
-                         bDict[name]=rval
-    return sql,bDict
+        if i.tag=="python_query":
+           sql,bDict=parseDBSQuery(i)
+        elif i.tag=="count_query":
+           count_sql,count_bDict=parseDBSQuery(i)
+    return sql,bDict,count_sql,count_bDict
 
 #
 # main
@@ -958,27 +967,57 @@ if __name__ == "__main__":
 <input>
 find dataset where dataset like *
 </input>
+<timeStamp>Tue May 20 17:38:06 CEST 2008</timeStamp>
 </userinput>
-<query>
+<java_query>
 <sql>
 SELECT DISTINCT 
-        Block.Path
+    Block.Path
 FROM
-        Block
+    CMS_DBS_PROD_LOCAL_03.Block
 
 WHERE
-        Block.ID  IN ( 
+    Block.ID  IN ( 
 SELECT 
-        Block.ID FROM Block     WHERE 
-        Block.Path LIKE ?)
+    Block.ID FROM CMS_DBS_PROD_LOCAL_03.Block   WHERE 
+    Block.Path LIKE ?)
+</sql>
+<bp>%</bp>
+</java_query>
+<python_query>
+<sql>
+SELECT DISTINCT 
+    Block.Path
+FROM
+    CMS_DBS_PROD_LOCAL_03.Block
+
+WHERE
+    Block.ID  IN ( 
+SELECT 
+    Block.ID FROM CMS_DBS_PROD_LOCAL_03.Block   WHERE 
+    Block.Path LIKE :p0)
 </sql>
 <bindparams>
-  <name>test</name>
-  <value>rval</value>
+<p0>%</p0>
 </bindparams>
-</query>
+</python_query>
+<count_query>
+<sql>
+SELECT COUNT(*) FROM
+    CMS_DBS_PROD_LOCAL_03.Block
+
+WHERE
+    Block.ID  IN ( 
+SELECT 
+    Block.ID FROM CMS_DBS_PROD_LOCAL_03.Block   WHERE 
+    Block.Path LIKE ?)
+</sql>
+<bindparams>
+<p0>%</p0>
+</bindparams>
+</count_query>
 <SUCCESS/>
 </dbs>
 """
-   sql,bindDict=getDBSQuery(input)
-   print "Found",sql,bindDict
+   sql,bindDict,count_sql,count_bindDict=getDBSQuery(input)
+   print "Found query",sql,bindDict,count_sql,count_bindDict
