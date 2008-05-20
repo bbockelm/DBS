@@ -9,8 +9,8 @@
 	<property name="librarydir" value="${basedir}/bin/WEB-INF/lib"/>
 	<property name="libraryolddir" value="${basedir}/lib"/>
 	<!--property name="app.name" value="DBSADSTEST03_ADSDEF"/-->
-	<!--property name="app.name" value="DBSADSTEST03_ORA"/-->
 	<property name="app.name" value="DBS"/>
+	<!--property name="app.name" value="DBS116TEST"/-->
 	<property environment="env"/>
 	<property name="jredir" value="${env.JAVA_HOME}/jre/lib"/>
 	<path id="libraries">

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.90 $"
- $Id: DBSApiFileLogic.java,v 1.90 2008/02/21 23:30:38 sekhri Exp $"
+ $Revision: 1.91 $"
+ $Id: DBSApiFileLogic.java,v 1.91 2008/05/01 22:06:06 afaq Exp $"
  *
  */
 
@@ -982,6 +982,62 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				valueVec.clear();
 				String runID = null;
 
+		                //This can move into DBSSQL later on !!!
+                		java.util.ArrayList keys = new java.util.ArrayList();
+		                keys.add("Fileid");
+                		keys.add("Lumi");
+		                keys.add("Run");
+                		keys.add("CreationDate");
+		                keys.add("CreatedBy");
+		                keys.add("LastModifiedBy");
+
+                                for (int j = 0; j < lumiVector.size(); ++j) {
+                                        Hashtable hashTable = (Hashtable)lumiVector.get(j);
+                                        String thisRunN = get(hashTable, "run_number", true);
+                                        runID = getID(conn, "Runs", "RunNumber",  thisRunN, true);
+                                        String lsNumber = get(hashTable, "lumi_section_number", false);
+
+                                        if ( !isNull(lsNumber) ) {
+						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false);
+						if( isNull(lumiID)) {
+                                                        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+                                                }
+						valueVec.add(fileID);
+						valueVec.add(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true));
+						valueVec.add(runID);
+						valueVec.add(creationDate);
+		                                valueVec.add(cbUserID);
+                		                valueVec.add(lmbUserID);
+
+					} else {
+						valueVec.add(fileID);
+						valueVec.add(lsNumber);
+						valueVec.add(runID);
+						valueVec.add(creationDate);
+		                                valueVec.add(cbUserID);
+                		                valueVec.add(lmbUserID);
+					}
+					// Insert ProcDS-Run Map, if its already not there
+                                        insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+                                                        procDSID, runID,
+                                                        cbUserID, lmbUserID, creationDate, true);
+
+				}
+
+                		if (valueVec.size() > 0) {
+                        		//PreparedStatement ps = null;
+                        		try {
+                                		ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, valueVec);
+                                		//System.out.println("\n\nBATCH CREATED\n\n");
+                                		ps.executeBatch();
+                       			 } finally {
+                                		if (ps != null) ps.close();
+                        		}
+                		}
+
+
+				/** 
+				//AA - 5/19/08 The above code replaces this block (Performing the Batch insert for insertFile 
                                 for (int j = 0; j < lumiVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)lumiVector.get(j);
 					String thisRunN = get(hashTable, "run_number", true);
@@ -1013,49 +1069,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         cbUserID, lmbUserID, creationDate, true);
                                 }
 
-
-
-
-
-
-/*
-                                for (int j = 0; j < lumiVector.size(); ++j) {
-                                        Hashtable hashTable = (Hashtable)lumiVector.get(j);
-
-                                        //No need to add a LumiSection, User will never provide lumisection TO be added at this stage
-                                        //All Lumi Scetions will already be in DBS (SV#28264). Anzar Afaq (08/20/2007)
-
-                                        //Only when User provides a lumi section, MAP it
-                                        //There can be cases when NO lumi Section number is give (Run only)
-                                        runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
-                                        String lsNumber = get(hashTable, "lumi_section_number", false);
-                                        if ( !isNull(lsNumber) ) {
-						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
-                                                //String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
-						valueVec.add(lumiID);
-
-                                        }
-
-                                        //Just add Run-Fileid map (Rare case!)
-                                        else {
-                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
-                                                        fileID,
-                                                        runID,
-                                                        cbUserID, lmbUserID, creationDate, false);
-                                        }
-					
-                                        // Insert ProcDS-Run Map, if its already not there      
-					if (!runsMapped.contains(runID)) {
-						runsMapped.add(runID);
-                                        	insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
-                                                        procDSID, runID,
-                                                        cbUserID, lmbUserID, creationDate);
-					}
-                                }
-				//insert LumiRun Map now
-				insertMapBatch(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run", fileID, valueVec, runID, cbUserID, lmbUserID, creationDate);
-*/
-
+				*/
 
                                 //Insert Trigger tags (if present)
                                 for (int j = 0; j < trigTagVector.size(); ++j) {
