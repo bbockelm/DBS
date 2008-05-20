@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 756
+-- === Build : 719
 -- ======================================================================
 
-drop database if exists DBS_1_1_0_ADSDEF;
-create database DBS_1_1_0_ADSDEF;
-use DBS_1_1_0_ADSDEF;
+drop database if exists DBS_1_0_7;
+create database DBS_1_0_7;
+use DBS_1_0_7;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -111,8 +111,6 @@ CREATE TABLE ProcessedDataset
     PrimaryDataset        BIGINT UNSIGNED   not null,
     PhysicsGroup          BIGINT UNSIGNED   not null,
     Status                BIGINT UNSIGNED   not null,
-    AquisitionEra	  varchar(255),
-    GlobalTag             varchar(255),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -155,7 +153,6 @@ CREATE TABLE Files
     FileSize              BIGINT UNSIGNED   not null,
     FileStatus            BIGINT UNSIGNED   not null,
     FileType              BIGINT UNSIGNED   not null,
-    FileBranch            BIGINT UNSIGNED,
     ValidationStatus      BIGINT UNSIGNED,
     QueryableMetadata     varchar(1000)     default 'NOTSET',
     CreatedBy             BIGINT UNSIGNED,
@@ -202,13 +199,27 @@ CREATE TABLE LumiSection
 
 -- ======================================================================
 
+CREATE TABLE Branch
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)      unique not null,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE TimeLog
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Action                varchar(500)      not null,
-    Cause                 varchar(500)      not null,
-    Effect                varchar(500)      not null,
-    Description           varchar(1000)     not null,
+    Action                varchar(100)      not null,
+    Cause                 varchar(100)      not null,
+    Effect                varchar(100)      not null,
+    Description           varchar(500)      not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -224,36 +235,6 @@ CREATE TABLE DataTierOrder
     ID                    BIGINT UNSIGNED not null auto_increment,
     DataTierOrder         varchar(250)      unique not null,
     Description           varchar(1000),
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE ReasonCode
-  (
-    ReasonCode            BIGINT UNSIGNED   not null,
-    Description           varchar(1000)     not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ReasonCode)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE RecycleBin
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Path                  varchar(500)      not null,
-    BlockName             varchar(700)      not null,
-    Xml                   LONGTEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -472,7 +453,7 @@ CREATE TABLE FileRunLumi
 CREATE TABLE FileAlgo
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED,
+    Fileid                BIGINT UNSIGNED   not null,
     Algorithm             BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -509,6 +490,22 @@ CREATE TABLE FileType
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE FileBranch
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Fileid                BIGINT UNSIGNED   not null,
+    Branch                BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Fileid,Branch)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -624,22 +621,6 @@ CREATE TABLE ProcAlgo
 
 -- ======================================================================
 
-CREATE TABLE ProcADSParent
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    ThisDataset           BIGINT UNSIGNED   not null,
-    ItsParentADS          BIGINT UNSIGNED   not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-
-    primary key(ID),
-    unique(ThisDataset,ItsParentADS)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE AnalysisDataset
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -714,8 +695,13 @@ CREATE TABLE AnalysisDSDef
     Name                  varchar(700)      unique not null,
     Path                  varchar(1000),
     Description           TEXT,
-    UserInput             TEXT,
-    SQLQuery              TEXT,
+    LumiSections          TEXT,
+    LumiSectionRanges     TEXT,
+    Runs                  TEXT,
+    RunsRanges            TEXT,
+    Algorithms            varchar(1000),
+    LFNs                  TEXT,
+    UserCut               TEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -761,7 +747,6 @@ CREATE TABLE SEBlock
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     SEID                  BIGINT UNSIGNED   not null,
-    Roles                 char(1)           default 'Y',
     BlockID               BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -881,25 +866,6 @@ CREATE TABLE RunLumiQuality
     unique(Run,Lumi,SubSystem)
   ) ENGINE = InnoDB ;
 
-
--- ======================================================================
-    
-CREATE TABLE RunLumiDQInt
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Run                   BIGINT UNSIGNED   not null,
-    Lumi                  BIGINT UNSIGNED,
-    SubSystem             BIGINT UNSIGNED   not null,
-    IntDQValue            INT UNSIGNED   not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID),
-    unique(Run,Lumi,SubSystem)
-  ) ENGINE = InnoDB ;
-
 -- ======================================================================
 
 CREATE TABLE QualityHistory
@@ -934,52 +900,6 @@ CREATE TABLE QualityVersion
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE Branch
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)      unique not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE BranchHash
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Hash                  varchar(700)      unique not null,
-    Description           varchar(1000),
-    Content               LONGTEXT,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE BranchHashMap
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    BranchID              BIGINT UNSIGNED   not null,
-    BranchHashID          BIGINT UNSIGNED   not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID),
-    unique(BranchID,BranchHashID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -1077,9 +997,6 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_FileType_FK foreign key(FileType) references FileType(ID)
 ;
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_FileBranch_FK foreign key(FileBranch) references BranchHash(ID)
-;
-ALTER TABLE Files ADD CONSTRAINT 
     Files_ValidationStatus_FK foreign key(ValidationStatus) references FileValidStatus(ID)
 ;
 ALTER TABLE Files ADD CONSTRAINT 
@@ -1106,6 +1023,13 @@ ALTER TABLE LumiSection ADD CONSTRAINT
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+
 ALTER TABLE TimeLog ADD CONSTRAINT 
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -1118,20 +1042,6 @@ ALTER TABLE DataTierOrder ADD CONSTRAINT
 ;
 ALTER TABLE DataTierOrder ADD CONSTRAINT 
     DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE ReasonCode ADD CONSTRAINT 
-    ReasonCode_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE ReasonCode ADD CONSTRAINT 
-    ReasonCode_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE RecycleBin ADD CONSTRAINT 
-    RecycleBin_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE RecycleBin ADD CONSTRAINT 
-    RecycleBin_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -1300,6 +1210,19 @@ ALTER TABLE FileType ADD CONSTRAINT
     FileType_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
+;
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_Branch_FK foreign key(Branch) references Branch(ID)
+;
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE FileValidStatus ADD CONSTRAINT 
     FileValidStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -1380,19 +1303,6 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
 ;
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE ProcADSParent ADD CONSTRAINT 
-    ProcADSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on delete CASCADE
-;
-ALTER TABLE ProcADSParent ADD CONSTRAINT 
-    ProcADSParent_ItsParentADS_FK foreign key(ItsParentADS) references AnalysisDataset(ID) on delete CASCADE
-;
-ALTER TABLE ProcADSParent ADD CONSTRAINT 
-    ProcADSParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE ProcADSParent ADD CONSTRAINT 
-    ProcADSParentLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
@@ -1551,23 +1461,6 @@ ALTER TABLE RunLumiQuality ADD CONSTRAINT
     RunLumiQualityLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-
-ALTER TABLE RunLumiDQInt ADD CONSTRAINT
-    RunLumiDQInt_Run_FK foreign key(Run) references Runs(ID)
-;
-ALTER TABLE RunLumiDQInt ADD CONSTRAINT   
-    RunLumiDQInt_Lumi_FK foreign key(Lumi) references LumiSection(ID)
-;   
-ALTER TABLE RunLumiDQInt ADD CONSTRAINT 
-    RunLumiDQInt_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
-;
-ALTER TABLE RunLumiDQInt ADD CONSTRAINT
-    RunLumiDQInt_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE RunLumiDQInt ADD CONSTRAINT
-    RunLumiDQIntLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiQuality(ID)
 ;
@@ -1595,33 +1488,6 @@ ALTER TABLE QualityVersion ADD CONSTRAINT
 ;
 ALTER TABLE QualityVersion ADD CONSTRAINT 
     QualityVersionLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE Branch ADD CONSTRAINT 
-    Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE Branch ADD CONSTRAINT 
-    Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE BranchHash ADD CONSTRAINT 
-    BranchHash_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE BranchHash ADD CONSTRAINT 
-    BranchHash_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMap_BranchID_FK foreign key(BranchID) references Branch(ID) on delete CASCADE
-;
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMap_BranchHashID_FK foreign key(BranchHashID) references BranchHash(ID)
-;
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMapLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 -- =========== INSERT TRIGGERS FOR LastModificationDate ============================
@@ -1659,16 +1525,13 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_LumiSection BEFORE INSERT ON LumiSection
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER TR_Branch BEFORE INSERT ON Branch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER TR_TimeLog BEFORE INSERT ON TimeLog
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_DataTierOrder BEFORE INSERT ON DataTierOrder
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_ReasonCode BEFORE INSERT ON ReasonCode
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_RecycleBin BEFORE INSERT ON RecycleBin
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_AlgorithmConfig BEFORE INSERT ON AlgorithmConfig
@@ -1719,6 +1582,9 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_FileType BEFORE INSERT ON FileType
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER TR_FileBranch BEFORE INSERT ON FileBranch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER TR_FileValidStatus BEFORE INSERT ON FileValidStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1738,9 +1604,6 @@ CREATE TRIGGER TR_ProcDSParent BEFORE INSERT ON ProcDSParent
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_ProcAlgo BEFORE INSERT ON ProcAlgo
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_ProcADSParent BEFORE INSERT ON ProcADSParent
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_AnalysisDataset BEFORE INSERT ON AnalysisDataset
@@ -1788,20 +1651,8 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_RunLumiQuality BEFORE INSERT ON RunLumiQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER TR_RunLumiDQInt BEFORE INSERT ON RunLumiDQInt
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
 
 CREATE TRIGGER TR_QualityVersion BEFORE INSERT ON QualityVersion
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_Branch BEFORE INSERT ON Branch
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_BranchHash BEFORE INSERT ON BranchHash
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_BranchHashMap BEFORE INSERT ON BranchHashMap
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 -- =========== UPDATE TRIGGERS FOR LastModificationDate ============================
@@ -1839,16 +1690,13 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_LumiSection BEFORE UPDATE ON LumiSection
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_Branch BEFORE UPDATE ON Branch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER UTR_TimeLog BEFORE UPDATE ON TimeLog
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_DataTierOrder BEFORE UPDATE ON DataTierOrder
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_ReasonCode BEFORE UPDATE ON ReasonCode
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_RecycleBin BEFORE UPDATE ON RecycleBin
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_AlgorithmConfig BEFORE UPDATE ON AlgorithmConfig
@@ -1899,6 +1747,9 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_FileType BEFORE UPDATE ON FileType
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_FileBranch BEFORE UPDATE ON FileBranch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER UTR_FileValidStatus BEFORE UPDATE ON FileValidStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1918,9 +1769,6 @@ CREATE TRIGGER UTR_ProcDSParent BEFORE UPDATE ON ProcDSParent
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_ProcAlgo BEFORE UPDATE ON ProcAlgo
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_ProcADSParent BEFORE UPDATE ON ProcADSParent
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_AnalysisDataset BEFORE UPDATE ON AnalysisDataset
@@ -1969,27 +1817,14 @@ CREATE TRIGGER UTR_RunLumiQuality BEFORE UPDATE ON RunLumiQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 
-CREATE TRIGGER UTR_RunLumiDQInt BEFORE UPDATE ON RunLumiDQInt
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-
 CREATE TRIGGER UTR_QualityVersion BEFORE UPDATE ON QualityVersion
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_Branch BEFORE UPDATE ON Branch
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_BranchHash BEFORE UPDATE ON BranchHash
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_BranchHashMap BEFORE UPDATE ON BranchHashMap
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 -- ======================================================================
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_0', 'LOCAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_7', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
