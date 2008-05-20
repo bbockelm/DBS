@@ -1,6 +1,6 @@
 /**
- $Revision: 1.133 $"
- $Id: DBSApiLogic.java,v 1.133 2008/05/09 21:37:59 sekhri Exp $"
+ $Revision: 1.134 $"
+ $Id: DBSApiLogic.java,v 1.134 2008/05/15 16:28:39 sekhri Exp $"
  *
  */
 
@@ -178,9 +178,10 @@ public class DBSApiLogic {
 		String xmlBindValues = "";
 		while(valentinQuery.indexOf("?") != -1) {
 			String pName = ":p" + String.valueOf(pCount);
+			String pTag = "p" + String.valueOf(pCount);
 			if(pCount >= sizeOfBindValues) val = String.valueOf(bindIntValues.get(pCount - sizeOfBindValues).intValue());
 			else val =  bindValues.get(pCount);
-			xmlBindValues += "<" + pName + ">" + val + "</" + pName + ">\n";
+			xmlBindValues += "<" + pTag + ">" + val + "</" + pTag + ">\n";
 			valentinQuery = valentinQuery.replaceFirst("[?]", pName);
 			++pCount;
 		}
