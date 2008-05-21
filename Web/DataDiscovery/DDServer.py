@@ -5428,7 +5428,6 @@ Save query as:
            self.setContentType('xml') 
         case      = getArg(kwargs,'caseSensitive','on')
         sortName  = getArg(kwargs,'sortName','')
-        print "\n@@@@@@@sortName",sortName
         try:
             sortName="%s.%s"%(self.ddrules.tableName[sortName],self.ddrules.colName[sortName])
 #            sortName=self.ddrules.colName[sortName]
