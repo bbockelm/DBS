@@ -84,7 +84,7 @@ def dbsApiImplListAnalysisDataset(self, pattern="*", path="", version=None):
             		Name=str(attrs['analysis_dataset_definition_name']),
             		ProcessedDatasetPath=str(attrs['path']),
             		UserInput=str(attrs['user_input']),
-			SQLQuery=str(attrs['sql_query'])
+			SQLQuery=str(attrs['sql_query']),
          		Description=str(attrs['description']),
                         CreationDate=str(attrs['creation_date']),
                         CreatedBy=str(attrs['created_by']),

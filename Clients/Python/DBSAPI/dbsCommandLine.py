@@ -175,6 +175,8 @@ class cmd_doc_writer:
       print "\n"
       self._help_createads()
       print "\n"
+      self._help_createcff()
+      print "\n"
 
   def command_help(self):
       pre=""
@@ -225,7 +227,7 @@ class cmd_doc_writer:
   def _help_myadsdeflist(self):
                 pre=""
                 if self.wiki_help:
-                        print "---+++\b"
+                        print "---+++"
                 print pre+"Lists Local Analysis Dataset Definitions"
                 print "   Arguments:"
                 print "         -c myadsdef, or --command=myAnalysisDatasetDef or --command=myadsdef"
@@ -240,7 +242,7 @@ class cmd_doc_writer:
   def _help_myadslist(self):
 		pre=""
                 if self.wiki_help:
-                        print "---+++\b"
+                        print "---+++"
                 print pre+"Lists Local Analysis Datasets"
                 print "   Arguments:"
                 print "         -c myads, or --command=myAnalysisDataset or --command=myads"
@@ -257,7 +259,7 @@ class cmd_doc_writer:
   def _help_andslist(self):
                 pre=""
 		if self.wiki_help:
-			print "---+++\b"
+			print "---+++"
                 print pre+"Lists Analysis Datasets know to this DBS"
                 print "   Arguments:"
                 print "         -c lsads, or --command=listAnalysisDataset or --command=lsads"
@@ -446,26 +448,51 @@ class cmd_doc_writer:
                 print "         python dbsCommandLine.py --createPADS=MYPADS01 --usequery=MYTESTADSDEF"
 		if self.wiki_help: print "</verbatim>"
 
+  def _help_createcff(self):
+		pre=""
+		if self.wiki_help:
+                        pre="---+++"
+                print pre+"Creates .cff files for the search criteria"
+                print "   This command cannot be used alone you have to use it with --usequery= or search"
+                print "   You can use --usequery=<QUERYNAME> to specify a pre-stored query"
+		print "   or perform a fresh search using --query and store the results as .cff"
+                print "   First you run search (dbs search --query=\"Your Query Here\", after you have found what you were looking for "
+                print "   you will either specify a name for your search and store it using --storequery=<QUERYNAME>"
+                print "                    Where QUERYNAME is a Valid Analysis Dataset Definition Name, stored in your local system"
+                print "   And then use then --usequery=<QUERYNAME> to specify a pre-stored query and create same ADS in DBS instance"
+                print "   Arguments:"
+                print "         --createCFF=<CFFNAME> --usequery=<QUERYNAME>"
+                print "                Where CFFNAME is a Valid File Name, QUERYNAME is a Valid Analysis Dataset Definition Name from DBS Mart"
+		print "   OR you can just specify --createCFF= and --storequery= and create .cff and store the query at the same time"
+                print "         python dbsCommandLine.py -c search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --storequery=ANZARTESTADS --createPADS=mycff_file (do not specify .cff)"
+                if self.wiki_help: print "<verbatim>"
+                print "   examples:"
+                print "         python dbsCommandLine.py --createCFF=MYCFFTest01 --usequery=MYTESTADSDEF01"
+                if self.wiki_help: print "</verbatim>"
 
   def _help_createads(self):
                 pre=""
                 if self.wiki_help:
                         pre="---+++"
                 print pre+"Creates Analysis Dataset (NOT on Local on Disk but in specified DBS instance), based on the search criteria"
-                print "   This command cannot be used alone you have to use it with --usequery="
+                print "   This command cannot be used alone you have to use it with --usequery= or search"
+                print "   You can use --usequery=<QUERYNAME> to specify a pre-stored query"
+                print "   or perform a fresh search using --query and create an ADS"
                 print "   First you run search (dbs search --query=\"Your Query Here\", after you have found what you were looking for "
-                print "   you will have to specify a name for your search and store it using --storequery=<QUERYNAME>"
+                print "   you will either specify a name for your search and store it using --storequery=<QUERYNAME>"
                 print "                    Where QUERYNAME is a Valid Analysis Dataset Definition Name, stored in your local system"
-                print "   You can use then --usequery=<QUERYNAME> to specify a pre-stored query and create same ADS in DBS instance"
-		print " This \"twist\" is to save DBS instance from too many unwanted ADS."
+                print "   And then use then --usequery=<QUERYNAME> to specify a pre-stored query and create same ADS in DBS instance"
                 print "   Arguments:"
+                print "         --createADS=<ADSNAME> --storequery=<QUERYNAME>"
+                print "                Where ADSNAME is a Valid Analysis Dataset Name, QUERYNAME is a Valid Analysis Dataset Definition Name"
+                print "                   "
                 print "         --createADS=<ADSNAME> --usequery=<QUERYNAME>"
                 print "                Where ADSNAME is a Valid Analysis Dataset Name, QUERYNAME is a Valid Analysis Dataset Definition Name from DBS Mart"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py --createADS=MYPADS01 --usequery=MYTESTADSDEF01"
+                print "         python dbsCommandLine.py -c search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --storequery=ANZARTESTADS --createADS=MYADS01"
+                print "         python dbsCommandLine.py --createADS=MYADS01 --usequery=MYTESTADSDEF"
                 if self.wiki_help: print "</verbatim>"
-
 		
   def _help_search(self):
                 pre=""
@@ -517,7 +544,7 @@ class cmd_doc_writer:
 				"""
 		print detail_help
                 print "DBS SEARCH ALWAYS CONNECTS TO DBS GLOBAL ONLY FOR THE TIME BEING"
-                print "search can be used in conjuction with --storequery and --createPADS operations, look at --doc for help"
+                print "search can be used in conjuction with --storequery and --createPADS/--createADS operations, look at --doc for help"
 		if self.wiki_help: print "</verbatim>"
 
 
@@ -588,7 +615,10 @@ class DbsOptionParser(optparse.OptionParser):
            help="Create Personal Analysis Dataset for the search query (must be used with --search, or --usequery=)")
 
       self.add_option("--createADS", action="store", type="string", dest="createADS",
-           help="Create Analysis Dataset for the search query (must be used with --usequery=)")
+           help="Create Analysis Dataset for the search query (must be used with --search, or --usequery=)")
+
+      self.add_option("--createCFF", action="store", type="string", dest="createCFF",
+           help="Create .cff file for the search query (must be used with --search, or --usequery=)")
 
       self.add_option("--usequery", action="store", type="string", dest="usequery",
            help="Specifies the ADS Def/Query to be used for creating PADS/ADS (must be used with --createPADS= or --createADS=)")
@@ -782,6 +812,11 @@ class ApiDispatcher:
         apiCall='createADS'
         self.optdict['createADS']=self.getArgVal(args)
 
+    elif apiCall.startswith('createCFF') or apiCall.startswith('--createCFF') or \
+                        apiCall.startswith('--createCFF=') or apiCall.startswith('createCFF='):
+        apiCall='createCFF'
+        self.optdict['createCFF']=self.getArgVal(args)
+
     else:
 	# Lets continue with normal executioni
 	# we possibly have our command right
@@ -837,6 +872,9 @@ class ApiDispatcher:
 
     elif apiCall in ('createADS'):
         self.handleCreateADSCall()
+
+    elif apiCall in ('createCFF'):
+        seCFFhandleCreateCFFCall()
 
     ##Search data
     elif apiCall in ('search', '--search') or self.optdict.get('search'):
@@ -1063,13 +1101,22 @@ class ApiDispatcher:
         if len(algoparam):
                 paramDict.update(algoparam)
 
-        #dot = printDot()
-        #dot.start()
-
         print "Listing datasets, please wait..."
 	self.progress.start()
+
+	# Use faster call if no patter is supplied	
+	if self.optdict.get('path') in (None, '', '*', '/*/*/*'):
+		apiret = self.api.listDatasetPaths()
+		print "\n"
+		for aPath in apiret:
+			print aPath
+		if self.optdict.get('report'):
+			self.printRED("\n--report has no afcet when you are not supplying --path or --algopattern")
+		
+		self.progress.stop()
+		return
+	
         apiret = self.api.listProcessedDatasets(**paramDict)
-	self.progress.stop()
 
         #dot.mark_done()
 
@@ -1175,13 +1222,15 @@ class ApiDispatcher:
 
         self.printGREEN ("\nListed as:     /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n" )
         for anObj in apiret:
-		print anObj
-		print "CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
-		print "LastModificationDate: %s" % self.makeTIME(anObj['CreationDate'])
+		#print anObj
+		#print "CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
+		#print "LastModificationDate: %s" % self.makeTIME(anObj['CreationDate'])
                 print "       /"+ anObj['ExecutableName'] \
 				+ "/" + anObj['ApplicationVersion']  \
 					+"/"+ anObj['ApplicationFamily'] \
 						+ "/" + anObj['ParameterSetID']['Hash']
+
+		print "NAME:::::::", anObj['ParameterSetID']['Name']
         if (len(apiret) > 10): self.printGREEN( "\nListed as:      /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n\n" )
         return
 
@@ -1483,7 +1532,76 @@ class ApiDispatcher:
 	print "Created ADS: %s" % adspath
 
 	return
- 	
+ 
+  def handleCreateCFFCall(self):
+	"""
+	Generates CFF file
+	"""
+        if self.optdict.has_key('want_help'):
+                self.helper._help_createcff()
+                return
+
+	usequery=self.optdict.get('usequery') or ''
+
+	if usequery not in ('', None):
+		self.setMartParams()
+        	usequery=self.optdict.get('usequery') or ''
+        	#storequery=self.optdict.get('storequery') or ''
+
+        	if usequery in ('', None):
+                	self.printRED("You cannot use --createPADS without --usequery (see --doc)")
+                	self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
+                	return
+
+        	if usequery not in self.KnownQueries.keys():
+                	self.printRED("Query %s not found in the specified MART" % usequery)
+                	return
+
+        	self.printGREEN("Creating ADS based on query: %s " % usequery )
+        	martQ=self.KnownQueries[usequery]
+        	if martQ['PATH'] in ('', None):
+                	martQ['PATH'] = self.optdict.get('path')
+                	if martQ['PATH'] in ('', None):
+                        	self.printRED("You must specify a dataset path for ADS, either when creating query, or use --path=")
+                        	return
+
+        	userq=martQ['USERINPUT']
+        	self.printGREEN(userq)
+	        # Verify the validity of query
+	        userInput=userq.replace('where','WHERE')
+        	criteria=userInput.split('WHERE')
+        	if len(criteria) <= 0:
+                	self.printRED( "Not a valid criteria for creating ADS: %s " % userInput)
+                	self.printRED( "Use --help, or refer to Twiki page")
+               		return
+
+                if self.optdict.get('useASearch') not in ('', None):
+                        results=self.getDataFromDDSearch(userInput)
+                else: results=self.getDataFromDBSServer(userInput)
+
+                files=results['ADSFileList']
+		createCFF=self.optdict.get('createCFF') or ''
+		self.generateCFF(createCFF, files)
+	else:
+        	self.handleSearchCall()
+        return
+
+  def generateCFF(cffName, cfffileslist):
+
+	self.setMartParams()
+	cffpath = os.path.join(self.adshome, cffName)
+	cffpath = os.path.join(cffpath, ".cff")
+	
+	# Lets write the CFF file
+	cff_file=open(cffpath, 'w')
+	cff_file.write("\n")
+	cff_file.write("\nreplace PoolSource.fileNames = {\n")
+	for aFile in cfffileslist:
+		cff_file.write("\n"+aFile['LogicalFileName']+",\n")
+	cff_file.write("\n}\n")
+	self.printGREEN("Generated %s in %s" % (cffpath, self.adshome) )
+	return
+
   def handleUseQueryCall(self):
 	if self.optdict.has_key('want_help'):
 		self.printRED("\n--usequery Can only be used with --createPADS or --createADS call\n")
@@ -1493,21 +1611,27 @@ class ApiDispatcher:
 	# Check to see if its a createADS or createPADS call (Cannot be both)
 	createPADS=self.optdict.get('createPADS') or ''
 	createADS=self.optdict.get('createADS') or ''
+    	createCFF=self.optdict.get('createCFF') or ''
 
-	if createPADS in ('', None) and createADS in ('', None):
-		self.printRED("\n--usequery Can only be used with --createPADS or --createADS call\n")
+    	if createCFF not in ('', None):
+        	self.generateCFF(createCFF, adsfileslist)
+
+	if createPADS in ('', None) and createADS in ('', None) and createCFF in ('', None) :
+		self.printRED("\n--usequery Can only be used with --createPADS, --createADS or --createCFF calls\n")
 		self.printRED("\nTry --doc for more information.\n")
                 return
-	if createPADS not in ('', None) and createADS not in ('', None):
-		self.printRED("\n--usequery Can only be used with either of --createPADS or --createADS calls\n")
-                self.printRED("\nTry --doc for more information.\n")
-                return
+
+	#if createPADS not in ('', None) and createADS not in ('', None):
+	#	self.printRED("\n--usequery Can only be used with either of --createPADS or --createADS calls\n")
+        #        self.printRED("\nTry --doc for more information.\n")
+        #        return
 
 	if createPADS not in ('', None):
 		self.handleCreatePADSCall()
-	else :
+	if createPADS not in ('', None):
 		self.handleCreateADSCall()
-
+	if createCFF not in ('', None):
+		self.handleCreateCFFCall()
 
   def getDataFromDBSServer(self, userInput):
 
@@ -1693,9 +1817,10 @@ class ApiDispatcher:
 
     storequeryname=self.optdict.get('storequery') or ''
     createPADS=self.optdict.get('createPADS') or ''
+    createADS=self.optdict.get('createADS') or ''
 
     # ONLY do this if User needs to create an ADS
-    if createPADS not in ('', None) :
+    if createPADS not in ('', None) or createADS not in ('', None) :
 	userInput=userInput.replace('where','WHERE')
     	criteria=userInput.split('WHERE')
     	if len(criteria) <= 0:
@@ -1710,6 +1835,10 @@ class ApiDispatcher:
 
     datasetPath=results['DATASETPATH'].strip()
     adsfileslist=results['ADSFileList']
+
+    createCFF=self.optdict.get('createCFF') or ''
+    if createCFF not in ('', None):
+	self.generateCFF(createCFF, adsfileslist)
  
     if storequeryname not in ('', None):
                 #if len(datasetPaths) > 1:
@@ -1718,17 +1847,23 @@ class ApiDispatcher:
                 canstore=self.storeQuery(results['DATASETPATH'], results['USERINPUT'], results['QUERY'], storequeryname)
                 if (canstore) and createPADS not in ('', None):
            		if datasetPath in ('', None) or len(adsfileslist) <= 0 :
-				self.printRED("Cannot create ADS, No matching Dataset (With Files and LumiSections) found")
+				self.printRED("Cannot create PADS, No matching Dataset (With Files and LumiSections) found")
 				self.printRED("Used Query %s" % results['USERINPUT'])
 				return
                        	self.handleCreatePADSCall(datasetPath, adsfileslist)
+		if (canstore) and createADS not in ('', None):
+			#handleCreateADSCall only knows about usequery, so we can set it here
+			self.optdict['usequery']=results['USERINPUT']
+			self.handleCreateADSCall()
 
     if createPADS not in ('', None) and storequeryname in ('', None):
                 self.printRED("You cannot use --createPADS without --storequery (see --doc)")
+                self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating PADS")
+
+    if createADS not in ('', None) and storequeryname in ('', None):
+                self.printRED("You cannot use --createADS without --storequery in this case (see --doc)")
                 self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
-
     return
-
 
   def storeQuery(self, path, userquery, sqlquery, queryname):
 	"""
