@@ -1230,7 +1230,7 @@ class ApiDispatcher:
 					+"/"+ anObj['ApplicationFamily'] \
 						+ "/" + anObj['ParameterSetID']['Hash']
 
-		print "NAME:::::::", anObj['ParameterSetID']['Name']
+		#print "NAME:::::::", anObj['ParameterSetID']['Name']
         if (len(apiret) > 10): self.printGREEN( "\nListed as:      /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n\n" )
         return
 
