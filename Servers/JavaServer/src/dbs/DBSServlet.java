@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.41 $"
- $Id: DBSServlet.java,v 1.41 2008/04/30 19:13:15 sekhri Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSServlet.java,v 1.42 2008/05/16 20:10:44 sekhri Exp $"
 
  */
 package dbs;
@@ -108,7 +108,15 @@ public class DBSServlet extends HttpServlet{
 			RegisterLock.getRegisterLockInstance();
 
 			System.out.println("DBS READY");
+                } catch(DBSException dbse) {
+                        System.out.println("DBS Failed to initialize: "+dbse.getMessage());
+                        System.out.println("Exception Details: "+dbse.getDetail());
+                        dbse.printStackTrace();
+                        throw new ServletException(dbse);
+
     		} catch(Exception e) {
+			System.out.println("DBS Failed to initialize: "+e.getMessage());
+			e.printStackTrace();
 			throw new ServletException(e);
     		}
 	}

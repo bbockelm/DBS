@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.18 $"
- $Id: DBSConfig.java,v 1.18 2008/03/18 17:15:17 afaq Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSConfig.java,v 1.19 2008/05/16 20:10:44 sekhri Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -221,11 +221,14 @@ public class DBSConfig {
                     DBSUtil.writeLog("regServiceURL: "+regServiceURL);
                     DBSUtil.writeLog("alias: "+alias);
                     DBSUtil.writeLog("supportedClientVersions: "+supportedClientVersions);
-
-                } catch (Exception ex) {
+               	} catch (DBSException ex) {
+		  throw ex;
+                  //throw new DBSException("Configuration Error", "1051","Unable to read configuration file dbs.config"+
+                  //                                                                                            ex.getM); 
+               	} catch (Exception ex) {
                   throw new DBSException("Configuration Error", "1051","Unable to read configuration file dbs.config"+
-                                                                                                              ex.getMessage()); 
-                }
+                                                                                                              ex.getMessage());
+		}
                 finally {
                   if (property_file!=null) {
                       try {
