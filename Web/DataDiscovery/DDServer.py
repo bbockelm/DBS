@@ -5428,6 +5428,12 @@ Save query as:
            self.setContentType('xml') 
         case      = getArg(kwargs,'caseSensitive','on')
         sortName  = getArg(kwargs,'sortName','')
+        print "\n@@@@@@@sortName",sortName
+        try:
+            sortName="%s.%s"%(self.ddrules.tableName[sortName],self.ddrules.colName[sortName])
+#            sortName=self.ddrules.colName[sortName]
+        except:
+            sortName=getArg(kwargs,'sortName','')
         details   = getArg(kwargs,'details',1)
         cff       = getArg(kwargs,'cff',0)
         try:
@@ -5442,6 +5448,16 @@ Save query as:
             page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
             return page
         userInput = userInput.replace(" path "," dataset ")
+        ### TEMP, test DBS QL
+#        if dbsInst=="cms_dbs_prod_local_03":
+#           print "###### TEST OF DBS QL ####"
+#           config={'url':'http://vocms02.cern.ch/cms_dbs_prod_local_03/servlet/DBSServlet','mode':'POST','version':'DBS_1_0_8'}
+#           config={'url':'http://cmssrv48.fnal.gov:8383/DBS/servlet/DBSServlet','mode':'POST','version':'DBS_1_0_8'}
+#           dbsApi = DbsApi(config)
+#           print dbsApi.getServerUrl()
+#           print self.qmaker.executeDBSQuery(dbsApi,userInput,_idx*pagerStep,_idx*pagerStep+pagerStep)
+#           print "###### END TEST OF DBS QL ####"
+        ### END OF TEMP
         for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
             userInput=userInput.replace(pair[0],pair[1])
         output    = "dataset"

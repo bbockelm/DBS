@@ -590,15 +590,36 @@ class DDQueryMaker(DDLogger):
       else:
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       
-  def executeDBSQuery(self,dbsApi,input):
-      print "\n\n+++ executeDBSQuery\n",input
-      res=dbsApi.executeQuery(input,type="query")
-      sql,bindDict=getDBSQuery(res)
+  def executeDBSQuery(self,dbsApi,userInput,fromRow,toRow):
+      res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+      sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
       bparams=[]
-      for key in bindDict:
+      for key in bindDict.keys():
           bparams.append(sqlalchemy.bindparam(key=key,value=bindDict[key]))
-      sel=sqlalchemy.text(input,bind=self.dbManager.engine[self.dbsInstance],bindparams=bparams)
-      return self.executeSingleQuery(sel)
+      sql=sql.replace('\n',' ').replace('\t',' ').strip()
+      sel=sqlalchemy.text(sql,bind=self.dbManager.engine[self.dbsInstance],bindparams=bparams)
+      if self.verbose:
+         print "\n\n+++ executeDBSQuery\n",userInput
+         print self.printQuery(sel)
+         print self.extractBindParams(sel)
+      con  = self.connectToDB()
+      try:
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          print msg
+          traceback.print_exc()
+          raise "Fail in executeDBSQuery"
+      oList=[]
+      tList=[]
+      for item in result:
+          if type(item) is types.StringType:
+              raise item
+          oList.append(item.values())
+          if not tList:
+             tList=list(item.keys())
+      self.closeConnection(con)
+      return oList,tList
 
   def executeSingleQuery(self,sel):
 #      print "\n\n+++ executeSingleQuery\n",sel,self.extractBindParams(sel)
@@ -662,6 +683,8 @@ class DDQueryMaker(DDLogger):
       oList=[]
       tList=[]
       for item in result:
+          if type(item) is types.StringType:
+             raise item
           # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              valList=item.values()[:-1] # last element is rownum
@@ -706,14 +729,34 @@ class DDQueryMaker(DDLogger):
           except:
               # multi select case
               oSel = ['*']
+              cList= []
+              query=query.apply_labels()
+              findInString(str(query).lower(),'select','from',cList)
+              oSelList=[]
+              triggerSort=0
+              oBy = []
+              for item in cList:
+                  for elem in item.split():
+                      if elem.lower().find(sortName.lower())!=-1: triggerSort=1
+                      if elem.find(".")!=-1 or elem.lower()=="as" or elem.lower()=="distinct":
+                         continue
+                      oSelList.append(elem.replace(",","").strip())
+                      if not oBy and triggerSort:
+                         oBy=self.sortOrder(elem.replace(",","").strip(),sortOrder)
+              oSel = [','.join(oSelList)]
               qobj = query.alias('qobj')
               tab  = None
               obj  = qobj
-              if sortName and sortName.find(".")!=-1:
-                 tab,col = sortName.split(".")
-                 oBy  = self.sortOrder(self.col(tab,col),sortOrder)
-              else:
-                 oBy  = []
+#              if sortName and sortName.find(".")!=-1:
+#                 t,col= sortName.split(".")
+#                 _tab = self.dbManager.getTable(self.dbsInstance,t)
+#                 oBy  = self.sortOrder(self.col(_tab,col),sortOrder)
+#              elif sortName:
+#                 t,col= self.ddrules.tableName(sortName),self.ddrules.colName(sortName)
+#                 _tab = self.dbManager.getTable(self.dbsInstance,t)
+#                 oBy  = self.sortOrder(self.col(_tab,col),sortOrder)
+#              else:
+#                 oBy  = []
               gBy  = []
               pass
           sel = sqlalchemy.select(oSel,from_obj=[obj],group_by=gBy,order_by=oBy,distinct=True)
@@ -739,6 +782,8 @@ class DDQueryMaker(DDLogger):
       oList=[]
       tList=[]
       for item in result:
+          if type(item) is types.StringType:
+             raise item
           # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
           if self.dbManager.dbType[self.dbsInstance]=='oracle' and selRowNum:
              valList=item.values()[:-1] # last element is rownum
