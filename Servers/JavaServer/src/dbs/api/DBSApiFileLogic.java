@@ -1,6 +1,6 @@
 /**
- $Revision: 1.91 $"
- $Id: DBSApiFileLogic.java,v 1.91 2008/05/01 22:06:06 afaq Exp $"
+ $Revision: 1.92 $"
+ $Id: DBSApiFileLogic.java,v 1.92 2008/05/20 21:40:11 afaq Exp $"
  *
  */
 
@@ -978,12 +978,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					valueVec.add(getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true));
 				insertMapBatch(conn, out, "FileParentage", "ThisFile", "itsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 
+//----------------------------Lumi/Run mapping 				
                                 //Insert FileLumi table by first inserting and then fetching Lumi Section ID
 				valueVec.clear();
 				String runID = null;
 
-		                //This can move into DBSSQL later on !!!
+				ArrayList lumiOnlyValueVec = new ArrayList();
+				
                 		java.util.ArrayList keys = new java.util.ArrayList();
+				//AA- NEVER change this ORDER
 		                keys.add("Fileid");
                 		keys.add("Lumi");
 		                keys.add("Run");
@@ -1010,12 +1013,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 		                valueVec.add(lmbUserID);
 
 					} else {
-						valueVec.add(fileID);
-						valueVec.add(lsNumber);
-						valueVec.add(runID);
-						valueVec.add(creationDate);
-		                                valueVec.add(cbUserID);
-                		                valueVec.add(lmbUserID);
+						//No Lumi
+						lumiOnlyValueVec.add(fileID);
+						lumiOnlyValueVec.add(runID);
+						lumiOnlyValueVec.add(creationDate);
+		                                lumiOnlyValueVec.add(cbUserID);
+                		                lumiOnlyValueVec.add(lmbUserID);
 					}
 					// Insert ProcDS-Run Map, if its already not there
                                         insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
@@ -1023,54 +1026,26 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         cbUserID, lmbUserID, creationDate, true);
 
 				}
-
                 		if (valueVec.size() > 0) {
                         		//PreparedStatement ps = null;
                         		try {
                                 		ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, valueVec);
-                                		//System.out.println("\n\nBATCH CREATED\n\n");
                                 		ps.executeBatch();
                        			 } finally {
                                 		if (ps != null) ps.close();
                         		}
                 		}
-
-
-				/** 
-				//AA - 5/19/08 The above code replaces this block (Performing the Batch insert for insertFile 
-                                for (int j = 0; j < lumiVector.size(); ++j) {
-                                        Hashtable hashTable = (Hashtable)lumiVector.get(j);
-					String thisRunN = get(hashTable, "run_number", true);
-					runID = getID(conn, "Runs", "RunNumber",  thisRunN, true);
-                                        String lsNumber = get(hashTable, "lumi_section_number", false);
-
-                                        if ( !isNull(lsNumber) ) {
-                                                String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false);
-                                                if( isNull(lumiID)) {
-                                                        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-                                                }
-
-                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
-                                                        fileID,
-                                                        getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true),
-                                                        runID,
-                                                        cbUserID, lmbUserID, creationDate, true);
+                                if (lumiOnlyValueVec.size() > 0) {
+                                        //PreparedStatement ps = null;
+                                        try {
+						keys.remove(1); //remove the Lumi Key from keys list
+                                                ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, lumiOnlyValueVec);
+                                                ps.executeBatch();
+                                         } finally {
+                                                if (ps != null) ps.close();
                                         }
-                                        //Just add Run-Fileid map
-                                        else {
-                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
-                                                        fileID,
-                                                        runID,
-                                                        cbUserID, lmbUserID, creationDate, true);
-                                        }
-                                        // Insert ProcDS-Run Map, if its already not there
-                                        insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
-                                                        procDSID, runID,
-                                                        cbUserID, lmbUserID, creationDate, true);
                                 }
-
-				*/
-
+//----------------------------Lumi/Run mapping done				
                                 //Insert Trigger tags (if present)
                                 for (int j = 0; j < trigTagVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)trigTagVector.get(j);

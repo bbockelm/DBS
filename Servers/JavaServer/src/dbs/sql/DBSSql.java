@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.169 $"
- $Id: DBSSql.java,v 1.169 2008/05/13 21:00:13 afaq Exp $"
+ $Revision: 1.170 $"
+ $Id: DBSSql.java,v 1.170 2008/05/13 22:21:17 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3733,28 +3733,17 @@ public class DBSSql {
 		}
 		sql += " ) " + slct + " from dual ";
 
-
-		//System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQlllllllllllllllll:\n"+sql);
-
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
-
-		//System.out.println("Created ps");
-
 
 		for ( int j = 0; j < values.size(); j += keys.size() ) {
                 	int columnIndx = 1;
 			for (int k = 0; k != keys.size(); ++k) {
                         	ps.setString(columnIndx++, (String)values.get(j+k));
-				//System.out.println("j: "+j+" (String)values.get(j)::::="+(String)values.get(j+k) );
 			}
-			//System.out.println("ps.addBatch()");
                         ps.addBatch(); 
 		}
 
-                //DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		//System.out.println("MULTI QQQQQQQQQQQQQQQQQQ:::::::::::\n"+ps+"\n\n\n");
-
-		//System.out.println("RETURNING");
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
                 return ps;
 	}
