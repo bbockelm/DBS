@@ -925,12 +925,7 @@ def parseDBSQuery(i):
            sql=k.text
         if k.tag=="bindparams":
            for j in k:
-               if j.tag=="name":
-                  name=j.text
-               if j.tag=="value":
-                  rval=j.text
-               if name and rval:
-                  bDict[name]=rval
+               bDict[j.tag]=j.text
     return sql,bDict
 def getDBSQuery(data,tag="python_query"):
     elem  = ET.fromstring(data)
