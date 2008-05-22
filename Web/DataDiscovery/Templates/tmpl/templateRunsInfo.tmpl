@@ -6,21 +6,20 @@ registerAjaxRunSummaryCalls();
 #import urllib
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
 ####set nRun=len($runList)
+###if $proc
 #if $proc
-#*
-Dataset:<br />
-<table class="offset_left">
-<tr>
-<td align="left">
-<b>$proc</b>
-</td></tr></table>
-*#
 <p><b>$proc</b></p>
+#end if
 <table width="100%">
 <tr>
 <td align="left">
-contains $nRun run(s). Run range: $minRun-$maxRun.
+#if $proc
+contains $nRun run(s). Run range: $minRun-$maxRun. 
 PhEDEx <a href="javascript:getPhedexStatus()">info</a>.
+#else
+Found multiple datasets. Show
+PhEDEx <a href="javascript:getPhedexStatus()">info</a>.
+#end if
 </td>
 <td align="right">
 <script type="text/javascript">
@@ -43,10 +42,10 @@ Jump to run range:
 </td>
 </tr>
 </table>
-#end if
+###end if
 <p />
 ###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
-<table id="$tableId" cellspacing="0" cellpadding="0" border="1">
+<table id="$tableId" cellspacing="0" cellpadding="0" border="1" width="100%">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
 <td>Run</td>
 <td>Type</td>
@@ -158,7 +157,11 @@ $system
 </td>
 #### Here is Phedex transfer status call for each site
 <td align="right">
+#if len($sites)==1
+#set phedexResponse=$sites[0]+":"+$procDS+":"+str($run)
+#else
 #set phedexResponse="multiple:"+$procDS+":"+str($run)
+#end if
 #if $datasetDict.has_key($run)
 #set datasetDict[$run]=$datasetDict[$run]+[$procDS]
 #else
