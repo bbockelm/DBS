@@ -41,7 +41,7 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 		spaces
 	 op=	(EQ | LT | GT) 	{c.setOp($op.text);}   
 		spaces
-	 val=	genValue	{c.setValue($val.text); constraints.add(c); 	}               
+	 val=	dotValue 	{c.setValue($val.text); constraints.add(c); 	}               
 		| 
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces 
@@ -60,7 +60,11 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 
 where	:('WHERE' | 'where');
 dotValue        : VALUE 
-		| VALUE DOT VALUE;
+		| VALUE DOT VALUE
+		| VALUE SPACE VALUE
+		| VALUE SPACE VALUE SPACE VALUE;
+//dateValue	: (DIGIT);
+
 valueList	:dotValue ( spaces COMMA spaces dotValue )*;
 compOpt		:(EQ)
 		|(LT)
@@ -73,24 +77,29 @@ genValue	:dotValue
 		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
 likeValue 	:(dotValue| STAR)+;
 logicalOp	:(and|or);
-entity	: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq');
-attr	:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' | 'def' | 'evnum' );
-funct	:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
-select	:('select' | 'SELECT' | 'find' | 'FIND');
-and	:('and' | 'AND');
-or	:('or' | 'OR');
-in	:('in' | 'IN');
-not	:('not' | 'NOT');
-like	:('like' | 'LIKE');
-VALUE	:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_')+ ;
-COMMA	:(',');
-SPACE	:(' ')  ;
-DOT	:('.');
-GT	:('>');
-LT	:('<');
-EQ	:('=');
-AMP	:('&');
-STAR	:('*'|'%');
-NL	:('\n');
-WS 	: ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ 	{ $channel = HIDDEN; } ;
+entity		: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq');
+attr		:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'tier' | 'def' | 'evnum' );
+funct		:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
+select		:('select' | 'SELECT' | 'find' | 'FIND');
+and		:('and' | 'AND');
+or		:('or' | 'OR');
+in		:('in' | 'IN');
+not		:('not' | 'NOT');
+like		:('like' | 'LIKE');
+VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':')+ ;
+//DIGIT		:('0'..'9');
+//DASH		:('-');
+//COLON		:(':');
+//CHAR		:('a'..'z'|'A'..'Z');
+COMMA		:(',');
+SPACE		:(' ');
+DOT		:('.');
+//QUOTE		:('"');
+GT		:('>');
+LT		:('<');
+EQ		:('=');
+AMP		:('&');
+STAR		:('*'|'%');
+NL		:('\n');
+WS 		: ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ 	{ $channel = HIDDEN; } ;
 

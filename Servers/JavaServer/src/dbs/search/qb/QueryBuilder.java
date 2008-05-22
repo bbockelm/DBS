@@ -275,7 +275,8 @@ public class QueryBuilder {
 					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
 				} else if(Util.isSame(key, "procds.tier")) {
 					queryWhere += "\tProcDSTier.DataTier" + handleTier(op, val);
-
+				} else if(key.endsWith("createdate")) {
+					queryWhere += "\t" + km.getMappedValue(key) + handleDate(op, val);
 
 				} else {
 
@@ -334,13 +335,6 @@ public class QueryBuilder {
 						}
 					}
 					queryWhere += handleOp(op, val);
-					/*if(Util.isSame(op, "in")) queryWhere += handleIn(val);
-					else if(Util.isSame(op, "like")) queryWhere += handleLike(val);
-					else {
-						//queryWhere += op + " '" + val + "'";
-						queryWhere += op + " ?";
-						bindValues.add(val);
-					}*/
 				}
 
 			} else {
@@ -508,6 +502,24 @@ public class QueryBuilder {
 		bindValues.add(data[2]);
 		return query;
 	}*/
+
+	private String handleDate(String op, String val) throws Exception {
+		if(Util.isSame(op, "in")) throw new Exception("Operator IN not supported with date. Please use =, < or >");
+		if(Util.isSame(op, "like")) throw new Exception("Operator LIKE not supported with date. Please use =, < or >");
+		String query = "";
+		String epoch1 = String.valueOf(DateUtil.dateStr2Epoch(val));
+		if(Util.isSame(op, "=")) {
+			String epoch2 = String.valueOf(DateUtil.getNextDate(val).getTime());
+			query += " BETWEEN ? AND ?\n";
+			bindValues.add(epoch1);
+			bindValues.add(epoch2);
+
+		} else {
+			query += " " + op + " ?\n";
+			bindValues.add(epoch1);
+		}
+		return query;
+	}
 
 	private String handlePath(String path, String op) throws Exception {
 		String query = " IN ( \n" +
