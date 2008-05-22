@@ -2641,6 +2641,7 @@ All LFNs in a block
                    self.writeLog(getExcept())
                 printExcept()
                 page+="No LFNs found for site '%s'\n"%site
+                lfnLIst=[]
                 pass
             page+=self.formatLFNList(lfnList,what)
             page+= self.genBottomHTML()
