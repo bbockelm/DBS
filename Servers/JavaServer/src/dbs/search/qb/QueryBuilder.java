@@ -507,9 +507,9 @@ public class QueryBuilder {
 		if(Util.isSame(op, "in")) throw new Exception("Operator IN not supported with date. Please use =, < or >");
 		if(Util.isSame(op, "like")) throw new Exception("Operator LIKE not supported with date. Please use =, < or >");
 		String query = "";
-		String epoch1 = String.valueOf(DateUtil.dateStr2Epoch(val));
+		String epoch1 = String.valueOf(DateUtil.dateStr2Epoch(val) / 1000);
 		if(Util.isSame(op, "=")) {
-			String epoch2 = String.valueOf(DateUtil.getNextDate(val).getTime());
+			String epoch2 = String.valueOf(DateUtil.getNextDate(val).getTime() / 1000);
 			query += " BETWEEN ? AND ?\n";
 			bindValues.add(epoch1);
 			bindValues.add(epoch2);
