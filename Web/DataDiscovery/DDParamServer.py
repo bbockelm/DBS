@@ -61,7 +61,7 @@ class DDParamServer(DDLogger):
         else:
            url="http://"+os.path.normpath(url)
         print url,iParams
-        data=urllib2.urlopen(url,urllib.urlencode(iParams)).read()
+        data=urllib2.urlopen(url,urllib.urlencode(iParams,doseq=True)).read()
         return data
 
     def sendPostMessage_v1(self,method,iParams,debug=0):
