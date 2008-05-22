@@ -834,7 +834,6 @@ class DDServer(DDLogger,Controller):
                page+= str(t)
             elif userMode=="dbsExpert":
                page+="""<hr class="dbs" />"""
-               page+="""<p class="sectionhead">OTHER DATA DISCOVERY SERVICES:</p>"""
                nameSpace = {'userMode':userMode,'ddList':self.ddUrls,'dbsdd':self.dbsdd}
                page+= templateRemoteDD(searchList=[nameSpace]).respond()
                # Walk through all registered DD services and exchange update SOAP msg's
