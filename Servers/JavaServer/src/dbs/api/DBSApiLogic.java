@@ -1,6 +1,6 @@
 /**
- $Revision: 1.134 $"
- $Id: DBSApiLogic.java,v 1.134 2008/05/15 16:28:39 sekhri Exp $"
+ $Revision: 1.135 $"
+ $Id: DBSApiLogic.java,v 1.135 2008/05/20 16:25:07 sekhri Exp $"
  *
  */
 
@@ -28,6 +28,7 @@ import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
 import org.apache.commons.lang.StringEscapeUtils;
+import dbs.search.qb.DateUtil;
 
 
 
@@ -248,11 +249,13 @@ public class DBSApiLogic {
 				for (int i = 0; i != numberOfColumns; ++i) {
 					out.write(((String) colNames[i] + "='"));
 					if(colNames[i].indexOf("Date") != -1) {
-						out.write(((String) 
+						out.write(((String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)) + "' "));
+							
+						/*out.write(((String) 
 									(new Timestamp(Long.valueOf( get(rs, colNames[i])) * 1000
 										       ).toString() +"' "
 									 ) 
-							));
+							));*/
 					}
 					else out.write(((String) get(rs, colNames[i] ) +"' "));
 				}

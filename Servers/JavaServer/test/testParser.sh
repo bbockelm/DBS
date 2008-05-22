@@ -99,8 +99,9 @@ executeQuery () {
 #$CMD query="find file, file.createdate, file.moddate where file.createdate > 0" begin=5 end=20 type=quera
 #$CMD query="find dataset, file.id, lumi.id where file.createdate > 0" begin=5 end=20 type=querya
 #$CMD query="find dataset.parent  where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM"
+$CMD query="find file, file.createdate  where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM"
 #$CMD query="find dataset"
 #$CMD query="find lumi.id , file.id , dataset"
-$CMD query="find lumi.id where dataset like *"
+#$CMD query="find lumi.id where dataset like *"
 #executeQuery
 
