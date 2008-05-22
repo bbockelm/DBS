@@ -4942,13 +4942,15 @@ Save query as:
            params['dataset']=datasetPath
         page=""
         try:
+            if  self.verbose>1:
+                print "\n\n### response phedex response"
+                print "site=",site
+                print "dataset=",datasetPath
+                print "id_suffix=",id_suffix
+                print "params=",params
+                print "urllib params=",urllib.urlencode(params)
+                print "page=",page
             page = self.phedexServer.sendPostMessage(url,params,debug=0)
-#            print "\n\n### response phedex response"
-#            print site
-#            print datasetPath
-#            print id_suffix
-#            print params
-#            print page
             if type(page) is types.StringType:
                page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
         except:
