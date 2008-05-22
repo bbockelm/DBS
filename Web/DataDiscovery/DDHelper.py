@@ -2550,7 +2550,7 @@ MCDescription:      %s
                                   order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
                                  )
           condDict={}
-          if dataset:
+          if dataset and dataset!="*":
              sel.append_whereclause(self.col(tblk,'Path')==dataset)
              condDict[findLastBindVar(str(sel))]=dataset
           if primD and primD!="*":
