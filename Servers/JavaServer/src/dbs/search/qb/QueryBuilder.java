@@ -275,7 +275,7 @@ public class QueryBuilder {
 					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
 				} else if(Util.isSame(key, "procds.tier")) {
 					queryWhere += "\tProcDSTier.DataTier" + handleTier(op, val);
-				} else if(key.endsWith("createdate")) {
+				} else if(key.endsWith("createdate") ||  key.endsWith("moddate")) {
 					queryWhere += "\t" + km.getMappedValue(key) + handleDate(op, val);
 
 				} else {
