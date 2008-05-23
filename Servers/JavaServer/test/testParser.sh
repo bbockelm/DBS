@@ -73,6 +73,19 @@ executeQuery () {
 	$CMD query="find lumi.startevnum, lumi.endevnum, lumi.id where file.createdate > 0"
 	$CMD query="find file where lumi.evnum  = 150"
 	$CMD query="find lumi, dataset where lumi.evnum  = 150"
+	$CMD query="find file, file.createdate where  file.createdate = 2007-04-20 "
+	$CMD query="find file, file.createdate where  file.createdate = 2007-04-20 11:27:21 CDT  or file.moddate > 2008"
+	$CMD query="find file, file.createdate where  file.createdate = 2007-04-20 11:27:21"
+	$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05:12 order by run"
+	$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05"
+	$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12"
+	$CMD query="find run, run.createdate where run.createdate = 2008-05-01"
+	$CMD query="find run, run.createdate where run.createdate = 2008"
+	$CMD query="find run, run.createdate where run.createdate < 2008"
+	$CMD query="find run, run.createdate where run.createdate > 2008"
+	$CMD query="find run,file  order by file"
+	$CMD query="find run,file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM  order by file.createdate"
+
 
 
 }
@@ -101,21 +114,12 @@ executeQuery () {
 #$CMD query="find dataset.parent  where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM"
 
 
-#$CMD query="find file, file.createdate where  file.createdate = 2007-04-20 "
-#$CMD query="find file, file.createdate where  file.createdate = 2007-04-20 11:27:21 CDT  or file.moddate > 2008"
-#$CMD query="find file, file.createdate where  file.createdate = 2007-04-20 11:27:21"
-#$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05:12"
-#$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05"
-#$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12"
-#$CMD query="find run, run.createdate where run.createdate = 2008-05-01"
-#$CMD query="find run, run.createdate where run.createdate = 2008"
-#$CMD query="find run, run.createdate where run.createdate < 2008"
-$CMD query="find run, run.createdate where run.createdate > 2008"
-
 #$CMD query="find file, file.createdate, file.moddate where  dataset = /test_primary_001/TestProcessedDS002/GEN-SIM "
 
 #$CMD query="find dataset"
 #$CMD query="find lumi.id , file.id , dataset"
 #$CMD query="find lumi.id where dataset like *"
+#$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM order by file"
+#$CMD query="find run,file  order by file"
 #executeQuery
 

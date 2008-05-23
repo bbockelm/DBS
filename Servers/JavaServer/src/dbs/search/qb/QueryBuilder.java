@@ -39,10 +39,11 @@ public class QueryBuilder {
 		return bindIntValues;
 	}
 
-	public String genQuery(ArrayList kws, ArrayList cs) throws Exception{
-		return genQuery(kws, cs, "", "");
+	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws) throws Exception{
+		return genQuery(kws, cs, okws, "", "");
 	}
-	public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
+	//public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
+	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String begin, String end) throws Exception{
 		//Store all the keywors both from select and where in allKws
 		String personJoinQuery = "";
 		String parentJoinQuery = "";
@@ -344,6 +345,23 @@ public class QueryBuilder {
 		}
 		//System.out.println("\n\nFINAL query is \n\n" + query);
 		query += personJoinQuery + parentJoinQuery + queryWhere;
+		boolean orderOnce = false;
+		for(Object o: okws){
+			String orderBy = (String)o;
+			if(!orderOnce) {
+				query += " ORDER BY ";
+			}
+			if(orderOnce) query += ",";
+			String orderToken = "";
+			Vertex vCombined = u.getMappedVertex(orderBy);
+			if(vCombined == null) orderToken = km.getMappedValue(orderBy);
+			else orderToken = u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined);
+
+			query += orderToken;
+			orderOnce = true;
+		}
+
+		
 		if(!begin.equals("") && !end.equals("")) {
 			int bInt = Integer.parseInt(begin);
 			int eInt = Integer.parseInt(end);
@@ -748,7 +766,7 @@ public class QueryBuilder {
 
 		//tmp.add("PrimaryDataset");
 		tmp.add("file");
-		System.out.println(qb.genQuery(tmp, new ArrayList(), "4", "10"));		
+		System.out.println(qb.genQuery(tmp, new ArrayList(),new ArrayList(), "4", "10"));		
 		//tmp.add("Runs");
 		//tmp.add("FileRunLumi");
 		

@@ -31,6 +31,7 @@ public class Wrapper {
 		        parser.stmt();
 	
 			ArrayList kws = parser.kws;
+			ArrayList okws = parser.okws;
 			ArrayList cs = parser.constraints;
 			/*for (int i =0 ; i!= kws.size(); ++i) 
 				System.out.println("KEWORD\t" + kws.get(i));*/
@@ -44,7 +45,7 @@ public class Wrapper {
 				}//else System.out.println("REL " + (String)obj);
 			}*/
 			QueryBuilder qb = new QueryBuilder(db);
-			queryToReturn = qb.genQuery(kws, cs, begin, end);
+			queryToReturn = qb.genQuery(kws, cs, okws, begin, end);
 			bindValues = qb.getBindValues();
 			bindIntValues = qb.getBindIntValues();
 		} catch (NoViableAltException nvae) {

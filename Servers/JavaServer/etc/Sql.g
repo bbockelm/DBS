@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 @members {
 ArrayList kws = new ArrayList();
+ArrayList okws = new ArrayList();
 ArrayList constraints = new ArrayList();
 }
 @rulecatch {
@@ -17,7 +18,14 @@ catch (RecognitionException e) {
 }
 
 stmt	: select spaces selectList spaces where spaces constraintList  
-	| select spaces selectList;
+	| select spaces selectList
+	| select spaces selectList spaces order spaces by spaces
+okw=	keyword 	{okws.add($okw.text);}
+	spaces
+	| select spaces selectList spaces where spaces constraintList spaces order spaces by spaces
+okw=	keyword		{okws.add($okw.text);}
+	spaces;
+
 
 spaces	: (SPACE)*;
 		 
@@ -82,6 +90,8 @@ attr		:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby
 funct		:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
 select		:('select' | 'SELECT' | 'find' | 'FIND');
 and		:('and' | 'AND');
+order		:('order' | 'ORDER');
+by		:('by' | 'BY');
 or		:('or' | 'OR');
 in		:('in' | 'IN');
 not		:('not' | 'NOT');
