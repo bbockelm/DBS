@@ -591,6 +591,11 @@ class DDQueryMaker(DDLogger):
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       
   def executeDBSQuery(self,dbsApi,userInput,fromRow,toRow):
+# I can actually call server instead of client
+# http://cmssrv17.fnal.gov:8989/DBSADSTEST03_ADSDEF/servlet/DBSServlet?apiversion=DBS_1_1_2&query=find%20dataset%20where%20dataset%20like%20%25QCD_800-1000%25&begin=&api=executeQuery&end=&type=query
+# so the call would be
+# http://url/DBSServlet?apiversion=DBS_1_1_2&query=userInput&begin=&api=executeQuery=&type=query
+#
       res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
       sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
       bparams=[]
@@ -729,21 +734,22 @@ class DDQueryMaker(DDLogger):
           except:
               # multi select case
               oSel = ['*']
-              cList= []
-              query=query.apply_labels()
-              findInString(str(query).lower(),'select','from',cList)
-              oSelList=[]
-              triggerSort=0
-              oBy = []
-              for item in cList:
-                  for elem in item.split():
-                      if elem.lower().find(sortName.lower())!=-1: triggerSort=1
-                      if elem.find(".")!=-1 or elem.lower()=="as" or elem.lower()=="distinct":
-                         continue
-                      oSelList.append(elem.replace(",","").strip())
-                      if not oBy and triggerSort:
-                         oBy=self.sortOrder(elem.replace(",","").strip(),sortOrder)
-              oSel = [','.join(oSelList)]
+              oBy  = []
+              if  sortName:
+                  cList= []
+                  query=query.apply_labels()
+                  findInString(str(query).lower(),'select','from',cList)
+                  oSelList=[]
+                  triggerSort=0
+                  for item in cList:
+                      for elem in item.split():
+                          if elem.lower().find(sortName.lower())!=-1: triggerSort=1
+                          if elem.find(".")!=-1 or elem.lower()=="as" or elem.lower()=="distinct" or elem.lower()=="count" or elem=="(" or elem==")":
+                             continue
+                          oSelList.append(elem.replace(",","").strip())
+                          if not oBy and triggerSort:
+                             oBy=self.sortOrder(elem.replace(",","").strip(),sortOrder)
+                  oSel = [','.join(oSelList)]
               qobj = query.alias('qobj')
               tab  = None
               obj  = qobj
