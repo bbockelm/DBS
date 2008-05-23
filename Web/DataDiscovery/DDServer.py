@@ -5547,7 +5547,7 @@ Save query as:
               if pagerStep==-1:
                  page ="\nFound %s %ss\n"%(nResults,_out)
               else:
-                 page ="\nFound %s %ss, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
+                 page ="\nFound %s %s, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
         if html:
            # Construct result page
