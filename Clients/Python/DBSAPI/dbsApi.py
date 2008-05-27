@@ -108,7 +108,11 @@ class DbsApi(DbsConfig):
 
     DbsLogger(self.loglevel(), self.log()) 
     #logging.log(DBSDEBUG, "DBS Api initialized")
-    
+
+    # Set the default Client Type to NORMAL
+    if not self.configDict.has_key('clienttype'):
+	self.configDict['clienttype'] = "NORMAL"
+ 
   def getServerUrl(self):
     """
     Returns the server URL
