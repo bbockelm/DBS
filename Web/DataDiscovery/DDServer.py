@@ -958,6 +958,7 @@ class DDServer(DDLogger,Controller):
             nameSpace = {
                          'userMode' : userMode,
                          'ddList'   : self.ddUrls,
+                         'dbsdd'    : self.dbsdd,
                         }
             page+= templateRemoteDD(searchList=[nameSpace]).respond()
             page+= self.genBottomHTML()
