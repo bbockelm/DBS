@@ -27,7 +27,7 @@ def print_flags_nice(dqHierarchyList):
                 for aSubSubDQ in aSubDQ['SubSysFlagList']:
                         print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
 			for abSubSubDQ in aSubSubDQ['SubSysFlagList'] :
-				print "                ", abSubSubDQ['Name'], abSubSubDQ['Value']
+				print "                               ", abSubSubDQ['Name'], abSubSubDQ['Value']
 
 
 #-------------------------------------------------------------------------------
@@ -54,11 +54,11 @@ flag3 = DbsDQFlag (
 #Create RunDQ Object, for RunNumber , RunNumber  already exists in DBS
 
 run_dq_search_criteria = DbsRunLumiDQ (
-        #RunNumber=1,
+        RunNumber=298,
 	#LumiSectionNumber can be part of this serach criteria
         #LumiSectionNumber=123,
         #DQFlagList = [flag1]
-        DQFlagList = [flag1, flag2, flag3]
+        #DQFlagList = [flag1, flag2, flag3]
         )
 
 try:
@@ -69,6 +69,9 @@ try:
     # If the Objects are prepared with "hierarch or NOT, they will be pulled 
     # in hierarch.	
 
+    #dqHierarchyList =  api.listRunLumiDQ()
+    #print_flags_nice(dqHierarchyList)
+
     # Mind that run_dq_search_criteria is just one object, API takes a LIST of such objects
     # So you must pass it as list
 
@@ -76,7 +79,7 @@ try:
     print_flags_nice(dqHierarchyList)
  
     # ALL of them, ARE U CRAZY ?
-    print "\n-------------------CURRENT...."
+    #print "\n-------------------CURRENT...."
 
     #dqHierarchyList =  api.listRunLumiDQ(   )
     #print_flags_nice(dqHierarchyList)
