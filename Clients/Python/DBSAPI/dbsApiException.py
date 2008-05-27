@@ -19,7 +19,7 @@ class DbsApiException(DbsException):
     msg = "\nCaught API Exception %s: %s "  % (self.getClassName(), self.getErrorMessage() )
     if self.getErrorCode() not in (None, ""):
        msg += "\nDBS Exception Error Code: %s " % str(self.getErrorCode())
-    logging.error(msg)
+    #logging.error(msg)
   
 class InvalidDatasetPathName(DbsApiException):
     
