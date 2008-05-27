@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.170 $"
- $Id: DBSSql.java,v 1.170 2008/05/13 22:21:17 afaq Exp $"
+ $Revision: 1.171 $"
+ $Id: DBSSql.java,v 1.171 2008/05/21 22:19:18 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3022,7 +3022,9 @@ public class DBSSql {
 		sql += "WHERE ";
 		boolean useAnd = false;
 		if(!DBSUtil.isNull(patternLFN))  {
-			sql += "f.LogicalFileName like ? \n" ;
+                        if(patternLFN.indexOf('%') == -1) sql += "f.LogicalFileName = ? \n";
+                        else sql += "f.LogicalFileName like ? \n";
+			//sql += "f.LogicalFileName like ? \n" ;
 			useAnd = true;
 		}
 		if(!DBSUtil.isNull(procDSID) && DBSUtil.isNull(path)) {
