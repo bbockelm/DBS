@@ -80,6 +80,8 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 
     xmlinput += "</dbs>"
 
+    print xmlinput
+
     ###logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'listRunLumiDQ',
@@ -130,8 +132,6 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 			self.SubSubFlags.append(subSubFlag)
         def endElement(self, name):
             if name == 'run':
-
-
 		mark_for_removel=[]
 		#resolve Sub Sub System Parentage First
 		for asssys in self.SubSubFlags:
@@ -148,7 +148,8 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 					added = 1
 
 		for toDel in mark_for_removel:
-			self.SubSubFlags.remove(toDel)
+			if toDel in self.SubSubFlags:
+				self.SubSubFlags.remove(toDel)
 
 
                 for asssys in self.SubSubFlags:
