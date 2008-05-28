@@ -39,7 +39,6 @@ print header
 
 stop = 0
 
-import pdb
 for aline in lines:
 	if aline.strip().startswith('from'):
 		continue

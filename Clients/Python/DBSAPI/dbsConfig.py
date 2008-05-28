@@ -64,8 +64,6 @@ class DbsConfig(object):
                keyword=string.upper(item)
                if re.search(keyword,line):
 		  #print item, line, keyword     
-		  #import pdb
-		  #pdb.set_trace()
                   self.configDict[item] = string.split(line,"%s="%keyword)[1]
                #if iConfig.has_key(item) and iConfig[item]:
                #   self.configDict[item] = iConfig[item]

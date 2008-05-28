@@ -34,8 +34,6 @@ class DbsExecService:
     """
 
     try:
-       #import pdb
-       #pdb.set_trace()
        classpath=""
        classpathbase= self.Home+'/lib/' 
        for ajar in os.listdir(classpathbase):
@@ -71,9 +69,6 @@ class DbsExecService:
        #obj = os.popen('cd ' + self.Home + '/test;' + request_string)
         
        obj = os.popen(request_string)
-       #import pdb
-       #pdb.set_trace()
-
 
        tmp = obj.readline()
        data = tmp
