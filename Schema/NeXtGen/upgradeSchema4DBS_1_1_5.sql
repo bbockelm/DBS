@@ -141,4 +141,10 @@ END;
 
 UPDATE SchemaVersion SET SchemaVersion='DBS_1_1_2';
 
+ALTER TABLE TimeLog RENAME column Description TO DescriptionSmall;
+ALTER TABLE TimeLog ADD ( Description CLOB);
+commit;
+UPDATE TimeLog SET Description = DescriptionSmall;
+ALTER TABLE TimeLog MODIFY ( DescriptionSmall varchar(1000) NULL );
+
 
