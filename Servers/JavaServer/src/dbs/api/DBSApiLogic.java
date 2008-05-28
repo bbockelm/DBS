@@ -1,6 +1,6 @@
 /**
- $Revision: 1.135 $"
- $Id: DBSApiLogic.java,v 1.135 2008/05/20 16:25:07 sekhri Exp $"
+ $Revision: 1.136 $"
+ $Id: DBSApiLogic.java,v 1.136 2008/05/22 18:55:38 sekhri Exp $"
  *
  */
 
@@ -691,6 +691,31 @@ public class DBSApiLogic {
                                 if (ps != null) ps.close();
                 }
         }
+
+
+        protected void insertGeneralBatch(Connection conn, Writer out, String tableName, ArrayList keys, ArrayList valueVec) throws Exception {
+
+		if (keys.size() <= 0 || valueVec.size() <=0 ) return;
+	 	PreparedStatement ps = null;
+                try {
+			ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, valueVec);
+                        ps.executeBatch();
+		} catch (SQLException ex) {
+			String exmsg = ex.getMessage();
+			if ( exmsg.startsWith("Duplicate entry") || 
+				exmsg.startsWith("ORA-00001: unique constraint") ) {
+				return;
+			} else {
+				throw new SQLException("'"+ex.getMessage()+
+                                	                      " Query failed is "+ps);
+			}
+		} finally {
+			if (ps != null) ps.close();
+		}
+	}
+
+
+
 
 	/**
 	 * This is a generic method that can delete entry from any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it exist, it goes ahead and performs the delete.

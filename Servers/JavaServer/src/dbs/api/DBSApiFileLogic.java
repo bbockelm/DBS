@@ -1,6 +1,6 @@
 /**
- $Revision: 1.93 $"
- $Id: DBSApiFileLogic.java,v 1.93 2008/05/21 22:19:17 afaq Exp $"
+ $Revision: 1.94 $"
+ $Id: DBSApiFileLogic.java,v 1.94 2008/05/28 19:37:07 afaq Exp $"
  *
  */
 
@@ -932,7 +932,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                                 	if (ps != null) ps.close();
 				}
-
+				
                                 //if(isNull(fileID)) fileID = getFileID(conn, lfn);
                                 //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
                                 //FileID is needed if any of the other table information is provided i.e the vector size is > 0
@@ -954,7 +954,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                                         true));
 				}
 				insertMapBatch(conn, out, "FileAlgo", "Fileid", "Algorithm", fileID, valueVec, cbUserID, lmbUserID, creationDate);
-
                                 //Insert FileTier table by fetching data tier ID
 				valueVec.clear();
 				for (int j = 0; j < tierVector.size(); ++j) {
@@ -962,6 +961,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         get((Hashtable)tierVector.get(j), "name").toUpperCase() ,
                                                         true));
 				}
+
 				insertMapBatch(conn, out, "FileTier", "Fileid", "DataTier", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 				
                                 //Insert FileParentage table by fetching parent File ID
@@ -1026,26 +1026,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         cbUserID, lmbUserID, creationDate, true);
 
 				}
-                		if (valueVec.size() > 0) {
-                        		//PreparedStatement ps = null;
-                        		try {
-                                		ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, valueVec);
-                                		ps.executeBatch();
-                       			 } finally {
-                                		if (ps != null) ps.close();
-                        		}
-                		}
-                                if (lumiOnlyValueVec.size() > 0) {
-                                        //PreparedStatement ps = null;
-                                        try {
-						keys.remove(1); //remove the Lumi Key from keys list
-                                                ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, lumiOnlyValueVec);
-                                                ps.executeBatch();
-                                         } finally {
-                                                if (ps != null) ps.close();
-                                        }
-                                }
+
+				insertGeneralBatch(conn, out, "FileRunLumi", keys, valueVec);
+				insertGeneralBatch(conn, out, "FileRunLumi", keys, lumiOnlyValueVec);
+
 //----------------------------Lumi/Run mapping done				
+
                                 //Insert Trigger tags (if present)
                                 for (int j = 0; j < trigTagVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)trigTagVector.get(j);
@@ -1054,7 +1040,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         fileID,
                                                         get(hashTable, "trigger_tag"),
                                                         get(hashTable, "number_of_events"),
-                                                        cbUserID, lmbUserID, creationDate, false);
+                                                        cbUserID, lmbUserID, creationDate, true);
                                 }
 
                                 //Insert the file association   
@@ -1063,7 +1049,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         insertMap(conn, out, "FileAssoc", "ThisFile", "ItsAssoc",
                                                                 fileID,
                                                                 getID(conn, "Files", "LogicalFileName", fileAssoc, true),
-                                                                cbUserID, lmbUserID, creationDate, false);
+                                                                cbUserID, lmbUserID, creationDate, true);
                                 }
                         if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
                 }//For loop
