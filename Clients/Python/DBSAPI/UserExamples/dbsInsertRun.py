@@ -16,10 +16,26 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
 
 try:
-    for aRun in range(23000, 24000):
+	"""
+	for aRun in range(23000, 24000):
 
-        run = DbsRun (
-                RunNumber=aRun,
+        	run = DbsRun (
+                	RunNumber=aRun,
+                	NumberOfEvents= 100,
+               		NumberOfLumiSections= 20,
+                	TotalLuminosity= 2222,
+                	StoreNumber= 123,
+                	StartOfRun= 12345,
+                	EndOfRun= 45678,
+                	)
+
+    		print "Creating run", aRun
+	
+    		api.insertRun (run)
+	"""
+
+	run = DbsRun (
+                RunNumber=1,
                 NumberOfEvents= 100,
                 NumberOfLumiSections= 20,
                 TotalLuminosity= 2222,
@@ -28,9 +44,8 @@ try:
                 EndOfRun= 45678,
                 )
 
-    	print "Creating run", aRun
+	api.insertRun (run)
 
-    	api.insertRun (run)
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

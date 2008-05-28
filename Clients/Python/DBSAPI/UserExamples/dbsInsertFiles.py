@@ -39,7 +39,8 @@ algo = DbsAlgorithm (
 primary = DbsPrimaryDataset (Name = "test_primary_001")
 proc = DbsProcessedDataset (
         PrimaryDataset=primary, 
-        Name="TestProcessedDSWithADSParent", 
+        Name="TestProcessedDS001", 
+        #Name="TestProcessedDSWithADSParent", 
         PhysicsGroup="BPositive",
         Status="Valid",
         TierList=['SIM', 'GEN'],
@@ -215,13 +216,13 @@ myfile44= DbsFile (
         
 
 block = DbsFileBlock (
-         Name="/test_primary_001/TestProcessedDSWithADSParent/GEN-SIM#12345"
-         #Name="/test_primary_001/TestProcessedDS001/SIM#12345"
+         #Name="/test_primary_001/TestProcessedDSWithADSParent/GEN-SIM#123456"
+         Name="/test_primary_001/TestProcessedDS001/GEN-SIM#123456"
          )
            
 block2 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
+	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#123456"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"
@@ -234,18 +235,18 @@ try:
 
     #api.insertFiles (proc, [myfile1], block)
 
-
     ##api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22])
+
     #Insert in a Block	
+    print "Inserting files... "
+
     api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22], block)
-    #DBS Creates the Block and add file that has ONLYU run, No Lumi
+    #DBS Creates the Block and add file that has ONLY run, No Lumi
     api.insertFiles (proc, [myfile3] )
 
     api.insertFiles(proc, [myfile4], block)  
 
     api.insertFiles(proc, [myfile44], block)  
-
-    print "Result: %s" % myfile3
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
