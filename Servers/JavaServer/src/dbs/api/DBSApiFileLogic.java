@@ -1,6 +1,6 @@
 /**
- $Revision: 1.92 $"
- $Id: DBSApiFileLogic.java,v 1.92 2008/05/20 21:40:11 afaq Exp $"
+ $Revision: 1.93 $"
+ $Id: DBSApiFileLogic.java,v 1.93 2008/05/21 22:19:17 afaq Exp $"
  *
  */
 
@@ -914,13 +914,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                             cbUserID, lmbUserID, creationDate);
 
                                 	ps.execute();
+					newFileInserted = true;
 				} catch (SQLException ex) {
 					String exmsg = ex.getMessage();
 					if ( exmsg.startsWith("Duplicate entry") || 
 						exmsg.startsWith("ORA-00001: unique constraint") ) {
 						writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
 						ps.close();
-						return; 
+						//Shouldn't RETURN from here, just continue
+						//return; 
 					} else {
  						throw new SQLException("'"+ex.getMessage()+"' insertFile for LogicalFileName:"+lfn+
                                         		" Query failed is"+ps);
@@ -930,8 +932,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                                 	if (ps != null) ps.close();
 				}
-
-                                newFileInserted = true;
 
                                 //if(isNull(fileID)) fileID = getFileID(conn, lfn);
                                 //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
