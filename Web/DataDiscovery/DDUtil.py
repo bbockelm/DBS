@@ -940,6 +940,54 @@ def getDBSQuery(data,tag="python_query"):
            count_sql,count_bDict=parseDBSQuery(i)
     return sql,bDict,count_sql,count_bDict
 
+def getDQInfo(data):
+    sysDict = {}
+    subDict = {}
+    elem  = ET.fromstring(data)
+    dot = """
+digraph prof {
+        size="10,8"; ratio = fill;
+        node [style=filled];
+"""
+    colorGood="[color=\"#00FF00\"]"
+    colorBad="[color=\"#FF0000\"]"
+    color=""
+    for i in elem:
+        if i.tag=="run":
+           for j in i:
+               if j.attrib['value']=="GOOD":
+                  color=colorGood
+               else:
+                  color=colorBad
+#               dot += "%s -> %s;\n"%(j.attrib['parent'],j.attrib['name'])
+#               dot += "%s %s;\n"%(j.attrib['name'],color)
+               if j.tag=="dq_sub_system":
+#                  print j.tag,j.attrib
+                  addToDict(sysDict,j.attrib['parent'],[j.attrib['name'],j.attrib['value']])
+#                  dot += "%s -> %s;\n"%(j.attrib['parent'],j.attrib['name'])
+#                  dot += "%s %s;\n"%(j.attrib['name'],color)
+               if j.tag=="dq_sub_subsys":
+#                  print j.tag,j.attrib
+                  addToDict(subDict,j.attrib['parent'],[j.attrib['name'],j.attrib['value']])
+#    dot+="}\n"
+#    print dot
+    node=""
+    idx=0
+#    for k in sysDict.keys():
+#        entry=""
+#        for tup in sysDict[k]:
+#            entry+="|<%s> %s"%(tup[0],tup[0])
+#        node+="node%s[label=\"%s\"];\n"%(idx,entry[1:])
+#        idx+=1
+#    for k in subDict.keys():
+#        entry=""
+#        for tup in subDict[k]:
+#            entry+="|<%s> %s"%(tup[0],tup[0])
+#        node+="node%s[label=\"%s\"];\n"%(idx,entry[1:])
+#        idx+=1
+#    print node
+
+    return sysDict,subDict
 #
 # main
 #
