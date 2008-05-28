@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.171 $"
- $Id: DBSSql.java,v 1.171 2008/05/21 22:19:18 afaq Exp $"
+ $Revision: 1.172 $"
+ $Id: DBSSql.java,v 1.172 2008/05/27 19:43:00 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -184,7 +184,7 @@ public class DBSSql {
                 String sql = "INSERT INTO "+owner()+tableName+" \n"+
                                 "("+key1+","+key2+", \n"+
                                 " CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                " select ?, ?, ?, ?, ? FROM DUAL \n";
+                                " select ?, ?, ?, ?, ? FROM DUAL ";
                                 //" select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -201,7 +201,7 @@ public class DBSSql {
 
                         ps.addBatch();
                 }
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n" + ps + "\n");
 
                 return ps;
         }
@@ -213,7 +213,7 @@ public class DBSSql {
                 String sql = "INSERT INTO "+owner()+tableName+" \n"+
                                 "("+key1+","+key2+", \n"+
                                 " CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                " select ?, ?, ?, ?, ? FROM DUAL \n";
+                                " select ?, ?, ?, ?, ? FROM DUAL ";
                                 //" select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -236,7 +236,7 @@ public class DBSSql {
                         ps.addBatch();
                 }
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n" + ps + "\n");
 
                 return ps;
         }

@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.42 $"
- $Id: DBSServlet.java,v 1.42 2008/05/16 20:10:44 sekhri Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSServlet.java,v 1.43 2008/05/21 21:21:54 afaq Exp $"
 
  */
 package dbs;
@@ -132,15 +132,12 @@ public class DBSServlet extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
 		try {
 			RegisterLock rLock = RegisterLock.getRegisterLockInstance();
-			System.out.println("checking doneOnce");
 			if(!rLock.isDoneOnce()) {
-				System.out.println("addming register");
 				String url = request.getRequestURL().toString();
 				DBSUtil u = new DBSUtil();
 				u.addRegistration(url);
 				rLock.setDoneOnce(true);
 			}
-			System.out.println("DONE register");
 	 	} catch(Exception e) {
 			System.out.println(e);
     		}
