@@ -807,67 +807,67 @@ adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
 		Description="This is a test Analysis Dataset" + mytime,
 		)
 		    
-apiObj = DbsUnitTestApi(api.createAnalysisDatasetDefinition, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************createAnalysisDatasetDefinition API tests***************************")
+#apiObj = DbsUnitTestApi(api.createAnalysisDatasetDefinition, f)
+#apiObj.setVerboseLevel(opts.verbose)
+#f.write("\n\n***********************createAnalysisDatasetDefinition API tests***************************")
+#
+#apiObj.run(adef, excep = False)
+#apiObj.run(adef, excep = True)
+#
+#adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_006" + mytime,
+#		ProcessedDatasetPath=path,
+#		Description="This is a test Analysis Dataset" + mytime,
+#		)
+#
+#apiObj.run(adef1, excep = False)
+#
+#adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_007" + mytime)
+#apiObj.run(adef1, excep = True)
+#
+#adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDe  f_006" + mytime)
+#apiObj.run(adef1, excep = True)
+#
+#
+#f.write("\n***********************createAnalysisDatasetDefinition API tests***************************")
+#
+#
+#apiObj = DbsUnitTestApi(api.createAnalysisDataset, f)
+#apiObj.setVerboseLevel(opts.verbose)
+#f.write("\n\n***********************createAnalysisDataset API tests***************************")
+#
 
-apiObj.run(adef, excep = False)
-apiObj.run(adef, excep = True)
+#ads = DbsAnalysisDataset(
+#                            Annotation='testdataset' +mytime,
+#                            Type='TEST',
+#                            Status='NEW',
+#                            PhysicsGroup='BPositive'
+#                           )
+#
+##apiObj.run(ads, adef['Name'] , excep = False)
+#apiObj.run(ads, adef['Name'] , excep = False)
+#
+#ads1 = DbsAnalysisDataset(
+#                            Annotation='testdataset' +mytime,
+#                            PhysicsGroup='BPositive')
+##apiObj.run(ads1, adef['Name'] , excep = False)
+#
+#ads1 = DbsAnalysisDataset(Name='TestAnalysisDaaaataset0056' + mytime,
+#                            PhysicsGroup='BPositive')
+##apiObj.run(ads1, adef['Name'] , excep = True)
+#
+#ads1 = DbsAnalysisDataset(Name='TestAnalysiqqqqsDataset0056' + mytime,
+#                            Annotation='testdataset' +mytime,)
+##apiObj.run(ads1, adef['Name'] , excep = True)
+#
+#ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0  056' + mytime,
+#                            Annotation='testdataset' +mytime,
+#                            PhysicsGroup='BPositive' )
+##apiObj.run(ads1, adef['Name'] , excep = True)
+#
+#apiObj.run(adef['Name'] , excep = True)
+#apiObj.run(ads1, 'Should_not_exists' , excep = True)
 
-adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_006" + mytime,
-		ProcessedDatasetPath=path,
-		Description="This is a test Analysis Dataset" + mytime,
-		)
-
-apiObj.run(adef1, excep = False)
-
-adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_007" + mytime)
-apiObj.run(adef1, excep = True)
-
-adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDe  f_006" + mytime)
-apiObj.run(adef1, excep = True)
-
-
-f.write("\n***********************createAnalysisDatasetDefinition API tests***************************")
-
-
-apiObj = DbsUnitTestApi(api.createAnalysisDataset, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************createAnalysisDataset API tests***************************")
-
-
-ads = DbsAnalysisDataset(
-                            Annotation='testdataset' +mytime,
-                            Type='TEST',
-                            Status='NEW',
-                            PhysicsGroup='BPositive'
-                           )
-
-apiObj.run(ads, adef['Name'] , excep = False)
-apiObj.run(ads, adef['Name'] , excep = False)
-
-ads1 = DbsAnalysisDataset(
-                            Annotation='testdataset' +mytime,
-                            PhysicsGroup='BPositive')
-#apiObj.run(ads1, adef['Name'] , excep = False)
-
-ads1 = DbsAnalysisDataset(Name='TestAnalysisDaaaataset0056' + mytime,
-                            PhysicsGroup='BPositive')
-#apiObj.run(ads1, adef['Name'] , excep = True)
-
-ads1 = DbsAnalysisDataset(Name='TestAnalysiqqqqsDataset0056' + mytime,
-                            Annotation='testdataset' +mytime,)
-#apiObj.run(ads1, adef['Name'] , excep = True)
-
-ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0  056' + mytime,
-                            Annotation='testdataset' +mytime,
-                            PhysicsGroup='BPositive' )
-#apiObj.run(ads1, adef['Name'] , excep = True)
-
-apiObj.run(adef['Name'] , excep = True)
-apiObj.run(ads1, 'Should_not_exists' , excep = True)
-
-f.write("\n***********************createAnalysisDataset API tests***************************")
+#f.write("\n***********************createAnalysisDataset API tests***************************")
 
 
 apiObj = DbsUnitTestApi(api.addReplicaToBlock, f)
