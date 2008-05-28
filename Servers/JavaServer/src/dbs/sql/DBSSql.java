@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.172 $"
- $Id: DBSSql.java,v 1.172 2008/05/27 19:43:00 afaq Exp $"
+ $Revision: 1.173 $"
+ $Id: DBSSql.java,v 1.173 2008/05/28 21:20:26 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3486,14 +3486,9 @@ public class DBSSql {
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
 			"adsdef.ID as ADDID, \n" +
                         "adsdef.Name as ANALYSIS_DATASET_DEF_NAME, \n" +
-                        "adsdef.LumiSections as LUMI_SECTIONS, \n" +
-                        "adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
-                        "adsdef.Runs as RUNS, \n" +
-                        "adsdef.RunsRanges as RUNS_RANGES, \n" +
-                        "adsdef.Algorithms as ALGORITHMS, \n" +
-                        "adsdef.LFNs as LFNS, \n" +
                         "adsdef.Path as ANALYSIS_DATASET_DEF_PATH, \n" +
-                        "adsdef.UserCut as USER_CUT, \n" +
+                        "adsdef.UserInput as USER_INPUT, \n" +
+                        "adsdef.SQLQuery as SQL_QUERY, \n" +
                         "adsdef.Description as ADD_DESCRIPTION, \n" +
                         "adsdef.CreationDate as ADD_CREATION_DATE, \n" +
                         "adsdef.LastModificationDate as ADD_LAST_MODIFICATION_DATE, \n" +
