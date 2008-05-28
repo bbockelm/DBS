@@ -4,9 +4,10 @@
 -- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_1_1_0_ADSDEF;
-create database DBS_1_1_0_ADSDEF;
-use DBS_1_1_0_ADSDEF;
+drop database if exists DBS_1_1_2;
+create database DBS_1_1_2;
+use DBS_1_1_2;
+
 -- ======================================================================
 
 CREATE TABLE Person
@@ -1989,7 +1990,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_0', 'LOCAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_2', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
@@ -2012,7 +2013,20 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'G
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW', 'SV Support 102463 for CSA 07');
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()) ;
+
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-HLTDEBUG', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW-HLTDEBUG', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RECO', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW-RECO', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-RECO', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-HLTDEBUG-RECO', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08');
+
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()), ('GEN-SIM', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI', UNIX_TIMESTAMP()), ('GEN-SIM-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP());
+
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
 ('SUSYBSM', UNIX_TIMESTAMP()), 

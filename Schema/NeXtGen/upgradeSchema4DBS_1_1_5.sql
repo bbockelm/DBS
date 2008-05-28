@@ -44,6 +44,22 @@ ALTER TABLE TimeLog MODIFY (
 
 -- =====================================================================
 
+PROMPT Changing TimeLog renaming Description to DescriptionSmall;
+
+ALTER TABLE TimeLog RENAME column Description TO DescriptionSmall;
+
+
+PROMPT Changing TimeLog adding Description as CLOB;
+ALTER TABLE TimeLog ADD ( Description CLOB);
+
+PROMPT Changing TimeLog copying DescriptionSmall into Description;
+UPDATE TimeLog SET Description = DescriptionSmall;
+
+PROMPT Removing not null from DescriptionSmall;
+ALTER TABLE TimeLog MODIFY ( DescriptionSmall varchar(1000) NULL );
+
+-- =====================================================================
+
 CREATE TABLE RunLumiDQInt
   (
     ID                    integer,
@@ -140,11 +156,4 @@ END;
 /
 
 UPDATE SchemaVersion SET SchemaVersion='DBS_1_1_2';
-
-ALTER TABLE TimeLog RENAME column Description TO DescriptionSmall;
-ALTER TABLE TimeLog ADD ( Description CLOB);
-commit;
-UPDATE TimeLog SET Description = DescriptionSmall;
-ALTER TABLE TimeLog MODIFY ( DescriptionSmall varchar(1000) NULL );
-
 

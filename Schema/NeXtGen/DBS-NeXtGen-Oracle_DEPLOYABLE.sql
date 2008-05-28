@@ -2885,22 +2885,27 @@ END;
 /
 
 -- Set the Schema Version -- 
-INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_1_0', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_1_2', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 -- Pre Fill some information into tables ---------
 INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('VALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('INVALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('MERGED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('IMPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('EXPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('RO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
+
 INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('mc', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('cosmic', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -2908,9 +2913,12 @@ INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('align', (select (sysdat
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('calib', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('raw', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('data', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -2925,6 +2933,20 @@ INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI-RECO', 'Min bias data', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'SV Support 102463 for CSA 07', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-HLTDEBUG-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -2934,6 +2956,20 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', (select (sysdate -
 INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AODSIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-HLTDEBUG', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAW-HLTDEBUG', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAW-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-HLTDEBUG-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSYBSM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -2951,6 +2987,7 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Btag', (selec
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('RelVal', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PhysVal', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Tracker', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('GOOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('BAD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('UNKNOWN', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
