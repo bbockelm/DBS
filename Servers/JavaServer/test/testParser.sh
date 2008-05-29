@@ -4,7 +4,7 @@ if [ "${JAVA_HOME}" = "" ]; then
 	exit 1
 fi
 savePWD=$PWD
-cd $BASE/lib
+cd $BASE/../../LibValut
 CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.1.7.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
@@ -120,6 +120,6 @@ executeQuery () {
 #$CMD query="find lumi.id , file.id , dataset"
 #$CMD query="find lumi.id where dataset like *"
 #$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM order by file"
-#$CMD query="find run,file  order by file"
+$CMD query="find run,file  order by file"
 #executeQuery
 
