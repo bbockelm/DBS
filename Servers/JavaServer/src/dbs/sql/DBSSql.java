@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.173 $"
- $Id: DBSSql.java,v 1.173 2008/05/28 21:20:26 afaq Exp $"
+ $Revision: 1.174 $"
+ $Id: DBSSql.java,v 1.174 2008/05/28 21:46:54 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2989,7 +2989,7 @@ public class DBSSql {
 			String whereClause = "";
 			if(!DBSUtil.isNull(path)) whereClause = "WHERE Path = ? ";
 			else if(!DBSUtil.isNull(procDSID)) whereClause = "WHERE Dataset = ? ";
-			sql += "JOIN (SELECT Name, ID from Block " + whereClause + ") b \n" +
+			sql += "JOIN (SELECT Name, ID from "+owner()+"Block " + whereClause + ") b \n" +
 					"ON b.id = f.Block \n ";
 		}
 		if(DBSUtil.contains(attributes, "retrive_type")) 
@@ -3054,7 +3054,7 @@ public class DBSSql {
 		}
 		if (!DBSUtil.isNull(path)) {
 			if(useAnd) sql += " AND ";
-			sql += "f.Block IN (SELECT bl.ID from Block bl where bl.Path = ? ) \n" ;
+			sql += "f.Block IN (SELECT bl.ID from "+owner()+"Block bl where bl.Path = ? ) \n" ;
 			useAnd = true;
 		}
 		if (!DBSUtil.contains(attributes, "retrive_invalid_files")) {
