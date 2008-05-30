@@ -120,6 +120,7 @@ executeQuery () {
 #$CMD query="find lumi.id , file.id , dataset"
 #$CMD query="find lumi.id where dataset like *"
 #$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM order by file"
-$CMD query="find run,file  order by file"
+#$CMD query="find run,file  order by file"
+$CMD query="find dataset"
 #executeQuery
 

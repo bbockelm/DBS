@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiPrimDSLogic.java,v 1.21 2007/12/12 19:50:23 afaq Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.22 2008/01/11 18:07:14 afaq Exp $"
  *
  */
 
@@ -48,6 +48,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listPrimaryDatasets(conn, getPattern(pattern, "primary_dataset_name_pattern"));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<primary_dataset id='" + get(rs, "ID") +
@@ -135,6 +136,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 					end_date,
 					getID(conn, "PrimaryDSType", "Type", type, true), 
 					cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} catch (SQLException ex) {
 				//System.out.println("Exception: "+ex.getMessage());

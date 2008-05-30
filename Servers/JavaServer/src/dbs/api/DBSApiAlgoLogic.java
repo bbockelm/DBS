@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApiAlgoLogic.java,v 1.18 2007/11/16 21:29:36 sekhri Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSApiAlgoLogic.java,v 1.19 2008/04/16 16:22:55 sekhri Exp $"
  *
  */
 
@@ -54,6 +54,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.listAlgorithms(conn, patternVer, patternFam, patternExe, patternPS);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String ann = get(rs, "PS_ANNOTATION");
@@ -97,6 +98,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.listAlgorithms(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String ann = get(rs, "PS_ANNOTATION");
@@ -180,6 +182,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 					getID(conn, "AppFamily", "FamilyName", family, true), 
 					getID(conn, "QueryableParameterSet", "Hash", psHash, true), 
 					cbUserID, userID, creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} finally { 
 				if (ps != null) ps.close();
@@ -238,6 +241,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
                                                 //FIXME We are allowing every thing in content, need to fix it
 						contentBase64, 
 						cbUserID, userID, creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -271,6 +275,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psHash);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if (excep) throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psHash);

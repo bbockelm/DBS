@@ -1,6 +1,6 @@
 /**
- $Revision: 1.136 $"
- $Id: DBSApiLogic.java,v 1.136 2008/05/22 18:55:38 sekhri Exp $"
+ $Revision: 1.137 $"
+ $Id: DBSApiLogic.java,v 1.137 2008/05/28 21:08:44 afaq Exp $"
  *
  */
 
@@ -62,6 +62,10 @@ public class DBSApiLogic {
          */
 
           //tableName,paramList=[],from=1,rows='*'
+	protected void pushQuery(PreparedStatement ps) {
+		this.data.qStack.push(ps.toString());
+		System.out.println("Stack SIZE is " + this.data.qStack.size());
+	}
 
         public void listRowsInTable(Connection conn, Writer out, String tableName, String from, String rows) throws Exception {
 
@@ -72,6 +76,7 @@ public class DBSApiLogic {
                 try {
 		System.out.println("what ?");
                         ps = DBSSql.listRowsInTable(conn, tableName, from, rows);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
 
                         ResultSetMetaData rsmd = rs.getMetaData();
@@ -128,6 +133,7 @@ public class DBSApiLogic {
 					personApi.getUserID(conn, dbsUser),
 					getTime(run, "creation_date", false));
 
+				pushQuery(ps);
 				ps.execute();
 			} finally { 
 				if (ps != null) ps.close();
@@ -236,6 +242,7 @@ public class DBSApiLogic {
 			//out.write("<readable_query>\n");
 			//out.write(StringEscapeUtils.escapeXml(ps.toString()) + "\n");
 			//out.write("</readable_query>\n");
+			pushQuery(ps);
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int numberOfColumns = rsmd.getColumnCount();
@@ -289,6 +296,7 @@ public class DBSApiLogic {
 						get(run, "end_of_run", false),
 						personApi.getUserID(conn, dbsUser)
 						);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -313,6 +321,8 @@ public class DBSApiLogic {
 						get(lumi, "lumi_start_time", false),
 						get(lumi, "lumi_end_time", false),
 						personApi.getUserID(conn, dbsUser));
+
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -402,6 +412,7 @@ public class DBSApiLogic {
 						cbUserID,
 						lmbUserID,
 						creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -411,6 +422,7 @@ public class DBSApiLogic {
         	        ps = null;
                 	try {
                         	ps = DBSSql.updateRunLumiCount(conn, runID);
+				pushQuery(ps);
                         	ps.executeUpdate();
                 	} finally {
                         	if (ps != null) ps.close();
@@ -443,6 +455,8 @@ public class DBSApiLogic {
 						cbUserID,
 						lmbUserID,
 						creationDate);
+				
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -484,6 +498,7 @@ public class DBSApiLogic {
 					uniqueValueFrom,
 					uniqueValueTo,
 					lmbUserID);
+			pushQuery(ps);
 			ps.execute();
 		} finally {
 			if (ps != null) ps.close();
@@ -506,6 +521,7 @@ public class DBSApiLogic {
 					updateKey, 
 					updateKeyValue,
 					lmbUserID);
+			pushQuery(ps);
 			ps.execute();
 		} finally {
 			if (ps != null) ps.close();
@@ -522,6 +538,7 @@ public class DBSApiLogic {
 					value2New,
 					value2Old,
 					lmbUserID);
+			pushQuery(ps);
 			ps.execute();
 		} finally {
 			if (ps != null) ps.close();
@@ -548,6 +565,7 @@ public class DBSApiLogic {
 					updateKey1, 
 					getID(conn, tableName2, uniqueKey2, uniqueValue2.toUpperCase(), true), 
 					lmbUserID);
+			pushQuery(ps);
 			ps.execute();
 		} finally {
 			if (ps != null) ps.close();
@@ -582,6 +600,7 @@ public class DBSApiLogic {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertName(conn, table, key, value, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -601,6 +620,7 @@ public class DBSApiLogic {
                         PreparedStatement ps = null;
                         try {
                                 ps = DBSSql.insertName(conn, table, key, value, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
                                 ps.execute();
                         } finally {
                                 if (ps != null) ps.close();
@@ -639,6 +659,7 @@ public class DBSApiLogic {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -653,6 +674,7 @@ public class DBSApiLogic {
                 PreparedStatement ps = null;
                 try {
                         ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, mapTo, values, cbUserID, lmbUserID, creationDate);
+			pushQuery(ps);
                         ps.executeBatch();
                 } catch (SQLException ex) {
                         String exmsg = ex.getMessage();
@@ -676,6 +698,7 @@ public class DBSApiLogic {
                 PreparedStatement ps = null;
                 try {
                         ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, key3, mapTo, values, mapK3, cbUserID, lmbUserID, creationDate);
+			pushQuery(ps);
                         ps.executeBatch();
                 } catch (SQLException ex) {
                         String exmsg = ex.getMessage();
@@ -699,6 +722,7 @@ public class DBSApiLogic {
 	 	PreparedStatement ps = null;
                 try {
 			ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, valueVec);
+			pushQuery(ps);
                         ps.executeBatch();
 		} catch (SQLException ex) {
 			String exmsg = ex.getMessage();
@@ -730,6 +754,7 @@ public class DBSApiLogic {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.deleteMap(conn, tableName, key1, key2, value1, value2);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -750,6 +775,7 @@ public class DBSApiLogic {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.deleteName(conn, tableName, key, value);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -795,6 +821,7 @@ public class DBSApiLogic {
                         try {
                                 ps = DBSSql.insertMap(conn, tableName, key1, key2, key3, value1, 
 							value2, value3, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
                                 ps.execute();
                         } finally {
                                 if (ps != null) ps.close();
@@ -840,6 +867,7 @@ public class DBSApiLogic {
 					cbUserID,
 					lmbUserID,
 					creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -867,6 +895,7 @@ public class DBSApiLogic {
 							getTime(new Hashtable(), "creation_date", false)
 							);
 
+				pushQuery(ps);
                                 ps.execute();
                         } finally {
                                 if (ps != null) ps.close();
@@ -938,6 +967,7 @@ public class DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.getID(conn, tableName, key, value);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if(excep) throw new DBSException("Unavailable data", "1011", "No such " + tableName + " : " + key + " : " + value );
@@ -979,6 +1009,7 @@ public class DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.getMapID(conn, tableName, key1, key2, value1, value2);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if(excep) throw new DBSException("Unavailable data", "1012", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
@@ -1002,6 +1033,7 @@ public class DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.getMapID(conn, tableName, key1, key2, value1, value2);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if(excep) throw new DBSException("Unavailable data", "1012", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
@@ -1046,6 +1078,7 @@ public class DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.getMapID(conn, tableName, key1, key2, key3, value1, value2, value3);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if(excep) throw new DBSException("Unavailable data", "1012", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2 + " : " + key3 + " : " + value3 );
@@ -1214,6 +1247,7 @@ public class DBSApiLogic {
         	        try {
                 	        //List all rows of DataTierOrder Table
 	                        ps =  DBSSql.getDataTierOrder(conn);
+				pushQuery(ps);
         	                rs =  ps.executeQuery();
 				if(!rs.next()) throw new DBSException("Unavailable data", "1011", "DataTierOrder table does not exist" );
 				this.data.dbOrderedList.add(get(rs, "DATATIERORDER"));

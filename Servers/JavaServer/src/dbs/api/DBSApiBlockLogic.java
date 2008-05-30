@@ -1,6 +1,6 @@
 /**
- $Revision: 1.55 $"
- $Id: DBSApiBlockLogic.java,v 1.55 2008/05/09 16:29:05 sekhri Exp $"
+ $Revision: 1.56 $"
+ $Id: DBSApiBlockLogic.java,v 1.56 2008/05/13 16:35:55 sekhri Exp $"
  *
  */
 
@@ -65,6 +65,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				patternPath = path;
 			}
 			ps =  DBSSql.listBlocks(conn, procDSID, patternPath, getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			//System.out.println("userType " + userType);
 			if(isNull(userType)) userType = "NORMAL";
@@ -122,6 +123,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps =  DBSSql.listStorageElements(conn, getPattern(patternSEName, "storage_element_name"));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<storage_element id='" + get(rs, "ID") +
@@ -232,6 +234,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					userID,
 					creationDate);
 
+				pushQuery(ps);
 				ps.execute();
 			} finally { 
 				if (ps != null) ps.close();
@@ -307,6 +310,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps =  DBSSql.getMap(conn, "SEBlock", "SEID", "BlockID", seID, "");
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				deleteName(conn, out, "StorageElement", "SEName", seName);
@@ -345,6 +349,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                 personApi.getUserID(conn, dbsUser),
 				creationDate);
 
+			pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();
@@ -423,6 +428,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		Vector toReturn = new Vector();
 		try {
 			ps =  DBSSql.getMap(conn, "SEBlock", "SEID", "BlockID", seID, "");
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) toReturn.add(get(rs, "BlockID"));
 		} finally {
@@ -472,6 +478,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 ResultSet rs = null;
 		try {
 			ps = DBSSql.listBlockValues(conn, blockID);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) {
 				updateBlock( conn, out, 
@@ -491,6 +498,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		try {
 			ps = DBSSql.updateBlock(conn, blockID, blockSize, numberOfFiles, numberOfEvents, lmbUserID);
+			pushQuery(ps);
 			ps.executeUpdate();
 		} finally { 
 			if (ps != null) ps.close();
@@ -517,6 +525,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
                 try {
                         ps = DBSSql.getOpenBlockID(conn, procDSID, blockNamePath, seVector);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
 			
 			if (!rs.next()) {
@@ -595,6 +604,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 PreparedStatement ps = null;
                 try {
                         ps = DBSSql.openBlock(conn, getBlockID(conn, name, false, true), personApi.getUserID(conn, dbsUser));
+			pushQuery(ps);
                         ps.executeUpdate();
                 } finally {
                         if (ps != null) ps.close();
@@ -618,6 +628,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		try {
 			ps = DBSSql.closeBlock(conn, blockID, lmbUserID);
+			pushQuery(ps);
 			ps.executeUpdate();
 		} finally {
 			if (ps != null) ps.close();
@@ -642,6 +653,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		try {
 			//ps = DBSSql.getID(conn, "Block", "Name", name);
 			ps = DBSSql.getBlockID(conn, name);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if(excep) throw new DBSException("Unavailable data", "1010", "No such block : name : "  + name );
@@ -668,6 +680,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.listFilesChildern(conn, getBlockID(conn, blockName, false, true));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) 
 				throw new DBSException("Files cannot be Orphaned", "1091", "This Block " + blockName + " has files which have childern. Delete those files/datatset first " );
@@ -720,6 +733,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		try {
 			//Get the xml of the Blocks from the recycle bin
 			ps =  DBSSql.listBlockContentsInRecycleBin(conn, path, blockName);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) {
 		       		undeleteBlock(conn, out, path, blockName, get(rs, "XML"), dbsUser, clientVersion);
@@ -755,6 +769,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listPathParent(conn, path);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset_parent path='" +  get(rs, "PATH") + 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.130 $"
- $Id: DBSApi.java,v 1.130 2008/05/09 16:29:05 sekhri Exp $"
+ $Revision: 1.131 $"
+ $Id: DBSApi.java,v 1.131 2008/05/13 21:00:13 afaq Exp $"
  *
 */
 
@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.io.Writer;
 import java.util.Vector;
+import java.util.Stack;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.ArrayList;
@@ -821,7 +822,11 @@ public class DBSApi {
 			StringEscapeUtils.escapeXml(code) + 
 			"' detail ='" + 
 			StringEscapeUtils.escapeXml(detail) + "'/>\n";
-		
+		int stackSize = this.data.qStack.size();
+		toWrite += "\n<stack_trace>\n";
+		for (int i = 0; i != stackSize; ++i) 
+			toWrite += "\t<stack_element index='" + String.valueOf(i) + "' query='" + StringEscapeUtils.escapeXml((String)this.data.qStack.pop()) + "'/>\n";
+		toWrite += "</stack_trace>\n";
 		out.write(toWrite ); 
 		/*out.write("<exception message='" + message + "' "); 
 		out.write(" code ='" + code + "' "); 

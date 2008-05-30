@@ -1,12 +1,13 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiData.java,v 1.6 2007/11/16 21:29:36 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiData.java,v 1.7 2007/11/16 22:20:35 sekhri Exp $"
  *
  */
 
 package dbs.api;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.Stack;
 import dbs.data.DBSDataCache;
 
 /**
@@ -24,6 +25,7 @@ public class DBSApiData {
 	public Hashtable localPDPath = new Hashtable();
 	public Hashtable person = new Hashtable();
 	public Vector dbOrderedList = new Vector();
+	public Stack qStack = new Stack();
 	public String apiName = "";
 	public String instanceName = "";
 	/**

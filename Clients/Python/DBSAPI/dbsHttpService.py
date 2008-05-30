@@ -303,6 +303,10 @@ class DbsHttpService:
 	raise DbsExecutionError (args=msg, code="505")            
 
     try:
+      data = data.replace("&apos;","")
+      data = unescape(data)
+      qTrace = data[data.find('<stack_trace>') + 13 : data.find('</stack_trace>')]
+      #print qTrace
       # DbsExecutionError message would arrive in XML, if any
       class Handler (xml.sax.handler.ContentHandler):
            def startElement(self, name, attrs):
@@ -314,6 +318,7 @@ class DbsHttpService:
 		exmsg = exmsg.replace("____________", "\n");
 		exmsg = exmsg.replace("QUERY    ", "\n");
 		exmsg = exmsg.replace("POSITION ", "\n");
+		exmsg += "\n" + qTrace + "\n"
 		
 		if statusCode_i == 1018:
 		    raise DbsBadRequest (args=exmsg, code=statusCode)
@@ -343,8 +348,6 @@ class DbsHttpService:
 		info += "\n Detail: %s " %attrs['detail']+"\n"
                 #####logging.log(DBSINFO, info)
 		
-      data = data.replace("&apos;","")
-      data = unescape(data)
       #print data
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data

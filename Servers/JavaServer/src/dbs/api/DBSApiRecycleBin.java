@@ -42,6 +42,7 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 				cbUserID,
 				cbUserID,
 				creationDate);
+			pushQuery(ps);
 			ps.execute();
                 } finally {
 			if (ps != null) ps.close();
@@ -53,6 +54,7 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 		PreparedStatement ps = null;
 		try {
 			ps = DBSSql.deleteMap(conn, "RecycleBin", "Path", "BlockName", path, blockName);
+			pushQuery(ps);
 			ps.execute();
                 } finally {
 			if (ps != null) ps.close();

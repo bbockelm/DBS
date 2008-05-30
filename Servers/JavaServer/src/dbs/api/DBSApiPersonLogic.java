@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApiPersonLogic.java,v 1.10 2007/11/15 21:02:27 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSApiPersonLogic.java,v 1.11 2007/11/16 21:29:36 sekhri Exp $"
  *
  */
 
@@ -61,6 +61,7 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 			try {
 				//FIXME it is not important to store whoi created this person 
 				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();

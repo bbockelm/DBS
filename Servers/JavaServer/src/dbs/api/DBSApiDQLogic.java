@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiDQLogic.java,v 1.13 2008/05/01 22:06:06 afaq Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApiDQLogic.java,v 1.14 2008/05/06 18:43:24 afaq Exp $"
  *
  */
 
@@ -49,6 +49,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 PreparedStatement ps = null;
                 try {
                         ps = DBSSql.insertDQFlagHistory(conn, rowID);
+			pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();
@@ -61,6 +62,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                         ps = DBSSql.updateDQFlag(conn, rowID,
                                                         getID(conn, "QualityValues", "Value", value, true),
                                                         lmbUserID);
+			pushQuery(ps);
                         ps.executeUpdate();
                 } finally {
                         if (ps != null) ps.close();
@@ -91,6 +93,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                                         getIDNoCheck(conn, "SubSystem", "Name", flag, true),
                                                         getID(conn, "QualityValues", "Value", value, true),
                                                         cbUserID, lmbUserID, creationDate);
+			pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();
@@ -123,6 +126,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                                         getIDNoCheck(conn, "SubSystem", "Name", flag, true),
                                                         value,
                                                         cbUserID, lmbUserID, creationDate);
+			pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();
@@ -169,6 +173,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 try {
                         ps = DBSSql.getDQFlag(conn, runID, lumiID, flagid,  valueid);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
 
 			if(!rs.next()) {
@@ -203,6 +208,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 try {
                         ps = DBSSql.getDQIntFlag(conn, runID, lumiID, flagid,  valueid);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
 
                         if(!rs.next()) {
@@ -228,6 +234,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 ResultSet rs = null;
 		try {
                         ps = DBSSql.getDQVerTimeStamp(conn, dqVersion);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 
                         if(!rs.next()) {
@@ -252,6 +259,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 try {
                         ps = DBSSql.listDQVersions(conn);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write( (String) "<dq_version version='"+get(rs, "DQ_VERSION")+"' time_stamp='"+get(rs, "TIME_STAMP")+"' />");
@@ -269,6 +277,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 		try {
                         ps = DBSSql.listSubSystems(conn);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write( (String) "<sub_system name='"+get(rs, "SUBSYSTEM")+"' parent='"+get(rs, "PARENT")+"' />");
@@ -302,6 +311,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 try {
                         ps = DBSSql.listFilesForRunLumiDQ(conn, runDQList, timeStamp);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
 
                         while(rs.next()) {
@@ -335,6 +345,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		boolean first = true;
                 try {
                         ps = DBSSql.listRunLumiDQ(conn, runDQList, timeStamp);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
 
 			String prevRun="";
@@ -465,6 +476,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 PreparedStatement ps = null;
                 try {
 			ps = DBSSql.insertDQVersion(conn, versionName, descrp, cbUserID, lmbUserID, creationDate);
+			pushQuery(ps);
                         ps.execute();
 
                 } finally {
@@ -527,6 +539,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 try {
                         ps = DBSSql.insertSubSystem(conn, name, parent, cbUserID, lmbUserID, creationDate);
+			pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();
@@ -725,6 +738,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 			try {
 				ps = DBSSql.getInsertSQLBatch (conn, "RunLumiQuality", keys, values);
 				//System.out.println("\n\nBATCH CREATED\n\n");
+				pushQuery(ps);
 				ps.executeBatch();
                 	} finally {
                         	if (ps != null) ps.close();

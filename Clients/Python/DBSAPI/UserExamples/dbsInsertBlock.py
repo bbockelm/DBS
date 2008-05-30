@@ -19,7 +19,7 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-primary = DbsPrimaryDataset (Name = "test_primary_001")
+primary = DbsPrimaryDataset (Name = "test_primary_001a")
 
 proc = DbsProcessedDataset (
          PrimaryDataset=primary,

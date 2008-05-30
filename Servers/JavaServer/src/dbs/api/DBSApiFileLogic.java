@@ -1,6 +1,6 @@
 /**
- $Revision: 1.94 $"
- $Id: DBSApiFileLogic.java,v 1.94 2008/05/28 19:37:07 afaq Exp $"
+ $Revision: 1.95 $"
+ $Id: DBSApiFileLogic.java,v 1.95 2008/05/28 21:08:44 afaq Exp $"
  *
  */
 
@@ -50,6 +50,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                 try {
                         ps = DBSSql.listFiles(conn, procDSID, path, runID, listInvalidFiles);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
                         while(rs.next()) {
                                 String fileID = get(rs, "ID");
@@ -191,6 +192,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		try {
 			//ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn);
 			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn, listInvalidFiles);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
@@ -316,6 +318,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		try {
 			//ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn, listInvalidFiles);
 			ps = DBSSql.listFiles(conn, procDSID, path, runID, aDSID, blockID, tierIDList, patternlfn, attributes);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
@@ -397,6 +400,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		try {
 			//ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
 			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			String tag = "";
 			if(parentOrChild) tag = "file_parent";
@@ -430,6 +434,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listFileTrigs(conn, getFileID(conn, lfn, true));
+			pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_trigger_tag id='" + get(rs, "ID") +
@@ -461,6 +466,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFileAlgorithms(conn, getFileID(conn, lfn, true));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_algorithm id='" + get(rs, "ID") + 
@@ -494,6 +500,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFileTiers(conn, getFileID(conn, lfn, true));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_data_tier id='" + get(rs, "ID") +
@@ -519,6 +526,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listBranch(conn, branchId);
+			pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_branch id='" + get(rs, "ID") +
@@ -544,6 +552,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFileBranchID(conn, lfn);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			
 			if (rs.next()) branchID = get(rs, "FILE_BRANCH");
@@ -577,6 +586,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFileLumis(conn, getFileID(conn, lfn, true));
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_lumi_section id='" +  get(rs, "ID") +
@@ -604,6 +614,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listFileRuns(conn, getFileID(conn, lfn, true));
+			pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_run id='" +  get(rs, "ID") +
@@ -634,6 +645,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
  		 String prevLFN = "";
  		 try {
  			 ps = DBSSql.listLFNs(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true) ,  getPattern(patternMetaData, "pattern_meta_data"));
+			pushQuery(ps);
  			 rs =  ps.executeQuery();
  			 while(rs.next()) {
  				 String lfn = get(rs, "LFN");
@@ -711,6 +723,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						contentBase64,
                                                 get(branchInfo, "description"),
                                                 cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
                                 ps.execute();
 				branchHashID = getID(conn, "BranchHash", "Hash", branchHash, true);
                         } finally {
@@ -783,6 +796,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
                         ps =  DBSSql.listBlockInfo(conn, getBlockPattern(blockName));
+			pushQuery(ps);
                         rs =  ps.executeQuery();
                         if (rs.next()) {
                                 blockID = get(rs, "ID");
@@ -913,6 +927,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                             branchID,
                                             cbUserID, lmbUserID, creationDate);
 
+					pushQuery(ps);
                                 	ps.execute();
 					newFileInserted = true;
 				} catch (SQLException ex) {
@@ -1327,6 +1342,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 							get(file, "queryable_meta_data", false), 
 							branchID,
 							cbUserID, lmbUserID, creationDate);
+					pushQuery(ps);
 					ps.execute();
 
 					//Update the Block stats in case it is dbsManaged Block
@@ -1484,6 +1500,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			/*PreparedStatement ps = null;
 			try {
 				ps = DBSSql.updateBlock(conn, blockID);
+				pushQuery(ps);
 				ps.executeUpdate();
 			} finally { 
 				if (ps != null) ps.close();
@@ -1620,6 +1637,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			try {
 				//Get all the parents
 				ps = DBSSql.listFileProvenence(conn, inFileID, true, true);
+				pushQuery(ps);
 				rs =  ps.executeQuery();
 				while(rs.next()) {
 					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
@@ -1637,6 +1655,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			try {
 				//Get all the childern
 				ps = DBSSql.listFileProvenence(conn, inFileID, false, true);
+				pushQuery(ps);
 				rs =  ps.executeQuery();
 				while(rs.next()) {
 					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
@@ -1695,6 +1714,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFiles(conn, lfn);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) (new DBSApiBlockLogic(this.data)).updateBlock(conn, out, get(rs, "BLOCK_ID"), lmbUserID);
 			else throw new DBSException("Unavailable data", "1011", "No such Files : LogicalFileName : " + lfn );

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApiLumiLogic.java,v 1.22 2008/01/11 18:07:14 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiLumiLogic.java,v 1.1 2008/03/07 23:06:50 sekhri Exp $"
  *
  */
 
@@ -43,6 +43,7 @@ public class DBSApiLumiLogic extends DBSApiLogic {
 		try {
 			
 			ps = DBSSql.getIntegratedLuminosity(conn, procDSID, "", run, runRange, tag);
+			pushQuery(ps);
 			rs =  ps.executeQuery();
 			Double sumInstantLumi = 0.0;
 			Double sumInstantLumiErr = 0.0;

@@ -8,7 +8,7 @@ fi
 savePWD=$PWD
 outFile=$savePWD/result.txt
 rm -f $outFile
-cd $BASE/lib
+cd $BASE/../../LibValut
 CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/commons-lang-2.4.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
@@ -179,7 +179,8 @@ listBlocks() {
 listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFiles path=$path_child detail="true"`
+	#out=`$CMD api=listFiles path=$path_child detail="true"`
+	out=`$CMD api=listFiles path=/CalPrivateGlobal-default/Online/RAW detail="true"`
 	#out=`$CMD api=listFiles "path=$path_child-$tier_name1"`
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
@@ -739,14 +740,14 @@ executeQuery () {
 
 #executeQuery
 #getIntegratedLuminosity	
-#insertPrimaryDataset
-#insertAlgorithm
-#insertTier
-#insertRun
-#insertLumiSection
-#insertProcessedDataset
-#insertBlock
-#insertFiles
+insertPrimaryDataset
+insertAlgorithm
+insertTier
+insertRun
+insertLumiSection
+insertProcessedDataset
+insertBlock
+insertFiles
 #
 ##deleteBlock
 ##undeleteBlock
@@ -758,13 +759,13 @@ executeQuery () {
 ##listAnalysisDataset
 ##
 #listPrimaryDatasets
-listPathParents
+#listPathParents
 #listProcessedDatasets
 #listAlgorithms
 #listRuns
 #listTiers
 #listBlocks
-#listFiles
+listFiles
 #listLFNs
 #listDatasetSummary
 ##listDatasetContents
