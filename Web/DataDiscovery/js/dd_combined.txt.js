@@ -1978,6 +1978,63 @@ function commonMenu(tag,iMenu) {
     }
 }
 */
+
+
+function AddNode(subList,name,node,admin) {
+    var text, flag, rval;
+    try {
+        var nList = subList[name]
+        for(var j=0;j<nList.length;j++) {
+            //var text=nList[j][0]+' ('+nList[j][1]+')';
+            flag=nList[j][0];
+            rval=nList[j][1];
+            if(admin==1) {
+                text='<input type="text" name="'+flag+'" size="5"/> - <span class="tiny">'+flag+'</span>';
+            } else {
+                if (rval=='GOOD') {
+                   text='<img src="images/choice-yes.gif" alt="GOOD" />-<span class="tiny">'+flag+'</span>';
+                } else {
+                   text='<img src="images/choice-no.gif" alt="'+rval+'" />-<span class="tiny">'+flag+'</span>';
+                }
+            }
+            var nodeName = new YAHOO.widget.TextNode(text,node,false);
+            AddNode(subList,nList[j][0],nodeName);
+        }
+    } catch(err) {
+    }
+}
+function BuildNode(tree,name,tableList,subList,admin) {
+    var tList = tableList[name];
+    var text,flag,rval,subnode;
+    for(var i=0;i<tList.length;i++) {
+        flag=tList[i][0];
+        rval=tList[i][1];
+        if (admin==1) {
+            text='<input type="text" name="'+flag+'" size="5"/> - <span class="tiny">'+flag+'</span>';
+        } else {
+            if (rval=='GOOD') {
+               text='<img src="images/choice-yes.gif" alt="GOOD" />-<span class="tiny">'+flag+'</span>';
+            } else {
+               text='<img src="images/choice-no.gif" alt="'+rval+'" />-<span class="tiny">'+flag+'</span>';
+            }
+        }
+        subnode = new YAHOO.widget.TextNode(text, tree.getRoot(), false);
+        AddNode(subList,flag,subnode,admin);
+    } 
+}
+function BuildNodeTree(tag,name,tableList,subList,admin) {
+    var tree = new YAHOO.widget.TreeView(tag);
+    BuildNode(tree,name,tableList,subList,admin);
+    tree.draw();
+}
+function ExpandView(tag) {
+   $(tag).innerHTML='<a href="javascript:CollapseView()">collapse</a>'
+   tree.expandAll();
+}
+function CollapseView() {
+   $(tag).innerHTML='<a href="javascript:ExpandView()">expand</a>'
+   tree.collapseAll();
+}
 /*  Prototype JavaScript framework, version 1.4.0
  *  (c) 2005 Sam Stephenson <sam@conio.net>
  *
@@ -7118,6 +7175,9 @@ function registerAjaxUserMenuCalls() {
 
 }
 
+function ajaxGetDQInfo(dbsInst,run,admin) {
+  ajaxEngine.sendRequest('ajaxGetDQInfo','dbsInst='+dbsInst,'run='+run,'admin='+admin);
+}
 function ajaxGetIntegratedLumi(dbsInst,dataset) {
   ajaxEngine.sendRequest('ajaxGetIntegratedLumi','dbsInst='+dbsInst,'dataset='+dataset);
 }
@@ -7716,6 +7776,7 @@ function ajaxInit(_dbs) {
 
 function registerAjaxRunSummaryCalls() {
     ajaxEngine.registerRequest('ajaxRunSummary','getRunDBInfo');
+    ajaxEngine.registerRequest('ajaxGetDQInfo','getDQInfo');
 }
 function ajaxRunSummary(runs) {
    ajaxEngine.sendRequest('ajaxRunSummary','runs='+runs);

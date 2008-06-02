@@ -2303,6 +2303,7 @@ class DDServer(DDLogger,Controller):
                          'userMode' : userMode,
                          'minRun'   : _minRun,
                          'maxRun'   : _maxRun,
+                         'admin'    : getArg(kwargs,'admin',0),
                         }
             t = templateRunsInfo(searchList=[nameSpace]).respond()
             page+=str(t)
@@ -2408,7 +2409,8 @@ class DDServer(DDLogger,Controller):
                              'runDBInfo': runDBInfoDict,
                              'tableId'  : "runTable",
                              'proc'     : "",
-                             'userMode' : userMode
+                             'userMode' : userMode,
+                             'admin'    : getArg(kwargs,'admin',0),
                             }
                 t = templateRunsInfo(searchList=[nameSpace]).respond()
                 page+=str(t)
@@ -5023,6 +5025,48 @@ Save query as:
             self.writeLog(page)
         return page
     getIntegratedLumi.exposed=True
+
+    def getDQInfo(self,dbsInst,run,**kwargs):
+        self.setContentType('xml')
+        ajax=getArg(kwargs,'ajax',1)
+        admin=int(getArg(kwargs,'admin',0))
+        if ajax:
+            page="""<ajax-response>"""
+            page+="""<response type='object' id="dq_run_%s">\n"""%run
+#            page+="""<response type='element' id="dq_run_%s">\n"""%run
+        else:
+            page=""
+        try:
+            xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='298' lumi_section_number='' /></dbs>"""
+
+            params={'apiversion':'DBS_1_0_9','api':'listRunLumiDQ','xmlinput':xmlinput}
+            f = urllib.urlopen("http://cmssrv17.fnal.gov:8989/DBS_116pre1/servlet/DBSServlet?%s"%urllib.urlencode(params))
+            data=f.read()
+            sysDict,subDict=getDQInfo(data)
+            nameSpace={'tag':"dq_%s"%run,'sysDict':sysDict,'subDict':subDict,'admin':0}
+            token = SecurityToken()
+#            if self.context.SecurityDBApi.hasGroupResponsibility(token.dn,"DataQuality","Global Admin"):
+            if admin and self.securityApi.hasGroupResponsibility(token.dn,"DataQuality","Global Admin"):
+                nameSpace['admin']=1
+                t = templateDQInfo(searchList=[nameSpace]).respond()
+                page+="ADMIN DQ:<br/>"+str(t)
+            else:
+                t = templateDQInfo(searchList=[nameSpace]).respond()
+                page+=str(t)
+#            @is_authorized (Role("Global Admin"), Group("DataQuality"), onFail=showTempate)
+#            t = templateDQInfo(searchList=[nameSpace]).respond()
+#            page+=str(t)
+        except:
+            page+="N/A"
+            traceback.print_exc()
+            pass
+        if  ajax:
+            page+="</response>"
+            page+="</ajax-response>"
+        if  self.verbose==2:
+            self.writeLog(page)
+        return page
+    getDQInfo.exposed=True
 
     # helper functions to decorate output
     def aSearchAll(self,dbsInst,keyword,func=None):

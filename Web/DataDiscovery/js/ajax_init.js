@@ -540,6 +540,9 @@ function registerAjaxUserMenuCalls() {
 
 }
 
+function ajaxGetDQInfo(dbsInst,run,admin) {
+  ajaxEngine.sendRequest('ajaxGetDQInfo','dbsInst='+dbsInst,'run='+run,'admin='+admin);
+}
 function ajaxGetIntegratedLumi(dbsInst,dataset) {
   ajaxEngine.sendRequest('ajaxGetIntegratedLumi','dbsInst='+dbsInst,'dataset='+dataset);
 }
@@ -1138,6 +1141,7 @@ function ajaxInit(_dbs) {
 
 function registerAjaxRunSummaryCalls() {
     ajaxEngine.registerRequest('ajaxRunSummary','getRunDBInfo');
+    ajaxEngine.registerRequest('ajaxGetDQInfo','getDQInfo');
 }
 function ajaxRunSummary(runs) {
    ajaxEngine.sendRequest('ajaxRunSummary','runs='+runs);

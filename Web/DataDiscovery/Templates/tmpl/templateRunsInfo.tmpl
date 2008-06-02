@@ -44,6 +44,15 @@ Jump to run range:
 </table>
 ###end if
 <p />
+<div align="right">
+#if not $admin
+<span class="box_blue">In order to manage DQ flags authentication is required</span>.
+Manage <a href="javascript:reload(1)">DQ flags</a>
+#else 
+Return to non-admin <a href="javascript:reload(0)">page</a>.
+#end if
+</div>
+
 ###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
 <table id="$tableId" cellspacing="0" cellpadding="0" border="1" width="100%">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
@@ -55,9 +64,11 @@ Jump to run range:
 <td>Store</td>
 <td>StartOfRun</td>
 <td>EndOfRun</td>
+#if not $admin
 <td>dataset</td>
 <td># Files</td>
 <td>Size</td>
+#end if
 #if $userMode=="runManager"
 ### here we took first item from runList and 11th element which is dsType 
 #set first=$runList[0]
@@ -73,9 +84,12 @@ Jump to run range:
 <td>Modified by</td>
 <td>Modification time</td>
 #end if
+#if not $admin
 <td>LFNs</td>
+#end if
 <td>Transfer</td>
 <td>Run Summary</td>
+<td>DataQuality</td>
 </tr>
 ###for dbsDict in $runList
 #* (run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path) *#
@@ -120,6 +134,7 @@ $run
 <td align="right">$store </td>
 <td align="right">$sRun </td>
 <td align="right">$eRun </td>
+#if not $admin
 <td>
 <a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off&amp;group=Any&amp;site=Any&amp;tier=Any&amp;app=Any&amp;primType=Any&amp;primD=Any">
 #set pathName="/"+$procDS[1:].replace("/","<br />/")
@@ -128,6 +143,8 @@ $pathName
 </td>
 <td align="right">$nFiles</td>
 <td align="right">$colorSizeHTMLFormat($fSize)</td>
+#end if
+
 #if $userMode=="runManager"
 #if $dsType.lower()!='mc'
 #if $runDBInfo.has_key($run)
@@ -150,11 +167,13 @@ $system
 <td align="right">$mBy </td>
 <td align="right">$mDate </td>
 #end if
+#if not $admin
 <td align="right">
 <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;what=cff">cff</a>
 <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">plain</a>
 <a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
 </td>
+#end if ### end of admin check
 #### Here is Phedex transfer status call for each site
 <td align="right">
 #if len($sites)==1
@@ -181,6 +200,7 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
 </script>
 
 </td>
+
 #### Here is Run summary status call for each run
 <td>
 <div id="runSummary_key_$run" name="runSummary_key_$run"></div>
@@ -199,6 +219,15 @@ var runUpdater_b = new RunSummaryUpdater('runSummary_bfield_$run');
 ajaxEngine.registerAjaxObject('runSummary_bfield_$run',runUpdater_b);
 var runUpdater_c = new RunSummaryUpdater('runSummary_components_$run');
 ajaxEngine.registerAjaxObject('runSummary_components_$run',runUpdater_c);
+</script>
+</td>
+### Here is DQ flags
+<td>
+<div id="dq_run_$run"></div>
+<script type="text/javascript">
+//ajaxEngine.registerAjaxElement('dq_run_$run');
+dqUpdater = new GetDataUpdater('dq_run_$run','replace');
+ajaxEngine.registerAjaxObject('dq_run_$run',dqUpdater);
 </script>
 </td>
 </tr>
@@ -221,5 +250,29 @@ ajaxPhedexStatus('$listOfSites','$datasets','$run');
 #end for
 }
 ajaxRunSummary('$runs');
+function getAllDQ() {
+#for run in $datasetDict.keys()
+   ajaxGetDQInfo('$dbsInst','$run','$admin');
+   //YAHOO.util.Event.addListener(window, "load", treeInitdq_${run}); // treeInitdq_$run shipts via AJAX
+#end for
+}
+function reload(adminFlag) {
+   var myUrl=window.location.href;
+   if(myUrl.search("admin")>0) {
+     if (adminFlag==1) {
+         url=myUrl.replace(/admin=0/g,'admin=1');
+     } else {
+         url=myUrl.replace(/admin=1/g,'admin=0');
+     }
+   } else {
+     if(myUrl.search(/\?/)>0) {
+       url=myUrl+"&admin="+adminFlag;
+     } else {
+       url=myUrl+"?admin="+adminFlag;
+     }
+   }
+   load(url);
+}
+getAllDQ();
 </script>
 <!-- end of templateRunsInfo.tmpl -->
