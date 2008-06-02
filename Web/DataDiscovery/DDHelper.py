@@ -1519,7 +1519,7 @@ MCDescription:      %s
           oSel = [self.col(tprd,'ID')]
           obj  = tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
           sel1 = sqlalchemy.select(oSel,from_obj=[obj],distinct=True)
-          sel1 = sel2.apply_labels()
+          sel1 = sel1.apply_labels()
           if dataset and dataset!="*":
              sel1.append_whereclause(self.col(tblk,'Path')==dataset)
           # find ID's of children
