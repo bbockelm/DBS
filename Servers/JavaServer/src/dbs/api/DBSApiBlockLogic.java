@@ -1,6 +1,6 @@
 /**
- $Revision: 1.56 $"
- $Id: DBSApiBlockLogic.java,v 1.56 2008/05/13 16:35:55 sekhri Exp $"
+ $Revision: 1.57 $"
+ $Id: DBSApiBlockLogic.java,v 1.57 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -94,7 +94,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					if(role.equals("Y") || userType.equals("SUPER")) {
 						String se = get(rs, "STORAGE_ELEMENT_NAME");
 						//System.out.println("SE name is " + se);
-						if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"'/>\n"));
+						if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' role='" + role + "'/>\n"));
 					}
 				}
 

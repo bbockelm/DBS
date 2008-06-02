@@ -95,7 +95,8 @@ def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_nam
 
           if name == 'storage_element':
                self.currBlock['StorageElementList'].append(DbsStorageElement(
-								Name=str(attrs['storage_element_name']))
+								Name=str(attrs['storage_element_name']),
+								Role=str(attrs['role']))
 							  )		
 	       
 
