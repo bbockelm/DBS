@@ -19,6 +19,8 @@ api = DbsApi(opts.__dict__)
 
 
 def print_flags_nice(dqHierarchyList):
+    if len(dqHierarchyList) <= 0:
+	print "No DQ information for this run found"
     for aDQ in dqHierarchyList:
         print "\nRunNumber: ", aDQ['RunNumber']
         print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
@@ -54,7 +56,7 @@ flag3 = DbsDQFlag (
 #Create RunDQ Object, for RunNumber , RunNumber  already exists in DBS
 
 run_dq_search_criteria = DbsRunLumiDQ (
-        RunNumber=298,
+        RunNumber=43434,
 	#LumiSectionNumber can be part of this serach criteria
         #LumiSectionNumber=123,
         #DQFlagList = [flag1]
