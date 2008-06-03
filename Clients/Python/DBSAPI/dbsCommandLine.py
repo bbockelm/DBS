@@ -1117,6 +1117,7 @@ class ApiDispatcher:
 		return
 	
         apiret = self.api.listProcessedDatasets(**paramDict)
+	self.progress.stop()
 
         #dot.mark_done()
 
