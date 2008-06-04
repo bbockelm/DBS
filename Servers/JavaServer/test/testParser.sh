@@ -122,6 +122,12 @@ executeQuery () {
 #$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM order by file"
 #$CMD query="find run,file  order by file"
 #$CMD query="find dataset"
-$CMD query="find site where dataset=/Bplus2JpsiKplus/CMSSW_1_2_3-Spring07-Bphys-1175526403/GEN-SIM"
+#$CMD query="find site where dataset=/Bplus2JpsiKplus/CMSSW_1_2_3-Spring07-Bphys-1175526403/GEN-SIM"
+
+#$CMD query="find dataset"
+#$CMD query="find run where dataset = /TestPrimary_001_20080602_11h30m20s/TestProcessed_20080602_11h30m20s/GEN-SIM"
+#$CMD query="find file where run = 432.233"
+#$CMD query="find dataset, procds.createdate where dq = Tracker_Global=GOOD&TIB_Local=GOOD"
+$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05:12 order by run"
 #executeQuery
 

@@ -49,7 +49,7 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 		spaces
 	 op=	(EQ | LT | GT) 	{c.setOp($op.text);}   
 		spaces
-	 val=	dotValue 	{c.setValue($val.text); constraints.add(c); 	}               
+	 val=	genValue 	{c.setValue($val.text); constraints.add(c); 	}               
 		| 
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces 

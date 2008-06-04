@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-05-23 14:55:17
+// $ANTLR 3.0.1 Sql.g 2008-06-03 19:19:16
 
 
 import java.util.ArrayList;
@@ -509,12 +509,12 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start constraint
-    // Sql.g:48:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= dotValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );
+    // Sql.g:48:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );
     public final void constraint() throws RecognitionException {
         Token op=null;
         keyword_return kw = null;
 
-        dotValue_return val = null;
+        genValue_return val = null;
 
         in_return op1 = null;
 
@@ -526,12 +526,12 @@ public class SqlParser extends Parser {
 
 
         try {
-            // Sql.g:48:12: (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= dotValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue )
+            // Sql.g:48:12: (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue )
             int alt6=3;
             alt6 = dfa6.predict(input);
             switch (alt6) {
                 case 1 :
-                    // Sql.g:48:14: kw= keyword spaces op= ( EQ | LT | GT ) spaces val= dotValue
+                    // Sql.g:48:14: kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue
                     {
                     pushFollow(FOLLOW_keyword_in_constraint258);
                     kw=keyword();
@@ -558,8 +558,8 @@ public class SqlParser extends Parser {
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_dotValue_in_constraint301);
-                    val=dotValue();
+                    pushFollow(FOLLOW_genValue_in_constraint301);
+                    val=genValue();
                     _fsp--;
 
                     c.setValue(input.toString(val.start,val.stop)); constraints.add(c); 	
@@ -679,15 +679,10 @@ public class SqlParser extends Parser {
     }
     // $ANTLR end where
 
-    public static class dotValue_return extends ParserRuleReturnScope {
-    };
 
     // $ANTLR start dotValue
     // Sql.g:70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );
-    public final dotValue_return dotValue() throws RecognitionException {
-        dotValue_return retval = new dotValue_return();
-        retval.start = input.LT(1);
-
+    public final void dotValue() throws RecognitionException {
         try {
             // Sql.g:70:17: ( VALUE | VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE )
             int alt7=4;
@@ -816,8 +811,6 @@ public class SqlParser extends Parser {
                     break;
 
             }
-            retval.stop = input.LT(-1);
-
         }
 
         catch (RecognitionException e) {
@@ -825,7 +818,7 @@ public class SqlParser extends Parser {
         }
         finally {
         }
-        return retval;
+        return ;
     }
     // $ANTLR end dotValue
 
@@ -1104,10 +1097,15 @@ public class SqlParser extends Parser {
     }
     // $ANTLR end compOpt
 
+    public static class genValue_return extends ParserRuleReturnScope {
+    };
 
     // $ANTLR start genValue
     // Sql.g:84:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );
-    public final void genValue() throws RecognitionException {
+    public final genValue_return genValue() throws RecognitionException {
+        genValue_return retval = new genValue_return();
+        retval.start = input.LT(1);
+
         try {
             // Sql.g:84:10: ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* )
             int alt11=2;
@@ -1131,7 +1129,7 @@ public class SqlParser extends Parser {
                                 if ( ((LA11_9>=EQ && LA11_9<=GT)) ) {
                                     alt11=2;
                                 }
-                                else if ( (LA11_9==EOF) ) {
+                                else if ( (LA11_9==EOF||LA11_9==SPACE||(LA11_9>=64 && LA11_9<=67)||(LA11_9>=70 && LA11_9<=71)) ) {
                                     alt11=1;
                                 }
                                 else {
@@ -1140,6 +1138,9 @@ public class SqlParser extends Parser {
 
                                     throw nvae;
                                 }
+                            }
+                            else if ( (LA11_8==SPACE||(LA11_8>=64 && LA11_8<=67)||(LA11_8>=70 && LA11_8<=71)) ) {
+                                alt11=1;
                             }
                             else {
                                 NoViableAltException nvae =
@@ -1157,6 +1158,12 @@ public class SqlParser extends Parser {
                             }
                             break;
                         case EOF:
+                        case 64:
+                        case 65:
+                        case 66:
+                        case 67:
+                        case 70:
+                        case 71:
                             {
                             alt11=1;
                             }
@@ -1168,6 +1175,9 @@ public class SqlParser extends Parser {
                             throw nvae;
                         }
 
+                    }
+                    else if ( (LA11_2==SPACE||(LA11_2>=64 && LA11_2<=67)||(LA11_2>=70 && LA11_2<=71)) ) {
+                        alt11=1;
                     }
                     else {
                         NoViableAltException nvae =
@@ -1184,7 +1194,7 @@ public class SqlParser extends Parser {
                     if ( (LA11_3==VALUE) ) {
                         int LA11_7 = input.LA(4);
 
-                        if ( (LA11_7==EOF) ) {
+                        if ( (LA11_7==EOF||LA11_7==SPACE||(LA11_7>=64 && LA11_7<=67)||(LA11_7>=70 && LA11_7<=71)) ) {
                             alt11=1;
                         }
                         else if ( ((LA11_7>=EQ && LA11_7<=GT)) ) {
@@ -1206,6 +1216,12 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case EOF:
+                case 64:
+                case 65:
+                case 66:
+                case 67:
+                case 70:
+                case 71:
                     {
                     alt11=1;
                     }
@@ -1299,6 +1315,8 @@ public class SqlParser extends Parser {
                     break;
 
             }
+            retval.stop = input.LT(-1);
+
         }
 
         catch (RecognitionException e) {
@@ -1306,7 +1324,7 @@ public class SqlParser extends Parser {
         }
         finally {
         }
-        return ;
+        return retval;
     }
     // $ANTLR end genValue
 
@@ -1824,27 +1842,36 @@ public class SqlParser extends Parser {
     protected DFA6 dfa6 = new DFA6(this);
     protected DFA8 dfa8 = new DFA8(this);
     static final String DFA1_eotS =
-        "\164\uffff";
+        "\u00bc\uffff";
     static final String DFA1_eofS =
-        "\3\uffff\1\7\6\uffff\2\7\1\uffff\1\7\10\uffff\2\7\1\uffff\1\46\5"+
-        "\uffff\2\46\13\uffff\2\46\5\uffff\3\46\14\uffff\1\46\5\uffff\1\46"+
-        "\1\uffff\2\46\3\uffff\1\46\14\uffff\5\46\14\uffff\2\46\5\uffff";
+        "\3\uffff\1\7\6\uffff\2\7\1\uffff\1\7\10\uffff\2\7\1\uffff\1\50\5"+
+        "\uffff\2\50\16\uffff\3\50\11\uffff\3\50\17\uffff\3\50\6\uffff\1"+
+        "\50\1\uffff\2\50\3\uffff\1\50\22\uffff\1\50\2\uffff\1\50\7\uffff"+
+        "\3\50\1\uffff\1\50\3\uffff\2\50\20\uffff\2\50\3\uffff\3\50\1\uffff"+
+        "\1\50\12\uffff\1\50\1\uffff\1\50\3\uffff\1\50\10\uffff\2\50\1\uffff"+
+        "\1\50";
     static final String DFA1_minS =
-        "\1\74\3\4\1\24\2\4\1\uffff\1\4\1\uffff\6\4\1\24\2\4\1\24\16\4\1"+
-        "\12\2\4\2\uffff\2\4\1\12\6\4\1\12\6\4\1\24\25\4\1\12\5\4\2\12\4"+
-        "\4\1\12\21\4\1\12\10\4";
+        "\1\74\3\4\1\24\2\4\1\uffff\1\4\1\uffff\6\4\1\24\2\4\1\24\15\4\1"+
+        "\12\1\4\1\10\2\7\2\4\2\uffff\2\4\1\12\5\4\4\12\2\4\1\12\6\4\1\12"+
+        "\1\4\1\12\1\24\30\4\1\12\3\4\2\12\1\10\2\7\3\4\1\12\1\10\2\7\1\12"+
+        "\6\4\1\7\1\4\5\12\5\4\1\12\1\4\3\12\3\4\2\12\10\4\2\12\2\4\1\7\3"+
+        "\4\1\12\13\4\2\12\1\10\2\7\4\4\1\7\1\12\1\4\3\12\1\4\2\12\1\4\1"+
+        "\7\4\4";
     static final String DFA1_maxS =
         "\1\77\2\35\1\103\1\73\1\103\1\35\1\uffff\1\35\1\uffff\2\103\1\35"+
         "\1\103\1\35\1\115\1\73\1\115\1\12\1\73\1\17\1\14\2\103\1\12\1\107"+
-        "\2\115\1\17\1\12\1\14\3\107\1\12\2\35\2\uffff\1\12\1\20\1\12\4\107"+
-        "\1\35\1\115\1\12\1\20\1\12\4\107\1\73\1\115\1\17\1\12\1\14\3\20"+
-        "\1\12\1\20\2\107\2\115\1\17\2\12\1\107\1\14\2\107\1\20\1\12\1\20"+
-        "\1\107\1\12\1\20\1\107\2\12\1\107\3\20\1\12\1\20\1\12\5\107\4\20"+
-        "\1\12\1\20\2\107\2\20\1\12\1\20\2\107\5\20";
+        "\2\115\1\17\1\12\1\14\2\107\1\12\1\107\3\12\2\35\2\uffff\1\12\1"+
+        "\20\1\12\5\107\4\12\1\35\1\115\1\12\1\20\1\12\4\107\1\12\1\107\1"+
+        "\12\1\73\1\115\1\17\1\12\1\14\3\20\1\12\1\20\4\107\1\11\2\115\1"+
+        "\17\2\12\1\107\1\14\2\107\1\20\1\12\1\20\2\107\6\12\1\20\1\107\5"+
+        "\12\1\107\3\20\1\107\2\11\1\107\5\12\1\20\1\12\3\107\1\12\1\107"+
+        "\3\12\2\107\1\20\2\12\1\107\3\20\1\12\1\20\2\107\2\12\1\107\1\20"+
+        "\1\11\2\107\1\20\1\12\1\20\3\107\1\11\2\107\3\20\1\107\5\12\1\107"+
+        "\1\20\1\107\2\11\1\12\1\107\3\12\1\20\2\12\1\107\1\11\4\107";
     static final String DFA1_acceptS =
-        "\7\uffff\1\2\1\uffff\1\3\33\uffff\1\4\1\1\115\uffff";
+        "\7\uffff\1\2\1\uffff\1\3\36\uffff\1\1\1\4\u0092\uffff";
     static final String DFA1_specialS =
-        "\164\uffff}>";
+        "\u00bc\uffff}>";
     static final String[] DFA1_transitionS = {
             "\4\1",
             "\1\2\16\uffff\13\3",
@@ -1871,107 +1898,188 @@ public class SqlParser extends Parser {
             "\1\5\1\6\13\uffff\2\10\57\uffff\2\11",
             "\1\5\1\6\13\uffff\2\10\57\uffff\2\11",
             "\1\30\5\uffff\1\31",
-            "\1\41\1\uffff\1\42\71\uffff\2\43\2\45\2\uffff\2\44",
+            "\1\42\1\uffff\1\41\1\43\1\44\1\45\66\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
             "\1\21\2\uffff\3\22\76\uffff\2\24\2\uffff\2\25",
             "\1\21\2\uffff\3\22\76\uffff\2\24\2\uffff\2\25",
             "\1\34\12\uffff\1\35",
-            "\1\47\5\uffff\1\50",
+            "\1\52\5\uffff\1\53",
             "\1\36\5\uffff\1\37\1\uffff\1\40",
-            "\1\52\1\uffff\1\51\3\uffff\1\37\1\uffff\1\40\63\uffff\2\43\2"+
-            "\45\2\uffff\2\44",
-            "\1\53\5\uffff\1\37\1\uffff\1\40\63\uffff\2\43\2\45\2\uffff\2"+
-            "\44",
-            "\1\53\5\uffff\1\54\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\55",
-            "\1\56\16\uffff\13\57",
-            "\1\56\16\uffff\13\57",
+            "\1\55\1\uffff\1\54\3\uffff\1\37\1\uffff\1\40\63\uffff\2\46\2"+
+            "\51\2\uffff\2\47",
+            "\1\56\5\uffff\1\37\1\uffff\1\40\63\uffff\2\46\2\51\2\uffff\2"+
+            "\47",
+            "\1\57",
+            "\1\56\5\uffff\1\60\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\62\1\63\1\61",
+            "\1\64\2\uffff\1\61",
+            "\1\65\2\uffff\1\61",
+            "\1\66\16\uffff\13\67",
+            "\1\66\16\uffff\13\67",
             "",
             "",
-            "\1\47\5\uffff\1\50",
-            "\1\61\1\62\1\60\11\uffff\1\63",
-            "\1\64",
-            "\1\53\5\uffff\1\65\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\66\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\56\16\uffff\13\57",
-            "\1\70\1\uffff\1\67\3\72\76\uffff\2\71\2\uffff\2\73",
+            "\1\52\5\uffff\1\53",
+            "\1\71\1\72\1\70\11\uffff\1\73",
             "\1\74",
-            "\1\76\1\62\4\uffff\1\75\5\uffff\1\63",
-            "\1\77\5\uffff\1\100",
-            "\1\53\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\5\uffff\1\37\1\uffff\1\40\63\uffff\2\43\2\45\2\uffff\2"+
-            "\44",
-            "\1\101\5\uffff\1\37\1\uffff\1\40\63\uffff\2\43\2\45\2\uffff"+
-            "\2\44",
-            "\1\53\5\uffff\1\102\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\2\103\10\uffff\26\103\10\104",
-            "\1\70\2\uffff\3\72\76\uffff\2\71\2\uffff\2\73",
-            "\1\105\12\uffff\1\106",
-            "\1\107\5\uffff\1\110",
-            "\1\111\5\uffff\1\112\1\uffff\1\113",
-            "\1\76\1\62\12\uffff\1\63",
-            "\1\114\1\62\12\uffff\1\63",
-            "\1\76\1\62\12\uffff\1\63",
-            "\1\77\5\uffff\1\100",
-            "\1\116\1\62\1\115\11\uffff\1\63",
-            "\1\53\5\uffff\1\117\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\70\2\uffff\3\72\76\uffff\2\71\2\uffff\2\73",
-            "\1\70\2\uffff\3\72\76\uffff\2\71\2\uffff\2\73",
-            "\1\105\12\uffff\1\106",
-            "\1\120\5\uffff\1\121",
-            "\1\107\5\uffff\1\110",
-            "\1\122\1\uffff\1\123\71\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\111\5\uffff\1\112\1\uffff\1\113",
-            "\1\125\1\uffff\1\124\3\uffff\1\112\1\uffff\1\113\63\uffff\2"+
-            "\43\2\45\2\uffff\2\44",
-            "\1\53\5\uffff\1\112\1\uffff\1\113\63\uffff\2\43\2\45\2\uffff"+
-            "\2\44",
-            "\1\76\1\62\4\uffff\1\126\5\uffff\1\63",
-            "\1\127",
-            "\1\76\1\62\4\uffff\1\130\5\uffff\1\63",
-            "\1\53\5\uffff\1\37\1\uffff\1\40\63\uffff\2\43\2\45\2\uffff\2"+
-            "\44",
-            "\1\120\5\uffff\1\121",
-            "\1\132\1\133\1\131\11\uffff\1\134",
-            "\1\53\5\uffff\1\135\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\136",
-            "\1\137",
-            "\1\53\5\uffff\1\140\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\76\1\62\12\uffff\1\63",
-            "\1\76\1\62\12\uffff\1\63",
-            "\1\141\1\62\12\uffff\1\63",
-            "\1\142",
-            "\1\144\1\133\4\uffff\1\143\5\uffff\1\134",
-            "\1\145\5\uffff\1\146",
-            "\1\53\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\147\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\5\uffff\1\112\1\uffff\1\113\63\uffff\2\43\2\45\2\uffff"+
-            "\2\44",
-            "\1\150\5\uffff\1\112\1\uffff\1\113\63\uffff\2\43\2\45\2\uffff"+
-            "\2\44",
-            "\1\76\1\62\4\uffff\1\151\5\uffff\1\63",
-            "\1\144\1\133\12\uffff\1\134",
-            "\1\152\1\133\12\uffff\1\134",
-            "\1\144\1\133\12\uffff\1\134",
-            "\1\145\5\uffff\1\146",
-            "\1\154\1\133\1\153\11\uffff\1\134",
-            "\1\53\5\uffff\1\155\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\5\uffff\1\156\65\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\76\1\62\12\uffff\1\63",
-            "\1\144\1\133\4\uffff\1\157\5\uffff\1\134",
-            "\1\160",
-            "\1\144\1\133\4\uffff\1\161\5\uffff\1\134",
-            "\1\53\73\uffff\2\43\2\45\2\uffff\2\44",
-            "\1\53\5\uffff\1\112\1\uffff\1\113\63\uffff\2\43\2\45\2\uffff"+
-            "\2\44",
-            "\1\144\1\133\12\uffff\1\134",
-            "\1\144\1\133\12\uffff\1\134",
-            "\1\162\1\133\12\uffff\1\134",
-            "\1\144\1\133\4\uffff\1\163\5\uffff\1\134",
-            "\1\144\1\133\12\uffff\1\134"
+            "\1\56\5\uffff\1\75\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\73\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\2\uffff\1\43\1\44\1\45\66\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\76\2\uffff\1\43\1\44\1\45\66\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\100\1\uffff\1\77\4\uffff\1\101\64\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
+            "\1\61",
+            "\1\61",
+            "\1\61",
+            "\1\61",
+            "\1\66\16\uffff\13\67",
+            "\1\103\1\uffff\1\102\3\105\76\uffff\2\104\2\uffff\2\106",
+            "\1\107",
+            "\1\111\1\72\4\uffff\1\110\5\uffff\1\73",
+            "\1\112\5\uffff\1\113",
+            "\1\56\73\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\5\uffff\1\37\1\uffff\1\40\63\uffff\2\46\2\51\2\uffff\2"+
+            "\47",
+            "\1\114\5\uffff\1\37\1\uffff\1\40\63\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
+            "\1\56\5\uffff\1\115\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\116",
+            "\1\56\5\uffff\1\117\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\120",
+            "\2\121\10\uffff\26\121\10\122",
+            "\1\103\2\uffff\3\105\76\uffff\2\104\2\uffff\2\106",
+            "\1\123\12\uffff\1\124",
+            "\1\125\5\uffff\1\126",
+            "\1\127\5\uffff\1\130\1\uffff\1\131",
+            "\1\111\1\72\12\uffff\1\73",
+            "\1\132\1\72\12\uffff\1\73",
+            "\1\111\1\72\12\uffff\1\73",
+            "\1\112\5\uffff\1\113",
+            "\1\134\1\72\1\133\11\uffff\1\73",
+            "\1\56\5\uffff\1\135\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\2\uffff\1\43\1\44\1\45\66\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\6\uffff\1\101\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\136\6\uffff\1\101\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\137\1\uffff\1\140\1\141\1\142\1\143",
+            "\1\103\2\uffff\3\105\76\uffff\2\104\2\uffff\2\106",
+            "\1\103\2\uffff\3\105\76\uffff\2\104\2\uffff\2\106",
+            "\1\123\12\uffff\1\124",
+            "\1\144\5\uffff\1\145",
+            "\1\125\5\uffff\1\126",
+            "\1\146\1\uffff\1\147\1\150\1\151\1\152\66\uffff\2\46\2\51\2"+
+            "\uffff\2\47",
+            "\1\127\5\uffff\1\130\1\uffff\1\131",
+            "\1\154\1\uffff\1\153\3\uffff\1\130\1\uffff\1\131\63\uffff\2"+
+            "\46\2\51\2\uffff\2\47",
+            "\1\56\5\uffff\1\130\1\uffff\1\131\63\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
+            "\1\111\1\72\4\uffff\1\155\5\uffff\1\73",
+            "\1\156",
+            "\1\111\1\72\4\uffff\1\157\5\uffff\1\73",
+            "\1\56\5\uffff\1\37\1\uffff\1\40\63\uffff\2\46\2\51\2\uffff\2"+
+            "\47",
+            "\1\56\5\uffff\1\160\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\161",
+            "\1\162",
+            "\1\164\1\165\1\163",
+            "\1\166\2\uffff\1\163",
+            "\1\167\2\uffff\1\163",
+            "\1\144\5\uffff\1\145",
+            "\1\171\1\172\1\170\11\uffff\1\173",
+            "\1\56\5\uffff\1\174\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\175",
+            "\1\176\1\u0080\1\177",
+            "\1\u0081\2\uffff\1\177",
+            "\1\u0082\2\uffff\1\177",
+            "\1\u0083",
+            "\1\56\5\uffff\1\u0084\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\111\1\72\12\uffff\1\73",
+            "\1\111\1\72\12\uffff\1\73",
+            "\1\u0085\1\72\12\uffff\1\73",
+            "\1\56\6\uffff\1\101\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u0086\2\uffff\1\141\1\142\1\143",
+            "\1\141\1\142\1\143",
+            "\1\u0088\1\uffff\1\u0087\4\uffff\1\101\64\uffff\2\46\2\51\2"+
+            "\uffff\2\47",
+            "\1\163",
+            "\1\163",
+            "\1\163",
+            "\1\163",
+            "\1\u0089",
+            "\1\u008b\1\172\4\uffff\1\u008a\5\uffff\1\173",
+            "\1\u008c\5\uffff\1\u008d",
+            "\1\56\73\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u008e\2\uffff\1\150\1\151\1\152\66\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
+            "\1\56\2\uffff\1\150\1\151\1\152\66\uffff\2\46\2\51\2\uffff\2"+
+            "\47",
+            "\1\177",
+            "\1\u008f\1\uffff\1\u0090\4\uffff\1\u0091\64\uffff\2\46\2\51"+
+            "\2\uffff\2\47",
+            "\1\177",
+            "\1\177",
+            "\1\177",
+            "\1\56\5\uffff\1\130\1\uffff\1\131\63\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
+            "\1\u0092\5\uffff\1\130\1\uffff\1\131\63\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
+            "\1\111\1\72\4\uffff\1\u0093\5\uffff\1\73",
+            "\1\u0094",
+            "\1\u0095",
+            "\1\56\5\uffff\1\u0096\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u008b\1\172\12\uffff\1\173",
+            "\1\u0097\1\172\12\uffff\1\173",
+            "\1\u008b\1\172\12\uffff\1\173",
+            "\1\u008c\5\uffff\1\u008d",
+            "\1\u0099\1\172\1\u0098\11\uffff\1\173",
+            "\1\56\5\uffff\1\u009a\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\5\uffff\1\u009b\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u009c",
+            "\1\u009d",
+            "\1\56\5\uffff\1\u009e\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\111\1\72\12\uffff\1\73",
+            "\1\141\1\142\1\143",
+            "\1\56\6\uffff\1\101\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u009f\6\uffff\1\101\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u008b\1\172\4\uffff\1\u00a0\5\uffff\1\173",
+            "\1\u00a1",
+            "\1\u008b\1\172\4\uffff\1\u00a2\5\uffff\1\173",
+            "\1\56\2\uffff\1\150\1\151\1\152\66\uffff\2\46\2\51\2\uffff\2"+
+            "\47",
+            "\1\u00a3\6\uffff\1\u0091\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\6\uffff\1\u0091\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u00a4\1\uffff\1\u00a5\1\u00a6\1\u00a7\1\u00a8",
+            "\1\56\5\uffff\1\130\1\uffff\1\131\63\uffff\2\46\2\51\2\uffff"+
+            "\2\47",
+            "\1\56\5\uffff\1\u00a9\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u008b\1\172\12\uffff\1\173",
+            "\1\u008b\1\172\12\uffff\1\173",
+            "\1\u00aa\1\172\12\uffff\1\173",
+            "\1\56\5\uffff\1\u00ab\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u00ac",
+            "\1\u00ad",
+            "\1\u00b0\1\u00ae\1\u00af",
+            "\1\u00b1\2\uffff\1\u00af",
+            "\1\u00b2\2\uffff\1\u00af",
+            "\1\56\6\uffff\1\101\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u008b\1\172\4\uffff\1\u00b3\5\uffff\1\173",
+            "\1\56\6\uffff\1\u0091\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u00b4\2\uffff\1\u00a6\1\u00a7\1\u00a8",
+            "\1\u00a6\1\u00a7\1\u00a8",
+            "\1\u00af",
+            "\1\u00b6\1\uffff\1\u00b5\4\uffff\1\u0091\64\uffff\2\46\2\51"+
+            "\2\uffff\2\47",
+            "\1\u00af",
+            "\1\u00af",
+            "\1\u00af",
+            "\1\u008b\1\172\12\uffff\1\173",
+            "\1\u00b7",
+            "\1\u00b8",
+            "\1\56\5\uffff\1\u00b9\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u00a6\1\u00a7\1\u00a8",
+            "\1\56\6\uffff\1\u0091\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u00ba\6\uffff\1\u0091\64\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\5\uffff\1\u00bb\65\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\56\6\uffff\1\u0091\64\uffff\2\46\2\51\2\uffff\2\47"
     };
 
     static final short[] DFA1_eot = DFA.unpackEncodedString(DFA1_eotS);
@@ -2116,23 +2224,23 @@ public class SqlParser extends Parser {
     static final String DFA6_eofS =
         "\11\uffff";
     static final String DFA6_minS =
-        "\1\23\2\4\2\uffff\1\24\1\uffff\2\4";
+        "\1\23\1\4\1\24\1\4\3\uffff\2\4";
     static final String DFA6_maxS =
-        "\1\35\2\115\2\uffff\1\73\1\uffff\2\115";
+        "\1\35\1\115\1\73\1\115\3\uffff\2\115";
     static final String DFA6_acceptS =
-        "\3\uffff\1\2\1\1\1\uffff\1\3\2\uffff";
+        "\4\uffff\1\1\1\2\1\3\2\uffff";
     static final String DFA6_specialS =
         "\11\uffff}>";
     static final String[] DFA6_transitionS = {
             "\13\1",
-            "\1\2\1\uffff\1\5\3\4\76\uffff\2\3\2\uffff\2\6",
-            "\1\2\2\uffff\3\4\76\uffff\2\3\2\uffff\2\6",
-            "",
-            "",
+            "\1\3\1\uffff\1\2\3\4\76\uffff\2\5\2\uffff\2\6",
             "\2\7\10\uffff\26\7\10\10",
+            "\1\3\2\uffff\3\4\76\uffff\2\5\2\uffff\2\6",
             "",
-            "\1\2\2\uffff\3\4\76\uffff\2\3\2\uffff\2\6",
-            "\1\2\2\uffff\3\4\76\uffff\2\3\2\uffff\2\6"
+            "",
+            "",
+            "\1\3\2\uffff\3\4\76\uffff\2\5\2\uffff\2\6",
+            "\1\3\2\uffff\3\4\76\uffff\2\5\2\uffff\2\6"
     };
 
     static final short[] DFA6_eot = DFA.unpackEncodedString(DFA6_eotS);
@@ -2165,7 +2273,7 @@ public class SqlParser extends Parser {
             this.transition = DFA6_transition;
         }
         public String getDescription() {
-            return "48:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= dotValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );";
+            return "48:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );";
         }
     }
     static final String DFA8_eotS =
@@ -2278,7 +2386,7 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_spaces_in_constraint267 = new BitSet(new long[]{0x0000000000000380L});
     public static final BitSet FOLLOW_set_in_constraint274 = new BitSet(new long[]{0x0000000000000410L});
     public static final BitSet FOLLOW_spaces_in_constraint294 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_constraint301 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_genValue_in_constraint301 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_keyword_in_constraint330 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000300L});
     public static final BitSet FOLLOW_spaces_in_constraint339 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000300L});
     public static final BitSet FOLLOW_in_in_constraint346 = new BitSet(new long[]{0x0000000000008010L});
