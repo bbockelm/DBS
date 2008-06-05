@@ -1603,8 +1603,13 @@ class ApiDispatcher:
 	cff_file=open(cffpath, 'w')
 	cff_file.write("\n")
 	cff_file.write("\nreplace PoolSource.fileNames = {\n")
+	cnt=len(cfffileslist)
 	for aFile in cfffileslist:
-		cff_file.write("\n'"+aFile['LogicalFileName']+"',")
+		if aFile != cfffileslist[cnt-1]:
+			cff_file.write("\n'"+aFile['LogicalFileName']+"',")
+		else:
+			cff_file.write("\n'"+aFile['LogicalFileName']+"'")
+
 	cff_file.write("\n}\n")
 	self.printGREEN("Generated %s in %s" % (cffpath, self.adshome) )
 	return
