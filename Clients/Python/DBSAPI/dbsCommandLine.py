@@ -1587,11 +1587,17 @@ class ApiDispatcher:
         	self.handleSearchCall()
         return
 
-  def generateCFF(cffName, cfffileslist):
+  def generateCFF(self, cffName, cfffileslist):
 
 	self.setMartParams()
-	cffpath = os.path.join(self.adshome, cffName)
-	cffpath = os.path.join(cffpath, ".cff")
+
+	if cffName.endswith(".cff"):
+		cffpath=self.adshome+cffName
+	else: 
+		cffpath=self.adshome+cffName+".cff"
+
+	#cffpath = os.path.join(self.adshome, cffName)
+	#cffpath = os.path.join(cffpath, ".cff")
 	
 	# Lets write the CFF file
 	cff_file=open(cffpath, 'w')
