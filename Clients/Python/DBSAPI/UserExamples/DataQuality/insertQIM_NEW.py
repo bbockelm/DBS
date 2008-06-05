@@ -33,7 +33,7 @@ api.insertSubSystem(name="TIDF_Performance", parent="TIDF_Global")
 
 api.insertSubSystem(name="TECB_Global", parent="SiStrip_Global")
 api.insertSubSystem(name="TECB_OnlineDQM", parent="TECB_Global")
-api.insertSubSystem(name="TECB_Prerformance", parent="TECB_Global")
+api.insertSubSystem(name="TECB_Performance", parent="TECB_Global")
 
 api.insertSubSystem(name="TECF_Global", parent="SiStrip_Global")
 api.insertSubSystem(name="TECF_OnlineDQM", parent="TECF_Global")
