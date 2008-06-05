@@ -1592,9 +1592,9 @@ class ApiDispatcher:
 	self.setMartParams()
 
 	if cffName.endswith(".cff"):
-		cffpath=self.adshome+cffName
+		cffpath=self.adshome+"/"+cffName
 	else: 
-		cffpath=self.adshome+cffName+".cff"
+		cffpath=self.adshome+"/"+cffName+".cff"
 
 	#cffpath = os.path.join(self.adshome, cffName)
 	#cffpath = os.path.join(cffpath, ".cff")
@@ -1604,7 +1604,7 @@ class ApiDispatcher:
 	cff_file.write("\n")
 	cff_file.write("\nreplace PoolSource.fileNames = {\n")
 	for aFile in cfffileslist:
-		cff_file.write("\n"+aFile['LogicalFileName']+",\n")
+		cff_file.write("\n'"+aFile['LogicalFileName']+"',")
 	cff_file.write("\n}\n")
 	self.printGREEN("Generated %s in %s" % (cffpath, self.adshome) )
 	return
