@@ -1,6 +1,6 @@
 /**
- $Revision: 1.137 $"
- $Id: DBSApiLogic.java,v 1.137 2008/05/28 21:08:44 afaq Exp $"
+ $Revision: 1.138 $"
+ $Id: DBSApiLogic.java,v 1.138 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -64,7 +64,6 @@ public class DBSApiLogic {
           //tableName,paramList=[],from=1,rows='*'
 	protected void pushQuery(PreparedStatement ps) {
 		this.data.qStack.push(ps.toString());
-		System.out.println("Stack SIZE is " + this.data.qStack.size());
 	}
 
         public void listRowsInTable(Connection conn, Writer out, String tableName, String from, String rows) throws Exception {
