@@ -303,8 +303,9 @@ class DbsHttpService:
 	raise DbsExecutionError (args=msg, code="505")            
 
     try:
+
       data = data.replace("&apos;","")
-      data = unescape(data)
+      #data = unescape(data)
       qTrace = data[data.find('<stack_trace>') + 13 : data.find('</stack_trace>')]
       #print qTrace
       # DbsExecutionError message would arrive in XML, if any
