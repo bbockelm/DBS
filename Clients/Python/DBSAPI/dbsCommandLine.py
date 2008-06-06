@@ -626,7 +626,7 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--dbsmartfile", action="store", type="string", dest="dbsmartfile",
            help="Location of the dbs mart file, absolute path or relative to $ADSHOME")
 
-      self.add_option("--useASearch", action="store", type="string", dest="useASearch",
+      self.add_option("--useASearch", action="store_true", dest="useASearch", default=False,
            help="If supplied, ASearch (Search DBS Discovery Page) is used instead of DBS Server")
 
       self.add_option("--report", action="store_true", default=False, dest="report",
@@ -1499,7 +1499,7 @@ class ApiDispatcher:
 
         	else: userInput="find dataset, file, lumi where "+criteria[1]
 
-    		if self.optdict.get('useASearch') not in ('', None):
+    		if self.optdict.get('useASearch') :
         		results=self.getDataFromDDSearch(userInput)
     		else: results=self.getDataFromDBSServer(userInput)
 
@@ -1576,7 +1576,7 @@ class ApiDispatcher:
                 	self.printRED( "Use --help, or refer to Twiki page")
                		return
 
-                if self.optdict.get('useASearch') not in ('', None):
+                if self.optdict.get('useASearch') :
                         results=self.getDataFromDDSearch(userInput)
                 else: results=self.getDataFromDBSServer(userInput)
 
@@ -1841,7 +1841,7 @@ class ApiDispatcher:
 		return
  
    	userInput="find dataset, file, lumi where "+criteria[1]
-    if self.optdict.get('useASearch') not in ('', None):
+    if self.optdict.get('useASearch') :
 	results=self.getDataFromDDSearch(userInput)
     else: results=self.getDataFromDBSServer(userInput)
 
