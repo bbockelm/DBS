@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.174 $"
- $Id: DBSSql.java,v 1.174 2008/05/28 21:46:54 afaq Exp $"
+ $Revision: 1.175 $"
+ $Id: DBSSql.java,v 1.175 2008/05/30 15:22:22 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -384,7 +384,7 @@ public class DBSSql {
 
 	}
 
-        public static PreparedStatement listRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
+       public static PreparedStatement listRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
         throws SQLException
         {
 
@@ -402,86 +402,89 @@ public class DBSSql {
 				       "on rq.Run = r.ID \n"+
 				"LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
 				       "on ls.ID = rq.Lumi \n"+
-				"join SubSystem ss \n"+
+				"join "+owner()+"SubSystem ss \n"+
 			       		"on ss.ID = rq.SubSystem \n"+
-				"join QualityValues qv \n"+
+				"join "+owner()+"QualityValues qv \n"+
        					"on qv.ID = rq.DQValue \n";
 
-		if (runDQList.size() > 0 || !DBSUtil.isNull(timeStamp)) sql += " WHERE ";
-                //MAKE THIS BIND Valriable LATERS !!
-		String tmpSql = "";
-		String rlsql = "";
+
+		String sqlInt = "SELECT distinct rq.ID as ID, r.RunNumber as RUN_NUMBER, \n"+
+                                "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
+                                "ss.Name as DQ_FLAG, TO_CHAR(rq.IntDQValue) as QVALUE, \n"+
+                                "ss.Parent as PARENT, \n"+
+                                "rq.LastModificationDate as LASTMODIFICATIONDATE \n"+
+                                "FROM  "+owner()+"RunLumiDQInt rq \n"+
+                                "join "+owner()+"Runs r \n"+
+                                       "on rq.Run = r.ID \n"+
+                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
+                                       "on ls.ID = rq.Lumi \n"+
+                                "join "+owner()+"SubSystem ss \n"+
+                                        "on ss.ID = rq.SubSystem \n";
+
+		if (runDQList.size() > 0 || !DBSUtil.isNull(timeStamp)) {
+			sql += " WHERE ";	
+			sqlInt += " WHERE ";
+
+		}
+
+                String rlsql = "";
                 if (runDQList.size() > 0) {
-                                        for (int i = 0; i < runDQList.size() ; ++i) {
-                                                Hashtable runDQ = (Hashtable) runDQList.get(i);
-                                                //Get the sub-system Vector
-                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+                	for (int i = 0; i < runDQList.size() ; ++i) {
+                        	Hashtable runDQ = (Hashtable) runDQList.get(i);
 
-						String runnumber = DBSUtil.get(runDQ, "run_number");
-						if (!DBSUtil.isNull(runnumber)) {
-                                                	if (i==0) rlsql = " ( r.RunNumber = ? ";
-                                                	else	rlsql = " OR ( r.RunNumber = ? ";
-							if ( subSys.size() <= 0) bindvals.add(runnumber);
-							else rlsql += " AND ";
-						}
+                                String runnumber = DBSUtil.get(runDQ, "run_number");
+                                String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
 
-						else {
-							if (i==0) rlsql = " ( ";
-							else rlsql = " OR ( ";
-						
-						}
+                                if (!DBSUtil.isNull(runnumber)) {
+                                	if (i==0) rlsql = " ( r.RunNumber = ? ";
+                                        else    rlsql = " OR ( r.RunNumber = ? ";
+                                        if ( !DBSUtil.isNull(lumisec) ) {
+						rlsql += " AND ";
+					} else {
+						bindvals.add(runnumber);
+						bindvals.add(runnumber);
+					}
+	
+                              	}
 
-                                                String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
-                                                if (!DBSUtil.isNull(lumisec)) {
-							if (!DBSUtil.isNull(runnumber) && subSys.size() <= 0 ) rlsql += " AND ";
-                                                        rlsql += "ls.LumiSectionNumber=? ";
-							if ( subSys.size() <= 0) bindvals.add(lumisec);
-							else rlsql += " AND ";
-						}	
+                                else {
+                                	if (i==0) rlsql = " ( ";
+                                        else rlsql = " OR ( ";
+         
+                 	        }
 
-                                                //Loop over each item
-                                                for (int j = 0; j < subSys.size() ; ++j) {
-                                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
-                                                        String fvsql =  "";
+                                if (!DBSUtil.isNull(lumisec)) {
+					rlsql += "ls.LumiSectionNumber=? ";
+					bindvals.add(runnumber);
+					bindvals.add(lumisec);
+					bindvals.add(runnumber);
+					bindvals.add(lumisec);
+				}
+				if (!DBSUtil.isNull(rlsql) )
+					rlsql += " ) ";
+			}
+		}
 
-                                                        //Check for NULL
-                                                        if (j == 0) {
-								if (!DBSUtil.isNull(runnumber)) bindvals.add(runnumber);
-                	                                        if (!DBSUtil.isNull(lumisec)) bindvals.add(lumisec);
-                        	                                bindvals.add(DBSUtil.get(dqFlag, "name"));
-                                	                        bindvals.add(DBSUtil.get(dqFlag, "value"));
-
-                                                                fvsql = rlsql + " ss.Name=? "+
-                                                                        " AND qv.Value=? ) ";
-							
-                                                        } else {
-                                                                fvsql = "OR "+rlsql + " ss.Name=? "+
-                                                                        " AND qv.Value=? ) ";
-								if (!DBSUtil.isNull(runnumber)) bindvals.add(runnumber);
-                                                        	if (!DBSUtil.isNull(lumisec)) bindvals.add(lumisec);
-                                                        	bindvals.add(DBSUtil.get(dqFlag, "name"));
-                                                        	bindvals.add(DBSUtil.get(dqFlag, "value"));
-		                                                //bindvals.add(DBSUtil.get(dqFlag, "name"));
-                   			                        //bindvals.add(DBSUtil.get(dqFlag, "value"));
-                                                        }
-
-                                                        tmpSql += fvsql;
-                                                }
-                                                if (subSys.size() <= 0) sql +=  rlsql + ") ";
-                                                //else sql += rlsql;
-                                        }
-                                }
-
-		sql += tmpSql;
+		sql += rlsql;
+		sqlInt += rlsql;
+		
 		if (!DBSUtil.isNull(timeStamp)) {
-                              	sql += " rq.CreationDate <=? \n";
+	                        sql += " rq.CreationDate <=? \n";
                                	sql += " and rq.LastModificationDate <= ? \n";
 				bindvals.add(timeStamp);
 				bindvals.add(timeStamp);
-		}
-		if (!DBSUtil.isNull(timeStamp)) {
 
-				sql += "UNION \n"+
+                             	sqlInt += " rq.CreationDate <=? \n";
+                               	sqlInt += " and rq.LastModificationDate <= ? \n";
+				bindvals.add(timeStamp);
+				bindvals.add(timeStamp);
+		}
+
+		sql += " UNION \n" + sqlInt;
+
+		//NO History YET for the INT Variables
+		if (!DBSUtil.isNull(timeStamp)) {
+				sql += " UNION \n"+
 				"SELECT distinct qh.HistoryOf as ID, r.RunNumber as RUN_NUMBER, \n"+
 				"ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
 				"ss.Name as DQ_FLAG, qv.Value as QVALUE, \n"+
@@ -518,6 +521,12 @@ public class DBSSql {
                 return ps;
 
 	}
+
+
+
+
+
+
 
 
 
