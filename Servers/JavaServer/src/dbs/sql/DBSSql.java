@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.175 $"
- $Id: DBSSql.java,v 1.175 2008/05/30 15:22:22 sekhri Exp $"
+ $Revision: 1.176 $"
+ $Id: DBSSql.java,v 1.176 2008/06/06 14:09:43 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -558,6 +558,7 @@ public class DBSSql {
                 int badSysCount = 0;
                 int unknownSysCount = 0;
 		int firstrun=0;
+		int onlyRun=1;
 
 		String[] key_vals = query.split("&");
      		for (int i=0; i<key_vals.length; i++) {
@@ -592,11 +593,10 @@ public class DBSSql {
 
                                         String subsys=key_val[0];
                                         String value=key_val[1];
-
                                         if (j == 0) {
                                                 run_sql += " where ";
                                         }
-                                        if ( ! valueList.contains(value) ) {
+                                        if ( ! valueList.contains(value) && !subsys.equals("RunNumber")) {
                                                 //Probably its a number
                                                 //lets test that 
                                                 try {
@@ -614,6 +614,7 @@ public class DBSSql {
                                                                 intersectBinds.addAll(rbindvals);
                                                 }
                                                 intersects.add(tmpquery);
+						onlyRun=0;
                                         } else {
 
                                         	if (value.equals("GOOD")) {
@@ -632,8 +633,6 @@ public class DBSSql {
 	                                                        goodSysCount++;
         	                                        }
                 	                        }
-
-
 
                         	                if (value.equals("BAD")) {
                                 	                if ( badSysCount == 0 ) {
@@ -678,8 +677,9 @@ public class DBSSql {
 
                 String sql = "";
                 if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause) && (intersects.size() <= 0)
-                                && !DBSUtil.isNull(rlsql) )  {
-                        sql += rlsql + ")" ;
+                                && !DBSUtil.isNull(rlsql)  )  {
+                        sql += rlsql; 
+			if ( onlyRun==0 ) sql += ")" ;
                         bindvals.addAll(rbindvals);
                 }
 
