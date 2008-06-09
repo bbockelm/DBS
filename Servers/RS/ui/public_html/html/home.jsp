@@ -13,8 +13,8 @@ xmlns:rich="http://richfaces.org/rich"
 xmlns:ui="http://java.sun.com/jsf/facelets">
     <jsp:directive.page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"/>
     <f:view>
-    <h:panelGrid columns="3" columnClasses="col1, col2, col3">
-    <rich:panel rendered="false"></rich:panel>
+    <h:panelGrid columns="1" columnClasses="gridContent" style="left: 20%; right: 80%; top: 20px; width: 55%; position: relative">
+    <!--rich:panel bodyClass="rich-laguna-panel-no-header" --><!--/rich:panel-->
         <h:form binding="#{home.form1}" id="form1">
             
             
@@ -33,6 +33,8 @@ xmlns:ui="http://java.sun.com/jsf/facelets">
                                         <rich:columnGroup>
                                                 <rich:column><h:outputText value="DBS URL" /></rich:column>
                                                 <rich:column><h:outputText value="Status" /></rich:column>
+                                                <rich:column><h:outputText value="Schema Version" /></rich:column>
+                                                <rich:column><h:outputText value="Server Version" /></rich:column>
                                         </rich:columnGroup>
                                 </f:facet>
                                 <rich:column>
@@ -41,6 +43,8 @@ xmlns:ui="http://java.sun.com/jsf/facelets">
                                     </h:commandLink>
                                 </rich:column>
                                 <rich:column><h:outputText value="#{resultVar.status}"/></rich:column>
+                                <rich:column><h:outputText value="#{resultVar.schemaVersion}"/></rich:column>
+                                <rich:column><h:outputText value="#{resultVar.serverVersion}"/></rich:column>
                                 <f:facet name="footer">
                                         <rich:datascroller ajaxSingle="true"
                                                 for="dataTable1"
@@ -52,7 +56,7 @@ xmlns:ui="http://java.sun.com/jsf/facelets">
                 </rich:tab></rich:tabPanel>
             
         </h:form>
-        <rich:panel rendered="false"></rich:panel>
+        <!--rich:panel rendered="false"--><!--/rich:panel-->
         </h:panelGrid>
     </f:view>
 </jsp:root>

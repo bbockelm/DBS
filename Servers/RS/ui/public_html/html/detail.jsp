@@ -20,8 +20,9 @@ xmlns:ui="http://java.sun.com/jsf/facelets">
         font-weight:bold;
         }
     </style>
-    <h:panelGrid columns="3" columnClasses="col1, col2, col3">
-    <rich:panel rendered="false"></rich:panel>
+    <!--h:panelGrid columns="3" columnClasses="col1, col2, col3"-->
+    <h:panelGrid columns="1" columnClasses="gridContent" style="left: 20%; right: 80%; top: 20px; width: 55%; position: relative">
+    <!--rich:panel rendered="false"></rich:panel-->
         <h:form id="form1">
         <rich:tabPanel id="TopPanel"><rich:tab label="DBS Detail" id="topTab">
             <h:panelGrid columns="2" columnClasses="col1, col2">
@@ -59,7 +60,7 @@ xmlns:ui="http://java.sun.com/jsf/facelets">
             </h:panelGrid>
         </rich:tab></rich:tabPanel>
         </h:form>
-        <rich:panel rendered="false"></rich:panel>
+        <!--rich:panel rendered="false"></rich:panel-->
         </h:panelGrid>
     </f:view>
 </jsp:root>

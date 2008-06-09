@@ -44,9 +44,9 @@ public class RegTest {
         try{
             //RegApi rApi = new RegApi("jnp://plasma.dhcp.fnal.gov:1099");
             RegApi rApi = new RegApi("jnp://vocms25.cern.ch:1099");
-            rApi.addRegistration(r);
+            //rApi.addRegistration(r);
             //ejbObj.addRegistration(r);
-            ejbTObj.setTimer(200000);
+            ejbTObj.setTimer(300000);
             System.out.println("Done Adding a new Registration ");
         }catch(Exception e){
             System.out.println("ERROR " + e.getMessage());

@@ -47,8 +47,12 @@ public class TimerSessionEJBBean implements TimerSessionEJBLocal,
                 System.out.println("URL " + r.getUrl());
                 try{
                     DbsWebApi dbsApi = new DbsWebApi(r.getUrl());
-                    System.out.println("Server Version is " + dbsApi.getDBSServerVersion());
-                    setRegStatus(r, "active");
+                    String serverVersion = dbsApi.getDBSServerVersion();
+                    String schemaVersion = dbsApi.getDBSSchemaVersion();
+                    System.out.println("Server Version is " + serverVersion);
+                    System.out.println("Schema Version is " + schemaVersion);
+                    setRegServerVersion(r, "active", serverVersion, schemaVersion);
+                    //setRegStatus(r, "active");
                 }catch(Exception e) {
                     System.out.println("ERROR ---> " + e.getMessage());
                     setRegStatus(r, "inactive");
@@ -57,7 +61,24 @@ public class TimerSessionEJBBean implements TimerSessionEJBLocal,
         }catch(Exception e) {
             System.out.println("ERROR ---> " + e.getMessage());
         }
-         //timer.cancel();
+        //timer.cancel();
+    }
+    
+    private void setRegServerVersion(Registration r, String status, String serverVersion, String schemaVersion) {
+        try {
+            r.setStatus(status);
+            r.setServerVersion(serverVersion);
+            r.setSchemaVersion(schemaVersion);
+            System.out.println("trying to call the rsBean");
+            if(rsBean == null) System.out.println("rsBean is null");
+            else System.out.println("rsBean is NOT null");
+            if(r == null) System.out.println("r is null");
+            else System.out.println("r is NOT null");
+            rsBean.addRegistration(r);
+            System.out.println("r is persisted");
+        }catch(Exception e) {
+            System.out.println("ERROR --->" + e.getMessage());
+        }
     }
     
     private void setRegStatus(Registration r, String status) {
