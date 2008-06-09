@@ -121,7 +121,7 @@ if __name__ == "__main__":
        else:
           input=opts.input
     else:
-       print "\nUsage: DDSearchCLI.py --help"
+       print "\nUsage: %s --help"%sys.argv[0]
        sys.exit(0)
     result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.xml,opts.case,opts.details,opts.cff,opts.verbose)
     print result
