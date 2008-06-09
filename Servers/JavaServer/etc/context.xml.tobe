@@ -13,12 +13,12 @@
 		admin_name="Vijay Sekhri"
 	/>
 
-	<!--Loacl DBS MySQL Resource Parameter /-->
+	<!--Local DBS MySQL Resource Parameter /-->
 
         <Resource name="jdbc/dbs"
                 auth="Container"
                 type="javax.sql.DataSource"
-                maxActive="0"
+                maxActive="100"
                 maxIdle="1"
                 maxWait="-1"
 		username="__insert_username__"
