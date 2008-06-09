@@ -118,11 +118,11 @@ public class HttpUtil {
     }
 
     private void initSecureConnection () throws Exception {
-            //final String cert = "/home/sekhri/mycert.p12";
+            final String cert = "/home/sekhri/mycert.p12";
             //final String cert = "C:\\Documents and Settings\\Vijay Sekhri\\Desktop\\mycert.p12";
-            String cert = System.getProperty("certificate");
-            //final String pass = "vijayneha";
-            String pass = System.getProperty("password");;
+            //String cert = System.getProperty("certificate");
+            final String pass = "vijayneha";
+            //String pass = System.getProperty("password");;
             KeyStore ks = KeyStore.getInstance("PKCS12");
             ks.load((new FileInputStream(cert)), pass.toCharArray());
             KeyManagerFactory kmfactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm());

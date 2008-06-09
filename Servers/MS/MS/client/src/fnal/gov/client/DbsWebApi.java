@@ -22,27 +22,27 @@ public class DbsWebApi {
     private String url;
     private Util u;
     private HttpUtil hu;
-    private String str;
+    //private String str;
     private List<String> paths = null;
 
     PrintWriter out ;
-    MSSessionEJB ejbObj;
+    //MSSessionEJB ejbObj;
 
     public DbsWebApi(String url) throws Exception{
             this.url = url;
             u = new Util();
             hu= new HttpUtil();
-            str = "";
-            out =  new PrintWriter(System.out);
-            Object obj = u.getInitialContext().lookup("ms/MSSessionEJB/remote");
+            //str = "";
+            //out =  new PrintWriter(System.out);
+            /*Object obj = u.getInitialContext().lookup("ms/MSSessionEJB/remote");
             System.out.println("class of obj is : "+obj);
-            ejbObj = (MSSessionEJB)obj;
+            ejbObj = (MSSessionEJB)obj;*/
 
     }
 
-
-    public DbsWebApi() {
-    }
+    
+    
+    public DbsWebApi() {}
     
     public List<String> parse(String inputXml, String tag, String key) throws Exception {
                    if(u.isException(inputXml)) throw new Exception(inputXml);
@@ -116,6 +116,25 @@ public class DbsWebApi {
                    return parse(xml, "processed_dataset", "path");
            }
 
+            public String getDBSServerVersion() throws Exception {
+                Hashtable table = new Hashtable();
+                table.put("api", "getDBSServerVersion");
+                String instanceUrl = this.url + "?" + u.makeUrl(table);
+                String xml = hu.readUrl(instanceUrl);
+                List<String> toReturn = parse(xml, "dbs_version", "server_version");
+                if (toReturn.size() > 0) return toReturn.get(0);
+                return "";
+            }
+
+        public String getDBSSchemaVersion() throws Exception {
+            Hashtable table = new Hashtable();
+            table.put("api", "getDBSServerVersion");
+            String instanceUrl = this.url + "?" + u.makeUrl(table);
+            String xml = hu.readUrl(instanceUrl);
+            List<String> toReturn = parse(xml, "dbs_version", "schema_version");
+            if (toReturn.size() > 0) return toReturn.get(0);
+            return "";
+        }
 
            public String listDatasetContents(String path, String block) throws Exception {
                    Hashtable table = new Hashtable();
@@ -150,7 +169,7 @@ public class DbsWebApi {
 
 
 
-           private boolean doesPathExists(DbsWebApi dwApiDst, String path) throws Exception {
+           protected boolean doesPathExists(DbsWebApi dwApiDst, String path) throws Exception {
                    if (paths == null) paths = dwApiDst.listDatasetPaths();
 
                    for (int i = 0; i != paths.size() ; ++i) {
@@ -161,7 +180,7 @@ public class DbsWebApi {
 
            }
 
-           public String migrateDataset(String srcUrl, String dstUrl, String path, boolean withParents, boolean force) throws Exception {
+           /*public String migrateDataset(String srcUrl, String dstUrl, String path, boolean withParents, boolean force) throws Exception {
                    String toReturn = "";
                    DbsWebApi dwApiSrc = new DbsWebApi(srcUrl);
                    DbsWebApi dwApiDst = new DbsWebApi(dstUrl);
@@ -197,7 +216,7 @@ public class DbsWebApi {
                    }
 
                    return toReturn;
-           }
+           }*/
 
 
 }

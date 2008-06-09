@@ -13,14 +13,14 @@ import java.util.List;
 
 public class Start {
 
-        public void getAllPendingRequest(MSSessionEJB ejbObj) throws Exception {
+        /*public void getAllPendingRequest(MSSessionEJB ejbObj) throws Exception {
                 
                 
                 /*Util u = new Util();
                 Object obj = u.getInitialContext().lookup("ms/MSSessionEJB/remote");
                 System.out.println("class of obj is : "+obj);
                 MSSessionEJB ejbObj = (MSSessionEJB)obj;*/
-                String srcUrl = "";
+          /*      String srcUrl = "";
                 String dstUrl = "";
                 String path = "";
                 try {
@@ -55,7 +55,7 @@ public class Start {
                         ejbObj.updateRequest(srcUrl, dstUrl, path, "Halted", null, e.toString().replace('\'',' ').replace('<','[').replace('>',']'));
                         e.printStackTrace();
                 } 
-        }
+        }*/
 
 
 
@@ -84,7 +84,8 @@ public class Start {
                     System.out.println(  "dn = '" + r.getPerson().getDistinguishedName() + "'");
                     System.out.println(  "dstUrl = '" + r.getDstUrl().getUrl() + "'");
                     System.out.println(  "srcUrl = '" + r.getSrcUrl().getUrl() + "'");
-                    DbsWebApi dwApi = new DbsWebApi("http://cmssrv48.fnal.gov:8282/DBS/servlet/DBSServlet");
+                    //DbsWebApi dwApi = new DbsWebApi("http://cmssrv48.fnal.gov:8282/DBS/servlet/DBSServlet");
+                    DbsWebMigrateApi dwApi = new DbsWebMigrateApi("http://cmssrv48.fnal.gov:8282/DBS/servlet/DBSServlet", ejbObj);
                     boolean withParents = true;
                     boolean withForce = true;
                     if(r.getWithParents().equals("n")) withParents = false;
@@ -100,7 +101,7 @@ public class Start {
     
         
 
-        public static void main(String args[]){
+        /*public static void main(String args[]){
                 Start start = new Start();
                 try {
                     Util u = new Util();
@@ -112,5 +113,5 @@ public class Start {
                         e.printStackTrace();
                         System.out.println(e.getMessage());
                 }
-        }
+        }*/
 }

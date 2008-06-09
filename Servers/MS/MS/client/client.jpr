@@ -40,13 +40,7 @@
       </hash>
    </hash>
    <hash n="oracle.ide.model.DependencyConfiguration">
-      <list n="dependencyList">
-         <hash>
-            <value n="class" v="oracle.jdeveloper.library.ProjectLibrary"/>
-            <url n="sourceOwnerURL" path="../MS.jws"/>
-            <url n="sourceURL" path="../dm/dm.jpr"/>
-         </hash>
-      </list>
+      <list n="dependencyList"/>
    </hash>
    <hash n="oracle.ide.model.ResourcePaths">
       <hash n="resourcesContentSet">

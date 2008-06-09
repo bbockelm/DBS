@@ -4,6 +4,8 @@ import fnal.gov.ejb.entity.Dbsurl;
 import fnal.gov.ejb.entity.Person;
 import fnal.gov.ejb.entity.Request;
 
+//import fnal.gov.ejb.mail.MailHelper;
+
 import java.util.List;
 
 //import javax.annotation.Resource;
@@ -19,14 +21,18 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
+//import javax.ejb.ApplicationException;
 import javax.ejb.SessionContext;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import javax.jms.JMSException;
+//import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
+
+import javax.jms.QueueSession;
 
 import javax.jws.WebService;
 
@@ -39,6 +45,7 @@ public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal, MSSess
     @PersistenceContext(unitName="dm")
     private EntityManager em;
     private Util u;
+    
     @Resource
     private SessionContext ctx;
     
@@ -54,6 +61,7 @@ public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal, MSSess
 
     public MSSessionEJBBean() {
         u = new Util();
+        //mh = new MailHelper();
         /*Object obj = u.getJNDIObj("queue/mdb");
         if(obj != null) queue = (Queue) obj;
         obj = u.getJNDIObj("ConnectionFactory");
@@ -163,8 +171,31 @@ public class MSSessionEJBBean implements MSSessionEJB, MSSessionEJBLocal, MSSess
         if(!u.isNull(progress)) r.setProgress(progress);
         if(!u.isNull(detail)) r.setDetail(detail);
         System.out.println("Entity updated");
+        
+        //Send Email
+        String notify = r.getNotify();
+        if(status.equals("Finished") || status.equals("Halted")) {
+            String subject = "Your Migration request is " + status;
+            String body = "The request to migrate the dataset " + path + "\n" +
+            "from DBS instance " + srcUrl + "\n" +
+            "to DBS instance " + dstUrl + "\n" +
+            "with request id " + r.getId() + "\n" +
+            "is " + status + ".\n\n" +
+            "Information returned from the system is " + detail;
+            if(!u.isNull(notify)) {
+                QueueSession session = conn.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
+                MapMessage mapMsg = session.createMapMessage();
+                mapMsg.setString("recipient", notify);
+                mapMsg.setString("subject", subject);
+                mapMsg.setString("body", body);
+                session.createSender(queue).send(mapMsg);
+                //mh.sendMessage(notify, subject, body);
+            }
+        }
     }
     
+    
+    //@ApplicationException(rollback=true)
     public Request addRequest(String srcUrl, String dstUrl, String path, 
                              String dn, String withParents, String withForce, String notify) throws Exception {
         

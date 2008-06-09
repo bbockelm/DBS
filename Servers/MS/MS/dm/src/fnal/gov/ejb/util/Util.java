@@ -1,5 +1,6 @@
 package fnal.gov.ejb.util;
 
+import javax.jms.MapMessage;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
@@ -46,5 +47,9 @@ public class Util {
         QueueSession session = conn.createQueueSession(false,QueueSession.AUTO_ACKNOWLEDGE);
         TextMessage msg = session.createTextMessage(strMsg);
         session.createSender(queue).send(msg);        
+    }
+
+    public void sendMsg(QueueSession session, Queue queue, MapMessage mapMsg) throws Exception{
+        session.createSender(queue).send(mapMsg);        
     }
 }
