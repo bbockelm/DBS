@@ -1396,6 +1396,7 @@ class ApiDispatcher:
 		self.printBLUE ("Existing Definition will be reused by the DBS instance")
 		# ALL OK !. Creat ADS now
 	try:
+	        self.progress.start()	
 		from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
 		ads=DbsAnalysisDataset(
         		Type='TEST',
@@ -1407,6 +1408,7 @@ class ApiDispatcher:
                 )	
 
 		self.api.createAnalysisDataset(ads, usequery)		
+		self.progress.stop()
         except DbsApiException, ex:
                 self.printRED ("Unable to create ADS")
                 self.printRED ("Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ) )
@@ -1414,7 +1416,7 @@ class ApiDispatcher:
                         self.printRED("DBS Exception Error Code: "+ex.getErrorCode() )
 
 	self.printGREEN("Analysis Dataset Created")
-
+        
 	return
 
   def handleCreatePADSCall(self, path="", files=[]):
