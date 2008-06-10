@@ -516,9 +516,7 @@ class cmd_doc_writer:
 
 			Query Keywords: 	dataset primds , procds , tier , block , file , release , run , lumi , site.
 
-			Query Examples: *QCD*
-				shortcut for look-up all datasets whose name matched QCD pattern
-
+			Query Examples: 
 				find release where release like *
 				look-up all releases in DBS, NOTE: replace release with any other keyword, 
 				like primds, run, etc. in order to get all primary dataset, runs, respectively
@@ -537,13 +535,8 @@ class cmd_doc_writer:
 				find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW
 				look-up files and runs for given dataset name
 
-			Shortcuts: 	FIND dataset WHERE expression is default and can be skipped.
-				If you type single word, e.g. QCD your look-up will be: find dataset where dataset=QCD.
-				If you type word with asterisk, e.g. QCD* your look-up will be: find dataset where dataset like QCD*.
-				You can use = instead of like, e.g. find run where dataset=/Commissioning2008Ecal-A/* 
 				"""
 		print detail_help
-                print "DBS SEARCH ALWAYS CONNECTS TO DBS GLOBAL ONLY FOR THE TIME BEING"
                 print "search can be used in conjuction with --storequery and --createPADS/--createADS operations, look at --doc for help"
 		if self.wiki_help: print "</verbatim>"
 
@@ -624,7 +617,7 @@ class DbsOptionParser(optparse.OptionParser):
            help="Specifies the ADS Def/Query to be used for creating PADS/ADS (must be used with --createPADS= or --createADS=)")
 
       self.add_option("--dbsmartfile", action="store", type="string", dest="dbsmartfile",
-           help="Location of the dbs mart file, absolute path or relative to $ADSHOME")
+           help="Location of the dbs mart file, absolute path or relative to ADSHOME")
 
       self.add_option("--useASearch", action="store_true", dest="useASearch", default=False,
            help="If supplied, ASearch (Search DBS Discovery Page) is used instead of DBS Server")
