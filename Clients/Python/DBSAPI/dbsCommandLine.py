@@ -607,7 +607,7 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--createPADS", action="store", type="string", dest="createPADS",
            help="Create Personal Analysis Dataset for the search query (must be used with --search, or --usequery=)")
 
-      self.add_option("--createADS", action="store", type="string", dest="createADS",
+      self.add_option("--createADS", action="store_true", dest="createADS", 
            help="Create Analysis Dataset for the search query (must be used with --search, or --usequery=)")
 
       self.add_option("--createCFF", action="store", type="string", dest="createCFF",
@@ -958,24 +958,10 @@ class ApiDispatcher:
         return
 
   def reportAnDSDef(self, anObj):
-	print "\n  Analysis Dataset Definition: %s" %anObj['Name']
+	print "\n  USING: Analysis Dataset Definition: %s" %anObj['Name']
 	print "      Dataset Path: %s" %str(anObj['ProcessedDatasetPath'])
 	print "         CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
 	print "         CreatedBy: %s" %anObj['CreatedBy']
-	print "         Runs Included: %s" % str(anObj['RunsList'])
-	print "         RunRanges Included: %s" % str(anObj['RunRangeList'])
-	print "         Lumi Sections Included: %s" %str(anObj['LumiList'])
-	print "         LumiRanges Included: %s" %str(anObj['LumiRangeList'])
-	#print "         Tiers Included: %s" %str(anObj['TierList'])
-	print "         Algorithms Included:"
-	for anAlgo in anObj['AlgoList']:
-		if anAlgo in ('', None):
-			continue
-		algo = anAlgo.split(';')	
-                print "                /"+ algo[2] \
-                                + "/" + algo[0]  \
-                                        +"/"+ algo[1] \
-                                                + "/" + algo[3]
 	return	
 
   def handlelistMyADSDEFCall(self):
@@ -1039,6 +1025,7 @@ class ApiDispatcher:
                 return
         print self.optdict.get('path') 
         self.progress.start()
+	#apiret = self.api.listAnalysisDataset()
 	apiret = self.api.listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'))
         self.progress.stop()
         for anObj in apiret:
@@ -1048,6 +1035,7 @@ class ApiDispatcher:
 
   def reportAnDS(self, anObj):
         print "\n\nAnalysis Dataset: %s" %anObj['Name']
+        print "         Latest Version: %s" %anObj['Version']
         print "         CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
         print "         CreatedBy: %s" %anObj['CreatedBy']
         #Lets print the definition too.
@@ -1356,7 +1344,7 @@ class ApiDispatcher:
 	#if usequery not in ('', None) and storequery not in ('', None):
         #        self.printRED("You cannot provide BOTH --storequery and --usequery (see --doc)")
         #        return
-	
+
 	if usequery not in self.KnownQueries.keys():
                 self.printRED("Query %s not found in the specified MART" % usequery)
                 return
@@ -1399,22 +1387,21 @@ class ApiDispatcher:
                                          )
 		self.api.createAnalysisDatasetDefinition (adsdef)
 	except DbsApiException, ex:
-		self.printRED ("WARNING : Unable to create ADS Definition")
-  		self.printRED ("Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ) )
-		self.printRED ("Existing Definition will be reused by the DBS instance");
-  		if ex.getErrorCode() not in (None, ""):
-    			self.printRED("DBS Exception Error Code: "+ex.getErrorCode() )
 		if ex.getErrorMessage().find("Already Exists") < 0:
+			self.printBLUE ("Caught DBS Exception %s: %s "  % (ex.getClassName(), \
+									ex.getErrorMessage() ) )
 			return
-
-	# ALL OK !. Creat ADS now
+		self.printBLUE ("WARNING : Unable to create ADS Definition")
+		self.printBLUE ("ADS Definition ALREADY EXISTS")
+		self.printBLUE ("Existing Definition will be reused by the DBS instance")
+		# ALL OK !. Creat ADS now
 	try:
 		from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
 		ads=DbsAnalysisDataset(
         		Type='TEST',
                 	Status='NEW',
                 	PhysicsGroup='RelVal',
-                	Path=martQ['PATH'],
+                	#Path=martQ['PATH'],
 			Description="ADS Created by DBS Mart from MART query %s CreatedAt %s" \
 				% (usequery, martQ['CREATEDAT']),
                 )	
@@ -1633,7 +1620,7 @@ class ApiDispatcher:
 
 	if createPADS not in ('', None):
 		self.handleCreatePADSCall()
-	if createPADS not in ('', None):
+	if createADS not in ('', None):
 		self.handleCreateADSCall()
 	if createCFF not in ('', None):
 		self.handleCreateCFFCall()
@@ -1668,6 +1655,11 @@ class ApiDispatcher:
 
                 if name == 'userinput':
                         self.next_is_userinput=1
+
+                # That sucks 
+                if name == 'timeStamp':
+                        self.next_is_userinput=0
+
 
 		if name == 'result':
 			#result FILES_LOGICALFILENAME 	PATH
@@ -1858,7 +1850,7 @@ class ApiDispatcher:
                        	self.handleCreatePADSCall(datasetPath, adsfileslist)
 		if (canstore) and createADS not in ('', None):
 			#handleCreateADSCall only knows about usequery, so we can set it here
-			self.optdict['usequery']=results['USERINPUT']
+			self.optdict['usequery']=storequeryname
 			self.handleCreateADSCall()
 
     if createPADS not in ('', None) and storequeryname in ('', None):
