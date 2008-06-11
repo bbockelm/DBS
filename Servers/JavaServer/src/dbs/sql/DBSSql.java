@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.177 $"
- $Id: DBSSql.java,v 1.177 2008/06/06 15:27:22 afaq Exp $"
+ $Revision: 1.178 $"
+ $Id: DBSSql.java,v 1.178 2008/06/11 15:28:32 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -711,8 +711,15 @@ public class DBSSql {
 		else {
                         int put_first_intersect=0;
                         if (!DBSUtil.isNull(good_clause)) { sql += run_sql + good_clause ; put_first_intersect=1; }
-                        if (!DBSUtil.isNull(bad_clause)) { sql += " UNION "+ run_sql + bad_clause ; put_first_intersect=1; }
-                        if (!DBSUtil.isNull(unknown_clause)) { sql += " UNION "+ run_sql + unknown_clause; put_first_intersect=1; }
+                        if (!DBSUtil.isNull(bad_clause)) { 
+					if (!DBSUtil.isNull(good_clause)) sql += " UNION ";
+					sql += run_sql + bad_clause ; put_first_intersect=1; 
+					
+			}
+                        if (!DBSUtil.isNull(unknown_clause)) { 
+				if (!DBSUtil.isNull(good_clause) || !DBSUtil.isNull(bad_clause) ) sql += " UNION ";
+				sql += run_sql + unknown_clause; put_first_intersect=1; 
+			}
                         for (int i=0; i!= intersects.size(); ++i) {
                                 if (i==0 && put_first_intersect==1) sql += " INTERSECT ";
                                 //if (i==0) sql +=  run_sql + intersects.get(i); 
