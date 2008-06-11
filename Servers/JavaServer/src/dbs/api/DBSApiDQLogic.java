@@ -1,6 +1,6 @@
 /**
- $Revision: 1.15 $"
- $Id: DBSApiDQLogic.java,v 1.15 2008/05/30 16:40:04 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApiDQLogic.java,v 1.16 2008/06/11 15:28:32 afaq Exp $"
  *
  */
 
@@ -791,7 +791,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 				String exmsg = ex.getMessage();
 				if ( exmsg.startsWith("Duplicate entry") || 
 					exmsg.startsWith("ORA-00001: unique constraint") ) {
-		 			DBSUtil.writeLog("Duplicate entry being ignored....");	
+					throw new Exception("Duplicate entries not allowed, use update api instead\n"+exmsg);
 					
 				} else {
 					throw new Exception(ex.getMessage()+ "\nQuery failed is"+ps);
