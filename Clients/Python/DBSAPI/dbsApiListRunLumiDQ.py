@@ -80,8 +80,6 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 
     xmlinput += "</dbs>"
 
-    print xmlinput
-
     ###logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'listRunLumiDQ',
