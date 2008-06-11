@@ -265,6 +265,7 @@ class cmd_doc_writer:
                 print "         -c lsads, or --command=listAnalysisDataset or --command=lsads"
                 print "         optional: --pattern=<Analysis_Dataset_Name_Pattern>"
 		print "                   --path=<dataset path>"
+		print "                   --adsversion=VERSION, list a specific version of ADS, default is latest"
                 print "                   --help, displays this message"
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
@@ -624,6 +625,9 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
+
+      self.add_option("--adsversion", action="store", default="", dest="adsversion",
+           help="Use this with lsads (listing Analysis Dataset) to list a specific version")
 
       self.add_option("--doc", action="store_true", default=False, dest="doc",
            help="Generates a detailed documentation for reference, overrides all other cmdline options (use --wiki_help to produces help document in wiki format [dbs --doc --wiki_help])")
@@ -1025,8 +1029,12 @@ class ApiDispatcher:
                 return
         print self.optdict.get('path') 
         self.progress.start()
-	#apiret = self.api.listAnalysisDataset()
-	apiret = self.api.listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'))
+	adsversion=self.optdict.get('adsversion')
+	if adsversion in ("", None):
+		apiret = self.api.listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'))
+		#apiret = self.api.listAnalysisDataset()
+	else:
+		apiret = self.api.listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'), self.optdict.get('adsversion'))
         self.progress.stop()
         for anObj in apiret:
                 #print anObj
