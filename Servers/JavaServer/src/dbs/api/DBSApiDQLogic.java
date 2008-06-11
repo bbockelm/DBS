@@ -1,6 +1,6 @@
 /**
- $Revision: 1.14 $"
- $Id: DBSApiDQLogic.java,v 1.14 2008/05/06 18:43:24 afaq Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSApiDQLogic.java,v 1.15 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -33,6 +33,34 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		this.data = data;
 		personApi = new DBSApiPersonLogic(data);
 	}
+
+
+        //Updates value of a FLAG
+        public void updateDQIntFlag(Connection conn, Writer out, String runID, String lumiID,
+                                                                String flag, String value,
+                                                                String cbUserID, String creationDate,
+                                                                String lmbUserID
+                                                                ) throws Exception
+        {
+		//THERE is NO History table YET for the INT type of FLAGS (this is next !) 
+		//AA-06/12/2008
+
+		//First get the ID of the row to be changed (Also checks that such an entry DOES exists)
+		//Whatever is the value of this FLAG doesn't matter !!
+		String rowID = getDQIntFlagID(conn, runID, lumiID, flag, "", true);
+
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.updateDQIntFlag(conn, rowID,
+                                                        value,
+                                                        lmbUserID);
+                        pushQuery(ps);
+                        ps.executeUpdate();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+
+        }
 
 	//Updates value of a FLAG
         public void updateDQFlag(Connection conn, Writer out, String runID, String lumiID,
@@ -393,6 +421,12 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 		DBSUtil.writeLog("Entering updateRunLumiDQ...");
 
+                //This should probably be loaded from database in the cache once !
+                java.util.ArrayList valueList = new java.util.ArrayList();
+                valueList.add("GOOD");
+                valueList.add("BAD");
+                valueList.add("UNKNOWN");
+
 
  		for (int i = 0; i < runDQList.size() ; ++i) {
                         //Get the Run
@@ -426,28 +460,43 @@ public class DBSApiDQLogic extends DBSApiLogic {
                         	String value = get(dqFlag, "value", true);
                         	DBSUtil.writeLog("Flag: Name..."+name);
                         	DBSUtil.writeLog("Flag: Value..."+value);
+				//Check to see if this an INT
+				//AA-06/12/2008
+                                if ( ! valueList.contains(value) ) {
+                                        //Probably its a number
+                                        //lets test that 
+                                        try {
+                                                int m = Integer.valueOf(value).intValue();
+                                        } catch (java.lang.NumberFormatException e) {
+                                                throw new DBSException("Incorrect Data", "7012", "Invalid value: " + value + " For QIM " + name );
+                                        }
+					updateDQIntFlag(conn, out, runID, lumiID, name, value, cbUserID, creationDate, lmbUserID);
+                                } else {
 
-                        	//Let us UPDATE THIS FLAG
-                        	updateDQFlag(conn, out, runID, lumiID,
+                        		//Let us UPDATE THIS FLAG
+                        		updateDQFlag(conn, out, runID, lumiID,
                                                 name, value,
                                                 cbUserID, creationDate,
                         		                        lmbUserID);
 
-                        	//It may have a sub-sub-system vector to itself 
-                        	Vector subsubSys = DBSUtil.getVector(dqFlag, "dq_sub_subsys");
-                        	for (int k = 0; k < subsubSys.size() ; ++k) {
-                        		Hashtable dqsubFlag = (Hashtable) subsubSys.get(k);
-					//Check for null yourself! 
-					String subname = DBSUtil.get(dqsubFlag, "name");
-                                	String subvalue = get(dqsubFlag, "value", true);
-                                	DBSUtil.writeLog("      Flag: Sub Name..."+subname);
-                                	DBSUtil.writeLog("      Flag: Sub Value..."+subvalue);
+                        		//It may have a sub-sub-system vector to itself 
+					//ASSUMING the INT Type FLAGS do not YET have Sub-Sub FLAGS ??????????
+					//AA-06/12/2008		
+                        		Vector subsubSys = DBSUtil.getVector(dqFlag, "dq_sub_subsys");
+                        		for (int k = 0; k < subsubSys.size() ; ++k) {
+                        			Hashtable dqsubFlag = (Hashtable) subsubSys.get(k);
+						//Check for null yourself! 
+						String subname = DBSUtil.get(dqsubFlag, "name");
+                                		String subvalue = get(dqsubFlag, "value", true);
+                                		DBSUtil.writeLog("      Flag: Sub Name..."+subname);
+                                		DBSUtil.writeLog("      Flag: Sub Value..."+subvalue);
 
-                                	//Let us update THIS FLAG
-                                	updateDQFlag(conn, out, runID, lumiID,
+                                		//Let us update THIS FLAG
+                                		updateDQFlag(conn, out, runID, lumiID,
                                                                 subname, subvalue,
                                                                 cbUserID, creationDate,
                                                                 lmbUserID);
+					}
 				}
 			}
 		}
@@ -577,8 +626,6 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 //String creationDate = null;
 		//String lmbUserID = personApi.getUserID(conn, dbsUser);
 
-
-		 DBSUtil.writeLog("Entering insertRunLumiDQ...");	
 		 for (int i = 0; i < runDQList.size() ; ++i) {
 			//Get the Run
                         Hashtable runDQ = (Hashtable) runDQList.get(i);
@@ -740,6 +787,15 @@ public class DBSApiDQLogic extends DBSApiLogic {
 				//System.out.println("\n\nBATCH CREATED\n\n");
 				pushQuery(ps);
 				ps.executeBatch();
+			} catch (Exception ex) {
+				String exmsg = ex.getMessage();
+				if ( exmsg.startsWith("Duplicate entry") || 
+					exmsg.startsWith("ORA-00001: unique constraint") ) {
+		 			DBSUtil.writeLog("Duplicate entry being ignored....");	
+					
+				} else {
+					throw new Exception(ex.getMessage()+ "\nQuery failed is"+ps);
+				}
                 	} finally {
                         	if (ps != null) ps.close();
                 	}

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.176 $"
- $Id: DBSSql.java,v 1.176 2008/06/06 14:09:43 afaq Exp $"
+ $Revision: 1.177 $"
+ $Id: DBSSql.java,v 1.177 2008/06/06 15:27:22 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -315,6 +315,25 @@ public class DBSSql {
                 return ps;
         }
 
+	//AA-06/12/2008
+        public static PreparedStatement updateDQIntFlag(Connection conn,
+                                                        String rowID,
+                                                        String value,
+                                                        String lmbUserID) throws SQLException {
+
+                String sql = "UPDATE "+ owner()+"RunLumiDQInt\n" +
+                                "SET IntDQValue = ? , \n"+
+                                "LastModifiedBy = ? \n" +
+                                "WHERE ID = ?";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, value);
+                ps.setString(columnIndx++, lmbUserID);
+                ps.setString(columnIndx++, rowID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
 /*------- Data Quality Calls Collected in one place, later we can separate them out ------*/
 
