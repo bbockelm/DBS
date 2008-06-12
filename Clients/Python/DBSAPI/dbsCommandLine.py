@@ -871,7 +871,7 @@ class ApiDispatcher:
         self.handleCreateADSCall()
 
     elif apiCall in ('createCFF'):
-        seCFFhandleCreateCFFCall()
+        self.handleCreateCFFCall()
 
     ##Search data
     elif apiCall in ('search', '--search') or self.optdict.get('search'):
