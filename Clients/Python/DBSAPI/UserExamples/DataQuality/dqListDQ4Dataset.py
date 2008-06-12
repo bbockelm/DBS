@@ -7,6 +7,7 @@ from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsRunLumiDQ import DbsRunLumiDQ
+import sys
 
 def getRunDQ(api, runNumber, topSubs):
 
@@ -19,12 +20,14 @@ def getRunDQ(api, runNumber, topSubs):
     dqHierarchyList =  api.listRunLumiDQ(  runLumiDQList=[run_dq_search_criteria]  )
 
     row={}
- 
-    if len(dqHierarchyList) <= 0:
+
+    # Even if there are no flags, just print UNKNOW on each of them 
+    #if len(dqHierarchyList) <= 0:
         #print "No DQ information for this run found"
-	return ""
+    #	return ""
 
     for aDQ in dqHierarchyList:
+	#Just the top level falgs
         for aSubDQ in aDQ['DQFlagList']:
                 if aSubDQ['Name'] in topSubs:
 			row[aSubDQ['Name']] = aSubDQ['Value']
@@ -52,7 +55,12 @@ if __name__ == "__main__":
 
     api = DbsApi(opts.__dict__)
 
-    datasetName="/GlobalCruzet1-A/Online-CMSSW_2_0_4/RAW"
+    if len(sys.argv) < 2 :
+	print "USAGE: python "+sys.argv[0]+ " <datasetPath>"
+	sys.exit(0)
+    else:
+	datasetName=sys.argv[1]
+    #datasetName="/GlobalCruzet1-A/Online-CMSSW_2_0_4/RAW"
     datasetRunList=api.listRuns(datasetName)
 
     q=""
@@ -69,6 +77,7 @@ if __name__ == "__main__":
         header += aSubSys + " | "
 
     print header
+
 
     for runNumber in datasetRunList:
 	dqRow=getRunDQ(api, runNumber['RunNumber'], topSubs)
