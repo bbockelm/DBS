@@ -49,6 +49,8 @@ executeQuery () {
 	$CMD query="find dataset where site like %srm.cern*" 
 	$CMD query="find file where run > 1 and run < 1000000"
 	$CMD query="find procds.status  where dataset = /CalPrivateGlobal-default/Online/RAW"
+	$CMD query="find procds, procds.era, procds.tag"
+	$CMD query="find procds, procds.era, procds.tag where dataset = /CalPrivateGlobal-default/Online/RAW"
 	$CMD query="find site" 
 	$CMD query="find file.parent,file.parent, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM" 
 	$CMD query="find procds.parent,procds.name  where procds.name like %Test% or procds.parent like %"
@@ -128,6 +130,8 @@ executeQuery () {
 #$CMD query="find run where dataset = /TestPrimary_001_20080602_11h30m20s/TestProcessed_20080602_11h30m20s/GEN-SIM"
 #$CMD query="find file where run = 432.233"
 #$CMD query="find dataset, procds.createdate where dq = Tracker_Global=GOOD&TIB_Local=GOOD"
-$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05:12 order by run"
+#$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05:12 order by run"
+#$CMD query="find ads"
+$CMD query="find procds, procds.era, procds.tag"
 #executeQuery
 

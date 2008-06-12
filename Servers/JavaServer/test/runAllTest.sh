@@ -25,7 +25,7 @@ tier_name2="SIM"
 #tier_name2="This_is_a_test_tier_SIM"
 processed_name="This_is_a_test_processed_$rand"
 #path="/$primary_name/$tier_name1/$processed_name"
-path="/$primary_name/$processed_name/$tier_name1"
+path="/$primary_name/$processed_name/$tier_name1-$tier_name2"
 path_child="/$primary_name/CHILD_$processed_name/$tier_name2"
 run_number1="9999"
 run_number2="9998"
@@ -438,7 +438,6 @@ insertProcessedDataset () {
 	xmlString2="<?xml version='1.0' standalone='yes'?>
 		<dbs>
 			<processed_dataset primary_datatset_name='$primary_name' processed_datatset_name='CHILD_$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
-				<data_tier name='$tier_name1'/>
 				<data_tier name='$tier_name2'/>
 				<!--data_tier name='TEST_DIGI_$rand'/-->
 				<!--data_tier name='TEST_GEN_$rand'/-->

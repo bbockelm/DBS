@@ -14,6 +14,8 @@ public class KeyMap {
 		map.put("procds.name", "ProcessedDataset.Name");
 		map.put("procds.createdate", "ProcessedDataset.CreationDate");
 		map.put("procds.moddate", "ProcessedDataset.LastModificationDate");
+		map.put("procds.era", "ProcessedDataset.AquisitionEra");
+		map.put("procds.tag", "ProcessedDataset.GlobalTag");
 		
 		map.put("primds.name", "PrimaryDataset.Name");
 		map.put("primds.createdate", "PrimaryDataset.CreationDate");
