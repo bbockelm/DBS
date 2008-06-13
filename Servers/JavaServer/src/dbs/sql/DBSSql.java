@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.178 $"
- $Id: DBSSql.java,v 1.178 2008/06/11 15:28:32 afaq Exp $"
+ $Revision: 1.179 $"
+ $Id: DBSSql.java,v 1.179 2008/06/11 17:01:50 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -288,7 +288,7 @@ public class DBSSql {
                                 " HistoryTimeStamp) select ID, Run, Lumi, SubSystem, DQValue, CreationDate, \n" +
                                 " CreatedBy, LastModificationDate, LastModifiedBy, " + 
 				Long.toString( (new Date()).getTime() / 1000 ) +
-                                " from RunLumiQuality where ID = ?";
+                                " from "+ owner()+"RunLumiQuality where ID = ?";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, rowID);
