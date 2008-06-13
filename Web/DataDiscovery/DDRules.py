@@ -246,7 +246,8 @@ class DDRules:
            # to lumi
            ('dataset','lumi'):['Block.Path2ProcessedDataset.ID','ProcessedDataset.ID2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
            ('block','lumi'):['Block.Name2ProcessedDataset.ID','ProcessedDataset.ID2LumiSection.LumiSectionNumber'],
-           ('file','lumi'):['Files.LogicalFileName2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
+#           ('file','lumi'):['Files.LogicalFileName2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
+           ('file','lumi'):['Files.LogicalFileName2LumiSection.LumiSectionNumber'],
            ('release','lumi'):['AppVersion.Version2ProcessedDataset.ID','ProcessedDataset.ID2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
            ('run','lumi'):['Runs.RunNumber2LumiSection.LumiSectionNumber'],
            ('lumi','lumi'):['LumiSection.LumiSectionNumber2LumiSection.LumiSectionNumber'],

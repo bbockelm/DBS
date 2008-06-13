@@ -2445,6 +2445,7 @@ MCDescription:      %s
       else:
          conn.request("GET", "/cmsdb/servlet/RunSummary?RUN=%s&XML=1"%run)
       r1 = conn.getresponse()
+      runInfoDict={}
       if int(r1.status)==200:
          data=r1.read()
          elem=elementtree.ElementTree.fromstring(data)
@@ -2464,7 +2465,11 @@ MCDescription:      %s
                             if k.tag.lower()=="components": components=k.text
                         if run and not runDBDict.has_key(run):
                            runDBDict[run]=(global_key,triggers,events,bfield,components)
-      return runDBDict
+             elif i.tag=="runInfo":
+                query_data=i # get query
+                for j in query_data:
+                    runInfoDict[j.tag]=j.text
+      return runDBDict,runInfoDict
 
   def getRunDQInfo(self,run):
       con = self.connectToDB()

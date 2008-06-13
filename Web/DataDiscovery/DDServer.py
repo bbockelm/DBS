@@ -188,6 +188,7 @@ class DDServer(DDLogger,Controller):
         self.verbose    = verbose
         self.profile    = profile
         self.dbsDict    = {}
+        self.dbsApi     = {} # dict[dbsInst]=dbsApi
         self.userMode   = 'user'
         self.timer      = self.timerForSummary = time.time()
         self.sumPage    = ""
@@ -215,6 +216,7 @@ class DDServer(DDLogger,Controller):
             print "Read from hostname and port"
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
+        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_0_8'}
         print "DDServer URL '%s'"%self.dbsdd
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
@@ -246,6 +248,18 @@ class DDServer(DDLogger,Controller):
            self.ddUrls.append(self.dbsdd)
            self.ddServices[self.dbsdd]={}
         self.writeLog("DDServer init")
+
+    def getDbsApi(self,dbsInst):
+        dbsUrl=DBS_INST_URL[dbsInst]
+        dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
+        print "dbsUrl",dbsUrl
+        self.dbsConfig['url']=dbsUrl
+        if self.dbsApi.has_key(dbsInst):
+           return self.dbsApi[dbsInst]
+        else:
+           dbsApi = DbsApi(self.dbsConfig)
+           self.dbsApi[dbsInst]=dbsApi
+           return dbsApi
 
     def readyToRun(self):
         opts=self.context.CmdLineArgs().opts
@@ -4969,33 +4983,41 @@ Save query as:
         self.setContentType('xml')
         rDict={}
         try:
-            rDict = self.helper.getRunDBInfo(runs)
+            rDict,runInfoDict = self.helper.getRunDBInfo(runs)
 #            print "\n\n### getRunDBInfo response"
 #            print runs
 #            print rDict
         except:
             t=self.errorReport("Fail in phedexStatus function")
             pass
-        page="""<ajax-response>"""
+        page="""<ajax-response>\n"""
         for run in rDict.keys():
             global_key,triggers,events,bfield,components=rDict[run]
-            page+="""<response type='object' id="runSummary_key_%s">"""%run
-            page+="""<span>Type: %s</span>"""%global_key
-            page+="</response>"
-            page+="""<response type='object' id="runSummary_triggers_%s">"""%run
-            page+="""<span>Triggers: %s</span>"""%triggers
-            page+="</response>"
-            page+="""<response type='object' id="runSummary_events_%s">"""%run
-            page+="""<span>Events: %s</span>"""%triggers
-            page+="</response>"
-            page+="""<response type='object' id="runSummary_bfield_%s">"""%run
-            page+="""<span>B-field: %s</span>"""%bfield
-            page+="</response>"
-            page+="""<response type='object' id="runSummary_components_%s">"""%run
-            page+="""<span>Components: %s</span>"""%components
-            page+="</response>"
+            page+="""<response type='object' id="runSummary_key_%s">\n"""%run
+            page+="""<span>Type: %s</span>\n"""%global_key
+            page+="</response>\n"
+            page+="""<response type='object' id="runSummary_triggers_%s">\n"""%run
+            page+="""<span>Triggers: %s</span>\n"""%triggers
+            page+="</response>\n"
+            page+="""<response type='object' id="runSummary_events_%s">\n"""%run
+            page+="""<span>Events: %s</span>\n"""%triggers
+            page+="</response>\n"
+            page+="""<response type='object' id="runSummary_bfield_%s">\n"""%run
+            page+="""<span>B-field: %s</span>\n"""%bfield
+            page+="</response>\n"
+            page+="""<response type='object' id="runSummary_components_%s">\n"""%run
+            page+="""<span>Components: %s</span>\n"""%components
+            page+="</response>\n"
+            if runInfoDict:
+               page+="""<response type='object' id="runSummary_hlt_%s">\n"""%run
+               page+="""<div style="font-weight:bold">RunInfo:</div>\n"""
+               runInfoKeys=runInfoDict.keys()
+               runInfoKeys.sort()
+               for key in runInfoKeys:
+                   if key.lower()=="runnumber": continue
+                   page+="<span>&#187; %s: %s</span><br/>\n"%(key,runInfoDict[key])
+               page+="</response>\n"
         page+="</ajax-response>"
-            
         if self.verbose==2:
            self.writeLog(page)
         return page
@@ -5490,19 +5512,31 @@ Save query as:
         try:
             self.ddrules.checkSyntax(userInput)
         except:
-            msg ="<pre>%s</pre>"%getExcMessage(userMode)
-            page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+            if html:
+               msg ="<pre>%s</pre>"%getExcMessage(userMode)
+               page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+            else:
+               page=getExcMessage(userMode)
             return page
         userInput = userInput.replace(" path "," dataset ")
         ### TEMP, test DBS QL
-#        if dbsInst=="cms_dbs_prod_local_03":
-#           print "###### TEST OF DBS QL ####"
-#           config={'url':'http://vocms02.cern.ch/cms_dbs_prod_local_03/servlet/DBSServlet','mode':'POST','version':'DBS_1_0_8'}
-#           config={'url':'http://cmssrv48.fnal.gov:8383/DBS/servlet/DBSServlet','mode':'POST','version':'DBS_1_0_8'}
-#           dbsApi = DbsApi(config)
-#           print dbsApi.getServerUrl()
-#           print self.qmaker.executeDBSQuery(dbsApi,userInput,_idx*pagerStep,_idx*pagerStep+pagerStep)
-#           print "###### END TEST OF DBS QL ####"
+        print "###### TEST OF DBS QL ####"
+        try:
+            dbsApi = self.getDbsApi(dbsInst)
+            print dbsApi.getServerUrl()
+            fromRow=_idx*pagerStep
+            toRow=_idx*pagerStep+pagerStep
+            res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+            print res
+            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+            nres,tList,oList=self.qmaker.executeDBSQuery(sql,bindDict,count_sql,count_bindDict)
+            print "Found %s results",nres
+            print tList
+            print oList
+        except:
+            pass
+#        print self.qmaker.executeDBSQuery(dbsApi,userInput,_idx*pagerStep,_idx*pagerStep+pagerStep)
+        print "###### END TEST OF DBS QL ####"
         ### END OF TEMP
         for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
             userInput=userInput.replace(pair[0],pair[1])
