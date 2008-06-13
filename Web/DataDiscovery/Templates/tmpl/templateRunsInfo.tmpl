@@ -122,14 +122,14 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 #set fSize  = item[14]
 #set nFiles = item[15]
 #if run!=$_run_
-#set tstyle="border-width: 1px 0px 0px 0px; border-style:solid; border-color:gray;padding:2px;"
+#set tstyle="border-width: 1px 1px 0px 0px; border-style:solid dotted; border-color:gray;padding:2px;"
 #if $rowColor=="#FFFADC"
 #set rowColor="#FFF5E8"
 #else
 #set rowColor="#FFFADC"
 #end if
 #else
-#set tstyle="border-width: 0px 0px 0px 0px; border-style:solid; border-color:gray;padding:2px;"
+#set tstyle="border-width: 0px 1px 0px 0px; border-style:solid dotted; border-color:gray;padding:2px;"
 #end if
 <tr valign="top" bgcolor="$rowColor" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 ### I need to get run type and decide do I need or not provide a link to run quality DB.
@@ -176,13 +176,26 @@ $eRun
 </td>
 #if not $admin
 <td style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
 <a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off&amp;group=Any&amp;site=Any&amp;tier=Any&amp;app=Any&amp;primType=Any&amp;primD=Any">
 #set pathName="/"+$procDS[1:].replace("/","<br />/")
 $pathName
 </a>
 </td>
-<td align="right" style="$tstyle">$nFiles</td>
-<td align="right" style="$tstyle">$colorSizeHTMLFormat($fSize)</td>
+<td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+$nFiles
+</td>
+<td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+$colorSizeHTMLFormat($fSize)
+</td>
 #end if
 
 #if $userMode=="runManager"
@@ -194,21 +207,50 @@ $pathName
 #set system='N/A'
 #end if
 <td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
 $runmode
 </td>
 <td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
 $system
 </td>
 #end if
 #end if
 #if $userMode=="expert"
-<td align="right" style="$tstyle">$cBy </td>
-<td align="right" style="$tstyle">$cDate </td>
-<td align="right" style="$tstyle">$mBy </td>
-<td align="right" style="$tstyle">$mDate </td>
+<td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+$cBy 
+</td>
+<td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+$cDate 
+</td>
+<td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+$mBy 
+</td>
+<td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+$mDate 
+</td>
 #end if
 #if not $admin
 <td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
 <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;what=cff">cff</a>
 <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">plain</a>
 <a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
@@ -216,6 +258,9 @@ $system
 #end if ### end of admin check
 #### Here is Phedex transfer status call for each site
 <td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
 #if len($sites)==1
 #set phedexResponse=$sites[0]+":"+$procDS+":"+str($run)
 #else
