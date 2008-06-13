@@ -87,6 +87,16 @@ executeQuery () {
 	$CMD query="find run, run.createdate where run.createdate > 2008"
 	$CMD query="find run,file  order by file"
 	$CMD query="find run,file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM  order by file.createdate"
+	$CMD query="find ilumi where run > 0"
+	$CMD query="find ilumi where run > 0"
+	$CMD query="find ilumi, file.name"
+	$CMD query="find run, ilumi, file"
+	$CMD query="find run, ilumi, file where run in (1,2,3)"
+	$CMD query="find ilumi, file where run in (1,2,3)"
+	$CMD query="find ilumi, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM"
+	$CMD query="find ilumi, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM order by file"
+	$CMD query="find ilumi, dataset where run > 0"
+	$CMD query="find ilumi"
 
 
 
@@ -132,6 +142,9 @@ executeQuery () {
 #$CMD query="find dataset, procds.createdate where dq = Tracker_Global=GOOD&TIB_Local=GOOD"
 #$CMD query="find run, run.createdate where run.createdate = 2008-05-01 12:05:12 order by run"
 #$CMD query="find ads"
-$CMD query="find procds, procds.era, procds.tag"
+#$CMD query="find procds, procds.era, procds.tag"
+#$CMD query="find procds, lumi where run > 0"
+#$CMD query="find file where dataset like *Cosmics/CRUZET2_CRUZET2_V1_v2/RECO* or run < 46873"
+
 #executeQuery
 

@@ -736,17 +736,17 @@ executeQuery () {
 	out=`$CMD api=executeQuery query="select file.name where run.number=35672"`
 	echo "$out"
 }
-
+getIntegratedLuminosity
 #executeQuery
 #getIntegratedLuminosity	
-insertPrimaryDataset
-insertAlgorithm
-insertTier
-insertRun
-insertLumiSection
-insertProcessedDataset
-insertBlock
-insertFiles
+#insertPrimaryDataset
+#insertAlgorithm
+#insertTier
+#insertRun
+#insertLumiSection
+#insertProcessedDataset
+#insertBlock
+#insertFiles
 #
 ##deleteBlock
 ##undeleteBlock
@@ -764,7 +764,7 @@ insertFiles
 #listRuns
 #listTiers
 #listBlocks
-listFiles
+#listFiles
 #listLFNs
 #listDatasetSummary
 ##listDatasetContents

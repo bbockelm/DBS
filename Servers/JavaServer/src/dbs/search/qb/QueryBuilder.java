@@ -48,23 +48,35 @@ public class QueryBuilder {
 		String personJoinQuery = "";
 		String parentJoinQuery = "";
 		String pathParentWhereQuery = "";
+		String groupByLumiQuery = "";
 		boolean modByAdded = false;
 		boolean createByAdded = false;
 		boolean fileParentAdded = false;
 		boolean datasetParentAdded = false;
 		boolean procDsParentAdded = false;
+		boolean iLumi = isInList(kws, "ilumi");
 		ArrayList allKws = new ArrayList();
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
 			String aKw = (String)kws.get(i);
-			//System.out.println("line 1");
+			System.out.println("line 1");
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
 			if(Util.isSame(aKw, "dataset")) {
 				allKws = addUniqueInList(allKws, "Block");
 				query += "Block.Path";
+				if(iLumi) groupByLumiQuery += "Block.Path,";
 			//System.out.println("line 2");
+			} else if(Util.isSame(aKw, "ilumi")) {
+			//System.out.println("line 2.1");
+				query += getIntLumiSelectQuery();
+			//System.out.println("line 2.1.1");
 			} else {
+			//System.out.println("line 2.2");
+				if(iLumi && (i < 2) ) {
+					allKws = addUniqueInList(allKws, "Runs");
+					allKws = addUniqueInList(allKws, "LumiSection");
+				}
 
 			//System.out.println("line 3");
 				StringTokenizer st = new StringTokenizer(aKw, ".");
@@ -79,6 +91,7 @@ public class QueryBuilder {
 					//Get default from vertex
 			//System.out.println("line 5");
 					query += makeQueryFromDefaults(vFirst);
+					if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(vFirst);			
 				} else {
 
 			//System.out.println("line 6");
@@ -101,6 +114,7 @@ public class QueryBuilder {
 						String realName = u.getMappedRealName(token2);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
 						query += makeQueryFromDefaults(u.getVertex(realName));			
+						if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
 						addQuery = false;
 					}
 
@@ -174,15 +188,27 @@ public class QueryBuilder {
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
 						String mapVal =  km.getMappedValue(aKw);
-						if(addQuery) query += mapVal + makeAs(mapVal); 
+						if(addQuery) {
+							query += mapVal + makeAs(mapVal); 
+							if(iLumi) groupByLumiQuery += mapVal + ",";
+						}
 					} else {
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
-						if(addQuery) query += makeQueryFromDefaults(vCombined);			
+						if(addQuery) {
+							query += makeQueryFromDefaults(vCombined);			
+							if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(vCombined);			
+						}
 						
 					}
 				}
 			}
 		}
+		//System.out.println("line 5");
+		if(iLumi && (cs.size() > 0) ) {
+			allKws = addUniqueInList(allKws, "Runs");
+			allKws = addUniqueInList(allKws, "LumiSection");
+		}
+
 		for (int i =0 ; i!= cs.size(); ++i) {
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
@@ -208,8 +234,10 @@ public class QueryBuilder {
 			}
 		}
 		
+		System.out.println("line 6");
 		//Get the route which determines the join table
-		allKws = makeCompleteListOfVertexs(allKws);
+		if(allKws.size() > 0) allKws = makeCompleteListOfVertexs(allKws);
+		System.out.println("line 7");
 
 		//If File is not there then add Block
 		//Otherwise
@@ -223,17 +251,22 @@ public class QueryBuilder {
 				}
 			}
 		}
-		allKws = makeCompleteListOfVertexs(allKws);
-
-
-		
-		allKws = sortVertexs(allKws);
+		if(allKws.size() > 0) {
+			 allKws = makeCompleteListOfVertexs(allKws);
+	 		 allKws = sortVertexs(allKws);
+		}
 		int len = allKws.size();
 		/*for(int i = 0 ; i != len ; ++i ) {
 			System.out.println("kw " + (String)allKws.get(i));
 		}*/
-
-		query += genJoins(allKws);
+		if(isInList(kws, "ilumi")) {
+			if(len == 0) query += getIntLumiFromQuery();
+			else {
+				query += genJoins(allKws);
+				query += getIntLumiJoinQuery();
+			}
+		} else query += genJoins(allKws);
+			
 		query += personJoinQuery;
 		query += parentJoinQuery;
 		personJoinQuery = "";
@@ -345,6 +378,11 @@ public class QueryBuilder {
 		}
 		//System.out.println("\n\nFINAL query is \n\n" + query);
 		query += personJoinQuery + parentJoinQuery + queryWhere;
+		if(groupByLumiQuery.length() > 0) {
+			groupByLumiQuery = groupByLumiQuery.substring(0, groupByLumiQuery.length() - 1);// to get rid of extra comma
+			query += "\n GROUP BY " + groupByLumiQuery;
+		}
+
 		boolean orderOnce = false;
 		for(Object o: okws){
 			String orderBy = (String)o;
@@ -360,8 +398,7 @@ public class QueryBuilder {
 			query += orderToken;
 			orderOnce = true;
 		}
-
-		
+			
 		if(!begin.equals("") && !end.equals("")) {
 			int bInt = Integer.parseInt(begin);
 			int eInt = Integer.parseInt(end);
@@ -396,6 +433,19 @@ public class QueryBuilder {
 
 	}
 	
+	private String makeGroupQueryFromDefaults(Vertex v){
+		String realVal = u.getRealFromVertex(v);
+		StringTokenizer st = new StringTokenizer(u.getDefaultFromVertex(v), ",");
+		int countDefTokens = st.countTokens();
+		String query = "";
+		for (int j = 0; j != countDefTokens; ++j) {
+			String token = st.nextToken();
+			query += realVal + "." + token + ",";
+		}
+		return query;
+
+	}
+
 	private String genJoins(ArrayList lKeywords) throws Exception {
 		//ArrayList uniquePassed = new ArrayList();
 		String prev = "";
@@ -607,6 +657,44 @@ public class QueryBuilder {
 		keyWords.add(aKw);
 		return keyWords;
 	}
+
+	private boolean isInList(ArrayList keyWords, String aKw) {
+			System.out.println("line 3.1");
+		for(Object kw: keyWords) {
+			if(((String)kw).equals(aKw))return true;
+		}
+		return false;
+	}
+
+	
+	private String getIntLumiSelectQuery() {
+		return ("\n\tSUM(ldblsum.INSTANT_LUMI * 93 * (1 - ldblsum.DEADTIME_NORMALIZATION) * ldblsum.NORMALIZATION) AS INTEGRATED_LUMINOSITY, " +
+				"\n\tSUM(ldblsum.INSTANT_LUMI_ERR * ldblsum.INSTANT_LUMI_ERR) AS INTEGRATED_ERROR");
+	}
+
+	private String getIntLumiFromQuery() {
+		return ("\n\tFROM CMS_LUMI_PROD_OFFLINE.LUMI_SUMMARIES ldblsum" +
+			"\n\tJOIN CMS_LUMI_PROD_OFFLINE.LUMI_SECTIONS ldbls" +
+			"\n\t\tON ldblsum.SECTION_ID = ldbls.SECTION_ID" +
+			"\n\tJOIN CMS_LUMI_PROD_OFFLINE.LUMI_VERSION_TAG_MAPS ldblvtm" +
+			"\n\t\tON ldblvtm.LUMI_SUMMARY_ID = ldblsum.LUMI_SUMMARY_ID" +
+			"\n\tJOIN CMS_LUMI_PROD_OFFLINE.LUMI_TAGS ldblt" +
+			"\n\t\tON ldblt.LUMI_TAG_ID =  ldblvtm.LUMI_TAG_ID");
+	}
+
+	private String getIntLumiJoinQuery() {
+		return ("\n\tJOIN CMS_LUMI_PROD_OFFLINE.LUMI_SECTIONS ldbls" +
+			"\n\t\tON Runs.RunNumber = ldbls.RUN_NUMBER" +
+			"\n\t\tAND LumiSection.LumiSectionNumber = ldbls.LUMI_SECTION_NUMBER" +
+			"\n\tJOIN CMS_LUMI_PROD_OFFLINE.LUMI_SUMMARIES ldblsum" +
+			"\n\t\tON ldblsum.SECTION_ID = ldbls.SECTION_ID" +
+			"\n\tJOIN CMS_LUMI_PROD_OFFLINE.LUMI_VERSION_TAG_MAPS ldblvtm" +
+			"\n\t\tON ldblvtm.LUMI_SUMMARY_ID = ldblsum.LUMI_SUMMARY_ID" +
+			"\n\tJOIN CMS_LUMI_PROD_OFFLINE.LUMI_TAGS ldblt" +
+			"\n\t\tON ldblt.LUMI_TAG_ID =  ldblvtm.LUMI_TAG_ID");
+	}
+
+
 
 	private ArrayList makeCompleteListOfVertexsOld(ArrayList lKeywords) {
 		int len = lKeywords.size();
