@@ -6729,8 +6729,8 @@ PhedexUpdater.prototype = {
      }
    }
 }
-var RunSummaryUpdater=Class.create();
-RunSummaryUpdater.prototype = {
+var IdUpdater=Class.create();
+IdUpdater.prototype = {
    initialize: function(tab,mode) {
       this.tab=tab
       // keep always in update mode
@@ -6742,9 +6742,40 @@ RunSummaryUpdater.prototype = {
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementById(this.tab);
+     if (t) {
+        if (this.mode=='update') {
+            t.innerHTML=t.innerHTML+responseHTML;
+        } else {
+            t.innerHTML=responseHTML;
+        }
+     }
+     // parse response and search for any JavaScript code there, if found execute it.
+     var jsCode = SearchForJSCode(responseHTML);
+     if(jsCode) {
+        eval(jsCode);
+     }
+   }
+}
+var NameUpdater=Class.create();
+NameUpdater.prototype = {
+   initialize: function(tab) {
+      this.tab=tab
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
      var t=document.getElementsByName(this.tab);
      for(i=0;i<t.length;i++) {
-        t[i].innerHTML=t[i].innerHTML+responseHTML;
+        if (this.mode=='update') {
+            t[i].innerHTML=t[i].innerHTML+responseHTML;
+        } else {
+            t[i].innerHTML=responseHTML;
+        }
+     }
+     // parse response and search for any JavaScript code there, if found execute it.
+     var jsCode = SearchForJSCode(responseHTML);
+     if(jsCode) {
+        eval(jsCode);
      }
    }
 }
