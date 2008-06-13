@@ -146,5 +146,6 @@ executeQuery () {
 #$CMD query="find procds, lumi where run > 0"
 #$CMD query="find file where dataset like *Cosmics/CRUZET2_CRUZET2_V1_v2/RECO* or run < 46873"
 
+$CMD query="find ilumi, dataset where run > 0"
 #executeQuery
 
