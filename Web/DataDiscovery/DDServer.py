@@ -5015,6 +5015,13 @@ Save query as:
                runInfoKeys.sort()
                for key in runInfoKeys:
                    if key.lower()=="runnumber": continue
+                   if key.lower()=="tsckey":
+                      val = runInfoDict[key]
+                      new_val = ""
+                      # insert br for every 30th character to fit on a page
+                      for i in xrange(0,len(val)/30):
+                          new_val+=val[i*30:(i+1)*30]+"<br/>"
+                      runInfoDict[key]=new_val
                    page+="<span>&#187; %s: %s</span><br/>\n"%(key,runInfoDict[key])
                page+="</response>\n"
         page+="</ajax-response>"
@@ -5059,11 +5066,17 @@ Save query as:
         else:
             page=""
         try:
-            xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='298' lumi_section_number='' /></dbs>"""
+            xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='%s' lumi_section_number='' /></dbs>"""%run
+#            xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='298' lumi_section_number='' /></dbs>"""
 
             params={'apiversion':'DBS_1_0_9','api':'listRunLumiDQ','xmlinput':xmlinput}
-            f = urllib.urlopen("http://cmssrv17.fnal.gov:8989/DBS_116pre1/servlet/DBSServlet?%s"%urllib.urlencode(params))
+#            f = urllib.urlopen("http://cmssrv17.fnal.gov:8989/DBS_116pre1/servlet/DBSServlet?%s"%urllib.urlencode(params))
+            dbsUrl=DBS_INST_URL[dbsInst]
+            dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
+#            print "\n\n####Lookup-DQ",dbsInst,dbsUrl,params
+            f = urllib.urlopen("%s?%s"%(dbsUrl,urllib.urlencode(params)))
             data=f.read()
+#            print "\n\n####GetDQ",data
             sysDict,subDict=getDQInfo(data)
             nameSpace={'tag':"dq_%s"%run,'sysDict':sysDict,'subDict':subDict,'admin':0}
             token = SecurityToken()
