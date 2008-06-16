@@ -1,6 +1,6 @@
 /**
- $Revision: 1.45 $"
- $Id: DBSApiAnaDSLogic.java,v 1.45 2008/05/14 15:15:53 afaq Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.46 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -555,7 +555,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		if (isNull(status)) status = "NEW";
 		if (isNull(type)) type = "TEST";
 		
-		Vector existingFileLumis = new Vector();
 		long adsVer = 0;
 		boolean insert = false;
 
@@ -571,7 +570,11 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			if (userInput.indexOf("WHERE") > 0) vals = userInput.split("WHERE");
 			else vals = userInput.split("where");
 				
-			userInput = "find dataset, file.id, lumi.id WHERE "+ vals[1];
+			//userInput = "find dataset, file.id, lumi.id WHERE "+ vals[1];
+			userInput = "find file.id, lumi.id WHERE "+ vals[1];
+			//WE need to limit the search to single Path only
+			userInput += " and dataset="+path;
+			//WE must get a sorted list
 
                 	ArrayList objList = executeQuery(conn, out, userInput, "", "");
                 	String finalQuery = (String)objList.get(1);
@@ -594,16 +597,36 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					ps1 = DBSSql.listExADSFileLumiIDs(conn, aDSID);
 					rs1 =  ps1.executeQuery();
 					int numberOfRowsExisting = DBSUtil.getNumberOfRows(rs1);
+					
+					//System.out.println("numberOfRowsExisting: "+numberOfRowsExisting);
+					//System.out.println("DBSUtil.getNumberOfRows(rs)" + DBSUtil.getNumberOfRows(rs));
 
 					if (numberOfRowsExisting == DBSUtil.getNumberOfRows(rs)) { 
-						for (int j = 0 ; j!= numberOfRowsExisting ; ++j) {
+
+						//Time to check if these are SAME files in Both result sets
+						//Get the list of existing fileids 
+						// (only checking file IDs, heck if lumi are different for now !)
+						// AA-06/16/2008
+						ArrayList existingFileIDs = new ArrayList();
+						for (int k = 0 ; k != numberOfRowsExisting ; ++k) {
 							rs1.next();
+							existingFileIDs.add(get(rs1, "FILEID"));
+						}
+						
+						//Now lets compare
+						for (int j = 0 ; j!= numberOfRowsExisting ; ++j) {
 							rs.next();
+							if (!existingFileIDs.contains(get(rs, "Files_ID"))) {
+								insert=true;
+								break;
+							}
+							
+							/*	
 							if(!(get(rs1, "LUMIID").equals(get(rs, "LumiSection_ID"))) ||
 									!(get(rs1, "FILEID").equals(get(rs, "Files_ID")))) {
 								insert = true;
 								break;
-							}
+							}*/
 						}
 						
 					} else {
@@ -657,8 +680,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 						cbUserID, lmbUserID, creationDate);
 				}
 	
-			} else 	writeWarning(out, "Already Exists", "1020", "AnalysisDataset " + 
-					analysisDatasetName + " with same entries already exists");
+			} else 	
+				throw new DBSException("Already Exists", "1020", "AnalysisDataset " + 
+					analysisDatasetName + " with same entries and version="+adsVer+" already exists");
 
        		    } finally {
     			    if (rs != null) rs.close();
