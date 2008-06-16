@@ -674,6 +674,9 @@ class DbsOptionParser(optparse.OptionParser):
         self.doc()
 
       help=False
+      if 'help' in sys.argv:
+                sys.argv.remove('help')
+                help=True
       if '--help' in sys.argv: 
 		sys.argv.remove('--help')
 		help=True
@@ -686,6 +689,9 @@ class DbsOptionParser(optparse.OptionParser):
       if '--h' in sys.argv : 
 		sys.argv.remove('--h')
 		help=True
+      if '?' in sys.argv:
+                sys.argv.remove('?')
+                help=True
       if '-?' in sys.argv: 
 		sys.argv.remove('-?')
 		help=True
@@ -755,7 +761,6 @@ class ApiDispatcher:
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
 
-
     #See if Twril needs to be ignored
     if self.optdict.has_key('notwril'):
 	self.progress.notwril=self.optdict['notwril']
@@ -774,10 +779,14 @@ class ApiDispatcher:
     elif apiCall in ("--version", "version", "-ver", "--ver"):
         print "DBS API Version: %s" %self.api.getApiVersion()
         return
+
     elif apiCall in ("", None):
        self.printRED ("No command specified, use --help for details")
        return
 
+    elif self.optdict.has_key('want_help'):
+	if (self.manageHelp()):
+		return
     # Following are some weired possibilities, lets deal with'em first
     elif apiCall.startswith('myAnalysisDatasetDef') or apiCall.startswith('myadsdef') or apiCall.startswith('--myadsdef') or \
 		apiCall.startswith('myAnalysisDatasetDef=') or apiCall.startswith('myadsdef=') or apiCall.startswith('--myadsdef=') :
@@ -902,6 +911,44 @@ class ApiDispatcher:
         print "Interrupted."
         sys.exit(1)
 
+  def manageHelp(self):
+
+	cmd = self.optdict.get('command', '')
+	if cmd in ("find", "FIND", "Find"):
+                desc_help="""
+FIND is used with the search command to query data in DBS
+e.g.:  dbs search --query=\"find dataset where dataset like *Online*\""
+Query Syntax:   FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
+Constrain operators: <=, <, >=, >, =, not like, like, in, between
+words FIND,WHERE,AND,OR can be upper or lower case.
+Expressions can be groupped together using brackets, e.g. ((a and b) or c)
+
+keywords:  ads dataset release site block file primds procds run lumi dq
+	
+For further help on keywords use:
+	dbs help <keyword> 
+"""
+		print desc_help   
+		return True
+
+	entity_help={}
+	entity_help['ads'] = "Analysis Dataset(s)"	
+	entity_help['dataset'] = ""
+	entity_help['release'] = ""
+	entity_help['site'] = ""
+	entity_help['block'] = ""
+	entity_help['file'] = ""
+	entity_help['primds'] = ""
+	entity_help['procds'] = ""
+	entity_help['run'] = ""
+	entity_help['lumi'] = ""
+	entity_help['dq'] = ""
+
+	if cmd in ['ads', 'dataset', 'release', 'site', 'block', 'file', 'primds', 'procds', 'run', 'lumi', 'dq']:
+		print entity_help[cmd]
+
+	return False
+		
   def setMartParams(self):
 
 	#Loaded with MART Queries
@@ -1387,7 +1434,7 @@ class ApiDispatcher:
 		from DBSAPI.dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
 
 		adsdef = DbsAnalysisDatasetDefinition(Name=usequery,
-                                         ProcessedDatasetPath=martQ['PATH'],
+                                         #ProcessedDatasetPath=martQ['PATH'],
                                          UserInput=escape(userInput),
                                          SQLQuery=escape(martQ['QUERY']),
                                          Description="ADS DEF Created by DBS Mart from MART query %s CreatedAt %s" \
@@ -1410,21 +1457,25 @@ class ApiDispatcher:
         		Type='TEST',
                 	Status='NEW',
                 	PhysicsGroup='RelVal',
-                	#Path=martQ['PATH'],
+                	Path=martQ['PATH'],
 			Description="ADS Created by DBS Mart from MART query %s CreatedAt %s" \
 				% (usequery, martQ['CREATEDAT']),
                 )	
 
 		self.api.createAnalysisDataset(ads, usequery)		
+		self.printGREEN("Analysis Dataset Created")
 		self.progress.stop()
         except DbsApiException, ex:
+		self.progress.stop()
                 self.printRED ("Unable to create ADS")
-                self.printRED ("Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ) )
-                if ex.getErrorCode() not in (None, ""):
-                        self.printRED("DBS Exception Error Code: "+ex.getErrorCode() )
-
-	self.printGREEN("Analysis Dataset Created")
-        
+		if ex.getErrorMessage().find("Already Exists") < 0:
+                        self.printBLUE ("Caught DBS Exception %s: %s "  % (ex.getClassName(), \
+                                                                        ex.getErrorMessage() ) )
+                        return
+		self.printBLUE ("WARNING : Unable to create ADS")
+		msg=ex.getErrorMessage()
+		msg=msg.split("Already Exists,")[1].split("already exists")
+		self.printBLUE ("WARNING : "+str(msg[0])+" Already exists")
 	return
 
   def handleCreatePADSCall(self, path="", files=[]):
