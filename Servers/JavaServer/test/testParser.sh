@@ -97,6 +97,9 @@ executeQuery () {
 	$CMD query="find ilumi, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM order by file"
 	$CMD query="find ilumi, dataset where run > 0"
 	$CMD query="find ilumi"
+	$CMD query="find block"
+	$CMD query="find block, block.size,  block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
+	$CMD query="find block.size,  block.createdate, block.moddate, block.createby, block.modby where block = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO#01123fd3-5486-41fe-8b90-7dbb8fbe69b8"
 
 
 
@@ -114,8 +117,7 @@ executeQuery () {
 #$CMD query="find file,file.parent where dataset = /CalPrivateGlobal-default/Online/RAW" 
 #$CMD query="find file,file.parent" 
 #$CMD query="find procds,procds.parent" 
-#$CMD query="find procds.tier, procds" 
-#$CMD query="find file, file.tier" 
+#$CMD query="find lumi where file in ( NEW_TEST0005, NEW_TEST0004, NEW_TEST0003 ) or dataset = /test_primary_001/TestProcessedDS002/GEN-SIM or run in (1,2,3)" 
 #$CMD query="find file where file.tier = GEN" 
 #$CMD query="find procds,file where procds.tier = GEN" 
 #$CMD query="find procds,file,file.tier where dataset like *" 
@@ -128,13 +130,6 @@ executeQuery () {
 
 #$CMD query="find file, file.createdate, file.moddate where  dataset = /test_primary_001/TestProcessedDS002/GEN-SIM "
 
-#$CMD query="find dataset"
-#$CMD query="find lumi.id , file.id , dataset"
-#$CMD query="find lumi.id where dataset like *"
-#$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM order by file"
-#$CMD query="find run,file  order by file"
-#$CMD query="find dataset"
-#$CMD query="find site where dataset=/Bplus2JpsiKplus/CMSSW_1_2_3-Spring07-Bphys-1175526403/GEN-SIM"
 
 #$CMD query="find dataset"
 #$CMD query="find run where dataset = /TestPrimary_001_20080602_11h30m20s/TestProcessed_20080602_11h30m20s/GEN-SIM"
@@ -146,6 +141,24 @@ executeQuery () {
 #$CMD query="find procds, lumi where run > 0"
 #$CMD query="find file where dataset like *Cosmics/CRUZET2_CRUZET2_V1_v2/RECO* or run < 46873"
 
-$CMD query="find ilumi, dataset where run > 0"
+#$CMD query="find dataset where dataset like /CSA0*/CMSSW_*/*"
+#$CMD query="find file, file.release, file.size, file.type, file.status where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
+#$CMD query="find file, file.parent where file = /store/user/ndefilip/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/NicolaDeFilippis/Skim-zToTauTau_MuTau-Tier0-A1-Chowder_85f0790dd16f9aff6ccde9b27395c4d2/zToTauTau_MuTau_372.root"
+#$CMD query="find dataset where procds.createdate > 2007-04-20"
+#$CMD query="find dataset.parent where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER"
+#$CMD query="find primds"
+#$CMD query="find block, block.size "
+#$CMD query="find block, block.size,  block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
+	$CMD query="find block.dataset, block.size,  block.createdate, block.moddate, block.createby, block.modby where block = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO#01123fd3-5486-41fe-8b90-7dbb8fbe69b8"
+#$CMD query="find ads where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
+#$CMD query="find primds.createdate, primds.moddate, primds.createby, primds.modby where primds = CSA07Muon"
+#$CMD query="find lumi, lumi.startevnum, lumi.endevnum where file = NEW_TEST0005"
+#$CMD query="find site where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
+#$CMD query="find file where site like castorsrm.cr*" 
+#$CMD query="find file, run where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD and dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
+#$CMD query="find primds where primds.createdate > 2007-04-20"
+#$CMD query="find procds.release, procds.era, procds.tag, procds.status, procds.createdate, procds.moddate, procds.createby, procds.modby where procds = Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER"
+#$CMD query="find procds, procds.release, procds.era, procds.tag, procds.status, procds.createdate, procds.moddate, procds.createby, procds.modby "
+
 #executeQuery
 

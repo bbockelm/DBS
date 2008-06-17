@@ -23,7 +23,7 @@ public class KeyMap {
 		
 		map.put("block.name", "Block.Name");
 		map.put("block.size", "Block.BlockSize");
-		map.put("block.path", "Block.Path");
+		map.put("block.dataset", "Block.Path");
 		map.put("block.createdate", "Block.CreationDate");
 		map.put("block.moddate", "Block.LastModificationDate");
 		
