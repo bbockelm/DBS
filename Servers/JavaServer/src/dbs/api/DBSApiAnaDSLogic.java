@@ -1,6 +1,6 @@
 /**
- $Revision: 1.46 $"
- $Id: DBSApiAnaDSLogic.java,v 1.46 2008/05/30 16:40:04 sekhri Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.47 2008/06/16 23:00:54 afaq Exp $"
  *
  */
 
@@ -671,14 +671,43 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		    		aDSID = getADSID(conn, analysisDatasetName, true);
 				rs.beforeFirst();
+				// Lets do batch insert for ADS as well, for large ADS 
+				// this takes several minutes otherwise
+                		// This can move into DBSSQL later on !!!
+                		java.util.ArrayList keys = new java.util.ArrayList();
+                		keys.add("AnalysisDataset");
+               			keys.add("Lumi");
+                		keys.add("Fileid");
+                		keys.add("CreationDate");
+                		keys.add("CreatedBy");
+                		keys.add("LastModifiedBy");
+
+                		//Add values in batch for each row
+                		java.util.ArrayList values = new java.util.ArrayList();
 				while(rs.next()){
-					//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));					
-					insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
+					values.add(aDSID);
+					values.add(get(rs, "LumiSection_ID"));
+					values.add(get(rs, "Files_ID"));
+					values.add(creationDate);
+					values.add(cbUserID);
+					values.add(lmbUserID);
+					/*insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
 						aDSID,
 						get(rs, "LumiSection_ID"),
 						get(rs, "Files_ID"),
-						cbUserID, lmbUserID, creationDate);
+						cbUserID, lmbUserID, creationDate);*/
 				}
+                		if (values.size() > 0) {
+                        		ps = null;
+                        		try {
+		                                ps = DBSSql.getInsertSQLBatch (conn, "AnalysisDSFileLumi", keys, values);
+						System.out.println("BATCH QUERY:\n"+ps);
+		                                pushQuery(ps);
+                		                ps.executeBatch();
+		                        } finally {
+                		                if (ps != null) ps.close();
+		                        }
+                		}
 	
 			} else 	
 				throw new DBSException("Already Exists", "1020", "AnalysisDataset " + 
