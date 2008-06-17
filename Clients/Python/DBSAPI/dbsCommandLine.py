@@ -84,6 +84,27 @@ def importCode(code,name,add_to_sys_modules=0):
 
     return module
 
+# Class to capture stdout
+class NullStream:
+        def __init__(self):
+                self.txt=""
+        def write(self, text):
+                self.txt += text
+        def read(self):
+                return self.txt
+	def flush(self):
+		pass
+
+class manageStdOut:
+	
+	def capture(self):
+		self.SAVEOUT = sys.stdout
+		self.NEWSTDOUT = NullStream()
+		sys.stdout = self.NEWSTDOUT
+	def restore(self):
+		sys.stdout = self.SAVEOUT
+
+
 class printDot ( threading.Thread ):
        def __init__(self):  
           threading.Thread.__init__(self)
@@ -574,8 +595,11 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
-      self.add_option("-v","--verbose", action="store", type="string", default="ERROR", dest="level",
-           help="specify verbose level, e.g. --verbose=DBSDEBUG, The possible values are, CRITICAL, ERROR, DBSWARNING, DBSDEBUG, DBSINFO, where DBSINFO is most verbose, and ERROR is default")
+      #self.add_option("-v","--verbose", action="store", type="string", default="ERROR", dest="level",
+      #     help="specify verbose level, e.g. --verbose=DBSDEBUG, The possible values are, CRITICAL, ERROR, DBSWARNING, DBSDEBUG, DBSINFO, where DBSINFO is most verbose, and ERROR is default")
+
+      self.add_option("--q","--quiet", action="store_true", dest="quiet", default=False,
+	   help="if specified the output of certain commands will be supressed, generally used with 'search'")
 
       self.add_option("--p","--path", action="store", type="string", dest="path",
            help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed, supports shell glob")
@@ -1439,13 +1463,18 @@ For further help on keywords use:
                                          SQLQuery=escape(martQ['QUERY']),
                                          Description="ADS DEF Created by DBS Mart from MART query %s CreatedAt %s" \
 												% (usequery, martQ['CREATEDAT']),
-                                         )
+                         )
+
+		stdmgr=manageStdOut()
+		stdmgr.capture()
 		self.api.createAnalysisDatasetDefinition (adsdef)
+		stdmgr.restore()
 	except DbsApiException, ex:
 		if ex.getErrorMessage().find("Already Exists") < 0:
 			self.printBLUE ("Caught DBS Exception %s: %s "  % (ex.getClassName(), \
 									ex.getErrorMessage() ) )
 			return
+		stdmgr.restore()
 		self.printBLUE ("WARNING : Unable to create ADS Definition")
 		self.printBLUE ("ADS Definition ALREADY EXISTS")
 		self.printBLUE ("Existing Definition will be reused by the DBS instance")
@@ -1461,11 +1490,15 @@ For further help on keywords use:
 			Description="ADS Created by DBS Mart from MART query %s CreatedAt %s" \
 				% (usequery, martQ['CREATEDAT']),
                 )	
-
+		print "Processing, please wait..."
+                stdmgr=manageStdOut()
+                stdmgr.capture()
 		self.api.createAnalysisDataset(ads, usequery)		
-		self.printGREEN("Analysis Dataset Created")
+		stdmgr.restore()
 		self.progress.stop()
+		self.printGREEN("Analysis Dataset Created")
         except DbsApiException, ex:
+		stdmgr.restore()
 		self.progress.stop()
                 self.printRED ("Unable to create ADS")
 		if ex.getErrorMessage().find("Already Exists") < 0:
@@ -1696,7 +1729,8 @@ For further help on keywords use:
 	
 	data=self.api.executeQuery(userInput)
 	#print data
-
+        if self.optdict.has_key('quiet'):
+		quiet=self.optdict.get('quiet')
         try:
         # DbsExecutionError message would arrive in XML, if any
          class Handler (xml.sax.handler.ContentHandler):
@@ -1727,7 +1761,7 @@ For further help on keywords use:
 			out=""
 			for aval in attrs.values():
 				out += "    " +str(aval)
-			print out
+			if not quiet: print out
 			if  attrs.has_key('FILES_LOGICALFILENAME'):
 				aFile={}
 				aFile['LogicalFileName']=str(attrs['FILES_LOGICALFILENAME'])
@@ -1784,6 +1818,9 @@ For further help on keywords use:
     results['DATASETPATH']=''
     results['ADSFileList']=[]
 
+    if self.optdict.has_key('quiet'):
+                quiet=self.optdict.get('quiet')
+
     try:
         # DbsExecutionError message would arrive in XML, if any
         class Handler (xml.sax.handler.ContentHandler):
@@ -1833,7 +1870,7 @@ For further help on keywords use:
 			#return
 		else: pass
 		# It is worth printing
-		print (escape(s)).strip()
+		if not quiet: print (escape(s)).strip()
 
 	   def endElement(self, name):
 		if name=='sql':
