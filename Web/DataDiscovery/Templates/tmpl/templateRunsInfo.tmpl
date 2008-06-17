@@ -124,9 +124,12 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 #if run!=$_run_
 #set tstyle="border-width: 1px 1px 0px 0px; border-style:solid dotted; border-color:gray;padding:2px;"
 #if $rowColor=="#FFFADC"
+###if $rowColor=="#FFFFFF"
 #set rowColor="#FFF5E8"
+###set rowColor="#edf4f9"
 #else
 #set rowColor="#FFFADC"
+###set rowColor="#FFFFFF"
 #end if
 #else
 #set tstyle="border-width: 0px 1px 0px 0px; border-style:solid dotted; border-color:gray;padding:2px;"
