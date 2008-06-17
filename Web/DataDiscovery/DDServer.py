@@ -4981,33 +4981,17 @@ Save query as:
 
     def getRunDBInfo(self,runs,**kwargs):
         self.setContentType('xml')
-        rDict={}
+        runInfoList=[]
         try:
-            rDict,runInfoDict = self.helper.getRunDBInfo(runs)
+            runInfoList = self.helper.getRunDBInfo(runs)
 #            print "\n\n### getRunDBInfo response"
 #            print runs
-#            print rDict
+#            print runInfoList
         except:
             t=self.errorReport("Fail in phedexStatus function")
             pass
         page="""<ajax-response>\n"""
-        for run in rDict.keys():
-            global_key,triggers,events,bfield,components=rDict[run]
-            page+="""<response type='object' id="runSummary_key_%s">\n"""%run
-            page+="""<span>Type: %s</span>\n"""%global_key
-            page+="</response>\n"
-            page+="""<response type='object' id="runSummary_triggers_%s">\n"""%run
-            page+="""<span>Triggers: %s</span>\n"""%triggers
-            page+="</response>\n"
-            page+="""<response type='object' id="runSummary_events_%s">\n"""%run
-            page+="""<span>Events: %s</span>\n"""%triggers
-            page+="</response>\n"
-            page+="""<response type='object' id="runSummary_bfield_%s">\n"""%run
-            page+="""<span>B-field: %s</span>\n"""%bfield
-            page+="</response>\n"
-            page+="""<response type='object' id="runSummary_components_%s">\n"""%run
-            page+="""<span>Components: %s</span>\n"""%components
-            page+="</response>\n"
+        for run,runInfoDict in runInfoList:
             if runInfoDict:
                page+="""<response type='object' id="runSummary_hlt_%s">\n"""%run
                page+="""<div style="font-weight:bold">RunInfo:</div>\n"""
@@ -5377,6 +5361,8 @@ Save query as:
     def procdsSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def tierSummary(self,**kwargs):
+        return self.aSearchSummary(**kwargs)
+    def adsSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def datasetSummary(self,**kwargs):
         tabCol   = kwargs['tabCol']

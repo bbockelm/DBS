@@ -2435,7 +2435,6 @@ MCDescription:      %s
       """ I need to make the following query
             http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=12024,12222&XML=1
       """
-      runDBDict={}
       conn = httplib.HTTPConnection("cmsmon.cern.ch")
       if type(run) is types.ListType:
          runUrl=""
@@ -2446,30 +2445,18 @@ MCDescription:      %s
          conn.request("GET", "/cmsdb/servlet/RunSummary?RUN=%s&XML=1"%run)
       r1 = conn.getresponse()
       runInfoDict={}
+      runInfoList=[]
       if int(r1.status)==200:
          data=r1.read()
          elem=elementtree.ElementTree.fromstring(data)
          for i in elem:
-             if i.tag=="query":
+             if i.tag=="runInfo":
                 query_data=i # get query
                 for j in query_data:
-                    if  j.tag=="row":
-                        run=0
-                        global_key=triggers=events=bfield=components=""
-                        for k in j.getchildren():
-                            if k.tag.lower()=="run":        run=int(k.text)
-                            if k.tag.lower()=="global_key": global_key=k.text
-                            if k.tag.lower()=="triggers":   triggers=k.text
-                            if k.tag.lower()=="events":     events=k.text
-                            if k.tag.lower()=="bfield":     bfield=k.text
-                            if k.tag.lower()=="components": components=k.text
-                        if run and not runDBDict.has_key(run):
-                           runDBDict[run]=(global_key,triggers,events,bfield,components)
-             elif i.tag=="runInfo":
-                query_data=i # get query
-                for j in query_data:
+                    if j.tag=="runNumber": run=j.text
                     runInfoDict[j.tag]=j.text
-      return runDBDict,runInfoDict
+                runInfoList.append((run,runInfoDict))
+      return runInfoList
 
   def getRunDQInfo(self,run):
       con = self.connectToDB()
