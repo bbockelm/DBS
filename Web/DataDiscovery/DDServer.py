@@ -169,10 +169,19 @@ class DDServer(DDLogger,Controller):
         self.primD= ""
         self.tier = ""
         self.cmsNames   = {}
-        self.helper     = DDHelper(self.dbs,self.ddConfig.iface(),verbose,html=1)
+        self.dbManager  = ""
+        try:
+         self.dbManager = DBManager('OBSOLETE need to be removed',verbose)
+        except:
+         if self.verbose:
+            print "WARNING! some of the functionality will be disable due to missing authentication"
+            self.writeLog(getExcept())
+            printExcept()
+         pass
+        self.helper     = DDHelper(self.dbManager,self.dbs,self.ddConfig.iface(),verbose,html=1)
         self.asearch    = DDSearch(dbsHelper=self.helper)
         self.ddrules    = DDRules(verbose)
-        self.qmaker     = DDQueryMaker(self.dbs)
+        self.qmaker     = DDQueryMaker(self.dbManager,self.dbs)
         self.qmaker.setVerbose(verbose)
         self.dbsdls     = self.helper.getDbsDls()
         self.dbsList    = self.dbsdls.keys()
@@ -2318,6 +2327,7 @@ class DDServer(DDLogger,Controller):
                          'minRun'   : _minRun,
                          'maxRun'   : _maxRun,
                          'admin'    : getArg(kwargs,'admin',0),
+                         'showRange': 1,
                         }
             t = templateRunsInfo(searchList=[nameSpace]).respond()
             page+=str(t)
@@ -2425,6 +2435,7 @@ class DDServer(DDLogger,Controller):
                              'proc'     : "",
                              'userMode' : userMode,
                              'admin'    : getArg(kwargs,'admin',0),
+                             'showRange': 1,
                             }
                 t = templateRunsInfo(searchList=[nameSpace]).respond()
                 page+=str(t)
@@ -4988,10 +4999,11 @@ Save query as:
 #            print runs
 #            print runInfoList
         except:
-            t=self.errorReport("Fail in phedexStatus function")
+            t=self.errorReport("Fail in getRunDBInfo function")
             pass
         page="""<ajax-response>\n"""
         for run,runInfoDict in runInfoList:
+#            print "\n\n",run,runInfoDict
             if runInfoDict:
                page+="""<response type='object' id="runSummary_hlt_%s">\n"""%run
                page+="""<div style="font-weight:bold">RunInfo:</div>\n"""
@@ -5005,6 +5017,8 @@ Save query as:
                       # insert br for every 30th character to fit on a page
                       for i in xrange(0,len(val)/30):
                           new_val+=val[i*30:(i+1)*30]+"<br/>"
+                      if len(val)>(i+1)*30:
+                         new_val+=val[(i+1)*30:]
                       runInfoDict[key]=new_val
                    page+="<span>&#187; %s: %s</span><br/>\n"%(key,runInfoDict[key])
                page+="</response>\n"
@@ -5233,7 +5247,10 @@ Save query as:
         output   = kwargs['output']
         grid     = int(getArg(kwargs,'grid',0))
         userInput= kwargs['userInput']
+        getRes   = int(getArg(kwargs,'getRes',0))
         result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        if getRes:
+           return result
         # only take table column names from view's table, otherwise use what was provided by user
         if output.find(",")!=-1:
            titleList=output.split(",")
@@ -5351,7 +5368,61 @@ Save query as:
     def releaseSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def runSummary(self,**kwargs):
-        return self.aSearchSummary(**kwargs)
+        page = ""
+        html = int(kwargs['html'])
+        if not html: return self.aSearchSummary(**kwargs)
+        try:
+            dbsInst = kwargs['dbsInst']
+            userMode= kwargs['userMode']
+            kwargs['getRes']=1 # get results rather then format the page with them
+            results = self.aSearchSummary(**kwargs)
+            page    = ""
+            runList = []
+            seList  = []
+            minRun  = 10000000000000
+            maxRun  = 0
+            uRunList= []
+            for item in results:
+                run,cDate,cBy,mDate,mBy,totLumi,store,sRun,eRun,nEvts,sEvent,eEvent,nLumis=item
+                if not uRunList.count(run): uRunList.append(run)
+                if run<minRun: minRun=run
+                if run>maxRun: maxRun=run
+                pDict = self.helper.getPathSEs(run)
+                for dsType,path in pDict.keys():
+                    fSize,nFiles = self.helper.filesStat(path,run)
+                    seList=pDict[(dsType,path)]
+                    runList.append([run,nEvts,nLumis,totLumi,store,sRun,eRun,parseCreatedBy(cBy),timeGMT(cDate),parseCreatedBy(mBy),timeGMT(mDate),dsType,path,seList,fSize,nFiles])
+            nameSpace = {
+                         'dbsInst'  : dbsInst,
+                         'host'     : self.dbsdd,
+                         'runList'  : runList,
+                         'runDBInfo': {},
+                         'tableId'  : "runTable",
+                         'nRun'     : len(uRunList),
+                         'minRun'   : minRun,
+                         'maxRun'   : maxRun,
+                         'proc'     : "",
+                         'showRange': 0,
+                         'userMode' : userMode,
+                         'admin'    : getArg(kwargs,'admin',0),
+                        }
+            t = templateRunsInfo(searchList=[nameSpace]).respond()
+            page+=str(t)
+#            if html:
+#               num=len(runList)
+#               oname="runs"
+#               num   = kwargs['num']
+#               oname = kwargs['oname']
+#               link  = kwargs['link']
+#               t = templateSortBar(searchList=[{'num':num,'oname':oname,'link':link,'titleList':'','excludeList':''}]).respond()
+#               page = str(t)+page
+        except:
+            if self.verbose:
+               printExcept()
+            kwargs['getRes']=0 # get page rather then results
+            page=self.aSearchSummary(**kwargs)
+            pass
+        return page
     def lumiSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def siteSummary(self,**kwargs):
@@ -5519,23 +5590,22 @@ Save query as:
             return page
         userInput = userInput.replace(" path "," dataset ")
         ### TEMP, test DBS QL
-        print "###### TEST OF DBS QL ####"
-        try:
-            dbsApi = self.getDbsApi(dbsInst)
-            print dbsApi.getServerUrl()
-            fromRow=_idx*pagerStep
-            toRow=_idx*pagerStep+pagerStep
-            res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
-            print res
-            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-            nres,tList,oList=self.qmaker.executeDBSQuery(sql,bindDict,count_sql,count_bindDict)
-            print "Found %s results",nres
-            print tList
-            print oList
-        except:
-            pass
-#        print self.qmaker.executeDBSQuery(dbsApi,userInput,_idx*pagerStep,_idx*pagerStep+pagerStep)
-        print "###### END TEST OF DBS QL ####"
+#        print "###### TEST OF DBS QL ####"
+#        try:
+#            dbsApi = self.getDbsApi(dbsInst)
+#            print dbsApi.getServerUrl()
+#            fromRow=_idx*pagerStep
+#            toRow=_idx*pagerStep+pagerStep
+#            res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+#            print res
+#            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+#            nres,tList,oList=self.qmaker.executeDBSQuery(sql,bindDict,count_sql,count_bindDict)
+#            print "Found %s results",nres
+#            print tList
+#            print oList
+#        except:
+#            pass
+#        print "###### END TEST OF DBS QL ####"
         ### END OF TEMP
         for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
             userInput=userInput.replace(pair[0],pair[1])

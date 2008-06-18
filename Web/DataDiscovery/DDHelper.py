@@ -10,7 +10,7 @@ CLI DBS Data discovery toolkit.
 """
 
 # import system modules
-import string, sys, time, types, popen2, httplib
+import string, sys, time, types, popen2, httplib, urllib2
 import elementtree, traceback
 from elementtree.ElementTree import fromstring
 
@@ -20,6 +20,7 @@ from   DDConfig  import *
 from   DBSInst   import * # defines DBS instances and schema
 from   DDUtil    import * # general utils
 from   DDSearch  import constrainList
+from   DDNetUtil import *
 
 # QueryBuilder
 from QueryBuilder.Schema import Schema
@@ -36,7 +37,7 @@ class DDHelper(DDLogger):
   """
       DDHelper class
   """
-  def __init__(self,dbsInst="",iface="sqlalchemy",verbose=0,html=0):
+  def __init__(self,dbManager,dbsInst="",iface="sqlalchemy",verbose=0,html=0):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -59,14 +60,7 @@ class DDHelper(DDLogger):
       self.datasetPath = "*"# default path to entire content of DBS
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
-      try:
-         self.dbManager      = DBManager(self.iface,self.verbose)
-      except:
-         if self.verbose:
-            print "WARNING! some of the functionality will be disable due to missing authentication"
-            self.writeLog(getExcept())
-            printExcept()
-         pass
+      self.dbManager   = dbManager
       self.dbsTime     = 0
       self.dlsTime     = 0
       self.api         = "" # dbsCgiApi.DbsCgiApi(url,{'instance':dbsInst})
@@ -333,7 +327,7 @@ class DDHelper(DDLogger):
              msg+= dbs+"\n"
          raise msg
       self.dbsInstance = dbsInst
-      self.writeLog("DBS Instnace: %s"%dbsInst)
+      self.writeLog("DBS Instance: %s"%dbsInst)
       con = self.connectToDB()
       self.closeConnection(con)
       # use cache
@@ -1586,7 +1580,7 @@ MCDescription:      %s
       try:
           con = self.dbManager.connect(self.dbsInstance)
       except:
-	 try:
+         try:
              con = self.dbManager.connect(self.dbsInstance)
          except:
              try:
@@ -2435,27 +2429,31 @@ MCDescription:      %s
       """ I need to make the following query
             http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=12024,12222&XML=1
       """
-      conn = httplib.HTTPConnection("cmsmon.cern.ch")
+      runInfoDict={}
+      runInfoList=[]
+      iParams={}
+      iParams['XML']=1
+      iParams['RUN']=run
+      url = "http://cmsmon.cern.ch/cmsdb/servlet/RunSummary"
       if type(run) is types.ListType:
          runUrl=""
          for r in run:
              runUrl+="%s,"%r
-         conn.request("GET", "/cmsdb/servlet/RunSummary?RUN=%s&XML=1"%runUrl[:-1])
-      else:
-         conn.request("GET", "/cmsdb/servlet/RunSummary?RUN=%s&XML=1"%run)
-      r1 = conn.getresponse()
-      runInfoDict={}
-      runInfoList=[]
-      if int(r1.status)==200:
-         data=r1.read()
-         elem=elementtree.ElementTree.fromstring(data)
-         for i in elem:
-             if i.tag=="runInfo":
-                query_data=i # get query
-                for j in query_data:
-                    if j.tag=="runNumber": run=j.text
-                    runInfoDict[j.tag]=j.text
-                runInfoList.append((run,runInfoDict))
+         iParams['RUN']=runUrl[:-1]
+      http_handler = MyHTTPHandler(timeout = 15)
+      opener = urllib2.build_opener(http_handler)
+      req    = urllib2.Request(url,urllib.urlencode(iParams,doseq=True))
+      data   = opener.open(req).read()
+#      data=urllib2.urlopen(url,urllib.urlencode(iParams,doseq=True)).read()
+      elem=elementtree.ElementTree.fromstring(data)
+      for i in elem:
+          if i.tag=="runInfo":
+             query_data=i # get query
+             runInfoDict={}
+             for j in query_data:
+                 if j.tag=="runNumber": run=j.text
+                 runInfoDict[j.tag]=j.text
+             runInfoList.append((run,runInfoDict))
       return runInfoList
 
   def getRunDQInfo(self,run):
@@ -2679,6 +2677,72 @@ MCDescription:      %s
          except:
             pass
       return oList,runDBInfoDict
+
+
+  def getPathSEs(self,run):
+      con  = self.connectToDB()
+      pDict= {}
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tblk = self.alias('Block','tblk')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpdr = self.alias('ProcDSRuns','tpdr')
+          trun = self.alias('Runs','trun')
+          tse  = self.alias('StorageElement','tse')
+          tsb  = self.alias('SEBlock','tsb')
+          tpt  = self.alias('PrimaryDSType','tpt')
+          oSel = [self.col(tpt,'Type'),self.col(tblk,'Path'),self.col(tse,'SEName')]
+          sel  = sqlalchemy.select(oSel,
+                       from_obj=[
+                          trun.join(tpdr,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
+                          .join(tprd,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
+                          .join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                          .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                          .join(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+                          .outerjoin(tsb,onclause=self.col(tsb,'BlockID')==self.col(tblk,'ID'))
+                          .outerjoin(tse,onclause=self.col(tsb,'SEID')==self.col(tse,'ID'))
+                                ],distinct=True )
+          if run and run!="*":
+             sel.append_whereclause(self.col(trun,'RunNumber')==run)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getPathSEs"
+      for item in result:
+          dsType,path,se=item
+          if not se: se="N/A"
+          addToDict(pDict,(dsType,path),se)
+      return pDict
+
+  def filesStat(self,path,run):
+      con  = self.connectToDB()
+      pDict= {}
+      try:
+          tblk = self.alias('Block','tblk')
+          trun = self.alias('Runs','trun')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tf   = self.alias('Files','tf')
+          oSel = [sqlalchemy.func.sum(self.col(tf,'FileSize')),sqlalchemy.func.count(self.col(tf,'LogicalFileName'))]
+          sel  = sqlalchemy.select(oSel,
+                       from_obj=[
+                          trun.join(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
+                          .join(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
+                          .join(tblk,onclause=self.col(tf,'Block')==self.col(tblk,'ID'))
+                                ],distinct=True )
+          if run and run!="*":
+             sel.append_whereclause(self.col(trun,'RunNumber')==run)
+          if path and path!="*":
+             sel.append_whereclause(self.col(tblk,'Path')==path)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in filesStat"
+      for item in result:
+          fileSize,nFiles=item
+      return fileSize,nFiles
+
 
   def getRunRangeForDataset(self,dataset):
       con = self.connectToDB()

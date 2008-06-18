@@ -13,19 +13,15 @@ registerAjaxRunSummaryCalls();
 <table width="100%">
 <tr>
 <td align="left">
-#if $proc
+#if $nRun and $minRun and $maxRun
 contains $nRun run(s). Run range: $minRun-$maxRun. 
-<span id="phedexInfo">
-PhEDEx <a href="javascript:getPhedexStatus()">info</a>.
-</span>
-#else
-Found multiple datasets.
+#end if
 <span id="phedexInfo">
 Show PhEDEx <a href="javascript:getPhedexStatus()">info</a>.
 </span>
-#end if
 </td>
 <td align="right">
+#if $showRange
 <script type="text/javascript">
 function CheckRunRange() {
   var minRun=document.getElementById('minRun');
@@ -43,10 +39,12 @@ Jump to run range:
 <input type="text" name="maxRun" id="maxRun" size="6" />
 <input type="submit" value="Go" />
 </form>
+#end if
 </td>
 </tr>
 </table>
 ###end if
+#*
 <p />
 <div align="right">
 #if not $admin
@@ -56,6 +54,7 @@ Manage <a href="javascript:reload(1)">DQ flags</a>
 Return to non-admin <a href="javascript:reload(0)">page</a>.
 #end if
 </div>
+*#
 
 ###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
 #set tstyle="border-width: 1px 1px 1px 1px; border-style:solid; border-color:gray;"

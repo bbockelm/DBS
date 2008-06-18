@@ -317,7 +317,10 @@ def sizeFormat(i):
     """
        Format file size utility, it converts file size into KB, MB, GB, TB, PB units
     """
-    num=long(i)
+    try:
+       num=long(i)
+    except:
+       return "N/A"
     for x in ['','KB','MB','GB','TB','PB']:
         if num<1024.:
             return "%3.1f%s" % (num, x)

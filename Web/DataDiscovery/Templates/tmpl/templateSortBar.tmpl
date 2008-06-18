@@ -24,6 +24,7 @@ View results:
 <table>
 <tr>
 <td>
+#if len($titleList)
 #set sortName=$titleList[0]
 <select id="sel_sortName" onchange="javascript:ReloadASearch();">
 #for item in $titleList
@@ -32,13 +33,18 @@ View results:
 #end if
 #end for
 </select>
+#else
+#set sortName="N/A"
+#end if
 </td>
 <td>
+#if len($titleList)
 <a href="javascript:SortDesc();ReloadASearch();">
 <span id="sortDesc" class="td_underline_pad">desc</span></a>
 |
 <a href="javascript:SortAsc();ReloadASearch();">
 <span id="sortAsc" class="">asc</span></a>
+#end if
 </td>
 </tr>
 </table>

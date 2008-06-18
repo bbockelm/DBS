@@ -38,7 +38,7 @@ class DDQueryMaker(DDLogger):
   """
       DDQueryMaker class
   """
-  def __init__(self,dbsInst=""):
+  def __init__(self,dbManager,dbsInst=""):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -57,14 +57,7 @@ class DDQueryMaker(DDLogger):
       self.html        = 0
       self.ddrules     = DDRules(self.verbose)
       DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDQueryMaker",self.verbose)
-      try:
-         self.dbManager      = DBManager('OBSOLETE need to be removed',self.verbose)
-      except:
-         if self.verbose:
-            print "WARNING! some of the functionality will be disable due to missing authentication"
-            self.writeLog(getExcept())
-            printExcept()
-         pass
+      self.dbManager   = dbManager
       self.initDBS(self.dbsInstance)
 
   def initDBS(self,dbsInst):
@@ -95,7 +88,7 @@ class DDQueryMaker(DDLogger):
       try:
           con = self.dbManager.connect(self.dbsInstance)
       except:
-	 try:
+         try:
              con = self.dbManager.connect(self.dbsInstance)
          except:
              try:
