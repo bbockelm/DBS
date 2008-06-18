@@ -29,13 +29,16 @@ PROMPT Create VIEW RunSummary
 drop VIEW RunSummary
 /
 
-CREATE VIEW RunSummary (RunNumber, CreationDate, CreatedBy, TotLumi, StoreNumber, StartOfRun, EndOfRun, StartEvent, EndEvent, NumberOfLumis) 
-AS SELECT tr.RunNumber, tr.CreationDate, tp.DistinguishedName, tr.TotalLuminosity, tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, 
+CREATE VIEW RunSummary (RunNumber, CreationDate, CreatedBy, ModificationDate, ModifiedBy, TotLumi, StoreNumber, StartOfRun, EndOfRun, NumberOfEvents, StartEvent, EndEvent, NumberOfLumis)
+AS SELECT tr.RunNumber, tr.CreationDate, tp.DistinguishedName, 
+tr.LastModificationDate, tp2.DistinguishedName,
+tr.TotalLuminosity, tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvents,
 tls.StartEventNumber, tls.EndEventNumber, count(tls.LumiSectionNumber) 
 FROM Runs tr JOIN LumiSection tls ON tr.ID=tls.RunNumber 
 JOIN person tp ON tr.CreatedBy = tp.ID 
-GROUP BY tr.RunNumber, tr.CreationDate, tp.DistinguishedName, tr.TotalLuminosity, 
-tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tls.StartEventNumber, tls.EndEventNumber
+JOIN person tp2 ON tr.LastModifiedBy = tp2.IDGROUP BY tr.RunNumber, tr.CreationDate, tp.DistinguishedName, 
+tr.LastModificationDate, tp2.DistinguishedName, tr.TotalLuminosity,
+tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvents, tls.StartEventNumber, tls.EndEventNumber
 /
 
 PROMPT Create VIEW RunManagerSummary
