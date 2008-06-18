@@ -60,7 +60,8 @@ class DDParamServer(DDLogger):
            url="https://"+os.path.normpath(url)
         else:
            url="http://"+os.path.normpath(url)
-        print url,iParams
+        if  debug:
+            print url,iParams
         data=urllib2.urlopen(url,urllib.urlencode(iParams,doseq=True)).read()
         return data
 
