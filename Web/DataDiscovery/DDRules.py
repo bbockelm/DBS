@@ -52,7 +52,8 @@ class DDRules:
            'primds'      :'primsummary',
            'procds'      :'procsummary',
            'tier'        :'tiersummary',
-           'ads'         :'',
+           'ads'         :'adssummary',
+           'adsdef'      :'',
            'group'       :'',
        }
        # association between keyword-names and human readble meaning
@@ -67,7 +68,8 @@ class DDRules:
            'primds'      :'primary dataset',
            'procds'      :'processed dataset',
            'tier'        :'data tier',
-           'ads'         :'analisis dataset',
+           'ads'         :'analysis dataset',
+           'adsdef'      :'analysis dataset definition',
            'group'       :'physics group name',
            # additions to above keywords
            'createdate'  :'creation date',
@@ -86,6 +88,8 @@ class DDRules:
            'size'        :'size of entity',
            'type'        :'type of entity',
            'convener'    :'convener name',
+           'input'       :'user input query',
+           'query'       :'SQL query used in dbs',
        }
        # user help
        self.tooltip={
@@ -100,6 +104,7 @@ class DDRules:
            'procds'      :'processed dataset name or pattern, e.g. Online.',
            'tier'        :'data tier name or pattern, e.g. RAW',
            'ads'         :'analysis dataset name, e.g. MyTopAnalysis',
+           'adsdef'      :'analysis dataset definition name',
            'group'       :'physics group name, e.g. Higgs',
        }
        # associate between keyword-names and DBS tables
@@ -114,7 +119,8 @@ class DDRules:
            'primds'      :'PrimaryDataset',
            'procds'      :'ProcessedDataset',
            'tier'        :'DataTier',
-           'ads'         :'AnalisisDataset',
+           'ads'         :'AnalysisDataset',
+           'adsdef'      :'AnalysisDSDef',
            'group'       :'PhysicsGroup',
        }
        # use lowercase table names since SQLAlchemy returns them in lower-case
@@ -130,6 +136,7 @@ class DDRules:
            'datatier':1,
            'group':1,
            'ads':1,
+           'adsdef':1,
        }
        self.colName={
            'dataset'     :'Path',
@@ -143,6 +150,7 @@ class DDRules:
            'procds'      :'Name',
            'tier'        :'Name',
            'ads'         :'Name',
+           'adsdef'      :'Name',
            'group'       :'PhysicsGroupName',
        }
        # mapping of member functions to real DBS col names, if dict is provided in a value
@@ -163,7 +171,10 @@ class DDRules:
            'type'        :{'file':'FileType.Type','primds':'PrimaryDSType.Type','ads':'AnalysisDSType.Type'},
            'convener'    :{'group':'PhysicsGroupConvener'},
            'parents'     :{'dataset':'Block.Path'},
+           'input'       :{'adsdef':'UserInput'},
+           'query'       :{'adsdef':'SQLQuery'},
        }
+       self.clob = ['adsdef.input','adsdef.query']
        self.colFunc = {
            'latestrelease' :['file'],
            'parentrelease' :['file'],
@@ -190,6 +201,7 @@ class DDRules:
            ('procds','dataset'):['ProcessedDataset.Name2Block.Path'],
            ('tier','dataset'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2Block.Path'],
            ('ads','dataset'):['AnalysisDataset.Name2Block.Path'],
+           ('adsdef','dataset'):['AnalysisDSDef.Name2Block.Path'],
            ('group','dataset'):['PhysicsGroup.PhysicsGroupName2Block.Path'],
            # to block
            ('dataset','block'):['Block.Path2Block.Name'],
@@ -203,6 +215,7 @@ class DDRules:
            ('procds','block'):['ProcessedDataset.Name2Block.Name'],
            ('tier','block'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2Block.Name'],
            ('ads','block'):['AnalysisDataset.Name2Block.Name'],
+           ('adsdef','block'):['AnalysisDSDef.Name2Block.Name'],
            ('group','block'):['PhysicsGroup.PhysicsGroupName2Block.Name'],
            # to file
            ('dataset','file'):['Block.Path2Files.LogicalFileName'],
@@ -216,6 +229,7 @@ class DDRules:
            ('procds','file'):['ProcessedDataset.Name2Files.LogicalFileName'],
            ('tier','file'):['DataTier.Name2Files.LogicalFileName'],
            ('ads','file'):['AnalysisDataset.Name2Files.LogicalFileName'],
+           ('adsdef','file'):['AnalysisDSDef.Name2Files.LogicalFileName'],
            ('group','file'):['PhysicsGroup.PhysicsGroupName2Files.LogicalFileName'],
            # to release
            ('dataset','release'):['Block.Path2AppVersion.Version'],
@@ -229,6 +243,7 @@ class DDRules:
            ('procds','release'):['ProcessedDataset.Name2AppVersion.Version'],
            ('tier','release'):['DataTier.Name2AppVersion.Version'],
            ('ads','release'):['AnalysisDataset.Name2AppVersion.Version'],
+           ('adsdef','release'):['AnalysisDSDef.Name2AppVersion.Version'],
            ('group','release'):['PhysicsGroup.PhysicsGroupName2AppVersion.Version'],
            # to run
            ('dataset','run'):['Block.Path2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
@@ -242,6 +257,7 @@ class DDRules:
            ('procds','run'):['ProcessedDataset.Name2Runs.RunNumber'],
            ('tier','run'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2Runs.RunNumber'],
            ('ads','run'):['AnalysisDataset.Name2Runs.RunNumber'],
+           ('adsdef','run'):['AnalysisDSDef.Name2Runs.RunNumber'],
            ('group','run'):['PhysicsGroup.PhysicsGroupName2Runs.RunNumber'],
            # to lumi
            ('dataset','lumi'):['Block.Path2ProcessedDataset.ID','ProcessedDataset.ID2Runs.ID','Runs.ID2LumiSection.LumiSectionNumber'],
@@ -256,6 +272,7 @@ class DDRules:
            ('procds','lumi'):['ProcessedDataset.Name2LumiSection.LumiSectionNumber'],
            ('tier','lumi'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2LumiSection.LumiSectionNumber'],
            ('ads','lumi'):['AnalysisDataset.Name2LumiSection.LumiSectionNumber'],
+           ('adsdef','lumi'):['AnalysisDSDef.Name2LumiSection.LumiSectionNumber'],
            ('group','lumi'):['PhysicsGroup.PhysicsGroupName2LumiSection.LumiSectionNumber'],
            # to site
            ('dataset','site'):['Block.Path2StorageElement.SEName'],
@@ -269,6 +286,7 @@ class DDRules:
            ('procds','site'):['ProcessedDataset.Name2StorageElement.SEName'],
            ('tier','site'):['DataTier.Name2ProcessedDataset.ID','ProcessedDataset.ID2StorageElement.SEName'],
            ('ads','site'):['AnalysisDataset.Name2StorageElement.SEName'],
+           ('adsdef','site'):['AnalysisDSDef.Name2StorageElement.SEName'],
            ('group','site'):['PhysicsGroup.PhysicsGroupName2StorageElement.SEName'],
            # to primds
            ('dataset','primds'):['Block.Path2PrimaryDataset.Name'],
@@ -282,6 +300,7 @@ class DDRules:
            ('procds','primds'):['ProcessedDataset.Name2PrimaryDataset.Name'],
            ('tier','primds'):['DataTier.Name2PrimaryDataset.Name'],
            ('ads','primds'):['AnalysisDataset.Name2PrimaryDataset.Name'],
+           ('adsdef','primds'):['AnalysisDSDef.Name2PrimaryDataset.Name'],
            ('group','primds'):['PhysicsGroup.PhysicsGroupName2PrimaryDataset.Name'],
            # to procds
            ('dataset','procds'):['Block.Path2ProcessedDataset.Name'],
@@ -295,6 +314,7 @@ class DDRules:
            ('procds','procds'):['ProcessedDataset.Name2ProcessedDataset.Name'],
            ('tier','procds'):['DataTier.Name2ProcessedDataset.Name'],
            ('ads','procds'):['AnalysisDataset.Name2ProcessedDataset.Name'],
+           ('adsdef','procds'):['AnalysisDSDef.Name2ProcessedDataset.Name'],
            ('group','procds'):['PhysicsGroup.PhysicsGroupName2ProcessedDataset.Name'],
            # to tier
            ('dataset','tier'):['Block.Path2ProcessedDataset.ID','ProcessedDataset.ID2DataTier.Name'],
@@ -308,6 +328,7 @@ class DDRules:
            ('procds','tier'):['ProcessedDataset.Name2DataTier.Name'],
            ('tier','tier'):['DataTier.Name2DataTier.Name'],
            ('ads','tier'):['AnalysisDataset.Name2DataTier.Name'],
+           ('adsdef','tier'):['AnalysisDSDef.Name2DataTier.Name'],
            ('group','tier'):['PhysicsGroup.PhysicsGroupName2DataTier.Name'],
            # to ads
            ('dataset','ads'):['Block.Path2AnalysisDataset.Name'],
@@ -319,8 +340,24 @@ class DDRules:
            ('site','ads'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2AnalysisDataset.Name'],
            ('primds','ads'):['PrimaryDataset.Name2AnalysisDataset.Name'],
            ('procds','ads'):['ProcessedDataset.Name2AnalysisDataset.Name'],
+           ('tier','ads'):['DataTier.Name2AnalysisDataset.Name'],
            ('ads','ads'):['AnalysisDataset.Name2AnalysisDataset.Name'],
+           ('adsdef','ads'):['AnalysisDSDef.Name2AnalysisDataset.Name'],
            ('group','ads'):['PhysicsGroup.PhysicsGroupName2AnalysisDataset.Name'],
+           # to adsdef
+           ('dataset','adsdef'):['Block.Path2AnalysisDSDef.Name'],
+           ('block','adsdef'):['Block.Name2AnalysisDSDef.Name'],
+           ('file','adsdef'):['Files.LogicalFileName2AnalysisDSDef.Name'],
+           ('release','adsdef'):['AppVersion.Version2AnalysisDSDef.Name'],
+           ('run','adsdef'):['Runs.RunNumber2ProcessedDataset.ID','ProcessedDataset.ID2AnalysisDSDef.Name'],
+           ('lumi','adsdef'):['LumiSection.LumiSectionNumber2AnalysisDSDef.Name'],
+           ('site','adsdef'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2AnalysisDSDef.Name'],
+           ('primds','adsdef'):['PrimaryDataset.Name2AnalysisDSDef.Name'],
+           ('procds','adsdef'):['ProcessedDataset.Name2AnalysisDSDef.Name'],
+           ('tier','adsdef'):['DataTier.Name2AnalysisDSDef.Name'],
+           ('ads','adsdef'):['AnalysisDataset.Name2AnalysisDSDef.Name'],
+           ('adsdef','adsdef'):['AnalysisDSDef.Name2AnalysisDSDef.Name'],
+           ('group','adsdef'):['PhysicsGroup.PhysicsGroupName2AnalysisDSDef.Name'],
            # to group
            ('dataset','group'):['Block.Path2PhysicsGroup.PhysicsGroupName'],
            ('block','group'):['Block.Name2PhysicsGroup.PhysicsGroupName'],
@@ -331,7 +368,9 @@ class DDRules:
            ('site','group'):['StorageElement.SEName2ProcessedDataset.ID','ProcessedDataset.ID2PhysicsGroup.PhysicsGroupName'],
            ('primds','group'):['PrimaryDataset.Name2PhysicsGroup.PhysicsGroupName'],
            ('procds','group'):['ProcessedDataset.Name2PhysicsGroup.PhysicsGroupName'],
+           ('tier','group'):['DataTier.Name2PhysicsGroup.PhysicsGroupName'],
            ('ads','group'):['AnalysisDataset.Name2PhysicsGroup.PhysicsGroupName'],
+           ('adsdef','group'):['AnalysisDSDef.Name2PhysicsGroup.PhysicsGroupName'],
            ('group','group'):['PhysicsGroup.PhysicsGroupName2PhysicsGroup.PhysicsGroupName'],
        }
        self.keywords=list(self.colName.keys())

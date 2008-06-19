@@ -2423,6 +2423,7 @@ class DDServer(DDLogger,Controller):
             t = templatePagerStep(searchList=[_nameSpace]).respond()
             pagerPage=str(t)
 
+            nRun = self.helper.getNRuns(minRun,maxRun)
             runList,runDBInfoDict=self.helper.getRuns(dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
             if len(runList):
                 page+=pagerPage
@@ -2436,6 +2437,9 @@ class DDServer(DDLogger,Controller):
                              'userMode' : userMode,
                              'admin'    : getArg(kwargs,'admin',0),
                              'showRange': 1,
+                             'nRun'     : nRun,
+                             'minRun'   : minRun,
+                             'maxRun'   : maxRun,
                             }
                 t = templateRunsInfo(searchList=[nameSpace]).respond()
                 page+=str(t)
@@ -5263,15 +5267,21 @@ Save query as:
         num      = kwargs['num']
         oname    = kwargs['oname']
         link     = kwargs['link']
-        if output.find(",")!=-1 or output.find("total")!=-1:
-           longName=""
-        else:
+        longName = ""
+        try:
            longName = self.ddrules.longName[output].capitalize()
+        except:
+           pass
+#        if output.find(",")!=-1 or output.find("total")!=-1:
+#           longName=""
+#        else:
+#           longName = self.ddrules.longName[output].capitalize()
         counter  = 0
         cDateIdx =-1
         mDateIdx =-1
         cByIdx   =-1
         sizeIdx  =-1
+        pathIdx  =-1
         func     = lambda x: [i.lower() for i in x]
         ttList   = func(titleList)
         for idx in xrange(0,len(ttList)):
@@ -5281,6 +5291,7 @@ Save query as:
                if item.find('mod')!=-1: mDateIdx=idx 
             if item.find('size')!=-1: sizeIdx=idx
             if item.find('createdby')!=-1: cByIdx=idx
+            if item.find('path')!=-1: pathIdx=idx
         for item in result:
             if counter%2:
                style='class="zebra"'
@@ -5306,6 +5317,9 @@ Save query as:
                    elem=colorSizeHTMLFormat(elem)
                 if cByIdx!=-1 and jdx==cByIdx:
                    elem=parseCreatedBy(elem)
+                if pathIdx!=-1 and jdx==pathIdx:
+                   path=elem[0]+elem[1:].replace("/","<br/>/")
+                   elem="""<a href="getData?dbsInst=%s&amp;proc=%s&amp;userMode=%s&amp;ajax=0&amp;phedex=off&amp;group=Any&amp;site=Any&amp;tier=Any&amp;app=Any&amp;primType=Any&amp;primD=Any">%s</a>"""%(dbsInst,elem,userMode,path)
                 if  html:
                     if grid:
                        if not jdx: td_style='class="td_left"'
@@ -5323,14 +5337,36 @@ Save query as:
             if html and grid and output.find(",")==-1 and output.find("total")==-1: # no multiple select
                # add more links column
                more ="""<select style="width:100px" onchange="javascript:load(this.options[this.selectedIndex].value)">\n"""
+               if  output.find(".")==-1:
+                   more+="""<optgroup label="Entities">"""
                more+="""<option value="">More Info</option>\n"""
                for key in self.ddrules.tableName.keys():
                    if key==output: continue
                    ref  = urllib.quote("find %s where %s=%s"%(key,output,firstElem))
                    aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,sortOrder,grid)
                    more+="""<option value='%s'>%s</option>\n"""%(aref,"Find %s"%self.ddrules.longName[key])
+               if  output.find(".")==-1:
+                   more+="</optgroup>\n"
+                   more+="<optgroup label=\"Attributes\">\n"
+                   for _key in self.ddrules.colMember.keys():
+                       item = self.ddrules.colMember[_key]
+                       if type(item) is types.DictType:
+                           if item.keys().count(output):
+                              attr = item[output]
+                              if type(attr) is types.ListType: attrList=attr
+                              else: attrList=[attr]
+                              for elem in attrList:
+                                  ref  = urllib.quote("find %s.%s where %s=%s"%(output,_key,output,firstElem))
+                                  aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,sortOrder,grid)
+                                  more+="""<option value='%s'>%s</option>\n"""%(aref,elem)
+                       else:
+                           ref  = urllib.quote("find %s.%s where %s=%s"%(output,_key,output,firstElem))
+                           aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,sortOrder,grid)
+                           more+="""<option value='%s'>%s</option>\n"""%(aref,item)
+                   more+="</optgroup>\n"
                more+="</select>\n"
-               page+="<td %s>%s</td>\n"%(td_style,more) # for LINKS, see adding to titleList
+#               page+="<td %s>%s</td>\n"%(td_style,more) # for LINKS, see adding to titleList
+               page+="<td>%s</td>\n"%more # for LINKS, see adding to titleList
                page+="</tr>\n"
             if not html:
                if xml:
@@ -5374,6 +5410,7 @@ Save query as:
         try:
             dbsInst = kwargs['dbsInst']
             userMode= kwargs['userMode']
+            nRun    = kwargs['num']
             kwargs['getRes']=1 # get results rather then format the page with them
             results = self.aSearchSummary(**kwargs)
             page    = ""
@@ -5381,10 +5418,10 @@ Save query as:
             seList  = []
             minRun  = 10000000000000
             maxRun  = 0
-            uRunList= []
+#            uRunList= []
             for item in results:
                 run,cDate,cBy,mDate,mBy,totLumi,store,sRun,eRun,nEvts,sEvent,eEvent,nLumis=item
-                if not uRunList.count(run): uRunList.append(run)
+#                if not uRunList.count(run): uRunList.append(run)
                 if run<minRun: minRun=run
                 if run>maxRun: maxRun=run
                 pDict = self.helper.getPathSEs(run)
@@ -5398,7 +5435,8 @@ Save query as:
                          'runList'  : runList,
                          'runDBInfo': {},
                          'tableId'  : "runTable",
-                         'nRun'     : len(uRunList),
+#                         'nRun'     : len(uRunList),
+                         'nRun'     : nRun,
                          'minRun'   : minRun,
                          'maxRun'   : maxRun,
                          'proc'     : "",
@@ -5408,14 +5446,6 @@ Save query as:
                         }
             t = templateRunsInfo(searchList=[nameSpace]).respond()
             page+=str(t)
-#            if html:
-#               num=len(runList)
-#               oname="runs"
-#               num   = kwargs['num']
-#               oname = kwargs['oname']
-#               link  = kwargs['link']
-#               t = templateSortBar(searchList=[{'num':num,'oname':oname,'link':link,'titleList':'','excludeList':''}]).respond()
-#               page = str(t)+page
         except:
             if self.verbose:
                printExcept()
@@ -5434,6 +5464,8 @@ Save query as:
     def tierSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def adsSummary(self,**kwargs):
+        return self.aSearchSummary(**kwargs)
+    def adsdefSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def datasetSummary(self,**kwargs):
         tabCol   = kwargs['tabCol']
@@ -5752,8 +5784,12 @@ Save query as:
                elif output.find("dataset.parents")!=-1: # TEMP
                   page+=self.aSearchShowAll(**kDict)
                else:
-                  method=getattr(self,output+'Summary')
-                  page+=method(**kDict)
+                  try: 
+                      method=getattr(self,output+'Summary')
+                      page+=method(**kDict)
+                  except:
+                      pass
+                      page+=self.aSearchSummary(**kDict)
             else:
                page+=self.aSearchShowAll(**kDict)
             queryTime=time.time()-t1

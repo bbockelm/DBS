@@ -2678,6 +2678,24 @@ MCDescription:      %s
             pass
       return oList,runDBInfoDict
 
+  def getNRuns(self,minRun,maxRun):
+      con  = self.connectToDB()
+      sel  = ""
+      try:
+          trun = self.alias('Runs','trun')
+          oSel = [sqlalchemy.func.count(self.col(trun,'RunNumber').distinct())]
+          sel  = sqlalchemy.select(oSel,from_obj=[trun])
+          sel.append_whereclause(self.col(trun,'RunNumber')>=minRun)
+          sel.append_whereclause(self.col(trun,'RunNumber')<=maxRun)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getNRuns"
+      res = result.fetchone()[0]
+      self.closeConnection(con)
+      return res
+
 
   def getPathSEs(self,run):
       con  = self.connectToDB()
@@ -2713,6 +2731,7 @@ MCDescription:      %s
           dsType,path,se=item
           if not se: se="N/A"
           addToDict(pDict,(dsType,path),se)
+      self.closeConnection(con)
       return pDict
 
   def filesStat(self,path,run):

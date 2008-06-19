@@ -144,6 +144,7 @@ class DDQueryMaker(DDLogger):
       return cq.params
 
   def sortOrder(self,sortName,sortOrder):
+      if not sortName: return []
       if sortOrder=="desc":
          oBy = [sqlalchemy.desc(sortName)]
       else:
@@ -152,6 +153,13 @@ class DDQueryMaker(DDLogger):
 
   def makeJoinQuery(self,toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict={}):
 #      print "\n\n+++makeJoinQuery",toSelect,toJoin,wClause,sortName,sortOrder,case,funcDict
+
+      # Analyze what needs to be joined
+      toJoinList=[]
+      for item in toJoin.split(","):
+          t,c=item.split(".")
+          if not toJoinList.count(t): toJoinList.append(t)
+
       try:
           person = self.dbManager.getTable(self.dbsInstance,'Person')
           oSel   = []
@@ -192,10 +200,13 @@ class DDQueryMaker(DDLogger):
              qb  = Schema(self.dbManager.dbTables[self.dbsInstance],owner=self.dbsInstance)
           else:
              qb  = Schema(self.dbManager.dbTables[self.dbsInstance])
-          if toSelect==toJoin:
+          if len(toJoinList)==1:
+             query =_oSel
+          elif toSelect==toJoin:
              query =_oSel
           else:
              query  = qb.BuildQueryWithSel(_oSel,_Sel,personJoin)
+          if not funcDict: gBy=[]
           if gBy:
              query=query.group_by(*gBy)
           bparams=[]
@@ -272,6 +283,7 @@ class DDQueryMaker(DDLogger):
              query  = qb.BuildQueryWithSel(_oSel,_Sel,personJoin)
           query=query.distinct()
           query=query.apply_labels()
+          if not funcDict: gBy=[]
           if gBy:
              query=query.group_by(*gBy)
           if kwargs.has_key('rval'):
@@ -578,6 +590,9 @@ class DDQueryMaker(DDLogger):
          sortName=c
       dbTables = self.dbManager.getTableNames(self.dbsInstance)
       tName    = output+"summary"
+      # check if we have CLOB data, if so discard sorting 
+      if self.ddrules.clob.count(output):
+         sortName=""
       if dbTables.count(tName.lower()) and limit:
          return self.executeQueryFromView(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       else:
