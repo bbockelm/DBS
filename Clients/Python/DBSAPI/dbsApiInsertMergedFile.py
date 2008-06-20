@@ -31,10 +31,8 @@ def dbsApiImplInsertMergedFile(self, parents, outputFile):
     outputFile['ParentList'] = []
     for anInputLFN in parents:
        
-
-        #def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None)
-        #fileDetails = self.listFiles(patternLFN=get_name(anInputLFN), details=True, branchNTrig=True) 
-        fileDetails = self.listFiles(patternLFN=get_name(anInputLFN), details=True) 
+        #fileDetails = self.listFiles(patternLFN=get_name(anInputLFN), details=True) 
+        fileDetails = self.listFiles(patternLFN=get_name(anInputLFN), retriveList=["all"]) 
         if len(fileDetails) < 1:
 		raise DbsApiException(args="Unmerged file %s not found in DBS" %get_name(anInputLFN), code="1999")
         fileDetail = fileDetails[0] 
@@ -50,7 +48,6 @@ def dbsApiImplInsertMergedFile(self, parents, outputFile):
                 if algo not in outputFile['AlgoList']:
                         outputFile['AlgoList'].append(algo)
    
- 
         for achild in fileDetail['ChildList']:
                 if achild not in outputFile['ChildList']:
                         outputFile['ChildList'].append(achild)
