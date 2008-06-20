@@ -377,7 +377,26 @@ public class QueryBuilder {
 			}
 		}
 		//System.out.println("\n\nFINAL query is \n\n" + query);
-		query += personJoinQuery + parentJoinQuery + queryWhere;
+		String circularConst = "";
+		boolean useAnd = false;
+		if((queryWhere.length() == 0) && isIn(allKws, "FileRunLumi")) circularConst = "\nWHERE ";
+		
+		if(isIn(allKws, "Files") && isIn(allKws, "FileRunLumi")) {
+			if(queryWhere.length() != 0 || useAnd) circularConst += "\n\tAND ";
+		       	circularConst += "FileRunLumi.Fileid = Files.ID";
+			useAnd = true;
+		}
+		if(isIn(allKws, "Runs") && isIn(allKws, "FileRunLumi")) {
+			if(queryWhere.length() != 0 || useAnd) circularConst += "\n\tAND ";
+			circularConst += "\n\tFileRunLumi.Run = Runs.ID";
+			useAnd = true;
+		}
+		if(isIn(allKws, "LumiSection") && isIn(allKws, "FileRunLumi")) {
+			if(queryWhere.length() != 0 || useAnd) circularConst += "\n\tAND ";
+			circularConst += "\n\tFileRunLumi.Lumi = LumiSection.ID";
+		}
+
+		query += personJoinQuery + parentJoinQuery + queryWhere + circularConst;
 		if(groupByLumiQuery.length() > 0) {
 			groupByLumiQuery = groupByLumiQuery.substring(0, groupByLumiQuery.length() - 1);// to get rid of extra comma
 			query += "\n GROUP BY " + groupByLumiQuery;

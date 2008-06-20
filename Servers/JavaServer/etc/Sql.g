@@ -69,6 +69,8 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 where	:('WHERE' | 'where');
 dotValue        : VALUE 
 		| VALUE DOT VALUE
+		| VALUE DOT VALUE DOT VALUE
+		| VALUE DOT VALUE DOT VALUE DOT VALUE
 		| VALUE SPACE VALUE
 		| VALUE SPACE VALUE SPACE VALUE;
 //dateValue	: (DIGIT);
