@@ -986,7 +986,7 @@ class ApiDispatcher:
 	Syntax:    FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
 	Operators: <=, <, >=, >, =, not like, like, in, between
 			words FIND,WHERE,AND,OR can be upper or lower case.
-"""
+	"""
 		print desc_help
 		print "Possible keywords are: \n\t", string.join( entityAttr.keys(), '  ' )
 		print "For further help on keywords use:"
@@ -1955,13 +1955,18 @@ class ApiDispatcher:
 
     if storequeryname not in ('', None) and storetemplt not in ('', None):
 	self.printRED("You cannot specify both --storequery and --storetemplatequery")
+	return
 
-    qu="query"  # Run ONLY query and do not execute
-    if createCFF not in ('', None):
-	qu="exe"
+    qu="exe"
+    if storequeryname not in ('', None) and storetemplt not in ('', None) \
+        and createCFF in ('', None) and createPADS in ('', None) and createPADS in ('', None):
+        qu="query"  # Run ONLY query and do not execute
+
+    #if createCFF not in ('', None):
+    #	qu="exe"
     # ONLY do this if User needs to create an ADS
     if createPADS not in ('', None) or createADS not in ('', None):
-	qu="exe"
+	#qu="exe"
 	userInput=userInput.replace('where','WHERE')
     	criteria=userInput.split('WHERE')
     	if len(criteria) <= 0:
