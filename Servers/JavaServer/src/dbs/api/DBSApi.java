@@ -1,6 +1,6 @@
 /**
- $Revision: 1.131 $"
- $Id: DBSApi.java,v 1.131 2008/05/13 21:00:13 afaq Exp $"
+ $Revision: 1.132 $"
+ $Id: DBSApi.java,v 1.132 2008/05/30 16:40:04 sekhri Exp $"
  *
 */
 
@@ -352,8 +352,8 @@ public class DBSApi {
 						get(table, "pattern_lfn", false),
 						get(table, "run_number", false),
 						attributes,
-						apiVersion
-						//get(table, "detail", false)
+						apiVersion,
+						get(table, "detail", false)
 						//get(table, "branchNTrig", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {

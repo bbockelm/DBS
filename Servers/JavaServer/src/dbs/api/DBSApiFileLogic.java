@@ -1,6 +1,6 @@
 /**
- $Revision: 1.95 $"
- $Id: DBSApiFileLogic.java,v 1.95 2008/05/28 21:08:44 afaq Exp $"
+ $Revision: 1.96 $"
+ $Id: DBSApiFileLogic.java,v 1.96 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -236,7 +236,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	private boolean contains(ArrayList attributes, String param) {
 		return DBSUtil.contains(attributes, param);
 	}
-	
 	public void listFiles(Connection conn, 
 			Writer out, 
 			String path, 
@@ -249,6 +248,23 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String runNumber,
 			ArrayList attributes,
 			String clientVersion
+			) throws Exception {
+		listFiles(conn, out, path,primary, proc, dataTierList, aDSName, blockName, patternLFN, runNumber, attributes, clientVersion, "True");
+	}
+
+	public void listFiles(Connection conn, 
+			Writer out, 
+			String path, 
+			String primary, 
+			String proc, 
+			String dataTierList, 
+			String aDSName, 
+			String blockName, 
+			String patternLFN, 
+			String runNumber,
+			ArrayList attributes,
+			String clientVersion,
+			String detail
 			) throws Exception {
 
 		
@@ -334,6 +350,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + 	"' status='" + get(rs, "STATUS") + "'";
 						else toSend += " validation_status='' status=''";
 
+
 						if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
 						else toSend += " type=''";
 
@@ -359,13 +376,24 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				out.write(toSend);
 				this.data.localFile = new Hashtable();
 				this.data.localFile.put(lfn, fileID);
-				if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
-				if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
-				if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn);
-				if(DBSUtil.contains(attributes, "retrive_tier")) listFileTiers(conn, out, lfn);
-				if(DBSUtil.contains(attributes, "retrive_lumi")) listFileLumis(conn, out, lfn);
-				if(DBSUtil.contains(attributes, "retrive_run")) listFileRuns(conn, out, lfn);
-				if(DBSUtil.contains(attributes, "retrive_branch")) listBranch(conn, out, get(rs, "FILE_BRANCH"));
+				if(oldClients && detail.equals("True")) {
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
+					listFileAlgorithms(conn, out, lfn);
+					listFileTiers(conn, out, lfn);
+					listFileLumis(conn, out, lfn);
+					listFileRuns(conn, out, lfn);
+					listBranch(conn, out, get(rs, "FILE_BRANCH"));
+
+				} else {	
+					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
+					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
+					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn);
+					if(DBSUtil.contains(attributes, "retrive_tier")) listFileTiers(conn, out, lfn);
+					if(DBSUtil.contains(attributes, "retrive_lumi")) listFileLumis(conn, out, lfn);
+					if(DBSUtil.contains(attributes, "retrive_run")) listFileRuns(conn, out, lfn);
+					if(DBSUtil.contains(attributes, "retrive_branch")) listBranch(conn, out, get(rs, "FILE_BRANCH"));
+				}
                 		out.write(((String) "</file>\n"));
       
 			}
