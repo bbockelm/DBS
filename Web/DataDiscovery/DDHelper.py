@@ -2033,7 +2033,7 @@ MCDescription:      %s
       self.closeConnection(con)
       return content
 
-  def getLFNsFromRunRanges(self,dbsInst,dataset,runRanges):
+  def getLFNsFromRunRanges(self,dataset,runRanges):
       con = self.connectToDB()
       try:
           tb   = self.alias('Block','tb')
@@ -2078,18 +2078,58 @@ MCDescription:      %s
       self.closeConnection(con)
       return oList
 
-  def getLFNs(self,dbsInst,blockName,dataset,run="*",lfn="*"):
+  def getLFNParents(self,lfnList):
+      con = self.connectToDB()
+      condList = []
+      try:
+          tf   = self.alias('Files','tf')
+          tf2  = self.alias('Files','tf2')
+          tfp  = self.alias('FileParentage','tfp')
+          tfp2 = self.alias('FileParentage','tfp2')
+
+          oSel = [self.col(tfp,'ItsParent')]
+          tobj = tf.join(tfp,self.col(tfp,'ThisFile')==self.col(tf,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[tobj])
+          for lfn in lfnList:
+              condList.append(self.col(tf,'LogicalFileName')==lfn)
+          if len(condList): 
+             sel.append_whereclause(sqlalchemy.or_(*condList))
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNParents"
+      condList = []
+      for item in result:
+          if not item[0]: continue
+          condList.append(self.col(tf,'ID')==item[0])
+      # check to see if we found any parent for provided lfnList
+      if not condList:
+         return []
+      try:
+          oSel = [self.col(tf,'LogicalFileName')]
+          sel  = sqlalchemy.select(oSel,from_obj=[tf])
+          if len(condList): 
+             sel.append_whereclause(sqlalchemy.or_(*condList))
+#          print self.printQuery(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNParents"
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item[0])
+      self.closeConnection(con)
+      return oList
+
+  def getLFNs(self,blockName,dataset,run="*",lfn="*"):
       prim="*"
       tier="*"
       proc="*"
-      if dataset and dataset!="*":
-         empty,prim,proc,tier=string.split(dataset,"/")
       con = self.connectToDB()
       try:
-          tprd = self.alias('ProcessedDataset','tprd')
-          tpm  = self.alias('PrimaryDataset','tpm')
-          tpds = self.alias('ProcDSTier','tpds')
-          tdt  = self.alias('DataTier','tdt')
           tb   = self.alias('Block','tb')
           tf   = self.alias('Files','tf')
           tfs  = self.alias('FileStatus','tfs')
@@ -2097,38 +2137,17 @@ MCDescription:      %s
           tfrl = self.alias('FileRunLumi','tfrl')
           tr   = self.alias('Runs','tr')
           oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents'),self.col(tf,'Checksum')]
-          sel  = sqlalchemy.select(oSel,
-                 from_obj=[
-                     tprd.join(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
-                         .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                         .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                         .join(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
-                         .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
-                         .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
-                     ],distinct=True,order_by=oSel
-                                  )
+          tobj = tb.join(tf,self.col(tf,'Block')==self.col(tb,'ID'))
           if  run and run!="*":                        
-              sel  = sqlalchemy.select(oSel,
-                     from_obj=[
-                         tprd.join(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
-                             .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                             .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                             .join(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
-                             .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
-                             .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
-                             .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
-                             .outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
-                         ],distinct=True,order_by=oSel
-                                      )
-          sel.append_whereclause(self.col(tf,'Block')==self.col(tb,'ID'))
-          if proc and proc!="*":
-             sel.append_whereclause(self.col(tprd,'Name')==proc)
-          if prim and prim!="*":
-             sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if tier and tier!="*":
-             self.joinTiers(sel,tpds,tier,tprd)
+              tobj = tobj.join(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
+              tobj = tobj.join(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
+          tobj = tobj.outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+          tobj = tobj.outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[tobj],distinct=True,order_by=oSel)
           if blockName and blockName!="*":
              sel.append_whereclause(self.col(tb,'Name')==blockName)
+          if dataset and dataset!="*":
+             sel.append_whereclause(self.col(tb,'Path')==dataset)
           if run and run!="*":
              sel.append_whereclause(self.col(tr,'RunNumber')==run)
           if lfn and lfn!="*":
@@ -2147,7 +2166,7 @@ MCDescription:      %s
       self.closeConnection(con)
       return oList
 
-  def getLFNs_Runs(self,dbsInst,blockName):
+  def getLFNs_Runs(self,blockName):
       con = self.connectToDB()
       try:
           tb   = self.alias('Block','tb')
@@ -2440,7 +2459,7 @@ MCDescription:      %s
          for r in run:
              runUrl+="%s,"%r
          iParams['RUN']=runUrl[:-1]
-      http_handler = MyHTTPHandler(timeout = 15)
+      http_handler = MyHTTPHandler(timeout = 60) # timeout in seconds
       opener = urllib2.build_opener(http_handler)
       req    = urllib2.Request(url,urllib.urlencode(iParams,doseq=True))
       data   = opener.open(req).read()
