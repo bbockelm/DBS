@@ -17,7 +17,7 @@ class MyHTTPConnection(httplib.HTTPConnection):
     timeout, specified at construction."""
 
     def __init__(self, host, port=None, strict=None,
-                timeout=None):
+                timeout=None): # timeout in seconds
         httplib.HTTPConnection.__init__(self, host, port,
                 strict)
         self.timeout = timeout
