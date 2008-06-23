@@ -254,8 +254,14 @@ $mDate
 <hr class="dbs"/>
 #end if
 <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;what=cff">cff</a>
+<br/>
 <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">plain</a>
+<br/>
 <a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
+<br/>
+<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">cff wParents</a>
+<br/>
+<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;format=python">py wParents</a>
 </td>
 #end if ### end of admin check
 #### Here is Phedex transfer status call for each site
