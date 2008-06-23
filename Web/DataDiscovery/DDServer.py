@@ -1570,7 +1570,7 @@ class DDServer(DDLogger,Controller):
         page = self.genTopHTML(userMode=userMode)
         # TODO: I need to validate user input, runRanges
         # it should be in a form minR-maxRun,minRun-maxRun,...
-        lfnList=self.helper.getLFNsFromRunRanges(dbsInst,dataset,runRanges)
+        lfnList=self.helper.getLFNsFromRunRanges(dataset,runRanges)
         page+=self.formatLFNList(lfnList,"cff",idx=0)
         page+= self.genBottomHTML()
         return page
@@ -2494,7 +2494,7 @@ class DDServer(DDLogger,Controller):
         run="*"
         try:
             self.helperInit(dbsInst)
-            lfnDict = self.helper.getLFNs_Runs(dbsInst,blockName)
+            lfnDict = self.helper.getLFNs_Runs(blockName)
             lfnList = lfnDict.keys()
             lfnList.sort()
             page+="""
@@ -2545,7 +2545,7 @@ class DDServer(DDLogger,Controller):
         run="*"
         try:
             self.helperInit(dbsInst)
-            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
+            lfnList = self.helper.getLFNs(blockName,dataset,run)
             page+="""
 <select multiple="multiple" name="%s" id="%s" style="width:1000px;font-size:8px" size="10" onchange="%s">
 <option value="All">
@@ -2643,7 +2643,10 @@ All LFNs in a block
                page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
             else:
                page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
-            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
+            lfnList = self.helper.getLFNs(blockName,dataset,run)
+            justLFNs= []
+            for lfn in lfnList: justLFNs.append(lfn[0])
+            parentLFNList = self.helper.getLFNParents(justLFNs)
             page+=self.formatLFNList(lfnList,what,idx=0)
             page+= self.genBottomHTML()
             return page
@@ -2652,7 +2655,84 @@ All LFNs in a block
             pass
             return str(t)
     getLFN_txt.exposed = True
+
+    def getLFNsWithParents(self,dbsInst,blockName,dataset="",userMode='user',run='*',**kwargs):
+        """
+           Retrieves and represents LFN list in ASCII form
+           @type  dataset: string 
+           @param dataset: dataset name
+           @type blockName: string
+           @param blockName: block name
+           @rtype : string
+           @return: returns HTML code
+        """
+        try:
+            self.helperInit(dbsInst)
+            format = getArg(kwargs,'format','cff')
+            page = self.genTopHTML(userMode=userMode)
+            t="dataset"
+            v=dataset
+            if blockName and blockName!="*":
+               t="block"
+               v=blockName
+            if run and run!='*':
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
+            else:
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
+            lfnList = self.helper.getLFNs(blockName=blockName,dataset=dataset,run=run)
+            justLFNs= []
+            for lfn in lfnList: justLFNs.append(lfn[0])
+            parentLFNList = self.helper.getLFNParents(justLFNs)
+            page+=self.formatLFNPoolSource(justLFNs,parentLFNList,format)
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in getLFNsWithParents function")
+            pass
+            return str(t)
+    getLFNsWithParents.exposed = True
     
+    def formatLFNPoolSource(self,lfnList,parentLfnList,format="cff"):
+        p1=""
+        for lfn in lfnList:
+            if lfn==lfnList[-1]:
+               p1+="""            'file:%s'\n"""%lfn
+            else:
+               p1+="""            'file:%s',\n"""%lfn
+        p2=""
+        for lfn in parentLfnList:
+            if lfn==parentLfnList[-1]:
+               p2+="""            'file:%s'\n"""%lfn
+            else:
+               p2+="""            'file:%s',\n"""%lfn
+        if format=="python":
+            page="""
+<pre>
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+   source = cms.Source ("PoolSource",
+       fileNames = cms.untracked.vstring (
+%s
+      )
+       secondaryFileNames = cms.untracked.vstring (
+%s
+      )
+   )
+</pre>"""%(p1,p2)
+        else:
+            page="""
+<pre>
+untracked PSet maxEvents = {untracked int32 input = -1}
+   source = PoolSource {
+       untracked vstring fileNames = {
+%s
+      }
+       untracked vstring secondaryFileNames = {
+%s
+      } 
+   }
+</pre>"""%(p1,p2)
+        return page 
+
     def getLFNsForSite(self,dbsInst,site,datasetPath,what="cff",userMode='user',run="*"):
         """
            Generates a list of LFNs for given site
@@ -2723,7 +2803,7 @@ All LFNs in a block
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
-            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
+            lfnList = self.helper.getLFNs(blockName,dataset)
             page+=self.formatLFNList(lfnList,what="cff",idx=0)
             page+= self.genBottomHTML()
             return page
@@ -2743,7 +2823,7 @@ All LFNs in a block
            @rtype : string
            @return: returns HTML code
         """
-        lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
+        lfnList = self.helper.getLFNs(blockName,dataset,run)
         nameSpace = {
                      'host'      : self.dbsdd,
                      'dbsInst'   : dbsInst,
@@ -5019,6 +5099,7 @@ Save query as:
                       val = runInfoDict[key]
                       new_val = ""
                       # insert br for every 30th character to fit on a page
+                      i=0
                       for i in xrange(0,len(val)/30):
                           new_val+=val[i*30:(i+1)*30]+"<br/>"
                       if len(val)>(i+1)*30:
