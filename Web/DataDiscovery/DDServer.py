@@ -2712,7 +2712,7 @@ maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
    source = cms.Source ("PoolSource",
        fileNames = cms.untracked.vstring (
 %s
-      )
+      ),
        secondaryFileNames = cms.untracked.vstring (
 %s
       )
