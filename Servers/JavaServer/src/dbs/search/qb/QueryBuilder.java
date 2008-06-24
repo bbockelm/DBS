@@ -49,6 +49,7 @@ public class QueryBuilder {
 		String parentJoinQuery = "";
 		String pathParentWhereQuery = "";
 		String groupByLumiQuery = "";
+		boolean invalidFile = false;
 		boolean modByAdded = false;
 		boolean createByAdded = false;
 		boolean fileParentAdded = false;
@@ -56,10 +57,14 @@ public class QueryBuilder {
 		boolean procDsParentAdded = false;
 		boolean iLumi = isInList(kws, "ilumi");
 		ArrayList allKws = new ArrayList();
+		if(isInList(kws, "file") || isInList(kws, "file.status")) {
+			invalidFile = true;
+			allKws = addUniqueInList(allKws, "FileStatus");
+
+		}
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
 			String aKw = (String)kws.get(i);
-			System.out.println("line 1");
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
 			if(Util.isSame(aKw, "dataset")) {
@@ -218,6 +223,7 @@ public class QueryBuilder {
 				}else if(Util.isSame(key, "dq")) {
 					allKws = addUniqueInList(allKws, km.getMappedValue(key));
 				}else {
+					if(Util.isSame(key, "file.status")) invalidFile = false;
 					StringTokenizer st = new StringTokenizer(key, ".");
 					int count = st.countTokens();
 					allKws = addUniqueInList(allKws, u.getMappedRealName(st.nextToken()));
@@ -234,10 +240,8 @@ public class QueryBuilder {
 			}
 		}
 		
-		System.out.println("line 6");
 		//Get the route which determines the join table
 		if(allKws.size() > 0) allKws = makeCompleteListOfVertexs(allKws);
-		System.out.println("line 7");
 
 		//If File is not there then add Block
 		//Otherwise
@@ -296,14 +300,14 @@ public class QueryBuilder {
 						queryWhere += handlePath(val, op);
 					}
 				} else if(Util.isSame(key, "dq")) {
-					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operater should be = . Invalid operater given " + op);
+					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operator should be = . Invalid operator given " + op);
 					queryWhere += "\tRuns.ID" + handleDQ(val);
 				} else if(Util.isSame(key, "file.release")) {
 					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(op, val);
 				} else if(Util.isSame(key, "file.tier")) {
 					queryWhere += "\tFileTier.DataTier" + handleTier(op, val);
 				} else if(Util.isSame(key, "lumi.evnum")) {
-					if(!Util.isSame(op, "=")) throw new Exception("When evnum is provided operater should be = . Invalid operater given " + op);
+					if(!Util.isSame(op, "=")) throw new Exception("When evnum is provided operator should be = . Invalid operator given " + op);
 					queryWhere += handleEvNum(val);
 				} else if(Util.isSame(key, "procds.release")) {
 					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
@@ -395,8 +399,19 @@ public class QueryBuilder {
 			if(queryWhere.length() != 0 || useAnd) circularConst += "\n\tAND ";
 			circularConst += "\n\tFileRunLumi.Lumi = LumiSection.ID";
 		}
-
-		query += personJoinQuery + parentJoinQuery + queryWhere + circularConst;
+		
+		String invalidFileQuery = "FileStatus.Status <> ?";
+		String invalidConst = "";
+		if((queryWhere.length() == 0) && (circularConst.length() == 0) && (invalidFile)) {
+			invalidConst = "\nWHERE " + invalidFileQuery;
+			bindValues.add("INVALID");
+		}
+		if(((queryWhere.length() != 0) || (circularConst.length() != 0)) && (invalidFile)) {
+			invalidConst = "\nAND " + invalidFileQuery;
+			bindValues.add("INVALID");
+		}
+		
+		query += personJoinQuery + parentJoinQuery + queryWhere + circularConst + invalidConst;
 		if(groupByLumiQuery.length() > 0) {
 			groupByLumiQuery = groupByLumiQuery.substring(0, groupByLumiQuery.length() - 1);// to get rid of extra comma
 			query += "\n GROUP BY " + groupByLumiQuery;
