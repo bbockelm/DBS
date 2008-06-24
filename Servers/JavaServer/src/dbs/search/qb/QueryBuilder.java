@@ -47,12 +47,14 @@ public class QueryBuilder {
 		//Store all the keywors both from select and where in allKws
 		String personJoinQuery = "";
 		String parentJoinQuery = "";
+		String childJoinQuery = "";
 		String pathParentWhereQuery = "";
 		String groupByLumiQuery = "";
 		boolean invalidFile = false;
 		boolean modByAdded = false;
 		boolean createByAdded = false;
 		boolean fileParentAdded = false;
+		boolean fileChildAdded = false;
 		boolean datasetParentAdded = false;
 		boolean procDsParentAdded = false;
 		boolean iLumi = isInList(kws, "ilumi");
@@ -160,13 +162,24 @@ public class QueryBuilder {
 						boolean dontJoin = false;
 						if(fileParentAdded) dontJoin = true;
 						fileParentAdded = true;
-						//String tmpTableName =  token + "_" + token2;
 						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
 						addQuery = false;
 					}
-					
+		
+					if(Util.isSame(token2, "child") && Util.isSame(token, "file")) {
+						boolean dontJoin = false;
+						if(fileChildAdded) dontJoin = true;
+						fileChildAdded = true;
+						System.out.println("childJoinQuery " + childJoinQuery+ "  dontJoin " + dontJoin);
+						if(!dontJoin) childJoinQuery += handleChild(tmpTableName, "Files", "FileParentage");
+						System.out.println("AGAIN childJoinQuery " + childJoinQuery);
+						String fqName = tmpTableName + ".LogicalFileName";
+						query += fqName + makeAs(fqName);			
+						addQuery = false;
+					}
+				
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
 						boolean dontJoin = false;
 						if(procDsParentAdded) dontJoin = true;
@@ -194,6 +207,7 @@ public class QueryBuilder {
 					if(vCombined == null) {
 						String mapVal =  km.getMappedValue(aKw);
 						if(addQuery) {
+							if(mapVal.equals(aKw)) throw new Exception("The keyword " + aKw + " not yet implemented in Query Builder" );
 							query += mapVal + makeAs(mapVal); 
 							if(iLumi) groupByLumiQuery += mapVal + ",";
 						}
@@ -273,8 +287,10 @@ public class QueryBuilder {
 			
 		query += personJoinQuery;
 		query += parentJoinQuery;
+		query += childJoinQuery;
 		personJoinQuery = "";
 		parentJoinQuery = "";
+		childJoinQuery = "";
 		String queryWhere = "";
 		if (cs.size() > 0) queryWhere += "\nWHERE\n";
 		
@@ -348,7 +364,6 @@ public class QueryBuilder {
 							boolean dontJoin = false;
 							if(fileParentAdded) dontJoin = true;
 							fileParentAdded = true;
-							//String tmpTableName =  token + "_" + token2;
 							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
 							queryWhere += tmpTableName + ".LogicalFileName ";			
 						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
@@ -358,6 +373,12 @@ public class QueryBuilder {
 							//String tmpTableName =  token + "_" + token2;
 							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
 							queryWhere += tmpTableName + ".Name ";			
+						} else	if(Util.isSame(token2, "child") && Util.isSame(token, "file")) {
+							boolean dontJoin = false;
+							if(fileChildAdded) dontJoin = true;
+							fileChildAdded = true;
+							if(!dontJoin) childJoinQuery += handleChild(tmpTableName, "Files", "FileParentage");
+							queryWhere += tmpTableName + ".LogicalFileName ";			
 						} else doGeneric = true;
 					
 					}else doGeneric = true;
@@ -411,7 +432,7 @@ public class QueryBuilder {
 			bindValues.add("INVALID");
 		}
 		
-		query += personJoinQuery + parentJoinQuery + queryWhere + circularConst + invalidConst;
+		query += personJoinQuery + parentJoinQuery + childJoinQuery + queryWhere + circularConst + invalidConst;
 		if(groupByLumiQuery.length() > 0) {
 			groupByLumiQuery = groupByLumiQuery.substring(0, groupByLumiQuery.length() - 1);// to get rid of extra comma
 			query += "\n GROUP BY " + groupByLumiQuery;
@@ -495,6 +516,7 @@ public class QueryBuilder {
 							//System.out.println("Relation bwteen " + v1 + " and " + v2 + " is " + u.getRealtionFromVertex(v1, v2));
 							String tmp = u.getRealtionFromVertex(v1, v2);
 							query += "\t";
+							if(Util.isSame(v1, "FileChildage")) v1 = "FileParentage";
 							if(Util.isSame(v1, "FileParentage") ||
 									Util.isSame(v1, "ProcDSParent")) query += "LEFT OUTER ";
 							query += "JOIN " + owner() +  v1 + "\n";
@@ -537,6 +559,12 @@ public class QueryBuilder {
 				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ItsParent\n" );
 
 	}
+	private String handleChild(String tmpTableName, String table1, String table2) throws Exception {
+		return ( "\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
+				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ThisFile\n" );
+
+	}
+
 	private String handlePathParent() throws Exception {
 		String sql = "Block.ID in  \n" +
 			"\t(" + DBSSql.listPathParent() + ")\n";
@@ -693,7 +721,7 @@ public class QueryBuilder {
 	}
 
 	private boolean isInList(ArrayList keyWords, String aKw) {
-			System.out.println("line 3.1");
+			//System.out.println("line 3.1");
 		for(Object kw: keyWords) {
 			if(((String)kw).equals(aKw))return true;
 		}

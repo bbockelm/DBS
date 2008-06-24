@@ -17,6 +17,7 @@
 	<node id="QueryableParameterSet"	user="ps" 		real="QueryableParameterSet" 		default="Hash"/>
 	<node id="FileTier" 			user="file.tier"	real="FileTier" 			default="Fileid,DataTier"/>
 	<node id="FileParentage" 		user="file.parent"	real="FileParentage" 			default="ThisFile,ItsParent"/>
+	<node id="FileChildage" 		user="file.child"	real="FileChildage" 			default="ThisFile,ItsParent"/>
 	<node id="FileRunLumi" 			user="frl" 		real="FileRunLumi" 			default="Fileid,Lumi,Run"/>
 	<node id="FileAlgo" 			user="file.release" 	real="FileAlgo" 			default="Fileid,Algorithm"/>
 	<node id="FileStatus" 			user="file.status" 	real="FileStatus" 			default="Status"/>
@@ -104,6 +105,7 @@
 	<edge directed="false"	wt="1"	source="AlgorithmConfig" 		target="AppFamily" 		relation="AppFamily.ID = AlgorithmConfig.ApplicationFamily"/>
 	<edge directed="false"	wt="1"	source="AlgorithmConfig" 		target="QueryableParameterSet"	relation="QueryableParameterSet.ID = AlgorithmConfig.ParameterSetID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileParentage" 		relation="Files.ID = FileParentage.ThisFile"/>
+	<edge directed="false"	wt="1"	source="Files"	 		target="FileChildage"		relation="Files.ID = FileParentage.ItsParent"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="BranchHash" 		relation="Files.FileBranch = BranchHash.ID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileStatus" 		relation="Files.FileStatus = FileStatus.ID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileType" 		relation="Files.FileType = FileType.ID"/>

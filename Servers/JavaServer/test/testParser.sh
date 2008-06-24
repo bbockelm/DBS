@@ -111,6 +111,9 @@ executeQuery () {
 	$CMD query="find lumi, lumi.starttime, lumi.endtime"
 	$CMD query="find dataset.id, dataset.status, dataset.era, dataset.tag, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM"
 	$CMD query="find dataset.release, dataset.era, dataset.tag, dataset.status, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER"
+	$CMD query="find file.child, file where file = NEW_TEST0002" 
+	$CMD query="find file where file.child = NEW_TEST0005" 
+
 
 
 
@@ -180,7 +183,7 @@ executeQuery () {
 #$CMD query="find ads, ads.type, ads.status, ads.def, ads.version"
 #$CMD query="find file where dataset=/test_primary_001/TestProcessedDS002/GEN-SIM or run=47011 or lumi=140 "
 #$CMD query="find file, lumi where dataset=/test_primary_001/TestProcessedDS002/GEN-SIM or run=140 "
-#$CMD query="find file, lumi where dataset=/test_primary_001/TestProcessedDS002/GEN-SIM "
+#$CMD query="find file,file.status, lumi where dataset=/test_primary_001/TestProcessedDS002/GEN-SIM "
 #$CMD query="find file, run where dataset=/test_primary_001/TestProcessedDS002/GEN-SIM or lumi = 2 or file like *"
 #$CMD query="find file,  lumi"
 #$CMD query="find file, run, lumi"
@@ -190,4 +193,6 @@ executeQuery () {
 #$CMD query="find file"
 #$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
 #executeQuery
+	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
+#	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 
