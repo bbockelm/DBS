@@ -12,28 +12,34 @@ public class KeyMap {
 		map.put("file.moddate", "Files.LastModificationDate");
 
 		map.put("procds.name", "ProcessedDataset.Name");
+		map.put("procds.id", "ProcessedDataset.ID");
 		map.put("procds.createdate", "ProcessedDataset.CreationDate");
 		map.put("procds.moddate", "ProcessedDataset.LastModificationDate");
 		map.put("procds.era", "ProcessedDataset.AquisitionEra");
 		map.put("procds.tag", "ProcessedDataset.GlobalTag");
 		
 		map.put("dataset.name", "ProcessedDataset.Name");
+		map.put("dataset.id", "ProcessedDataset.ID");
 		map.put("dataset.createdate", "ProcessedDataset.CreationDate");
 		map.put("dataset.moddate", "ProcessedDataset.LastModificationDate");
 		map.put("dataset.era", "ProcessedDataset.AquisitionEra");
 		map.put("dataset.tag", "ProcessedDataset.GlobalTag");
+		map.put("dataset.parent", "Block.Path");
 
 		map.put("primds.name", "PrimaryDataset.Name");
+		map.put("primds.id", "PrimaryDataset.ID");
 		map.put("primds.createdate", "PrimaryDataset.CreationDate");
 		map.put("primds.moddate", "PrimaryDataset.LastModificationDate");
 		
 		map.put("block.name", "Block.Name");
+		map.put("block.id", "Block.ID");
 		map.put("block.size", "Block.BlockSize");
 		map.put("block.dataset", "Block.Path");
 		map.put("block.createdate", "Block.CreationDate");
 		map.put("block.moddate", "Block.LastModificationDate");
 		
 		map.put("run.number", "Runs.RunNumber");
+		map.put("run.id", "Runs.ID");
 		map.put("run.numevents", "Runs.NumberOfEvents");
 		map.put("run.numlss", "Runs.NumberOfLumiSections");
 		map.put("run.starttime", "Runs.StartOfRun");
@@ -51,6 +57,7 @@ public class KeyMap {
 		map.put("lumi.moddate", "LumiSection.LastModificationDate");
 		
 		map.put("ads.name", "AnalysisDataset.Name");
+		map.put("ads.id", "AnalysisDataset.ID");
 		map.put("ads.version", "AnalysisDataset.Version");
 		map.put("ads.dataset", "AnalysisDataset.Path");
 		map.put("ads.desc", "AnalysisDataset.Description");
@@ -58,7 +65,6 @@ public class KeyMap {
 		map.put("ads.createdate", "AnalysisDataset.CreationDate");
 		map.put("ads.moddate", "AnalysisDataset.LastModificationDate");
 		
-		map.put("dataset.parent", "Block.Path");
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 	}
