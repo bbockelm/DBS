@@ -170,8 +170,9 @@ executeQuery () {
 #$CMD query="find ads.def, ads.type, ads.status, ads.createby, ads.modby, ads.createdate, ads.moddate where ads.name = MyAds" 
 #$CMD query="find file,run,lumi where ads.name in ( MyAds, Myades )" 
 #$CMD query="find file, run where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD and dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
-$CMD query="find primds where primds.createdate > 2007-04-20"
+#$CMD query="find primds where primds.createdate > 2007-04-20"
 #$CMD query="find procds.release, procds.era, procds.tag, procds.status, procds.createdate, procds.moddate, procds.createby, procds.modby where procds = Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER"
+$CMD query="find dataset.status, dataset.era, dataset.tag, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM"
 #$CMD query="find procds, procds.release, procds.era, procds.tag, procds.status, procds.createdate, procds.moddate, procds.createby, procds.modby "
 
 #	$CMD query="find procds.parent,procds.name,file,file.parent  where procds.parent like %"
