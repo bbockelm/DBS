@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.179 $"
- $Id: DBSSql.java,v 1.179 2008/06/11 17:01:50 afaq Exp $"
+ $Revision: 1.180 $"
+ $Id: DBSSql.java,v 1.180 2008/06/13 15:30:23 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3379,7 +3379,38 @@ public class DBSSql {
 		return ps;
 	}
 
-        public static PreparedStatement listFileRuns(Connection conn, String fileID) throws SQLException {
+        public static PreparedStatement listADSFileLumis(Connection conn, String aDSID, String fileID) throws SQLException {
+                String sql = "SELECT DISTINCT lumi.id as ID, \n" +
+                        "lumi.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
+                        "r.RunNumber as RUN_NUMBER, \n" +
+                        "lumi.StartEventNumber as START_EVENT_NUMBER, \n" +
+                        "lumi.EndEventNumber as END_EVENT_NUMBER, \n" +
+                        "lumi.LumiStartTime as LUMI_START_TIME, \n" +
+                        "lumi.LumiEndTime as LUMI_END_TIME, \n" +
+                        "lumi.CreationDate as CREATION_DATE, \n" +
+                        "lumi.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM "+owner()+"LumiSection lumi \n" +
+                        "JOIN "+owner()+"AnalysisDSFileLumi adsfl \n" +
+                                "ON adsfl.Lumi = lumi.id \n" +
+                        "JOIN "+owner()+"Runs r \n" +
+                                "ON r.ID = lumi.RunNumber \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+                                "ON percb.id = lumi.CreatedBy \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+                                "ON perlm.id = lumi.LastModifiedBy \n" +
+			 "WHERE adsfl.Fileid = ? AND adsfl.AnalysisDataset=? \n";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, fileID);
+                ps.setString(columnIndx++, aDSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+        public static PreparedStatement listADSFileRuns(Connection conn, String aDSID, String fileID) throws SQLException {
                 String sql = "SELECT DISTINCT run.id as ID, \n" +
                         "run.RunNumber as RUN_NUMBER, \n" +
                         "run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
@@ -3393,6 +3424,39 @@ public class DBSSql {
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Runs run \n" +
+			"JOIN "+owner()+"LumiSection ls \n"+
+				"ON ls.RunNumber=run.ID\n"+
+                        "JOIN "+owner()+"AnalysisDSFileLumi adsfl \n" +
+                                "ON adsfl.lumi = ls.ID \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+                                "ON percb.id = run.CreatedBy \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+                                "ON perlm.id = run.LastModifiedBy \n" +
+                        "WHERE adsfl.Fileid = ? AND adsfl.AnalysisDataset=? \n";
+	
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+                ps.setString(columnIndx++, fileID);
+		ps.setString(columnIndx++, aDSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
+        public static PreparedStatement listFileRuns(Connection conn, String fileID) throws SQLException {
+                String sql = "SELECT DISTINCT run.id as ID, \n" +
+                        "run.RunNumber as RUN_NUMBER, \n" +
+                        "run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "run.NumberOfLumiSections as NUMBER_OF_LUMI_SECTIONS, \n" +
+                        "run.TotalLuminosity as TOTAL_LUMINOSITY, \n" +
+                        "run.StoreNumber as STRORE_NUMBER, \n" +
+                        "run.StartOfRun as START_OF_RUN, \n" +
+                        "run.EndOfRun as END_OF_RUN, \n" +
+                        "run.CreationDate as CREATION_DATE, \n" +
+                        "run.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM "+owner()+"Runs run \n" +
                         "JOIN "+owner()+"FileRunLumi fl \n" +
                                 "ON run.ID = fl.Run \n" +
                         "LEFT OUTER JOIN "+owner()+"Person percb \n" +
@@ -3409,6 +3473,8 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
+
+
 
 	public static PreparedStatement listAnalysisDatasetDefinition(Connection conn, String patternName) throws SQLException {
 		//String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +

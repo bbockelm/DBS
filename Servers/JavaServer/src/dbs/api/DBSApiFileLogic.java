@@ -1,6 +1,6 @@
 /**
- $Revision: 1.96 $"
- $Id: DBSApiFileLogic.java,v 1.96 2008/05/30 16:40:04 sekhri Exp $"
+ $Revision: 1.97 $"
+ $Id: DBSApiFileLogic.java,v 1.97 2008/06/20 20:36:18 afaq Exp $"
  *
  */
 
@@ -390,8 +390,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
 					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn);
 					if(DBSUtil.contains(attributes, "retrive_tier")) listFileTiers(conn, out, lfn);
-					if(DBSUtil.contains(attributes, "retrive_lumi")) listFileLumis(conn, out, lfn);
-					if(DBSUtil.contains(attributes, "retrive_run")) listFileRuns(conn, out, lfn);
+					if(DBSUtil.contains(attributes, "retrive_lumi")) {
+									if (!isNull(aDSID) ) listADSFileLumis(conn, out, aDSID, lfn);
+									else listFileLumis(conn, out, lfn);
+					}
+					if(DBSUtil.contains(attributes, "retrive_run")) {
+									if (!isNull(aDSID) ) listADSFileRuns(conn, out, aDSID, lfn);
+									else listFileRuns(conn, out, lfn);
+					}
 					if(DBSUtil.contains(attributes, "retrive_branch")) listBranch(conn, out, get(rs, "FILE_BRANCH"));
 				}
                 		out.write(((String) "</file>\n"));
@@ -637,6 +643,37 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		}
 	 }
 
+
+
+         public void listADSFileLumis(Connection conn, Writer out, String aDSID, String lfn) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps = DBSSql.listADSFileLumis(conn, aDSID, getFileID(conn, lfn, true));
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                out.write(((String) "<file_lumi_section id='" +  get(rs, "ID") +
+                                        "' lumi_section_number='" + get(rs, "LUMI_SECTION_NUMBER") +
+                                        "' run_number='" + get(rs, "RUN_NUMBER") +
+                                        "' start_event_number='" + get(rs, "START_EVENT_NUMBER") +
+                                        "' end_event_number='" + get(rs, "END_EVENT_NUMBER") +
+                                        "' lumi_start_time='" + get(rs, "LUMI_START_TIME") +
+                                        "' lumi_end_time='" + get(rs, "LUMI_END_TIME") +
+                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + get(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                        "'/>\n"));
+
+                                }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+         }
+
+
          public void listFileRuns(Connection conn, Writer out, String lfn) throws Exception {
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
@@ -665,6 +702,38 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         if (ps != null) ps.close();
                 }
          }
+
+
+         public void listADSFileRuns(Connection conn, Writer out, String aDSID, String lfn) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps = DBSSql.listADSFileRuns(conn, aDSID, getFileID(conn, lfn, true));
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                out.write(((String) "<file_run id='" +  get(rs, "ID") +
+                                        "' run_number='" + get(rs, "RUN_NUMBER") +
+                                        "' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+                                        "' number_of_lumi_sections='" + get(rs, "NUMBER_OF_LUMI_SECTIONS") +
+                                        "' total_luminosity='" + get(rs, "TOTAL_LUMINOSITY") +
+                                        "' store_number='" + get(rs, "STRORE_NUMBER") +
+                                        "' start_of_run='" + get(rs, "START_OF_RUN") +
+                                        "' end_of_run='" + get(rs, "END_OF_RUN") +
+                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + get(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                        "'/>\n"));
+
+                                }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+         }
+
+
 
 	 public void listLFNs(Connection conn, Writer out, String path, String patternMetaData) throws Exception {
  		 PreparedStatement ps = null;

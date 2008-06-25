@@ -24,8 +24,29 @@ def dbsApiImplListDatasetFiles(self, datasetPath):
       inpath=inpath[:-1]
    pathl = inpath.split('/')
 
+
+   allowedRetriveValue = [
+                    #'all',
+                    #'retrive_invalid_files', 
+                    #'retrive_status',
+                    #'retrive_type',
+                    #'retrive_block',
+                    #'retrive_date',
+                    #'retrive_person',
+                    #'retrive_parent',
+                    #'retrive_child',
+                    #'retrive_algo',
+                    #'retrive_tier',
+                    'retrive_lumi',
+                    'retrive_run',
+                    #'retrive_branch',
+                    ]
+
+
    if len(pathl) == 3: # Most most probably this is Processed Dataset Path
    	return self.listFiles(path=datasetPath)
    else:
-	return self.listFiles(analysisDataset=datasetPath)
+	return self.listFiles(analysisDataset=datasetPath, retriveList=allowedRetriveValue)
 	
+
+
