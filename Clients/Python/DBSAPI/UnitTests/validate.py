@@ -47,8 +47,11 @@ psType2 = 'test_Ptype2_' + ran
 psAnno2 = 'test_Panno2_' + ran
 psCon2 = 'test_Con2_' + ran
 
+
+
+
 runNumber = random.choice(range(10000))
-numEvents = 1200
+runNumEvents = 1200
 numLumi = 1234
 totalLumi = 3456
 storeNum = 8907
@@ -83,6 +86,23 @@ se2 = 'test_se2_' + ran
 blockName1 = path1 + '#' + str(random.choice(range(10000)))
 blockName2 = path2 + '#' + str(random.choice(range(10000)))
 
+fileName1 = 'test_file_name_1_' + ran
+fileCkecksum1 = 'test_cksum_1_' + ran
+fileNumEvents1 = 34567
+fileSize1 = 123987
+fileStatus1 = 'VALID'
+fileValidStatus1 = 'VALID'
+fileType1 = 'EDM'
+
+fileName2 = 'test_file_name_2_' + ran
+fileNumEvents2 = 84567
+fileCkecksum2 = 'test_cksum_2_' + ran
+fileSize2 = 122657
+fileStatus2 = 'VALID'
+fileValidStatus2 = 'VALID'
+fileType2 = 'STREAMER'
+
+
 
 primObj = DbsPrimaryDataset (Name = primName, Type = primType)
 algoObj1 = DbsAlgorithm (
@@ -114,7 +134,7 @@ algoObj2 = DbsAlgorithm (
 
 runObj = DbsRun (
 		RunNumber = runNumber,
-		NumberOfEvents = numEvents,
+		NumberOfEvents = runNumEvents,
 		NumberOfLumiSections = numLumi,
 		TotalLuminosity = totalLumi,
 		StoreNumber = storeNum,
@@ -142,7 +162,8 @@ procObj2 = DbsProcessedDataset (
 		Status = procStatus,
 		TierList = [tier1, tier2],
 		AlgoList = [algoObj1, algoObj2],
-		ParentList = [path1]
+		ParentList = [path1],
+		RunsList = [runNumber]
 		)
 
 lumiObj1 = DbsLumiSection (
@@ -171,6 +192,34 @@ blockObj2 = DbsFileBlock (
 		Name = blockName2
 		)
 
+fileObj1= DbsFile (
+		Checksum = fileCkecksum1,
+		LogicalFileName = fileName1,
+		NumberOfEvents = fileNumEvents1,
+		FileSize = fileSize1,
+		Status = fileStatus1,
+		ValidationStatus = fileValidStatus1,
+		FileType = fileType1,
+		Dataset = procObj1,
+		AlgoList = [algoObj1],
+		LumiList = [lumiObj1],
+		TierList = [tier1, tier2]
+		)
+
+fileObj2= DbsFile (
+		Checksum = fileCkecksum2,
+		LogicalFileName = fileName2,
+		NumberOfEvents = fileNumEvents2,
+		FileSize = fileSize2,
+		Status = fileStatus2,
+		ValidationStatus = fileValidStatus2,
+		FileType = fileType2,
+		Dataset = procObj2,
+		AlgoList = [algoObj2],
+		LumiList = [lumiObj2],
+		TierList = [tier1, tier2],
+		ParentList = [fileName1]
+		)
 
 class Test1(unittest.TestCase):
 	def testPrimary(self):
@@ -208,6 +257,7 @@ class Test3(unittest.TestCase):
 		api.insertAlgorithm (algoObj2)
 
 	
+		api.insertRun (runObj)
 		api.insertProcessedDataset (procObj1)
 		api.insertProcessedDataset (procObj2)
 		procList = api.listProcessedDatasets(patternPrim = primName, patternProc = procName2)
@@ -260,6 +310,7 @@ class Test4(unittest.TestCase):
 	def testBlock(self):
 		print 'testBlock'
 		api.insertBlock (procObj1, blockObj1, [se1, se2])
+		api.insertBlock (procObj2, blockObj2, [se2])
 		blockList = api.listBlocks(procObj1)
 		self.assertEqual(len(blockList), 1)
 		for blockInDBS in api.listBlocks(procObj1):
@@ -275,22 +326,75 @@ class Test4(unittest.TestCase):
 				
 
 
-"""
-class TestRun(unittest.TestCase):
-	def setUp(self):
-		self.ran = random.choice(range(10000))
+class Test5(unittest.TestCase):
 	def testRun(self):
 		print 'testRun'
-		api.insertRun (runObj)
-		for runInDBS in api.listRuninProcds():
+		runList = api.listRuns(procObj2)
+		self.assertEqual(len(runList), 1)
+		for runInDBS in runList:
 			self.assertEqual(runNumber, runInDBS['RunNumber'])
-			self.assertEqual(numEvents, runInDBS['NumberOfEvents'])
+			self.assertEqual(runNumEvents, runInDBS['NumberOfEvents'])
 			self.assertEqual(numLumi, runInDBS['NumberOfLumiSections'])
 			self.assertEqual(totalLumi, runInDBS['TotalLuminosity'])
 			self.assertEqual(storeNum, runInDBS['StoreNumber'])
 			self.assertEqual(startRun, runInDBS['StartOfRun'])
 			self.assertEqual(endRun, runInDBS['EndOfRun'])
-"""
+
+class Test6(unittest.TestCase):
+	def testFile(self):
+		print 'testFile'
+		api.insertFiles(procObj1, [fileObj1], blockObj1)
+		api.insertFiles(procObj2, [fileObj2], blockObj2)
+		fileList = api.listFiles(path = path2, retriveList = ['all'])
+		self.assertEqual(len(fileList), 1)
+		for fileInDBS in fileList:
+			self.assertEqual(fileCkecksum2, fileInDBS['Checksum'])
+			self.assertEqual(fileName2, fileInDBS['LogicalFileName'])
+			self.assertEqual(fileNumEvents2, fileInDBS['NumberOfEvents'])
+			self.assertEqual(fileSize2, fileInDBS['FileSize'])
+			self.assertEqual(fileStatus2, fileInDBS['Status'])
+			#self.assertEqual(fileValidStatus2, fileInDBS['ValidationStatus'])
+			self.assertEqual(fileType2, fileInDBS['FileType'])
+			algoList = fileInDBS['AlgoList']
+			self.assertEqual(len(algoList), 1)
+			for algoInDBS in algoList:
+				self.assertEqual(algoExe2, algoInDBS['ExecutableName'])
+				self.assertEqual(algoVer2, algoInDBS['ApplicationVersion'])
+				self.assertEqual(algoFam2, algoInDBS['ApplicationFamily'])
+				self.assertEqual(psHash2, algoInDBS['ParameterSetID']['Hash'])
+
+			lumiList = fileInDBS['LumiList']
+			self.assertEqual(len(lumiList), 1)
+			for lumiInDBS in lumiList:
+				self.assertEqual(lsNumber2, lumiInDBS['LumiSectionNumber'])
+				self.assertEqual(stEvNum2, lumiInDBS['StartEventNumber'])
+				self.assertEqual(endEvNum2, lumiInDBS['EndEventNumber'])
+				self.assertEqual(stLumiTime2, lumiInDBS['LumiStartTime'])
+				self.assertEqual(endLumiTime2, lumiInDBS['LumiEndTime'])
+				self.assertEqual(runNumber, lumiInDBS['RunNumber'])
+		
+			tierList = fileInDBS['TierList']
+			self.assertEqual(len(tierList), 2)
+			for tierInDBS in tierList:
+				if(tierInDBS != tier1 and tierInDBS != tier2):
+					print 'tier %s is not expected', tierInDBS
+					self.assertEqual(1, 2)
+
+			parentList = fileInDBS['ParentList']
+			self.assertEqual(len(parentList), 1)
+			for parentInDBS in parentList:
+				self.assertEqual(fileCkecksum1, parentInDBS['Checksum'])
+				self.assertEqual(fileName1, parentInDBS['LogicalFileName'])
+				self.assertEqual(fileNumEvents1, parentInDBS['NumberOfEvents'])
+				self.assertEqual(fileSize1, parentInDBS['FileSize'])
+				self.assertEqual(fileStatus1, parentInDBS['Status'])
+				#self.assertEqual(fileValidStatus1, parentInDBS['ValidationStatus'])
+				self.assertEqual(fileType1, parentInDBS['FileType'])
+
+
+
+
+
 
 if __name__ == '__main__':
 	unittest.main()
