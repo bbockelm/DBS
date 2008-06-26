@@ -20,6 +20,7 @@ public class QueryBuilder {
 	private ArrayList bindIntValues;
 	GraphUtil u = null;
 	private String db = "";
+	private String countQuery = "";
 	public QueryBuilder(String db) {
 		this.db = db;
 		bindValues = new ArrayList();
@@ -31,7 +32,10 @@ public class QueryBuilder {
 	private String owner() throws Exception {
 		return DBSSql.owner();	
 	}
-	
+	public String getCountQuery() {
+		return countQuery;	
+	}
+
 	public ArrayList getBindValues() {
 		return bindValues;
 	}
@@ -454,6 +458,7 @@ public class QueryBuilder {
 			orderOnce = true;
 		}
 			
+		countQuery = "SELECT COUNT(*) " + query.substring(query.indexOf("FROM"));
 		if(!begin.equals("") && !end.equals("")) {
 			int bInt = Integer.parseInt(begin);
 			int eInt = Integer.parseInt(end);

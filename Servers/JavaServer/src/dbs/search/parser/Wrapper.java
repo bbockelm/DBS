@@ -9,11 +9,15 @@ import dbs.search.qb.QueryBuilder;
 public class Wrapper {
 	private ArrayList bindValues ;
 	private ArrayList bindIntValues ;
+	private String countQuery = "";
 	public ArrayList getBindValues() {
 		return bindValues;
 	}
 	public ArrayList getBindIntValues() {
 		return bindIntValues;
+	}
+	public String getCountQuery() {
+		return countQuery;	
 	}
 
 	public String getQuery(String query, String begin, String end, String db) throws Exception {
@@ -48,6 +52,7 @@ public class Wrapper {
 			queryToReturn = qb.genQuery(kws, cs, okws, begin, end);
 			bindValues = qb.getBindValues();
 			bindIntValues = qb.getBindIntValues();
+			countQuery = qb.getCountQuery();
 		} catch (NoViableAltException nvae) {
 			Token t =  nvae.token;
 			String msg = "Invalid Token " + t.getText() + " on line " + t.getLine() + " at column " + t.getCharPositionInLine() + "\n";

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.138 $"
- $Id: DBSApiLogic.java,v 1.138 2008/05/30 16:40:04 sekhri Exp $"
+ $Revision: 1.139 $"
+ $Id: DBSApiLogic.java,v 1.139 2008/06/05 19:39:02 afaq Exp $"
  *
  */
 
@@ -156,9 +156,31 @@ public class DBSApiLogic {
 		toReturn.add(finalQuery);
 		toReturn.add(bindValues);
 		toReturn.add(bindIntValues);
+		toReturn.add(wr.getCountQuery());
 		return toReturn;
 	}
 
+	private ArrayList makeValentinQuery(String query, List<Integer> bindIntValues, List<String> bindValues) {
+		int pCount = 0;
+		String val = "";
+		String xmlBindValues = "";
+		String valentinQuery = query;
+		int sizeOfBindValues = bindValues.size();
+		ArrayList toReturn = new ArrayList();
+		while(valentinQuery.indexOf("?") != -1) {
+			String pName = ":p" + String.valueOf(pCount);
+			String pTag = "p" + String.valueOf(pCount);
+			if(pCount >= sizeOfBindValues) val = String.valueOf(bindIntValues.get(pCount - sizeOfBindValues).intValue());
+			else val =  bindValues.get(pCount);
+			xmlBindValues += "<" + pTag + ">" + val + "</" + pTag + ">\n";
+			valentinQuery = valentinQuery.replaceFirst("[?]", pName);
+			++pCount;
+		}
+		toReturn.add(valentinQuery);
+		toReturn.add(xmlBindValues);
+		return toReturn;
+	}
+	
 	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type) throws Exception {
 		/*String db = "oracle";
 		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
@@ -174,11 +196,11 @@ public class DBSApiLogic {
 		System.out.println("___________________________________________________________________________________");*/
 		ArrayList objList = executeQuery(conn, out, userQuery, begin, end);
 		String finalQuery = (String)objList.get(1);
-		String valentinQuery = finalQuery;
+		//String valentinQuery = finalQuery;
 		List<String> bindValues = (List<String>)objList.get(2);
 		List<Integer> bindIntValues = (List<Integer>)objList.get(3);
-
-		int pCount = 0;
+		String countQuery = (String)objList.get(4);
+		/*int pCount = 0;
 		int sizeOfBindValues = bindValues.size();
 		String val = "";
 		String xmlBindValues = "";
@@ -190,11 +212,15 @@ public class DBSApiLogic {
 			xmlBindValues += "<" + pTag + ">" + val + "</" + pTag + ">\n";
 			valentinQuery = valentinQuery.replaceFirst("[?]", pName);
 			++pCount;
-		}
+		}*/
+		ArrayList valentinQueryList = makeValentinQuery(finalQuery, bindIntValues, bindValues);
+		String valentinQuery = (String)valentinQueryList.get(0);
+		String xmlBindValues = (String)valentinQueryList.get(1);
+		countQuery = (String)makeValentinQuery(countQuery, bindIntValues, bindValues).get(0);
 
 
-		String countQuery = valentinQuery;
-		countQuery = "SELECT COUNT(*) " + countQuery.substring(countQuery.indexOf("FROM"));
+		//String countQuery = valentinQuery;
+		//countQuery = "SELECT COUNT(*) " + countQuery.substring(countQuery.indexOf("FROM"));
 		
 		out.write("<userinput>\n");
 		out.write("<input>\n");
