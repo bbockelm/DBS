@@ -458,7 +458,8 @@ public class QueryBuilder {
 			orderOnce = true;
 		}
 			
-		countQuery = "SELECT COUNT(*) " + query.substring(query.indexOf("FROM"));
+		//countQuery = "SELECT COUNT(*) " + query.substring(query.indexOf("FROM"));
+		countQuery = "SELECT COUNT(*) FROM (" + query + ") x";
 		if(!begin.equals("") && !end.equals("")) {
 			int bInt = Integer.parseInt(begin);
 			int eInt = Integer.parseInt(end);
