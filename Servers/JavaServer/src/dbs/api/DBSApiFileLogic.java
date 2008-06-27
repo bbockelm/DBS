@@ -1,6 +1,6 @@
 /**
- $Revision: 1.97 $"
- $Id: DBSApiFileLogic.java,v 1.97 2008/06/20 20:36:18 afaq Exp $"
+ $Revision: 1.98 $"
+ $Id: DBSApiFileLogic.java,v 1.98 2008/06/25 16:40:27 afaq Exp $"
  *
  */
 
@@ -385,6 +385,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					listFileRuns(conn, out, lfn);
 					listBranch(conn, out, get(rs, "FILE_BRANCH"));
 
+				}else if( detail.equals("True")) {	
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
+					listFileAlgorithms(conn, out, lfn);
+					listFileTiers(conn, out, lfn);
+					listFileLumis(conn, out, lfn);
+					listFileRuns(conn, out, lfn);
+					listBranch(conn, out, get(rs, "FILE_BRANCH"));
+
+					
 				} else {	
 					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
 					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
