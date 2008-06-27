@@ -312,6 +312,33 @@ def assertProc(test, procIn1, procIn2):
 	test.assertEqual(procIn1['PhysicsGroup'], procIn2['PhysicsGroup'])
 	test.assertEqual(procIn1['Status'], procIn2['Status'])
 
+def assertRun(test, runIn1, runIn2):
+	test.assertEqual(runIn1['RunNumber'], runIn2['RunNumber'])
+	test.assertEqual(runIn1['NumberOfEvents'], runIn2['NumberOfEvents'])
+	test.assertEqual(runIn1['NumberOfLumiSections'], runIn2['NumberOfLumiSections'])
+	test.assertEqual(runIn1['TotalLuminosity'], runIn2['TotalLuminosity'])
+	test.assertEqual(runIn1['StoreNumber'], runIn2['StoreNumber'])
+	test.assertEqual(runIn1['StartOfRun'], runIn2['StartOfRun'])
+	test.assertEqual(runIn1['EndOfRun'], runIn2['EndOfRun'])
+
+def assertFile(test, fileIn1, fileIn2):
+	test.assertEqual(fileIn1['Checksum'], fileIn2['Checksum'])
+	test.assertEqual(fileIn1['LogicalFileName'], fileIn2['LogicalFileName'])
+	test.assertEqual(fileIn1['NumberOfEvents'], fileIn2['NumberOfEvents'])
+	test.assertEqual(fileIn1['FileSize'], fileIn2['FileSize'])
+	test.assertEqual(fileIn1['Status'], fileIn2['Status'])
+	#test.assertEqual(fileIn1['ValidationStatus'], fileIn2['ValidationStatus'])
+	test.assertEqual(fileIn1['FileType'], fileIn2['FileType'])
+	
+def assertLumi(test, lumiIn1, lumiIn2):
+	test.assertEqual(lumiIn1['LumiSectionNumber'], lumiIn2['LumiSectionNumber'])
+	test.assertEqual(lumiIn1['StartEventNumber'], lumiIn2['StartEventNumber'])
+	test.assertEqual(lumiIn1['EndEventNumber'], lumiIn2['EndEventNumber'])
+	test.assertEqual(lumiIn1['LumiStartTime'], lumiIn2['LumiStartTime'])
+	test.assertEqual(lumiIn1['LumiEndTime'], lumiIn2['LumiEndTime'])
+	test.assertEqual(lumiIn1['RunNumber'], lumiIn2['RunNumber'])
+	
+
 
 class Test1(unittest.TestCase):
 	def testPrimary(self):
@@ -403,13 +430,7 @@ class Test5(unittest.TestCase):
 		runList = api.listRuns(procObj2)
 		self.assertEqual(len(runList), 1)
 		for runInDBS in runList:
-			self.assertEqual(runNumber, runInDBS['RunNumber'])
-			self.assertEqual(runNumEvents, runInDBS['NumberOfEvents'])
-			self.assertEqual(numLumi, runInDBS['NumberOfLumiSections'])
-			self.assertEqual(totalLumi, runInDBS['TotalLuminosity'])
-			self.assertEqual(storeNum, runInDBS['StoreNumber'])
-			self.assertEqual(startRun, runInDBS['StartOfRun'])
-			self.assertEqual(endRun, runInDBS['EndOfRun'])
+			assertRun(self, runObj, runInDBS)
 
 class Test6(unittest.TestCase):
 	def testFile(self):
@@ -419,13 +440,7 @@ class Test6(unittest.TestCase):
 		fileList = api.listFiles(path = path2, retriveList = ['all'])
 		self.assertEqual(len(fileList), 1)
 		for fileInDBS in fileList:
-			self.assertEqual(fileCkecksum2, fileInDBS['Checksum'])
-			self.assertEqual(fileName2, fileInDBS['LogicalFileName'])
-			self.assertEqual(fileNumEvents2, fileInDBS['NumberOfEvents'])
-			self.assertEqual(fileSize2, fileInDBS['FileSize'])
-			self.assertEqual(fileStatus2, fileInDBS['Status'])
-			#self.assertEqual(fileValidStatus2, fileInDBS['ValidationStatus'])
-			self.assertEqual(fileType2, fileInDBS['FileType'])
+			assertFile(self, fileObj2, fileInDBS)
 			algoList = fileInDBS['AlgoList']
 			self.assertEqual(len(algoList), 1)
 			for algoInDBS in algoList:
@@ -434,12 +449,7 @@ class Test6(unittest.TestCase):
 			lumiList = fileInDBS['LumiList']
 			self.assertEqual(len(lumiList), 1)
 			for lumiInDBS in lumiList:
-				self.assertEqual(lsNumber2, lumiInDBS['LumiSectionNumber'])
-				self.assertEqual(stEvNum2, lumiInDBS['StartEventNumber'])
-				self.assertEqual(endEvNum2, lumiInDBS['EndEventNumber'])
-				self.assertEqual(stLumiTime2, lumiInDBS['LumiStartTime'])
-				self.assertEqual(endLumiTime2, lumiInDBS['LumiEndTime'])
-				self.assertEqual(runNumber, lumiInDBS['RunNumber'])
+				assertLumi(self, lumiObj2, lumiInDBS)
 		
 			tierList = fileInDBS['TierList']
 			self.assertEqual(len(tierList), 2)
@@ -451,13 +461,14 @@ class Test6(unittest.TestCase):
 			parentList = fileInDBS['ParentList']
 			self.assertEqual(len(parentList), 1)
 			for parentInDBS in parentList:
-				self.assertEqual(fileCkecksum1, parentInDBS['Checksum'])
-				self.assertEqual(fileName1, parentInDBS['LogicalFileName'])
-				self.assertEqual(fileNumEvents1, parentInDBS['NumberOfEvents'])
-				self.assertEqual(fileSize1, parentInDBS['FileSize'])
-				self.assertEqual(fileStatus1, parentInDBS['Status'])
-				#self.assertEqual(fileValidStatus1, parentInDBS['ValidationStatus'])
-				self.assertEqual(fileType1, parentInDBS['FileType'])
+				assertFile(self, fileObj1, parentInDBS)
+
+			runList = fileInDBS['RunsList']	
+			self.assertEqual(len(runList), 1)
+			for runInDBS in runList:
+				self.assertEqual(2, runInDBS['NumberOfLumiSections'])
+				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
+				assertRun(self, runObj, runInDBS)
 
 	def testParentOfProcDS(self):
 		print 'testParentOfProcDS'
@@ -522,13 +533,7 @@ class Test8(unittest.TestCase):
 		fileList = api.listFiles(path = pathM, retriveList = ['all'])
 		self.assertEqual(len(fileList), 1)
 		for fileInDBS in fileList:
-			self.assertEqual(fileCkecksumM, fileInDBS['Checksum'])
-			self.assertEqual(fileNameM, fileInDBS['LogicalFileName'])
-			self.assertEqual(fileNumEventsM, fileInDBS['NumberOfEvents'])
-			self.assertEqual(fileSizeM, fileInDBS['FileSize'])
-			self.assertEqual(fileStatusM, fileInDBS['Status'])
-			#self.assertEqual(fileValidStatusM, fileInDBS['ValidationStatus'])
-			self.assertEqual(fileTypeM, fileInDBS['FileType'])
+			assertFile(self, fileObjM, fileInDBS)
 			algoList = fileInDBS['AlgoList']
 			self.assertEqual(len(algoList), 3)
 			for algoInDBS in algoList:
@@ -540,26 +545,22 @@ class Test8(unittest.TestCase):
 					else:
 						if (algoInDBS['ExecutableName'] == algoExeM):
 							assertAlgo(self, algoObjM, algoInDBS)
+						else:
+							print 'algo %s is not expected', algoInDBS
+							self.assertEqual(1, 2)
 
 
 			lumiList = fileInDBS['LumiList']
 			self.assertEqual(len(lumiList), 2)
 			for lumiInDBS in lumiList:
 				if(lumiInDBS['LumiSectionNumber'] == lsNumber1):
-					self.assertEqual(lsNumber1, lumiInDBS['LumiSectionNumber'])
-					self.assertEqual(stEvNum1, lumiInDBS['StartEventNumber'])
-					self.assertEqual(endEvNum1, lumiInDBS['EndEventNumber'])
-					self.assertEqual(stLumiTime1, lumiInDBS['LumiStartTime'])
-					self.assertEqual(endLumiTime1, lumiInDBS['LumiEndTime'])
-					self.assertEqual(runNumber, lumiInDBS['RunNumber'])
+					assertLumi(self, lumiObj1, lumiInDBS)
 				else:
 					if(lumiInDBS['LumiSectionNumber'] == lsNumber2):
-						self.assertEqual(lsNumber2, lumiInDBS['LumiSectionNumber'])
-						self.assertEqual(stEvNum2, lumiInDBS['StartEventNumber'])
-						self.assertEqual(endEvNum2, lumiInDBS['EndEventNumber'])
-						self.assertEqual(stLumiTime2, lumiInDBS['LumiStartTime'])
-						self.assertEqual(endLumiTime2, lumiInDBS['LumiEndTime'])
-						self.assertEqual(runNumber, lumiInDBS['RunNumber'])
+						assertLumi(self, lumiObj2, lumiInDBS)
+					else:
+						print 'lumi %s is not expected', lumiInDBS
+						self.assertEqual(1, 2)
 
 					
 		
@@ -574,22 +575,20 @@ class Test8(unittest.TestCase):
 			self.assertEqual(len(parentList), 2)
 			for parentInDBS in parentList:
 				if(parentInDBS['LogicalFileName'] == fileName1):
-					self.assertEqual(fileCkecksum1, parentInDBS['Checksum'])
-					self.assertEqual(fileName1, parentInDBS['LogicalFileName'])
-					self.assertEqual(fileNumEvents1, parentInDBS['NumberOfEvents'])
-					self.assertEqual(fileSize1, parentInDBS['FileSize'])
-					self.assertEqual(fileStatus1, parentInDBS['Status'])
-					#self.assertEqual(fileValidStatus1, parentInDBS['ValidationStatus'])
-					self.assertEqual(fileType1, parentInDBS['FileType'])
+					assertFile(self, fileObj1, parentInDBS)
 				else:
 					if(parentInDBS['LogicalFileName'] == fileName2):	
-						self.assertEqual(fileCkecksum2, parentInDBS['Checksum'])
-						self.assertEqual(fileName2, parentInDBS['LogicalFileName'])
-						self.assertEqual(fileNumEvents2, parentInDBS['NumberOfEvents'])
-						self.assertEqual(fileSize2, parentInDBS['FileSize'])
-						self.assertEqual(fileStatus2, parentInDBS['Status'])
-						#self.assertEqual(fileValidStatus2, parentInDBS['ValidationStatus'])
-						self.assertEqual(fileType2, parentInDBS['FileType'])
+						assertFile(self, fileObj2, parentInDBS)
+					else:
+						print 'file %s is not expected', parentInDBS
+						self.assertEqual(1, 2)
+
+			runList = fileInDBS['RunsList']	
+			self.assertEqual(len(runList), 1)
+			for runInDBS in runList:
+				self.assertEqual(2, runInDBS['NumberOfLumiSections'])
+				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
+				assertRun(self, runObj, runInDBS)
 
 					
 
