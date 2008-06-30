@@ -32,8 +32,8 @@ from dbsLogger import *
 from dbsUtil import *
 
 #DBS Api version
-__version__ = "DBS_1_0_8"
-#__version__ = "$Name:  $"
+#__version__ = "DBS_1_0_8"
+__version__ = "$Name:  $"
 #__version__ = "$Name:  $"
 
 
@@ -925,6 +925,18 @@ class DbsApi(DbsConfig):
         #Calling the Implementation function
         from dbsApiDeleteProcDS import dbsApiImplUndeleteProcDS
         return  dbsApiImplUndeleteProcDS(self, path)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def deleteADS(self, ads, version):
+
+     try:
+        #Calling the Implementation function
+        from dbsApiDeleteADS import dbsApiImplDeleteADS
+        return  dbsApiImplDeleteADS(self, ads, version)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
