@@ -1435,6 +1435,8 @@ class ApiDispatcher:
 
 
   def handleCreateADSCall(self):
+        if self.optdict.get('useASearch') :
+                self.printRED("You cannot use --useASearch for creating ADS")
 
         self.setMartParams()
         if self.optdict.has_key('want_help'):
@@ -1552,6 +1554,9 @@ class ApiDispatcher:
 	return
 
   def handleCreatePADSCall(self, path="", files=[]):
+	if self.optdict.get('useASearch') :
+		self.printRED("You cannot use --useASearch for creating PADS")
+
 	self.setMartParams()
 	if self.optdict.has_key('want_help'):
 		self.helper._help_createpads()
