@@ -77,17 +77,23 @@ public class QueryBuilder {
 				allKws = addUniqueInList(allKws, "Block");
 				query += "Block.Path";
 				if(iLumi) groupByLumiQuery += "Block.Path,";
-			//System.out.println("line 2");
 			} else if(Util.isSame(aKw, "ilumi")) {
-			//System.out.println("line 2.1");
 				query += getIntLumiSelectQuery();
 			//System.out.println("line 2.1.1");
+			} else if(aKw.toLowerCase().startsWith("count")) {
+				System.out.println("________line 8");
+				aKw = aKw.toLowerCase();
+				query += "COUNT(*)";
+				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
+				//System.out.println("entity = " + entity);
+				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
 			} else {
 			//System.out.println("line 2.2");
 				if(iLumi && (i < 2) ) {
 					allKws = addUniqueInList(allKws, "Runs");
 					allKws = addUniqueInList(allKws, "LumiSection");
 				}
+				
 
 			//System.out.println("line 3");
 				StringTokenizer st = new StringTokenizer(aKw, ".");
@@ -226,7 +232,6 @@ public class QueryBuilder {
 				}
 			}
 		}
-		//System.out.println("line 5");
 		if(iLumi && (cs.size() > 0) ) {
 			allKws = addUniqueInList(allKws, "Runs");
 			allKws = addUniqueInList(allKws, "LumiSection");

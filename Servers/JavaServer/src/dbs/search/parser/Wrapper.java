@@ -37,8 +37,8 @@ public class Wrapper {
 			ArrayList kws = parser.kws;
 			ArrayList okws = parser.okws;
 			ArrayList cs = parser.constraints;
-			/*for (int i =0 ; i!= kws.size(); ++i) 
-				System.out.println("KEWORD\t" + kws.get(i));*/
+			for (int i =0 ; i!= kws.size(); ++i) 
+				System.out.println("KEWORD\t" + kws.get(i));
 		
 			/*for (int i =0 ; i!= cs.size(); ++i) {
 				Object obj = cs.get(i);
@@ -48,11 +48,17 @@ public class Wrapper {
 	
 				}//else System.out.println("REL " + (String)obj);
 			}*/
+			System.out.println(".... line 1 ");
 			QueryBuilder qb = new QueryBuilder(db);
+			System.out.println(".... line 2 ");
 			queryToReturn = qb.genQuery(kws, cs, okws, begin, end);
+			System.out.println(".... line 3 ");
 			bindValues = qb.getBindValues();
+			System.out.println(".... line 4 ");
 			bindIntValues = qb.getBindIntValues();
+			System.out.println(".... line 5 ");
 			countQuery = qb.getCountQuery();
+			System.out.println(".... line 6 ");
 		} catch (NoViableAltException nvae) {
 			Token t =  nvae.token;
 			String msg = "Invalid Token " + t.getText() + " on line " + t.getLine() + " at column " + t.getCharPositionInLine() + "\n";

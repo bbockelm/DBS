@@ -39,10 +39,11 @@ selectList	:kw=	keyword 		{kws.add($kw.text);}
  		
 keyword	: entity 
 	| entity DOT attr
-	| entity DOT funct;
+	| entity DOT funct
+	| count spaces '(' spaces entity spaces ')';
 	
 constraintList	: constraint ( spaces 
-	rel=	logicalOp 		{if(rel== null) System.out.println("REL is NULL"); constraints.add($rel.text);}
+	rel=	logicalOp 		{ constraints.add($rel.text);}
 		spaces constraint)*;
 
 constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
@@ -98,6 +99,7 @@ or		:('or' | 'OR');
 in		:('in' | 'IN');
 not		:('not' | 'NOT');
 like		:('like' | 'LIKE');
+count		:('count' | 'COUNT');
 VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#')+ ;
 //DIGIT		:('0'..'9');
 //DASH		:('-');

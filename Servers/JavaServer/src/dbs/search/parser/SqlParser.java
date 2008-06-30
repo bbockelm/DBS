@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-06-24 13:57:16
+// $ANTLR 3.0.1 Sql.g 2008-06-30 10:10:33
 
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class SqlParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "SPACE", "COMMA", "DOT", "EQ", "LT", "GT", "VALUE", "AMP", "STAR", "NL", "WS", "'('", "')'", "'WHERE'", "'where'", "'ads'", "'dataset'", "'release'", "'site'", "'block'", "'file'", "'primds'", "'procds'", "'run'", "'lumi'", "'dq'", "'ilumi'", "'createdate'", "'moddate'", "'starttime'", "'endtime'", "'createby'", "'modby'", "'name'", "'version'", "'number'", "'startevnum'", "'endevnum'", "'numevents'", "'numlss'", "'size'", "'count'", "'status'", "'type'", "'id'", "'parent'", "'child'", "'tier'", "'def'", "'evnum'", "'era'", "'tag'", "'numruns()'", "'numfiles()'", "'dataquality()'", "'latest()'", "'parentrelease()'", "'childrelease()'", "'intluminosity()'", "'findevents()'", "'select'", "'SELECT'", "'find'", "'FIND'", "'and'", "'AND'", "'order'", "'ORDER'", "'by'", "'BY'", "'or'", "'OR'", "'in'", "'IN'", "'not'", "'NOT'", "'like'", "'LIKE'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "SPACE", "COMMA", "DOT", "EQ", "LT", "GT", "VALUE", "AMP", "STAR", "NL", "WS", "'('", "')'", "'WHERE'", "'where'", "'ads'", "'dataset'", "'release'", "'site'", "'block'", "'file'", "'primds'", "'procds'", "'run'", "'lumi'", "'dq'", "'ilumi'", "'createdate'", "'moddate'", "'starttime'", "'endtime'", "'createby'", "'modby'", "'name'", "'version'", "'number'", "'startevnum'", "'endevnum'", "'numevents'", "'numlss'", "'size'", "'count'", "'status'", "'type'", "'id'", "'parent'", "'child'", "'tier'", "'def'", "'evnum'", "'era'", "'tag'", "'numruns()'", "'numfiles()'", "'dataquality()'", "'latest()'", "'parentrelease()'", "'childrelease()'", "'intluminosity()'", "'findevents()'", "'select'", "'SELECT'", "'find'", "'FIND'", "'and'", "'AND'", "'order'", "'ORDER'", "'by'", "'BY'", "'or'", "'OR'", "'in'", "'IN'", "'not'", "'NOT'", "'like'", "'LIKE'", "'COUNT'"
     };
     public static final int LT=8;
     public static final int WS=14;
@@ -342,48 +342,51 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start keyword
-    // Sql.g:40:1: keyword : ( entity | entity DOT attr | entity DOT funct );
+    // Sql.g:40:1: keyword : ( entity | entity DOT attr | entity DOT funct | count spaces '(' spaces entity spaces ')' );
     public final keyword_return keyword() throws RecognitionException {
         keyword_return retval = new keyword_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:40:9: ( entity | entity DOT attr | entity DOT funct )
-            int alt4=3;
+            // Sql.g:40:9: ( entity | entity DOT attr | entity DOT funct | count spaces '(' spaces entity spaces ')' )
+            int alt4=4;
             int LA4_0 = input.LA(1);
 
             if ( ((LA4_0>=19 && LA4_0<=30)) ) {
                 int LA4_1 = input.LA(2);
 
-                if ( (LA4_1==DOT) ) {
-                    int LA4_2 = input.LA(3);
+                if ( (LA4_1==EOF||(LA4_1>=SPACE && LA4_1<=COMMA)||(LA4_1>=EQ && LA4_1<=GT)||(LA4_1>=17 && LA4_1<=18)||(LA4_1>=70 && LA4_1<=71)||(LA4_1>=76 && LA4_1<=77)||(LA4_1>=80 && LA4_1<=81)) ) {
+                    alt4=1;
+                }
+                else if ( (LA4_1==DOT) ) {
+                    int LA4_4 = input.LA(3);
 
-                    if ( ((LA4_2>=56 && LA4_2<=63)) ) {
+                    if ( ((LA4_4>=56 && LA4_4<=63)) ) {
                         alt4=3;
                     }
-                    else if ( ((LA4_2>=20 && LA4_2<=21)||(LA4_2>=31 && LA4_2<=55)) ) {
+                    else if ( ((LA4_4>=20 && LA4_4<=21)||(LA4_4>=31 && LA4_4<=55)) ) {
                         alt4=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("40:1: keyword : ( entity | entity DOT attr | entity DOT funct );", 4, 2, input);
+                            new NoViableAltException("40:1: keyword : ( entity | entity DOT attr | entity DOT funct | count spaces '(' spaces entity spaces ')' );", 4, 4, input);
 
                         throw nvae;
                     }
                 }
-                else if ( (LA4_1==EOF||(LA4_1>=SPACE && LA4_1<=COMMA)||(LA4_1>=EQ && LA4_1<=GT)||(LA4_1>=17 && LA4_1<=18)||(LA4_1>=70 && LA4_1<=71)||(LA4_1>=76 && LA4_1<=77)||(LA4_1>=80 && LA4_1<=81)) ) {
-                    alt4=1;
-                }
                 else {
                     NoViableAltException nvae =
-                        new NoViableAltException("40:1: keyword : ( entity | entity DOT attr | entity DOT funct );", 4, 1, input);
+                        new NoViableAltException("40:1: keyword : ( entity | entity DOT attr | entity DOT funct | count spaces '(' spaces entity spaces ')' );", 4, 1, input);
 
                     throw nvae;
                 }
             }
+            else if ( (LA4_0==45||LA4_0==82) ) {
+                alt4=4;
+            }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("40:1: keyword : ( entity | entity DOT attr | entity DOT funct );", 4, 0, input);
+                    new NoViableAltException("40:1: keyword : ( entity | entity DOT attr | entity DOT funct | count spaces '(' spaces entity spaces ')' );", 4, 0, input);
 
                 throw nvae;
             }
@@ -428,6 +431,34 @@ public class SqlParser extends Parser {
 
                     }
                     break;
+                case 4 :
+                    // Sql.g:43:4: count spaces '(' spaces entity spaces ')'
+                    {
+                    pushFollow(FOLLOW_count_in_keyword220);
+                    count();
+                    _fsp--;
+
+                    pushFollow(FOLLOW_spaces_in_keyword222);
+                    spaces();
+                    _fsp--;
+
+                    match(input,15,FOLLOW_15_in_keyword224); 
+                    pushFollow(FOLLOW_spaces_in_keyword226);
+                    spaces();
+                    _fsp--;
+
+                    pushFollow(FOLLOW_entity_in_keyword228);
+                    entity();
+                    _fsp--;
+
+                    pushFollow(FOLLOW_spaces_in_keyword230);
+                    spaces();
+                    _fsp--;
+
+                    match(input,16,FOLLOW_16_in_keyword232); 
+
+                    }
+                    break;
 
             }
             retval.stop = input.LT(-1);
@@ -445,42 +476,42 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start constraintList
-    // Sql.g:44:1: constraintList : constraint ( spaces rel= logicalOp spaces constraint )* ;
+    // Sql.g:45:1: constraintList : constraint ( spaces rel= logicalOp spaces constraint )* ;
     public final void constraintList() throws RecognitionException {
         logicalOp_return rel = null;
 
 
         try {
-            // Sql.g:44:16: ( constraint ( spaces rel= logicalOp spaces constraint )* )
-            // Sql.g:44:18: constraint ( spaces rel= logicalOp spaces constraint )*
+            // Sql.g:45:16: ( constraint ( spaces rel= logicalOp spaces constraint )* )
+            // Sql.g:45:18: constraint ( spaces rel= logicalOp spaces constraint )*
             {
-            pushFollow(FOLLOW_constraint_in_constraintList224);
+            pushFollow(FOLLOW_constraint_in_constraintList241);
             constraint();
             _fsp--;
 
-            // Sql.g:44:29: ( spaces rel= logicalOp spaces constraint )*
+            // Sql.g:45:29: ( spaces rel= logicalOp spaces constraint )*
             loop5:
             do {
                 int alt5=2;
                 alt5 = dfa5.predict(input);
                 switch (alt5) {
             	case 1 :
-            	    // Sql.g:44:31: spaces rel= logicalOp spaces constraint
+            	    // Sql.g:45:31: spaces rel= logicalOp spaces constraint
             	    {
-            	    pushFollow(FOLLOW_spaces_in_constraintList228);
+            	    pushFollow(FOLLOW_spaces_in_constraintList245);
             	    spaces();
             	    _fsp--;
 
-            	    pushFollow(FOLLOW_logicalOp_in_constraintList235);
+            	    pushFollow(FOLLOW_logicalOp_in_constraintList252);
             	    rel=logicalOp();
             	    _fsp--;
 
-            	    if(rel== null) System.out.println("REL is NULL"); constraints.add(input.toString(rel.start,rel.stop));
-            	    pushFollow(FOLLOW_spaces_in_constraintList243);
+            	     constraints.add(input.toString(rel.start,rel.stop));
+            	    pushFollow(FOLLOW_spaces_in_constraintList260);
             	    spaces();
             	    _fsp--;
 
-            	    pushFollow(FOLLOW_constraint_in_constraintList245);
+            	    pushFollow(FOLLOW_constraint_in_constraintList262);
             	    constraint();
             	    _fsp--;
 
@@ -509,7 +540,7 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start constraint
-    // Sql.g:48:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );
+    // Sql.g:49:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );
     public final void constraint() throws RecognitionException {
         Token op=null;
         keyword_return kw = null;
@@ -526,19 +557,19 @@ public class SqlParser extends Parser {
 
 
         try {
-            // Sql.g:48:12: (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue )
+            // Sql.g:49:12: (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue )
             int alt6=3;
             alt6 = dfa6.predict(input);
             switch (alt6) {
                 case 1 :
-                    // Sql.g:48:14: kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue
+                    // Sql.g:49:14: kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue
                     {
-                    pushFollow(FOLLOW_keyword_in_constraint258);
+                    pushFollow(FOLLOW_keyword_in_constraint275);
                     kw=keyword();
                     _fsp--;
 
                     Constraint c= new Constraint(); c.setKey(input.toString(kw.start,kw.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint267);
+                    pushFollow(FOLLOW_spaces_in_constraint284);
                     spaces();
                     _fsp--;
 
@@ -550,15 +581,15 @@ public class SqlParser extends Parser {
                     else {
                         MismatchedSetException mse =
                             new MismatchedSetException(null,input);
-                        recoverFromMismatchedSet(input,mse,FOLLOW_set_in_constraint274);    throw mse;
+                        recoverFromMismatchedSet(input,mse,FOLLOW_set_in_constraint291);    throw mse;
                     }
 
                     c.setOp(op.getText());
-                    pushFollow(FOLLOW_spaces_in_constraint294);
+                    pushFollow(FOLLOW_spaces_in_constraint311);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_genValue_in_constraint301);
+                    pushFollow(FOLLOW_genValue_in_constraint318);
                     val=genValue();
                     _fsp--;
 
@@ -567,66 +598,66 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Sql.g:54:2: kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')'
+                    // Sql.g:55:2: kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')'
                     {
-                    pushFollow(FOLLOW_keyword_in_constraint330);
+                    pushFollow(FOLLOW_keyword_in_constraint347);
                     kw=keyword();
                     _fsp--;
 
                     Constraint c= new Constraint(); c.setKey(input.toString(kw.start,kw.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint339);
+                    pushFollow(FOLLOW_spaces_in_constraint356);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_in_in_constraint346);
+                    pushFollow(FOLLOW_in_in_constraint363);
                     op1=in();
                     _fsp--;
 
                     c.setOp(input.toString(op1.start,op1.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint357);
+                    pushFollow(FOLLOW_spaces_in_constraint374);
                     spaces();
                     _fsp--;
 
-                    match(input,15,FOLLOW_15_in_constraint359); 
-                    pushFollow(FOLLOW_spaces_in_constraint363);
+                    match(input,15,FOLLOW_15_in_constraint376); 
+                    pushFollow(FOLLOW_spaces_in_constraint380);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_valueList_in_constraint369);
+                    pushFollow(FOLLOW_valueList_in_constraint386);
                     val1=valueList();
                     _fsp--;
 
                     c.setValue(input.toString(val1.start,val1.stop)); constraints.add(c);
-                    pushFollow(FOLLOW_spaces_in_constraint377);
+                    pushFollow(FOLLOW_spaces_in_constraint394);
                     spaces();
                     _fsp--;
 
-                    match(input,16,FOLLOW_16_in_constraint381); 
+                    match(input,16,FOLLOW_16_in_constraint398); 
 
                     }
                     break;
                 case 3 :
-                    // Sql.g:63:2: kw= keyword spaces op2= like spaces val2= likeValue
+                    // Sql.g:64:2: kw= keyword spaces op2= like spaces val2= likeValue
                     {
-                    pushFollow(FOLLOW_keyword_in_constraint407);
+                    pushFollow(FOLLOW_keyword_in_constraint424);
                     kw=keyword();
                     _fsp--;
 
                     Constraint c= new Constraint(); c.setKey(input.toString(kw.start,kw.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint416);
+                    pushFollow(FOLLOW_spaces_in_constraint433);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_like_in_constraint423);
+                    pushFollow(FOLLOW_like_in_constraint440);
                     op2=like();
                     _fsp--;
 
                     c.setOp(input.toString(op2.start,op2.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint432);
+                    pushFollow(FOLLOW_spaces_in_constraint449);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_likeValue_in_constraint439);
+                    pushFollow(FOLLOW_likeValue_in_constraint456);
                     val2=likeValue();
                     _fsp--;
 
@@ -649,11 +680,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start where
-    // Sql.g:69:1: where : ( 'WHERE' | 'where' ) ;
+    // Sql.g:70:1: where : ( 'WHERE' | 'where' ) ;
     public final void where() throws RecognitionException {
         try {
-            // Sql.g:69:7: ( ( 'WHERE' | 'where' ) )
-            // Sql.g:69:8: ( 'WHERE' | 'where' )
+            // Sql.g:70:7: ( ( 'WHERE' | 'where' ) )
+            // Sql.g:70:8: ( 'WHERE' | 'where' )
             {
             if ( (input.LA(1)>=17 && input.LA(1)<=18) ) {
                 input.consume();
@@ -662,7 +693,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_where468);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_where485);    throw mse;
             }
 
 
@@ -681,10 +712,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start dotValue
-    // Sql.g:70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );
+    // Sql.g:71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );
     public final void dotValue() throws RecognitionException {
         try {
-            // Sql.g:70:17: ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE )
+            // Sql.g:71:17: ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE )
             int alt7=6;
             int LA7_0 = input.LA(1);
 
@@ -708,7 +739,7 @@ public class SqlParser extends Parser {
                             }
                             else {
                                 NoViableAltException nvae =
-                                    new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 7, input);
+                                    new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 7, input);
 
                                 throw nvae;
                             }
@@ -718,7 +749,7 @@ public class SqlParser extends Parser {
                         }
                         else {
                             NoViableAltException nvae =
-                                new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 5, input);
+                                new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 5, input);
 
                             throw nvae;
                         }
@@ -728,7 +759,7 @@ public class SqlParser extends Parser {
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 2, input);
+                            new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 2, input);
 
                         throw nvae;
                     }
@@ -755,14 +786,14 @@ public class SqlParser extends Parser {
                                 }
                                 else {
                                     NoViableAltException nvae =
-                                        new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 12, input);
+                                        new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 12, input);
 
                                     throw nvae;
                                 }
                             }
                             else {
                                 NoViableAltException nvae =
-                                    new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 9, input);
+                                    new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 9, input);
 
                                 throw nvae;
                             }
@@ -772,14 +803,14 @@ public class SqlParser extends Parser {
                         }
                         else {
                             NoViableAltException nvae =
-                                new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 6, input);
+                                new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 6, input);
 
                             throw nvae;
                         }
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 3, input);
+                            new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 3, input);
 
                         throw nvae;
                     }
@@ -806,7 +837,7 @@ public class SqlParser extends Parser {
                     break;
                 default:
                     NoViableAltException nvae =
-                        new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 1, input);
+                        new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 1, input);
 
                     throw nvae;
                 }
@@ -814,68 +845,68 @@ public class SqlParser extends Parser {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("70:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 0, input);
+                    new NoViableAltException("71:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 0, input);
 
                 throw nvae;
             }
             switch (alt7) {
                 case 1 :
-                    // Sql.g:70:19: VALUE
+                    // Sql.g:71:19: VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue488); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue505); 
 
                     }
                     break;
                 case 2 :
-                    // Sql.g:71:5: VALUE DOT VALUE
+                    // Sql.g:72:5: VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue495); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue497); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue499); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue512); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue514); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue516); 
 
                     }
                     break;
                 case 3 :
-                    // Sql.g:72:5: VALUE DOT VALUE DOT VALUE
+                    // Sql.g:73:5: VALUE DOT VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue505); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue507); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue509); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue511); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue513); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue522); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue524); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue526); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue528); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue530); 
 
                     }
                     break;
                 case 4 :
-                    // Sql.g:73:5: VALUE DOT VALUE DOT VALUE DOT VALUE
+                    // Sql.g:74:5: VALUE DOT VALUE DOT VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue519); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue521); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue523); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue525); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue527); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue529); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue531); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue536); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue538); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue540); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue542); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue544); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue546); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue548); 
 
                     }
                     break;
                 case 5 :
-                    // Sql.g:74:5: VALUE SPACE VALUE
+                    // Sql.g:75:5: VALUE SPACE VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue537); 
-                    match(input,SPACE,FOLLOW_SPACE_in_dotValue539); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue541); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue554); 
+                    match(input,SPACE,FOLLOW_SPACE_in_dotValue556); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue558); 
 
                     }
                     break;
                 case 6 :
-                    // Sql.g:75:5: VALUE SPACE VALUE SPACE VALUE
+                    // Sql.g:76:5: VALUE SPACE VALUE SPACE VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue547); 
-                    match(input,SPACE,FOLLOW_SPACE_in_dotValue549); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue551); 
-                    match(input,SPACE,FOLLOW_SPACE_in_dotValue553); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue555); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue564); 
+                    match(input,SPACE,FOLLOW_SPACE_in_dotValue566); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue568); 
+                    match(input,SPACE,FOLLOW_SPACE_in_dotValue570); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue572); 
 
                     }
                     break;
@@ -896,38 +927,38 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start valueList
-    // Sql.g:78:1: valueList : dotValue ( spaces COMMA spaces dotValue )* ;
+    // Sql.g:79:1: valueList : dotValue ( spaces COMMA spaces dotValue )* ;
     public final valueList_return valueList() throws RecognitionException {
         valueList_return retval = new valueList_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:78:11: ( dotValue ( spaces COMMA spaces dotValue )* )
-            // Sql.g:78:12: dotValue ( spaces COMMA spaces dotValue )*
+            // Sql.g:79:11: ( dotValue ( spaces COMMA spaces dotValue )* )
+            // Sql.g:79:12: dotValue ( spaces COMMA spaces dotValue )*
             {
-            pushFollow(FOLLOW_dotValue_in_valueList563);
+            pushFollow(FOLLOW_dotValue_in_valueList580);
             dotValue();
             _fsp--;
 
-            // Sql.g:78:21: ( spaces COMMA spaces dotValue )*
+            // Sql.g:79:21: ( spaces COMMA spaces dotValue )*
             loop8:
             do {
                 int alt8=2;
                 alt8 = dfa8.predict(input);
                 switch (alt8) {
             	case 1 :
-            	    // Sql.g:78:23: spaces COMMA spaces dotValue
+            	    // Sql.g:79:23: spaces COMMA spaces dotValue
             	    {
-            	    pushFollow(FOLLOW_spaces_in_valueList567);
+            	    pushFollow(FOLLOW_spaces_in_valueList584);
             	    spaces();
             	    _fsp--;
 
-            	    match(input,COMMA,FOLLOW_COMMA_in_valueList569); 
-            	    pushFollow(FOLLOW_spaces_in_valueList571);
+            	    match(input,COMMA,FOLLOW_COMMA_in_valueList586); 
+            	    pushFollow(FOLLOW_spaces_in_valueList588);
             	    spaces();
             	    _fsp--;
 
-            	    pushFollow(FOLLOW_dotValue_in_valueList573);
+            	    pushFollow(FOLLOW_dotValue_in_valueList590);
             	    dotValue();
             	    _fsp--;
 
@@ -958,20 +989,15 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start compOpt
-    // Sql.g:79:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );
+    // Sql.g:80:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );
     public final void compOpt() throws RecognitionException {
         try {
-            // Sql.g:79:10: ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) )
+            // Sql.g:80:10: ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) )
             int alt9=7;
             switch ( input.LA(1) ) {
             case EQ:
                 {
                 switch ( input.LA(2) ) {
-                case VALUE:
-                    {
-                    alt9=1;
-                    }
-                    break;
                 case GT:
                     {
                     alt9=4;
@@ -982,9 +1008,14 @@ public class SqlParser extends Parser {
                     alt9=5;
                     }
                     break;
+                case VALUE:
+                    {
+                    alt9=1;
+                    }
+                    break;
                 default:
                     NoViableAltException nvae =
-                        new NoViableAltException("79:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 1, input);
+                        new NoViableAltException("80:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 1, input);
 
                     throw nvae;
                 }
@@ -995,15 +1026,15 @@ public class SqlParser extends Parser {
                 {
                 int LA9_2 = input.LA(2);
 
-                if ( (LA9_2==EQ) ) {
-                    alt9=6;
-                }
-                else if ( (LA9_2==VALUE) ) {
+                if ( (LA9_2==VALUE) ) {
                     alt9=2;
+                }
+                else if ( (LA9_2==EQ) ) {
+                    alt9=6;
                 }
                 else {
                     NoViableAltException nvae =
-                        new NoViableAltException("79:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 2, input);
+                        new NoViableAltException("80:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 2, input);
 
                     throw nvae;
                 }
@@ -1013,15 +1044,15 @@ public class SqlParser extends Parser {
                 {
                 int LA9_3 = input.LA(2);
 
-                if ( (LA9_3==EQ) ) {
-                    alt9=7;
-                }
-                else if ( (LA9_3==VALUE) ) {
+                if ( (LA9_3==VALUE) ) {
                     alt9=3;
+                }
+                else if ( (LA9_3==EQ) ) {
+                    alt9=7;
                 }
                 else {
                     NoViableAltException nvae =
-                        new NoViableAltException("79:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 3, input);
+                        new NoViableAltException("80:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 3, input);
 
                     throw nvae;
                 }
@@ -1029,19 +1060,19 @@ public class SqlParser extends Parser {
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("79:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 0, input);
+                    new NoViableAltException("80:1: compOpt : ( ( EQ ) | ( LT ) | ( GT ) | ( EQ ) ( GT ) | ( EQ ) ( LT ) | ( LT ) ( EQ ) | ( GT ) ( EQ ) );", 9, 0, input);
 
                 throw nvae;
             }
 
             switch (alt9) {
                 case 1 :
-                    // Sql.g:79:11: ( EQ )
+                    // Sql.g:80:11: ( EQ )
                     {
-                    // Sql.g:79:11: ( EQ )
-                    // Sql.g:79:12: EQ
+                    // Sql.g:80:11: ( EQ )
+                    // Sql.g:80:12: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt584); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt601); 
 
                     }
 
@@ -1049,12 +1080,12 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Sql.g:80:4: ( LT )
+                    // Sql.g:81:4: ( LT )
                     {
-                    // Sql.g:80:4: ( LT )
-                    // Sql.g:80:5: LT
+                    // Sql.g:81:4: ( LT )
+                    // Sql.g:81:5: LT
                     {
-                    match(input,LT,FOLLOW_LT_in_compOpt591); 
+                    match(input,LT,FOLLOW_LT_in_compOpt608); 
 
                     }
 
@@ -1062,12 +1093,12 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Sql.g:81:4: ( GT )
+                    // Sql.g:82:4: ( GT )
                     {
-                    // Sql.g:81:4: ( GT )
-                    // Sql.g:81:5: GT
+                    // Sql.g:82:4: ( GT )
+                    // Sql.g:82:5: GT
                     {
-                    match(input,GT,FOLLOW_GT_in_compOpt598); 
+                    match(input,GT,FOLLOW_GT_in_compOpt615); 
 
                     }
 
@@ -1075,19 +1106,19 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Sql.g:82:4: ( EQ ) ( GT )
+                    // Sql.g:83:4: ( EQ ) ( GT )
                     {
-                    // Sql.g:82:4: ( EQ )
-                    // Sql.g:82:5: EQ
+                    // Sql.g:83:4: ( EQ )
+                    // Sql.g:83:5: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt605); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt622); 
 
                     }
 
-                    // Sql.g:82:8: ( GT )
-                    // Sql.g:82:9: GT
+                    // Sql.g:83:8: ( GT )
+                    // Sql.g:83:9: GT
                     {
-                    match(input,GT,FOLLOW_GT_in_compOpt608); 
+                    match(input,GT,FOLLOW_GT_in_compOpt625); 
 
                     }
 
@@ -1095,19 +1126,19 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Sql.g:83:4: ( EQ ) ( LT )
+                    // Sql.g:84:4: ( EQ ) ( LT )
                     {
-                    // Sql.g:83:4: ( EQ )
-                    // Sql.g:83:5: EQ
+                    // Sql.g:84:4: ( EQ )
+                    // Sql.g:84:5: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt615); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt632); 
 
                     }
 
-                    // Sql.g:83:8: ( LT )
-                    // Sql.g:83:9: LT
+                    // Sql.g:84:8: ( LT )
+                    // Sql.g:84:9: LT
                     {
-                    match(input,LT,FOLLOW_LT_in_compOpt618); 
+                    match(input,LT,FOLLOW_LT_in_compOpt635); 
 
                     }
 
@@ -1115,19 +1146,19 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Sql.g:84:4: ( LT ) ( EQ )
+                    // Sql.g:85:4: ( LT ) ( EQ )
                     {
-                    // Sql.g:84:4: ( LT )
-                    // Sql.g:84:5: LT
+                    // Sql.g:85:4: ( LT )
+                    // Sql.g:85:5: LT
                     {
-                    match(input,LT,FOLLOW_LT_in_compOpt625); 
+                    match(input,LT,FOLLOW_LT_in_compOpt642); 
 
                     }
 
-                    // Sql.g:84:8: ( EQ )
-                    // Sql.g:84:9: EQ
+                    // Sql.g:85:8: ( EQ )
+                    // Sql.g:85:9: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt628); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt645); 
 
                     }
 
@@ -1135,19 +1166,19 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // Sql.g:85:4: ( GT ) ( EQ )
+                    // Sql.g:86:4: ( GT ) ( EQ )
                     {
-                    // Sql.g:85:4: ( GT )
-                    // Sql.g:85:5: GT
+                    // Sql.g:86:4: ( GT )
+                    // Sql.g:86:5: GT
                     {
-                    match(input,GT,FOLLOW_GT_in_compOpt635); 
+                    match(input,GT,FOLLOW_GT_in_compOpt652); 
 
                     }
 
-                    // Sql.g:85:8: ( EQ )
-                    // Sql.g:85:9: EQ
+                    // Sql.g:86:8: ( EQ )
+                    // Sql.g:86:9: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt638); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt655); 
 
                     }
 
@@ -1171,103 +1202,29 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start genValue
-    // Sql.g:86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );
+    // Sql.g:87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );
     public final genValue_return genValue() throws RecognitionException {
         genValue_return retval = new genValue_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:86:10: ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* )
+            // Sql.g:87:10: ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
             if ( (LA11_0==VALUE) ) {
                 switch ( input.LA(2) ) {
-                case SPACE:
+                case DOT:
                     {
                     int LA11_2 = input.LA(3);
 
                     if ( (LA11_2==VALUE) ) {
                         switch ( input.LA(4) ) {
-                        case SPACE:
+                        case DOT:
                             {
                             int LA11_8 = input.LA(5);
 
                             if ( (LA11_8==VALUE) ) {
-                                int LA11_10 = input.LA(6);
-
-                                if ( ((LA11_10>=EQ && LA11_10<=GT)) ) {
-                                    alt11=2;
-                                }
-                                else if ( (LA11_10==EOF||LA11_10==SPACE||(LA11_10>=68 && LA11_10<=71)||(LA11_10>=74 && LA11_10<=75)) ) {
-                                    alt11=1;
-                                }
-                                else {
-                                    NoViableAltException nvae =
-                                        new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 10, input);
-
-                                    throw nvae;
-                                }
-                            }
-                            else if ( (LA11_8==SPACE||(LA11_8>=68 && LA11_8<=71)||(LA11_8>=74 && LA11_8<=75)) ) {
-                                alt11=1;
-                            }
-                            else {
-                                NoViableAltException nvae =
-                                    new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 8, input);
-
-                                throw nvae;
-                            }
-                            }
-                            break;
-                        case EOF:
-                        case 68:
-                        case 69:
-                        case 70:
-                        case 71:
-                        case 74:
-                        case 75:
-                            {
-                            alt11=1;
-                            }
-                            break;
-                        case EQ:
-                        case LT:
-                        case GT:
-                            {
-                            alt11=2;
-                            }
-                            break;
-                        default:
-                            NoViableAltException nvae =
-                                new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 6, input);
-
-                            throw nvae;
-                        }
-
-                    }
-                    else if ( (LA11_2==SPACE||(LA11_2>=68 && LA11_2<=71)||(LA11_2>=74 && LA11_2<=75)) ) {
-                        alt11=1;
-                    }
-                    else {
-                        NoViableAltException nvae =
-                            new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 2, input);
-
-                        throw nvae;
-                    }
-                    }
-                    break;
-                case DOT:
-                    {
-                    int LA11_3 = input.LA(3);
-
-                    if ( (LA11_3==VALUE) ) {
-                        switch ( input.LA(4) ) {
-                        case DOT:
-                            {
-                            int LA11_9 = input.LA(5);
-
-                            if ( (LA11_9==VALUE) ) {
                                 switch ( input.LA(6) ) {
                                 case DOT:
                                     {
@@ -1276,22 +1233,22 @@ public class SqlParser extends Parser {
                                     if ( (LA11_12==VALUE) ) {
                                         int LA11_13 = input.LA(8);
 
-                                        if ( ((LA11_13>=EQ && LA11_13<=GT)) ) {
-                                            alt11=2;
-                                        }
-                                        else if ( (LA11_13==EOF||LA11_13==SPACE||(LA11_13>=68 && LA11_13<=71)||(LA11_13>=74 && LA11_13<=75)) ) {
+                                        if ( (LA11_13==EOF||LA11_13==SPACE||(LA11_13>=68 && LA11_13<=71)||(LA11_13>=74 && LA11_13<=75)) ) {
                                             alt11=1;
+                                        }
+                                        else if ( ((LA11_13>=EQ && LA11_13<=GT)) ) {
+                                            alt11=2;
                                         }
                                         else {
                                             NoViableAltException nvae =
-                                                new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 13, input);
+                                                new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 13, input);
 
                                             throw nvae;
                                         }
                                     }
                                     else {
                                         NoViableAltException nvae =
-                                            new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 12, input);
+                                            new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 12, input);
 
                                         throw nvae;
                                     }
@@ -1318,7 +1275,7 @@ public class SqlParser extends Parser {
                                     break;
                                 default:
                                     NoViableAltException nvae =
-                                        new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 11, input);
+                                        new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 10, input);
 
                                     throw nvae;
                                 }
@@ -1326,7 +1283,7 @@ public class SqlParser extends Parser {
                             }
                             else {
                                 NoViableAltException nvae =
-                                    new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 9, input);
+                                    new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 8, input);
 
                                 throw nvae;
                             }
@@ -1353,7 +1310,7 @@ public class SqlParser extends Parser {
                             break;
                         default:
                             NoViableAltException nvae =
-                                new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 7, input);
+                                new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 6, input);
 
                             throw nvae;
                         }
@@ -1361,7 +1318,81 @@ public class SqlParser extends Parser {
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 3, input);
+                            new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 2, input);
+
+                        throw nvae;
+                    }
+                    }
+                    break;
+                case SPACE:
+                    {
+                    int LA11_3 = input.LA(3);
+
+                    if ( (LA11_3==VALUE) ) {
+                        switch ( input.LA(4) ) {
+                        case SPACE:
+                            {
+                            int LA11_9 = input.LA(5);
+
+                            if ( (LA11_9==VALUE) ) {
+                                int LA11_11 = input.LA(6);
+
+                                if ( (LA11_11==EOF||LA11_11==SPACE||(LA11_11>=68 && LA11_11<=71)||(LA11_11>=74 && LA11_11<=75)) ) {
+                                    alt11=1;
+                                }
+                                else if ( ((LA11_11>=EQ && LA11_11<=GT)) ) {
+                                    alt11=2;
+                                }
+                                else {
+                                    NoViableAltException nvae =
+                                        new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 11, input);
+
+                                    throw nvae;
+                                }
+                            }
+                            else if ( (LA11_9==SPACE||(LA11_9>=68 && LA11_9<=71)||(LA11_9>=74 && LA11_9<=75)) ) {
+                                alt11=1;
+                            }
+                            else {
+                                NoViableAltException nvae =
+                                    new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 9, input);
+
+                                throw nvae;
+                            }
+                            }
+                            break;
+                        case EOF:
+                        case 68:
+                        case 69:
+                        case 70:
+                        case 71:
+                        case 74:
+                        case 75:
+                            {
+                            alt11=1;
+                            }
+                            break;
+                        case EQ:
+                        case LT:
+                        case GT:
+                            {
+                            alt11=2;
+                            }
+                            break;
+                        default:
+                            NoViableAltException nvae =
+                                new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 7, input);
+
+                            throw nvae;
+                        }
+
+                    }
+                    else if ( (LA11_3==SPACE||(LA11_3>=68 && LA11_3<=71)||(LA11_3>=74 && LA11_3<=75)) ) {
+                        alt11=1;
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 3, input);
 
                         throw nvae;
                     }
@@ -1387,7 +1418,7 @@ public class SqlParser extends Parser {
                     break;
                 default:
                     NoViableAltException nvae =
-                        new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 1, input);
+                        new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 1, input);
 
                     throw nvae;
                 }
@@ -1395,15 +1426,15 @@ public class SqlParser extends Parser {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("86:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 0, input);
+                    new NoViableAltException("87:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 0, input);
 
                 throw nvae;
             }
             switch (alt11) {
                 case 1 :
-                    // Sql.g:86:11: dotValue
+                    // Sql.g:87:11: dotValue
                     {
-                    pushFollow(FOLLOW_dotValue_in_genValue645);
+                    pushFollow(FOLLOW_dotValue_in_genValue662);
                     dotValue();
                     _fsp--;
 
@@ -1411,21 +1442,21 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Sql.g:87:4: dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )*
+                    // Sql.g:88:4: dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )*
                     {
-                    pushFollow(FOLLOW_dotValue_in_genValue650);
+                    pushFollow(FOLLOW_dotValue_in_genValue667);
                     dotValue();
                     _fsp--;
 
-                    pushFollow(FOLLOW_compOpt_in_genValue652);
+                    pushFollow(FOLLOW_compOpt_in_genValue669);
                     compOpt();
                     _fsp--;
 
-                    pushFollow(FOLLOW_dotValue_in_genValue654);
+                    pushFollow(FOLLOW_dotValue_in_genValue671);
                     dotValue();
                     _fsp--;
 
-                    // Sql.g:87:30: ( AMP dotValue compOpt dotValue )*
+                    // Sql.g:88:30: ( AMP dotValue compOpt dotValue )*
                     loop10:
                     do {
                         int alt10=2;
@@ -1438,18 +1469,18 @@ public class SqlParser extends Parser {
 
                         switch (alt10) {
                     	case 1 :
-                    	    // Sql.g:87:31: AMP dotValue compOpt dotValue
+                    	    // Sql.g:88:31: AMP dotValue compOpt dotValue
                     	    {
-                    	    match(input,AMP,FOLLOW_AMP_in_genValue657); 
-                    	    pushFollow(FOLLOW_dotValue_in_genValue659);
+                    	    match(input,AMP,FOLLOW_AMP_in_genValue674); 
+                    	    pushFollow(FOLLOW_dotValue_in_genValue676);
                     	    dotValue();
                     	    _fsp--;
 
-                    	    pushFollow(FOLLOW_compOpt_in_genValue661);
+                    	    pushFollow(FOLLOW_compOpt_in_genValue678);
                     	    compOpt();
                     	    _fsp--;
 
-                    	    pushFollow(FOLLOW_dotValue_in_genValue663);
+                    	    pushFollow(FOLLOW_dotValue_in_genValue680);
                     	    dotValue();
                     	    _fsp--;
 
@@ -1484,16 +1515,16 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start likeValue
-    // Sql.g:88:1: likeValue : ( dotValue | STAR )+ ;
+    // Sql.g:89:1: likeValue : ( dotValue | STAR )+ ;
     public final likeValue_return likeValue() throws RecognitionException {
         likeValue_return retval = new likeValue_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:88:12: ( ( dotValue | STAR )+ )
-            // Sql.g:88:13: ( dotValue | STAR )+
+            // Sql.g:89:12: ( ( dotValue | STAR )+ )
+            // Sql.g:89:13: ( dotValue | STAR )+
             {
-            // Sql.g:88:13: ( dotValue | STAR )+
+            // Sql.g:89:13: ( dotValue | STAR )+
             int cnt12=0;
             loop12:
             do {
@@ -1510,9 +1541,9 @@ public class SqlParser extends Parser {
 
                 switch (alt12) {
             	case 1 :
-            	    // Sql.g:88:14: dotValue
+            	    // Sql.g:89:14: dotValue
             	    {
-            	    pushFollow(FOLLOW_dotValue_in_likeValue673);
+            	    pushFollow(FOLLOW_dotValue_in_likeValue690);
             	    dotValue();
             	    _fsp--;
 
@@ -1520,9 +1551,9 @@ public class SqlParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // Sql.g:88:24: STAR
+            	    // Sql.g:89:24: STAR
             	    {
-            	    match(input,STAR,FOLLOW_STAR_in_likeValue676); 
+            	    match(input,STAR,FOLLOW_STAR_in_likeValue693); 
 
             	    }
             	    break;
@@ -1556,16 +1587,16 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start logicalOp
-    // Sql.g:89:1: logicalOp : ( and | or ) ;
+    // Sql.g:90:1: logicalOp : ( and | or ) ;
     public final logicalOp_return logicalOp() throws RecognitionException {
         logicalOp_return retval = new logicalOp_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:89:11: ( ( and | or ) )
-            // Sql.g:89:12: ( and | or )
+            // Sql.g:90:11: ( ( and | or ) )
+            // Sql.g:90:12: ( and | or )
             {
-            // Sql.g:89:12: ( and | or )
+            // Sql.g:90:12: ( and | or )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -1577,15 +1608,15 @@ public class SqlParser extends Parser {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("89:12: ( and | or )", 13, 0, input);
+                    new NoViableAltException("90:12: ( and | or )", 13, 0, input);
 
                 throw nvae;
             }
             switch (alt13) {
                 case 1 :
-                    // Sql.g:89:13: and
+                    // Sql.g:90:13: and
                     {
-                    pushFollow(FOLLOW_and_in_logicalOp685);
+                    pushFollow(FOLLOW_and_in_logicalOp702);
                     and();
                     _fsp--;
 
@@ -1593,9 +1624,9 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Sql.g:89:17: or
+                    // Sql.g:90:17: or
                     {
-                    pushFollow(FOLLOW_or_in_logicalOp687);
+                    pushFollow(FOLLOW_or_in_logicalOp704);
                     or();
                     _fsp--;
 
@@ -1623,11 +1654,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start entity
-    // Sql.g:90:1: entity : ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' ) ;
+    // Sql.g:91:1: entity : ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' ) ;
     public final void entity() throws RecognitionException {
         try {
-            // Sql.g:90:9: ( ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' ) )
-            // Sql.g:90:11: ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' )
+            // Sql.g:91:9: ( ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' ) )
+            // Sql.g:91:11: ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' )
             {
             if ( (input.LA(1)>=19 && input.LA(1)<=30) ) {
                 input.consume();
@@ -1636,7 +1667,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_entity696);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_entity713);    throw mse;
             }
 
 
@@ -1655,11 +1686,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start attr
-    // Sql.g:91:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' ) ;
+    // Sql.g:92:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' ) ;
     public final void attr() throws RecognitionException {
         try {
-            // Sql.g:91:7: ( ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' ) )
-            // Sql.g:91:8: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' )
+            // Sql.g:92:7: ( ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' ) )
+            // Sql.g:92:8: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' )
             {
             if ( (input.LA(1)>=20 && input.LA(1)<=21)||(input.LA(1)>=31 && input.LA(1)<=55) ) {
                 input.consume();
@@ -1668,7 +1699,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_attr749);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_attr766);    throw mse;
             }
 
 
@@ -1687,11 +1718,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start funct
-    // Sql.g:92:1: funct : ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' ) ;
+    // Sql.g:93:1: funct : ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' ) ;
     public final void funct() throws RecognitionException {
         try {
-            // Sql.g:92:8: ( ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' ) )
-            // Sql.g:92:9: ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' )
+            // Sql.g:93:8: ( ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' ) )
+            // Sql.g:93:9: ( 'numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' )
             {
             if ( (input.LA(1)>=56 && input.LA(1)<=63) ) {
                 input.consume();
@@ -1700,7 +1731,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct863);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct880);    throw mse;
             }
 
 
@@ -1719,11 +1750,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start select
-    // Sql.g:93:1: select : ( 'select' | 'SELECT' | 'find' | 'FIND' ) ;
+    // Sql.g:94:1: select : ( 'select' | 'SELECT' | 'find' | 'FIND' ) ;
     public final void select() throws RecognitionException {
         try {
-            // Sql.g:93:9: ( ( 'select' | 'SELECT' | 'find' | 'FIND' ) )
-            // Sql.g:93:10: ( 'select' | 'SELECT' | 'find' | 'FIND' )
+            // Sql.g:94:9: ( ( 'select' | 'SELECT' | 'find' | 'FIND' ) )
+            // Sql.g:94:10: ( 'select' | 'SELECT' | 'find' | 'FIND' )
             {
             if ( (input.LA(1)>=64 && input.LA(1)<=67) ) {
                 input.consume();
@@ -1732,7 +1763,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select901);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select918);    throw mse;
             }
 
 
@@ -1751,11 +1782,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start and
-    // Sql.g:94:1: and : ( 'and' | 'AND' ) ;
+    // Sql.g:95:1: and : ( 'and' | 'AND' ) ;
     public final void and() throws RecognitionException {
         try {
-            // Sql.g:94:6: ( ( 'and' | 'AND' ) )
-            // Sql.g:94:7: ( 'and' | 'AND' )
+            // Sql.g:95:6: ( ( 'and' | 'AND' ) )
+            // Sql.g:95:7: ( 'and' | 'AND' )
             {
             if ( (input.LA(1)>=68 && input.LA(1)<=69) ) {
                 input.consume();
@@ -1764,7 +1795,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and922);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and939);    throw mse;
             }
 
 
@@ -1783,11 +1814,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start order
-    // Sql.g:95:1: order : ( 'order' | 'ORDER' ) ;
+    // Sql.g:96:1: order : ( 'order' | 'ORDER' ) ;
     public final void order() throws RecognitionException {
         try {
-            // Sql.g:95:8: ( ( 'order' | 'ORDER' ) )
-            // Sql.g:95:9: ( 'order' | 'ORDER' )
+            // Sql.g:96:8: ( ( 'order' | 'ORDER' ) )
+            // Sql.g:96:9: ( 'order' | 'ORDER' )
             {
             if ( (input.LA(1)>=70 && input.LA(1)<=71) ) {
                 input.consume();
@@ -1796,7 +1827,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_order935);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_order952);    throw mse;
             }
 
 
@@ -1815,11 +1846,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start by
-    // Sql.g:96:1: by : ( 'by' | 'BY' ) ;
+    // Sql.g:97:1: by : ( 'by' | 'BY' ) ;
     public final void by() throws RecognitionException {
         try {
-            // Sql.g:96:5: ( ( 'by' | 'BY' ) )
-            // Sql.g:96:6: ( 'by' | 'BY' )
+            // Sql.g:97:5: ( ( 'by' | 'BY' ) )
+            // Sql.g:97:6: ( 'by' | 'BY' )
             {
             if ( (input.LA(1)>=72 && input.LA(1)<=73) ) {
                 input.consume();
@@ -1828,7 +1859,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_by948);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_by965);    throw mse;
             }
 
 
@@ -1847,11 +1878,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start or
-    // Sql.g:97:1: or : ( 'or' | 'OR' ) ;
+    // Sql.g:98:1: or : ( 'or' | 'OR' ) ;
     public final void or() throws RecognitionException {
         try {
-            // Sql.g:97:5: ( ( 'or' | 'OR' ) )
-            // Sql.g:97:6: ( 'or' | 'OR' )
+            // Sql.g:98:5: ( ( 'or' | 'OR' ) )
+            // Sql.g:98:6: ( 'or' | 'OR' )
             {
             if ( (input.LA(1)>=74 && input.LA(1)<=75) ) {
                 input.consume();
@@ -1860,7 +1891,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or961);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or978);    throw mse;
             }
 
 
@@ -1881,14 +1912,14 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start in
-    // Sql.g:98:1: in : ( 'in' | 'IN' ) ;
+    // Sql.g:99:1: in : ( 'in' | 'IN' ) ;
     public final in_return in() throws RecognitionException {
         in_return retval = new in_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:98:5: ( ( 'in' | 'IN' ) )
-            // Sql.g:98:6: ( 'in' | 'IN' )
+            // Sql.g:99:5: ( ( 'in' | 'IN' ) )
+            // Sql.g:99:6: ( 'in' | 'IN' )
             {
             if ( (input.LA(1)>=76 && input.LA(1)<=77) ) {
                 input.consume();
@@ -1897,7 +1928,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in974);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in991);    throw mse;
             }
 
 
@@ -1918,11 +1949,11 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start not
-    // Sql.g:99:1: not : ( 'not' | 'NOT' ) ;
+    // Sql.g:100:1: not : ( 'not' | 'NOT' ) ;
     public final void not() throws RecognitionException {
         try {
-            // Sql.g:99:6: ( ( 'not' | 'NOT' ) )
-            // Sql.g:99:7: ( 'not' | 'NOT' )
+            // Sql.g:100:6: ( ( 'not' | 'NOT' ) )
+            // Sql.g:100:7: ( 'not' | 'NOT' )
             {
             if ( (input.LA(1)>=78 && input.LA(1)<=79) ) {
                 input.consume();
@@ -1931,7 +1962,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not987);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not1004);    throw mse;
             }
 
 
@@ -1952,14 +1983,14 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start like
-    // Sql.g:100:1: like : ( 'like' | 'LIKE' ) ;
+    // Sql.g:101:1: like : ( 'like' | 'LIKE' ) ;
     public final like_return like() throws RecognitionException {
         like_return retval = new like_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:100:7: ( ( 'like' | 'LIKE' ) )
-            // Sql.g:100:8: ( 'like' | 'LIKE' )
+            // Sql.g:101:7: ( ( 'like' | 'LIKE' ) )
+            // Sql.g:101:8: ( 'like' | 'LIKE' )
             {
             if ( (input.LA(1)>=80 && input.LA(1)<=81) ) {
                 input.consume();
@@ -1968,7 +1999,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like1000);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like1017);    throw mse;
             }
 
 
@@ -1988,326 +2019,391 @@ public class SqlParser extends Parser {
     // $ANTLR end like
 
 
+    // $ANTLR start count
+    // Sql.g:102:1: count : ( 'count' | 'COUNT' ) ;
+    public final void count() throws RecognitionException {
+        try {
+            // Sql.g:102:8: ( ( 'count' | 'COUNT' ) )
+            // Sql.g:102:9: ( 'count' | 'COUNT' )
+            {
+            if ( input.LA(1)==45||input.LA(1)==82 ) {
+                input.consume();
+                errorRecovery=false;
+            }
+            else {
+                MismatchedSetException mse =
+                    new MismatchedSetException(null,input);
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_count1030);    throw mse;
+            }
+
+
+            }
+
+        }
+
+        catch (RecognitionException e) {
+        	throw e;
+        }
+        finally {
+        }
+        return ;
+    }
+    // $ANTLR end count
+
+
     protected DFA1 dfa1 = new DFA1(this);
     protected DFA3 dfa3 = new DFA3(this);
     protected DFA5 dfa5 = new DFA5(this);
     protected DFA6 dfa6 = new DFA6(this);
     protected DFA8 dfa8 = new DFA8(this);
     static final String DFA1_eotS =
-        "\u00f4\uffff";
+        "\u0110\uffff";
     static final String DFA1_eofS =
-        "\3\uffff\1\11\7\uffff\1\11\2\uffff\2\11\6\uffff\2\11\3\uffff\1\50"+
-        "\1\uffff\2\50\20\uffff\2\50\1\uffff\1\50\5\uffff\2\50\3\uffff\1"+
-        "\50\21\uffff\4\50\2\uffff\1\50\5\uffff\4\50\32\uffff\3\50\2\uffff"+
-        "\1\50\4\uffff\2\50\2\uffff\1\50\5\uffff\4\50\27\uffff\1\50\2\uffff"+
-        "\6\50\5\uffff\2\50\23\uffff\5\50\3\uffff\1\50\6\uffff\1\50\11\uffff"+
-        "\2\50\2\uffff\2\50\6\uffff\2\50\1\uffff\1\50";
+        "\3\uffff\1\11\12\uffff\1\11\1\uffff\2\11\20\uffff\3\11\3\uffff\1"+
+        "\74\3\uffff\2\74\5\uffff\1\11\20\uffff\2\74\1\uffff\1\74\6\uffff"+
+        "\2\74\3\uffff\1\74\23\uffff\4\74\6\uffff\1\74\1\uffff\2\74\2\uffff"+
+        "\2\74\34\uffff\3\74\4\uffff\1\74\5\uffff\4\74\4\uffff\3\74\27\uffff"+
+        "\1\74\2\uffff\2\74\4\uffff\4\74\1\uffff\2\74\23\uffff\2\74\3\uffff"+
+        "\3\74\2\uffff\1\74\4\uffff\1\74\11\uffff\1\74\1\uffff\1\74\2\uffff"+
+        "\2\74\5\uffff\2\74\1\uffff\1\74";
     static final String DFA1_minS =
-        "\1\100\6\4\1\24\2\uffff\6\4\2\24\20\4\1\12\1\10\2\7\2\4\2\uffff"+
-        "\1\4\1\12\5\4\1\12\1\4\3\12\4\4\1\12\4\4\1\12\1\4\2\12\2\4\1\24"+
-        "\3\4\1\12\25\4\1\12\1\4\1\12\1\4\1\12\1\4\3\12\1\10\2\7\1\4\1\12"+
-        "\1\10\2\7\3\4\2\12\7\4\1\6\2\4\4\12\2\4\2\12\1\4\3\12\6\4\2\12\1"+
-        "\4\4\12\2\4\2\12\1\4\1\12\6\4\1\12\4\4\1\6\1\7\7\4\1\12\1\4\1\12"+
-        "\3\4\3\12\1\4\2\12\1\4\2\12\1\10\2\7\4\4\1\12\1\4\1\7\5\4\1\6\1"+
-        "\4\1\12\1\4\5\12\2\4\5\12\6\4\1\6\1\7\2\4\3\12\2\4\1\7\2\4\1\12"+
+        "\1\100\6\4\1\uffff\1\24\1\uffff\15\4\1\24\4\4\1\24\27\4\1\12\1\4"+
+        "\1\10\2\7\2\4\2\uffff\1\4\1\12\7\4\1\12\1\4\3\12\5\4\1\12\3\4\1"+
+        "\12\2\4\2\12\1\24\7\4\1\12\27\4\1\12\1\4\1\12\1\4\1\12\1\4\3\12"+
+        "\1\10\2\7\2\4\1\12\1\4\1\10\2\7\1\4\1\12\2\4\1\12\7\4\1\6\1\4\2"+
+        "\12\1\4\3\12\6\4\4\12\3\4\2\12\1\4\4\12\6\4\1\12\1\4\1\12\1\4\1"+
+        "\12\1\4\1\12\4\4\1\6\1\7\2\4\1\12\2\4\1\12\7\4\3\12\5\4\2\12\1\4"+
+        "\2\12\1\10\2\7\1\12\1\4\1\7\2\4\1\12\1\4\1\12\3\4\1\6\2\4\4\12\1"+
+        "\4\1\12\3\4\4\12\2\4\1\12\1\4\1\6\1\7\3\4\2\12\1\4\1\7\2\4\1\12"+
         "\1\4";
     static final String DFA1_maxS =
-        "\1\103\2\36\2\107\2\36\1\77\2\uffff\1\36\1\107\1\36\1\121\2\107"+
-        "\2\77\1\121\1\12\1\14\1\17\2\107\2\121\1\12\1\113\1\14\2\113\1\17"+
-        "\1\12\1\113\4\12\2\36\2\uffff\1\113\1\12\1\113\1\12\1\20\2\113\1"+
-        "\12\1\113\3\12\1\36\1\121\2\113\1\12\1\20\1\12\2\113\1\12\1\113"+
-        "\2\12\1\121\1\12\1\77\1\17\1\14\1\113\1\12\3\20\1\12\1\20\4\113"+
-        "\1\11\1\12\1\113\2\121\1\17\1\12\1\14\4\113\1\12\1\20\1\12\1\20"+
-        "\1\12\1\113\6\12\1\113\5\12\1\20\1\113\2\12\4\20\3\113\2\11\1\113"+
-        "\4\12\2\113\2\12\1\113\3\12\1\20\1\12\4\113\2\12\1\20\4\12\2\113"+
-        "\2\12\1\113\1\12\3\20\1\12\1\20\1\113\1\12\3\20\1\113\2\11\6\113"+
-        "\1\11\1\12\1\20\1\12\1\20\2\113\3\12\1\113\2\12\1\113\5\12\4\20"+
-        "\1\12\1\20\1\11\5\113\2\11\1\12\1\113\5\12\1\20\1\113\5\12\1\113"+
-        "\3\20\2\113\2\11\2\113\3\12\1\113\1\20\1\11\2\113\1\12\1\113";
+        "\1\103\2\122\1\107\1\17\1\107\1\122\1\uffff\1\77\1\uffff\1\122\1"+
+        "\17\1\36\1\122\1\107\1\17\2\107\1\122\1\121\1\17\1\36\1\20\1\77"+
+        "\1\17\1\36\1\121\1\12\1\77\1\14\2\17\1\36\1\20\3\107\1\36\1\20\1"+
+        "\12\1\113\2\121\1\14\2\113\1\17\1\12\1\36\2\20\1\107\1\12\1\113"+
+        "\3\12\2\122\2\uffff\1\113\1\12\1\113\1\12\2\20\1\121\2\113\1\12"+
+        "\1\113\3\12\1\122\1\121\1\17\2\113\1\12\1\20\1\12\1\113\1\12\2\113"+
+        "\2\12\1\77\1\121\1\17\1\12\1\14\1\17\1\36\1\113\1\12\3\20\1\12\1"+
+        "\20\4\113\1\11\2\121\1\17\2\12\1\113\1\14\2\113\1\36\1\20\2\113"+
+        "\1\12\1\20\1\12\1\20\1\12\1\113\7\12\1\20\1\12\1\113\3\12\1\113"+
+        "\1\12\1\20\1\121\1\12\4\20\3\113\2\11\2\12\1\113\3\12\1\20\1\12"+
+        "\4\113\4\12\3\113\2\12\1\20\4\12\1\113\3\20\1\12\1\20\1\12\1\113"+
+        "\1\12\1\113\1\12\1\113\1\12\3\20\1\113\2\11\2\113\1\12\2\20\1\12"+
+        "\4\113\1\11\2\113\3\12\1\113\4\20\2\12\1\113\6\12\1\20\1\11\2\113"+
+        "\1\12\1\20\1\12\3\113\2\11\1\113\4\12\1\113\1\12\3\20\4\12\2\113"+
+        "\1\12\1\113\2\11\2\113\1\20\2\12\1\113\1\11\2\113\1\12\1\113";
     static final String DFA1_acceptS =
-        "\10\uffff\1\3\1\2\36\uffff\1\1\1\4\u00ca\uffff";
+        "\7\uffff\1\3\1\uffff\1\2\61\uffff\1\4\1\1\u00d3\uffff";
     static final String DFA1_specialS =
-        "\u00f4\uffff}>";
+        "\u0110\uffff}>";
     static final String[] DFA1_transitionS = {
             "\4\1",
-            "\1\2\16\uffff\14\3",
-            "\1\2\16\uffff\14\3",
-            "\1\4\1\5\1\7\12\uffff\2\6\63\uffff\2\10",
-            "\1\4\1\5\13\uffff\2\6\63\uffff\2\10",
-            "\1\12\16\uffff\14\13",
-            "\1\14\16\uffff\14\15",
-            "\2\17\11\uffff\31\17\10\16",
+            "\1\2\16\uffff\14\3\16\uffff\1\4\44\uffff\1\4",
+            "\1\2\16\uffff\14\3\16\uffff\1\4\44\uffff\1\4",
+            "\1\5\1\6\1\10\12\uffff\2\12\63\uffff\2\7",
+            "\1\13\12\uffff\1\14",
+            "\1\5\1\6\13\uffff\2\12\63\uffff\2\7",
+            "\1\15\16\uffff\14\16\16\uffff\1\17\44\uffff\1\17",
             "",
+            "\2\20\11\uffff\31\20\10\21",
             "",
-            "\1\12\16\uffff\14\13",
-            "\1\4\1\5\1\20\12\uffff\2\6\63\uffff\2\10",
-            "\1\14\16\uffff\14\15",
-            "\1\22\1\uffff\1\21\3\23\102\uffff\2\25\2\uffff\2\24",
-            "\1\4\1\5\13\uffff\2\6\63\uffff\2\10",
-            "\1\4\1\5\13\uffff\2\6\63\uffff\2\10",
-            "\2\26\11\uffff\31\26\10\27",
-            "\2\31\11\uffff\31\31\10\30",
-            "\1\22\2\uffff\3\23\102\uffff\2\25\2\uffff\2\24",
-            "\1\32\5\uffff\1\33",
-            "\1\34\5\uffff\1\35\1\uffff\1\36",
+            "\1\22\16\uffff\14\23\16\uffff\1\24\44\uffff\1\24",
+            "\1\13\12\uffff\1\14",
+            "\1\25\16\uffff\14\26",
+            "\1\15\16\uffff\14\16\16\uffff\1\17\44\uffff\1\17",
+            "\1\5\1\6\1\27\12\uffff\2\12\63\uffff\2\7",
+            "\1\30\12\uffff\1\31",
+            "\1\5\1\6\13\uffff\2\12\63\uffff\2\7",
+            "\1\5\1\6\13\uffff\2\12\63\uffff\2\7",
+            "\1\22\16\uffff\14\23\16\uffff\1\24\44\uffff\1\24",
+            "\1\32\1\uffff\1\34\3\33\102\uffff\2\36\2\uffff\2\35",
             "\1\37\12\uffff\1\40",
-            "\1\4\1\5\13\uffff\2\6\63\uffff\2\10",
-            "\1\4\1\5\13\uffff\2\6\63\uffff\2\10",
-            "\1\22\2\uffff\3\23\102\uffff\2\25\2\uffff\2\24",
-            "\1\22\2\uffff\3\23\102\uffff\2\25\2\uffff\2\24",
-            "\1\32\5\uffff\1\33",
-            "\1\41\1\uffff\1\42\1\43\1\44\1\45\72\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\34\5\uffff\1\35\1\uffff\1\36",
-            "\1\52\1\uffff\1\53\3\uffff\1\35\1\uffff\1\36\67\uffff\2\46\2"+
-            "\51\2\uffff\2\47",
-            "\1\54\5\uffff\1\35\1\uffff\1\36\67\uffff\2\46\2\51\2\uffff\2"+
-            "\47",
+            "\1\25\16\uffff\14\26",
+            "\1\41\13\uffff\1\42",
+            "\2\44\11\uffff\31\44\10\43",
+            "\1\30\12\uffff\1\31",
+            "\1\45\16\uffff\14\46",
+            "\1\32\2\uffff\3\33\102\uffff\2\36\2\uffff\2\35",
+            "\1\47\5\uffff\1\50",
+            "\2\51\11\uffff\31\51\10\52",
+            "\1\53\5\uffff\1\54\1\uffff\1\55",
+            "\1\56\12\uffff\1\57",
             "\1\37\12\uffff\1\40",
-            "\1\55\5\uffff\1\56",
-            "\1\54\5\uffff\1\57\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\60",
-            "\1\63\1\61\1\62",
-            "\1\64\2\uffff\1\62",
-            "\1\65\2\uffff\1\62",
-            "\1\66\16\uffff\14\67",
-            "\1\66\16\uffff\14\67",
+            "\1\60\16\uffff\14\61",
+            "\1\41\13\uffff\1\42",
+            "\1\5\1\6\13\uffff\2\12\63\uffff\2\7",
+            "\1\5\1\6\13\uffff\2\12\63\uffff\2\7",
+            "\1\5\1\6\13\uffff\2\12\63\uffff\2\7",
+            "\1\45\16\uffff\14\46",
+            "\1\62\13\uffff\1\63",
+            "\1\47\5\uffff\1\50",
+            "\1\65\1\uffff\1\64\1\66\1\67\1\70\72\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\32\2\uffff\3\33\102\uffff\2\36\2\uffff\2\35",
+            "\1\32\2\uffff\3\33\102\uffff\2\36\2\uffff\2\35",
+            "\1\53\5\uffff\1\54\1\uffff\1\55",
+            "\1\75\1\uffff\1\76\3\uffff\1\54\1\uffff\1\55\67\uffff\2\71\2"+
+            "\73\2\uffff\2\72",
+            "\1\77\5\uffff\1\54\1\uffff\1\55\67\uffff\2\71\2\73\2\uffff\2"+
+            "\72",
+            "\1\56\12\uffff\1\57",
+            "\1\100\5\uffff\1\101",
+            "\1\60\16\uffff\14\61",
+            "\1\102\13\uffff\1\103",
+            "\1\62\13\uffff\1\63",
+            "\1\5\1\6\13\uffff\2\12\63\uffff\2\7",
+            "\1\104",
+            "\1\77\5\uffff\1\105\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\110\1\106\1\107",
+            "\1\111\2\uffff\1\107",
+            "\1\112\2\uffff\1\107",
+            "\1\113\16\uffff\14\114\16\uffff\1\115\44\uffff\1\115",
+            "\1\113\16\uffff\14\114\16\uffff\1\115\44\uffff\1\115",
             "",
             "",
-            "\1\54\5\uffff\1\70\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\71",
-            "\1\54\77\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\55\5\uffff\1\56",
-            "\1\73\1\74\1\72\11\uffff\1\75",
-            "\1\76\2\uffff\1\43\1\44\1\45\72\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\1\uffff\1\77\1\43\1\44\1\45\72\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\62",
-            "\1\100\1\uffff\1\101\4\uffff\1\102\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\62",
-            "\1\62",
-            "\1\62",
-            "\1\66\16\uffff\14\67",
-            "\1\103\1\uffff\1\105\3\104\102\uffff\2\106\2\uffff\2\107",
-            "\1\110\5\uffff\1\35\1\uffff\1\36\67\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\1\uffff\1\111\3\uffff\1\35\1\uffff\1\36\67\uffff\2\46"+
-            "\2\51\2\uffff\2\47",
-            "\1\112",
-            "\1\114\1\74\4\uffff\1\113\5\uffff\1\75",
-            "\1\115\5\uffff\1\116",
-            "\1\54\77\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\5\uffff\1\117\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\120",
-            "\1\54\5\uffff\1\121\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\122",
-            "\1\123",
-            "\1\103\2\uffff\3\104\102\uffff\2\106\2\uffff\2\107",
-            "\1\124\5\uffff\1\125",
-            "\2\126\11\uffff\31\126\10\127",
-            "\1\130\12\uffff\1\131",
-            "\1\132\5\uffff\1\133\1\uffff\1\134",
-            "\1\54\5\uffff\1\135\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\136",
-            "\1\114\1\74\1\137\11\uffff\1\75",
-            "\1\140\1\74\12\uffff\1\75",
-            "\1\114\1\74\12\uffff\1\75",
-            "\1\115\5\uffff\1\116",
-            "\1\142\1\74\1\141\11\uffff\1\75",
-            "\1\54\2\uffff\1\43\1\44\1\45\72\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\1\uffff\1\143\1\43\1\44\1\45\72\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\144\6\uffff\1\102\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\1\uffff\1\145\4\uffff\1\102\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\147\1\uffff\1\146\1\150\1\151\1\152",
-            "\1\124\5\uffff\1\125",
-            "\1\153\1\uffff\1\154\1\155\1\156\1\157\72\uffff\2\46\2\51\2"+
-            "\uffff\2\47",
-            "\1\103\2\uffff\3\104\102\uffff\2\106\2\uffff\2\107",
-            "\1\103\2\uffff\3\104\102\uffff\2\106\2\uffff\2\107",
-            "\1\130\12\uffff\1\131",
+            "\1\77\5\uffff\1\116\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\117",
+            "\1\77\77\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\100\5\uffff\1\101",
+            "\1\121\1\122\1\120\11\uffff\1\123",
+            "\1\102\13\uffff\1\103",
+            "\1\32\2\uffff\3\33\102\uffff\2\36\2\uffff\2\35",
+            "\1\77\1\uffff\1\124\1\66\1\67\1\70\72\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\125\2\uffff\1\66\1\67\1\70\72\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\107",
+            "\1\126\1\uffff\1\127\4\uffff\1\130\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\107",
+            "\1\107",
+            "\1\107",
+            "\1\113\16\uffff\14\114\16\uffff\1\115\44\uffff\1\115",
+            "\1\132\1\uffff\1\131\3\134\102\uffff\2\133\2\uffff\2\135",
+            "\1\136\12\uffff\1\137",
+            "\1\140\5\uffff\1\54\1\uffff\1\55\67\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\1\uffff\1\141\3\uffff\1\54\1\uffff\1\55\67\uffff\2\71"+
+            "\2\73\2\uffff\2\72",
+            "\1\142",
+            "\1\144\1\122\4\uffff\1\143\5\uffff\1\123",
+            "\1\145\5\uffff\1\146",
+            "\1\77\77\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\147",
+            "\1\77\5\uffff\1\150\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\77\5\uffff\1\151\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\152",
+            "\1\153",
+            "\2\155\11\uffff\31\155\10\154",
+            "\1\132\2\uffff\3\134\102\uffff\2\133\2\uffff\2\135",
+            "\1\156\12\uffff\1\157",
             "\1\160\5\uffff\1\161",
-            "\1\132\5\uffff\1\133\1\uffff\1\134",
-            "\1\162\1\uffff\1\163\3\uffff\1\133\1\uffff\1\134\67\uffff\2"+
-            "\46\2\51\2\uffff\2\47",
-            "\1\54\5\uffff\1\133\1\uffff\1\134\67\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\5\uffff\1\35\1\uffff\1\36\67\uffff\2\46\2\51\2\uffff\2"+
-            "\47",
-            "\1\54\1\uffff\1\164\3\uffff\1\35\1\uffff\1\36\67\uffff\2\46"+
-            "\2\51\2\uffff\2\47",
-            "\1\165",
-            "\1\114\1\74\4\uffff\1\166\5\uffff\1\75",
-            "\1\167",
-            "\1\114\1\74\4\uffff\1\170\5\uffff\1\75",
-            "\1\171",
-            "\1\54\5\uffff\1\172\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\173",
-            "\1\174",
-            "\1\175",
-            "\1\u0080\1\177\1\176",
-            "\1\u0081\2\uffff\1\176",
-            "\1\u0082\2\uffff\1\176",
-            "\1\54\5\uffff\1\u0083\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u0084",
-            "\1\u0085\1\u0086\1\u0087",
-            "\1\u0088\2\uffff\1\u0087",
-            "\1\u0089\2\uffff\1\u0087",
+            "\1\162\5\uffff\1\163\1\uffff\1\164",
+            "\1\136\12\uffff\1\137",
+            "\1\165\16\uffff\14\166",
+            "\1\77\5\uffff\1\167\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\170",
+            "\1\144\1\122\1\171\11\uffff\1\123",
+            "\1\172\1\122\12\uffff\1\123",
+            "\1\144\1\122\12\uffff\1\123",
+            "\1\145\5\uffff\1\146",
+            "\1\174\1\122\1\173\11\uffff\1\123",
+            "\1\77\1\uffff\1\175\1\66\1\67\1\70\72\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\2\uffff\1\66\1\67\1\70\72\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\176\6\uffff\1\130\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\77\1\uffff\1\177\4\uffff\1\130\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\u0081\1\uffff\1\u0080\1\u0082\1\u0083\1\u0084",
+            "\1\132\2\uffff\3\134\102\uffff\2\133\2\uffff\2\135",
+            "\1\132\2\uffff\3\134\102\uffff\2\133\2\uffff\2\135",
+            "\1\156\12\uffff\1\157",
+            "\1\u0085\5\uffff\1\u0086",
             "\1\160\5\uffff\1\161",
-            "\1\u008b\1\u008c\1\u008a\11\uffff\1\u008d",
-            "\1\54\5\uffff\1\u008e\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u008f",
-            "\1\u0090",
-            "\1\114\1\74\1\u0091\11\uffff\1\75",
-            "\1\114\1\74\12\uffff\1\75",
-            "\1\114\1\74\1\u0092\11\uffff\1\75",
-            "\1\u0093\1\74\12\uffff\1\75",
-            "\1\54\2\uffff\1\43\1\44\1\45\72\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\6\uffff\1\102\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\1\uffff\1\u0094\4\uffff\1\102\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\u0095\1\150\1\151\1\152",
-            "\1\u0096\2\uffff\1\150\1\151\1\152",
-            "\1\u0098\1\uffff\1\u0097\4\uffff\1\102\70\uffff\2\46\2\51\2"+
-            "\uffff\2\47",
-            "\1\176",
-            "\1\176",
-            "\1\176",
-            "\1\176",
-            "\1\u0099\2\uffff\1\155\1\156\1\157\72\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\1\uffff\1\u009a\1\155\1\156\1\157\72\uffff\2\46\2\51\2"+
-            "\uffff\2\47",
-            "\1\u0087",
-            "\1\u0087",
-            "\1\u009c\1\uffff\1\u009b\4\uffff\1\u009d\70\uffff\2\46\2\51"+
-            "\2\uffff\2\47",
-            "\1\u0087",
-            "\1\u0087",
-            "\1\u009e",
-            "\1\u00a0\1\u008c\4\uffff\1\u009f\5\uffff\1\u008d",
-            "\1\u00a1\5\uffff\1\u00a2",
-            "\1\54\77\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00a3\5\uffff\1\133\1\uffff\1\134\67\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\1\uffff\1\u00a4\3\uffff\1\133\1\uffff\1\134\67\uffff\2"+
-            "\46\2\51\2\uffff\2\47",
-            "\1\54\5\uffff\1\35\1\uffff\1\36\67\uffff\2\46\2\51\2\uffff\2"+
-            "\47",
-            "\1\u00a5",
-            "\1\u00a6",
-            "\1\114\1\74\4\uffff\1\u00a7\5\uffff\1\75",
-            "\1\u00a8",
-            "\1\u00a9",
-            "\1\u00aa",
+            "\1\u0088\1\uffff\1\u0087\1\u0089\1\u008a\1\u008b\72\uffff\2"+
+            "\71\2\73\2\uffff\2\72",
+            "\1\162\5\uffff\1\163\1\uffff\1\164",
+            "\1\u008c\1\uffff\1\u008d\3\uffff\1\163\1\uffff\1\164\67\uffff"+
+            "\2\71\2\73\2\uffff\2\72",
+            "\1\77\5\uffff\1\163\1\uffff\1\164\67\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\165\16\uffff\14\166",
+            "\1\u008e\13\uffff\1\u008f",
+            "\1\77\5\uffff\1\54\1\uffff\1\55\67\uffff\2\71\2\73\2\uffff\2"+
+            "\72",
+            "\1\77\1\uffff\1\u0090\3\uffff\1\54\1\uffff\1\55\67\uffff\2\71"+
+            "\2\73\2\uffff\2\72",
+            "\1\u0091",
+            "\1\144\1\122\4\uffff\1\u0092\5\uffff\1\123",
+            "\1\u0093",
+            "\1\144\1\122\4\uffff\1\u0094\5\uffff\1\123",
+            "\1\u0095",
+            "\1\77\5\uffff\1\u0096\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u0097",
+            "\1\u0098",
+            "\1\u0099",
+            "\1\u009b\1\u009a\1\u009c",
+            "\1\u009d\2\uffff\1\u009c",
+            "\1\u009e\2\uffff\1\u009c",
+            "\1\u0085\5\uffff\1\u0086",
+            "\1\u00a0\1\u00a1\1\u009f\11\uffff\1\u00a2",
+            "\1\u00a3",
+            "\1\77\5\uffff\1\u00a4\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00a6\1\u00a7\1\u00a5",
+            "\1\u00a8\2\uffff\1\u00a5",
+            "\1\u00a9\2\uffff\1\u00a5",
+            "\1\77\5\uffff\1\u00aa\71\uffff\2\71\2\73\2\uffff\2\72",
             "\1\u00ab",
-            "\1\54\5\uffff\1\u00ac\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\5\uffff\1\u00ad\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00ae",
-            "\1\u00af",
-            "\1\54\5\uffff\1\u00b0\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00b1",
-            "\1\u00a0\1\u008c\1\u00b2\11\uffff\1\u008d",
-            "\1\u00b3\1\u008c\12\uffff\1\u008d",
-            "\1\u00a0\1\u008c\12\uffff\1\u008d",
-            "\1\u00a1\5\uffff\1\u00a2",
-            "\1\u00b5\1\u008c\1\u00b4\11\uffff\1\u008d",
-            "\1\54\5\uffff\1\u00b6\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00b7",
-            "\1\114\1\74\12\uffff\1\75",
-            "\1\114\1\74\1\u00b8\11\uffff\1\75",
-            "\1\114\1\74\12\uffff\1\75",
-            "\1\54\6\uffff\1\102\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00b9\1\150\1\151\1\152",
-            "\1\150\1\151\1\152",
-            "\1\54\1\uffff\1\u00ba\4\uffff\1\102\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\u00bb\6\uffff\1\102\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\2\uffff\1\155\1\156\1\157\72\uffff\2\46\2\51\2\uffff\2"+
-            "\47",
-            "\1\54\1\uffff\1\u00bc\1\155\1\156\1\157\72\uffff\2\46\2\51\2"+
-            "\uffff\2\47",
-            "\1\54\1\uffff\1\u00bd\4\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\u00be\6\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00c0\1\uffff\1\u00bf\1\u00c1\1\u00c2\1\u00c3",
+            "\1\u008e\13\uffff\1\u008f",
+            "\1\132\2\uffff\3\134\102\uffff\2\133\2\uffff\2\135",
+            "\1\u00ac",
+            "\1\144\1\122\1\u00ad\11\uffff\1\123",
+            "\1\144\1\122\12\uffff\1\123",
+            "\1\144\1\122\1\u00ae\11\uffff\1\123",
+            "\1\u00af\1\122\12\uffff\1\123",
+            "\1\77\2\uffff\1\66\1\67\1\70\72\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\77\6\uffff\1\130\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\77\1\uffff\1\u00b0\4\uffff\1\130\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\u00b1\1\u0082\1\u0083\1\u0084",
+            "\1\u00b2\2\uffff\1\u0082\1\u0083\1\u0084",
+            "\1\u009c",
+            "\1\u009c",
+            "\1\u00b4\1\uffff\1\u00b3\4\uffff\1\130\70\uffff\2\71\2\73\2"+
+            "\uffff\2\72",
+            "\1\u009c",
+            "\1\u009c",
+            "\1\u00b5",
+            "\1\u00b7\1\u00a1\4\uffff\1\u00b6\5\uffff\1\u00a2",
+            "\1\u00b8\5\uffff\1\u00b9",
+            "\1\77\77\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\77\1\uffff\1\u00ba\1\u0089\1\u008a\1\u008b\72\uffff\2\71"+
+            "\2\73\2\uffff\2\72",
+            "\1\u00bb\2\uffff\1\u0089\1\u008a\1\u008b\72\uffff\2\71\2\73"+
+            "\2\uffff\2\72",
+            "\1\u00bd\1\uffff\1\u00bc\4\uffff\1\u00be\70\uffff\2\71\2\73"+
+            "\2\uffff\2\72",
+            "\1\u00a5",
+            "\1\u00a5",
+            "\1\u00a5",
+            "\1\u00a5",
+            "\1\u00bf\5\uffff\1\163\1\uffff\1\164\67\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\1\uffff\1\u00c0\3\uffff\1\163\1\uffff\1\164\67\uffff\2"+
+            "\71\2\73\2\uffff\2\72",
+            "\1\77\5\uffff\1\54\1\uffff\1\55\67\uffff\2\71\2\73\2\uffff\2"+
+            "\72",
+            "\1\u00c1",
+            "\1\u00c2",
+            "\1\144\1\122\4\uffff\1\u00c3\5\uffff\1\123",
             "\1\u00c4",
-            "\1\u00a0\1\u008c\4\uffff\1\u00c5\5\uffff\1\u008d",
+            "\1\u00c5",
             "\1\u00c6",
-            "\1\u00a0\1\u008c\4\uffff\1\u00c7\5\uffff\1\u008d",
-            "\1\54\5\uffff\1\133\1\uffff\1\134\67\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\1\uffff\1\u00c8\3\uffff\1\133\1\uffff\1\134\67\uffff\2"+
-            "\46\2\51\2\uffff\2\47",
-            "\1\u00c9",
-            "\1\u00ca",
-            "\1\u00cb",
-            "\1\54\5\uffff\1\u00cc\71\uffff\2\46\2\51\2\uffff\2\47",
+            "\1\u00c7",
+            "\1\77\5\uffff\1\u00c8\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00b7\1\u00a1\1\u00c9\11\uffff\1\u00a2",
+            "\1\u00ca\1\u00a1\12\uffff\1\u00a2",
+            "\1\u00b7\1\u00a1\12\uffff\1\u00a2",
+            "\1\u00b8\5\uffff\1\u00b9",
+            "\1\u00cb\1\u00a1\1\u00cc\11\uffff\1\u00a2",
             "\1\u00cd",
-            "\1\u00ce",
-            "\1\54\5\uffff\1\u00cf\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00d0",
+            "\1\77\5\uffff\1\u00ce\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00cf",
+            "\1\77\5\uffff\1\u00d0\71\uffff\2\71\2\73\2\uffff\2\72",
             "\1\u00d1",
-            "\1\u00d2\1\u00d4\1\u00d3",
-            "\1\u00d5\2\uffff\1\u00d3",
-            "\1\u00d6\2\uffff\1\u00d3",
-            "\1\u00a0\1\u008c\1\u00d7\11\uffff\1\u008d",
-            "\1\u00a0\1\u008c\12\uffff\1\u008d",
-            "\1\u00a0\1\u008c\1\u00d8\11\uffff\1\u008d",
-            "\1\u00d9\1\u008c\12\uffff\1\u008d",
-            "\1\u00da",
-            "\1\114\1\74\12\uffff\1\75",
-            "\1\150\1\151\1\152",
-            "\1\54\1\uffff\1\u00db\4\uffff\1\102\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\6\uffff\1\102\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\2\uffff\1\155\1\156\1\157\72\uffff\2\46\2\51\2\uffff\2"+
-            "\47",
-            "\1\54\1\uffff\1\u00dc\4\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\6\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00dd\1\u00c1\1\u00c2\1\u00c3",
-            "\1\u00de\2\uffff\1\u00c1\1\u00c2\1\u00c3",
+            "\1\77\5\uffff\1\u00d2\71\uffff\2\71\2\73\2\uffff\2\72",
             "\1\u00d3",
-            "\1\u00e0\1\uffff\1\u00df\4\uffff\1\u009d\70\uffff\2\46\2\51"+
-            "\2\uffff\2\47",
-            "\1\u00d3",
-            "\1\u00d3",
-            "\1\u00d3",
-            "\1\u00e1",
-            "\1\u00e2",
-            "\1\u00a0\1\u008c\4\uffff\1\u00e3\5\uffff\1\u008d",
-            "\1\54\5\uffff\1\133\1\uffff\1\134\67\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\u00e4",
+            "\1\144\1\122\12\uffff\1\123",
+            "\1\144\1\122\1\u00d4\11\uffff\1\123",
+            "\1\144\1\122\12\uffff\1\123",
+            "\1\77\6\uffff\1\130\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00d5\1\u0082\1\u0083\1\u0084",
+            "\1\u0082\1\u0083\1\u0084",
+            "\1\77\1\uffff\1\u00d6\4\uffff\1\130\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\u00d7\6\uffff\1\130\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00d8",
+            "\1\u00b7\1\u00a1\4\uffff\1\u00d9\5\uffff\1\u00a2",
+            "\1\u00b7\1\u00a1\4\uffff\1\u00da\5\uffff\1\u00a2",
+            "\1\u00db",
+            "\1\77\1\uffff\1\u00dc\1\u0089\1\u008a\1\u008b\72\uffff\2\71"+
+            "\2\73\2\uffff\2\72",
+            "\1\77\2\uffff\1\u0089\1\u008a\1\u008b\72\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\1\uffff\1\u00dd\4\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\u00de\6\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00e0\1\uffff\1\u00df\1\u00e1\1\u00e2\1\u00e3",
+            "\1\77\5\uffff\1\163\1\uffff\1\164\67\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\1\uffff\1\u00e4\3\uffff\1\163\1\uffff\1\164\67\uffff\2"+
+            "\71\2\73\2\uffff\2\72",
             "\1\u00e5",
             "\1\u00e6",
             "\1\u00e7",
-            "\1\u00e8",
-            "\1\54\5\uffff\1\u00e9\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00a0\1\u008c\12\uffff\1\u008d",
-            "\1\u00a0\1\u008c\1\u00ea\11\uffff\1\u008d",
-            "\1\u00a0\1\u008c\12\uffff\1\u008d",
-            "\1\54\6\uffff\1\102\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\54\6\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00eb\1\u00c1\1\u00c2\1\u00c3",
-            "\1\u00c1\1\u00c2\1\u00c3",
-            "\1\54\1\uffff\1\u00ec\4\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\u00ed\6\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00ee",
+            "\1\77\5\uffff\1\u00e8\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00b7\1\u00a1\1\u00e9\11\uffff\1\u00a2",
+            "\1\u00b7\1\u00a1\12\uffff\1\u00a2",
+            "\1\u00ea\1\u00a1\12\uffff\1\u00a2",
+            "\1\u00b7\1\u00a1\1\u00eb\11\uffff\1\u00a2",
+            "\1\u00ec",
+            "\1\u00ed",
+            "\1\77\5\uffff\1\u00ee\71\uffff\2\71\2\73\2\uffff\2\72",
             "\1\u00ef",
             "\1\u00f0",
-            "\1\54\5\uffff\1\u00f1\71\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00a0\1\u008c\12\uffff\1\u008d",
-            "\1\u00c1\1\u00c2\1\u00c3",
-            "\1\54\1\uffff\1\u00f2\4\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff"+
-            "\2\47",
-            "\1\54\6\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff\2\47",
-            "\1\u00f3",
-            "\1\54\6\uffff\1\u009d\70\uffff\2\46\2\51\2\uffff\2\47"
+            "\1\u00f3\1\u00f2\1\u00f1",
+            "\1\u00f4\2\uffff\1\u00f1",
+            "\1\u00f5\2\uffff\1\u00f1",
+            "\1\u00f6",
+            "\1\144\1\122\12\uffff\1\123",
+            "\1\u0082\1\u0083\1\u0084",
+            "\1\77\1\uffff\1\u00f7\4\uffff\1\130\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\6\uffff\1\130\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00f8",
+            "\1\u00b7\1\u00a1\4\uffff\1\u00f9\5\uffff\1\u00a2",
+            "\1\u00fa",
+            "\1\77\2\uffff\1\u0089\1\u008a\1\u008b\72\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\1\uffff\1\u00fb\4\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\6\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00fc\1\u00e1\1\u00e2\1\u00e3",
+            "\1\u00fd\2\uffff\1\u00e1\1\u00e2\1\u00e3",
+            "\1\u00ff\1\uffff\1\u00fe\4\uffff\1\u00be\70\uffff\2\71\2\73"+
+            "\2\uffff\2\72",
+            "\1\u00f1",
+            "\1\u00f1",
+            "\1\u00f1",
+            "\1\u00f1",
+            "\1\77\5\uffff\1\163\1\uffff\1\164\67\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\u0100",
+            "\1\u00b7\1\u00a1\12\uffff\1\u00a2",
+            "\1\u00b7\1\u00a1\12\uffff\1\u00a2",
+            "\1\u00b7\1\u00a1\1\u0101\11\uffff\1\u00a2",
+            "\1\u0102",
+            "\1\u0103",
+            "\1\u0104",
+            "\1\u0105",
+            "\1\77\5\uffff\1\u0106\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\77\6\uffff\1\130\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u0107",
+            "\1\77\6\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u0108\1\u00e1\1\u00e2\1\u00e3",
+            "\1\u00e1\1\u00e2\1\u00e3",
+            "\1\77\1\uffff\1\u0109\4\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\u010a\6\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00b7\1\u00a1\12\uffff\1\u00a2",
+            "\1\u010b",
+            "\1\u010c",
+            "\1\77\5\uffff\1\u010d\71\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u00e1\1\u00e2\1\u00e3",
+            "\1\77\1\uffff\1\u010e\4\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff"+
+            "\2\72",
+            "\1\77\6\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff\2\72",
+            "\1\u010f",
+            "\1\77\6\uffff\1\u00be\70\uffff\2\71\2\73\2\uffff\2\72"
     };
 
     static final short[] DFA1_eot = DFA.unpackEncodedString(DFA1_eotS);
@@ -2444,31 +2540,39 @@ public class SqlParser extends Parser {
             this.transition = DFA5_transition;
         }
         public String getDescription() {
-            return "()* loopback of 44:29: ( spaces rel= logicalOp spaces constraint )*";
+            return "()* loopback of 45:29: ( spaces rel= logicalOp spaces constraint )*";
         }
     }
     static final String DFA6_eotS =
-        "\11\uffff";
+        "\20\uffff";
     static final String DFA6_eofS =
-        "\11\uffff";
+        "\20\uffff";
     static final String DFA6_minS =
-        "\1\23\1\4\1\24\1\4\3\uffff\2\4";
+        "\1\23\2\4\1\24\1\4\3\uffff\10\4";
     static final String DFA6_maxS =
-        "\1\36\1\121\1\77\1\121\3\uffff\2\121";
+        "\1\122\1\121\1\17\1\77\1\121\3\uffff\1\17\1\36\2\121\1\36\2\20\1"+
+        "\121";
     static final String DFA6_acceptS =
-        "\4\uffff\1\3\1\2\1\1\2\uffff";
+        "\5\uffff\1\1\1\2\1\3\10\uffff";
     static final String DFA6_specialS =
-        "\11\uffff}>";
+        "\20\uffff}>";
     static final String[] DFA6_transitionS = {
-            "\14\1",
-            "\1\3\1\uffff\1\2\3\6\102\uffff\2\5\2\uffff\2\4",
-            "\2\7\11\uffff\31\7\10\10",
-            "\1\3\2\uffff\3\6\102\uffff\2\5\2\uffff\2\4",
+            "\14\1\16\uffff\1\2\44\uffff\1\2",
+            "\1\4\1\uffff\1\3\3\5\102\uffff\2\6\2\uffff\2\7",
+            "\1\10\12\uffff\1\11",
+            "\2\12\11\uffff\31\12\10\13",
+            "\1\4\2\uffff\3\5\102\uffff\2\6\2\uffff\2\7",
             "",
             "",
             "",
-            "\1\3\2\uffff\3\6\102\uffff\2\5\2\uffff\2\4",
-            "\1\3\2\uffff\3\6\102\uffff\2\5\2\uffff\2\4"
+            "\1\10\12\uffff\1\11",
+            "\1\14\16\uffff\14\15",
+            "\1\4\2\uffff\3\5\102\uffff\2\6\2\uffff\2\7",
+            "\1\4\2\uffff\3\5\102\uffff\2\6\2\uffff\2\7",
+            "\1\14\16\uffff\14\15",
+            "\1\16\13\uffff\1\17",
+            "\1\16\13\uffff\1\17",
+            "\1\4\2\uffff\3\5\102\uffff\2\6\2\uffff\2\7"
     };
 
     static final short[] DFA6_eot = DFA.unpackEncodedString(DFA6_eotS);
@@ -2501,7 +2605,7 @@ public class SqlParser extends Parser {
             this.transition = DFA6_transition;
         }
         public String getDescription() {
-            return "48:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );";
+            return "49:1: constraint : (kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue | kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')' | kw= keyword spaces op2= like spaces val2= likeValue );";
         }
     }
     static final String DFA8_eotS =
@@ -2553,50 +2657,50 @@ public class SqlParser extends Parser {
             this.transition = DFA8_transition;
         }
         public String getDescription() {
-            return "()* loopback of 78:21: ( spaces COMMA spaces dotValue )*";
+            return "()* loopback of 79:21: ( spaces COMMA spaces dotValue )*";
         }
     }
  
 
-    public static final BitSet FOLLOW_select_in_stmt27 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt29 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_select_in_stmt27 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt29 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_selectList_in_stmt31 = new BitSet(new long[]{0x0000000000060010L});
     public static final BitSet FOLLOW_spaces_in_stmt33 = new BitSet(new long[]{0x0000000000060000L});
-    public static final BitSet FOLLOW_where_in_stmt35 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt37 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_where_in_stmt35 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt37 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_constraintList_in_stmt39 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt46 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt48 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_select_in_stmt46 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt48 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_selectList_in_stmt50 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt55 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt57 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_select_in_stmt55 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt57 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_selectList_in_stmt59 = new BitSet(new long[]{0x0000000000000010L,0x00000000000000C0L});
     public static final BitSet FOLLOW_spaces_in_stmt61 = new BitSet(new long[]{0x0000000000000000L,0x00000000000000C0L});
     public static final BitSet FOLLOW_order_in_stmt63 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000300L});
     public static final BitSet FOLLOW_spaces_in_stmt65 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000300L});
-    public static final BitSet FOLLOW_by_in_stmt67 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt69 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_by_in_stmt67 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt69 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_keyword_in_stmt74 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_spaces_in_stmt80 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt85 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt87 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_select_in_stmt85 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt87 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_selectList_in_stmt89 = new BitSet(new long[]{0x0000000000060010L});
     public static final BitSet FOLLOW_spaces_in_stmt91 = new BitSet(new long[]{0x0000000000060000L});
-    public static final BitSet FOLLOW_where_in_stmt93 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt95 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_where_in_stmt93 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt95 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_constraintList_in_stmt97 = new BitSet(new long[]{0x0000000000000010L,0x00000000000000C0L});
     public static final BitSet FOLLOW_spaces_in_stmt99 = new BitSet(new long[]{0x0000000000000000L,0x00000000000000C0L});
     public static final BitSet FOLLOW_order_in_stmt101 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000300L});
     public static final BitSet FOLLOW_spaces_in_stmt103 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000300L});
-    public static final BitSet FOLLOW_by_in_stmt105 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_stmt107 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_by_in_stmt105 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_stmt107 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_keyword_in_stmt112 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_spaces_in_stmt118 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SPACE_in_spaces128 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_keyword_in_selectList143 = new BitSet(new long[]{0x0000000000000032L});
     public static final BitSet FOLLOW_spaces_in_selectList156 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COMMA_in_selectList160 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_selectList164 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_COMMA_in_selectList160 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_selectList164 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
     public static final BitSet FOLLOW_keyword_in_selectList171 = new BitSet(new long[]{0x0000000000000032L});
     public static final BitSet FOLLOW_entity_in_keyword196 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_entity_in_keyword202 = new BitSet(new long[]{0x0000000000000040L});
@@ -2605,93 +2709,101 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_entity_in_keyword211 = new BitSet(new long[]{0x0000000000000040L});
     public static final BitSet FOLLOW_DOT_in_keyword213 = new BitSet(new long[]{0xFF00000000000000L});
     public static final BitSet FOLLOW_funct_in_keyword215 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_constraint_in_constraintList224 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
-    public static final BitSet FOLLOW_spaces_in_constraintList228 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000C30L});
-    public static final BitSet FOLLOW_logicalOp_in_constraintList235 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_constraintList243 = new BitSet(new long[]{0x000000007FF80000L});
-    public static final BitSet FOLLOW_constraint_in_constraintList245 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
-    public static final BitSet FOLLOW_keyword_in_constraint258 = new BitSet(new long[]{0x0000000000000390L});
-    public static final BitSet FOLLOW_spaces_in_constraint267 = new BitSet(new long[]{0x0000000000000380L});
-    public static final BitSet FOLLOW_set_in_constraint274 = new BitSet(new long[]{0x0000000000000410L});
-    public static final BitSet FOLLOW_spaces_in_constraint294 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_genValue_in_constraint301 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keyword_in_constraint330 = new BitSet(new long[]{0x0000000000000010L,0x0000000000003000L});
-    public static final BitSet FOLLOW_spaces_in_constraint339 = new BitSet(new long[]{0x0000000000000000L,0x0000000000003000L});
-    public static final BitSet FOLLOW_in_in_constraint346 = new BitSet(new long[]{0x0000000000008010L});
-    public static final BitSet FOLLOW_spaces_in_constraint357 = new BitSet(new long[]{0x0000000000008000L});
-    public static final BitSet FOLLOW_15_in_constraint359 = new BitSet(new long[]{0x0000000000000410L});
-    public static final BitSet FOLLOW_spaces_in_constraint363 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_valueList_in_constraint369 = new BitSet(new long[]{0x0000000000010010L});
-    public static final BitSet FOLLOW_spaces_in_constraint377 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_constraint381 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keyword_in_constraint407 = new BitSet(new long[]{0x0000000000000010L,0x0000000000030000L});
-    public static final BitSet FOLLOW_spaces_in_constraint416 = new BitSet(new long[]{0x0000000000000000L,0x0000000000030000L});
-    public static final BitSet FOLLOW_like_in_constraint423 = new BitSet(new long[]{0x0000000000001410L});
-    public static final BitSet FOLLOW_spaces_in_constraint432 = new BitSet(new long[]{0x0000000000001400L});
-    public static final BitSet FOLLOW_likeValue_in_constraint439 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_where468 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue488 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue495 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue497 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue499 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue505 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue507 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue509 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue511 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue513 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue519 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue521 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue523 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue525 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue527 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue529 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue531 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue537 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_SPACE_in_dotValue539 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue541 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue547 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_SPACE_in_dotValue549 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue551 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_SPACE_in_dotValue553 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue555 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dotValue_in_valueList563 = new BitSet(new long[]{0x0000000000000032L});
-    public static final BitSet FOLLOW_spaces_in_valueList567 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COMMA_in_valueList569 = new BitSet(new long[]{0x0000000000000410L});
-    public static final BitSet FOLLOW_spaces_in_valueList571 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_valueList573 = new BitSet(new long[]{0x0000000000000032L});
-    public static final BitSet FOLLOW_EQ_in_compOpt584 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LT_in_compOpt591 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GT_in_compOpt598 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EQ_in_compOpt605 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_GT_in_compOpt608 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EQ_in_compOpt615 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_LT_in_compOpt618 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LT_in_compOpt625 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_EQ_in_compOpt628 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GT_in_compOpt635 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_EQ_in_compOpt638 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dotValue_in_genValue645 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dotValue_in_genValue650 = new BitSet(new long[]{0x0000000000000380L});
-    public static final BitSet FOLLOW_compOpt_in_genValue652 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_genValue654 = new BitSet(new long[]{0x0000000000000802L});
-    public static final BitSet FOLLOW_AMP_in_genValue657 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_genValue659 = new BitSet(new long[]{0x0000000000000380L});
-    public static final BitSet FOLLOW_compOpt_in_genValue661 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_genValue663 = new BitSet(new long[]{0x0000000000000802L});
-    public static final BitSet FOLLOW_dotValue_in_likeValue673 = new BitSet(new long[]{0x0000000000001402L});
-    public static final BitSet FOLLOW_STAR_in_likeValue676 = new BitSet(new long[]{0x0000000000001402L});
-    public static final BitSet FOLLOW_and_in_logicalOp685 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_or_in_logicalOp687 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_entity696 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_attr749 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_funct863 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_select901 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_and922 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_order935 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_by948 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_or961 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_in974 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_not987 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_like1000 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_count_in_keyword220 = new BitSet(new long[]{0x0000000000008010L});
+    public static final BitSet FOLLOW_spaces_in_keyword222 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_keyword224 = new BitSet(new long[]{0x000000007FF80010L});
+    public static final BitSet FOLLOW_spaces_in_keyword226 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_entity_in_keyword228 = new BitSet(new long[]{0x0000000000010010L});
+    public static final BitSet FOLLOW_spaces_in_keyword230 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_16_in_keyword232 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_constraint_in_constraintList241 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
+    public static final BitSet FOLLOW_spaces_in_constraintList245 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000C30L});
+    public static final BitSet FOLLOW_logicalOp_in_constraintList252 = new BitSet(new long[]{0x000020007FF80010L,0x0000000000040000L});
+    public static final BitSet FOLLOW_spaces_in_constraintList260 = new BitSet(new long[]{0x000020007FF80000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_constraint_in_constraintList262 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
+    public static final BitSet FOLLOW_keyword_in_constraint275 = new BitSet(new long[]{0x0000000000000390L});
+    public static final BitSet FOLLOW_spaces_in_constraint284 = new BitSet(new long[]{0x0000000000000380L});
+    public static final BitSet FOLLOW_set_in_constraint291 = new BitSet(new long[]{0x0000000000000410L});
+    public static final BitSet FOLLOW_spaces_in_constraint311 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_genValue_in_constraint318 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keyword_in_constraint347 = new BitSet(new long[]{0x0000000000000010L,0x0000000000003000L});
+    public static final BitSet FOLLOW_spaces_in_constraint356 = new BitSet(new long[]{0x0000000000000000L,0x0000000000003000L});
+    public static final BitSet FOLLOW_in_in_constraint363 = new BitSet(new long[]{0x0000000000008010L});
+    public static final BitSet FOLLOW_spaces_in_constraint374 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_constraint376 = new BitSet(new long[]{0x0000000000000410L});
+    public static final BitSet FOLLOW_spaces_in_constraint380 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_valueList_in_constraint386 = new BitSet(new long[]{0x0000000000010010L});
+    public static final BitSet FOLLOW_spaces_in_constraint394 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_16_in_constraint398 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keyword_in_constraint424 = new BitSet(new long[]{0x0000000000000010L,0x0000000000030000L});
+    public static final BitSet FOLLOW_spaces_in_constraint433 = new BitSet(new long[]{0x0000000000000000L,0x0000000000030000L});
+    public static final BitSet FOLLOW_like_in_constraint440 = new BitSet(new long[]{0x0000000000001410L});
+    public static final BitSet FOLLOW_spaces_in_constraint449 = new BitSet(new long[]{0x0000000000001400L});
+    public static final BitSet FOLLOW_likeValue_in_constraint456 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_where485 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue505 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue512 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue514 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue516 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue522 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue524 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue526 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue528 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue530 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue536 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue538 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue540 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue542 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue544 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue546 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue548 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue554 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_SPACE_in_dotValue556 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue558 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue564 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_SPACE_in_dotValue566 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue568 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_SPACE_in_dotValue570 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue572 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dotValue_in_valueList580 = new BitSet(new long[]{0x0000000000000032L});
+    public static final BitSet FOLLOW_spaces_in_valueList584 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COMMA_in_valueList586 = new BitSet(new long[]{0x0000000000000410L});
+    public static final BitSet FOLLOW_spaces_in_valueList588 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_valueList590 = new BitSet(new long[]{0x0000000000000032L});
+    public static final BitSet FOLLOW_EQ_in_compOpt601 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LT_in_compOpt608 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GT_in_compOpt615 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EQ_in_compOpt622 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_GT_in_compOpt625 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EQ_in_compOpt632 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_LT_in_compOpt635 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LT_in_compOpt642 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_EQ_in_compOpt645 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GT_in_compOpt652 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_EQ_in_compOpt655 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dotValue_in_genValue662 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dotValue_in_genValue667 = new BitSet(new long[]{0x0000000000000380L});
+    public static final BitSet FOLLOW_compOpt_in_genValue669 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_genValue671 = new BitSet(new long[]{0x0000000000000802L});
+    public static final BitSet FOLLOW_AMP_in_genValue674 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_genValue676 = new BitSet(new long[]{0x0000000000000380L});
+    public static final BitSet FOLLOW_compOpt_in_genValue678 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_genValue680 = new BitSet(new long[]{0x0000000000000802L});
+    public static final BitSet FOLLOW_dotValue_in_likeValue690 = new BitSet(new long[]{0x0000000000001402L});
+    public static final BitSet FOLLOW_STAR_in_likeValue693 = new BitSet(new long[]{0x0000000000001402L});
+    public static final BitSet FOLLOW_and_in_logicalOp702 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_or_in_logicalOp704 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_entity713 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_attr766 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_funct880 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_select918 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_and939 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_order952 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_by965 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_or978 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_in991 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_not1004 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_like1017 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_count1030 = new BitSet(new long[]{0x0000000000000002L});
 
 }
