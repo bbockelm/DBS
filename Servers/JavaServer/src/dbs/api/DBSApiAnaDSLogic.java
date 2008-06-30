@@ -1,6 +1,6 @@
 /**
- $Revision: 1.47 $"
- $Id: DBSApiAnaDSLogic.java,v 1.47 2008/06/16 23:00:54 afaq Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.48 2008/06/17 17:07:20 afaq Exp $"
  *
  */
 
@@ -795,6 +795,16 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
     		}
     		return  ver;
  	}
+
+
+	public void deleteADS(Connection conn, Writer out, String analName, String version, Hashtable dbsUser) throws Exception {
+		if(isNull(version)) {
+			throw new DBSException("Missing Parameter", "1099", "There may be multiple versions of this ADS, Specify the version to be delete");
+		}
+
+		String adsID = getADSVersionID(conn, analName, version, true);
+		deleteName(conn, out, "AnalysisDataset", "ID", adsID);	
+	}
 
  
  	 /**
