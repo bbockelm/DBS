@@ -81,7 +81,6 @@ public class QueryBuilder {
 				query += getIntLumiSelectQuery();
 			//System.out.println("line 2.1.1");
 			} else if(aKw.toLowerCase().startsWith("count")) {
-				System.out.println("________line 8");
 				aKw = aKw.toLowerCase();
 				query += "COUNT(*)";
 				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
@@ -129,6 +128,14 @@ public class QueryBuilder {
 					if(Util.isSame(token2, "release") ||
 							Util.isSame(token2, "tier")) {
 						String realName = u.getMappedRealName(token2);//AppVersion
+						allKws = addUniqueInList(allKws, realName);
+						query += makeQueryFromDefaults(u.getVertex(realName));			
+						if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
+						addQuery = false;
+					}
+
+					if(Util.isSame(token, "release")) {
+						String realName = u.getMappedRealName(token);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
 						query += makeQueryFromDefaults(u.getVertex(realName));			
 						if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
@@ -243,9 +250,12 @@ public class QueryBuilder {
 				Constraint o = (Constraint)obj;
 				String key = (String)o.getKey();
 				if(Util.isSame(key, "dataset")) {
-				}else if(Util.isSame(key, "dq")) {
+				} else if(Util.isSame(key, "release")) {
+					if(isInList(kws, "procds") || isInList(kws, "dataset")) allKws = addUniqueInList(allKws, "ProcAlgo");
+					else addUniqueInList(allKws, "FileAlgo");
+				} else if(Util.isSame(key, "dq")) {
 					allKws = addUniqueInList(allKws, km.getMappedValue(key));
-				}else {
+				} else {
 					if(Util.isSame(key, "file.status")) invalidFile = false;
 					StringTokenizer st = new StringTokenizer(key, ".");
 					int count = st.countTokens();
@@ -326,7 +336,17 @@ public class QueryBuilder {
 					}
 				} else if(Util.isSame(key, "dq")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operator should be = . Invalid operator given " + op);
-					queryWhere += "\tRuns.ID" + handleDQ(val);
+					queryWhere += "\tRuns.ID" + handleDQ(val);	
+				} else if(Util.isSame(key, "release")) {
+					//FIXME add FILEALGO and ProcALgo first
+					boolean useAnd = false;
+					if(isInList(kws, "procds") || isInList(kws, "dataset")) {
+						queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
+						useAnd = true;
+					} else {
+						if(useAnd)  queryWhere += "\tAND\n";
+						queryWhere += "\tFileAlgo.Algorithm " + handleRelease(op, val);
+					}
 				} else if(Util.isSame(key, "file.release")) {
 					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(op, val);
 				} else if(Util.isSame(key, "file.tier")) {
