@@ -40,7 +40,8 @@ selectList	:kw=	keyword 		{kws.add($kw.text);}
 keyword	: entity 
 	| entity DOT attr
 	| entity DOT funct
-	| count spaces '(' spaces entity spaces ')';
+	| count spaces '(' spaces entity spaces ')'
+	| sum spaces '(' spaces entity DOT attr spaces ')';
 	
 constraintList	: constraint ( spaces 
 	rel=	logicalOp 		{ constraints.add($rel.text);}
@@ -100,6 +101,7 @@ in		:('in' | 'IN');
 not		:('not' | 'NOT');
 like		:('like' | 'LIKE');
 count		:('count' | 'COUNT');
+sum		:('sum' | 'SUM');
 VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#')+ ;
 //DIGIT		:('0'..'9');
 //DASH		:('-');

@@ -124,6 +124,9 @@ executeQuery () {
 	$CMD query="find dataset.release, dataset.era, dataset.tag, dataset.status, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER"
 	$CMD query="find file.child, file where file = NEW_TEST0002" 
 	$CMD query="find file where file.child = NEW_TEST0005" 
+	$CMD query="find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
+	$CMD query="find sum(run.numevents) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
+	$CMD query="find sum(block.size)  where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
 
 
 
@@ -211,7 +214,8 @@ executeQuery () {
 #$CMD query="find count(run) where run.number > 1 and run.number < 888800"
 #$CMD query="find count(block) where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
 #$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
-#executeQuery
+#$CMD query="find sum(dataset.size)"
+executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
 #	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 

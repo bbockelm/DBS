@@ -86,6 +86,13 @@ public class QueryBuilder {
 				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
 				//System.out.println("entity = " + entity);
 				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
+			} else if(aKw.toLowerCase().startsWith("sum")) {
+				aKw = aKw.toLowerCase();
+				String keyword = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
+				String entity = (new StringTokenizer(keyword, ".")).nextToken();
+				//System.out.println("entity " + entity);
+				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
+				query += "SUM(" + km.getMappedValue(keyword, true) + ")";
 			} else {
 			//System.out.println("line 2.2");
 				if(iLumi && (i < 2) ) {
@@ -222,9 +229,9 @@ public class QueryBuilder {
 
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
-						String mapVal =  km.getMappedValue(aKw);
 						if(addQuery) {
-							if(mapVal.equals(aKw)) throw new Exception("The keyword " + aKw + " not yet implemented in Query Builder" );
+							String mapVal =  km.getMappedValue(aKw, true);
+							//if(mapVal.equals(aKw)) throw new Exception("The keyword " + aKw + " not yet implemented in Query Builder" );
 							query += mapVal + makeAs(mapVal); 
 							if(iLumi) groupByLumiQuery += mapVal + ",";
 						}
@@ -254,7 +261,7 @@ public class QueryBuilder {
 					if(isInList(kws, "procds") || isInList(kws, "dataset")) allKws = addUniqueInList(allKws, "ProcAlgo");
 					else addUniqueInList(allKws, "FileAlgo");
 				} else if(Util.isSame(key, "dq")) {
-					allKws = addUniqueInList(allKws, km.getMappedValue(key));
+					allKws = addUniqueInList(allKws, km.getMappedValue(key, false));
 				} else {
 					if(Util.isSame(key, "file.status")) invalidFile = false;
 					StringTokenizer st = new StringTokenizer(key, ".");
@@ -359,7 +366,7 @@ public class QueryBuilder {
 				} else if(Util.isSame(key, "procds.tier")) {
 					queryWhere += "\tProcDSTier.DataTier" + handleTier(op, val);
 				} else if(key.endsWith("createdate") ||  key.endsWith("moddate")) {
-					queryWhere += "\t" + km.getMappedValue(key) + handleDate(op, val);
+					queryWhere += "\t" + km.getMappedValue(key, true) + handleDate(op, val);
 
 				} else {
 
@@ -416,7 +423,7 @@ public class QueryBuilder {
 						//Vertex vFirst = u.getMappedVertex(token);
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined == null) {
-							queryWhere += "\t" + km.getMappedValue(key) + " " ;
+							queryWhere += "\t" + km.getMappedValue(key, true) + " " ;
 						} else {
 						        queryWhere += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
 							//FIXME default can be list
@@ -476,7 +483,7 @@ public class QueryBuilder {
 			if(orderOnce) query += ",";
 			String orderToken = "";
 			Vertex vCombined = u.getMappedVertex(orderBy);
-			if(vCombined == null) orderToken = km.getMappedValue(orderBy);
+			if(vCombined == null) orderToken = km.getMappedValue(orderBy, true);
 			else orderToken = u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined);
 
 			query += orderToken;

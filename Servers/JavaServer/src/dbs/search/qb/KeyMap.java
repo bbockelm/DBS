@@ -68,10 +68,14 @@ public class KeyMap {
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 	}
-	public String getMappedValue(String key) {
-		if(!map.containsKey(key.toLowerCase())) return key;
+	public String getMappedValue(String key, boolean excep) throws Exception{
+		if(!map.containsKey(key.toLowerCase())) {
+			if(excep) throw new Exception("The keyword " + key+ " not yet implemented in Query Builder" );
+			else return key;
+		}
 		return (String)map.get(key.toLowerCase());
 
 	}
+
 }
 
