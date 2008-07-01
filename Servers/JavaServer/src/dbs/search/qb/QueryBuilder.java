@@ -502,7 +502,7 @@ public class QueryBuilder {
 			}
 			if(db.equals("oracle")) {
 				bindIntValues.add(new Integer(eInt));
-				query =  "SELECT * FROM (SELECT x.*, rownum as rnum FROM (\n" + query + "\n) x) where rnum between ? and ?";
+				query =  "SELECT * FROM (SELECT x.* FROM (\n" + query + "\n) x) where rownum between ? and ?";
 			}
 		}
 

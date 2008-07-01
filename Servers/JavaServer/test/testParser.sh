@@ -214,8 +214,8 @@ executeQuery () {
 #$CMD query="find count(run) where run.number > 1 and run.number < 888800"
 #$CMD query="find count(block) where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
 #$CMD query="find file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
-#$CMD query="find sum(dataset.size)"
-executeQuery
+$CMD query="find run where dataset like *Online*"
+#executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
 #	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 
