@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiDQLogic.java,v 1.16 2008/06/11 15:28:32 afaq Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiDQLogic.java,v 1.17 2008/06/11 15:37:53 afaq Exp $"
  *
  */
 
@@ -42,14 +42,24 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                                                 String lmbUserID
                                                                 ) throws Exception
         {
-		//THERE is NO History table YET for the INT type of FLAGS (this is next !) 
-		//AA-06/12/2008
-
 		//First get the ID of the row to be changed (Also checks that such an entry DOES exists)
 		//Whatever is the value of this FLAG doesn't matter !!
 		String rowID = getDQIntFlagID(conn, runID, lumiID, flag, "", true);
 
+		//THERE is NO History table YET for the INT type of FLAGS (this is next !) 
+		//AA-06/12/2008
+
+                //INSERT into HISTORY table FIRST
                 PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.insertDQIntFlagHistory(conn, rowID);
+                        pushQuery(ps);
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+
+                ps = null;
                 try {
                         ps = DBSSql.updateDQIntFlag(conn, rowID,
                                                         value,
@@ -232,10 +242,10 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 String flagid = null;
                 String valueid = null;
                 if (!isNull(flag)) flagid = getIDNoCheck(conn, "SubSystem", "Name", flag, true);
-                if (!isNull(value)) valueid = getID(conn, "QualityValues", "Value", value, true);
+                //if (!isNull(value)) valueid = getID(conn, "QualityValues", "Value", value, true);
 
                 try {
-                        ps = DBSSql.getDQIntFlag(conn, runID, lumiID, flagid,  valueid);
+                        ps = DBSSql.getDQIntFlag(conn, runID, lumiID, flagid,  value);
 			pushQuery(ps);
                         rs =  ps.executeQuery();
 

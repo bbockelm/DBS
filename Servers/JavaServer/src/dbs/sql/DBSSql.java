@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.180 $"
- $Id: DBSSql.java,v 1.180 2008/06/13 15:30:23 afaq Exp $"
+ $Revision: 1.181 $"
+ $Id: DBSSql.java,v 1.181 2008/06/25 16:40:27 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -296,6 +296,24 @@ public class DBSSql {
                 return ps;
         }
 
+        public static PreparedStatement insertDQIntFlagHistory(Connection conn, String rowID) throws SQLException {
+
+                //HistoryTimeStamp  MUSt be provided by Trigger later ON.
+                String sql = "INSERT INTO "+owner()+"IntQualityHistory \n "+
+                                " (HistoryOf, Run,  Lumi, SubSystem, IntDQValue, \n" +
+                                " CreationDate, CreatedBy, LastModificationDate, LastModifiedBy, \n"+
+                                " HistoryTimeStamp) select ID, Run, Lumi, SubSystem, IntDQValue, CreationDate, \n" +
+                                " CreatedBy, LastModificationDate, LastModifiedBy, " +
+                                Long.toString( (new Date()).getTime() / 1000 ) +
+                                " from "+ owner()+"RunLumiDQInt where ID = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, rowID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
         public static PreparedStatement updateDQFlag(Connection conn,
                                                         String rowID,
                                                         String valueID,
@@ -446,6 +464,9 @@ public class DBSSql {
 
 		}
 
+		///////////BIND VAR. NIRA CHUTIYAPA !!!!!!!!!!!!!!
+		boolean ts_bindvar=true;
+
                 String rlsql = "";
                 if (runDQList.size() > 0) {
                 	for (int i = 0; i < runDQList.size() ; ++i) {
@@ -461,6 +482,13 @@ public class DBSSql {
 						rlsql += " AND ";
 					} else {
 						bindvals.add(runnumber);
+						if (!DBSUtil.isNull(timeStamp)) {
+							ts_bindvar=false;				
+							bindvals.add(timeStamp);
+							bindvals.add(timeStamp);
+							bindvals.add(timeStamp);
+							bindvals.add(timeStamp);
+						}
 						bindvals.add(runnumber);
 					}
 	
@@ -476,11 +504,22 @@ public class DBSSql {
 					rlsql += "ls.LumiSectionNumber=? ";
 					bindvals.add(runnumber);
 					bindvals.add(lumisec);
+					if (!DBSUtil.isNull(timeStamp)) {
+							ts_bindvar=false;				
+                                                        bindvals.add(timeStamp);
+                                                        bindvals.add(timeStamp);
+                                        }
 					bindvals.add(runnumber);
 					bindvals.add(lumisec);
+					if (!DBSUtil.isNull(timeStamp)) {
+                                                        bindvals.add(timeStamp);
+                                                        bindvals.add(timeStamp);
+                                        }
 				}
 				if (!DBSUtil.isNull(rlsql) )
 					rlsql += " ) ";
+				if (!DBSUtil.isNull(timeStamp))
+					rlsql += " and ";
 			}
 		}
 
@@ -490,13 +529,16 @@ public class DBSSql {
 		if (!DBSUtil.isNull(timeStamp)) {
 	                        sql += " rq.CreationDate <=? \n";
                                	sql += " and rq.LastModificationDate <= ? \n";
-				bindvals.add(timeStamp);
-				bindvals.add(timeStamp);
 
-                             	sqlInt += " rq.CreationDate <=? \n";
+			        sqlInt += " rq.CreationDate <=? \n";
                                	sqlInt += " and rq.LastModificationDate <= ? \n";
-				bindvals.add(timeStamp);
-				bindvals.add(timeStamp);
+
+				if (ts_bindvar) {
+					bindvals.add(timeStamp);
+					bindvals.add(timeStamp);
+					bindvals.add(timeStamp);
+					bindvals.add(timeStamp);
+				}
 		}
 
 		sql += " UNION \n" + sqlInt;
@@ -517,13 +559,30 @@ public class DBSSql {
 				"join "+owner()+"SubSystem ss \n"+
        					"on ss.ID = qh.SubSystem \n"+
 				"join "+owner()+"QualityValues qv \n"+
-       					"on qv.ID = qh.DQValue \n";
-
-					sql += "where qh.CreationDate <=?  and \n"+
-					"qh.LastModificationDate <=?  \n";
-					bindvals.add(timeStamp);
-					bindvals.add(timeStamp);
-		
+       					"on qv.ID = qh.DQValue \n" +
+				"where qh.CreationDate <=?  and \n"+
+				"qh.LastModificationDate <=?  \n";
+				bindvals.add(timeStamp);
+				bindvals.add(timeStamp);
+	
+                                sql += " UNION \n"+
+                                "SELECT distinct qh.HistoryOf as ID, r.RunNumber as RUN_NUMBER, \n"+
+                                "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
+                                "ss.Name as DQ_FLAG, TO_CHAR(qh.IntDQValue) as QVALUE, \n"+
+                                "ss.Parent as PARENT, \n"+
+                                "qh.LastModificationDate as LASTMODIFICATIONDATE \n"+
+                                "FROM  "+owner()+"IntQualityHistory qh \n"+
+                                "join "+owner()+"Runs r \n"+
+                                        "on qh.Run = r.ID \n"+
+                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
+                                        "on ls.ID = qh.Lumi \n"+
+                                "join "+owner()+"SubSystem ss \n"+
+                                        "on ss.ID = qh.SubSystem \n" +
+				"where qh.CreationDate <=?  and \n"+
+                                "qh.LastModificationDate <=?  \n";
+                                bindvals.add(timeStamp);
+                                bindvals.add(timeStamp);
+	
 					//"and qh.HistoryTimeStamp <= "+timeStamp+" \n";
 		}
 
@@ -540,13 +599,6 @@ public class DBSSql {
                 return ps;
 
 	}
-
-
-
-
-
-
-
 
 
         //public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
@@ -942,264 +994,6 @@ public class DBSSql {
                 return ps;
 
 	}
-
-
-/*
-        public static PreparedStatement listFilesForRunLumiDQ_OLDER(Connection conn, Vector runDQList, String timeStamp)
-        throws SQLException
-        {
-		String vtable = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()+"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
-		String where_clause = "";
-		String keyv_clause = "";
-
-
-		java.util.Vector bindvals = new java.util.Vector();
-
-		if (runDQList.size() > 0) {
-			for (int i = 0; i < runDQList.size() ; ++i) {
-				Hashtable runDQ = (Hashtable) runDQList.get(i);
-				//Get the sub-system Vector
-				Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
-
-                		//Loop over each item
-                		for (int j = 0; j < subSys.size() ; ++j) {
-					Hashtable dqFlag = (Hashtable) subSys.get(j);
-
-					vtable +=" , "+owner()+"RunLumiQuality RQ"+j+ " join "+owner()+"SubSystem SS"+j+" on SS"+j+".ID = RQ"+j
-						+".SubSystem JOIN "+owner()+"QualityValues QV"+j+" on RQ"+j+".DQValue=QV"+j+".ID";
-					if (j == 0) {
-						where_clause += " where ";
-					}
-					where_clause += " RQ.Run = RQ"+j+".Run AND ";
-
-					if  (j != 0) { 
-						keyv_clause += " AND ";
-						
-						keyv_clause += "( SS"+j+".Name = ? ";
-						keyv_clause += " AND QV"+j+".Value = ? ) ";
-
-						bindvals.add(DBSUtil.get(dqFlag, "name"));
-						bindvals.add(DBSUtil.get(dqFlag, "value"));
-					} 
-
-					else {
-	                      			keyv_clause += "( SS.Name = ? ";
-	                      			keyv_clause += " AND QV.Value = ? ) ";
-
-						bindvals.add(DBSUtil.get(dqFlag, "name"));
-						bindvals.add(DBSUtil.get(dqFlag, "value"));
-					}
-
-                 		}
-			}
-		}
-
-		String file_sql = "SELECT distinct F.LogicalFilename as LFN \n" +
-					" ,R.RunNumber as RUN \n" +
-					" FROM "+owner()+"Files F \n" +  
-					" join "+owner()+"FileRunLumi FLR \n"+
-                                        " on FLR.Fileid = F.id \n" +
-					" join "+owner()+"Runs R \n" +
-					" on FLR.Run = R.ID \n" +
-					" WHERE FLR.Run in (";
-
-		String sql = file_sql + vtable + where_clause + keyv_clause + ")";
-
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-
-                int columnIndx = 1;
-		for (int i=0; i != bindvals.size(); ++i)
-			ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-
-//mysql> select RQ.Run from RunLumiQuality RQ join SubSystem SS on SS.ID = RQ.SubSystem JOIN QualityValues QV on RQ.DQValue=QV.ID, RunLumiQuality RQ1 join SubSystem SS1 on SS1.ID = RQ1.SubSystem JOIN QualityValues QV1 on RQ1.DQValue=QV1.ID where RQ.Run = RQ1.Run AND (SS.Name = 'Tracker_Global' AND QV.Value='GOOD' ) AND ( SS1.Name='TIB_DCS' AND QV1.Value='GOOD' );
-
-	}
-****/
-
-
-	/* AA
-        public static PreparedStatement listFilesForRunLumiDQ_OLD(Connection conn, Vector runDQList, String timeStamp)
-        throws SQLException
-        {
-
-                //JUST for testing 
-                //timeStamp = "1182285735";
-
-                String sql = "SELECT distinct F.LogicalFilename as LFN \n" +
-                                "FROM  "+owner()+"RunLumiQuality rq \n"+
-                                "join "+owner()+"Runs r \n"+
-                                       "on rq.Run = r.ID \n"+
-                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
-                                       "on ls.ID = rq.Lumi \n"+
-                                "join "+owner()+"SubSystem ss \n"+
-                                        "on ss.ID = rq.SubSystem \n"+
-                                "join "+owner()+"QualityValues qv \n"+
-                                        "on qv.ID = rq.DQValue \n"+
-                                "join "+owner()+"FileRunLumi FLR \n"+
-                                        "on FLR.Run = rq.Run \n" +
-                                "join "+owner()+"Files F \n" +
-                                        "on FLR.Fileid = F.ID \n";
-
-                if (runDQList.size() > 0 || !DBSUtil.isNull(timeStamp)) sql += " WHERE ";
-                //MAKE THIS BIND Valriable LATERS !!
-                String tmpSql = "";
-                String rlsql = "";
-                if (runDQList.size() > 0) {
-                                        for (int i = 0; i < runDQList.size() ; ++i) {
-                                                Hashtable runDQ = (Hashtable) runDQList.get(i);
-						String runnumber = DBSUtil.get(runDQ, "run_number");
-                                                if (!DBSUtil.isNull(runnumber)) {
-
-                                                        if (i==0) rlsql = " ( r.RunNumber="+ runnumber + " AND ";
-                                                        else rlsql = " OR ( r.RunNumber="+ runnumber + " AND ";
-                                                }
-
-                                                else {
-                                                        if (i==0) rlsql = " ( ";
-                                                        else rlsql = " OR ( ";
-
-                                                }
-
-                                                String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
-                                                if (!DBSUtil.isNull(lumisec))
-                                                        rlsql += " ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number")  + " AND ";
-                                                //Get the sub-system Vector
-                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
-
-                                                //Loop over each item
-                                                for (int j = 0; j < subSys.size() ; ++j) {
-                                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
-                                                        String fvsql =  "";
-
-                                                        //Check for NULL
-                                                        if (j == 0) {
-                                                                fvsql = rlsql + " ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
-                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
-                                                        } else {
-								//THIS OR is correct here
-                                                                fvsql = "OR "+rlsql + " ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
-                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
-                                                        }
-
-                                                        tmpSql += fvsql;
-                                                }
-                                                if (subSys.size() <= 0) sql +=  rlsql + ") ";
-                                                //else sql += rlsql;
-                                        }
-                                }
-
-                sql += tmpSql;
-                if (!DBSUtil.isNull(timeStamp)) {
-                                sql += " rq.CreationDate <= " +timeStamp+  "\n";
-                                sql += " and rq.LastModificationDate <= "+timeStamp+ "\n";
-                }
-
-               if (!DBSUtil.isNull(timeStamp)) {
-
-                                sql += "UNION \n"+
-                                "SELECT F.LogicalFilename as LFN \n"+
-                                "FROM  "+owner()+"QualityHistory qh \n"+
-                                "join "+owner()+"Runs r \n"+
-                                        "on qh.Run = r.ID \n"+
-                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
-                                        "on ls.ID = qh.Lumi \n"+
-                                "join "+owner()+"SubSystem ss \n"+
-                                        "on ss.ID = qh.SubSystem \n"+
-                                "join "+owner()+"QualityValues qv \n"+
-                                        "on qv.ID = qh.DQValue \n" +
-                                "join "+owner()+"FileRunLumi FLR \n"+
-                                        "on FLR.Run = rq.Run \n" +
-                                "join "+owner()+"Files F \n" +
-                                        "on FLR.Fileid = F.ID \n";
-
-                                        sql += "where qh.CreationDate <= "+timeStamp+" and \n"+
-                                        "qh.LastModificationDate <= "+timeStamp+" \n";
-
-                }
-
-                //sql += " order by LASTMODIFICATIONDATE, RUN_NUMBER desc ";
-                //sql += " order by RUN_NUMBER, ID, LASTMODIFICATIONDATE desc ";
-                //sql += " order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC";
-                //Order by is very important, Change it ONLY if BUSH becomes president third times!
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-
-        } */
-
-
-
-	/* AA 
-        public static PreparedStatement listRunLumiDQ_old(Connection conn, Vector runDQList, String timeStamp)
-        throws SQLException
-        {
-
-                String sql = "SELECT distinct rq.ID as ID, r.RunNumber as RUN_NUMBER, \n" +
-                                "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
-                                "ss.Name as DQ_FLAG, qv.Value as QVALUE, \n" +
-                                "ss.Parent as PARENT \n" +
-                                "FROM  "+owner()+"RunLumiQuality rq \n" +
-                                "join "+owner()+"Runs r \n" +
-                                        "on rq.Run = r.ID \n" +
-                                "LEFT OUTER JOIN "+owner()+"LumiSection ls \n" +
-                                        "on ls.ID = rq.Lumi \n" +
-                                "join "+owner()+"SubSystem ss \n" +
-                                        "on ss.ID = rq.SubSystem \n" +
-                                "join "+owner()+"QualityValues qv \n" +
-                                        "on qv.ID = rq.DQValue \n";
-
-                                String rlsql = "";
-
-                                //MAKE THIS BIND Valriable LATERS !!
-                                if (runDQList.size() > 0) {
-                                        sql += "WHERE \n";
-                                        for (int i = 0; i < runDQList.size() ; ++i) {
-                                                Hashtable runDQ = (Hashtable) runDQList.get(i);
-                                                if (i==0) rlsql = " ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number") ;
-                                                else rlsql = " OR ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number");
-
-                                                String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
-                                                if (!DBSUtil.isNull(lumisec))
-                                                        rlsql += " AND ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number");
-                                                //Get the sub-system Vector
-                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
-
-                                                //Loop over each item
-                                                for (int j = 0; j < subSys.size() ; ++j) {
-                                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
-                                                        String fvsql =  "";
-
-                                                        //Check for NULL
-                                                        if (j == 0) {
-                                                                fvsql = rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
-                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
-                                                        } else {
-                                                                fvsql = "OR "+rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
-                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
-                                                        }
-
-                                                        sql += fvsql;
-                                                }
-                                                if (subSys.size() <= 0) sql +=  rlsql + ") ";
-                                                //else sql += rlsql;
-                                        }
-                                }
-
-                                sql += "ORDER by r.RunNumber, rq.ID";  //THE ORDER BY is VERY IMPORTANT here
-
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-                //ps.setString(columnIndx++, adsID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-
-        }
-
-
-	*/
 
         public static PreparedStatement getDQFlag(Connection conn, String runID, String lumiID,
                                                         String flagID,
