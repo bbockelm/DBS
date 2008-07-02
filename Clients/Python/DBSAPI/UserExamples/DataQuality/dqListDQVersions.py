@@ -13,10 +13,6 @@ try:
     (opts,args) = optManager.getOpt()
 
     api = DbsApi(opts.__dict__)
-    serverInfo = api.getServerInfo()
-    print "Server Version : ", serverInfo['ServerVersion']
-    print "Schema Version : ", serverInfo['SchemaVersion']
-
     versions = api.listDQVersions()
     for aVer in versions:
 	print "Version: %s, CreationDate: %s" \
