@@ -42,7 +42,7 @@ create sequence seq_intqualityhistory ;
 -- ====================================================
 -- AUTO INC TRIGGER FOR intqualityhistory.ID using SEQ seq_intqualityhistory
 
-PROMPT AUTO INC TRIGGER FOR Trigger for Table: intqualityhistory
+PROMPT AUTO INC TRIGGER FOR Trigger for Table: intqualityhistory;
  CREATE OR REPLACE TRIGGER intqualityhistory_TRIG before insert on intqualityhistory    for each row begin     if inserting then       if :NEW.ID is null then          select seq_intqualityhistory.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
