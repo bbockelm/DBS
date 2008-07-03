@@ -18,7 +18,7 @@ CREATE TABLE IntQualityHistory
 
 
 ALTER TABLE IntQualityHistory ADD CONSTRAINT
-    IntQualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiQuality(ID)
+    IntQualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiDQInt(ID)
 /
 ALTER TABLE IntQualityHistory ADD CONSTRAINT
     IntQualityHistory_Run_FK foreign key(Run) references Runs(ID)
