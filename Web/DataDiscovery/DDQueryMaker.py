@@ -598,15 +598,21 @@ class DDQueryMaker(DDLogger):
       else:
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       
-  def executeDBSQuery(self,sql,bindDict,count_sql,count_bindDict):
+  def wrapToView(self,view,field,query):
+      print "\n\n#### call wrapToView",view,field,query
+      query=query.replace('\n',' ').replace('\t',' ').strip()
+      query="""SELECT * FROM %s WHERE %s IN (%s)"""%(view,field,query)
+      if self.verbose:
+         print query
+      return query
+      
+  def executeDBSQuery(self,sql,bindDict):
 #  def executeDBSQuery(self,dbsApi,userInput,fromRow,toRow):
 # I can actually call server instead of client
 # http://cmssrv17.fnal.gov:8989/DBSADSTEST03_ADSDEF/servlet/DBSServlet?apiversion=DBS_1_1_2&query=find%20dataset%20where%20dataset%20like%20%25QCD_800-1000%25&begin=&api=executeQuery&end=&type=query
 # so the call would be
 # http://url/DBSServlet?apiversion=DBS_1_1_2&query=userInput&begin=&api=executeQuery=&type=query
 #
-#      res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
-#      sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
       bparams=[]
       for key in bindDict.keys():
           bparams.append(sqlalchemy.bindparam(key=key,value=bindDict[key]))
@@ -627,12 +633,27 @@ class DDQueryMaker(DDLogger):
       oList=[]
       tList=[]
       for item in result:
+          print item
           if type(item) is types.StringType:
               raise item
           oList.append(item.values())
           if not tList:
              tList=list(item.keys())
-      # get number of results
+          # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
+#          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+#             oList.append(item.values()[:-1]) # last element is rownum
+#             if not tList:
+#                tList=list(item.keys()[:-1])
+#          else:
+#             oList.append(item.values())
+#             if not tList:
+#                tList=list(item.keys())
+      self.closeConnection(con)
+      return oList,tList
+
+  def executeDBSCountQuery(self,count_sql,count_bindDict):
+      con  = self.connectToDB()
+      res=""
       bparams=[]
       for key in count_bindDict.keys():
           bparams.append(sqlalchemy.bindparam(key=key,value=count_bindDict[key]))
@@ -652,7 +673,7 @@ class DDQueryMaker(DDLogger):
           raise "Fail in executeDBSQuery"
       # end of number of results
       self.closeConnection(con)
-      return res,oList,tList
+      return res
 
   def executeSingleQuery(self,sel):
 #      print "\n\n+++ executeSingleQuery\n",sel,self.extractBindParams(sel)

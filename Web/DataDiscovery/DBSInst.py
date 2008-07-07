@@ -111,7 +111,7 @@ class DBManager(DDLogger):
      http://www.sqlalchemy.org
                                 
   """
-  def __init__(self,iface='cgi',verbose=0):
+  def __init__(self,iface='dbsapi',verbose=0):
       """
          DBSDD constructor. 
          @type verbose: boolean or integer

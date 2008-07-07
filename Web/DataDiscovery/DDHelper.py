@@ -37,7 +37,7 @@ class DDHelper(DDLogger):
   """
       DDHelper class
   """
-  def __init__(self,dbManager,dbsInst="",iface="sqlalchemy",verbose=0,html=0):
+  def __init__(self,dbManager,dbsInst="",iface="dbsapi",verbose=0,html=0):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -330,26 +330,7 @@ class DDHelper(DDLogger):
       self.writeLog("DBS Instance: %s"%dbsInst)
       con = self.connectToDB()
       self.closeConnection(con)
-      # use cache
-#      if not self.dbsApi.has_key(dbsInst):
-#         if self.iface=="cgi":
-#            self.api = dbsCgiApi.DbsCgiApi(DEFAULT_URL,{'instance':dbsInst})
-#         else: 
-#            url,dlsType,endpoint = DBS_INST_URL[dbsInst]
-#            self.api=""
-#            con = self.connectToDB()
-#            self.closeConnection(con)
-#         self.dbsApi[dbsInst]=self.api
-#      else:
-#         self.api = self.dbsApi[dbsInst]
-      # UNCOMMENT FOR DLS usage
-#      if not self.dbsDLS.has_key(dbsInst):
-#         url,dlsType,endpoint = DBS_INST_URL[dbsInst]
-#         self.writeLog("DLS Instance: %s %s"%(dlsType,endpoint))
-#         self.dlsApi = dlsClient.getDlsApi(dlsType, endpoint)
-#      else:
-#         self.dlsApi = self.dbsDLS[dbsInst]
- 
+
   def setDLS_LFC(self):
       """
          Set grid instance of DLS for further usage. By default for all queries we use
@@ -790,23 +771,6 @@ MCDescription:      %s
 
   def listDatasetsFromApp(self,appPath="*"):
       return self.listProcessedDatasets(app=appPath)
-
-#  def listApplications(self,appPath="*"):
-#      """
-#         Wrapper around dbsApi
-#      """
-#      if self.iface=="cgi":
-#         aList = self.api.listApplications(appPath)
-#         aList.sort()
-#         aList.reverse()
-#         return aList
-#      else:
-#         if appPath=="*":
-#            ver=family=exe="*"
-#         else:
-#            empty,ver,family,exe=string.split(appPath,"/")
-#         res = self.api.listApplications(patternVer=ver,patternFam=family,patternExe=exe)
-#         return res
 
   def joinTiers(self,sel,tjoin,tier,tprd,condDict={}):
       aList=[]
@@ -2459,7 +2423,7 @@ MCDescription:      %s
          for r in run:
              runUrl+="%s,"%r
          iParams['RUN']=runUrl[:-1]
-      http_handler = MyHTTPHandler(timeout = 60) # timeout in seconds
+      http_handler = MyHTTPHandler(timeout = 15) # timeout in seconds
       opener = urllib2.build_opener(http_handler)
       req    = urllib2.Request(url,urllib.urlencode(iParams,doseq=True))
       data   = opener.open(req).read()
@@ -3755,9 +3719,9 @@ if __name__ == "__main__":
     if opts.verbose:
        verbose=1
 
-    iface="cgi"
-    if opts.iface!="cgi":
-       iface = "sqlalchemy"
+    iface="dd"
+    if opts.iface!="dd":
+       iface = "dbsapi"
     helper = DDHelper(dbsInst,iface,verbose)
 
 

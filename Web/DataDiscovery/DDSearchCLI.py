@@ -30,6 +30,8 @@ class DDOptionParser:
          help="request output for files in CMS cff format")
     self.parser.add_option("--host",action="store",type="string",dest="host",
          help="specify a host name of Data Discovery service, e.g. https://cmsweb.cern.ch/dbs_discovery/")
+    self.parser.add_option("--iface",action="store",default="dbsapi",type="string",dest="iface",
+         help="specify which interface to use for queries dd or dbsapi, default is dbsapi.")
     self.parser.add_option("--details",action="store_true",dest="details",
          help="show detailed output")
     self.parser.add_option("--case",action="store",default="on",type="string",dest="case",
@@ -44,7 +46,7 @@ class DDOptionParser:
     """
     return self.parser.parse_args()
 
-def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',details=0,cff=0,debug=0):
+def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',iface='dbsapi',details=0,cff=0,debug=0):
     """
        Send message to server, message should be an well formed XML document.
     """
@@ -76,7 +78,7 @@ def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',details=0
        http_conn = httplib.HTTP(host,port)
     if details: details=1
     else:       details=0
-    path='/aSearch?dbsInst=%s&html=0&caseSensitive=%s&_idx=%s&pagerStep=%s&userInput=%s&xml=%s&details=%s&cff=%s'%(dbsInst,case,page,limit,input,xml,details,cff)
+    path='/aSearch?dbsInst=%s&html=0&caseSensitive=%s&_idx=%s&pagerStep=%s&userInput=%s&xml=%s&details=%s&cff=%s&method=%s'%(dbsInst,case,page,limit,input,xml,details,cff,iface)
     if prefix_path:
        path="/"+prefix_path+path[1:]
     http_conn.putrequest('POST',path)
@@ -123,5 +125,5 @@ if __name__ == "__main__":
     else:
        print "\nUsage: %s --help"%sys.argv[0]
        sys.exit(0)
-    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.xml,opts.case,opts.details,opts.cff,opts.verbose)
+    result = sendMessage(host,port,dbsInst,input,opts.page,opts.limit,opts.xml,opts.case,opts.iface,opts.details,opts.cff,opts.verbose)
     print result

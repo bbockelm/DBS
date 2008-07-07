@@ -178,7 +178,8 @@ class DDServer(DDLogger,Controller):
             self.writeLog(getExcept())
             printExcept()
          pass
-        self.helper     = DDHelper(self.dbManager,self.dbs,self.ddConfig.iface(),verbose,html=1)
+        self.iface      = self.ddConfig.iface()
+        self.helper     = DDHelper(self.dbManager,self.dbs,self.iface,verbose,html=1)
         self.asearch    = DDSearch(dbsHelper=self.helper)
         self.ddrules    = DDRules(verbose)
         self.qmaker     = DDQueryMaker(self.dbManager,self.dbs)
@@ -225,8 +226,9 @@ class DDServer(DDLogger,Controller):
             print "Read from hostname and port"
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
-        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_0_8'}
-        print "DDServer URL '%s'"%self.dbsdd
+        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_0_9'}
+        print "+++ DDServer URL '%s'"%self.dbsdd
+        print "+++ Using %s interface"%self.iface
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
                            'siteForm': ("",""), # (dbsInst,site)
@@ -563,6 +565,7 @@ class DDServer(DDLogger,Controller):
         """
         self.dbs = dbsInst
         self.helper.setDBSDLS(dbsInst)
+        self.qmaker.initDBS(dbsInst)
 
     def genTopHTML(self,intro=False,userMode='user',onload=''):
         """
@@ -1163,8 +1166,7 @@ class DDServer(DDLogger,Controller):
            meta-data tables.
         """
 
-        if self.ddConfig.iface()=='cgi': searchFunc="javascript:ajaxSearch()"
-        else: searchFunc="javascript:ResetAllResults();ajaxFinderSearch('%s')"%userMode
+        searchFunc="javascript:ResetAllResults();ajaxFinderSearch('%s')"%userMode
 
         # FIXME, TODO: firstDBS should be passed here
         if not firstDBS: firstDBS=DBSGLOBAL
@@ -5233,7 +5235,14 @@ Save query as:
             msg ="<pre>%s</pre>"%getExcMessage(userMode)
             page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
             return page
-        result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        method   = getArg(kwargs,'method',self.iface)
+        if method=="dbsapi":
+           dbsApi = self.getDbsApi(dbsInst)
+           res=dbsApi.executeQuery(userInput,begin=fromRow,end=limit,type="query")
+           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+           result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        else:
+           result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if parents:
            what,par = output.split(".")
            print "orig. result",result
@@ -5333,7 +5342,22 @@ Save query as:
         grid     = int(getArg(kwargs,'grid',0))
         userInput= kwargs['userInput']
         getRes   = int(getArg(kwargs,'getRes',0))
-        result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        method   = getArg(kwargs,'method','dd')
+        userInput= kwargs['userInput']
+        if method=="dbsapi":
+           dbsApi = self.getDbsApi(dbsInst)
+           res=dbsApi.executeQuery(userInput,begin=fromRow,end=limit,type="query")
+           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+           tableView = output+"summary"
+           if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
+               tc = "%s.%s"%(tableView,self.ddrules.colName[output])
+               tableView=self.dbManager.getTable(dbsInst,tableView)
+               sqlView = self.qmaker.wrapToView(tableView,tc,sql)
+               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
+           else:
+               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        else:
+           result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if getRes:
            return result
         # only take table column names from view's table, otherwise use what was provided by user
@@ -5568,7 +5592,19 @@ Save query as:
         num      = kwargs['num']
         oname    = kwargs['oname']
         link     = kwargs['link']
-        result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        method   = getArg(kwargs,'method','dd')
+        userInput= kwargs['userInput']
+        if method=="dbsapi":
+           dbsApi = self.getDbsApi(dbsInst)
+           res=dbsApi.executeQuery(userInput,begin=fromRow,end=limit,type="query")
+           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+           if  self.helper.dbManager.getTableNames(dbsInst).count("datasetsummary"):
+               sqlView = self.qmaker.wrapToView("datasetsummary","Block.Path",sql)
+               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
+           else:
+               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        else:
+           result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if len(titleList)==1: # no view found
            titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
         excludeList=[]
@@ -5670,7 +5706,9 @@ Save query as:
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         t0=time.time()
         self.helperInit(dbsInst)
+
         _idx=int(_idx)
+        method = getArg(kwargs,'method',self.iface)
         pagerStep = int(pagerStep)
         html      = getArg(kwargs,'html',1)
         if not int(html):
@@ -5693,7 +5731,8 @@ Save query as:
             traceback.print_exc()
             raise "aSearch require input query"
         try:
-            self.ddrules.checkSyntax(userInput)
+            if method!="dbsapi":
+               self.ddrules.checkSyntax(userInput)
         except:
             if html:
                msg ="<pre>%s</pre>"%getExcMessage(userMode)
@@ -5702,24 +5741,6 @@ Save query as:
                page=getExcMessage(userMode)
             return page
         userInput = userInput.replace(" path "," dataset ")
-        ### TEMP, test DBS QL
-#        print "###### TEST OF DBS QL ####"
-#        try:
-#            dbsApi = self.getDbsApi(dbsInst)
-#            print dbsApi.getServerUrl()
-#            fromRow=_idx*pagerStep
-#            toRow=_idx*pagerStep+pagerStep
-#            res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
-#            print res
-#            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-#            nres,tList,oList=self.qmaker.executeDBSQuery(sql,bindDict,count_sql,count_bindDict)
-#            print "Found %s results",nres
-#            print tList
-#            print oList
-#        except:
-#            pass
-#        print "###### END TEST OF DBS QL ####"
-        ### END OF TEMP
         for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
             userInput=userInput.replace(pair[0],pair[1])
         output    = "dataset"
@@ -5740,7 +5761,8 @@ Save query as:
         sortOrder = getArg(kwargs,'sortOrder','desc')
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         try :
-            sel = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
+            if method!="dbsapi":
+               sel = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
         except:
             if not html:
                return traceback.format_exc()
@@ -5752,7 +5774,7 @@ Save query as:
         limit    = pagerStep
         oTable   = ""
         tabCol   = ""
-        if output.find(",")==-1:
+        if output.find(",")==-1 and method!="dbsapi":
            if output.find("total")!=-1:
               o  = output.replace("(","").replace(")","").replace("total","")
               oTable   = self.ddrules.tableName[o]
@@ -5763,24 +5785,43 @@ Save query as:
                  oTable   = self.ddrules.tableName[oTab]
                  tabCol   = "%s.%s"%(oTable,oCol)
               else:
-#              try:
-                 oTable   = self.ddrules.tableName[output]
-                 tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
-#              except: pass
+                  try:
+                     oTable   = self.ddrules.tableName[output]
+                     tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
+                  except: pass
               
         self.qmaker.initDBS(dbsInst)
-        try:
-            query= self.qmaker.processQuery(sel,userMode)
-        except:
-            if not html:
-               return traceback.format_exc()
-            msg ="<pre>%s</pre>"%getExcMessage(userMode)
-            page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
-            return page
-        nResults = self.qmaker.countSel(query,tabCol)
+        if method=="dbsapi":
+            try:
+                dbsApi = self.getDbsApi(dbsInst)
+                if self.verbose:
+                   print dbsApi.getServerUrl()
+                fromRow=_idx*pagerStep
+                toRow=_idx*pagerStep+pagerStep
+                if pagerStep==-1:
+                   res=dbsApi.executeQuery(userInput,type="query")
+                else:
+                   res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+                sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+                query=sql
+                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict)
+            except:
+                printExcept()
+                pass
+        else:
+
+            try:
+                query= self.qmaker.processQuery(sel,userMode)
+            except:
+                if not html:
+                   return traceback.format_exc()
+                msg ="<pre>%s</pre>"%getExcMessage(userMode)
+                page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+                return page
+            nResults = self.qmaker.countSel(query,tabCol)
 
         # construct output kwargs
-        kDict=self.update_kwargs(kwargs,query=query,output=output,tabCol=tabCol,sortName=sortName,sortOrder=sortOrder,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,case=case,cff=cff)
+        kDict=self.update_kwargs(kwargs,query=query,output=output,tabCol=tabCol,sortName=sortName,sortOrder=sortOrder,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,case=case,cff=cff,method=method)
 
         if html:
            page = self.genTopHTML(userMode=userMode)
