@@ -30,7 +30,7 @@ for input in \
 "find file where release=CMSSW_1_6_7 and site=T2_UK"
 do
     echo "input=\"$input\""
-    $cmd --host=$host --input="$input"
+    $cmd --host=$host --input="$input" --iface=dd
 done
 
 echo "### TEST xml output ###"
@@ -42,7 +42,7 @@ for input in \
 "find run,run.numevents,run.numlumi,run.totlumi,run.createby,run.createdate where dataset=/GlobalMar08-Express/Online/RAW"
 do
     echo "input=\"$input\""
-    $cmd --host=$host --input="$input" --details --xml
+    $cmd --host=$host --input="$input" --iface=dd --details --xml
 done
 
 echo "### TEST cff output ###"
@@ -50,7 +50,7 @@ for input in \
 "find file where release=CMSSW_1_6_7"
 do
     echo "input=\"$input\""
-    $cmd --host=$host --input="$input" --cff
+    $cmd --host=$host --input="$input" --iface=dd --cff
 done
 
 echo "### TEST xml output ###"
@@ -58,5 +58,13 @@ for input in \
 "find file,lumi where dataset=/GlobalMar08-Express/Online/RAW and file=/store/data/GlobalMar08/Express/000/038/341/GlobalMar08.00038341.0011.Express.storageManager.0.0001.dat"
 do
     echo "input=\"$input\""
-    $cmd --host=$host --input="$input" --details --xml --limit=-1
+    $cmd --host=$host --input="$input" --iface=dd --details --xml --limit=-1
+done
+
+echo "### TEST DBS-QL using DBSAPI ###"
+for input in \
+"find primds where primds.createdate > 2007-04-20"
+do
+    echo "input=\"$input\""
+    $cmd --host=$host --input="$input" --iface=dbsapi
 done
