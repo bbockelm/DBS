@@ -17,8 +17,8 @@ catch (RecognitionException e) {
 }
 }
 
-stmt	: select spaces selectList spaces where spaces constraintList  
-	| select spaces selectList
+stmt	: select spaces selectList spaces where spaces constraintList spaces 
+	| select spaces selectList spaces
 	| select spaces selectList spaces order spaces by spaces
 okw=	keyword 	{okws.add($okw.text);}
 	spaces

@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-07-07 09:50:09
+// $ANTLR 3.0.1 Sql.g 2008-07-07 10:55:14
 
 
 import java.util.ArrayList;
@@ -44,18 +44,18 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start stmt
-    // Sql.g:20:1: stmt : ( select spaces selectList spaces where spaces constraintList | select spaces selectList | select spaces selectList spaces order spaces by spaces okw= keyword spaces | select spaces selectList spaces where spaces constraintList spaces order spaces by spaces okw= keyword spaces );
+    // Sql.g:20:1: stmt : ( select spaces selectList spaces where spaces constraintList spaces | select spaces selectList spaces | select spaces selectList spaces order spaces by spaces okw= keyword spaces | select spaces selectList spaces where spaces constraintList spaces order spaces by spaces okw= keyword spaces );
     public final void stmt() throws RecognitionException {
         keyword_return okw = null;
 
 
         try {
-            // Sql.g:20:6: ( select spaces selectList spaces where spaces constraintList | select spaces selectList | select spaces selectList spaces order spaces by spaces okw= keyword spaces | select spaces selectList spaces where spaces constraintList spaces order spaces by spaces okw= keyword spaces )
+            // Sql.g:20:6: ( select spaces selectList spaces where spaces constraintList spaces | select spaces selectList spaces | select spaces selectList spaces order spaces by spaces okw= keyword spaces | select spaces selectList spaces where spaces constraintList spaces order spaces by spaces okw= keyword spaces )
             int alt1=4;
             alt1 = dfa1.predict(input);
             switch (alt1) {
                 case 1 :
-                    // Sql.g:20:8: select spaces selectList spaces where spaces constraintList
+                    // Sql.g:20:8: select spaces selectList spaces where spaces constraintList spaces
                     {
                     pushFollow(FOLLOW_select_in_stmt27);
                     select();
@@ -85,22 +85,30 @@ public class SqlParser extends Parser {
                     constraintList();
                     _fsp--;
 
+                    pushFollow(FOLLOW_spaces_in_stmt41);
+                    spaces();
+                    _fsp--;
+
 
                     }
                     break;
                 case 2 :
-                    // Sql.g:21:4: select spaces selectList
+                    // Sql.g:21:4: select spaces selectList spaces
                     {
-                    pushFollow(FOLLOW_select_in_stmt46);
+                    pushFollow(FOLLOW_select_in_stmt47);
                     select();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt48);
+                    pushFollow(FOLLOW_spaces_in_stmt49);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_selectList_in_stmt50);
+                    pushFollow(FOLLOW_selectList_in_stmt51);
                     selectList();
+                    _fsp--;
+
+                    pushFollow(FOLLOW_spaces_in_stmt53);
+                    spaces();
                     _fsp--;
 
 
@@ -109,44 +117,44 @@ public class SqlParser extends Parser {
                 case 3 :
                     // Sql.g:22:4: select spaces selectList spaces order spaces by spaces okw= keyword spaces
                     {
-                    pushFollow(FOLLOW_select_in_stmt55);
+                    pushFollow(FOLLOW_select_in_stmt58);
                     select();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt57);
+                    pushFollow(FOLLOW_spaces_in_stmt60);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_selectList_in_stmt59);
+                    pushFollow(FOLLOW_selectList_in_stmt62);
                     selectList();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt61);
+                    pushFollow(FOLLOW_spaces_in_stmt64);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_order_in_stmt63);
+                    pushFollow(FOLLOW_order_in_stmt66);
                     order();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt65);
+                    pushFollow(FOLLOW_spaces_in_stmt68);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_by_in_stmt67);
+                    pushFollow(FOLLOW_by_in_stmt70);
                     by();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt69);
+                    pushFollow(FOLLOW_spaces_in_stmt72);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_keyword_in_stmt74);
+                    pushFollow(FOLLOW_keyword_in_stmt77);
                     okw=keyword();
                     _fsp--;
 
                     okws.add(input.toString(okw.start,okw.stop));
-                    pushFollow(FOLLOW_spaces_in_stmt80);
+                    pushFollow(FOLLOW_spaces_in_stmt83);
                     spaces();
                     _fsp--;
 
@@ -156,60 +164,60 @@ public class SqlParser extends Parser {
                 case 4 :
                     // Sql.g:25:4: select spaces selectList spaces where spaces constraintList spaces order spaces by spaces okw= keyword spaces
                     {
-                    pushFollow(FOLLOW_select_in_stmt85);
+                    pushFollow(FOLLOW_select_in_stmt88);
                     select();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt87);
+                    pushFollow(FOLLOW_spaces_in_stmt90);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_selectList_in_stmt89);
+                    pushFollow(FOLLOW_selectList_in_stmt92);
                     selectList();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt91);
+                    pushFollow(FOLLOW_spaces_in_stmt94);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_where_in_stmt93);
+                    pushFollow(FOLLOW_where_in_stmt96);
                     where();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt95);
+                    pushFollow(FOLLOW_spaces_in_stmt98);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_constraintList_in_stmt97);
+                    pushFollow(FOLLOW_constraintList_in_stmt100);
                     constraintList();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt99);
+                    pushFollow(FOLLOW_spaces_in_stmt102);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_order_in_stmt101);
+                    pushFollow(FOLLOW_order_in_stmt104);
                     order();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt103);
+                    pushFollow(FOLLOW_spaces_in_stmt106);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_by_in_stmt105);
+                    pushFollow(FOLLOW_by_in_stmt108);
                     by();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_stmt107);
+                    pushFollow(FOLLOW_spaces_in_stmt110);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_keyword_in_stmt112);
+                    pushFollow(FOLLOW_keyword_in_stmt115);
                     okw=keyword();
                     _fsp--;
 
                     okws.add(input.toString(okw.start,okw.stop));
-                    pushFollow(FOLLOW_spaces_in_stmt118);
+                    pushFollow(FOLLOW_spaces_in_stmt121);
                     spaces();
                     _fsp--;
 
@@ -252,7 +260,7 @@ public class SqlParser extends Parser {
             	case 1 :
             	    // Sql.g:30:11: SPACE
             	    {
-            	    match(input,SPACE,FOLLOW_SPACE_in_spaces128); 
+            	    match(input,SPACE,FOLLOW_SPACE_in_spaces131); 
 
             	    }
             	    break;
@@ -287,7 +295,7 @@ public class SqlParser extends Parser {
             // Sql.g:32:12: (kw= keyword ( spaces COMMA spaces kw= keyword )* )
             // Sql.g:32:13: kw= keyword ( spaces COMMA spaces kw= keyword )*
             {
-            pushFollow(FOLLOW_keyword_in_selectList143);
+            pushFollow(FOLLOW_keyword_in_selectList146);
             kw=keyword();
             _fsp--;
 
@@ -301,16 +309,16 @@ public class SqlParser extends Parser {
             	case 1 :
             	    // Sql.g:34:3: spaces COMMA spaces kw= keyword
             	    {
-            	    pushFollow(FOLLOW_spaces_in_selectList156);
+            	    pushFollow(FOLLOW_spaces_in_selectList159);
             	    spaces();
             	    _fsp--;
 
-            	    match(input,COMMA,FOLLOW_COMMA_in_selectList160); 
-            	    pushFollow(FOLLOW_spaces_in_selectList164);
+            	    match(input,COMMA,FOLLOW_COMMA_in_selectList163); 
+            	    pushFollow(FOLLOW_spaces_in_selectList167);
             	    spaces();
             	    _fsp--;
 
-            	    pushFollow(FOLLOW_keyword_in_selectList171);
+            	    pushFollow(FOLLOW_keyword_in_selectList174);
             	    kw=keyword();
             	    _fsp--;
 
@@ -416,7 +424,7 @@ public class SqlParser extends Parser {
                 case 1 :
                     // Sql.g:40:11: entity
                     {
-                    pushFollow(FOLLOW_entity_in_keyword196);
+                    pushFollow(FOLLOW_entity_in_keyword199);
                     entity();
                     _fsp--;
 
@@ -426,12 +434,12 @@ public class SqlParser extends Parser {
                 case 2 :
                     // Sql.g:41:4: entity DOT attr
                     {
-                    pushFollow(FOLLOW_entity_in_keyword202);
+                    pushFollow(FOLLOW_entity_in_keyword205);
                     entity();
                     _fsp--;
 
-                    match(input,DOT,FOLLOW_DOT_in_keyword204); 
-                    pushFollow(FOLLOW_attr_in_keyword206);
+                    match(input,DOT,FOLLOW_DOT_in_keyword207); 
+                    pushFollow(FOLLOW_attr_in_keyword209);
                     attr();
                     _fsp--;
 
@@ -441,12 +449,12 @@ public class SqlParser extends Parser {
                 case 3 :
                     // Sql.g:42:4: entity DOT funct
                     {
-                    pushFollow(FOLLOW_entity_in_keyword211);
+                    pushFollow(FOLLOW_entity_in_keyword214);
                     entity();
                     _fsp--;
 
-                    match(input,DOT,FOLLOW_DOT_in_keyword213); 
-                    pushFollow(FOLLOW_funct_in_keyword215);
+                    match(input,DOT,FOLLOW_DOT_in_keyword216); 
+                    pushFollow(FOLLOW_funct_in_keyword218);
                     funct();
                     _fsp--;
 
@@ -456,61 +464,61 @@ public class SqlParser extends Parser {
                 case 4 :
                     // Sql.g:43:4: count spaces '(' spaces entity spaces ')'
                     {
-                    pushFollow(FOLLOW_count_in_keyword220);
+                    pushFollow(FOLLOW_count_in_keyword223);
                     count();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_keyword222);
+                    pushFollow(FOLLOW_spaces_in_keyword225);
                     spaces();
                     _fsp--;
 
-                    match(input,15,FOLLOW_15_in_keyword224); 
-                    pushFollow(FOLLOW_spaces_in_keyword226);
+                    match(input,15,FOLLOW_15_in_keyword227); 
+                    pushFollow(FOLLOW_spaces_in_keyword229);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_entity_in_keyword228);
+                    pushFollow(FOLLOW_entity_in_keyword231);
                     entity();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_keyword230);
+                    pushFollow(FOLLOW_spaces_in_keyword233);
                     spaces();
                     _fsp--;
 
-                    match(input,16,FOLLOW_16_in_keyword232); 
+                    match(input,16,FOLLOW_16_in_keyword235); 
 
                     }
                     break;
                 case 5 :
                     // Sql.g:44:4: sum spaces '(' spaces entity DOT attr spaces ')'
                     {
-                    pushFollow(FOLLOW_sum_in_keyword237);
+                    pushFollow(FOLLOW_sum_in_keyword240);
                     sum();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_keyword239);
+                    pushFollow(FOLLOW_spaces_in_keyword242);
                     spaces();
                     _fsp--;
 
-                    match(input,15,FOLLOW_15_in_keyword241); 
-                    pushFollow(FOLLOW_spaces_in_keyword243);
+                    match(input,15,FOLLOW_15_in_keyword244); 
+                    pushFollow(FOLLOW_spaces_in_keyword246);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_entity_in_keyword245);
+                    pushFollow(FOLLOW_entity_in_keyword248);
                     entity();
                     _fsp--;
 
-                    match(input,DOT,FOLLOW_DOT_in_keyword247); 
-                    pushFollow(FOLLOW_attr_in_keyword249);
+                    match(input,DOT,FOLLOW_DOT_in_keyword250); 
+                    pushFollow(FOLLOW_attr_in_keyword252);
                     attr();
                     _fsp--;
 
-                    pushFollow(FOLLOW_spaces_in_keyword251);
+                    pushFollow(FOLLOW_spaces_in_keyword254);
                     spaces();
                     _fsp--;
 
-                    match(input,16,FOLLOW_16_in_keyword253); 
+                    match(input,16,FOLLOW_16_in_keyword256); 
 
                     }
                     break;
@@ -540,7 +548,7 @@ public class SqlParser extends Parser {
             // Sql.g:46:16: ( constraint ( spaces rel= logicalOp spaces constraint )* )
             // Sql.g:46:18: constraint ( spaces rel= logicalOp spaces constraint )*
             {
-            pushFollow(FOLLOW_constraint_in_constraintList262);
+            pushFollow(FOLLOW_constraint_in_constraintList265);
             constraint();
             _fsp--;
 
@@ -553,20 +561,20 @@ public class SqlParser extends Parser {
             	case 1 :
             	    // Sql.g:46:31: spaces rel= logicalOp spaces constraint
             	    {
-            	    pushFollow(FOLLOW_spaces_in_constraintList266);
+            	    pushFollow(FOLLOW_spaces_in_constraintList269);
             	    spaces();
             	    _fsp--;
 
-            	    pushFollow(FOLLOW_logicalOp_in_constraintList273);
+            	    pushFollow(FOLLOW_logicalOp_in_constraintList276);
             	    rel=logicalOp();
             	    _fsp--;
 
             	     constraints.add(input.toString(rel.start,rel.stop));
-            	    pushFollow(FOLLOW_spaces_in_constraintList281);
+            	    pushFollow(FOLLOW_spaces_in_constraintList284);
             	    spaces();
             	    _fsp--;
 
-            	    pushFollow(FOLLOW_constraint_in_constraintList283);
+            	    pushFollow(FOLLOW_constraint_in_constraintList286);
             	    constraint();
             	    _fsp--;
 
@@ -619,12 +627,12 @@ public class SqlParser extends Parser {
                 case 1 :
                     // Sql.g:50:14: kw= keyword spaces op= ( EQ | LT | GT ) spaces val= genValue
                     {
-                    pushFollow(FOLLOW_keyword_in_constraint296);
+                    pushFollow(FOLLOW_keyword_in_constraint299);
                     kw=keyword();
                     _fsp--;
 
                     Constraint c= new Constraint(); c.setKey(input.toString(kw.start,kw.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint305);
+                    pushFollow(FOLLOW_spaces_in_constraint308);
                     spaces();
                     _fsp--;
 
@@ -636,15 +644,15 @@ public class SqlParser extends Parser {
                     else {
                         MismatchedSetException mse =
                             new MismatchedSetException(null,input);
-                        recoverFromMismatchedSet(input,mse,FOLLOW_set_in_constraint312);    throw mse;
+                        recoverFromMismatchedSet(input,mse,FOLLOW_set_in_constraint315);    throw mse;
                     }
 
                     c.setOp(op.getText());
-                    pushFollow(FOLLOW_spaces_in_constraint332);
+                    pushFollow(FOLLOW_spaces_in_constraint335);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_genValue_in_constraint339);
+                    pushFollow(FOLLOW_genValue_in_constraint342);
                     val=genValue();
                     _fsp--;
 
@@ -655,64 +663,64 @@ public class SqlParser extends Parser {
                 case 2 :
                     // Sql.g:56:2: kw= keyword spaces op1= in spaces '(' spaces val1= valueList spaces ')'
                     {
-                    pushFollow(FOLLOW_keyword_in_constraint368);
+                    pushFollow(FOLLOW_keyword_in_constraint371);
                     kw=keyword();
                     _fsp--;
 
                     Constraint c= new Constraint(); c.setKey(input.toString(kw.start,kw.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint377);
+                    pushFollow(FOLLOW_spaces_in_constraint380);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_in_in_constraint384);
+                    pushFollow(FOLLOW_in_in_constraint387);
                     op1=in();
                     _fsp--;
 
                     c.setOp(input.toString(op1.start,op1.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint395);
+                    pushFollow(FOLLOW_spaces_in_constraint398);
                     spaces();
                     _fsp--;
 
-                    match(input,15,FOLLOW_15_in_constraint397); 
-                    pushFollow(FOLLOW_spaces_in_constraint401);
+                    match(input,15,FOLLOW_15_in_constraint400); 
+                    pushFollow(FOLLOW_spaces_in_constraint404);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_valueList_in_constraint407);
+                    pushFollow(FOLLOW_valueList_in_constraint410);
                     val1=valueList();
                     _fsp--;
 
                     c.setValue(input.toString(val1.start,val1.stop)); constraints.add(c);
-                    pushFollow(FOLLOW_spaces_in_constraint415);
+                    pushFollow(FOLLOW_spaces_in_constraint418);
                     spaces();
                     _fsp--;
 
-                    match(input,16,FOLLOW_16_in_constraint419); 
+                    match(input,16,FOLLOW_16_in_constraint422); 
 
                     }
                     break;
                 case 3 :
                     // Sql.g:65:2: kw= keyword spaces op2= like spaces val2= likeValue
                     {
-                    pushFollow(FOLLOW_keyword_in_constraint445);
+                    pushFollow(FOLLOW_keyword_in_constraint448);
                     kw=keyword();
                     _fsp--;
 
                     Constraint c= new Constraint(); c.setKey(input.toString(kw.start,kw.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint454);
+                    pushFollow(FOLLOW_spaces_in_constraint457);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_like_in_constraint461);
+                    pushFollow(FOLLOW_like_in_constraint464);
                     op2=like();
                     _fsp--;
 
                     c.setOp(input.toString(op2.start,op2.stop));
-                    pushFollow(FOLLOW_spaces_in_constraint470);
+                    pushFollow(FOLLOW_spaces_in_constraint473);
                     spaces();
                     _fsp--;
 
-                    pushFollow(FOLLOW_likeValue_in_constraint477);
+                    pushFollow(FOLLOW_likeValue_in_constraint480);
                     val2=likeValue();
                     _fsp--;
 
@@ -748,7 +756,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_where506);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_where509);    throw mse;
             }
 
 
@@ -776,64 +784,20 @@ public class SqlParser extends Parser {
 
             if ( (LA7_0==VALUE) ) {
                 switch ( input.LA(2) ) {
-                case SPACE:
+                case DOT:
                     {
                     int LA7_2 = input.LA(3);
 
                     if ( (LA7_2==VALUE) ) {
                         int LA7_5 = input.LA(4);
 
-                        if ( (LA7_5==SPACE) ) {
+                        if ( (LA7_5==DOT) ) {
                             int LA7_7 = input.LA(5);
 
                             if ( (LA7_7==VALUE) ) {
-                                alt7=8;
-                            }
-                            else if ( ((LA7_7>=SPACE && LA7_7<=COMMA)||LA7_7==16||(LA7_7>=68 && LA7_7<=71)||(LA7_7>=74 && LA7_7<=75)) ) {
-                                alt7=7;
-                            }
-                            else {
-                                NoViableAltException nvae =
-                                    new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 7, input);
+                                int LA7_11 = input.LA(6);
 
-                                throw nvae;
-                            }
-                        }
-                        else if ( (LA7_5==EOF||LA7_5==COMMA||(LA7_5>=EQ && LA7_5<=STAR)||LA7_5==16||(LA7_5>=68 && LA7_5<=71)||(LA7_5>=74 && LA7_5<=75)) ) {
-                            alt7=7;
-                        }
-                        else {
-                            NoViableAltException nvae =
-                                new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 5, input);
-
-                            throw nvae;
-                        }
-                    }
-                    else if ( ((LA7_2>=SPACE && LA7_2<=COMMA)||LA7_2==16||(LA7_2>=68 && LA7_2<=71)||(LA7_2>=74 && LA7_2<=75)) ) {
-                        alt7=1;
-                    }
-                    else {
-                        NoViableAltException nvae =
-                            new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 2, input);
-
-                        throw nvae;
-                    }
-                    }
-                    break;
-                case DOT:
-                    {
-                    int LA7_3 = input.LA(3);
-
-                    if ( (LA7_3==VALUE) ) {
-                        int LA7_6 = input.LA(4);
-
-                        if ( (LA7_6==DOT) ) {
-                            int LA7_9 = input.LA(5);
-
-                            if ( (LA7_9==VALUE) ) {
-                                int LA7_12 = input.LA(6);
-
-                                if ( (LA7_12==DOT) ) {
+                                if ( (LA7_11==DOT) ) {
                                     int LA7_13 = input.LA(7);
 
                                     if ( (LA7_13==VALUE) ) {
@@ -882,15 +846,56 @@ public class SqlParser extends Parser {
                                         throw nvae;
                                     }
                                 }
-                                else if ( (LA7_12==EOF||(LA7_12>=SPACE && LA7_12<=COMMA)||(LA7_12>=EQ && LA7_12<=STAR)||LA7_12==16||(LA7_12>=68 && LA7_12<=71)||(LA7_12>=74 && LA7_12<=75)) ) {
+                                else if ( (LA7_11==EOF||(LA7_11>=SPACE && LA7_11<=COMMA)||(LA7_11>=EQ && LA7_11<=STAR)||LA7_11==16||(LA7_11>=68 && LA7_11<=71)||(LA7_11>=74 && LA7_11<=75)) ) {
                                     alt7=3;
                                 }
                                 else {
                                     NoViableAltException nvae =
-                                        new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 12, input);
+                                        new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 11, input);
 
                                     throw nvae;
                                 }
+                            }
+                            else {
+                                NoViableAltException nvae =
+                                    new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 7, input);
+
+                                throw nvae;
+                            }
+                        }
+                        else if ( (LA7_5==EOF||(LA7_5>=SPACE && LA7_5<=COMMA)||(LA7_5>=EQ && LA7_5<=STAR)||LA7_5==16||(LA7_5>=68 && LA7_5<=71)||(LA7_5>=74 && LA7_5<=75)) ) {
+                            alt7=2;
+                        }
+                        else {
+                            NoViableAltException nvae =
+                                new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 5, input);
+
+                            throw nvae;
+                        }
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("72:1: dotValue : ( VALUE | VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE | VALUE SPACE VALUE | VALUE SPACE VALUE SPACE VALUE );", 7, 2, input);
+
+                        throw nvae;
+                    }
+                    }
+                    break;
+                case SPACE:
+                    {
+                    int LA7_3 = input.LA(3);
+
+                    if ( (LA7_3==VALUE) ) {
+                        int LA7_6 = input.LA(4);
+
+                        if ( (LA7_6==SPACE) ) {
+                            int LA7_9 = input.LA(5);
+
+                            if ( (LA7_9==VALUE) ) {
+                                alt7=8;
+                            }
+                            else if ( (LA7_9==EOF||(LA7_9>=SPACE && LA7_9<=COMMA)||LA7_9==16||(LA7_9>=68 && LA7_9<=71)||(LA7_9>=74 && LA7_9<=75)) ) {
+                                alt7=7;
                             }
                             else {
                                 NoViableAltException nvae =
@@ -899,8 +904,8 @@ public class SqlParser extends Parser {
                                 throw nvae;
                             }
                         }
-                        else if ( (LA7_6==EOF||(LA7_6>=SPACE && LA7_6<=COMMA)||(LA7_6>=EQ && LA7_6<=STAR)||LA7_6==16||(LA7_6>=68 && LA7_6<=71)||(LA7_6>=74 && LA7_6<=75)) ) {
-                            alt7=2;
+                        else if ( (LA7_6==EOF||LA7_6==COMMA||(LA7_6>=EQ && LA7_6<=STAR)||LA7_6==16||(LA7_6>=68 && LA7_6<=71)||(LA7_6>=74 && LA7_6<=75)) ) {
+                            alt7=7;
                         }
                         else {
                             NoViableAltException nvae =
@@ -908,6 +913,9 @@ public class SqlParser extends Parser {
 
                             throw nvae;
                         }
+                    }
+                    else if ( (LA7_3==EOF||(LA7_3>=SPACE && LA7_3<=COMMA)||LA7_3==16||(LA7_3>=68 && LA7_3<=71)||(LA7_3>=74 && LA7_3<=75)) ) {
+                        alt7=1;
                     }
                     else {
                         NoViableAltException nvae =
@@ -954,92 +962,92 @@ public class SqlParser extends Parser {
                 case 1 :
                     // Sql.g:72:19: VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue526); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue529); 
 
                     }
                     break;
                 case 2 :
                     // Sql.g:73:5: VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue533); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue535); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue537); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue536); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue538); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue540); 
 
                     }
                     break;
                 case 3 :
                     // Sql.g:74:5: VALUE DOT VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue543); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue545); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue547); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue549); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue551); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue546); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue548); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue550); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue552); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue554); 
 
                     }
                     break;
                 case 4 :
                     // Sql.g:75:5: VALUE DOT VALUE DOT VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue557); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue559); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue561); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue563); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue565); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue567); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue569); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue560); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue562); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue564); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue566); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue568); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue570); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue572); 
 
                     }
                     break;
                 case 5 :
                     // Sql.g:76:5: VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue575); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue577); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue579); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue581); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue583); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue585); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue587); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue589); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue591); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue578); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue580); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue582); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue584); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue586); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue588); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue590); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue592); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue594); 
 
                     }
                     break;
                 case 6 :
                     // Sql.g:77:5: VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue597); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue599); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue601); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue603); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue605); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue607); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue609); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue611); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue613); 
-                    match(input,DOT,FOLLOW_DOT_in_dotValue615); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue617); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue600); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue602); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue604); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue606); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue608); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue610); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue612); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue614); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue616); 
+                    match(input,DOT,FOLLOW_DOT_in_dotValue618); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue620); 
 
                     }
                     break;
                 case 7 :
                     // Sql.g:78:5: VALUE SPACE VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue623); 
-                    match(input,SPACE,FOLLOW_SPACE_in_dotValue625); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue627); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue626); 
+                    match(input,SPACE,FOLLOW_SPACE_in_dotValue628); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue630); 
 
                     }
                     break;
                 case 8 :
                     // Sql.g:79:5: VALUE SPACE VALUE SPACE VALUE
                     {
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue633); 
-                    match(input,SPACE,FOLLOW_SPACE_in_dotValue635); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue637); 
-                    match(input,SPACE,FOLLOW_SPACE_in_dotValue639); 
-                    match(input,VALUE,FOLLOW_VALUE_in_dotValue641); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue636); 
+                    match(input,SPACE,FOLLOW_SPACE_in_dotValue638); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue640); 
+                    match(input,SPACE,FOLLOW_SPACE_in_dotValue642); 
+                    match(input,VALUE,FOLLOW_VALUE_in_dotValue644); 
 
                     }
                     break;
@@ -1069,7 +1077,7 @@ public class SqlParser extends Parser {
             // Sql.g:82:11: ( dotValue ( spaces COMMA spaces dotValue )* )
             // Sql.g:82:12: dotValue ( spaces COMMA spaces dotValue )*
             {
-            pushFollow(FOLLOW_dotValue_in_valueList649);
+            pushFollow(FOLLOW_dotValue_in_valueList652);
             dotValue();
             _fsp--;
 
@@ -1082,16 +1090,16 @@ public class SqlParser extends Parser {
             	case 1 :
             	    // Sql.g:82:23: spaces COMMA spaces dotValue
             	    {
-            	    pushFollow(FOLLOW_spaces_in_valueList653);
+            	    pushFollow(FOLLOW_spaces_in_valueList656);
             	    spaces();
             	    _fsp--;
 
-            	    match(input,COMMA,FOLLOW_COMMA_in_valueList655); 
-            	    pushFollow(FOLLOW_spaces_in_valueList657);
+            	    match(input,COMMA,FOLLOW_COMMA_in_valueList658); 
+            	    pushFollow(FOLLOW_spaces_in_valueList660);
             	    spaces();
             	    _fsp--;
 
-            	    pushFollow(FOLLOW_dotValue_in_valueList659);
+            	    pushFollow(FOLLOW_dotValue_in_valueList662);
             	    dotValue();
             	    _fsp--;
 
@@ -1131,9 +1139,9 @@ public class SqlParser extends Parser {
             case EQ:
                 {
                 switch ( input.LA(2) ) {
-                case GT:
+                case LT:
                     {
-                    alt9=4;
+                    alt9=5;
                     }
                     break;
                 case VALUE:
@@ -1141,9 +1149,9 @@ public class SqlParser extends Parser {
                     alt9=1;
                     }
                     break;
-                case LT:
+                case GT:
                     {
-                    alt9=5;
+                    alt9=4;
                     }
                     break;
                 default:
@@ -1177,11 +1185,11 @@ public class SqlParser extends Parser {
                 {
                 int LA9_3 = input.LA(2);
 
-                if ( (LA9_3==EQ) ) {
-                    alt9=7;
-                }
-                else if ( (LA9_3==VALUE) ) {
+                if ( (LA9_3==VALUE) ) {
                     alt9=3;
+                }
+                else if ( (LA9_3==EQ) ) {
+                    alt9=7;
                 }
                 else {
                     NoViableAltException nvae =
@@ -1205,7 +1213,7 @@ public class SqlParser extends Parser {
                     // Sql.g:83:11: ( EQ )
                     // Sql.g:83:12: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt670); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt673); 
 
                     }
 
@@ -1218,7 +1226,7 @@ public class SqlParser extends Parser {
                     // Sql.g:84:4: ( LT )
                     // Sql.g:84:5: LT
                     {
-                    match(input,LT,FOLLOW_LT_in_compOpt677); 
+                    match(input,LT,FOLLOW_LT_in_compOpt680); 
 
                     }
 
@@ -1231,7 +1239,7 @@ public class SqlParser extends Parser {
                     // Sql.g:85:4: ( GT )
                     // Sql.g:85:5: GT
                     {
-                    match(input,GT,FOLLOW_GT_in_compOpt684); 
+                    match(input,GT,FOLLOW_GT_in_compOpt687); 
 
                     }
 
@@ -1244,14 +1252,14 @@ public class SqlParser extends Parser {
                     // Sql.g:86:4: ( EQ )
                     // Sql.g:86:5: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt691); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt694); 
 
                     }
 
                     // Sql.g:86:8: ( GT )
                     // Sql.g:86:9: GT
                     {
-                    match(input,GT,FOLLOW_GT_in_compOpt694); 
+                    match(input,GT,FOLLOW_GT_in_compOpt697); 
 
                     }
 
@@ -1264,14 +1272,14 @@ public class SqlParser extends Parser {
                     // Sql.g:87:4: ( EQ )
                     // Sql.g:87:5: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt701); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt704); 
 
                     }
 
                     // Sql.g:87:8: ( LT )
                     // Sql.g:87:9: LT
                     {
-                    match(input,LT,FOLLOW_LT_in_compOpt704); 
+                    match(input,LT,FOLLOW_LT_in_compOpt707); 
 
                     }
 
@@ -1284,14 +1292,14 @@ public class SqlParser extends Parser {
                     // Sql.g:88:4: ( LT )
                     // Sql.g:88:5: LT
                     {
-                    match(input,LT,FOLLOW_LT_in_compOpt711); 
+                    match(input,LT,FOLLOW_LT_in_compOpt714); 
 
                     }
 
                     // Sql.g:88:8: ( EQ )
                     // Sql.g:88:9: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt714); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt717); 
 
                     }
 
@@ -1304,14 +1312,14 @@ public class SqlParser extends Parser {
                     // Sql.g:89:4: ( GT )
                     // Sql.g:89:5: GT
                     {
-                    match(input,GT,FOLLOW_GT_in_compOpt721); 
+                    match(input,GT,FOLLOW_GT_in_compOpt724); 
 
                     }
 
                     // Sql.g:89:8: ( EQ )
                     // Sql.g:89:9: EQ
                     {
-                    match(input,EQ,FOLLOW_EQ_in_compOpt724); 
+                    match(input,EQ,FOLLOW_EQ_in_compOpt727); 
 
                     }
 
@@ -1399,6 +1407,13 @@ public class SqlParser extends Parser {
                                                     }
                                                     }
                                                     break;
+                                                case EQ:
+                                                case LT:
+                                                case GT:
+                                                    {
+                                                    alt11=2;
+                                                    }
+                                                    break;
                                                 case EOF:
                                                 case SPACE:
                                                 case 68:
@@ -1409,13 +1424,6 @@ public class SqlParser extends Parser {
                                                 case 75:
                                                     {
                                                     alt11=1;
-                                                    }
-                                                    break;
-                                                case EQ:
-                                                case LT:
-                                                case GT:
-                                                    {
-                                                    alt11=2;
                                                     }
                                                     break;
                                                 default:
@@ -1504,13 +1512,6 @@ public class SqlParser extends Parser {
                             }
                             }
                             break;
-                        case EQ:
-                        case LT:
-                        case GT:
-                            {
-                            alt11=2;
-                            }
-                            break;
                         case EOF:
                         case SPACE:
                         case 68:
@@ -1521,6 +1522,13 @@ public class SqlParser extends Parser {
                         case 75:
                             {
                             alt11=1;
+                            }
+                            break;
+                        case EQ:
+                        case LT:
+                        case GT:
+                            {
+                            alt11=2;
                             }
                             break;
                         default:
@@ -1565,7 +1573,7 @@ public class SqlParser extends Parser {
                                     throw nvae;
                                 }
                             }
-                            else if ( (LA11_9==SPACE||(LA11_9>=68 && LA11_9<=71)||(LA11_9>=74 && LA11_9<=75)) ) {
+                            else if ( (LA11_9==EOF||LA11_9==SPACE||(LA11_9>=68 && LA11_9<=71)||(LA11_9>=74 && LA11_9<=75)) ) {
                                 alt11=1;
                             }
                             else {
@@ -1574,13 +1582,6 @@ public class SqlParser extends Parser {
 
                                 throw nvae;
                             }
-                            }
-                            break;
-                        case EQ:
-                        case LT:
-                        case GT:
-                            {
-                            alt11=2;
                             }
                             break;
                         case EOF:
@@ -1594,6 +1595,13 @@ public class SqlParser extends Parser {
                             alt11=1;
                             }
                             break;
+                        case EQ:
+                        case LT:
+                        case GT:
+                            {
+                            alt11=2;
+                            }
+                            break;
                         default:
                             NoViableAltException nvae =
                                 new NoViableAltException("90:1: genValue : ( dotValue | dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )* );", 11, 7, input);
@@ -1602,7 +1610,7 @@ public class SqlParser extends Parser {
                         }
 
                     }
-                    else if ( (LA11_3==SPACE||(LA11_3>=68 && LA11_3<=71)||(LA11_3>=74 && LA11_3<=75)) ) {
+                    else if ( (LA11_3==EOF||LA11_3==SPACE||(LA11_3>=68 && LA11_3<=71)||(LA11_3>=74 && LA11_3<=75)) ) {
                         alt11=1;
                     }
                     else {
@@ -1611,13 +1619,6 @@ public class SqlParser extends Parser {
 
                         throw nvae;
                     }
-                    }
-                    break;
-                case EQ:
-                case LT:
-                case GT:
-                    {
-                    alt11=2;
                     }
                     break;
                 case EOF:
@@ -1629,6 +1630,13 @@ public class SqlParser extends Parser {
                 case 75:
                     {
                     alt11=1;
+                    }
+                    break;
+                case EQ:
+                case LT:
+                case GT:
+                    {
+                    alt11=2;
                     }
                     break;
                 default:
@@ -1649,7 +1657,7 @@ public class SqlParser extends Parser {
                 case 1 :
                     // Sql.g:90:11: dotValue
                     {
-                    pushFollow(FOLLOW_dotValue_in_genValue731);
+                    pushFollow(FOLLOW_dotValue_in_genValue734);
                     dotValue();
                     _fsp--;
 
@@ -1659,15 +1667,15 @@ public class SqlParser extends Parser {
                 case 2 :
                     // Sql.g:91:4: dotValue compOpt dotValue ( AMP dotValue compOpt dotValue )*
                     {
-                    pushFollow(FOLLOW_dotValue_in_genValue736);
+                    pushFollow(FOLLOW_dotValue_in_genValue739);
                     dotValue();
                     _fsp--;
 
-                    pushFollow(FOLLOW_compOpt_in_genValue738);
+                    pushFollow(FOLLOW_compOpt_in_genValue741);
                     compOpt();
                     _fsp--;
 
-                    pushFollow(FOLLOW_dotValue_in_genValue740);
+                    pushFollow(FOLLOW_dotValue_in_genValue743);
                     dotValue();
                     _fsp--;
 
@@ -1686,16 +1694,16 @@ public class SqlParser extends Parser {
                     	case 1 :
                     	    // Sql.g:91:31: AMP dotValue compOpt dotValue
                     	    {
-                    	    match(input,AMP,FOLLOW_AMP_in_genValue743); 
-                    	    pushFollow(FOLLOW_dotValue_in_genValue745);
+                    	    match(input,AMP,FOLLOW_AMP_in_genValue746); 
+                    	    pushFollow(FOLLOW_dotValue_in_genValue748);
                     	    dotValue();
                     	    _fsp--;
 
-                    	    pushFollow(FOLLOW_compOpt_in_genValue747);
+                    	    pushFollow(FOLLOW_compOpt_in_genValue750);
                     	    compOpt();
                     	    _fsp--;
 
-                    	    pushFollow(FOLLOW_dotValue_in_genValue749);
+                    	    pushFollow(FOLLOW_dotValue_in_genValue752);
                     	    dotValue();
                     	    _fsp--;
 
@@ -1758,7 +1766,7 @@ public class SqlParser extends Parser {
             	case 1 :
             	    // Sql.g:92:14: dotValue
             	    {
-            	    pushFollow(FOLLOW_dotValue_in_likeValue759);
+            	    pushFollow(FOLLOW_dotValue_in_likeValue762);
             	    dotValue();
             	    _fsp--;
 
@@ -1768,7 +1776,7 @@ public class SqlParser extends Parser {
             	case 2 :
             	    // Sql.g:92:24: STAR
             	    {
-            	    match(input,STAR,FOLLOW_STAR_in_likeValue762); 
+            	    match(input,STAR,FOLLOW_STAR_in_likeValue765); 
 
             	    }
             	    break;
@@ -1831,7 +1839,7 @@ public class SqlParser extends Parser {
                 case 1 :
                     // Sql.g:93:13: and
                     {
-                    pushFollow(FOLLOW_and_in_logicalOp771);
+                    pushFollow(FOLLOW_and_in_logicalOp774);
                     and();
                     _fsp--;
 
@@ -1841,7 +1849,7 @@ public class SqlParser extends Parser {
                 case 2 :
                     // Sql.g:93:17: or
                     {
-                    pushFollow(FOLLOW_or_in_logicalOp773);
+                    pushFollow(FOLLOW_or_in_logicalOp776);
                     or();
                     _fsp--;
 
@@ -1882,7 +1890,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_entity782);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_entity785);    throw mse;
             }
 
 
@@ -1914,7 +1922,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_attr835);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_attr838);    throw mse;
             }
 
 
@@ -1946,7 +1954,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct949);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct952);    throw mse;
             }
 
 
@@ -1978,7 +1986,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select987);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select990);    throw mse;
             }
 
 
@@ -2010,7 +2018,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and1008);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and1011);    throw mse;
             }
 
 
@@ -2042,7 +2050,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_order1021);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_order1024);    throw mse;
             }
 
 
@@ -2074,7 +2082,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_by1034);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_by1037);    throw mse;
             }
 
 
@@ -2106,7 +2114,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or1047);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or1050);    throw mse;
             }
 
 
@@ -2143,7 +2151,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in1060);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in1063);    throw mse;
             }
 
 
@@ -2177,7 +2185,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not1073);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not1076);    throw mse;
             }
 
 
@@ -2214,7 +2222,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like1086);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like1089);    throw mse;
             }
 
 
@@ -2248,7 +2256,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_count1099);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_count1102);    throw mse;
             }
 
 
@@ -2280,7 +2288,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_sum1112);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_sum1115);    throw mse;
             }
 
 
@@ -2306,62 +2314,65 @@ public class SqlParser extends Parser {
     static final String DFA1_eotS =
         "\u016c\uffff";
     static final String DFA1_eofS =
-        "\3\uffff\1\13\14\uffff\2\13\1\uffff\1\13\31\uffff\1\13\1\uffff\2"+
-        "\13\11\uffff\1\117\1\uffff\2\117\6\uffff\1\13\23\uffff\1\13\4\uffff"+
-        "\3\117\1\uffff\1\117\7\uffff\2\117\2\uffff\1\13\33\uffff\4\117\6"+
-        "\uffff\2\117\1\uffff\1\117\4\uffff\2\117\34\uffff\3\117\3\uffff"+
-        "\1\117\6\uffff\5\117\1\uffff\1\117\4\uffff\1\117\32\uffff\2\117"+
-        "\2\uffff\2\117\4\uffff\6\117\1\uffff\1\117\27\uffff\2\117\1\uffff"+
-        "\2\117\3\uffff\4\117\2\uffff\1\117\4\uffff\1\117\20\uffff\1\117"+
-        "\1\uffff\1\117\2\uffff\3\117\2\uffff\2\117\14\uffff\1\117\2\uffff"+
-        "\3\117\1\uffff\2\117\6\uffff\1\117\1\uffff\1\117\1\uffff\1\117\4"+
-        "\uffff\1\117\1\uffff\1\117";
+        "\3\uffff\1\12\3\uffff\1\12\10\uffff\2\12\1\uffff\1\12\31\uffff\1"+
+        "\12\1\uffff\2\12\11\uffff\2\115\1\uffff\1\115\6\uffff\1\12\4\uffff"+
+        "\1\115\4\uffff\1\115\1\uffff\1\115\7\uffff\1\12\4\uffff\3\115\4"+
+        "\uffff\3\115\6\uffff\1\12\6\uffff\1\115\12\uffff\1\115\1\uffff\1"+
+        "\115\7\uffff\2\115\5\uffff\2\115\1\uffff\1\115\4\uffff\4\115\11"+
+        "\uffff\1\115\1\uffff\1\115\10\uffff\1\115\10\uffff\1\115\3\uffff"+
+        "\5\115\1\uffff\1\115\4\uffff\3\115\3\uffff\1\115\15\uffff\1\115"+
+        "\1\uffff\1\115\1\uffff\1\115\10\uffff\1\115\2\uffff\1\115\4\uffff"+
+        "\6\115\1\uffff\2\115\2\uffff\2\115\12\uffff\1\115\11\uffff\1\115"+
+        "\2\uffff\1\115\3\uffff\4\115\3\uffff\1\115\3\uffff\2\115\1\uffff"+
+        "\2\115\13\uffff\1\115\6\uffff\3\115\2\uffff\3\115\1\uffff\1\115"+
+        "\10\uffff\1\115\4\uffff\3\115\1\uffff\2\115\1\uffff\1\115\7\uffff"+
+        "\1\115\1\uffff\2\115\4\uffff\1\115\1\uffff\1\115";
     static final String DFA1_minS =
         "\1\100\5\4\1\24\3\4\2\uffff\21\4\1\6\1\24\4\4\1\24\12\4\1\24\5\4"+
-        "\1\6\14\4\1\6\3\4\1\24\2\4\1\12\1\4\1\10\2\7\2\4\2\uffff\1\4\1\12"+
-        "\3\4\1\24\3\4\1\12\5\4\1\12\1\4\3\12\16\4\1\12\2\4\2\12\2\4\1\24"+
-        "\7\4\1\12\2\4\1\12\1\4\1\12\22\4\1\6\6\4\1\12\1\4\3\12\1\10\2\7"+
-        "\2\4\1\12\1\4\1\12\1\4\1\10\2\7\2\4\1\24\3\12\4\4\1\6\1\4\1\12\1"+
-        "\4\4\12\7\4\1\12\1\4\3\12\5\4\5\12\6\4\1\12\1\4\1\12\1\4\1\12\1"+
-        "\4\1\12\2\4\3\12\2\4\1\6\1\7\2\4\1\12\1\4\1\12\13\4\4\12\5\4\3\12"+
-        "\1\4\2\12\1\10\2\7\3\12\2\4\1\6\2\4\2\12\5\4\1\6\2\4\4\12\3\4\3"+
-        "\12\3\4\6\12\1\4\1\12\1\4\1\6\1\4\2\12\3\4\1\6\1\7\3\4\2\12\2\4"+
-        "\5\12\1\4\1\7\1\4\2\12\3\4\1\6\2\4\1\12\2\4\3\12\1\4\1\12\1\4\1"+
-        "\6\2\4\2\12\1\7\1\4\1\12\1\4";
+        "\1\6\14\4\1\6\3\4\1\24\2\4\1\12\3\4\2\uffff\1\4\1\12\1\4\1\10\2"+
+        "\7\2\4\1\24\3\4\1\12\14\4\4\12\10\4\1\12\1\4\1\24\10\4\1\12\1\4"+
+        "\1\12\1\4\1\12\2\4\1\12\2\4\1\12\16\4\1\6\11\4\1\12\2\4\1\12\1\4"+
+        "\1\12\1\4\1\10\2\7\2\4\1\24\2\12\1\4\2\12\1\10\2\7\1\12\1\4\1\12"+
+        "\2\4\1\12\6\4\1\12\1\4\3\12\4\4\1\6\1\4\1\12\1\4\3\12\3\4\1\12\5"+
+        "\4\1\12\1\4\1\12\1\4\1\12\1\4\1\12\2\4\5\12\1\4\2\12\2\4\1\12\1"+
+        "\4\1\12\11\4\1\6\1\7\4\4\1\12\4\4\3\12\1\4\2\12\1\10\2\7\4\12\1"+
+        "\4\2\12\1\4\1\12\1\4\1\12\4\4\1\6\1\4\1\12\1\4\3\12\2\4\1\6\7\4"+
+        "\6\12\1\4\6\12\3\4\1\6\1\7\3\4\1\6\4\4\5\12\1\4\4\12\3\4\1\6\2\4"+
+        "\1\7\3\4\5\12\1\4\1\6\3\4\2\12\1\7\1\4\1\12\1\4";
     static final String DFA1_maxS =
         "\1\103\2\124\1\107\2\17\1\77\1\107\2\124\2\uffff\1\17\1\36\1\17"+
         "\1\36\2\107\1\124\1\107\2\17\1\124\1\121\2\17\1\36\1\20\1\36\1\6"+
-        "\1\77\1\17\1\36\1\17\1\36\1\77\1\121\1\17\1\12\1\14\1\17\1\36\1"+
-        "\17\1\36\1\20\1\107\1\67\2\107\1\36\1\20\1\36\1\6\2\121\1\17\2\12"+
-        "\1\113\1\14\2\113\1\36\1\20\1\36\1\6\2\20\1\107\1\67\1\12\1\20\1"+
-        "\12\1\113\3\12\2\124\2\uffff\1\113\1\12\1\113\1\20\1\121\1\67\1"+
-        "\20\1\107\1\20\1\12\1\20\1\12\3\113\1\12\1\113\3\12\1\124\1\121"+
-        "\2\17\2\113\2\20\1\107\3\20\1\12\1\20\1\12\2\113\2\12\1\121\1\17"+
-        "\1\77\1\14\1\12\1\17\1\36\1\17\1\36\1\113\1\12\1\20\1\121\1\12\1"+
-        "\20\1\12\1\20\4\113\1\11\1\17\1\12\2\121\1\14\2\113\1\12\1\113\1"+
-        "\36\1\20\1\36\1\6\2\113\4\20\1\12\1\113\7\12\1\20\1\12\1\113\1\12"+
-        "\1\113\3\12\1\20\1\121\1\67\3\12\1\20\3\113\2\11\1\12\1\113\4\12"+
-        "\1\20\1\12\5\113\1\12\1\113\3\12\1\20\1\113\3\20\5\12\1\113\3\20"+
-        "\1\12\1\20\1\12\1\113\1\12\1\113\1\12\1\113\1\12\1\20\1\121\3\12"+
-        "\2\113\2\11\2\113\1\12\1\20\1\12\1\20\6\113\1\11\1\113\2\20\4\12"+
-        "\1\113\4\20\3\12\1\113\10\12\2\113\1\11\2\113\2\12\1\20\4\113\2"+
-        "\11\1\113\4\12\1\113\2\20\3\12\3\20\6\12\1\113\1\12\1\113\1\11\1"+
-        "\113\2\12\3\113\2\11\2\113\1\20\2\12\2\20\5\12\1\113\1\11\1\113"+
-        "\2\12\3\113\1\11\2\113\1\12\2\20\3\12\1\113\1\12\1\113\1\11\1\113"+
-        "\1\20\2\12\1\11\1\113\1\12\1\113";
+        "\1\77\1\17\1\36\1\17\1\36\1\77\1\121\1\17\1\14\1\12\1\17\1\36\1"+
+        "\17\1\36\1\20\1\107\1\67\2\107\1\36\1\20\1\36\1\6\2\121\1\17\1\12"+
+        "\1\14\2\113\1\12\1\113\1\36\1\20\1\36\1\6\2\20\1\107\1\67\1\12\1"+
+        "\20\1\12\1\113\2\124\2\uffff\1\113\1\12\1\113\3\12\1\20\1\121\1"+
+        "\67\1\20\1\107\1\20\1\12\1\20\1\12\3\113\1\124\1\121\2\17\3\113"+
+        "\4\12\2\20\1\107\3\20\1\12\1\20\1\12\1\113\1\77\1\121\1\17\1\14"+
+        "\1\12\1\17\1\36\1\17\1\36\1\12\1\113\1\12\1\113\1\12\1\20\1\121"+
+        "\1\12\2\20\1\12\2\113\2\121\1\17\1\12\1\14\2\113\1\12\1\113\1\36"+
+        "\1\20\1\36\1\6\4\113\1\11\4\20\2\12\1\20\1\12\1\113\1\12\1\113\3"+
+        "\12\1\20\1\121\1\67\2\12\1\113\6\12\1\20\1\12\1\113\1\20\2\12\5"+
+        "\113\1\12\1\113\3\12\1\20\3\113\2\11\1\12\1\113\3\12\3\20\1\12\3"+
+        "\20\1\12\1\20\1\12\1\113\1\12\1\113\1\12\1\113\1\12\1\20\1\121\5"+
+        "\12\1\113\2\12\1\113\1\20\1\12\1\20\1\12\6\113\1\11\2\113\2\11\2"+
+        "\113\2\20\1\12\4\20\3\12\1\113\11\12\1\113\2\12\1\113\1\12\1\20"+
+        "\1\12\4\113\2\11\1\12\1\113\3\12\2\113\1\11\2\113\5\20\6\12\1\113"+
+        "\6\12\3\113\2\11\3\113\1\11\1\113\3\20\5\12\1\113\4\12\3\113\1\11"+
+        "\2\113\1\11\1\113\2\20\5\12\1\113\1\11\2\113\1\20\2\12\1\11\1\113"+
+        "\1\12\1\113";
     static final String DFA1_acceptS =
-        "\12\uffff\1\3\1\2\103\uffff\1\1\1\4\u011b\uffff";
+        "\12\uffff\1\2\1\3\100\uffff\1\4\1\1\u011e\uffff";
     static final String DFA1_specialS =
         "\u016c\uffff}>";
     static final String[] DFA1_transitionS = {
             "\4\1",
             "\1\2\16\uffff\14\3\16\uffff\1\4\44\uffff\1\4\2\5",
             "\1\2\16\uffff\14\3\16\uffff\1\4\44\uffff\1\4\2\5",
-            "\1\7\1\10\1\6\12\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\1\6\12\uffff\2\11\63\uffff\2\13",
             "\1\14\12\uffff\1\15",
             "\1\16\12\uffff\1\17",
-            "\2\20\11\uffff\31\20\10\21",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
+            "\2\21\11\uffff\31\21\10\20",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
             "\1\22\16\uffff\14\23\16\uffff\1\24\44\uffff\1\24\2\25",
             "\1\26\16\uffff\14\27\16\uffff\1\30\44\uffff\1\30\2\31",
             "",
@@ -2370,14 +2381,14 @@ public class SqlParser extends Parser {
             "\1\32\16\uffff\14\33",
             "\1\16\12\uffff\1\17",
             "\1\34\16\uffff\14\35",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
             "\1\22\16\uffff\14\23\16\uffff\1\24\44\uffff\1\24\2\25",
-            "\1\7\1\10\1\36\12\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\1\36\12\uffff\2\11\63\uffff\2\13",
             "\1\37\12\uffff\1\40",
             "\1\41\12\uffff\1\42",
             "\1\26\16\uffff\14\27\16\uffff\1\30\44\uffff\1\30\2\31",
-            "\1\44\1\uffff\1\43\3\46\102\uffff\2\45\2\uffff\2\47",
+            "\1\44\1\uffff\1\43\3\47\102\uffff\2\45\2\uffff\2\46",
             "\1\50\12\uffff\1\51",
             "\1\52\12\uffff\1\53",
             "\1\32\16\uffff\14\33",
@@ -2390,388 +2401,388 @@ public class SqlParser extends Parser {
             "\1\41\12\uffff\1\42",
             "\1\63\16\uffff\14\64",
             "\2\65\11\uffff\31\65\10\66",
-            "\1\44\2\uffff\3\46\102\uffff\2\45\2\uffff\2\47",
+            "\1\44\2\uffff\3\47\102\uffff\2\45\2\uffff\2\46",
             "\1\67\12\uffff\1\70",
-            "\1\71\5\uffff\1\72",
-            "\1\73\5\uffff\1\74\1\uffff\1\75",
+            "\1\71\5\uffff\1\72\1\uffff\1\73",
+            "\1\74\5\uffff\1\75",
             "\1\50\12\uffff\1\51",
             "\1\76\16\uffff\14\77",
             "\1\52\12\uffff\1\53",
             "\1\100\16\uffff\14\101",
             "\1\54\13\uffff\1\55",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
             "\2\102\11\uffff\31\102",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
             "\1\61\16\uffff\14\62",
             "\1\103\13\uffff\1\104",
             "\1\63\16\uffff\14\64",
             "\1\105",
-            "\1\44\2\uffff\3\46\102\uffff\2\45\2\uffff\2\47",
-            "\1\44\2\uffff\3\46\102\uffff\2\45\2\uffff\2\47",
+            "\1\44\2\uffff\3\47\102\uffff\2\45\2\uffff\2\46",
+            "\1\44\2\uffff\3\47\102\uffff\2\45\2\uffff\2\46",
             "\1\67\12\uffff\1\70",
             "\1\106\5\uffff\1\107",
-            "\1\71\5\uffff\1\72",
-            "\1\111\1\uffff\1\110\1\112\1\113\1\114\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\73\5\uffff\1\74\1\uffff\1\75",
-            "\1\121\1\uffff\1\122\3\uffff\1\74\1\uffff\1\75\67\uffff\2\115"+
-            "\2\120\2\uffff\2\116",
-            "\1\123\5\uffff\1\74\1\uffff\1\75\67\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
+            "\1\71\5\uffff\1\72\1\uffff\1\73",
+            "\1\111\1\uffff\1\110\3\uffff\1\72\1\uffff\1\73\67\uffff\2\112"+
+            "\2\114\2\uffff\2\113",
+            "\1\116\5\uffff\1\72\1\uffff\1\73\67\uffff\2\112\2\114\2\uffff"+
+            "\2\113",
+            "\1\74\5\uffff\1\75",
+            "\1\120\1\uffff\1\117\1\121\1\122\1\123\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
             "\1\76\16\uffff\14\77",
             "\1\124\13\uffff\1\125",
             "\1\100\16\uffff\14\101",
             "\1\126",
             "\1\127\13\uffff\1\130",
             "\1\103\13\uffff\1\104",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
             "\2\131\11\uffff\31\131",
             "\1\106\5\uffff\1\107",
             "\1\133\1\134\1\132\11\uffff\1\135",
             "\1\136",
-            "\1\123\5\uffff\1\137\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\140\1\142\1\141",
-            "\1\143\2\uffff\1\141",
-            "\1\144\2\uffff\1\141",
-            "\1\145\16\uffff\14\146\16\uffff\1\147\44\uffff\1\147\2\150",
-            "\1\145\16\uffff\14\146\16\uffff\1\147\44\uffff\1\147\2\150",
+            "\1\116\5\uffff\1\137\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\140\16\uffff\14\141\16\uffff\1\142\44\uffff\1\142\2\143",
+            "\1\140\16\uffff\14\141\16\uffff\1\142\44\uffff\1\142\2\143",
             "",
             "",
-            "\1\123\5\uffff\1\151\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\152",
-            "\1\123\77\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\116\77\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\144",
+            "\1\116\5\uffff\1\145\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\150\1\147\1\146",
+            "\1\151\2\uffff\1\146",
+            "\1\152\2\uffff\1\146",
             "\1\124\13\uffff\1\125",
-            "\1\44\2\uffff\3\46\102\uffff\2\45\2\uffff\2\47",
+            "\1\44\2\uffff\3\47\102\uffff\2\45\2\uffff\2\46",
             "\2\153\11\uffff\31\153",
             "\1\127\13\uffff\1\130",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
             "\1\154\13\uffff\1\155",
             "\1\156",
             "\1\160\1\134\4\uffff\1\157\5\uffff\1\135",
             "\1\161\5\uffff\1\162",
-            "\1\123\77\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\163\1\112\1\113\1\114\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\164\2\uffff\1\112\1\113\1\114\72\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
-            "\1\141",
-            "\1\165\1\uffff\1\166\4\uffff\1\167\70\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
-            "\1\141",
-            "\1\141",
-            "\1\141",
-            "\1\145\16\uffff\14\146\16\uffff\1\147\44\uffff\1\147\2\150",
-            "\1\170\1\uffff\1\172\3\174\102\uffff\2\171\2\uffff\2\173",
-            "\1\175\12\uffff\1\176",
-            "\1\177\12\uffff\1\u0080",
-            "\1\u0081\5\uffff\1\74\1\uffff\1\75\67\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
-            "\1\123\1\uffff\1\u0082\3\uffff\1\74\1\uffff\1\75\67\uffff\2"+
-            "\115\2\120\2\uffff\2\116",
+            "\1\116\77\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\116\1\uffff\1\163\3\uffff\1\72\1\uffff\1\73\67\uffff\2\112"+
+            "\2\114\2\uffff\2\113",
+            "\1\164\5\uffff\1\72\1\uffff\1\73\67\uffff\2\112\2\114\2\uffff"+
+            "\2\113",
+            "\1\140\16\uffff\14\141\16\uffff\1\142\44\uffff\1\142\2\143",
+            "\1\166\1\uffff\1\165\3\171\102\uffff\2\167\2\uffff\2\170",
+            "\1\172\12\uffff\1\173",
+            "\1\174\12\uffff\1\175",
+            "\1\116\1\uffff\1\176\1\121\1\122\1\123\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\177\2\uffff\1\121\1\122\1\123\72\uffff\2\112\2\114\2\uffff"+
+            "\2\113",
+            "\1\u0081\1\uffff\1\u0080\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\146",
+            "\1\146",
+            "\1\146",
+            "\1\146",
             "\1\u0083\13\uffff\1\u0084",
             "\1\154\13\uffff\1\155",
-            "\1\7\1\10\13\uffff\2\11\63\uffff\2\12",
+            "\1\7\1\10\13\uffff\2\11\63\uffff\2\13",
             "\1\160\1\134\1\u0085\11\uffff\1\135",
             "\1\u0086\1\134\12\uffff\1\135",
             "\1\160\1\134\12\uffff\1\135",
             "\1\161\5\uffff\1\162",
-            "\1\u0088\1\134\1\u0087\11\uffff\1\135",
+            "\1\u0087\1\134\1\u0088\11\uffff\1\135",
             "\1\u0089",
-            "\1\123\5\uffff\1\u008a\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\123\5\uffff\1\u008b\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u008c",
-            "\1\u008d",
-            "\1\170\2\uffff\3\174\102\uffff\2\171\2\uffff\2\173",
-            "\1\u008e\12\uffff\1\u008f",
-            "\2\u0091\11\uffff\31\u0091\10\u0090",
-            "\1\u0092\5\uffff\1\u0093\1\uffff\1\u0094",
-            "\1\u0095\5\uffff\1\u0096",
-            "\1\175\12\uffff\1\176",
-            "\1\u0097\16\uffff\14\u0098",
-            "\1\177\12\uffff\1\u0080",
-            "\1\u0099\16\uffff\14\u009a",
-            "\1\123\5\uffff\1\u009b\71\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\116\5\uffff\1\u008a\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\2\u008c\11\uffff\31\u008c\10\u008b",
+            "\1\166\2\uffff\3\171\102\uffff\2\167\2\uffff\2\170",
+            "\1\u008d\12\uffff\1\u008e",
+            "\1\u008f\5\uffff\1\u0090\1\uffff\1\u0091",
+            "\1\u0092\5\uffff\1\u0093",
+            "\1\172\12\uffff\1\173",
+            "\1\u0094\16\uffff\14\u0095",
+            "\1\174\12\uffff\1\175",
+            "\1\u0096\16\uffff\14\u0097",
+            "\1\u0098",
+            "\1\116\5\uffff\1\u0099\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u009a",
+            "\1\116\5\uffff\1\u009b\71\uffff\2\112\2\114\2\uffff\2\113",
             "\1\u009c",
             "\1\u0083\13\uffff\1\u0084",
-            "\1\44\2\uffff\3\46\102\uffff\2\45\2\uffff\2\47",
+            "\1\44\2\uffff\3\47\102\uffff\2\45\2\uffff\2\46",
             "\1\u009d",
             "\1\160\1\134\4\uffff\1\u009e\5\uffff\1\135",
-            "\1\u009f",
-            "\1\160\1\134\4\uffff\1\u00a0\5\uffff\1\135",
-            "\1\123\1\uffff\1\u00a1\1\112\1\113\1\114\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\2\uffff\1\112\1\113\1\114\72\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
-            "\1\u00a2\6\uffff\1\167\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\u00a3\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
-            "\1\u00a5\1\uffff\1\u00a4\1\u00a6\1\u00a7\1\u00a8",
-            "\1\u008e\12\uffff\1\u008f",
-            "\1\u00a9\5\uffff\1\u00aa",
-            "\1\170\2\uffff\3\174\102\uffff\2\171\2\uffff\2\173",
-            "\1\170\2\uffff\3\174\102\uffff\2\171\2\uffff\2\173",
-            "\1\u0092\5\uffff\1\u0093\1\uffff\1\u0094",
-            "\1\u00ac\1\uffff\1\u00ab\3\uffff\1\u0093\1\uffff\1\u0094\67"+
-            "\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\123\5\uffff\1\u0093\1\uffff\1\u0094\67\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u0095\5\uffff\1\u0096",
-            "\1\u00ae\1\uffff\1\u00ad\1\u00af\1\u00b0\1\u00b1\72\uffff\2"+
-            "\115\2\120\2\uffff\2\116",
-            "\1\u0097\16\uffff\14\u0098",
-            "\1\u00b2\13\uffff\1\u00b3",
-            "\1\u0099\16\uffff\14\u009a",
-            "\1\u00b4",
-            "\1\123\5\uffff\1\74\1\uffff\1\75\67\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
-            "\1\123\1\uffff\1\u00b5\3\uffff\1\74\1\uffff\1\75\67\uffff\2"+
-            "\115\2\120\2\uffff\2\116",
+            "\1\160\1\134\4\uffff\1\u009f\5\uffff\1\135",
+            "\1\u00a0",
+            "\1\116\1\uffff\1\u00a1\3\uffff\1\72\1\uffff\1\73\67\uffff\2"+
+            "\112\2\114\2\uffff\2\113",
+            "\1\116\5\uffff\1\72\1\uffff\1\73\67\uffff\2\112\2\114\2\uffff"+
+            "\2\113",
+            "\1\166\2\uffff\3\171\102\uffff\2\167\2\uffff\2\170",
+            "\1\166\2\uffff\3\171\102\uffff\2\167\2\uffff\2\170",
+            "\1\u008d\12\uffff\1\u008e",
+            "\1\u00a2\5\uffff\1\u00a3",
+            "\1\u008f\5\uffff\1\u0090\1\uffff\1\u0091",
+            "\1\u00a5\1\uffff\1\u00a4\3\uffff\1\u0090\1\uffff\1\u0091\67"+
+            "\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\116\5\uffff\1\u0090\1\uffff\1\u0091\67\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u0092\5\uffff\1\u0093",
+            "\1\u00a7\1\uffff\1\u00a6\1\u00a8\1\u00a9\1\u00aa\72\uffff\2"+
+            "\112\2\114\2\uffff\2\113",
+            "\1\u0094\16\uffff\14\u0095",
+            "\1\u00ab\13\uffff\1\u00ac",
+            "\1\u0096\16\uffff\14\u0097",
+            "\1\u00ad",
+            "\1\116\1\uffff\1\u00ae\1\121\1\122\1\123\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\2\uffff\1\121\1\122\1\123\72\uffff\2\112\2\114\2\uffff"+
+            "\2\113",
+            "\1\116\1\uffff\1\u00af\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u00b0\6\uffff\1\u0082\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00b2\1\uffff\1\u00b1\1\u00b3\1\u00b4\1\u00b5",
             "\1\160\1\134\1\u00b6\11\uffff\1\135",
             "\1\160\1\134\12\uffff\1\135",
-            "\1\160\1\134\1\u00b7\11\uffff\1\135",
-            "\1\u00b8\1\134\12\uffff\1\135",
+            "\1\u00b7\1\134\12\uffff\1\135",
+            "\1\160\1\134\1\u00b8\11\uffff\1\135",
             "\1\u00b9",
-            "\1\123\5\uffff\1\u00ba\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u00bb",
-            "\1\u00bc",
-            "\1\u00bd",
-            "\1\u00c0\1\u00be\1\u00bf",
-            "\1\u00c1\2\uffff\1\u00bf",
-            "\1\u00c2\2\uffff\1\u00bf",
-            "\1\u00a9\5\uffff\1\u00aa",
-            "\1\u00c4\1\u00c5\1\u00c3\11\uffff\1\u00c6",
-            "\1\u00c7",
-            "\1\123\5\uffff\1\u00c8\71\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\u00a2\5\uffff\1\u00a3",
+            "\1\u00ba\1\u00bc\1\u00bb\11\uffff\1\u00bd",
+            "\1\u00be",
+            "\1\116\5\uffff\1\u00bf\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00c0",
+            "\1\116\5\uffff\1\u00c1\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00c4\1\u00c2\1\u00c3",
+            "\1\u00c5\2\uffff\1\u00c3",
+            "\1\u00c6\2\uffff\1\u00c3",
+            "\1\u00ab\13\uffff\1\u00ac",
+            "\1\166\2\uffff\3\171\102\uffff\2\167\2\uffff\2\170",
+            "\2\u00c7\11\uffff\31\u00c7",
+            "\1\u00c8",
             "\1\u00c9",
-            "\1\123\5\uffff\1\u00ca\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u00cd\1\u00cb\1\u00cc",
-            "\1\u00ce\2\uffff\1\u00cc",
-            "\1\u00cf\2\uffff\1\u00cc",
-            "\1\u00b2\13\uffff\1\u00b3",
-            "\1\170\2\uffff\3\174\102\uffff\2\171\2\uffff\2\173",
-            "\2\u00d0\11\uffff\31\u00d0",
-            "\1\u00d1",
+            "\1\116\5\uffff\1\u00ca\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00cb",
+            "\1\u00cc",
+            "\1\u00cd\1\u00cf\1\u00ce",
+            "\1\u00d0\2\uffff\1\u00ce",
+            "\1\u00d1\2\uffff\1\u00ce",
             "\1\u00d2",
-            "\1\u00d3",
-            "\1\160\1\134\4\uffff\1\u00d4\5\uffff\1\135",
-            "\1\123\1\uffff\1\u00d5\1\112\1\113\1\114\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\6\uffff\1\167\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\u00d6\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
-            "\1\u00d7\1\u00a6\1\u00a7\1\u00a8",
-            "\1\u00d8\2\uffff\1\u00a6\1\u00a7\1\u00a8",
-            "\1\u00bf",
-            "\1\u00da\1\uffff\1\u00d9\4\uffff\1\167\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u00bf",
-            "\1\u00bf",
-            "\1\u00bf",
-            "\1\u00db",
-            "\1\u00dd\1\u00c5\4\uffff\1\u00dc\5\uffff\1\u00c6",
-            "\1\u00de\5\uffff\1\u00df",
-            "\1\123\77\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\u00e0\3\uffff\1\u0093\1\uffff\1\u0094\67\uffff"+
-            "\2\115\2\120\2\uffff\2\116",
-            "\1\u00e1\5\uffff\1\u0093\1\uffff\1\u0094\67\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\1\uffff\1\u00e2\1\u00af\1\u00b0\1\u00b1\72\uffff\2\115"+
-            "\2\120\2\uffff\2\116",
-            "\1\u00e3\2\uffff\1\u00af\1\u00b0\1\u00b1\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u00cc",
-            "\1\u00e5\1\uffff\1\u00e4\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u00cc",
-            "\1\u00cc",
-            "\1\u00cc",
-            "\1\u00e7\13\uffff\1\u00e8",
-            "\1\123\1\uffff\1\u00e9\3\uffff\1\74\1\uffff\1\75\67\uffff\2"+
-            "\115\2\120\2\uffff\2\116",
+            "\1\160\1\134\4\uffff\1\u00d3\5\uffff\1\135",
+            "\1\u00d4",
+            "\1\116\1\uffff\1\u00d5\3\uffff\1\72\1\uffff\1\73\67\uffff\2"+
+            "\112\2\114\2\uffff\2\113",
+            "\1\u00d7\1\u00bc\4\uffff\1\u00d6\5\uffff\1\u00bd",
+            "\1\u00d8",
+            "\1\u00d9\5\uffff\1\u00da",
+            "\1\116\77\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\116\1\uffff\1\u00db\3\uffff\1\u0090\1\uffff\1\u0091\67\uffff"+
+            "\2\112\2\114\2\uffff\2\113",
+            "\1\u00dc\5\uffff\1\u0090\1\uffff\1\u0091\67\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\1\uffff\1\u00dd\1\u00a8\1\u00a9\1\u00aa\72\uffff\2\112"+
+            "\2\114\2\uffff\2\113",
+            "\1\u00de\2\uffff\1\u00a8\1\u00a9\1\u00aa\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u00c3",
+            "\1\u00e0\1\uffff\1\u00df\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u00c3",
+            "\1\u00c3",
+            "\1\u00c3",
+            "\1\u00e2\13\uffff\1\u00e3",
+            "\1\116\1\uffff\1\u00e4\1\121\1\122\1\123\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\1\uffff\1\u00e5\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\6\uffff\1\u0082\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00e6\1\u00b3\1\u00b4\1\u00b5",
+            "\1\u00e7\2\uffff\1\u00b3\1\u00b4\1\u00b5",
+            "\1\u00ce",
+            "\1\u00e9\1\uffff\1\u00e8\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u00ce",
+            "\1\u00ce",
+            "\1\u00ce",
             "\1\160\1\134\1\u00ea\11\uffff\1\135",
-            "\1\160\1\134\1\u00eb\11\uffff\1\135",
             "\1\160\1\134\12\uffff\1\135",
+            "\1\160\1\134\1\u00eb\11\uffff\1\135",
             "\1\u00ec",
-            "\1\u00ed",
-            "\1\u00ee",
-            "\1\u00ef",
-            "\1\u00f0",
-            "\1\123\5\uffff\1\u00f1\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u00dd\1\u00c5\1\u00f2\11\uffff\1\u00c6",
-            "\1\u00f3\1\u00c5\12\uffff\1\u00c6",
-            "\1\u00dd\1\u00c5\12\uffff\1\u00c6",
-            "\1\u00de\5\uffff\1\u00df",
-            "\1\u00f5\1\u00c5\1\u00f4\11\uffff\1\u00c6",
-            "\1\u00f6",
-            "\1\123\5\uffff\1\u00f7\71\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\u00ed\1\u00bc\12\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\12\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\1\u00ee\11\uffff\1\u00bd",
+            "\1\u00d9\5\uffff\1\u00da",
+            "\1\u00ef\1\u00bc\1\u00f0\11\uffff\1\u00bd",
+            "\1\u00f1",
+            "\1\116\5\uffff\1\u00f2\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00f3",
+            "\1\116\5\uffff\1\u00f4\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00f5",
+            "\1\116\5\uffff\1\u00f6\71\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00f7",
+            "\1\u00e2\13\uffff\1\u00e3",
+            "\1\166\2\uffff\3\171\102\uffff\2\167\2\uffff\2\170",
             "\1\u00f8",
-            "\1\123\5\uffff\1\u00f9\71\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\u00f9",
             "\1\u00fa",
-            "\1\123\5\uffff\1\u00fb\71\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\u00fb",
             "\1\u00fc",
-            "\1\u00e7\13\uffff\1\u00e8",
-            "\1\170\2\uffff\3\174\102\uffff\2\171\2\uffff\2\173",
-            "\1\u00fd",
+            "\1\116\5\uffff\1\u00fd\71\uffff\2\112\2\114\2\uffff\2\113",
             "\1\u00fe",
             "\1\u00ff",
-            "\1\123\1\uffff\1\u0100\1\112\1\113\1\114\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\1\uffff\1\u0101\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
-            "\1\u0102\1\u00a6\1\u00a7\1\u00a8",
-            "\1\u00a6\1\u00a7\1\u00a8",
-            "\1\123\1\uffff\1\u0103\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
-            "\1\u0104\6\uffff\1\167\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u0105",
-            "\1\u00dd\1\u00c5\4\uffff\1\u0106\5\uffff\1\u00c6",
-            "\1\u0107",
-            "\1\u00dd\1\u00c5\4\uffff\1\u0108\5\uffff\1\u00c6",
-            "\1\123\1\uffff\1\u0109\3\uffff\1\u0093\1\uffff\1\u0094\67\uffff"+
-            "\2\115\2\120\2\uffff\2\116",
-            "\1\123\5\uffff\1\u0093\1\uffff\1\u0094\67\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\1\uffff\1\u010a\1\u00af\1\u00b0\1\u00b1\72\uffff\2\115"+
-            "\2\120\2\uffff\2\116",
-            "\1\123\2\uffff\1\u00af\1\u00b0\1\u00b1\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\1\uffff\1\u010b\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u010c\6\uffff\1\u00e6\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u010e\1\uffff\1\u010d\1\u010f\1\u0110\1\u0111",
-            "\1\123\1\uffff\1\u0112\3\uffff\1\74\1\uffff\1\75\67\uffff\2"+
-            "\115\2\120\2\uffff\2\116",
+            "\1\116\1\uffff\1\u0100\3\uffff\1\72\1\uffff\1\73\67\uffff\2"+
+            "\112\2\114\2\uffff\2\113",
+            "\1\u00d7\1\u00bc\4\uffff\1\u0101\5\uffff\1\u00bd",
+            "\1\u0102",
+            "\1\u00d7\1\u00bc\4\uffff\1\u0103\5\uffff\1\u00bd",
+            "\1\u0104",
+            "\1\116\1\uffff\1\u0105\3\uffff\1\u0090\1\uffff\1\u0091\67\uffff"+
+            "\2\112\2\114\2\uffff\2\113",
+            "\1\116\5\uffff\1\u0090\1\uffff\1\u0091\67\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\1\uffff\1\u0106\1\u00a8\1\u00a9\1\u00aa\72\uffff\2\112"+
+            "\2\114\2\uffff\2\113",
+            "\1\116\2\uffff\1\u00a8\1\u00a9\1\u00aa\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\1\uffff\1\u0107\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u0108\6\uffff\1\u00e1\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u010a\1\uffff\1\u0109\1\u010b\1\u010c\1\u010d",
+            "\1\116\1\uffff\1\u010e\1\121\1\122\1\123\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\1\uffff\1\u010f\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u0110\1\u00b3\1\u00b4\1\u00b5",
+            "\1\u00b3\1\u00b4\1\u00b5",
+            "\1\116\1\uffff\1\u0111\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u0112\6\uffff\1\u0082\70\uffff\2\112\2\114\2\uffff\2\113",
             "\1\160\1\134\1\u0113\11\uffff\1\135",
             "\1\160\1\134\1\u0114\11\uffff\1\135",
             "\1\u0115",
-            "\1\u0116",
-            "\1\u0117",
-            "\1\u0118",
-            "\1\123\5\uffff\1\u0119\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u00dd\1\u00c5\1\u011a\11\uffff\1\u00c6",
-            "\1\u00dd\1\u00c5\12\uffff\1\u00c6",
-            "\1\u00dd\1\u00c5\1\u011b\11\uffff\1\u00c6",
-            "\1\u011c\1\u00c5\12\uffff\1\u00c6",
+            "\1\u00d7\1\u00bc\12\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\1\u0116\11\uffff\1\u00bd",
+            "\1\u0117\1\u00bc\12\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\1\u0118\11\uffff\1\u00bd",
+            "\1\u0119",
+            "\1\u011a",
+            "\1\u011b",
+            "\1\116\5\uffff\1\u011c\71\uffff\2\112\2\114\2\uffff\2\113",
             "\1\u011d",
             "\1\u011e",
-            "\1\u011f",
-            "\1\123\5\uffff\1\u0120\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u0121",
-            "\1\u0122",
-            "\1\u0124\1\u0125\1\u0123",
-            "\1\u0126\2\uffff\1\u0123",
-            "\1\u0127\2\uffff\1\u0123",
-            "\1\u0128",
+            "\1\u011f\1\u0121\1\u0120",
+            "\1\u0122\2\uffff\1\u0120",
+            "\1\u0123\2\uffff\1\u0120",
+            "\1\u0124",
+            "\1\u0125",
+            "\1\u0126",
+            "\1\u0127",
+            "\1\116\5\uffff\1\u0128\71\uffff\2\112\2\114\2\uffff\2\113",
             "\1\u0129",
             "\1\u012a",
-            "\1\123\2\uffff\1\112\1\113\1\114\72\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
-            "\1\123\1\uffff\1\u012b\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
-            "\1\u012c\1\u00a6\1\u00a7\1\u00a8",
-            "\1\123\1\uffff\1\u012d\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
-            "\1\123\6\uffff\1\167\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u012e",
-            "\1\u012f",
-            "\1\u00dd\1\u00c5\4\uffff\1\u0130\5\uffff\1\u00c6",
-            "\1\123\1\uffff\1\u0131\3\uffff\1\u0093\1\uffff\1\u0094\67\uffff"+
-            "\2\115\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\u0132\1\u00af\1\u00b0\1\u00b1\72\uffff\2\115"+
-            "\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\u0133\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\6\uffff\1\u00e6\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u0134\1\u010f\1\u0110\1\u0111",
-            "\1\u0135\2\uffff\1\u010f\1\u0110\1\u0111",
-            "\1\u0137\1\uffff\1\u0136\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u0123",
-            "\1\u0123",
-            "\1\u0123",
-            "\1\u0123",
-            "\1\123\5\uffff\1\74\1\uffff\1\75\67\uffff\2\115\2\120\2\uffff"+
-            "\2\116",
+            "\1\116\5\uffff\1\72\1\uffff\1\73\67\uffff\2\112\2\114\2\uffff"+
+            "\2\113",
+            "\1\u012b",
+            "\1\u00d7\1\u00bc\4\uffff\1\u012c\5\uffff\1\u00bd",
+            "\1\u012d",
+            "\1\116\1\uffff\1\u012e\3\uffff\1\u0090\1\uffff\1\u0091\67\uffff"+
+            "\2\112\2\114\2\uffff\2\113",
+            "\1\116\1\uffff\1\u012f\1\u00a8\1\u00a9\1\u00aa\72\uffff\2\112"+
+            "\2\114\2\uffff\2\113",
+            "\1\116\1\uffff\1\u0130\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\6\uffff\1\u00e1\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u0131\1\u010b\1\u010c\1\u010d",
+            "\1\u0132\2\uffff\1\u010b\1\u010c\1\u010d",
+            "\1\u0120",
+            "\1\u0134\1\uffff\1\u0133\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u0120",
+            "\1\u0120",
+            "\1\u0120",
+            "\1\116\2\uffff\1\121\1\122\1\123\72\uffff\2\112\2\114\2\uffff"+
+            "\2\113",
+            "\1\116\1\uffff\1\u0135\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u0136\1\u00b3\1\u00b4\1\u00b5",
+            "\1\116\1\uffff\1\u0137\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\6\uffff\1\u0082\70\uffff\2\112\2\114\2\uffff\2\113",
             "\1\160\1\134\12\uffff\1\135",
             "\1\160\1\134\1\u0138\11\uffff\1\135",
-            "\1\u0139",
-            "\1\u013a",
+            "\1\u00d7\1\u00bc\1\u0139\11\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\12\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\1\u013a\11\uffff\1\u00bd",
             "\1\u013b",
-            "\1\u00dd\1\u00c5\1\u013c\11\uffff\1\u00c6",
-            "\1\u00dd\1\u00c5\1\u013d\11\uffff\1\u00c6",
-            "\1\u00dd\1\u00c5\12\uffff\1\u00c6",
+            "\1\u013c",
+            "\1\u013d",
             "\1\u013e",
             "\1\u013f",
             "\1\u0140",
-            "\1\u0141",
+            "\1\116\5\uffff\1\u0141\71\uffff\2\112\2\114\2\uffff\2\113",
             "\1\u0142",
             "\1\u0143",
-            "\1\123\5\uffff\1\u0144\71\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\u0144",
             "\1\u0145",
-            "\1\123\6\uffff\1\167\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u0146\1\u00a6\1\u00a7\1\u00a8",
-            "\1\123\1\uffff\1\u0147\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
-            "\1\u0148",
-            "\1\u0149",
-            "\1\123\1\uffff\1\u014a\3\uffff\1\u0093\1\uffff\1\u0094\67\uffff"+
-            "\2\115\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\u014b\1\u00af\1\u00b0\1\u00b1\72\uffff\2\115"+
-            "\2\120\2\uffff\2\116",
-            "\1\123\1\uffff\1\u014c\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u014d\1\u010f\1\u0110\1\u0111",
-            "\1\u010f\1\u0110\1\u0111",
-            "\1\123\1\uffff\1\u014e\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u014f\6\uffff\1\u00e6\70\uffff\2\115\2\120\2\uffff\2\116",
+            "\1\u0146",
+            "\1\u0147",
+            "\1\116\1\uffff\1\u0148\3\uffff\1\u0090\1\uffff\1\u0091\67\uffff"+
+            "\2\112\2\114\2\uffff\2\113",
+            "\1\116\1\uffff\1\u0149\1\u00a8\1\u00a9\1\u00aa\72\uffff\2\112"+
+            "\2\114\2\uffff\2\113",
+            "\1\116\1\uffff\1\u014a\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u014b\1\u010b\1\u010c\1\u010d",
+            "\1\u010b\1\u010c\1\u010d",
+            "\1\116\1\uffff\1\u014c\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u014d\6\uffff\1\u00e1\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\116\6\uffff\1\u0082\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u014e\1\u00b3\1\u00b4\1\u00b5",
+            "\1\116\1\uffff\1\u014f\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
             "\1\160\1\134\12\uffff\1\135",
-            "\1\u0150",
-            "\1\u0151",
-            "\1\u00dd\1\u00c5\1\u0152\11\uffff\1\u00c6",
-            "\1\u00dd\1\u00c5\1\u0153\11\uffff\1\u00c6",
+            "\1\u00d7\1\u00bc\1\u0150\11\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\1\u0151\11\uffff\1\u00bd",
+            "\1\u0152",
+            "\1\u0153",
             "\1\u0154",
             "\1\u0155",
             "\1\u0156",
-            "\1\u0157",
+            "\1\116\5\uffff\1\u0157\71\uffff\2\112\2\114\2\uffff\2\113",
             "\1\u0158",
-            "\1\123\5\uffff\1\u0159\71\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u00a6\1\u00a7\1\u00a8",
-            "\1\123\1\uffff\1\u015a\4\uffff\1\167\70\uffff\2\115\2\120\2"+
-            "\uffff\2\116",
+            "\1\u0159",
+            "\1\u015a",
             "\1\u015b",
-            "\1\u015c",
-            "\1\123\5\uffff\1\u0093\1\uffff\1\u0094\67\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\2\uffff\1\u00af\1\u00b0\1\u00b1\72\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\1\uffff\1\u015d\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u015e\1\u010f\1\u0110\1\u0111",
-            "\1\123\1\uffff\1\u015f\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\123\6\uffff\1\u00e6\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u0160",
-            "\1\u00dd\1\u00c5\12\uffff\1\u00c6",
-            "\1\u00dd\1\u00c5\1\u0161\11\uffff\1\u00c6",
+            "\1\116\5\uffff\1\u0090\1\uffff\1\u0091\67\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\2\uffff\1\u00a8\1\u00a9\1\u00aa\72\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\1\uffff\1\u015c\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u015d\1\u010b\1\u010c\1\u010d",
+            "\1\116\1\uffff\1\u015e\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\6\uffff\1\u00e1\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00b3\1\u00b4\1\u00b5",
+            "\1\116\1\uffff\1\u015f\4\uffff\1\u0082\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\u00d7\1\u00bc\12\uffff\1\u00bd",
+            "\1\u00d7\1\u00bc\1\u0160\11\uffff\1\u00bd",
+            "\1\u0161",
             "\1\u0162",
             "\1\u0163",
             "\1\u0164",
-            "\1\123\6\uffff\1\167\70\uffff\2\115\2\120\2\uffff\2\116",
             "\1\u0165",
-            "\1\123\6\uffff\1\u00e6\70\uffff\2\115\2\120\2\uffff\2\116",
-            "\1\u0166\1\u010f\1\u0110\1\u0111",
-            "\1\123\1\uffff\1\u0167\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
-            "\1\u00dd\1\u00c5\12\uffff\1\u00c6",
+            "\1\116\6\uffff\1\u00e1\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u0166\1\u010b\1\u010c\1\u010d",
+            "\1\116\1\uffff\1\u0167\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
+            "\1\116\6\uffff\1\u0082\70\uffff\2\112\2\114\2\uffff\2\113",
+            "\1\u00d7\1\u00bc\12\uffff\1\u00bd",
             "\1\u0168",
             "\1\u0169",
-            "\1\u010f\1\u0110\1\u0111",
-            "\1\123\1\uffff\1\u016a\4\uffff\1\u00e6\70\uffff\2\115\2\120"+
-            "\2\uffff\2\116",
+            "\1\u010b\1\u010c\1\u010d",
+            "\1\116\1\uffff\1\u016a\4\uffff\1\u00e1\70\uffff\2\112\2\114"+
+            "\2\uffff\2\113",
             "\1\u016b",
-            "\1\123\6\uffff\1\u00e6\70\uffff\2\115\2\120\2\uffff\2\116"
+            "\1\116\6\uffff\1\u00e1\70\uffff\2\112\2\114\2\uffff\2\113"
     };
 
     static final short[] DFA1_eot = DFA.unpackEncodedString(DFA1_eotS);
@@ -2804,13 +2815,13 @@ public class SqlParser extends Parser {
             this.transition = DFA1_transition;
         }
         public String getDescription() {
-            return "20:1: stmt : ( select spaces selectList spaces where spaces constraintList | select spaces selectList | select spaces selectList spaces order spaces by spaces okw= keyword spaces | select spaces selectList spaces where spaces constraintList spaces order spaces by spaces okw= keyword spaces );";
+            return "20:1: stmt : ( select spaces selectList spaces where spaces constraintList spaces | select spaces selectList spaces | select spaces selectList spaces order spaces by spaces okw= keyword spaces | select spaces selectList spaces where spaces constraintList spaces order spaces by spaces okw= keyword spaces );";
         }
     }
     static final String DFA3_eotS =
         "\4\uffff";
     static final String DFA3_eofS =
-        "\1\2\3\uffff";
+        "\2\2\2\uffff";
     static final String DFA3_minS =
         "\2\4\2\uffff";
     static final String DFA3_maxS =
@@ -2862,19 +2873,19 @@ public class SqlParser extends Parser {
     static final String DFA5_eotS =
         "\4\uffff";
     static final String DFA5_eofS =
-        "\1\1\3\uffff";
+        "\2\2\2\uffff";
     static final String DFA5_minS =
-        "\1\4\1\uffff\1\4\1\uffff";
+        "\2\4\2\uffff";
     static final String DFA5_maxS =
-        "\1\113\1\uffff\1\113\1\uffff";
+        "\2\113\2\uffff";
     static final String DFA5_acceptS =
-        "\1\uffff\1\2\1\uffff\1\1";
+        "\2\uffff\1\2\1\1";
     static final String DFA5_specialS =
         "\4\uffff}>";
     static final String[] DFA5_transitionS = {
-            "\1\2\77\uffff\2\3\2\1\2\uffff\2\3",
+            "\1\1\77\uffff\2\3\2\2\2\uffff\2\3",
+            "\1\1\77\uffff\2\3\2\2\2\uffff\2\3",
             "",
-            "\1\2\77\uffff\2\3\2\1\2\uffff\2\3",
             ""
     };
 
@@ -2916,40 +2927,40 @@ public class SqlParser extends Parser {
     static final String DFA6_eofS =
         "\31\uffff";
     static final String DFA6_minS =
-        "\1\23\3\4\1\24\1\4\3\uffff\11\4\1\6\2\4\1\24\3\4";
+        "\1\23\4\4\1\uffff\1\24\2\uffff\11\4\1\6\2\4\1\24\3\4";
     static final String DFA6_maxS =
-        "\1\124\1\121\2\17\1\77\1\121\3\uffff\1\17\1\36\1\17\1\36\2\121\1"+
-        "\36\1\20\1\36\1\6\1\20\1\121\1\67\2\20\1\121";
+        "\1\124\1\121\2\17\1\121\1\uffff\1\77\2\uffff\1\17\1\36\1\17\1\36"+
+        "\2\121\1\36\1\20\1\36\1\6\1\20\1\121\1\67\2\20\1\121";
     static final String DFA6_acceptS =
-        "\6\uffff\1\2\1\1\1\3\20\uffff";
+        "\5\uffff\1\2\1\uffff\1\1\1\3\20\uffff";
     static final String DFA6_specialS =
         "\31\uffff}>";
     static final String[] DFA6_transitionS = {
             "\14\1\16\uffff\1\2\44\uffff\1\2\2\3",
-            "\1\5\1\uffff\1\4\3\7\102\uffff\2\6\2\uffff\2\10",
+            "\1\4\1\uffff\1\6\3\7\102\uffff\2\5\2\uffff\2\10",
             "\1\11\12\uffff\1\12",
             "\1\13\12\uffff\1\14",
-            "\2\16\11\uffff\31\16\10\15",
-            "\1\5\2\uffff\3\7\102\uffff\2\6\2\uffff\2\10",
+            "\1\4\2\uffff\3\7\102\uffff\2\5\2\uffff\2\10",
             "",
+            "\2\15\11\uffff\31\15\10\16",
             "",
             "",
             "\1\11\12\uffff\1\12",
             "\1\17\16\uffff\14\20",
             "\1\13\12\uffff\1\14",
             "\1\21\16\uffff\14\22",
-            "\1\5\2\uffff\3\7\102\uffff\2\6\2\uffff\2\10",
-            "\1\5\2\uffff\3\7\102\uffff\2\6\2\uffff\2\10",
+            "\1\4\2\uffff\3\7\102\uffff\2\5\2\uffff\2\10",
+            "\1\4\2\uffff\3\7\102\uffff\2\5\2\uffff\2\10",
             "\1\17\16\uffff\14\20",
             "\1\23\13\uffff\1\24",
             "\1\21\16\uffff\14\22",
             "\1\25",
             "\1\23\13\uffff\1\24",
-            "\1\5\2\uffff\3\7\102\uffff\2\6\2\uffff\2\10",
+            "\1\4\2\uffff\3\7\102\uffff\2\5\2\uffff\2\10",
             "\2\26\11\uffff\31\26",
             "\1\27\13\uffff\1\30",
             "\1\27\13\uffff\1\30",
-            "\1\5\2\uffff\3\7\102\uffff\2\6\2\uffff\2\10"
+            "\1\4\2\uffff\3\7\102\uffff\2\5\2\uffff\2\10"
     };
 
     static final short[] DFA6_eot = DFA.unpackEncodedString(DFA6_eotS);
@@ -3045,172 +3056,174 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_spaces_in_stmt33 = new BitSet(new long[]{0x0000000000060000L});
     public static final BitSet FOLLOW_where_in_stmt35 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
     public static final BitSet FOLLOW_spaces_in_stmt37 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_constraintList_in_stmt39 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt46 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_stmt48 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_selectList_in_stmt50 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt55 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_stmt57 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_selectList_in_stmt59 = new BitSet(new long[]{0x0000000000000010L,0x00000000000000C0L});
-    public static final BitSet FOLLOW_spaces_in_stmt61 = new BitSet(new long[]{0x0000000000000000L,0x00000000000000C0L});
-    public static final BitSet FOLLOW_order_in_stmt63 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000300L});
-    public static final BitSet FOLLOW_spaces_in_stmt65 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000300L});
-    public static final BitSet FOLLOW_by_in_stmt67 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_stmt69 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_keyword_in_stmt74 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_spaces_in_stmt80 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt85 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_stmt87 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_selectList_in_stmt89 = new BitSet(new long[]{0x0000000000060010L});
-    public static final BitSet FOLLOW_spaces_in_stmt91 = new BitSet(new long[]{0x0000000000060000L});
-    public static final BitSet FOLLOW_where_in_stmt93 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_stmt95 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_constraintList_in_stmt97 = new BitSet(new long[]{0x0000000000000010L,0x00000000000000C0L});
-    public static final BitSet FOLLOW_spaces_in_stmt99 = new BitSet(new long[]{0x0000000000000000L,0x00000000000000C0L});
-    public static final BitSet FOLLOW_order_in_stmt101 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000300L});
-    public static final BitSet FOLLOW_spaces_in_stmt103 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000300L});
-    public static final BitSet FOLLOW_by_in_stmt105 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_stmt107 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_keyword_in_stmt112 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_spaces_in_stmt118 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SPACE_in_spaces128 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_keyword_in_selectList143 = new BitSet(new long[]{0x0000000000000032L});
-    public static final BitSet FOLLOW_spaces_in_selectList156 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COMMA_in_selectList160 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_selectList164 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_keyword_in_selectList171 = new BitSet(new long[]{0x0000000000000032L});
-    public static final BitSet FOLLOW_entity_in_keyword196 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entity_in_keyword202 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_keyword204 = new BitSet(new long[]{0x00FFFFFF80300000L});
-    public static final BitSet FOLLOW_attr_in_keyword206 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entity_in_keyword211 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_keyword213 = new BitSet(new long[]{0xFF00000000000000L});
-    public static final BitSet FOLLOW_funct_in_keyword215 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_count_in_keyword220 = new BitSet(new long[]{0x0000000000008010L});
-    public static final BitSet FOLLOW_spaces_in_keyword222 = new BitSet(new long[]{0x0000000000008000L});
-    public static final BitSet FOLLOW_15_in_keyword224 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_keyword226 = new BitSet(new long[]{0x000000007FF80000L});
-    public static final BitSet FOLLOW_entity_in_keyword228 = new BitSet(new long[]{0x0000000000010010L});
-    public static final BitSet FOLLOW_spaces_in_keyword230 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_keyword232 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_sum_in_keyword237 = new BitSet(new long[]{0x0000000000008010L});
-    public static final BitSet FOLLOW_spaces_in_keyword239 = new BitSet(new long[]{0x0000000000008000L});
-    public static final BitSet FOLLOW_15_in_keyword241 = new BitSet(new long[]{0x000000007FF80010L});
-    public static final BitSet FOLLOW_spaces_in_keyword243 = new BitSet(new long[]{0x000000007FF80000L});
-    public static final BitSet FOLLOW_entity_in_keyword245 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_keyword247 = new BitSet(new long[]{0x00FFFFFF80300000L});
-    public static final BitSet FOLLOW_attr_in_keyword249 = new BitSet(new long[]{0x0000000000010010L});
-    public static final BitSet FOLLOW_spaces_in_keyword251 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_keyword253 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_constraint_in_constraintList262 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
-    public static final BitSet FOLLOW_spaces_in_constraintList266 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000C30L});
-    public static final BitSet FOLLOW_logicalOp_in_constraintList273 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_spaces_in_constraintList281 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
-    public static final BitSet FOLLOW_constraint_in_constraintList283 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
-    public static final BitSet FOLLOW_keyword_in_constraint296 = new BitSet(new long[]{0x0000000000000390L});
-    public static final BitSet FOLLOW_spaces_in_constraint305 = new BitSet(new long[]{0x0000000000000380L});
-    public static final BitSet FOLLOW_set_in_constraint312 = new BitSet(new long[]{0x0000000000000410L});
-    public static final BitSet FOLLOW_spaces_in_constraint332 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_genValue_in_constraint339 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keyword_in_constraint368 = new BitSet(new long[]{0x0000000000000010L,0x0000000000003000L});
-    public static final BitSet FOLLOW_spaces_in_constraint377 = new BitSet(new long[]{0x0000000000000000L,0x0000000000003000L});
-    public static final BitSet FOLLOW_in_in_constraint384 = new BitSet(new long[]{0x0000000000008010L});
-    public static final BitSet FOLLOW_spaces_in_constraint395 = new BitSet(new long[]{0x0000000000008000L});
-    public static final BitSet FOLLOW_15_in_constraint397 = new BitSet(new long[]{0x0000000000000410L});
-    public static final BitSet FOLLOW_spaces_in_constraint401 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_valueList_in_constraint407 = new BitSet(new long[]{0x0000000000010010L});
-    public static final BitSet FOLLOW_spaces_in_constraint415 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_constraint419 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keyword_in_constraint445 = new BitSet(new long[]{0x0000000000000010L,0x0000000000030000L});
-    public static final BitSet FOLLOW_spaces_in_constraint454 = new BitSet(new long[]{0x0000000000000000L,0x0000000000030000L});
-    public static final BitSet FOLLOW_like_in_constraint461 = new BitSet(new long[]{0x0000000000001410L});
-    public static final BitSet FOLLOW_spaces_in_constraint470 = new BitSet(new long[]{0x0000000000001400L});
-    public static final BitSet FOLLOW_likeValue_in_constraint477 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_where506 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue526 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue533 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue535 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue537 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue543 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue545 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue547 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue549 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue551 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue557 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue559 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue561 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue563 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue565 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue567 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue569 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue575 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue577 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue579 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue581 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue583 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue585 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue587 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue589 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue591 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue597 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue599 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue601 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue603 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue605 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue607 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue609 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue611 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue613 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_dotValue615 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue617 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue623 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_SPACE_in_dotValue625 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue627 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue633 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_SPACE_in_dotValue635 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue637 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_SPACE_in_dotValue639 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_VALUE_in_dotValue641 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dotValue_in_valueList649 = new BitSet(new long[]{0x0000000000000032L});
-    public static final BitSet FOLLOW_spaces_in_valueList653 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COMMA_in_valueList655 = new BitSet(new long[]{0x0000000000000410L});
-    public static final BitSet FOLLOW_spaces_in_valueList657 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_valueList659 = new BitSet(new long[]{0x0000000000000032L});
-    public static final BitSet FOLLOW_EQ_in_compOpt670 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LT_in_compOpt677 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GT_in_compOpt684 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EQ_in_compOpt691 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_GT_in_compOpt694 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EQ_in_compOpt701 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_LT_in_compOpt704 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LT_in_compOpt711 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_EQ_in_compOpt714 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GT_in_compOpt721 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_EQ_in_compOpt724 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dotValue_in_genValue731 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dotValue_in_genValue736 = new BitSet(new long[]{0x0000000000000380L});
-    public static final BitSet FOLLOW_compOpt_in_genValue738 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_genValue740 = new BitSet(new long[]{0x0000000000000802L});
-    public static final BitSet FOLLOW_AMP_in_genValue743 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_genValue745 = new BitSet(new long[]{0x0000000000000380L});
-    public static final BitSet FOLLOW_compOpt_in_genValue747 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_dotValue_in_genValue749 = new BitSet(new long[]{0x0000000000000802L});
-    public static final BitSet FOLLOW_dotValue_in_likeValue759 = new BitSet(new long[]{0x0000000000001402L});
-    public static final BitSet FOLLOW_STAR_in_likeValue762 = new BitSet(new long[]{0x0000000000001402L});
-    public static final BitSet FOLLOW_and_in_logicalOp771 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_or_in_logicalOp773 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_entity782 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_attr835 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_funct949 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_select987 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_and1008 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_order1021 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_by1034 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_or1047 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_in1060 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_not1073 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_like1086 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_count1099 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_sum1112 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_constraintList_in_stmt39 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_spaces_in_stmt41 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_select_in_stmt47 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_stmt49 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_selectList_in_stmt51 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_spaces_in_stmt53 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_select_in_stmt58 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_stmt60 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_selectList_in_stmt62 = new BitSet(new long[]{0x0000000000000010L,0x00000000000000C0L});
+    public static final BitSet FOLLOW_spaces_in_stmt64 = new BitSet(new long[]{0x0000000000000000L,0x00000000000000C0L});
+    public static final BitSet FOLLOW_order_in_stmt66 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000300L});
+    public static final BitSet FOLLOW_spaces_in_stmt68 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000300L});
+    public static final BitSet FOLLOW_by_in_stmt70 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_stmt72 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_keyword_in_stmt77 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_spaces_in_stmt83 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_select_in_stmt88 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_stmt90 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_selectList_in_stmt92 = new BitSet(new long[]{0x0000000000060010L});
+    public static final BitSet FOLLOW_spaces_in_stmt94 = new BitSet(new long[]{0x0000000000060000L});
+    public static final BitSet FOLLOW_where_in_stmt96 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_stmt98 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_constraintList_in_stmt100 = new BitSet(new long[]{0x0000000000000010L,0x00000000000000C0L});
+    public static final BitSet FOLLOW_spaces_in_stmt102 = new BitSet(new long[]{0x0000000000000000L,0x00000000000000C0L});
+    public static final BitSet FOLLOW_order_in_stmt104 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000300L});
+    public static final BitSet FOLLOW_spaces_in_stmt106 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000300L});
+    public static final BitSet FOLLOW_by_in_stmt108 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_stmt110 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_keyword_in_stmt115 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_spaces_in_stmt121 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SPACE_in_spaces131 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_keyword_in_selectList146 = new BitSet(new long[]{0x0000000000000032L});
+    public static final BitSet FOLLOW_spaces_in_selectList159 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COMMA_in_selectList163 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_selectList167 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_keyword_in_selectList174 = new BitSet(new long[]{0x0000000000000032L});
+    public static final BitSet FOLLOW_entity_in_keyword199 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_entity_in_keyword205 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_keyword207 = new BitSet(new long[]{0x00FFFFFF80300000L});
+    public static final BitSet FOLLOW_attr_in_keyword209 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_entity_in_keyword214 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_keyword216 = new BitSet(new long[]{0xFF00000000000000L});
+    public static final BitSet FOLLOW_funct_in_keyword218 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_count_in_keyword223 = new BitSet(new long[]{0x0000000000008010L});
+    public static final BitSet FOLLOW_spaces_in_keyword225 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_keyword227 = new BitSet(new long[]{0x000000007FF80010L});
+    public static final BitSet FOLLOW_spaces_in_keyword229 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_entity_in_keyword231 = new BitSet(new long[]{0x0000000000010010L});
+    public static final BitSet FOLLOW_spaces_in_keyword233 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_16_in_keyword235 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_sum_in_keyword240 = new BitSet(new long[]{0x0000000000008010L});
+    public static final BitSet FOLLOW_spaces_in_keyword242 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_keyword244 = new BitSet(new long[]{0x000000007FF80010L});
+    public static final BitSet FOLLOW_spaces_in_keyword246 = new BitSet(new long[]{0x000000007FF80000L});
+    public static final BitSet FOLLOW_entity_in_keyword248 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_keyword250 = new BitSet(new long[]{0x00FFFFFF80300000L});
+    public static final BitSet FOLLOW_attr_in_keyword252 = new BitSet(new long[]{0x0000000000010010L});
+    public static final BitSet FOLLOW_spaces_in_keyword254 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_16_in_keyword256 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_constraint_in_constraintList265 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
+    public static final BitSet FOLLOW_spaces_in_constraintList269 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000C30L});
+    public static final BitSet FOLLOW_logicalOp_in_constraintList276 = new BitSet(new long[]{0x000020007FF80010L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_spaces_in_constraintList284 = new BitSet(new long[]{0x000020007FF80000L,0x00000000001C0000L});
+    public static final BitSet FOLLOW_constraint_in_constraintList286 = new BitSet(new long[]{0x0000000000000012L,0x0000000000000C30L});
+    public static final BitSet FOLLOW_keyword_in_constraint299 = new BitSet(new long[]{0x0000000000000390L});
+    public static final BitSet FOLLOW_spaces_in_constraint308 = new BitSet(new long[]{0x0000000000000380L});
+    public static final BitSet FOLLOW_set_in_constraint315 = new BitSet(new long[]{0x0000000000000410L});
+    public static final BitSet FOLLOW_spaces_in_constraint335 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_genValue_in_constraint342 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keyword_in_constraint371 = new BitSet(new long[]{0x0000000000000010L,0x0000000000003000L});
+    public static final BitSet FOLLOW_spaces_in_constraint380 = new BitSet(new long[]{0x0000000000000000L,0x0000000000003000L});
+    public static final BitSet FOLLOW_in_in_constraint387 = new BitSet(new long[]{0x0000000000008010L});
+    public static final BitSet FOLLOW_spaces_in_constraint398 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_constraint400 = new BitSet(new long[]{0x0000000000000410L});
+    public static final BitSet FOLLOW_spaces_in_constraint404 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_valueList_in_constraint410 = new BitSet(new long[]{0x0000000000010010L});
+    public static final BitSet FOLLOW_spaces_in_constraint418 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_16_in_constraint422 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keyword_in_constraint448 = new BitSet(new long[]{0x0000000000000010L,0x0000000000030000L});
+    public static final BitSet FOLLOW_spaces_in_constraint457 = new BitSet(new long[]{0x0000000000000000L,0x0000000000030000L});
+    public static final BitSet FOLLOW_like_in_constraint464 = new BitSet(new long[]{0x0000000000001410L});
+    public static final BitSet FOLLOW_spaces_in_constraint473 = new BitSet(new long[]{0x0000000000001400L});
+    public static final BitSet FOLLOW_likeValue_in_constraint480 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_where509 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue529 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue536 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue538 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue540 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue546 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue548 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue550 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue552 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue554 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue560 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue562 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue564 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue566 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue568 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue570 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue572 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue578 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue580 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue582 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue584 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue586 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue588 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue590 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue592 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue594 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue600 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue602 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue604 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue606 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue608 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue610 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue612 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue614 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue616 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_dotValue618 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue620 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue626 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_SPACE_in_dotValue628 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue630 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue636 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_SPACE_in_dotValue638 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue640 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_SPACE_in_dotValue642 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_VALUE_in_dotValue644 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dotValue_in_valueList652 = new BitSet(new long[]{0x0000000000000032L});
+    public static final BitSet FOLLOW_spaces_in_valueList656 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COMMA_in_valueList658 = new BitSet(new long[]{0x0000000000000410L});
+    public static final BitSet FOLLOW_spaces_in_valueList660 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_valueList662 = new BitSet(new long[]{0x0000000000000032L});
+    public static final BitSet FOLLOW_EQ_in_compOpt673 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LT_in_compOpt680 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GT_in_compOpt687 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EQ_in_compOpt694 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_GT_in_compOpt697 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EQ_in_compOpt704 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_LT_in_compOpt707 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LT_in_compOpt714 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_EQ_in_compOpt717 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GT_in_compOpt724 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_EQ_in_compOpt727 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dotValue_in_genValue734 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dotValue_in_genValue739 = new BitSet(new long[]{0x0000000000000380L});
+    public static final BitSet FOLLOW_compOpt_in_genValue741 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_genValue743 = new BitSet(new long[]{0x0000000000000802L});
+    public static final BitSet FOLLOW_AMP_in_genValue746 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_genValue748 = new BitSet(new long[]{0x0000000000000380L});
+    public static final BitSet FOLLOW_compOpt_in_genValue750 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_dotValue_in_genValue752 = new BitSet(new long[]{0x0000000000000802L});
+    public static final BitSet FOLLOW_dotValue_in_likeValue762 = new BitSet(new long[]{0x0000000000001402L});
+    public static final BitSet FOLLOW_STAR_in_likeValue765 = new BitSet(new long[]{0x0000000000001402L});
+    public static final BitSet FOLLOW_and_in_logicalOp774 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_or_in_logicalOp776 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_entity785 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_attr838 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_funct952 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_select990 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_and1011 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_order1024 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_by1037 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_or1050 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_in1063 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_not1076 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_like1089 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_count1102 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_sum1115 = new BitSet(new long[]{0x0000000000000002L});
 
 }
