@@ -263,7 +263,8 @@ class DDServer(DDLogger,Controller):
     def getDbsApi(self,dbsInst):
         dbsUrl=DBS_INST_URL[dbsInst]
         dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
-        print "dbsUrl",dbsUrl
+        if self.verbose:
+           print "dbsUrl",dbsUrl
         self.dbsConfig['url']=dbsUrl
         if self.dbsApi.has_key(dbsInst):
            return self.dbsApi[dbsInst]
@@ -5224,24 +5225,24 @@ Save query as:
         cff      = int(getArg(kwargs,'cff',0))
         self.qmaker.initDBS(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
-        sel      = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
+        method   = getArg(kwargs,'method',self.iface)
         page     = ""
 #        print "\n\n+++aSearchShowAll",kwargs
-        try:
-            query= self.qmaker.processQuery(sel)
-        except:
-            if not html:
-               return traceback.format_exc()
-            msg ="<pre>%s</pre>"%getExcMessage(userMode)
-            page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
-            return page
-        method   = getArg(kwargs,'method',self.iface)
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=limit,type="query")
            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
+           try:
+               sel  = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
+               query= self.qmaker.processQuery(sel)
+           except:
+               if not html:
+                  return traceback.format_exc()
+               msg ="<pre>%s</pre>"%getExcMessage(userMode)
+               page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+               return page
            result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if parents:
            what,par = output.split(".")

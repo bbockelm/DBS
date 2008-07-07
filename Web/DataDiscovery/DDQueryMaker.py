@@ -633,7 +633,6 @@ class DDQueryMaker(DDLogger):
       oList=[]
       tList=[]
       for item in result:
-          print item
           if type(item) is types.StringType:
               raise item
           oList.append(item.values())
