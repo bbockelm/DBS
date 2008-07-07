@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.181 $"
- $Id: DBSSql.java,v 1.181 2008/06/25 16:40:27 afaq Exp $"
+ $Revision: 1.182 $"
+ $Id: DBSSql.java,v 1.182 2008/07/01 21:10:36 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3236,10 +3236,79 @@ public class DBSSql {
                 return ps;
         }
 
+	public static PreparedStatement listADSFileLumisExcluded(Connection conn, String aDSID, String fileID) throws SQLException {
+		 String sql = "SELECT DISTINCT lumi.id as LUMI_ID, \n" +
+			"lumi.LumiSectionNumber as LUMI_SECTION_NUMBER,  \n" +
+			"r.RunNumber as RUN_NUMBER,  \n" +
+			"lumi.StartEventNumber as START_EVENT_NUMBER,  \n" +
+			"lumi.EndEventNumber as END_EVENT_NUMBER,  \n" +
+			"lumi.LumiStartTime as LUMI_START_TIME,  \n" +
+			"lumi.LumiEndTime as LUMI_END_TIME,  \n" +
+			"lumi.CreationDate as CREATION_DATE,  \n" +
+			"lumi.LastModificationDate as LAST_MODIFICATION_DATE,  \n" +
+			"percb.DistinguishedName as CREATED_BY,  \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY  \n" +
+			"FROM "+owner()+"LumiSection lumi  \n" +
+			"JOIN "+owner()+"Runs r  \n" +
+				"ON r.ID = lumi.RunNumber  \n" +
+			"JOIN "+owner()+"ProcDSRuns procdsr \n" +
+				"ON r.ID = procdsr.Run  \n" +
+			"JOIN "+owner()+"ProcessedDataset procds \n" +
+		       		"ON procds.ID = procdsr.Dataset \n" +
+			"JOIN "+owner()+"AnalysisDataset ads \n" +
+			       	"ON ads.ProcessedDS = procds.ID \n" +
+			"JOIN "+owner()+"FileRunLumi frl \n" +
+			       	"ON frl.Lumi = lumi.ID \n" +
+			       	"AND frl.Run = r.ID \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb  \n" +
+				"ON percb.id = lumi.CreatedBy  \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm  \n" +
+				"ON perlm.id = lumi.LastModifiedBy  \n" +
+			"WHERE ads.ID = ? and frl.Fileid = ? \n" +
+			"AND \n" +
+				"(lumi.id, lumi.LumiSectionNumber , r.RunNumber ,  \n" +
+				" lumi.StartEventNumber , lumi.EndEventNumber ,  \n" +
+				" lumi.LumiStartTime , lumi.LumiEndTime , lumi.CreationDate , \n" +
+				" lumi.LastModificationDate , percb.DistinguishedName , perlm.DistinguishedName ) \n" +
+			"NOT IN \n" +
+			"( \n" +
+			" SELECT DISTINCT lumi.id as LUMI_ID, \n" +
+			" lumi.LumiSectionNumber as LUMI_SECTION_NUMBER,  \n" +
+			" r.RunNumber as RUN_NUMBER,  \n" +
+			" lumi.StartEventNumber as START_EVENT_NUMBER,  \n" +
+			" lumi.EndEventNumber as END_EVENT_NUMBER,  \n" +
+			" lumi.LumiStartTime as LUMI_START_TIME,  \n" +
+			" lumi.LumiEndTime as LUMI_END_TIME,  \n" +
+			" lumi.CreationDate as CREATION_DATE,  \n" +
+			" lumi.LastModificationDate as LAST_MODIFICATION_DATE,  \n" +
+			" percb.DistinguishedName as CREATED_BY,  \n" +
+			" perlm.DistinguishedName as LAST_MODIFIED_BY  \n" +
+			" FROM "+owner()+"LumiSection lumi  \n" +
+			" JOIN "+owner()+"AnalysisDSFileLumi adsfl  \n" +
+				" ON adsfl.Lumi = lumi.id  \n" +
+			" JOIN "+owner()+"Runs r  \n" +
+				" ON r.ID = lumi.RunNumber  \n" +
+			" LEFT OUTER JOIN "+owner()+"Person percb  \n" +
+				" ON percb.id = lumi.CreatedBy  \n" +
+			" LEFT OUTER JOIN "+owner()+"Person perlm  \n" +
+				" ON perlm.id = lumi.LastModifiedBy  \n" +
+			" WHERE  adsfl.AnalysisDataset = ? AND adsfl.Fileid = ?\n" +
+			") \n";
 
-        public static PreparedStatement listFileRuns(Connection conn, String fileID) throws SQLException {
-                String sql = "SELECT DISTINCT run.id as ID, \n" +
-                        "run.RunNumber as RUN_NUMBER, \n" +
+ 		 PreparedStatement ps = DBManagement.getStatement(conn, sql);
+ 		 int columnIndx = 1;
+ 		 ps.setString(columnIndx++, aDSID);
+ 		 ps.setString(columnIndx++, fileID);
+ 		 ps.setString(columnIndx++, aDSID);
+ 		 ps.setString(columnIndx++, fileID);
+ 		 DBSUtil.writeLog("\n\n" + ps + "\n\n");
+ 		 return ps;
+
+
+	}
+	
+	public static PreparedStatement listFileRuns(Connection conn, String fileID) throws SQLException {
+		String sql = "SELECT DISTINCT run.id as ID, \n" +                        "run.RunNumber as RUN_NUMBER, \n" +
                         "run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
                         "run.NumberOfLumiSections as NUMBER_OF_LUMI_SECTIONS, \n" +
                         "run.TotalLuminosity as TOTAL_LUMINOSITY, \n" +

@@ -17,6 +17,7 @@ api = DbsApi(opts.__dict__)
 
 try:
 
+    api.insertTier ('HCAL')
     api.insertTier ('GEN-SIM')
     api.insertTier ('GEN-SIM-DIGI')
     api.insertTier ('GEN-SIM-RAW')

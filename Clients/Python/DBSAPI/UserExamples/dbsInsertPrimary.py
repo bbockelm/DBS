@@ -4,9 +4,7 @@
 # Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
 #
-import sys
 from DBSAPI.dbsApi import DbsApi
-from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 from DBSAPI.dbsOptions import DbsOptionParser

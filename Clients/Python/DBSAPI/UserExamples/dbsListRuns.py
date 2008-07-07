@@ -18,7 +18,7 @@ try:
   # List all parameter sets
   print ""
   print "RUNS...."
-  for app in api.listRuns("/test_primary_001/TestProcessedDS001/SIM"):
+  for app in api.listRuns("/test_primary_002/TestProcessedDS0001/GEN-SIM"):
      print "  %s" % app
   
 except DbsApiException, ex:

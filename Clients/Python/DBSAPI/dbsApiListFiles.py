@@ -98,6 +98,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 		    'retrive_algo',
 		    'retrive_tier',
 		    'retrive_lumi',
+		    'retrive_lumi_excluded',
 		    'retrive_run',
 		    'retrive_branch',
 		    ]
@@ -186,6 +187,20 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                                    LastModificationDate=str(attrs['last_modification_date']),
                                                    LastModifiedBy=str(attrs['last_modified_by']), 
                                               ))
+	  if name == 'file_lumi_section_excluded':
+             self.currFile['LumiExcludedList'].append(DbsLumiSection(
+                                                   LumiSectionNumber=getLong(attrs['lumi_section_number']),
+                                                   StartEventNumber=getLong(attrs['start_event_number']),
+                                                   EndEventNumber=getLong(attrs['end_event_number']),   
+                                                   LumiStartTime=getLong(attrs['lumi_start_time']),
+                                                   LumiEndTime=getLong(attrs['lumi_end_time']),
+                                                   RunNumber=getLong(attrs['run_number']),
+                                                   CreationDate=str(attrs['creation_date']),
+                                                   CreatedBy=str(attrs['created_by']),
+                                                   LastModificationDate=str(attrs['last_modification_date']),
+                                                   LastModifiedBy=str(attrs['last_modified_by']), 
+                                              ))
+
           if name == 'file_algorithm':
             self.currFile['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),

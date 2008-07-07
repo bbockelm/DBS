@@ -1,6 +1,6 @@
 /**
- $Revision: 1.98 $"
- $Id: DBSApiFileLogic.java,v 1.98 2008/06/25 16:40:27 afaq Exp $"
+ $Revision: 1.99 $"
+ $Id: DBSApiFileLogic.java,v 1.99 2008/06/27 18:42:36 sekhri Exp $"
  *
  */
 
@@ -404,6 +404,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 									if (!isNull(aDSID) ) listADSFileLumis(conn, out, aDSID, lfn);
 									else listFileLumis(conn, out, lfn);
 					}
+					if(DBSUtil.contains(attributes, "retrive_lumi_excluded")) {
+									if (!isNull(aDSID) ) listADSFileLumisExcluded(conn, out, aDSID, lfn);
+					}
+
 					if(DBSUtil.contains(attributes, "retrive_run")) {
 									if (!isNull(aDSID) ) listADSFileRuns(conn, out, aDSID, lfn);
 									else listFileRuns(conn, out, lfn);
@@ -653,6 +657,32 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		}
 	 }
 
+	public void listADSFileLumisExcluded(Connection conn, Writer out, String aDSID, String lfn) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listADSFileLumisExcluded(conn, aDSID, getFileID(conn, lfn, true));
+			pushQuery(ps);
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<file_lumi_section_excluded id='" +  get(rs, "ID") +
+							"' lumi_section_number='" + get(rs, "LUMI_SECTION_NUMBER") +
+							"' run_number='" + get(rs, "RUN_NUMBER") +
+							"' start_event_number='" + get(rs, "START_EVENT_NUMBER") +
+							"' end_event_number='" + get(rs, "END_EVENT_NUMBER") +
+							"' lumi_start_time='" + get(rs, "LUMI_START_TIME") +
+							"' lumi_end_time='" + get(rs, "LUMI_END_TIME") +
+							"' creation_date='" + getTime(rs, "CREATION_DATE") +
+							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+							"' created_by='" + get(rs, "CREATED_BY") +
+							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+							"'/>\n"));
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
 
 
          public void listADSFileLumis(Connection conn, Writer out, String aDSID, String lfn) throws Exception {

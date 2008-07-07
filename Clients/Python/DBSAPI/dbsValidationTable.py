@@ -124,6 +124,7 @@ ValidationTable = {
          "Dataset" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "Block" : { "Comment" : "Required", "Validator" : isDictType },
          "LumiList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "LumiExcludedList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "ChildList" : { "Comment" : "List of THIS file's children files", "Validator" : isListType },
