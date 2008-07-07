@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-07-01 09:46:16
+// $ANTLR 3.0.1 Sql.g 2008-07-07 09:50:10
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -1428,10 +1428,10 @@ public class SqlLexer extends Lexer {
     public final void mVALUE() throws RecognitionException {
         try {
             int _type = VALUE;
-            // Sql.g:105:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+ )
-            // Sql.g:105:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
+            // Sql.g:107:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+ )
+            // Sql.g:107:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
             {
-            // Sql.g:105:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
+            // Sql.g:107:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
             int cnt1=0;
             loop1:
             do {
@@ -1484,11 +1484,11 @@ public class SqlLexer extends Lexer {
     public final void mCOMMA() throws RecognitionException {
         try {
             int _type = COMMA;
-            // Sql.g:110:8: ( ( ',' ) )
-            // Sql.g:110:9: ( ',' )
+            // Sql.g:112:8: ( ( ',' ) )
+            // Sql.g:112:9: ( ',' )
             {
-            // Sql.g:110:9: ( ',' )
-            // Sql.g:110:10: ','
+            // Sql.g:112:9: ( ',' )
+            // Sql.g:112:10: ','
             {
             match(','); 
 
@@ -1508,11 +1508,11 @@ public class SqlLexer extends Lexer {
     public final void mSPACE() throws RecognitionException {
         try {
             int _type = SPACE;
-            // Sql.g:111:8: ( ( ' ' ) )
-            // Sql.g:111:9: ( ' ' )
+            // Sql.g:113:8: ( ( ' ' ) )
+            // Sql.g:113:9: ( ' ' )
             {
-            // Sql.g:111:9: ( ' ' )
-            // Sql.g:111:10: ' '
+            // Sql.g:113:9: ( ' ' )
+            // Sql.g:113:10: ' '
             {
             match(' '); 
 
@@ -1532,11 +1532,11 @@ public class SqlLexer extends Lexer {
     public final void mDOT() throws RecognitionException {
         try {
             int _type = DOT;
-            // Sql.g:112:6: ( ( '.' ) )
-            // Sql.g:112:7: ( '.' )
+            // Sql.g:114:6: ( ( '.' ) )
+            // Sql.g:114:7: ( '.' )
             {
-            // Sql.g:112:7: ( '.' )
-            // Sql.g:112:8: '.'
+            // Sql.g:114:7: ( '.' )
+            // Sql.g:114:8: '.'
             {
             match('.'); 
 
@@ -1556,11 +1556,11 @@ public class SqlLexer extends Lexer {
     public final void mGT() throws RecognitionException {
         try {
             int _type = GT;
-            // Sql.g:114:5: ( ( '>' ) )
-            // Sql.g:114:6: ( '>' )
+            // Sql.g:116:5: ( ( '>' ) )
+            // Sql.g:116:6: ( '>' )
             {
-            // Sql.g:114:6: ( '>' )
-            // Sql.g:114:7: '>'
+            // Sql.g:116:6: ( '>' )
+            // Sql.g:116:7: '>'
             {
             match('>'); 
 
@@ -1580,11 +1580,11 @@ public class SqlLexer extends Lexer {
     public final void mLT() throws RecognitionException {
         try {
             int _type = LT;
-            // Sql.g:115:5: ( ( '<' ) )
-            // Sql.g:115:6: ( '<' )
+            // Sql.g:117:5: ( ( '<' ) )
+            // Sql.g:117:6: ( '<' )
             {
-            // Sql.g:115:6: ( '<' )
-            // Sql.g:115:7: '<'
+            // Sql.g:117:6: ( '<' )
+            // Sql.g:117:7: '<'
             {
             match('<'); 
 
@@ -1604,11 +1604,11 @@ public class SqlLexer extends Lexer {
     public final void mEQ() throws RecognitionException {
         try {
             int _type = EQ;
-            // Sql.g:116:5: ( ( '=' ) )
-            // Sql.g:116:6: ( '=' )
+            // Sql.g:118:5: ( ( '=' ) )
+            // Sql.g:118:6: ( '=' )
             {
-            // Sql.g:116:6: ( '=' )
-            // Sql.g:116:7: '='
+            // Sql.g:118:6: ( '=' )
+            // Sql.g:118:7: '='
             {
             match('='); 
 
@@ -1628,11 +1628,11 @@ public class SqlLexer extends Lexer {
     public final void mAMP() throws RecognitionException {
         try {
             int _type = AMP;
-            // Sql.g:117:6: ( ( '&' ) )
-            // Sql.g:117:7: ( '&' )
+            // Sql.g:119:6: ( ( '&' ) )
+            // Sql.g:119:7: ( '&' )
             {
-            // Sql.g:117:7: ( '&' )
-            // Sql.g:117:8: '&'
+            // Sql.g:119:7: ( '&' )
+            // Sql.g:119:8: '&'
             {
             match('&'); 
 
@@ -1652,8 +1652,8 @@ public class SqlLexer extends Lexer {
     public final void mSTAR() throws RecognitionException {
         try {
             int _type = STAR;
-            // Sql.g:118:7: ( ( '*' | '%' ) )
-            // Sql.g:118:8: ( '*' | '%' )
+            // Sql.g:120:7: ( ( '*' | '%' ) )
+            // Sql.g:120:8: ( '*' | '%' )
             {
             if ( input.LA(1)=='%'||input.LA(1)=='*' ) {
                 input.consume();
@@ -1679,11 +1679,11 @@ public class SqlLexer extends Lexer {
     public final void mNL() throws RecognitionException {
         try {
             int _type = NL;
-            // Sql.g:119:5: ( ( '\\n' ) )
-            // Sql.g:119:6: ( '\\n' )
+            // Sql.g:121:5: ( ( '\\n' ) )
+            // Sql.g:121:6: ( '\\n' )
             {
-            // Sql.g:119:6: ( '\\n' )
-            // Sql.g:119:7: '\\n'
+            // Sql.g:121:6: ( '\\n' )
+            // Sql.g:121:7: '\\n'
             {
             match('\n'); 
 
@@ -1703,10 +1703,10 @@ public class SqlLexer extends Lexer {
     public final void mWS() throws RecognitionException {
         try {
             int _type = WS;
-            // Sql.g:120:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
-            // Sql.g:120:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:122:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
+            // Sql.g:122:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             {
-            // Sql.g:120:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:122:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             int cnt2=0;
             loop2:
             do {
