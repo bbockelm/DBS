@@ -58,7 +58,7 @@ try:
     from DBSAPI.dbsApi import DbsApi
     from DBSAPI.dbsMigrateApi import DbsMigrateApi
 except:
-#    traceback.print_exc()
+    traceback.print_exc()
     pass
 
 # DBS migration service
@@ -226,7 +226,7 @@ class DDServer(DDLogger,Controller):
             print "Read from hostname and port"
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
-        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_0_9'}
+        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_0_9','retry':2}
         print "+++ DDServer URL '%s'"%self.dbsdd
         print "+++ Using %s interface"%self.iface
         self.formDict   = {
@@ -5799,17 +5799,20 @@ Save query as:
                 fromRow=_idx*pagerStep
                 toRow=_idx*pagerStep+pagerStep
                 if self.verbose:
-                   print "\n\n### While using DBS-QL DBSAPI, transform user input"
-                   print userInput, len(userInput)
-                   print sel, len(sel)
+                   msg="\n\n### While using DBS-QL DBSAPI, transform user input"
+                   msg+="\n'%s'"%userInput
+                   msg+="\n'%s'"%sel
+                   print msg
+                   self.writeLog(msg)
                 # I need to re-write userInput since DBS-QL
                 userInput = sel.strip()
                 if pagerStep==-1:
                    res=dbsApi.executeQuery(userInput,type="query")
                 else:
                    res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
-                if self.verbose:
+                if self.verbose>1:
                    print res
+                   self.writeLog(res)
                 sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
                 query=sql
                 nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict)
