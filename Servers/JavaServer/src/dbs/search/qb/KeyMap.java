@@ -64,7 +64,16 @@ public class KeyMap {
 		map.put("ads.procds", "AnalysisDataset.ProcessedDS");
 		map.put("ads.createdate", "AnalysisDataset.CreationDate");
 		map.put("ads.moddate", "AnalysisDataset.LastModificationDate");
-		
+	
+		map.put("phygrp.name", "PhysicsGroup.PhysicsGroupName");
+		map.put("phygrp.id", "PhysicsGroup.ID");
+		map.put("phygrp.createdate", "PhysicsGroup.CreationDate");
+		map.put("phygrp.moddate", "PhysicsGroup.LastModificationDate");
+		map.put("group.name", "PhysicsGroup.PhysicsGroupName");
+		map.put("group.id", "PhysicsGroup.ID");
+		map.put("group.createdate", "PhysicsGroup.CreationDate");
+		map.put("group.moddate", "PhysicsGroup.LastModificationDate");
+
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 	}

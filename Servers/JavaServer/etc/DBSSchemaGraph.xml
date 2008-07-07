@@ -3,7 +3,7 @@
 <?meta name="GENERATOR" content="XML::Smart 1.3.1" ?>
 <graph edgedefault="directed" name="DBSSchema">
 	<node id="Person" 			user="person" 		real="Person"	 			default="DistinguishedName"/>
-	<node id="PhysicsGroup" 		user="phygrp" 		real="PhysicsGroup"			default="PhysicsGroupName"/>
+	<node id="PhysicsGroup" 		user="phygrp,group" 		real="PhysicsGroup"			default="PhysicsGroupName"/>
 	<node id="PrimaryDataset" 		user="primds" 		real="PrimaryDataset"			default="Name"/>
 	<node id="ProcessedDataset" 		user="procds" 		real="ProcessedDataset" 		default="Name"/>
 	<node id="Runs" 			user="run" 		real="Runs" 				default="RunNumber"/>
