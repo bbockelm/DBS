@@ -126,6 +126,10 @@ class DbsHttpService:
                self.Secure = False
 
 	    self.UserID = Args['userID']
+            if Args.has_key('retry'):
+               self.retry = Args['retry']
+            else:
+               self.retry = None
 
   def setDebug(self, on=1):
     """ Set low-level debugging. """
@@ -166,6 +170,7 @@ class DbsHttpService:
    return key, proxy
    
   def _call(self, args, typ, repeat = 4, delay = 2 ):
+	  if self.retry: repeat=self.retry
 	  try:
 		  ret = self._callOriginal(args, typ)
                   return ret

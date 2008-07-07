@@ -76,6 +76,9 @@ class DbsApi(DbsConfig):
     if not self.configDict.has_key('version'):
        self.configDict['version'] = self.setApiVersion()
  
+    if self.configDict.has_key('retry'):
+       Args['retry'] = self.configDict['retry']
+ 
 
     if self.verbose():
        print "configuration dictionary:", self.configDict
