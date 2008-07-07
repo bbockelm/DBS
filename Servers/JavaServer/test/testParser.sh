@@ -127,6 +127,12 @@ executeQuery () {
 	$CMD query="find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
 	$CMD query="find sum(run.numevents) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
 	$CMD query="find sum(block.size)  where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
+	$CMD query="find phygrp" 
+	$CMD query="find phygrp where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM " 
+	$CMD query="find dataset where phygrp like *BPositive " 
+	$CMD query="find dataset where phygrp in (BPositive,Any )" 
+	$CMD query="find file where phygrp in (BPositive,Any )" 
+	$CMD query="find file,run where phygrp in (BPositive,Any )" 
 
 
 
@@ -184,7 +190,6 @@ executeQuery () {
 #$CMD query="find site where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
 #$CMD query="find file where site like  castorsrm.cr*" 
 #$CMD query="find file where site = srm-disk.pic.es " 
-$CMD query="find dataset where dataset like * " 
 #$CMD query="find file where site in ( srm-disk.pic.es, castorsrm.cr)" 
 #$CMD query="find block , dataset where site = srm-disk.pic.es" 
 #$CMD query="find ads.def, ads.type, ads.status, ads.createby, ads.modby, ads.createdate, ads.moddate where ads.name = MyAds" 
