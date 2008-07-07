@@ -5762,8 +5762,7 @@ Save query as:
         sortOrder = getArg(kwargs,'sortOrder','desc')
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         try :
-            if method!="dbsapi":
-               sel = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
+            sel = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case,method)
         except:
             if not html:
                return traceback.format_exc()
@@ -5800,9 +5799,9 @@ Save query as:
                 fromRow=_idx*pagerStep
                 toRow=_idx*pagerStep+pagerStep
                 if pagerStep==-1:
-                   res=dbsApi.executeQuery(userInput,type="query")
+                   res=dbsApi.executeQuery(sel,type="query")
                 else:
-                   res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+                   res=dbsApi.executeQuery(sel,begin=fromRow,end=toRow,type="query")
                 sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
                 query=sql
                 nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict)

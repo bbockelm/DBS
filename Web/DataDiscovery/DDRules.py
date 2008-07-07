@@ -424,7 +424,7 @@ class DDRules:
             pass
        return self.cmsNames
 
-   def parser(self,input,backEnd="oracle",sortName='CreationDate',sortOrder='desc',case='on'):
+   def parser(self,input,backEnd="oracle",sortName='CreationDate',sortOrder='desc',case='on',method='dd'):
        if self.verbose:
           print "-"*len(input)
           print input
@@ -433,7 +433,10 @@ class DDRules:
           raise "Input '%s' does not contain equal number of open/closed brackets"%input
        if input.find("'")!=-1 or input.find("\"")!=-1:
           raise "Quotes are not allowed"
-       words=self.parseInput(self.preParseInput(input),backEnd,sortName,sortOrder,case)
+       if method=='dd':
+          words=self.parseInput(self.preParseInput(input),backEnd,sortName,sortOrder,case)
+       else:
+          words=self.preParseInput(input,method)
        return words
 
    def preParseCMSNames(self,input):
@@ -526,7 +529,7 @@ class DDRules:
               return self.checkConditions(input,conditions[i+3:])
        return input
 
-   def preParseInput(self,input):
+   def preParseInput(self,input,method='dd'):
        if len(input.split())==1 and input.find("=")==-1 and input.find(">")==-1 and input.find("<")==-1:
           if not self.pathMatch.match(input) and input.find("*")==-1:
              input="*%s*"%input
@@ -607,7 +610,8 @@ class DDRules:
           conditions=input.split()
        else:
           conditions=input[widx+len(" where "):].split()
-       input = self.checkConditions(input,conditions)
+       if method=='dd':
+          input = self.checkConditions(input,conditions)
 
        input = self.preParseCMSNames(input)
        return input
