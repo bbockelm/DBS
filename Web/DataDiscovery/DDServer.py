@@ -5798,12 +5798,18 @@ Save query as:
                    print dbsApi.getServerUrl()
                 fromRow=_idx*pagerStep
                 toRow=_idx*pagerStep+pagerStep
+                if self.verbose:
+                   print "\n\n### While using DBS-QL DBSAPI, transform user input"
+                   print userInput, len(userInput)
+                   print sel, len(sel)
                 # I need to re-write userInput since DBS-QL
-                userInput = sel 
+                userInput = sel.strip()
                 if pagerStep==-1:
                    res=dbsApi.executeQuery(userInput,type="query")
                 else:
                    res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+                if self.verbose:
+                   print res
                 sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
                 query=sql
                 nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict)
