@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApiPrimDSLogic.java,v 1.22 2008/01/11 18:07:14 afaq Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.23 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -53,7 +53,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 			while(rs.next()) {
 				out.write(((String) "<primary_dataset id='" + get(rs, "ID") +
 						"' annotation='" + get(rs, "ANNOTATION") +
-						"' primary_name='" + get(rs, "PRIMARY_NAME") +
+						"' primary_name='" + get(rs, "PRIMARY_NAMEa") +
 						"' start_date='" + get(rs, "START_DATE") +
 						"' end_date='" + get(rs, "END_DATE") +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +

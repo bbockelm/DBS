@@ -180,8 +180,9 @@ listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
 	#out=`$CMD api=listFiles path=$path_child detail="true"`
-	out=`$CMD api=listFiles path=/CalPrivateGlobal-default/Online/RAW detail="true"`
-	#out=`$CMD api=listFiles "path=$path_child-$tier_name1"`
+	#out=`$CMD api=listFiles path=/testbeam_HCalAlone/h2tb2007_default_v1/RAW detail="True" other_detail="True"`
+	out=`$CMD api=listFiles path=/testbeam_HCalAlone/h2tb2007_default_v1/RAW detail="True"`
+	#out=`$CMD api=listFiles path=/test_primary_001/TestProcessedDS111/SIM-GEN detail="True"`
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
 	#$CMD api=listFiles path=$path pattern_lfn=* 
@@ -736,7 +737,7 @@ executeQuery () {
 	out=`$CMD api=executeQuery query="select file.name where run.number=35672"`
 	echo "$out"
 }
-getIntegratedLuminosity
+#getIntegratedLuminosity
 #executeQuery
 #getIntegratedLuminosity	
 #insertPrimaryDataset
@@ -764,7 +765,7 @@ getIntegratedLuminosity
 #listRuns
 #listTiers
 #listBlocks
-#listFiles
+listFiles
 #listLFNs
 #listDatasetSummary
 ##listDatasetContents

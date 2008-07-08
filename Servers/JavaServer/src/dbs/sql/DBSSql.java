@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.182 $"
- $Id: DBSSql.java,v 1.182 2008/07/01 21:10:36 afaq Exp $"
+ $Revision: 1.183 $"
+ $Id: DBSSql.java,v 1.183 2008/07/07 19:21:55 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -2915,6 +2915,9 @@ public class DBSSql {
 
 	//public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild) throws SQLException {
 	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild, boolean listInvalidFiles) throws SQLException {
+		return listFileProvenence(conn, fileID, parentOrChild, listInvalidFiles, true) ;
+	}
+	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild, boolean listInvalidFiles, boolean detail) throws SQLException {
 		//parentOrChild if true means we need to get the parents of the file 
 		//parentOrChild if false means we need to get the childern of the file
 		String joinStr = "";
@@ -2928,34 +2931,37 @@ public class DBSSql {
 		}
 			
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
-			"f.LogicalFileName as LFN, \n" +
-			"f.Checksum as CHECKSUM, \n" +
-			"f.FileSize as FILESIZE, \n" +
-			"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
-			"f.CreationDate as CREATION_DATE, \n" +
-			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-			"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
-			"f.ValidationStatus as VALIDATION_STATUS, \n" +
-			"st.Status as STATUS, \n" +
-			"ty.Type as TYPE, \n" +
-                        "b.Name as BLOCK_NAME, \n"+ 
-			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM "+owner()+"Files f \n" +
-			"JOIN "+owner()+"FileParentage fp \n" +
-				joinStr +
-			"LEFT OUTER JOIN "+owner()+"Block b \n" +
+			"f.LogicalFileName as LFN \n"; 
+		
+			if(detail) sql += ",f.Checksum as CHECKSUM, \n" +
+				"f.FileSize as FILESIZE, \n" +
+				"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
+				"f.CreationDate as CREATION_DATE, \n" +
+				"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+				"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+				"f.ValidationStatus as VALIDATION_STATUS, \n" +
+				"st.Status as STATUS, \n" +
+				"ty.Type as TYPE, \n" +
+                        	"b.Name as BLOCK_NAME, \n"+ 
+				"percb.DistinguishedName as CREATED_BY, \n" +
+				"perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+			
+			sql += "FROM "+owner()+"Files f \n" +
+				"JOIN "+owner()+"FileParentage fp \n" +
+					joinStr +
+				"LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
+					"ON st.id = f.FileStatus \n";
+			
+			if(detail) sql += "LEFT OUTER JOIN "+owner()+"Block b \n" +
 				"ON b.id = f.Block \n "+  
-			"LEFT OUTER JOIN "+owner()+"FileType ty \n" +
-				"ON ty.id = f.FileType \n" +
-			"LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
-				"ON st.id = f.FileStatus \n" +
-                        //"LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
-                        //        "ON vst.id = f.ValidationStatus \n" +
-			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
-				"ON percb.id = f.CreatedBy \n" +
-			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-				"ON perlm.id = f.LastModifiedBy \n";
+				"LEFT OUTER JOIN "+owner()+"FileType ty \n" +
+					"ON ty.id = f.FileType \n" +
+                	        //"LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
+                        	//        "ON vst.id = f.ValidationStatus \n" +
+				"LEFT OUTER JOIN "+owner()+"Person percb \n" +
+					"ON percb.id = f.CreatedBy \n" +
+				"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+					"ON perlm.id = f.LastModifiedBy \n";
 	
 		if(!DBSUtil.isNull(fileID)) {
 			sql += whereStr;
@@ -2990,16 +2996,19 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listFileTiers(Connection conn, String fileID) throws SQLException {
+		return listFileTiers(conn, fileID, true);
+	}
+	public static PreparedStatement listFileTiers(Connection conn, String fileID, boolean detail) throws SQLException {
 		String sql = "SELECT DISTINCT dt.ID as ID, \n " +
-			"dt.Name as NAME, \n" +
-			"dt.CreationDate as CREATION_DATE, \n" +
+			"dt.Name as NAME \n";
+		if(detail) sql += ",dt.CreationDate as CREATION_DATE, \n" +
 			"dt.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM "+owner()+"DataTier dt \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+		sql +=	"FROM "+owner()+"DataTier dt \n" +
 			"JOIN "+owner()+"FileTier ft \n" +
-				"ON ft.DataTier = dt.id \n" +
-			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
+				"ON ft.DataTier = dt.id \n";
+		if(detail) sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = dt.CreatedBy \n" +
 			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = dt.LastModifiedBy \n";
@@ -3016,20 +3025,23 @@ public class DBSSql {
 	}
 
         public static PreparedStatement listBranch(Connection conn, String branchID) throws SQLException {
+		return listBranch(conn, branchID, true);
+	}
+        public static PreparedStatement listBranch(Connection conn, String branchID, boolean detail) throws SQLException {
                 String sql = "SELECT br.ID as ID, \n " +
 			"br.Description as DESCRIPTION, \n" +
                         "br.Hash as HASH, \n" +
-                        "br.Content as CONTENT, \n" +
-                        "br.CreationDate as CREATION_DATE, \n" +
-                        "br.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-                        "percb.DistinguishedName as CREATED_BY, \n" +
-                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM "+owner()+"BranchHash br \n" +
-                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
-                                "ON percb.id = br.CreatedBy \n" +
-                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-                                "ON perlm.id = br.LastModifiedBy \n" +
-                        "WHERE br.id = ? \n";
+                        "br.Content as CONTENT \n";
+		if(detail) sql += ",br.CreationDate as CREATION_DATE, \n" +
+			"br.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+				"percb.DistinguishedName as CREATED_BY, \n" +
+				"perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+		sql += "FROM "+owner()+"BranchHash br \n";
+		if(detail) sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+			"ON percb.id = br.CreatedBy \n" +
+				"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+				"ON perlm.id = br.LastModifiedBy \n";
+		sql +=	"WHERE br.id = ? \n";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, branchID);
@@ -3105,17 +3117,20 @@ public class DBSSql {
         }
 
 	public static PreparedStatement listFileAlgorithms(Connection conn, String fileID) throws SQLException {
+		return listFileAlgorithms(conn, fileID, true);
+	}
+	public static PreparedStatement listFileAlgorithms(Connection conn, String fileID, boolean detail) throws SQLException {
 		String sql = "SELECT DISTINCT algo.id as ID, \n" +
 			"av.Version as APP_VERSION, \n" +
 			"af.FamilyName as APP_FAMILY_NAME, \n" +
 			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
-			"ps.Name as PS_NAME, \n" +
-			"ps.Hash as PS_HASH, \n" +
+			"ps.Hash as PS_HASH \n";
+		if(detail) sql += ",ps.Name as PS_NAME, \n" +
 			"algo.CreationDate as CREATION_DATE, \n" +
 			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM "+owner()+"AlgorithmConfig algo \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+		sql += 	"FROM "+owner()+"AlgorithmConfig algo \n" +
 			"JOIN "+owner()+"FileAlgo fa \n" +
 				"ON fa.Algorithm = algo.id \n" +
 			"JOIN "+owner()+"AppVersion av \n" +
@@ -3125,8 +3140,8 @@ public class DBSSql {
 			"JOIN "+owner()+"AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
 			"JOIN "+owner()+"QueryableParameterSet ps \n" +
-				"ON ps.id = algo.ParameterSetID \n" +
-			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
+				"ON ps.id = algo.ParameterSetID \n";
+		if(detail) sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
 			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n";
@@ -3142,23 +3157,26 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listFileLumis(Connection conn, String fileID) throws SQLException {
+		return listFileLumis(conn, fileID, true);
+	}
+	public static PreparedStatement listFileLumis(Connection conn, String fileID, boolean detail) throws SQLException {
 		String sql = "SELECT DISTINCT lumi.id as ID, \n" +
 			"lumi.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
 			"r.RunNumber as RUN_NUMBER, \n" +
 			"lumi.StartEventNumber as START_EVENT_NUMBER, \n" +
 			"lumi.EndEventNumber as END_EVENT_NUMBER, \n" +
 			"lumi.LumiStartTime as LUMI_START_TIME, \n" +
-			"lumi.LumiEndTime as LUMI_END_TIME, \n" +
-			"lumi.CreationDate as CREATION_DATE, \n" +
+			"lumi.LumiEndTime as LUMI_END_TIME \n";
+		if(detail) sql += ",lumi.CreationDate as CREATION_DATE, \n" +
 			"lumi.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM "+owner()+"LumiSection lumi \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+		sql +=	"FROM "+owner()+"LumiSection lumi \n" +
 			"JOIN "+owner()+"FileRunLumi fl \n" +
 				"ON fl.Lumi = lumi.id \n" +
 			"JOIN "+owner()+"Runs r \n" +
-				"ON r.ID = fl.Run \n" +
-			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
+				"ON r.ID = fl.Run \n";
+		if(detail) sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = lumi.CreatedBy \n" +
 			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = lumi.LastModifiedBy \n";

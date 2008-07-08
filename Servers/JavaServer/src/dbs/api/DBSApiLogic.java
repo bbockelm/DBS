@@ -1,6 +1,6 @@
 /**
- $Revision: 1.139 $"
- $Id: DBSApiLogic.java,v 1.139 2008/06/05 19:39:02 afaq Exp $"
+ $Revision: 1.140 $"
+ $Id: DBSApiLogic.java,v 1.140 2008/06/26 21:08:47 sekhri Exp $"
  *
  */
 
@@ -1220,6 +1220,14 @@ public class DBSApiLogic {
 		return value;
 	}
 	
+	protected String getNoExcep(ResultSet rs, String key) throws Exception {
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int numberOfColumns = rsmd.getColumnCount();
+		for(int i = 1 ; i != numberOfColumns + 1; ++i) 
+			if(rsmd.getColumnName(i).equals(key)) return get(rs, key);
+		return "";
+	}
+
 	protected String getTime(ResultSet rs, String key) throws Exception {
 
                //

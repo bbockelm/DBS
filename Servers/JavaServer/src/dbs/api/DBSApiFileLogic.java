@@ -1,6 +1,6 @@
 /**
- $Revision: 1.99 $"
- $Id: DBSApiFileLogic.java,v 1.99 2008/06/27 18:42:36 sekhri Exp $"
+ $Revision: 1.100 $"
+ $Id: DBSApiFileLogic.java,v 1.100 2008/07/07 19:21:55 sekhri Exp $"
  *
  */
 
@@ -249,7 +249,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ArrayList attributes,
 			String clientVersion
 			) throws Exception {
-		listFiles(conn, out, path,primary, proc, dataTierList, aDSName, blockName, patternLFN, runNumber, attributes, clientVersion, "True");
+		listFiles(conn, out, path,primary, proc, dataTierList, aDSName, blockName, patternLFN, runNumber, attributes, clientVersion, "True", "True");
 	}
 
 	public void listFiles(Connection conn, 
@@ -264,10 +264,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String runNumber,
 			ArrayList attributes,
 			String clientVersion,
-			String detail
+			String detail,
+			String otherDetail
 			) throws Exception {
 
-		
+		boolean allOtherDetails = false;
 		boolean listInvalidFiles = false;
 		boolean useJustPath = false;
 		String procDSID = null;
@@ -276,6 +277,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String runID = null;
 		String patternlfn = "";
 		Vector tierIDList = new Vector();
+		if(otherDetail.equals("True")) allOtherDetails = true;
 			
 		if(contains(attributes, "retrive_invalid_files")) listInvalidFiles = true;
 		//Search can be based on LFN pattern
@@ -377,32 +379,32 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				this.data.localFile = new Hashtable();
 				this.data.localFile.put(lfn, fileID);
 				if(oldClients && detail.equals("True")) {
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
-					listFileAlgorithms(conn, out, lfn);
-					listFileTiers(conn, out, lfn);
-					listFileLumis(conn, out, lfn);
-					listFileRuns(conn, out, lfn);
-					listBranch(conn, out, get(rs, "FILE_BRANCH"));
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles, allOtherDetails);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles, allOtherDetails);//Children
+					listFileAlgorithms(conn, out, lfn, allOtherDetails);
+					listFileTiers(conn, out, lfn, allOtherDetails);
+					listFileLumis(conn, out, lfn, allOtherDetails);
+					//listFileRuns(conn, out, lfn);
+					listBranch(conn, out, get(rs, "FILE_BRANCH"), allOtherDetails);
 
 				}else if( detail.equals("True")) {	
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
-					listFileAlgorithms(conn, out, lfn);
-					listFileTiers(conn, out, lfn);
-					listFileLumis(conn, out, lfn);
-					listFileRuns(conn, out, lfn);
-					listBranch(conn, out, get(rs, "FILE_BRANCH"));
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles, allOtherDetails);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles, allOtherDetails);//Children
+					listFileAlgorithms(conn, out, lfn, allOtherDetails);
+					listFileTiers(conn, out, lfn, allOtherDetails);
+					listFileLumis(conn, out, lfn, allOtherDetails);
+					//listFileRuns(conn, out, lfn);
+					listBranch(conn, out, get(rs, "FILE_BRANCH"), allOtherDetails);
 
 					
 				} else {	
-					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
-					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
-					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn);
-					if(DBSUtil.contains(attributes, "retrive_tier")) listFileTiers(conn, out, lfn);
+					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles, allOtherDetails);//Parents
+					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles, allOtherDetails);//Children
+					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn, allOtherDetails);
+					if(DBSUtil.contains(attributes, "retrive_tier")) listFileTiers(conn, out, lfn, allOtherDetails);
 					if(DBSUtil.contains(attributes, "retrive_lumi")) {
 									if (!isNull(aDSID) ) listADSFileLumis(conn, out, aDSID, lfn);
-									else listFileLumis(conn, out, lfn);
+									else listFileLumis(conn, out, lfn, allOtherDetails);
 					}
 					if(DBSUtil.contains(attributes, "retrive_lumi_excluded")) {
 									if (!isNull(aDSID) ) listADSFileLumisExcluded(conn, out, aDSID, lfn);
@@ -412,7 +414,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 									if (!isNull(aDSID) ) listADSFileRuns(conn, out, aDSID, lfn);
 									else listFileRuns(conn, out, lfn);
 					}
-					if(DBSUtil.contains(attributes, "retrive_branch")) listBranch(conn, out, get(rs, "FILE_BRANCH"));
+					if(DBSUtil.contains(attributes, "retrive_branch")) listBranch(conn, out, get(rs, "FILE_BRANCH"), allOtherDetails);
 				}
                 		out.write(((String) "</file>\n"));
       
@@ -438,16 +440,20 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 */
 	 //public void listFileParents(Connection conn, Writer out, String lfn) throws Exception {
 	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild) throws Exception {
-		 listFileProvenence(conn, out, lfn, parentOrChild, true);
+		 listFileProvenence(conn, out, lfn, parentOrChild, true, true);
+		 //Note that by default the invalid files will be listed . This is a required behaviour.
+	 }
+	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild, boolean listInvalidFiles) throws Exception {
+		 listFileProvenence(conn, out, lfn, parentOrChild, listInvalidFiles, true);
 		 //Note that by default the invalid files will be listed . This is a required behaviour.
 	 }
 
-	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild, boolean listInvalidFiles) throws Exception {
+	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild, boolean listInvalidFiles, boolean detail) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
 			//ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
-			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles);
+			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles, detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			String tag = "";
@@ -456,18 +462,18 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			while(rs.next()) {
 				out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
 					"' lfn='" + get(rs, "LFN") +
-					"' checksum='" + get(rs, "CHECKSUM") +
-					"' size='" + get(rs, "FILESIZE") +
-					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
-					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
-					"' validation_status='" + get(rs, "VALIDATION_STATUS") +
-					"' type='" + get(rs, "TYPE") +
-					"' status='" + get(rs, "STATUS") +
-					"' block_name='" + get(rs, "BLOCK_NAME") +
-					"' creation_date='" + getTime(rs, "CREATION_DATE") +
-					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-					"' created_by='" + get(rs, "CREATED_BY") +
-					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"' checksum='" + getNoExcep(rs, "CHECKSUM") +
+					"' size='" + getNoExcep(rs, "FILESIZE") +
+					"' queryable_meta_data='" + getNoExcep(rs, "QUERYABLE_META_DATA") +
+					"' number_of_events='" + getNoExcep(rs, "NUMBER_OF_EVENTS") +
+					"' validation_status='" + getNoExcep(rs, "VALIDATION_STATUS") +
+					"' type='" + getNoExcep(rs, "TYPE") +
+					"' status='" + getNoExcep(rs, "STATUS") +
+					"' block_name='" + getNoExcep(rs, "BLOCK_NAME") +
+					"' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+					"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + getNoExcep(rs, "CREATED_BY") +
+					"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
 		} finally { 
@@ -510,10 +516,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
 	 */
 	 public void listFileAlgorithms(Connection conn, Writer out, String lfn) throws Exception {
+		 listFileAlgorithms(conn, out, lfn, true);
+	 }
+	 public void listFileAlgorithms(Connection conn, Writer out, String lfn, boolean detail) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileAlgorithms(conn, getFileID(conn, lfn, true));
+			ps = DBSSql.listFileAlgorithms(conn, getFileID(conn, lfn, true), detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
@@ -521,12 +530,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' app_version='" + get(rs, "APP_VERSION") +
 					"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
 					"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
-					"' ps_name='" + get(rs, "PS_NAME") +
+					"' ps_name='" + getNoExcep(rs, "PS_NAME") +
 					"' ps_hash='" + get(rs, "PS_HASH") +
-					"' creation_date='" + getTime(rs, "CREATION_DATE") +
-					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-					"' created_by='" + get(rs, "CREATED_BY") +
-					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+					"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + getNoExcep(rs, "CREATED_BY") +
+					"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
 		} finally { 
@@ -544,19 +553,22 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
 	 */
 	 public void listFileTiers(Connection conn, Writer out, String lfn) throws Exception {
+		 listFileTiers(conn, out, lfn, true);
+	 }
+	 public void listFileTiers(Connection conn, Writer out, String lfn, boolean detail) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileTiers(conn, getFileID(conn, lfn, true));
+			ps = DBSSql.listFileTiers(conn, getFileID(conn, lfn, true), detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_data_tier id='" + get(rs, "ID") +
 					"' name='" + get(rs, "NAME") +
-					"' creation_date='" + getTime(rs, "CREATION_DATE") +
-					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-					"' created_by='" + get(rs, "CREATED_BY") +
-					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+					"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + getNoExcep(rs, "CREATED_BY") +
+					"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 
 			}
@@ -567,13 +579,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 }
 
         public void listBranch(Connection conn, Writer out, String branchId) throws Exception {
+		listBranch(conn, out, branchId, true);
+	}
+        public void listBranch(Connection conn, Writer out, String branchId, boolean detail) throws Exception {
 
 		if (isNull(branchId)) return;
 
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
                 try {
-                        ps = DBSSql.listBranch(conn, branchId);
+                        ps = DBSSql.listBranch(conn, branchId, detail);
 			pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
@@ -581,10 +596,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         "' hash='" + get(rs, "NAME") +
 							"' content='" + Base64.encodeBytes(get(rs, "CONTENT").getBytes()) +
                                                         "' description='" + get(rs, "DESCRIPTION") +
-                                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
-                                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-                                                        "' created_by='" + get(rs, "CREATED_BY") +
-                                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                                        "' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+                                                        "' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+                                                        "' created_by='" + getNoExcep(rs, "CREATED_BY") +
+                                                        "' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
                                                         "'/>\n"));
                         }
                 } finally {
@@ -630,10 +645,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
 	 */
 	 public void listFileLumis(Connection conn, Writer out, String lfn) throws Exception {
+		 listFileLumis(conn, out, lfn, true);
+	 }
+	 public void listFileLumis(Connection conn, Writer out, String lfn, boolean detail) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileLumis(conn, getFileID(conn, lfn, true));
+			ps = DBSSql.listFileLumis(conn, getFileID(conn, lfn, true), detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
@@ -644,10 +662,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' end_event_number='" + get(rs, "END_EVENT_NUMBER") +
 					"' lumi_start_time='" + get(rs, "LUMI_START_TIME") +
 					"' lumi_end_time='" + get(rs, "LUMI_END_TIME") +
-					"' creation_date='" + getTime(rs, "CREATION_DATE") +
-					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-					"' created_by='" + get(rs, "CREATED_BY") +
-					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+					"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + getNoExcep(rs, "CREATED_BY") +
+					"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 
 				}

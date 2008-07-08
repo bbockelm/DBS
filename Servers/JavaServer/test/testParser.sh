@@ -225,7 +225,8 @@ executeQuery () {
 #$CMD query="find dataset where site = heplnx204.pp.rl.ac.uk"
 	#$CMD query="find count(phygrp)" 
 	#$CMD query="find count(group)" 
-	$CMD query="find group, group.id, group.createdate , group.moddate, group.createby, group.modby" 
+	#$CMD query="find dataset" 
+	$CMD query="find file where dataset=/test_primary_001/TestProcessedDS111/SIM-GEN" 
 #executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
