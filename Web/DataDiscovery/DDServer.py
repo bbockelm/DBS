@@ -2647,9 +2647,6 @@ All LFNs in a block
             else:
                page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
             lfnList = self.helper.getLFNs(blockName,dataset,run)
-            justLFNs= []
-            for lfn in lfnList: justLFNs.append(lfn[0])
-            parentLFNList = self.helper.getLFNParents(justLFNs)
             page+=self.formatLFNList(lfnList,what,idx=0)
             page+= self.genBottomHTML()
             return page
