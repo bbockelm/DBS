@@ -120,6 +120,7 @@ class DDQueryMaker(DDLogger):
           msg="While connecting to %s exception was thrown:\n"%self.dbsInstance
           msg+=getExcept()
           res=[msg]
+          self.writeLog(msg)
           pass
       return res
 
@@ -232,6 +233,8 @@ class DDQueryMaker(DDLogger):
           query.append_whereclause(sel)
           return query
       except:
+          msg=getExcept()
+          self.writeLog(msg)
           traceback.print_exc()
           raise "Fail in DDQueryMaker::makeJoinQuery"+traceback.format_exc()
 
@@ -302,6 +305,8 @@ class DDQueryMaker(DDLogger):
                  query.append_whereclause(self.col(tabIn,colIn).in_(rval))
           return query
       except:
+          msg=getExcept()
+          self.writeLog(msg)
           traceback.print_exc()
           raise "Fail in DDQueryMaker::makeQuery"+traceback.format_exc()
       
@@ -388,6 +393,8 @@ class DDQueryMaker(DDLogger):
          else:
             raise "Unknown operator",op
       except:
+         msg=getExcept()
+         self.writeLog(msg)
          traceback.print_exc()
          raise "Fail to build query for '%s', '%s', '%s', case='%s'"%(self.printQuery(sel),tc,val,case)
 
@@ -480,6 +487,8 @@ class DDQueryMaker(DDLogger):
           print msg
           print sel.__dict__
           traceback.print_exc()
+          msg+=getExcept()
+          self.writeLog(msg)
           raise "Fail in countSel"
       self.closeConnection(con)
       return res
@@ -629,6 +638,8 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
+          msg+=getExcept()
+          self.writeLog(msg)
           raise "Fail in executeDBSQuery"
       oList=[]
       tList=[]
@@ -669,6 +680,8 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
+          msg+=getExcept()
+          self.writeLog(msg)
           raise "Fail in executeDBSQuery"
       # end of number of results
       self.closeConnection(con)
@@ -683,6 +696,8 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
+          msg+=getExcept()
+          self.writeLog(msg)
           raise "Fail in executeSingleQuery"
       oList=[]
       tList=[]
@@ -732,6 +747,8 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
+          msg+=getExcept()
+          self.writeLog(msg)
           raise "Fail in executeQueryFromView"
       oList=[]
       tList=[]
@@ -832,6 +849,8 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
+          msg+=getExcept()
+          self.writeLog(msg)
           raise "Fail in executeQueryFromTable"
       oList=[]
       tList=[]
@@ -870,6 +889,8 @@ class DDQueryMaker(DDLogger):
           msg="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
+          msg+=getExcept()
+          self.writeLog(msg)
           raise "Fail in getSummary"
       oList=[]
       for item in result:

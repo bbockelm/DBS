@@ -124,8 +124,7 @@ class DDHelper(DDLogger):
       return query
   
   def printExcept(self,msg=None):
-      if self.verbose:
-         self.writeLog(getExcept(msg))
+      self.writeLog(getExcept(msg))
       print msg
       printExcept()
 
