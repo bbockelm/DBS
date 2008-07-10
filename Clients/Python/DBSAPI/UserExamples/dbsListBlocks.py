@@ -16,7 +16,8 @@ try:
   #print opts.__dict__
   api = DbsApi(opts.__dict__)
   #for block in api.listBlocks("/TestPrimary_001_20070315_03h12m26s/TestProcessed_20070315_03h12m26s/GEN-SIM"):
-  for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM"):
+  #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM"):
+  for block in api.listBlocks("/test_Primary_bbd59eba-8b48-4858-b524-8a5c66d4bbd2/test_processed_1_bbd59eba-8b48-4858-b524-8a5c66d4bbd2/GEN-SIM"):
   #for block in api.listBlocks(block_name="/test_primary_001*"):
   #for block in api.listBlocks("", "/TestPrimary_001_20070315_02h26m11s/TestProcessed_20070315_02h26m11s/GEN-SIM#016712"):
   #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN*"):

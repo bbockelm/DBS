@@ -23,7 +23,7 @@ from dbsLogger import *
 from dbsUtil import *
 
 
-def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="", runNumber="", details=None, retriveList=[]):
+def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="", runNumber="", details=None, retriveList=[], otherDetails = False):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -116,6 +116,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 				    'data_tier_list' : sendTier,
 		                    'analysis_dataset_name' : analysisDataset,
                                     'block_name' : blockName, 
+                                    'other_detail' : str(otherDetails), 
 				    'run_number' : str(get_run(runNumber)),
                                     'pattern_lfn' : patternLFN, 'detail' : 'True',
 				    'retrive_list' : retrive_list }, 'GET')
@@ -125,6 +126,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                     'primary_dataset': primary,
                                     'processed_dataset' : proc,
                                     'data_tier_list' : sendTier,
+                                    'other_detail' : str(otherDetails), 
                                     'path' : path, 'block_name' : blockName, 
 		                    'analysis_dataset_name' : analysisDataset,
 				    'run_number' : str(get_run(runNumber)),

@@ -437,7 +437,7 @@ class Test6(unittest.TestCase):
 		print 'testFile'
 		api.insertFiles(procObj1, [fileObj1], blockObj1)
 		api.insertFiles(procObj2, [fileObj2], blockObj2)
-		fileList = api.listFiles(path = path2, retriveList = ['all'])
+		fileList = api.listFiles(path = path2, retriveList = ['all'], otherDetails = True)
 		self.assertEqual(len(fileList), 1)
 		for fileInDBS in fileList:
 			assertFile(self, fileObj2, fileInDBS)
@@ -530,7 +530,7 @@ class Test8(unittest.TestCase):
 		print 'testMergedFile'
 		api.insertBlock (procObjM, blockObjM, [seM])
 		api.insertMergedFile([fileName1, fileName2], fileObjM)
-		fileList = api.listFiles(path = pathM, retriveList = ['all'])
+		fileList = api.listFiles(path = pathM, retriveList = ['all'], otherDetails = True)
 		self.assertEqual(len(fileList), 1)
 		for fileInDBS in fileList:
 			assertFile(self, fileObjM, fileInDBS)
