@@ -1,6 +1,6 @@
 /**
- $Revision: 1.35 $"
- $Id: DBSApiTransferLogic.java,v 1.35 2008/03/18 21:23:32 sekhri Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSApiTransferLogic.java,v 1.36 2008/05/13 16:35:55 sekhri Exp $"
  *
  */
 
@@ -96,7 +96,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		attributes.add("retrive_run");
 		attributes.add("retrive_branch");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion);
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "True");
 
 	}
 	
