@@ -2909,7 +2909,7 @@ MCDescription:      %s
       oList = []
       sel   = ""
       try:
-          tpm  = tDict['PrimaryDatset']    = self.alias('PrimaryDataset','tpm')
+          tpm  = tDict['PrimaryDataset']    = self.alias('PrimaryDataset','tpm')
           tpds = tDict['ProcDSTier']       = self.alias('ProcDSTier','tpds')
           tdt  = tDict['DataTier']         = self.alias('DataTier','tdt')
           tprd = tDict['ProcessedDataset'] = self.alias('ProcessedDataset','tprd')
