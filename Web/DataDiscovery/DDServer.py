@@ -2694,17 +2694,21 @@ All LFNs in a block
     
     def formatLFNPoolSource(self,lfnList,parentLfnList,format="cff"):
         p1=""
+        if format=="cff":
+           prefix=""
+        else:
+           prefix="file:"
         for lfn in lfnList:
             if lfn==lfnList[-1]:
-               p1+="""            'file:%s'\n"""%lfn
+               p1+="""            '%s%s'\n"""%(prefix,lfn)
             else:
-               p1+="""            'file:%s',\n"""%lfn
+               p1+="""            '%s%s',\n"""%(prefix,lfn)
         p2=""
         for lfn in parentLfnList:
             if lfn==parentLfnList[-1]:
-               p2+="""            'file:%s'\n"""%lfn
+               p2+="""            '%s%s'\n"""%(prefix,lfn)
             else:
-               p2+="""            'file:%s',\n"""%lfn
+               p2+="""            '%s%s',\n"""%(prefix,lfn)
         if format=="python":
             page="""
 <pre>
