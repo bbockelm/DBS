@@ -2679,12 +2679,18 @@ All LFNs in a block
                page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
             else:
                page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
-            lfnList = self.helper.getLFNs(blockName=blockName,dataset=dataset,run=run)
-            justLFNs= []
-            for lfn in lfnList: justLFNs.append(lfn[0])
-            parentLFNList = self.helper.getLFNParents(justLFNs)
-            page+=self.formatLFNPoolSource(justLFNs,parentLFNList,format)
-            page+= self.genBottomHTML()
+            nLfns = self.helper.countLFNs(blockName=blockName,dataset=dataset,run=run)
+#            print "\n\n#### parents nLFNS",nLfns,dataset
+            if  nLfns>10000:
+                page+="<dev>This dataset has %s LFNs, but Data Discovery allows to look-up all parent LFNs only for dataset with less 10K LFNs</dev>"%nLfns
+                page+= self.genBottomHTML()
+            else:
+                lfnList = self.helper.getLFNs(blockName=blockName,dataset=dataset,run=run)
+                justLFNs= []
+                for lfn in lfnList: justLFNs.append(lfn[0])
+                parentLFNList = self.helper.getLFNParents(justLFNs)
+                page+=self.formatLFNPoolSource(justLFNs,parentLFNList,format)
+                page+= self.genBottomHTML()
             return page
         except:
             t=self.errorReport("Fail in getLFNsWithParents function")
