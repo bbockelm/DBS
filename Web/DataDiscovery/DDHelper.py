@@ -2058,6 +2058,7 @@ MCDescription:      %s
           if len(condList): 
              sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
+#          print "\n#### getLFNParents",sel
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
@@ -2075,6 +2076,7 @@ MCDescription:      %s
           if len(condList): 
              sel.append_whereclause(sqlalchemy.or_(*condList))
 #          print self.printQuery(sel)
+#          print "\n#### getLFNParents",sel
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
@@ -2086,6 +2088,44 @@ MCDescription:      %s
           oList.append(item[0])
       self.closeConnection(con)
       return oList
+
+  def countLFNs(self,blockName,dataset,run="*",lfn="*"):
+      res =-1
+      sel = ""
+      con = self.connectToDB()
+      try:
+          tb   = self.alias('Block','tb')
+          tf   = self.alias('Files','tf')
+          tfs  = self.alias('FileStatus','tfs')
+          tft  = self.alias('FileType','tft')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tr   = self.alias('Runs','tr')
+          oSel = [sqlalchemy.func.count(self.col(tf,'LogicalFileName'))]
+          tobj = tb.join(tf,self.col(tf,'Block')==self.col(tb,'ID'))
+          if  run and run!="*":                        
+              tobj = tobj.join(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
+              tobj = tobj.join(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
+          tobj = tobj.outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+          tobj = tobj.outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[tobj],distinct=True,order_by=oSel)
+          if blockName and blockName!="*":
+             sel.append_whereclause(self.col(tb,'Name')==blockName)
+          if dataset and dataset!="*":
+             sel.append_whereclause(self.col(tb,'Path')==dataset)
+          if run and run!="*":
+             sel.append_whereclause(self.col(tr,'RunNumber')==run)
+          if lfn and lfn!="*":
+             sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
+          sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+#          print self.printQuery(sel),blockName,dataset,run
+          result = self.getSQLAlchemyResult(con,sel)
+          res = result.fetchone()[0]
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNs"
+      self.closeConnection(con)
+      return res
 
   def getLFNs(self,blockName,dataset,run="*",lfn="*"):
       prim="*"
