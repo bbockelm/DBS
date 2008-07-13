@@ -4,6 +4,7 @@
 #if len($oList)
 
 Dataset:
+#set parent=$dataset
 <table class="offset_left">
 <tr>
 <td align="left">
@@ -33,10 +34,10 @@ $dataset
 
 <hr class="dbs" />
 The PoolSource code snippet for 2 file solution can be found here in two formats:
-<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=&amp;dataset=$dataset&amp;userMode=$userMode">
+<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=&amp;dataset=$parent&amp;userMode=$userMode">
 cff
 </a>,
-<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=&amp;dataset=$dataset&amp;userMode=$userMode&amp;format=python">
+<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=&amp;dataset=$parent&amp;userMode=$userMode&amp;format=python">
 py
 </a>
 #else
