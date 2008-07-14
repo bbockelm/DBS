@@ -162,9 +162,6 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 		#
 		self.currRun['DQFlagList'] = self.SubSysFlags
 		result.append(self.currRun)
-                self.SubSysFlags = []
-                self.SubSubFlags = []
-
 
       xml.sax.parseString (data, Handler ())
       return result
