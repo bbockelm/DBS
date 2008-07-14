@@ -214,6 +214,10 @@ executeQuery () {
 #$CMD query="find ilumi where run > 0"
 #$CMD query="find file.release"
 #$CMD query="find file where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db"
+	#$CMD query="find count(file) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM or run > 0"
+	#$CMD query="find file where file.size <= 100000 "
+	#$CMD query="find file.parent where file = NEW_TEST0004 "
+	$CMD query="find file.child where file = NEW_TEST0001 "
 #$CMD query="find file, dataset where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db"
 #$CMD query="find run where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db"
 #$CMD query="find  dataset where procds.release = test_Ver1_eaf67699-b539-487d-8713-07df617379db"
@@ -226,7 +230,8 @@ executeQuery () {
 	#$CMD query="find count(phygrp)" 
 	#$CMD query="find count(group)" 
 	#$CMD query="find dataset" 
-	$CMD query="find file where dataset=/test_primary_001/TestProcessedDS111/SIM-GEN" 
+	#$CMD query="find file where dataset=/test_primary_001/TestProcessedDS111/SIM-GEN" 
+	#$CMD query="find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
 #executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 

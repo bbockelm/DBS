@@ -49,7 +49,7 @@ constraintList	: constraint ( spaces
 
 constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces
-	 op=	(EQ | LT | GT) 	{c.setOp($op.text);}   
+	 op=	compOpt 	{c.setOp($op.text);}   
 		spaces
 	 val=	genValue 	{c.setValue($val.text); constraints.add(c); 	}               
 		| 
@@ -75,6 +75,10 @@ dotValue        : VALUE
 		| VALUE DOT VALUE DOT VALUE DOT VALUE
 		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
 		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
+		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
+		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
+		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE 
+		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE 
 		| VALUE SPACE VALUE
 		| VALUE SPACE VALUE SPACE VALUE;
 //dateValue	: (DIGIT);

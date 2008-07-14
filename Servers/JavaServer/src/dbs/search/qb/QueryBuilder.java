@@ -82,7 +82,7 @@ public class QueryBuilder {
 			//System.out.println("line 2.1.1");
 			} else if(aKw.toLowerCase().startsWith("count")) {
 				aKw = aKw.toLowerCase();
-				query += "COUNT(*)";
+				query += "COUNT(*) AS COUNT";
 				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
 				//System.out.println("entity = " + entity);
 				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
@@ -92,7 +92,7 @@ public class QueryBuilder {
 				String entity = (new StringTokenizer(keyword, ".")).nextToken();
 				//System.out.println("entity " + entity);
 				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
-				query += "SUM(" + km.getMappedValue(keyword, true) + ")";
+				query += "SUM(" + km.getMappedValue(keyword, true) + ") AS SUM_" + keyword.replace('.', '_') ;
 			} else {
 			//System.out.println("line 2.2");
 				if(iLumi && (i < 2) ) {
@@ -196,9 +196,8 @@ public class QueryBuilder {
 						boolean dontJoin = false;
 						if(fileChildAdded) dontJoin = true;
 						fileChildAdded = true;
-						System.out.println("childJoinQuery " + childJoinQuery+ "  dontJoin " + dontJoin);
+						//System.out.println("childJoinQuery " + childJoinQuery+ "  dontJoin " + dontJoin);
 						if(!dontJoin) childJoinQuery += handleChild(tmpTableName, "Files", "FileParentage");
-						System.out.println("AGAIN childJoinQuery " + childJoinQuery);
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
 						addQuery = false;
