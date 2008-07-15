@@ -188,8 +188,6 @@ class cmd_doc_writer:
       print "\n"
       self._help_storequery()
       print "\n"
-      self._help_templatestorequery
-      print "\n"
       self._help_createpads()
       print "\n"
       self._help_myadslist()
@@ -449,19 +447,6 @@ class cmd_doc_writer:
                 print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --storequery=MYTESTADSDEF"
                 if self.wiki_help: print "</verbatim>"
 
-  def _help_templatestorequery(self):
-                pre=""
-                if self.wiki_help:
-                        pre="---+++"
-                print pre+"Store the serach Criteria in DBS Mart without Specifying a Dataset Path (Expert Option)"
-                print "   At the query storage time or later this query could be used to create ADS, User will need"
-                print "   to provide --path option. "
-		print "Such queries in DBS are called Template queries, and hence the name"
-                if self.wiki_help: print "<verbatim>"
-                print "   examples:"
-                print "         dbs search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --storetemplatequery=MYTESTADSDEF"
-                if self.wiki_help: print "</verbatim>"
-
   def _help_createpads(self):
                 pre=""
                 if self.wiki_help:
@@ -501,33 +486,11 @@ class cmd_doc_writer:
                 print "         --createCFF=<CFFNAME> --usequery=<QUERYNAME>"
                 print "                Where CFFNAME is a Valid File Name, QUERYNAME is a Valid Analysis Dataset Definition Name from DBS Mart"
 		print "   OR you can just specify --createCFF= and --storequery= and create .cff and store the query at the same time"
-                print "         dbs search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --createPADS=mycff_file (do not specify .cff (.cff is default))"
+                print "         python dbsCommandLine.py -c search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --storequery=ANZARTESTADS --createPADS=mycff_file (do not specify .cff)"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
                 print "         python dbsCommandLine.py --createCFF=MYCFFTest01 --usequery=MYTESTADSDEF01"
                 if self.wiki_help: print "</verbatim>"
-
-  def _help_createcfg(self):
-                pre=""
-                if self.wiki_help:
-                        pre="---+++"
-                print pre+"Creates .cff files for CRAB based on search criteria"
-                print "   This command cannot be used alone you have to use it with --usequery= or search"
-                print "   You can use --usequery=<QUERYNAME> to specify a pre-stored query"
-                print "   or perform a fresh search using --query and store the results as crab.cfg"
-                print "   First you run search (dbs search --query=\"Your Query Here\", after you have found what you were looking for "
-                print "   you will either specify a name for your search and store it using --storequery=<QUERYNAME>"
-                print "                    Where QUERYNAME is a Valid Analysis Dataset Definition Name, stored in your local system"
-                print "   And then use then --usequery=<QUERYNAME> to specify a pre-stored query and create same ADS in DBS instance"
-                print "   Arguments:"
-                print "         --usequery=<QUERYNAME>"
-                print "                Where QUERYNAME is a Valid Analysis Dataset Definition Name from DBS Mart"
-                print "   OR you can just specify --createCFG= and --storequery= and create crab.cfg and store the query at the same time"
-                if self.wiki_help: print "<verbatim>"
-                print "   examples:"
-                print "         dbs search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --createCFG"
-		if self.wiki_help: print "</verbatim>"
-
 
   def _help_createads(self):
                 pre=""
@@ -566,7 +529,7 @@ class cmd_doc_writer:
 		print "                     --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
                 print "   Simple Example:"
-                print "         dbs search --query=\"find dataset where dataset like *Online*\""
+                print "         python dbsCommandLine.py -c search --dbs search --query=\"find dataset where dataset like *Online*\""
 		detail_help="""
 			Query Syntax: 	FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
 					Constrain operators: <=, <, >=, >, =, not like, like, in, between
@@ -577,13 +540,23 @@ class cmd_doc_writer:
 
 			Query Examples: 
 				find release where release like *
-				find file where release>CMSSW_1_6_7 and site=T2_UK
-				find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW
+				look-up all releases in DBS, NOTE: replace release with any other keyword, 
+				like primds, run, etc. in order to get all primary dataset, runs, respectively
 
-			Further Help: Use 'dbs help find' or 'dbs help <keyword>'
-			
-			'dbs search' can be used in conjuction with --storequery and --createPADS/--createADS 
-					look at --doc for details
+				run between 34850-36000 or run in 34850,34890
+				look-up dataset with runs within a given run ranges. 
+				The find dataset where was optional here and skipped (default).
+
+				find file where release>CMSSW_1_6_7 and site=T2_UK
+				find files located on T2_UK sites which were processed with release CMSSW_1_6_7 and above.
+
+				find primds where (dataset like *Online* or dataset not like *RelVal* ) and release>CMSSW_1_7
+				look-up primary datasets whose dataset name match either Online or not RelVal and who
+				are processed with release greater them CMSSW_1_7
+
+				find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW
+				look-up files and runs for given dataset name
+
 				"""
 		print detail_help
                 print "search can be used in conjuction with --storequery and --createPADS/--createADS operations, look at --doc for help"
@@ -653,9 +626,6 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--storequery", action="store", type="string", dest="storequery",
            help="Store the search query as ADS Definition (must be used with --search)")
 
-      self.add_option("--storetemplatequery", action="store", type="string", dest="storetemplatequery",
-           help="Store the search query as ADS <<Template>> Definition (must be used with --search)")
-
       self.add_option("--query", action="store", type="string", dest="query",
            help="Search query used to perform data serach, create ADS Definitions etc ")
 
@@ -664,9 +634,6 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--createADS", action="store_true", dest="createADS", 
            help="Create Analysis Dataset for the search query (must be used with --search, or --usequery=)")
-
-      self.add_option("--createCFG", action="store_true", dest="createCFG", 
-           help="Creates crab.cfg for the search query (must be used with --search, or --usequery=)")
 
       self.add_option("--createCFF", action="store", type="string", dest="createCFF",
            help="Create .cff file for the search query (must be used with --search, or --usequery=)")
@@ -833,11 +800,7 @@ class ApiDispatcher:
         print_help(self)
         return
 
-    if self.optdict.has_key('want_help'):
-        if (self.manageHelp()):
-                return
-
-    if apiCall in ("--version", "version", "-ver", "--ver"):
+    elif apiCall in ("--version", "version", "-ver", "--ver"):
         print "DBS API Version: %s" %self.api.getApiVersion()
         return
 
@@ -845,6 +808,9 @@ class ApiDispatcher:
        self.printRED ("No command specified, use --help for details")
        return
 
+    elif self.optdict.has_key('want_help'):
+	if (self.manageHelp()):
+		return
     # Following are some weired possibilities, lets deal with'em first
     elif apiCall.startswith('myAnalysisDatasetDef') or apiCall.startswith('myadsdef') or apiCall.startswith('--myadsdef') or \
 		apiCall.startswith('myAnalysisDatasetDef=') or apiCall.startswith('myadsdef=') or apiCall.startswith('--myadsdef=') :
@@ -861,7 +827,6 @@ class ApiDispatcher:
 	apiCall='usequery'
 	self.optdict['usequery']=self.getArgVal(args)
 
-    # also handles storetemplatequery
     elif apiCall.startswith('storequery') or apiCall.startswith('--storequery') or \
 		apiCall.startswith('--storequery=') or apiCall.startswith('storequery=') :
 	apiCall='storequery'
@@ -877,17 +842,10 @@ class ApiDispatcher:
         apiCall='createADS'
         self.optdict['createADS']=self.getArgVal(args)
 
-    elif apiCall.startswith('createCFG') or apiCall.startswith('--createCFG'):
-        apiCall='createCFG'
-	self.optdict['createCFG']=True
-	self.optdict['quiet']=True
-
     elif apiCall.startswith('createCFF') or apiCall.startswith('--createCFF') or \
                         apiCall.startswith('--createCFF=') or apiCall.startswith('createCFF='):
         apiCall='createCFF'
-	self.optdict['quiet']=True
         self.optdict['createCFF']=self.getArgVal(args)
-	if self.optdict.get('createCFF') in (None, ''): self.printRED("createCFF needs an argument, use --createCFF=<CFFNAME>")
 
     else:
 	# Lets continue with normal executioni
@@ -948,9 +906,6 @@ class ApiDispatcher:
     elif apiCall in ('createCFF'):
         self.handleCreateCFFCall()
 
-    elif apiCall in ('createCFG'):
-        self.handleCreateCFGCall()
-
     ##Search data
     elif apiCall in ('search', '--search') or self.optdict.get('search'):
 	self.handleSearchCall()
@@ -983,16 +938,22 @@ class ApiDispatcher:
   def manageHelp(self):
 
 	cmd = self.optdict.get('command', '')
-	#Map generated using JavaServer/etc/genHelp.py
-	entityAttr={'run': {'attr': ['number', 'numevents', 'numlss', 'starttime', 'endtime', 
-			'createdate', 'moddate']}, 'ads': {'attr': ['name', 'version', 'dataset', 
-			'desc', 'procds', 'createdate', 'moddate']}, 'site': {'attr': ['name']}, 
-			'dataset': {'attr': ['parent']}, 'procds': {'attr': ['name', 'createdate', 
-			'moddate']}, 'file': {'attr': ['name', 'size', 'id', 'numevents', 'createdate', 
-			'moddate']}, 'lumi': {'attr': ['startevnum', 'id', 'endevnum', 'number', 
-			'starttime', 'endtime', 'createdate', 'moddate']}, 'primds': {'attr': ['name', 
-			'createdate', 'moddate']}, 'block': {'attr': ['name', 'size', 'path', 'createdate', 
-			'moddate']}, 'dq': {'attr': []}}
+	if cmd in ("find", "FIND", "Find"):
+                desc_help="""
+FIND is used with the search command to query data in DBS
+e.g.:  dbs search --query=\"find dataset where dataset like *Online*\""
+Query Syntax:   FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
+Constrain operators: <=, <, >=, >, =, not like, like, in, between
+words FIND,WHERE,AND,OR can be upper or lower case.
+Expressions can be groupped together using brackets, e.g. ((a and b) or c)
+
+keywords:  ads dataset release site block file primds procds run lumi dq
+	
+For further help on keywords use:
+	dbs help <keyword> 
+"""
+		print desc_help   
+		return True
 
 	entity_help={}
 	entity_help['ads'] = "Analysis Dataset(s)"	
@@ -1007,33 +968,8 @@ class ApiDispatcher:
 	entity_help['lumi'] = ""
 	entity_help['dq'] = ""
 
-	if cmd in entityAttr.keys():
+	if cmd in ['ads', 'dataset', 'release', 'site', 'block', 'file', 'primds', 'procds', 'run', 'lumi', 'dq']:
 		print entity_help[cmd]
-		print "Possible attributes of %s are: " %cmd
-		for anAttr in entityAttr[cmd]['attr']:
-			print "  %s.%s" % (cmd, anAttr)
-		return True
-
-	if cmd in ("find", "FIND", "Find"):
-                desc_help="""
-	FIND is used with the search command to query data in DBS
-
-	Example:   dbs search --query=\"find dataset where dataset like *Online*\""
-	Syntax:    FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
-	Operators: <=, <, >=, >, =, not like, like, in, between
-			words FIND,WHERE,AND,OR can be upper or lower case.
-	"""
-		print desc_help
-		print "Possible keywords are: \n\t", string.join( entityAttr.keys(), '  ' )
-		print "For further help on keywords use:"
-		print "	dbs help <keyword>\n"
-		return True
-
-	if cmd in ("keyword"):
-		print "Possible keywords are: ", string.join( entityAttr.keys(), '  ' )
-		print "For further help on keywords use:"
-                print " dbs help <keyword>\n"
-                return True
 
 	return False
 		
@@ -1046,14 +982,8 @@ class ApiDispatcher:
         #Lets see if user has provided a MART File as destination
         self.adshome = os.path.expandvars(self.api.adshome())
         if not os.path.exists(self.adshome):
-                self.printRED("WARNING: Path %s do not exist, ADSHOME (%s) parameter is not set or not a valid path" \
-										% ( self.adshome,  str(self.api.adshome())))
-		self.printRED("WARNING: Trying to create ADSHOME (%s) " %str(self.adshome))
-		try:
-			os.mkdir(self.adshome)
-		except:
-			self.printRED("ERROR: Unable to create ADSHOME (%s) " %str(self.adshome))
-                	return False
+                self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+                return False
 
         mart_file_name = self.optdict.get('dbsmartfile') or ''
         if mart_file_name not in ('', None):
@@ -1471,8 +1401,6 @@ class ApiDispatcher:
 
 
   def handleCreateADSCall(self):
-        if self.optdict.get('useASearch') :
-                self.printRED("You cannot use --useASearch for creating ADS")
 
         self.setMartParams()
         if self.optdict.has_key('want_help'):
@@ -1502,14 +1430,10 @@ class ApiDispatcher:
 
 	self.printGREEN("Creating ADS based on query: %s " % usequery )
 	martQ=self.KnownQueries[usequery]
-
-
-	# See if DEF already has path, then no need to specify PATH here, else we need to pass the Path to DBS
-	adspath=""
 	if martQ['PATH'] in ('', None):
-		adspath = self.optdict.get('path')	
-		if adspath in ('', None):
-			self.printRED("You must specify a dataset path for ADS, either when doing --storequery, or use --path= now")
+		martQ['PATH'] = self.optdict.get('path')	
+		if martQ['PATH'] in ('', None):
+			self.printRED("You must specify a dataset path for ADS, either when creating query, or use --path=")
 			return
 
 	userq=martQ['USERINPUT']
@@ -1534,7 +1458,7 @@ class ApiDispatcher:
 		from DBSAPI.dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
 
 		adsdef = DbsAnalysisDatasetDefinition(Name=usequery,
-                                         ProcessedDatasetPath=martQ['PATH'],
+                                         #ProcessedDatasetPath=martQ['PATH'],
                                          UserInput=escape(userInput),
                                          SQLQuery=escape(martQ['QUERY']),
                                          Description="ADS DEF Created by DBS Mart from MART query %s CreatedAt %s" \
@@ -1558,13 +1482,11 @@ class ApiDispatcher:
 	try:
 	        self.progress.start()	
 		from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
-
-
 		ads=DbsAnalysisDataset(
         		Type='TEST',
                 	Status='NEW',
                 	PhysicsGroup='RelVal',
-                	Path=adspath,
+                	Path=martQ['PATH'],
 			Description="ADS Created by DBS Mart from MART query %s CreatedAt %s" \
 				% (usequery, martQ['CREATEDAT']),
                 )	
@@ -1590,9 +1512,6 @@ class ApiDispatcher:
 	return
 
   def handleCreatePADSCall(self, path="", files=[]):
-	if self.optdict.get('useASearch') :
-		self.printRED("You cannot use --useASearch for creating PADS")
-
 	self.setMartParams()
 	if self.optdict.has_key('want_help'):
 		self.helper._help_createpads()
@@ -1685,21 +1604,9 @@ class ApiDispatcher:
 		ads_file.write("\n<file lfn='%s' />" % aFile['LogicalFileName'])
 	ads_file.write("\n</dbs>")
         ads_file.close()
-	print "Created Personal ADS: %s" % adspath
+	print "Created ADS: %s" % adspath
 
 	return
-
-  def handleCreateCFGCall(self):
-        """
-        Generates CFF file
-        """
-        if self.optdict.has_key('want_help'):
-                self.helper._help_createcfg()
-                return
-	#handleCreateCFFCall also does what handleCreateCFG needs
-	self.handleCreateCFFCall()
-	return
-
  
   def handleCreateCFFCall(self):
 	"""
@@ -1725,7 +1632,7 @@ class ApiDispatcher:
                 	self.printRED("Query %s not found in the specified MART" % usequery)
                 	return
 
-        	#self.printGREEN("Creating ADS based on query: %s " % usequery )
+        	self.printGREEN("Creating ADS based on query: %s " % usequery )
         	martQ=self.KnownQueries[usequery]
         	if martQ['PATH'] in ('', None):
                 	martQ['PATH'] = self.optdict.get('path')
@@ -1734,7 +1641,7 @@ class ApiDispatcher:
                         	return
 
         	userq=martQ['USERINPUT']
-        	#self.printGREEN(userq)
+        	self.printGREEN(userq)
 	        # Verify the validity of query
 	        userInput=userq.replace('where','WHERE')
         	criteria=userInput.split('WHERE')
@@ -1748,14 +1655,8 @@ class ApiDispatcher:
                 else: results=self.getDataFromDBSServer(userInput)
 
                 files=results['ADSFileList']
-		if self.optdict.get('createCFG') : 
-			self.printGREEN("Creating crab.cfg based on query: %s " % usequery )
-			self.generateCFG(martQ['PATH'])
-
 		createCFF=self.optdict.get('createCFF') or ''
-		if createCFF not in ('', None): 
-			self.printGREEN("Creating .cff based on query: %s " % usequery )
-			self.generateCFF(createCFF, files)
+		self.generateCFF(createCFF, files)
 	else:
         	self.handleSearchCall()
         return
@@ -1769,6 +1670,9 @@ class ApiDispatcher:
 	else: 
 		cffpath=self.adshome+"/"+cffName+".cff"
 
+	#cffpath = os.path.join(self.adshome, cffName)
+	#cffpath = os.path.join(cffpath, ".cff")
+	
 	# Lets write the CFF file
 	cff_file=open(cffpath, 'w')
 	cff_file.write("\n")
@@ -1781,45 +1685,7 @@ class ApiDispatcher:
 			cff_file.write("\n'"+aFile['LogicalFileName']+"'")
 
 	cff_file.write("\n}\n")
-	cff_file.close()
 	self.printGREEN("Generated %s in %s" % (cffpath, self.adshome) )
-	return
-
-  def generateCFG(self, path):#, cfffileslist):
-
-	if path in ('', None):
-		self.printRED("No dataset path specified in query or commandline (use --path=)")
-		return
-
-        self.setMartParams()
-	crabfpath=self.adshome+"/"+"crab.cfg"
-	crabf=open(crabfpath, 'w')
-	crabf.write("[CRAB]")
-	crabf.write("\njobtype                 = cmssw")
-	crabf.write("\nscheduler               = glitecoll")
-
-	crabf.write("\n\n[CMSSW]")
-	crabf.write("\ndatasetpath             = %s" %path)
-	crabf.write("\npset                    = ")
-	crabf.write("\ntotal_number_of_events  = -1")
-	crabf.write("\nevents_per_job          = 1000")
-	crabf.write("\noutput_file             = ")
-
-	crabf.write("\n\n[USER]")
-	crabf.write("\nreturn_data             = 1")
-	crabf.write("\nuse_central_bossDB      = 0")
-	crabf.write("\nuse_boss_rt             = 0")
-
-	crabf.write("\n\n[EDG]")
-	crabf.write("\nrb                      = CERN ")
-	crabf.write("\nproxy_server            = myproxy.cern.ch ")
-	crabf.write("\nvirtual_organization    = cms")
-	crabf.write("\nretry_count             = 0")
-	crabf.write("\nlcg_catalog_type        = lfc")
-	crabf.write("\nlfc_host                = lfc-cms-test.cern.ch")
-	crabf.write("\nlfc_home                = /grid/cms")
-	crabf.close()
-	self.printGREEN("Generated %s/crab.cfg in %s" % (self.adshome,self.adshome) )
 	return
 
   def handleUseQueryCall(self):
@@ -1832,13 +1698,19 @@ class ApiDispatcher:
 	createPADS=self.optdict.get('createPADS') or ''
 	createADS=self.optdict.get('createADS') or ''
     	createCFF=self.optdict.get('createCFF') or ''
-    	createCFG=self.optdict.get('createCFG') or ''
 
-	if createPADS in ('', None) and createADS in ('', None) \
-			and createCFF in ('', None) and createCFG in ('', None) :
-		self.printRED("\n--usequery Can only be used with --createPADS, --createADS, --createCFG or --createCFF calls\n")
+    	if createCFF not in ('', None):
+        	self.generateCFF(createCFF, adsfileslist)
+
+	if createPADS in ('', None) and createADS in ('', None) and createCFF in ('', None) :
+		self.printRED("\n--usequery Can only be used with --createPADS, --createADS or --createCFF calls\n")
 		self.printRED("\nTry --doc for more information.\n")
                 return
+
+	#if createPADS not in ('', None) and createADS not in ('', None):
+	#	self.printRED("\n--usequery Can only be used with either of --createPADS or --createADS calls\n")
+        #        self.printRED("\nTry --doc for more information.\n")
+        #        return
 
 	if createPADS not in ('', None):
 		self.handleCreatePADSCall()
@@ -1846,11 +1718,8 @@ class ApiDispatcher:
 		self.handleCreateADSCall()
 	if createCFF not in ('', None):
 		self.handleCreateCFFCall()
-	if createCFG not in ('', None):
-                self.handleCreateCFGCall()
 
-
-  def getDataFromDBSServer(self, userInput, qu="exe"):
+  def getDataFromDBSServer(self, userInput):
 
 	results={}
 	results['QUERY']=''
@@ -1858,7 +1727,7 @@ class ApiDispatcher:
 	results['DATASETPATH']=''
 	results['ADSFileList']=[]
 	
-	data=self.api.executeQuery(userInput, type=qu)
+	data=self.api.executeQuery(userInput)
 	#print data
         if self.optdict.has_key('quiet'):
 		quiet=self.optdict.get('quiet')
@@ -2038,51 +1907,34 @@ class ApiDispatcher:
     userInput=self.optdict.get('query') or ''
 
     if userInput in ('', None):
-	print "No search criteria specified, Use --query= to specify a serach query (Do you want --usequery=?)"
+	print "Use --query= to specify a serach query"
 	return
 
     storequeryname=self.optdict.get('storequery') or ''
     createPADS=self.optdict.get('createPADS') or ''
     createADS=self.optdict.get('createADS') or ''
-    createCFF=self.optdict.get('createCFF') or ''
-    storetemplt=self.optdict.get('storetemplatequery') or ''
 
-    if storequeryname not in ('', None) and storetemplt not in ('', None):
-	self.printRED("You cannot specify both --storequery and --storetemplatequery")
-	return
-
-    qu="exe"
-    if storequeryname not in ('', None) and storetemplt not in ('', None) \
-        and createCFF in ('', None) and createPADS in ('', None) and createPADS in ('', None):
-        qu="query"  # Run ONLY query and do not execute
-
-    #if createCFF not in ('', None):
-    #	qu="exe"
     # ONLY do this if User needs to create an ADS
-    if createPADS not in ('', None) or createADS not in ('', None):
-	#qu="exe"
+    if createPADS not in ('', None) or createADS not in ('', None) :
 	userInput=userInput.replace('where','WHERE')
     	criteria=userInput.split('WHERE')
     	if len(criteria) <= 0:
-		self.printRED("Please provide a valid criteria for search, use where or WHERE clause")
-		self.printRED("Use --help, or refer to Twiki page")
+		print "Please provide a valid criteria for search, use where or WHERE clause"
+		print "Use --help, or refer to Twiki page"
 		return
-
+ 
    	userInput="find dataset, file, lumi where "+criteria[1]
-
-    # NEED to perform search to store certain information about the query
     if self.optdict.get('useASearch') :
-		results=self.getDataFromDDSearch(userInput)
-    else: results=self.getDataFromDBSServer(userInput, qu)
+	results=self.getDataFromDDSearch(userInput)
+    else: results=self.getDataFromDBSServer(userInput)
 
     datasetPath=results['DATASETPATH'].strip()
-    if storetemplt not in ('', None):
-	storequeryname=storetemplt
-	#Also the datasetPath should be empty for a Template ADSDef
-	datasetPath=""
-    
     adsfileslist=results['ADSFileList']
 
+    createCFF=self.optdict.get('createCFF') or ''
+    if createCFF not in ('', None):
+	self.generateCFF(createCFF, adsfileslist)
+ 
     if storequeryname not in ('', None):
                 #if len(datasetPaths) > 1:
                 #        self.printRED("Cannot create ADS, more than one matching Paths found for query, limit to ONE Path")
@@ -2106,13 +1958,6 @@ class ApiDispatcher:
     if createADS not in ('', None) and storequeryname in ('', None):
                 self.printRED("You cannot use --createADS without --storequery in this case (see --doc)")
                 self.printRED("Each query must be named and stored (as ADS Definition) before using it for creating ADS")
-
-    # CAN Create CFF without storing query
-    if createCFF not in ('', None):
-		self.generateCFF(createCFF, adsfileslist)
-
-    if self.optdict.get('createCFG') : self.generateCFG(datasetPath)
-
     return
 
   def storeQuery(self, path, userquery, sqlquery, queryname):
