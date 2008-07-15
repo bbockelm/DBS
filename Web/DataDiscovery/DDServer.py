@@ -5829,8 +5829,11 @@ Save query as:
                 query=sql
                 nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict)
             except:
-                printExcept()
-                pass
+                if not html:
+                   return traceback.format_exc()
+                msg ="<pre>%s</pre>"%getExcMessage(userMode)
+                page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+                return page
         else:
 
             try:
