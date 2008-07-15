@@ -2700,21 +2700,27 @@ All LFNs in a block
     
     def formatLFNPoolSource(self,lfnList,parentLfnList,format="cff"):
         p1=""
-        if format=="cff":
-           prefix=""
-        else:
-           prefix="file:"
         for lfn in lfnList:
             if lfn==lfnList[-1]:
-               p1+="""            '%s%s'\n"""%(prefix,lfn)
+               p1+="""            '%s'\n"""%lfn
             else:
-               p1+="""            '%s%s',\n"""%(prefix,lfn)
+               p1+="""            '%s',\n"""%lfn
         p2=""
+        if (len(parentLfnList)):
+           if format=="python":
+              p2+="\nsecondaryFileNames = cms.untracked.vstring (\n"
+           else:
+              p2+="\nuntracked vstring secondaryFileNames = {\n"
         for lfn in parentLfnList:
             if lfn==parentLfnList[-1]:
-               p2+="""            '%s%s'\n"""%(prefix,lfn)
+               p2+="""            '%s'\n"""%lfn
             else:
-               p2+="""            '%s%s',\n"""%(prefix,lfn)
+               p2+="""            '%s',\n"""%lfn
+        if (len(parentLfnList)):
+           if format=="python":
+              p2+="\n     )\n"
+           else:
+              p2+="\n     }\n"
         if format=="python":
             page="""
 <pre>
@@ -2723,9 +2729,7 @@ maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
        fileNames = cms.untracked.vstring (
 %s
       ),
-       secondaryFileNames = cms.untracked.vstring (
 %s
-      )
    )
 </pre>"""%(p1,p2)
         else:
@@ -2736,9 +2740,7 @@ untracked PSet maxEvents = {untracked int32 input = -1}
        untracked vstring fileNames = {
 %s
       }
-       untracked vstring secondaryFileNames = {
 %s
-      } 
    }
 </pre>"""%(p1,p2)
         return page 
@@ -2764,7 +2766,10 @@ untracked PSet maxEvents = {untracked int32 input = -1}
                 page+="No LFNs found for site '%s'\n"%site
                 lfnLIst=[]
                 pass
-            page+=self.formatLFNList(lfnList,what)
+            if what=="py":
+               page+=self.formatLFNPoolSource(lfnList,[],what)
+            else:
+               page+=self.formatLFNList(lfnList,what)
             page+= self.genBottomHTML()
             return page
         except:
