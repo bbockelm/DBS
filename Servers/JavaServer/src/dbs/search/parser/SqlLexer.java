@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-07-14 10:40:45
+// $ANTLR 3.0.1 Sql.g 2008-07-15 13:45:31
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -7,91 +7,91 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class SqlLexer extends Lexer {
-    public static final int T75=75;
-    public static final int T76=76;
-    public static final int T73=73;
-    public static final int T74=74;
-    public static final int LT=9;
-    public static final int T79=79;
-    public static final int STAR=12;
-    public static final int T77=77;
-    public static final int T78=78;
-    public static final int AMP=11;
-    public static final int T29=29;
-    public static final int T28=28;
-    public static final int T27=27;
-    public static final int T26=26;
-    public static final int T25=25;
-    public static final int SPACE=4;
-    public static final int EOF=-1;
-    public static final int T24=24;
-    public static final int T23=23;
-    public static final int T22=22;
-    public static final int T72=72;
-    public static final int T21=21;
-    public static final int T71=71;
-    public static final int T20=20;
-    public static final int T70=70;
-    public static final int T62=62;
-    public static final int T63=63;
-    public static final int T64=64;
-    public static final int T65=65;
-    public static final int T66=66;
-    public static final int T67=67;
-    public static final int T68=68;
-    public static final int T69=69;
     public static final int COMMA=5;
-    public static final int T38=38;
-    public static final int T37=37;
-    public static final int NL=13;
-    public static final int EQ=8;
-    public static final int T39=39;
-    public static final int DOT=6;
-    public static final int T34=34;
-    public static final int T33=33;
+    public static final int T79=79;
+    public static final int T29=29;
     public static final int T36=36;
+    public static final int T58=58;
+    public static final int T70=70;
+    public static final int T74=74;
     public static final int T35=35;
-    public static final int T30=30;
+    public static final int T85=85;
+    public static final int T83=83;
     public static final int T61=61;
+    public static final int VALUE=7;
+    public static final int T45=45;
+    public static final int T20=20;
+    public static final int T34=34;
+    public static final int DOT=6;
+    public static final int T64=64;
+    public static final int T25=25;
+    public static final int NL=13;
+    public static final int T86=86;
+    public static final int T18=18;
+    public static final int T37=37;
+    public static final int T26=26;
     public static final int T32=32;
+    public static final int T81=81;
+    public static final int T17=17;
+    public static final int T51=51;
+    public static final int AMP=11;
+    public static final int T46=46;
+    public static final int T77=77;
+    public static final int T16=16;
+    public static final int T38=38;
+    public static final int T41=41;
+    public static final int T24=24;
+    public static final int T19=19;
+    public static final int T69=69;
+    public static final int T39=39;
+    public static final int T21=21;
+    public static final int T62=62;
+    public static final int T44=44;
+    public static final int T55=55;
+    public static final int SPACE=4;
+    public static final int T84=84;
+    public static final int T73=73;
+    public static final int T68=68;
+    public static final int T33=33;
+    public static final int T22=22;
+    public static final int T50=50;
+    public static final int T78=78;
+    public static final int WS=14;
+    public static final int EQ=8;
+    public static final int T43=43;
+    public static final int LT=9;
+    public static final int T23=23;
+    public static final int T28=28;
+    public static final int GT=10;
+    public static final int T42=42;
+    public static final int T66=66;
+    public static final int T40=40;
+    public static final int T71=71;
+    public static final int T63=63;
+    public static final int T57=57;
+    public static final int T72=72;
+    public static final int T65=65;
+    public static final int T56=56;
+    public static final int T76=76;
+    public static final int T80=80;
+    public static final int T75=75;
+    public static final int T59=59;
+    public static final int T48=48;
+    public static final int T15=15;
+    public static final int T54=54;
+    public static final int EOF=-1;
+    public static final int T67=67;
+    public static final int T47=47;
+    public static final int Tokens=87;
+    public static final int T53=53;
     public static final int T60=60;
     public static final int T31=31;
-    public static final int T49=49;
-    public static final int T48=48;
-    public static final int VALUE=7;
-    public static final int T43=43;
-    public static final int Tokens=87;
-    public static final int T42=42;
-    public static final int T41=41;
-    public static final int T40=40;
-    public static final int T47=47;
-    public static final int T46=46;
-    public static final int T45=45;
-    public static final int T44=44;
-    public static final int T84=84;
-    public static final int WS=14;
-    public static final int T85=85;
-    public static final int T86=86;
-    public static final int T50=50;
-    public static final int T59=59;
-    public static final int GT=10;
-    public static final int T81=81;
-    public static final int T52=52;
-    public static final int T15=15;
-    public static final int T80=80;
-    public static final int T51=51;
-    public static final int T16=16;
-    public static final int T83=83;
-    public static final int T54=54;
-    public static final int T17=17;
     public static final int T82=82;
-    public static final int T53=53;
-    public static final int T18=18;
-    public static final int T56=56;
-    public static final int T19=19;
-    public static final int T55=55;
-    public static final int T58=58;
-    public static final int T57=57;
+    public static final int T49=49;
+    public static final int STAR=12;
+    public static final int T27=27;
+    public static final int T52=52;
+    public static final int T30=30;
     public SqlLexer() {;} 
     public SqlLexer(CharStream input) {
         super(input);
@@ -1468,10 +1468,10 @@ public class SqlLexer extends Lexer {
     public final void mVALUE() throws RecognitionException {
         try {
             int _type = VALUE;
-            // Sql.g:111:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+ )
-            // Sql.g:111:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
+            // Sql.g:115:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+ )
+            // Sql.g:115:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
             {
-            // Sql.g:111:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
+            // Sql.g:115:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' )+
             int cnt1=0;
             loop1:
             do {
@@ -1524,11 +1524,11 @@ public class SqlLexer extends Lexer {
     public final void mCOMMA() throws RecognitionException {
         try {
             int _type = COMMA;
-            // Sql.g:116:8: ( ( ',' ) )
-            // Sql.g:116:9: ( ',' )
+            // Sql.g:120:8: ( ( ',' ) )
+            // Sql.g:120:9: ( ',' )
             {
-            // Sql.g:116:9: ( ',' )
-            // Sql.g:116:10: ','
+            // Sql.g:120:9: ( ',' )
+            // Sql.g:120:10: ','
             {
             match(','); 
 
@@ -1548,11 +1548,11 @@ public class SqlLexer extends Lexer {
     public final void mSPACE() throws RecognitionException {
         try {
             int _type = SPACE;
-            // Sql.g:117:8: ( ( ' ' ) )
-            // Sql.g:117:9: ( ' ' )
+            // Sql.g:121:8: ( ( ' ' ) )
+            // Sql.g:121:9: ( ' ' )
             {
-            // Sql.g:117:9: ( ' ' )
-            // Sql.g:117:10: ' '
+            // Sql.g:121:9: ( ' ' )
+            // Sql.g:121:10: ' '
             {
             match(' '); 
 
@@ -1572,11 +1572,11 @@ public class SqlLexer extends Lexer {
     public final void mDOT() throws RecognitionException {
         try {
             int _type = DOT;
-            // Sql.g:118:6: ( ( '.' ) )
-            // Sql.g:118:7: ( '.' )
+            // Sql.g:122:6: ( ( '.' ) )
+            // Sql.g:122:7: ( '.' )
             {
-            // Sql.g:118:7: ( '.' )
-            // Sql.g:118:8: '.'
+            // Sql.g:122:7: ( '.' )
+            // Sql.g:122:8: '.'
             {
             match('.'); 
 
@@ -1596,11 +1596,11 @@ public class SqlLexer extends Lexer {
     public final void mGT() throws RecognitionException {
         try {
             int _type = GT;
-            // Sql.g:120:5: ( ( '>' ) )
-            // Sql.g:120:6: ( '>' )
+            // Sql.g:124:5: ( ( '>' ) )
+            // Sql.g:124:6: ( '>' )
             {
-            // Sql.g:120:6: ( '>' )
-            // Sql.g:120:7: '>'
+            // Sql.g:124:6: ( '>' )
+            // Sql.g:124:7: '>'
             {
             match('>'); 
 
@@ -1620,11 +1620,11 @@ public class SqlLexer extends Lexer {
     public final void mLT() throws RecognitionException {
         try {
             int _type = LT;
-            // Sql.g:121:5: ( ( '<' ) )
-            // Sql.g:121:6: ( '<' )
+            // Sql.g:125:5: ( ( '<' ) )
+            // Sql.g:125:6: ( '<' )
             {
-            // Sql.g:121:6: ( '<' )
-            // Sql.g:121:7: '<'
+            // Sql.g:125:6: ( '<' )
+            // Sql.g:125:7: '<'
             {
             match('<'); 
 
@@ -1644,11 +1644,11 @@ public class SqlLexer extends Lexer {
     public final void mEQ() throws RecognitionException {
         try {
             int _type = EQ;
-            // Sql.g:122:5: ( ( '=' ) )
-            // Sql.g:122:6: ( '=' )
+            // Sql.g:126:5: ( ( '=' ) )
+            // Sql.g:126:6: ( '=' )
             {
-            // Sql.g:122:6: ( '=' )
-            // Sql.g:122:7: '='
+            // Sql.g:126:6: ( '=' )
+            // Sql.g:126:7: '='
             {
             match('='); 
 
@@ -1668,11 +1668,11 @@ public class SqlLexer extends Lexer {
     public final void mAMP() throws RecognitionException {
         try {
             int _type = AMP;
-            // Sql.g:123:6: ( ( '&' ) )
-            // Sql.g:123:7: ( '&' )
+            // Sql.g:127:6: ( ( '&' ) )
+            // Sql.g:127:7: ( '&' )
             {
-            // Sql.g:123:7: ( '&' )
-            // Sql.g:123:8: '&'
+            // Sql.g:127:7: ( '&' )
+            // Sql.g:127:8: '&'
             {
             match('&'); 
 
@@ -1692,8 +1692,8 @@ public class SqlLexer extends Lexer {
     public final void mSTAR() throws RecognitionException {
         try {
             int _type = STAR;
-            // Sql.g:124:7: ( ( '*' | '%' ) )
-            // Sql.g:124:8: ( '*' | '%' )
+            // Sql.g:128:7: ( ( '*' | '%' ) )
+            // Sql.g:128:8: ( '*' | '%' )
             {
             if ( input.LA(1)=='%'||input.LA(1)=='*' ) {
                 input.consume();
@@ -1719,11 +1719,11 @@ public class SqlLexer extends Lexer {
     public final void mNL() throws RecognitionException {
         try {
             int _type = NL;
-            // Sql.g:125:5: ( ( '\\n' ) )
-            // Sql.g:125:6: ( '\\n' )
+            // Sql.g:129:5: ( ( '\\n' ) )
+            // Sql.g:129:6: ( '\\n' )
             {
-            // Sql.g:125:6: ( '\\n' )
-            // Sql.g:125:7: '\\n'
+            // Sql.g:129:6: ( '\\n' )
+            // Sql.g:129:7: '\\n'
             {
             match('\n'); 
 
@@ -1743,10 +1743,10 @@ public class SqlLexer extends Lexer {
     public final void mWS() throws RecognitionException {
         try {
             int _type = WS;
-            // Sql.g:126:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
-            // Sql.g:126:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:130:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
+            // Sql.g:130:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             {
-            // Sql.g:126:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:130:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             int cnt2=0;
             loop2:
             do {
@@ -1925,15 +1925,21 @@ public class SqlLexer extends Lexer {
         case 'd':
             {
             switch ( input.LA(2) ) {
-            case 'q':
+            case 'e':
                 {
                 int LA3_46 = input.LA(3);
 
-                if ( (LA3_46=='#'||LA3_46=='-'||(LA3_46>='/' && LA3_46<=':')||(LA3_46>='A' && LA3_46<='Z')||LA3_46=='_'||(LA3_46>='a' && LA3_46<='z')) ) {
-                    alt3=73;
+                if ( (LA3_46=='f') ) {
+                    int LA3_99 = input.LA(4);
+
+                    if ( (LA3_99=='#'||LA3_99=='-'||(LA3_99>='/' && LA3_99<=':')||(LA3_99>='A' && LA3_99<='Z')||LA3_99=='_'||(LA3_99>='a' && LA3_99<='z')) ) {
+                        alt3=73;
+                    }
+                    else {
+                        alt3=40;}
                 }
                 else {
-                    alt3=15;}
+                    alt3=73;}
                 }
                 break;
             case 'a':
@@ -2026,21 +2032,15 @@ public class SqlLexer extends Lexer {
                     alt3=73;}
                 }
                 break;
-            case 'e':
+            case 'q':
                 {
                 int LA3_48 = input.LA(3);
 
-                if ( (LA3_48=='f') ) {
-                    int LA3_101 = input.LA(4);
-
-                    if ( (LA3_101=='#'||LA3_101=='-'||(LA3_101>='/' && LA3_101<=':')||(LA3_101>='A' && LA3_101<='Z')||LA3_101=='_'||(LA3_101>='a' && LA3_101<='z')) ) {
-                        alt3=73;
-                    }
-                    else {
-                        alt3=40;}
+                if ( (LA3_48=='#'||LA3_48=='-'||(LA3_48>='/' && LA3_48<=':')||(LA3_48>='A' && LA3_48<='Z')||LA3_48=='_'||(LA3_48>='a' && LA3_48<='z')) ) {
+                    alt3=73;
                 }
                 else {
-                    alt3=73;}
+                    alt3=15;}
                 }
                 break;
             default:
@@ -2051,34 +2051,17 @@ public class SqlLexer extends Lexer {
         case 'r':
             {
             switch ( input.LA(2) ) {
-            case 'u':
+            case 'e':
                 {
                 int LA3_49 = input.LA(3);
 
-                if ( (LA3_49=='n') ) {
+                if ( (LA3_49=='l') ) {
                     int LA3_102 = input.LA(4);
 
-                    if ( (LA3_102=='#'||LA3_102=='-'||(LA3_102>='/' && LA3_102<=':')||(LA3_102>='A' && LA3_102<='Z')||LA3_102=='_'||(LA3_102>='a' && LA3_102<='z')) ) {
-                        alt3=73;
-                    }
-                    else {
-                        alt3=13;}
-                }
-                else {
-                    alt3=73;}
-                }
-                break;
-            case 'e':
-                {
-                int LA3_50 = input.LA(3);
+                    if ( (LA3_102=='e') ) {
+                        int LA3_158 = input.LA(5);
 
-                if ( (LA3_50=='l') ) {
-                    int LA3_103 = input.LA(4);
-
-                    if ( (LA3_103=='e') ) {
-                        int LA3_159 = input.LA(5);
-
-                        if ( (LA3_159=='a') ) {
+                        if ( (LA3_158=='a') ) {
                             int LA3_212 = input.LA(6);
 
                             if ( (LA3_212=='s') ) {
@@ -2109,6 +2092,23 @@ public class SqlLexer extends Lexer {
                     alt3=73;}
                 }
                 break;
+            case 'u':
+                {
+                int LA3_50 = input.LA(3);
+
+                if ( (LA3_50=='n') ) {
+                    int LA3_103 = input.LA(4);
+
+                    if ( (LA3_103=='#'||LA3_103=='-'||(LA3_103>='/' && LA3_103<=':')||(LA3_103>='A' && LA3_103<='Z')||LA3_103=='_'||(LA3_103>='a' && LA3_103<='z')) ) {
+                        alt3=73;
+                    }
+                    else {
+                        alt3=13;}
+                }
+                else {
+                    alt3=73;}
+                }
+                break;
             default:
                 alt3=73;}
 
@@ -2123,20 +2123,43 @@ public class SqlLexer extends Lexer {
 
                 if ( (LA3_51=='a') ) {
                     switch ( input.LA(4) ) {
-                    case 'r':
+                    case 't':
                         {
                         int LA3_160 = input.LA(5);
 
-                        if ( (LA3_160=='t') ) {
+                        if ( (LA3_160=='u') ) {
+                            int LA3_213 = input.LA(6);
+
+                            if ( (LA3_213=='s') ) {
+                                int LA3_260 = input.LA(7);
+
+                                if ( (LA3_260=='#'||LA3_260=='-'||(LA3_260>='/' && LA3_260<=':')||(LA3_260>='A' && LA3_260<='Z')||LA3_260=='_'||(LA3_260>='a' && LA3_260<='z')) ) {
+                                    alt3=73;
+                                }
+                                else {
+                                    alt3=34;}
+                            }
+                            else {
+                                alt3=73;}
+                        }
+                        else {
+                            alt3=73;}
+                        }
+                        break;
+                    case 'r':
+                        {
+                        int LA3_161 = input.LA(5);
+
+                        if ( (LA3_161=='t') ) {
                             switch ( input.LA(6) ) {
                             case 'e':
                                 {
-                                int LA3_260 = input.LA(7);
+                                int LA3_261 = input.LA(7);
 
-                                if ( (LA3_260=='v') ) {
-                                    int LA3_296 = input.LA(8);
+                                if ( (LA3_261=='v') ) {
+                                    int LA3_297 = input.LA(8);
 
-                                    if ( (LA3_296=='n') ) {
+                                    if ( (LA3_297=='n') ) {
                                         int LA3_324 = input.LA(9);
 
                                         if ( (LA3_324=='u') ) {
@@ -2166,12 +2189,12 @@ public class SqlLexer extends Lexer {
                                 break;
                             case 't':
                                 {
-                                int LA3_261 = input.LA(7);
+                                int LA3_262 = input.LA(7);
 
-                                if ( (LA3_261=='i') ) {
-                                    int LA3_297 = input.LA(8);
+                                if ( (LA3_262=='i') ) {
+                                    int LA3_298 = input.LA(8);
 
-                                    if ( (LA3_297=='m') ) {
+                                    if ( (LA3_298=='m') ) {
                                         int LA3_325 = input.LA(9);
 
                                         if ( (LA3_325=='e') ) {
@@ -2196,29 +2219,6 @@ public class SqlLexer extends Lexer {
                             default:
                                 alt3=73;}
 
-                        }
-                        else {
-                            alt3=73;}
-                        }
-                        break;
-                    case 't':
-                        {
-                        int LA3_161 = input.LA(5);
-
-                        if ( (LA3_161=='u') ) {
-                            int LA3_214 = input.LA(6);
-
-                            if ( (LA3_214=='s') ) {
-                                int LA3_262 = input.LA(7);
-
-                                if ( (LA3_262=='#'||LA3_262=='-'||(LA3_262>='/' && LA3_262<=':')||(LA3_262>='A' && LA3_262<='Z')||LA3_262=='_'||(LA3_262>='a' && LA3_262<='z')) ) {
-                                    alt3=73;
-                                }
-                                else {
-                                    alt3=34;}
-                            }
-                            else {
-                                alt3=73;}
                         }
                         else {
                             alt3=73;}
@@ -2334,25 +2334,14 @@ public class SqlLexer extends Lexer {
         case 'b':
             {
             switch ( input.LA(2) ) {
-            case 'y':
+            case 'l':
                 {
                 int LA3_55 = input.LA(3);
 
-                if ( (LA3_55=='#'||LA3_55=='-'||(LA3_55>='/' && LA3_55<=':')||(LA3_55>='A' && LA3_55<='Z')||LA3_55=='_'||(LA3_55>='a' && LA3_55<='z')) ) {
-                    alt3=73;
-                }
-                else {
-                    alt3=60;}
-                }
-                break;
-            case 'l':
-                {
-                int LA3_56 = input.LA(3);
+                if ( (LA3_55=='o') ) {
+                    int LA3_109 = input.LA(4);
 
-                if ( (LA3_56=='o') ) {
-                    int LA3_110 = input.LA(4);
-
-                    if ( (LA3_110=='c') ) {
+                    if ( (LA3_109=='c') ) {
                         int LA3_166 = input.LA(5);
 
                         if ( (LA3_166=='k') ) {
@@ -2374,6 +2363,17 @@ public class SqlLexer extends Lexer {
                     alt3=73;}
                 }
                 break;
+            case 'y':
+                {
+                int LA3_56 = input.LA(3);
+
+                if ( (LA3_56=='#'||LA3_56=='-'||(LA3_56>='/' && LA3_56<=':')||(LA3_56>='A' && LA3_56<='Z')||LA3_56=='_'||(LA3_56>='a' && LA3_56<='z')) ) {
+                    alt3=73;
+                }
+                else {
+                    alt3=60;}
+                }
+                break;
             default:
                 alt3=73;}
 
@@ -2385,17 +2385,34 @@ public class SqlLexer extends Lexer {
 
             if ( (LA3_10=='i') ) {
                 switch ( input.LA(3) ) {
-                case 'n':
+                case 'l':
                     {
                     int LA3_111 = input.LA(4);
 
-                    if ( (LA3_111=='d') ) {
+                    if ( (LA3_111=='e') ) {
+                        int LA3_167 = input.LA(5);
+
+                        if ( (LA3_167=='#'||LA3_167=='-'||(LA3_167>='/' && LA3_167<=':')||(LA3_167>='A' && LA3_167<='Z')||LA3_167=='_'||(LA3_167>='a' && LA3_167<='z')) ) {
+                            alt3=73;
+                        }
+                        else {
+                            alt3=10;}
+                    }
+                    else {
+                        alt3=73;}
+                    }
+                    break;
+                case 'n':
+                    {
+                    int LA3_112 = input.LA(4);
+
+                    if ( (LA3_112=='d') ) {
                         switch ( input.LA(5) ) {
                         case 'e':
                             {
-                            int LA3_219 = input.LA(6);
+                            int LA3_220 = input.LA(6);
 
-                            if ( (LA3_219=='v') ) {
+                            if ( (LA3_220=='v') ) {
                                 int LA3_265 = input.LA(7);
 
                                 if ( (LA3_265=='e') ) {
@@ -2510,23 +2527,6 @@ public class SqlLexer extends Lexer {
                         alt3=73;}
                     }
                     break;
-                case 'l':
-                    {
-                    int LA3_112 = input.LA(4);
-
-                    if ( (LA3_112=='e') ) {
-                        int LA3_168 = input.LA(5);
-
-                        if ( (LA3_168=='#'||LA3_168=='-'||(LA3_168>='/' && LA3_168<=':')||(LA3_168>='A' && LA3_168<='Z')||LA3_168=='_'||(LA3_168>='a' && LA3_168<='z')) ) {
-                            alt3=73;
-                        }
-                        else {
-                            alt3=10;}
-                    }
-                    else {
-                        alt3=73;}
-                    }
-                    break;
                 default:
                     alt3=73;}
 
@@ -2541,11 +2541,11 @@ public class SqlLexer extends Lexer {
             case 'r':
                 {
                 switch ( input.LA(3) ) {
-                case 'o':
+                case 'i':
                     {
                     int LA3_113 = input.LA(4);
 
-                    if ( (LA3_113=='c') ) {
+                    if ( (LA3_113=='m') ) {
                         int LA3_169 = input.LA(5);
 
                         if ( (LA3_169=='d') ) {
@@ -2558,7 +2558,7 @@ public class SqlLexer extends Lexer {
                                     alt3=73;
                                 }
                                 else {
-                                    alt3=12;}
+                                    alt3=11;}
                             }
                             else {
                                 alt3=73;}
@@ -2570,11 +2570,11 @@ public class SqlLexer extends Lexer {
                         alt3=73;}
                     }
                     break;
-                case 'i':
+                case 'o':
                     {
                     int LA3_114 = input.LA(4);
 
-                    if ( (LA3_114=='m') ) {
+                    if ( (LA3_114=='c') ) {
                         int LA3_170 = input.LA(5);
 
                         if ( (LA3_170=='d') ) {
@@ -2587,7 +2587,7 @@ public class SqlLexer extends Lexer {
                                     alt3=73;
                                 }
                                 else {
-                                    alt3=11;}
+                                    alt3=12;}
                             }
                             else {
                                 alt3=73;}
@@ -2885,23 +2885,52 @@ public class SqlLexer extends Lexer {
         case 'i':
             {
             switch ( input.LA(2) ) {
+            case 'l':
+                {
+                int LA3_64 = input.LA(3);
+
+                if ( (LA3_64=='u') ) {
+                    int LA3_120 = input.LA(4);
+
+                    if ( (LA3_120=='m') ) {
+                        int LA3_176 = input.LA(5);
+
+                        if ( (LA3_176=='i') ) {
+                            int LA3_229 = input.LA(6);
+
+                            if ( (LA3_229=='#'||LA3_229=='-'||(LA3_229>='/' && LA3_229<=':')||(LA3_229>='A' && LA3_229<='Z')||LA3_229=='_'||(LA3_229>='a' && LA3_229<='z')) ) {
+                                alt3=73;
+                            }
+                            else {
+                                alt3=16;}
+                        }
+                        else {
+                            alt3=73;}
+                    }
+                    else {
+                        alt3=73;}
+                }
+                else {
+                    alt3=73;}
+                }
+                break;
             case 'n':
                 {
                 switch ( input.LA(3) ) {
                 case 't':
                     {
-                    int LA3_120 = input.LA(4);
+                    int LA3_121 = input.LA(4);
 
-                    if ( (LA3_120=='l') ) {
-                        int LA3_176 = input.LA(5);
+                    if ( (LA3_121=='l') ) {
+                        int LA3_177 = input.LA(5);
 
-                        if ( (LA3_176=='u') ) {
-                            int LA3_229 = input.LA(6);
+                        if ( (LA3_177=='u') ) {
+                            int LA3_230 = input.LA(6);
 
-                            if ( (LA3_229=='m') ) {
-                                int LA3_271 = input.LA(7);
+                            if ( (LA3_230=='m') ) {
+                                int LA3_272 = input.LA(7);
 
-                                if ( (LA3_271=='i') ) {
+                                if ( (LA3_272=='i') ) {
                                     int LA3_307 = input.LA(8);
 
                                     if ( (LA3_307=='n') ) {
@@ -3034,35 +3063,6 @@ public class SqlLexer extends Lexer {
 
                 }
                 break;
-            case 'l':
-                {
-                int LA3_65 = input.LA(3);
-
-                if ( (LA3_65=='u') ) {
-                    int LA3_122 = input.LA(4);
-
-                    if ( (LA3_122=='m') ) {
-                        int LA3_177 = input.LA(5);
-
-                        if ( (LA3_177=='i') ) {
-                            int LA3_230 = input.LA(6);
-
-                            if ( (LA3_230=='#'||LA3_230=='-'||(LA3_230>='/' && LA3_230<=':')||(LA3_230>='A' && LA3_230<='Z')||LA3_230=='_'||(LA3_230>='a' && LA3_230<='z')) ) {
-                                alt3=73;
-                            }
-                            else {
-                                alt3=16;}
-                        }
-                        else {
-                            alt3=73;}
-                    }
-                    else {
-                        alt3=73;}
-                }
-                else {
-                    alt3=73;}
-                }
-                break;
             case 'd':
                 {
                 int LA3_66 = input.LA(3);
@@ -3117,145 +3117,38 @@ public class SqlLexer extends Lexer {
         case 'c':
             {
             switch ( input.LA(2) ) {
-            case 'r':
+            case 'h':
                 {
                 int LA3_68 = input.LA(3);
 
-                if ( (LA3_68=='e') ) {
+                if ( (LA3_68=='i') ) {
                     int LA3_125 = input.LA(4);
 
-                    if ( (LA3_125=='a') ) {
+                    if ( (LA3_125=='l') ) {
                         int LA3_179 = input.LA(5);
 
-                        if ( (LA3_179=='t') ) {
-                            int LA3_232 = input.LA(6);
-
-                            if ( (LA3_232=='e') ) {
-                                switch ( input.LA(7) ) {
-                                case 'b':
-                                    {
-                                    int LA3_308 = input.LA(8);
-
-                                    if ( (LA3_308=='y') ) {
-                                        int LA3_329 = input.LA(9);
-
-                                        if ( (LA3_329=='#'||LA3_329=='-'||(LA3_329>='/' && LA3_329<=':')||(LA3_329>='A' && LA3_329<='Z')||LA3_329=='_'||(LA3_329>='a' && LA3_329<='z')) ) {
-                                            alt3=73;
-                                        }
-                                        else {
-                                            alt3=23;}
-                                    }
-                                    else {
-                                        alt3=73;}
-                                    }
-                                    break;
-                                case 'd':
-                                    {
-                                    int LA3_309 = input.LA(8);
-
-                                    if ( (LA3_309=='a') ) {
-                                        int LA3_330 = input.LA(9);
-
-                                        if ( (LA3_330=='t') ) {
-                                            int LA3_346 = input.LA(10);
-
-                                            if ( (LA3_346=='e') ) {
-                                                int LA3_357 = input.LA(11);
-
-                                                if ( (LA3_357=='#'||LA3_357=='-'||(LA3_357>='/' && LA3_357<=':')||(LA3_357>='A' && LA3_357<='Z')||LA3_357=='_'||(LA3_357>='a' && LA3_357<='z')) ) {
-                                                    alt3=73;
-                                                }
-                                                else {
-                                                    alt3=19;}
-                                            }
-                                            else {
-                                                alt3=73;}
-                                        }
-                                        else {
-                                            alt3=73;}
-                                    }
-                                    else {
-                                        alt3=73;}
-                                    }
-                                    break;
-                                default:
-                                    alt3=73;}
-
-                            }
-                            else {
-                                alt3=73;}
-                        }
-                        else {
-                            alt3=73;}
-                    }
-                    else {
-                        alt3=73;}
-                }
-                else {
-                    alt3=73;}
-                }
-                break;
-            case 'o':
-                {
-                int LA3_69 = input.LA(3);
-
-                if ( (LA3_69=='u') ) {
-                    int LA3_126 = input.LA(4);
-
-                    if ( (LA3_126=='n') ) {
-                        int LA3_180 = input.LA(5);
-
-                        if ( (LA3_180=='t') ) {
-                            int LA3_233 = input.LA(6);
-
-                            if ( (LA3_233=='#'||LA3_233=='-'||(LA3_233>='/' && LA3_233<=':')||(LA3_233>='A' && LA3_233<='Z')||LA3_233=='_'||(LA3_233>='a' && LA3_233<='z')) ) {
-                                alt3=73;
-                            }
-                            else {
-                                alt3=33;}
-                        }
-                        else {
-                            alt3=73;}
-                    }
-                    else {
-                        alt3=73;}
-                }
-                else {
-                    alt3=73;}
-                }
-                break;
-            case 'h':
-                {
-                int LA3_70 = input.LA(3);
-
-                if ( (LA3_70=='i') ) {
-                    int LA3_127 = input.LA(4);
-
-                    if ( (LA3_127=='l') ) {
-                        int LA3_181 = input.LA(5);
-
-                        if ( (LA3_181=='d') ) {
+                        if ( (LA3_179=='d') ) {
                             switch ( input.LA(6) ) {
                             case 'r':
                                 {
-                                int LA3_276 = input.LA(7);
+                                int LA3_274 = input.LA(7);
 
-                                if ( (LA3_276=='e') ) {
-                                    int LA3_310 = input.LA(8);
+                                if ( (LA3_274=='e') ) {
+                                    int LA3_308 = input.LA(8);
 
-                                    if ( (LA3_310=='l') ) {
-                                        int LA3_331 = input.LA(9);
+                                    if ( (LA3_308=='l') ) {
+                                        int LA3_329 = input.LA(9);
 
-                                        if ( (LA3_331=='e') ) {
-                                            int LA3_347 = input.LA(10);
+                                        if ( (LA3_329=='e') ) {
+                                            int LA3_345 = input.LA(10);
 
-                                            if ( (LA3_347=='a') ) {
-                                                int LA3_358 = input.LA(11);
+                                            if ( (LA3_345=='a') ) {
+                                                int LA3_357 = input.LA(11);
 
-                                                if ( (LA3_358=='s') ) {
-                                                    int LA3_366 = input.LA(12);
+                                                if ( (LA3_357=='s') ) {
+                                                    int LA3_365 = input.LA(12);
 
-                                                    if ( (LA3_366=='e') ) {
+                                                    if ( (LA3_365=='e') ) {
                                                         int LA3_370 = input.LA(13);
 
                                                         if ( (LA3_370=='(') ) {
@@ -3367,6 +3260,113 @@ public class SqlLexer extends Lexer {
                     alt3=73;}
                 }
                 break;
+            case 'o':
+                {
+                int LA3_69 = input.LA(3);
+
+                if ( (LA3_69=='u') ) {
+                    int LA3_126 = input.LA(4);
+
+                    if ( (LA3_126=='n') ) {
+                        int LA3_180 = input.LA(5);
+
+                        if ( (LA3_180=='t') ) {
+                            int LA3_233 = input.LA(6);
+
+                            if ( (LA3_233=='#'||LA3_233=='-'||(LA3_233>='/' && LA3_233<=':')||(LA3_233>='A' && LA3_233<='Z')||LA3_233=='_'||(LA3_233>='a' && LA3_233<='z')) ) {
+                                alt3=73;
+                            }
+                            else {
+                                alt3=33;}
+                        }
+                        else {
+                            alt3=73;}
+                    }
+                    else {
+                        alt3=73;}
+                }
+                else {
+                    alt3=73;}
+                }
+                break;
+            case 'r':
+                {
+                int LA3_70 = input.LA(3);
+
+                if ( (LA3_70=='e') ) {
+                    int LA3_127 = input.LA(4);
+
+                    if ( (LA3_127=='a') ) {
+                        int LA3_181 = input.LA(5);
+
+                        if ( (LA3_181=='t') ) {
+                            int LA3_234 = input.LA(6);
+
+                            if ( (LA3_234=='e') ) {
+                                switch ( input.LA(7) ) {
+                                case 'd':
+                                    {
+                                    int LA3_309 = input.LA(8);
+
+                                    if ( (LA3_309=='a') ) {
+                                        int LA3_330 = input.LA(9);
+
+                                        if ( (LA3_330=='t') ) {
+                                            int LA3_346 = input.LA(10);
+
+                                            if ( (LA3_346=='e') ) {
+                                                int LA3_358 = input.LA(11);
+
+                                                if ( (LA3_358=='#'||LA3_358=='-'||(LA3_358>='/' && LA3_358<=':')||(LA3_358>='A' && LA3_358<='Z')||LA3_358=='_'||(LA3_358>='a' && LA3_358<='z')) ) {
+                                                    alt3=73;
+                                                }
+                                                else {
+                                                    alt3=19;}
+                                            }
+                                            else {
+                                                alt3=73;}
+                                        }
+                                        else {
+                                            alt3=73;}
+                                    }
+                                    else {
+                                        alt3=73;}
+                                    }
+                                    break;
+                                case 'b':
+                                    {
+                                    int LA3_310 = input.LA(8);
+
+                                    if ( (LA3_310=='y') ) {
+                                        int LA3_331 = input.LA(9);
+
+                                        if ( (LA3_331=='#'||LA3_331=='-'||(LA3_331>='/' && LA3_331<=':')||(LA3_331>='A' && LA3_331<='Z')||LA3_331=='_'||(LA3_331>='a' && LA3_331<='z')) ) {
+                                            alt3=73;
+                                        }
+                                        else {
+                                            alt3=23;}
+                                    }
+                                    else {
+                                        alt3=73;}
+                                    }
+                                    break;
+                                default:
+                                    alt3=73;}
+
+                            }
+                            else {
+                                alt3=73;}
+                        }
+                        else {
+                            alt3=73;}
+                    }
+                    else {
+                        alt3=73;}
+                }
+                else {
+                    alt3=73;}
+                }
+                break;
             default:
                 alt3=73;}
 
@@ -3441,41 +3441,41 @@ public class SqlLexer extends Lexer {
         case 'e':
             {
             switch ( input.LA(2) ) {
-            case 'n':
+            case 'v':
                 {
                 int LA3_72 = input.LA(3);
 
-                if ( (LA3_72=='d') ) {
-                    switch ( input.LA(4) ) {
-                    case 't':
-                        {
+                if ( (LA3_72=='n') ) {
+                    int LA3_129 = input.LA(4);
+
+                    if ( (LA3_129=='u') ) {
                         int LA3_184 = input.LA(5);
 
-                        if ( (LA3_184=='i') ) {
+                        if ( (LA3_184=='m') ) {
                             int LA3_237 = input.LA(6);
 
-                            if ( (LA3_237=='m') ) {
-                                int LA3_280 = input.LA(7);
-
-                                if ( (LA3_280=='e') ) {
-                                    int LA3_312 = input.LA(8);
-
-                                    if ( (LA3_312=='#'||LA3_312=='-'||(LA3_312>='/' && LA3_312<=':')||(LA3_312>='A' && LA3_312<='Z')||LA3_312=='_'||(LA3_312>='a' && LA3_312<='z')) ) {
-                                        alt3=73;
-                                    }
-                                    else {
-                                        alt3=22;}
-                                }
-                                else {
-                                    alt3=73;}
+                            if ( (LA3_237=='#'||LA3_237=='-'||(LA3_237>='/' && LA3_237<=':')||(LA3_237>='A' && LA3_237<='Z')||LA3_237=='_'||(LA3_237>='a' && LA3_237<='z')) ) {
+                                alt3=73;
                             }
                             else {
-                                alt3=73;}
+                                alt3=41;}
                         }
                         else {
                             alt3=73;}
-                        }
-                        break;
+                    }
+                    else {
+                        alt3=73;}
+                }
+                else {
+                    alt3=73;}
+                }
+                break;
+            case 'n':
+                {
+                int LA3_73 = input.LA(3);
+
+                if ( (LA3_73=='d') ) {
+                    switch ( input.LA(4) ) {
                     case 'e':
                         {
                         int LA3_185 = input.LA(5);
@@ -3487,12 +3487,12 @@ public class SqlLexer extends Lexer {
                                 int LA3_281 = input.LA(7);
 
                                 if ( (LA3_281=='u') ) {
-                                    int LA3_313 = input.LA(8);
+                                    int LA3_312 = input.LA(8);
 
-                                    if ( (LA3_313=='m') ) {
-                                        int LA3_334 = input.LA(9);
+                                    if ( (LA3_312=='m') ) {
+                                        int LA3_333 = input.LA(9);
 
-                                        if ( (LA3_334=='#'||LA3_334=='-'||(LA3_334>='/' && LA3_334<=':')||(LA3_334>='A' && LA3_334<='Z')||LA3_334=='_'||(LA3_334>='a' && LA3_334<='z')) ) {
+                                        if ( (LA3_333=='#'||LA3_333=='-'||(LA3_333>='/' && LA3_333<=':')||(LA3_333>='A' && LA3_333<='Z')||LA3_333=='_'||(LA3_333>='a' && LA3_333<='z')) ) {
                                             alt3=73;
                                         }
                                         else {
@@ -3500,6 +3500,35 @@ public class SqlLexer extends Lexer {
                                     }
                                     else {
                                         alt3=73;}
+                                }
+                                else {
+                                    alt3=73;}
+                            }
+                            else {
+                                alt3=73;}
+                        }
+                        else {
+                            alt3=73;}
+                        }
+                        break;
+                    case 't':
+                        {
+                        int LA3_186 = input.LA(5);
+
+                        if ( (LA3_186=='i') ) {
+                            int LA3_239 = input.LA(6);
+
+                            if ( (LA3_239=='m') ) {
+                                int LA3_282 = input.LA(7);
+
+                                if ( (LA3_282=='e') ) {
+                                    int LA3_313 = input.LA(8);
+
+                                    if ( (LA3_313=='#'||LA3_313=='-'||(LA3_313>='/' && LA3_313<=':')||(LA3_313>='A' && LA3_313<='Z')||LA3_313=='_'||(LA3_313>='a' && LA3_313<='z')) ) {
+                                        alt3=73;
+                                    }
+                                    else {
+                                        alt3=22;}
                                 }
                                 else {
                                     alt3=73;}
@@ -3521,45 +3550,16 @@ public class SqlLexer extends Lexer {
                 break;
             case 'r':
                 {
-                int LA3_73 = input.LA(3);
+                int LA3_74 = input.LA(3);
 
-                if ( (LA3_73=='a') ) {
-                    int LA3_130 = input.LA(4);
+                if ( (LA3_74=='a') ) {
+                    int LA3_131 = input.LA(4);
 
-                    if ( (LA3_130=='#'||LA3_130=='-'||(LA3_130>='/' && LA3_130<=':')||(LA3_130>='A' && LA3_130<='Z')||LA3_130=='_'||(LA3_130>='a' && LA3_130<='z')) ) {
+                    if ( (LA3_131=='#'||LA3_131=='-'||(LA3_131>='/' && LA3_131<=':')||(LA3_131>='A' && LA3_131<='Z')||LA3_131=='_'||(LA3_131>='a' && LA3_131<='z')) ) {
                         alt3=73;
                     }
                     else {
                         alt3=42;}
-                }
-                else {
-                    alt3=73;}
-                }
-                break;
-            case 'v':
-                {
-                int LA3_74 = input.LA(3);
-
-                if ( (LA3_74=='n') ) {
-                    int LA3_131 = input.LA(4);
-
-                    if ( (LA3_131=='u') ) {
-                        int LA3_187 = input.LA(5);
-
-                        if ( (LA3_187=='m') ) {
-                            int LA3_239 = input.LA(6);
-
-                            if ( (LA3_239=='#'||LA3_239=='-'||(LA3_239>='/' && LA3_239<=':')||(LA3_239>='A' && LA3_239<='Z')||LA3_239=='_'||(LA3_239>='a' && LA3_239<='z')) ) {
-                                alt3=73;
-                            }
-                            else {
-                                alt3=41;}
-                        }
-                        else {
-                            alt3=73;}
-                    }
-                    else {
-                        alt3=73;}
                 }
                 else {
                     alt3=73;}
@@ -3573,44 +3573,39 @@ public class SqlLexer extends Lexer {
         case 'n':
             {
             switch ( input.LA(2) ) {
-            case 'o':
+            case 'u':
                 {
                 int LA3_75 = input.LA(3);
 
-                if ( (LA3_75=='t') ) {
-                    int LA3_132 = input.LA(4);
-
-                    if ( (LA3_132=='#'||LA3_132=='-'||(LA3_132>='/' && LA3_132<=':')||(LA3_132>='A' && LA3_132<='Z')||LA3_132=='_'||(LA3_132>='a' && LA3_132<='z')) ) {
-                        alt3=73;
-                    }
-                    else {
-                        alt3=66;}
-                }
-                else {
-                    alt3=73;}
-                }
-                break;
-            case 'u':
-                {
-                int LA3_76 = input.LA(3);
-
-                if ( (LA3_76=='m') ) {
+                if ( (LA3_75=='m') ) {
                     switch ( input.LA(4) ) {
-                    case 'b':
+                    case 'f':
                         {
-                        int LA3_189 = input.LA(5);
+                        int LA3_188 = input.LA(5);
 
-                        if ( (LA3_189=='e') ) {
+                        if ( (LA3_188=='i') ) {
                             int LA3_240 = input.LA(6);
 
-                            if ( (LA3_240=='r') ) {
+                            if ( (LA3_240=='l') ) {
                                 int LA3_283 = input.LA(7);
 
-                                if ( (LA3_283=='#'||LA3_283=='-'||(LA3_283>='/' && LA3_283<=':')||(LA3_283>='A' && LA3_283<='Z')||LA3_283=='_'||(LA3_283>='a' && LA3_283<='z')) ) {
-                                    alt3=73;
+                                if ( (LA3_283=='e') ) {
+                                    int LA3_314 = input.LA(8);
+
+                                    if ( (LA3_314=='s') ) {
+                                        int LA3_335 = input.LA(9);
+
+                                        if ( (LA3_335=='(') ) {
+                                            alt3=45;
+                                        }
+                                        else {
+                                            alt3=73;}
+                                    }
+                                    else {
+                                        alt3=73;}
                                 }
                                 else {
-                                    alt3=27;}
+                                    alt3=73;}
                             }
                             else {
                                 alt3=73;}
@@ -3621,9 +3616,9 @@ public class SqlLexer extends Lexer {
                         break;
                     case 'e':
                         {
-                        int LA3_190 = input.LA(5);
+                        int LA3_189 = input.LA(5);
 
-                        if ( (LA3_190=='v') ) {
+                        if ( (LA3_189=='v') ) {
                             int LA3_241 = input.LA(6);
 
                             if ( (LA3_241=='e') ) {
@@ -3633,12 +3628,12 @@ public class SqlLexer extends Lexer {
                                     int LA3_315 = input.LA(8);
 
                                     if ( (LA3_315=='t') ) {
-                                        int LA3_335 = input.LA(9);
+                                        int LA3_336 = input.LA(9);
 
-                                        if ( (LA3_335=='s') ) {
-                                            int LA3_349 = input.LA(10);
+                                        if ( (LA3_336=='s') ) {
+                                            int LA3_350 = input.LA(10);
 
-                                            if ( (LA3_349=='#'||LA3_349=='-'||(LA3_349>='/' && LA3_349<=':')||(LA3_349>='A' && LA3_349<='Z')||LA3_349=='_'||(LA3_349>='a' && LA3_349<='z')) ) {
+                                            if ( (LA3_350=='#'||LA3_350=='-'||(LA3_350>='/' && LA3_350<=':')||(LA3_350>='A' && LA3_350<='Z')||LA3_350=='_'||(LA3_350>='a' && LA3_350<='z')) ) {
                                                 alt3=73;
                                             }
                                             else {
@@ -3662,9 +3657,9 @@ public class SqlLexer extends Lexer {
                         break;
                     case 'r':
                         {
-                        int LA3_191 = input.LA(5);
+                        int LA3_190 = input.LA(5);
 
-                        if ( (LA3_191=='u') ) {
+                        if ( (LA3_190=='u') ) {
                             int LA3_242 = input.LA(6);
 
                             if ( (LA3_242=='n') ) {
@@ -3689,52 +3684,17 @@ public class SqlLexer extends Lexer {
                             alt3=73;}
                         }
                         break;
-                    case 'f':
-                        {
-                        int LA3_192 = input.LA(5);
-
-                        if ( (LA3_192=='i') ) {
-                            int LA3_243 = input.LA(6);
-
-                            if ( (LA3_243=='l') ) {
-                                int LA3_286 = input.LA(7);
-
-                                if ( (LA3_286=='e') ) {
-                                    int LA3_317 = input.LA(8);
-
-                                    if ( (LA3_317=='s') ) {
-                                        int LA3_337 = input.LA(9);
-
-                                        if ( (LA3_337=='(') ) {
-                                            alt3=45;
-                                        }
-                                        else {
-                                            alt3=73;}
-                                    }
-                                    else {
-                                        alt3=73;}
-                                }
-                                else {
-                                    alt3=73;}
-                            }
-                            else {
-                                alt3=73;}
-                        }
-                        else {
-                            alt3=73;}
-                        }
-                        break;
                     case 'l':
                         {
-                        int LA3_193 = input.LA(5);
+                        int LA3_191 = input.LA(5);
 
-                        if ( (LA3_193=='s') ) {
-                            int LA3_244 = input.LA(6);
+                        if ( (LA3_191=='s') ) {
+                            int LA3_243 = input.LA(6);
 
-                            if ( (LA3_244=='s') ) {
-                                int LA3_287 = input.LA(7);
+                            if ( (LA3_243=='s') ) {
+                                int LA3_286 = input.LA(7);
 
-                                if ( (LA3_287=='#'||LA3_287=='-'||(LA3_287>='/' && LA3_287<=':')||(LA3_287>='A' && LA3_287<='Z')||LA3_287=='_'||(LA3_287>='a' && LA3_287<='z')) ) {
+                                if ( (LA3_286=='#'||LA3_286=='-'||(LA3_286>='/' && LA3_286<=':')||(LA3_286>='A' && LA3_286<='Z')||LA3_286=='_'||(LA3_286>='a' && LA3_286<='z')) ) {
                                     alt3=73;
                                 }
                                 else {
@@ -3747,9 +3707,49 @@ public class SqlLexer extends Lexer {
                             alt3=73;}
                         }
                         break;
+                    case 'b':
+                        {
+                        int LA3_192 = input.LA(5);
+
+                        if ( (LA3_192=='e') ) {
+                            int LA3_244 = input.LA(6);
+
+                            if ( (LA3_244=='r') ) {
+                                int LA3_287 = input.LA(7);
+
+                                if ( (LA3_287=='#'||LA3_287=='-'||(LA3_287>='/' && LA3_287<=':')||(LA3_287>='A' && LA3_287<='Z')||LA3_287=='_'||(LA3_287>='a' && LA3_287<='z')) ) {
+                                    alt3=73;
+                                }
+                                else {
+                                    alt3=27;}
+                            }
+                            else {
+                                alt3=73;}
+                        }
+                        else {
+                            alt3=73;}
+                        }
+                        break;
                     default:
                         alt3=73;}
 
+                }
+                else {
+                    alt3=73;}
+                }
+                break;
+            case 'o':
+                {
+                int LA3_76 = input.LA(3);
+
+                if ( (LA3_76=='t') ) {
+                    int LA3_133 = input.LA(4);
+
+                    if ( (LA3_133=='#'||LA3_133=='-'||(LA3_133>='/' && LA3_133<=':')||(LA3_133>='A' && LA3_133<='Z')||LA3_133=='_'||(LA3_133>='a' && LA3_133<='z')) ) {
+                        alt3=73;
+                    }
+                    else {
+                        alt3=66;}
                 }
                 else {
                     alt3=73;}
@@ -3850,21 +3850,21 @@ public class SqlLexer extends Lexer {
                     alt3=73;}
                 }
                 break;
-            case 'y':
+            case 'i':
                 {
                 int LA3_80 = input.LA(3);
 
-                if ( (LA3_80=='p') ) {
+                if ( (LA3_80=='e') ) {
                     int LA3_137 = input.LA(4);
 
-                    if ( (LA3_137=='e') ) {
+                    if ( (LA3_137=='r') ) {
                         int LA3_197 = input.LA(5);
 
                         if ( (LA3_197=='#'||LA3_197=='-'||(LA3_197>='/' && LA3_197<=':')||(LA3_197>='A' && LA3_197<='Z')||LA3_197=='_'||(LA3_197>='a' && LA3_197<='z')) ) {
                             alt3=73;
                         }
                         else {
-                            alt3=35;}
+                            alt3=39;}
                     }
                     else {
                         alt3=73;}
@@ -3873,21 +3873,21 @@ public class SqlLexer extends Lexer {
                     alt3=73;}
                 }
                 break;
-            case 'i':
+            case 'y':
                 {
                 int LA3_81 = input.LA(3);
 
-                if ( (LA3_81=='e') ) {
+                if ( (LA3_81=='p') ) {
                     int LA3_138 = input.LA(4);
 
-                    if ( (LA3_138=='r') ) {
+                    if ( (LA3_138=='e') ) {
                         int LA3_198 = input.LA(5);
 
                         if ( (LA3_198=='#'||LA3_198=='-'||(LA3_198>='/' && LA3_198<=':')||(LA3_198>='A' && LA3_198<='Z')||LA3_198=='_'||(LA3_198>='a' && LA3_198<='z')) ) {
                             alt3=73;
                         }
                         else {
-                            alt3=39;}
+                            alt3=35;}
                     }
                     else {
                         alt3=73;}
