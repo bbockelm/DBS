@@ -2987,6 +2987,7 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Btag', (selec
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('RelVal', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PhysVal', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Tracker', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('HeavyIon', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('GOOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('BAD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));

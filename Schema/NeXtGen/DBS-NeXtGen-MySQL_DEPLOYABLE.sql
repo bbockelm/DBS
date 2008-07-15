@@ -2043,6 +2043,7 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', 
 ('Btag', UNIX_TIMESTAMP()), 
 ('RelVal', UNIX_TIMESTAMP()), 
 ('Tracker', UNIX_TIMESTAMP()), 
+('HeavyIon', UNIX_TIMESTAMP()), 
 ('PhysVal', UNIX_TIMESTAMP());
 
 INSERT INTO QualityValues (Value, CreationDate) VALUES ("GOOD", UNIX_TIMESTAMP()),
