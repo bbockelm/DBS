@@ -126,6 +126,7 @@ class DbsHttpService:
                self.Secure = False
 
 	    self.UserID = Args['userID']
+	    self.retry_att = 0
             if Args.has_key('retry'):
                self.retry = Args['retry']
             else:
@@ -170,7 +171,9 @@ class DbsHttpService:
    return key, proxy
    
   def _call(self, args, typ, repeat = 4, delay = 2 ):
-	  if self.retry: repeat=self.retry
+	  if self.retry and not self.retry_att:
+            self.retry_att=1
+            repeat=self.retry
 	  try:
 		  ret = self._callOriginal(args, typ)
                   return ret
