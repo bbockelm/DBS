@@ -37,8 +37,8 @@ public class Wrapper {
 			ArrayList kws = parser.kws;
 			ArrayList okws = parser.okws;
 			ArrayList cs = parser.constraints;
-			for (int i =0 ; i!= kws.size(); ++i) 
-				System.out.println("KEWORD\t" + kws.get(i));
+			//for (int i =0 ; i!= kws.size(); ++i) 
+				//System.out.println("KEWORD\t" + kws.get(i));
 		
 			/*for (int i =0 ; i!= cs.size(); ++i) {
 				Object obj = cs.get(i);

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.100 $"
- $Id: DBSApiFileLogic.java,v 1.100 2008/07/07 19:21:55 sekhri Exp $"
+ $Revision: 1.101 $"
+ $Id: DBSApiFileLogic.java,v 1.101 2008/07/08 21:45:32 sekhri Exp $"
  *
  */
 
@@ -278,6 +278,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String patternlfn = "";
 		Vector tierIDList = new Vector();
 		if(otherDetail.equals("True")) allOtherDetails = true;
+		//System.out.println("Detail in listFiles is " + allOtherDetails);
 			
 		if(contains(attributes, "retrive_invalid_files")) listInvalidFiles = true;
 		//Search can be based on LFN pattern
@@ -452,6 +453,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
+			//System.out.println("Detail in fileParent is " + detail);
 			//ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
 			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles, detail);
 			pushQuery(ps);

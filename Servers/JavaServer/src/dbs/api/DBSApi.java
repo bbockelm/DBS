@@ -1,6 +1,6 @@
 /**
- $Revision: 1.134 $"
- $Id: DBSApi.java,v 1.134 2008/06/30 20:24:49 afaq Exp $"
+ $Revision: 1.135 $"
+ $Id: DBSApi.java,v 1.135 2008/07/08 21:45:32 sekhri Exp $"
  *
 */
 
@@ -342,6 +342,7 @@ public class DBSApi {
 					attributes.add("retrive_lumi");
 					attributes.add("retrive_run");
 				}
+				//System.out.println("other_detail in DBSAPI is " + get(table, "other_detail", false));
 				(new DBSApiFileLogic(this.data)).listFiles(conn, out, 
 						get(table, "path", false),
 						get(table, "primary_dataset", false),
