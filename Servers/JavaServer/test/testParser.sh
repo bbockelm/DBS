@@ -240,5 +240,7 @@ executeQuery () {
 #executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
-	$CMD query="find run,file  order by file, run"
+	#$CMD query="find run,file  order by file, run"
+	#$CMD query="find sum ( file.size ) , dataset where file.size > 0"
+	$CMD query="find count ( file ) , dataset where file.size > 0"
 #	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 

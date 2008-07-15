@@ -91,11 +91,13 @@ public class QueryBuilder {
 				aKw = aKw.toLowerCase();
 				query += "COUNT(*) AS COUNT";
 				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
+				entity = entity.trim();
 				//System.out.println("entity = " + entity);
 				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
 			} else if(aKw.toLowerCase().startsWith("sum")) {
 				aKw = aKw.toLowerCase();
 				String keyword = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
+				keyword = keyword.trim();
 				String entity = (new StringTokenizer(keyword, ".")).nextToken();
 				//System.out.println("entity " + entity);
 				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
