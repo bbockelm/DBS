@@ -461,6 +461,8 @@ class Test6(unittest.TestCase):
 			parentList = fileInDBS['ParentList']
 			self.assertEqual(len(parentList), 1)
 			for parentInDBS in parentList:
+				#print fileObj1
+				#print parentInDBS
 				assertFile(self, fileObj1, parentInDBS)
 
 			runList = fileInDBS['RunsList']	

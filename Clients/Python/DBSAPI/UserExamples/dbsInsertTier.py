@@ -33,6 +33,7 @@ try:
     api.insertTier ('GEN-SIM-DIGI-RECO')
     """
     api.insertTier ('GEN-SIM-DIGI-RECO')
+    api.insertTier ('GEN-SIM-DIGI-RAW-HLTDEBUG')
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

@@ -276,7 +276,7 @@ class DbsApi(DbsConfig):
      try:
        #Calling the Implementation function
        from dbsApiListFiles import dbsApiImplListFiles
-       return  dbsApiImplListFiles(self, path, primary, proc, tier_list, analysisDataset,blockName, patternLFN, runNumber, details, retriveList)
+       return  dbsApiImplListFiles(self, path, primary, proc, tier_list, analysisDataset,blockName, patternLFN, runNumber, details, retriveList, otherDetails)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
