@@ -53,7 +53,7 @@ public class QueryBuilder {
 		String parentJoinQuery = "";
 		String childJoinQuery = "";
 		String pathParentWhereQuery = "";
-		String groupByLumiQuery = "";
+		String groupByQuery = "";
 		boolean invalidFile = false;
 		boolean modByAdded = false;
 		boolean createByAdded = false;
@@ -62,11 +62,18 @@ public class QueryBuilder {
 		boolean datasetParentAdded = false;
 		boolean procDsParentAdded = false;
 		boolean iLumi = isInList(kws, "ilumi");
+		boolean countPresent = false;
+		boolean sumPresent = false;
 		ArrayList allKws = new ArrayList();
 		if(isInList(kws, "file") || isInList(kws, "file.status")) {
 			invalidFile = true;
 			allKws = addUniqueInList(allKws, "FileStatus");
 
+		}
+		for (int i =0 ; i!= kws.size(); ++i) {
+			String aKw = (String)kws.get(i);
+			if(aKw.toLowerCase().startsWith("count")) countPresent = true;
+			if(aKw.toLowerCase().startsWith("sum")) sumPresent = true;
 		}
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
@@ -76,7 +83,7 @@ public class QueryBuilder {
 			if(Util.isSame(aKw, "dataset")) {
 				allKws = addUniqueInList(allKws, "Block");
 				query += "Block.Path";
-				if(iLumi) groupByLumiQuery += "Block.Path,";
+				if(iLumi | sumPresent | countPresent) groupByQuery += "Block.Path,";
 			} else if(Util.isSame(aKw, "ilumi")) {
 				query += getIntLumiSelectQuery();
 			//System.out.println("line 2.1.1");
@@ -114,7 +121,7 @@ public class QueryBuilder {
 					//Get default from vertex
 			//System.out.println("line 5");
 					query += makeQueryFromDefaults(vFirst);
-					if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(vFirst);			
+					if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(vFirst);			
 				} else {
 
 			//System.out.println("line 6");
@@ -137,7 +144,7 @@ public class QueryBuilder {
 						String realName = u.getMappedRealName(token2);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
 						query += makeQueryFromDefaults(u.getVertex(realName));			
-						if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
+						if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
 						addQuery = false;
 					}
 
@@ -145,7 +152,7 @@ public class QueryBuilder {
 						String realName = u.getMappedRealName(token);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
 						query += makeQueryFromDefaults(u.getVertex(realName));			
-						if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
+						if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
 						addQuery = false;
 					}
 
@@ -232,13 +239,13 @@ public class QueryBuilder {
 							String mapVal =  km.getMappedValue(aKw, true);
 							//if(mapVal.equals(aKw)) throw new Exception("The keyword " + aKw + " not yet implemented in Query Builder" );
 							query += mapVal + makeAs(mapVal); 
-							if(iLumi) groupByLumiQuery += mapVal + ",";
+							if(iLumi | sumPresent | countPresent) groupByQuery += mapVal + ",";
 						}
 					} else {
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 						if(addQuery) {
 							query += makeQueryFromDefaults(vCombined);			
-							if(iLumi) groupByLumiQuery += makeGroupQueryFromDefaults(vCombined);			
+							if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(vCombined);			
 						}
 						
 					}
@@ -468,9 +475,9 @@ public class QueryBuilder {
 		}
 		
 		query += personJoinQuery + parentJoinQuery + childJoinQuery + queryWhere + circularConst + invalidConst;
-		if(groupByLumiQuery.length() > 0) {
-			groupByLumiQuery = groupByLumiQuery.substring(0, groupByLumiQuery.length() - 1);// to get rid of extra comma
-			query += "\n GROUP BY " + groupByLumiQuery;
+		if(groupByQuery.length() > 0) {
+			groupByQuery = groupByQuery.substring(0, groupByQuery.length() - 1);// to get rid of extra comma
+			query += "\n GROUP BY " + groupByQuery;
 		}
 
 		boolean orderOnce = false;
