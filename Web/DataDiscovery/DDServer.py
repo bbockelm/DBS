@@ -5282,7 +5282,6 @@ Save query as:
     aSearchShowAll.exposed=True
 
     def aSearchSummary(self,**kwargs):
-#        print "\n\n+++aSearchSummary",kwargs
         tabCol   = kwargs['tabCol']
         if not tabCol:
            tabCol= "Table.Column"
@@ -5306,6 +5305,7 @@ Save query as:
         getRes   = int(getArg(kwargs,'getRes',0))
         method   = getArg(kwargs,'method','dd')
         userInput= kwargs['userInput']
+#        print "\n\n+++aSearchSummary",kwargs
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
@@ -5567,7 +5567,7 @@ Save query as:
                result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
            result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
-        if len(titleList)==1: # no view found
+        if len(titleList)<=2: # no view found, 2 to account for rownum while using ORACLE
            titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
         excludeList=[]
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
