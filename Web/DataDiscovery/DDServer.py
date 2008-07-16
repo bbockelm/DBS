@@ -226,7 +226,7 @@ class DDServer(DDLogger,Controller):
             print "Read from hostname and port"
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
-        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_0_9','retry':2}
+        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_2_1','retry':2}
         print "+++ DDServer URL '%s'"%self.dbsdd
         print "+++ Using %s interface"%self.iface
         self.formDict   = {
@@ -5242,7 +5242,7 @@ Save query as:
 #        print "\n\n+++aSearchShowAll",kwargs
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
-           res=dbsApi.executeQuery(userInput,begin=fromRow,end=limit,type="query")
+           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
@@ -5359,7 +5359,7 @@ Save query as:
         userInput= kwargs['userInput']
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
-           res=dbsApi.executeQuery(userInput,begin=fromRow,end=limit,type="query")
+           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
            tableView = output+"summary"
            if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
@@ -5509,7 +5509,7 @@ Save query as:
            tab+="</tr>"
            page=tab+page+"</table>\n"
         if html and result:
-           t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':''}]).respond()
+           t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':'','iface':method}]).respond()
            page = str(t)+page
         if not result:
            page+="No results"
@@ -5609,7 +5609,7 @@ Save query as:
         userInput= kwargs['userInput']
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
-           res=dbsApi.executeQuery(userInput,begin=fromRow,end=limit,type="query")
+           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
            if  self.helper.dbManager.getTableNames(dbsInst).count("datasetsummary"):
                sqlView = self.qmaker.wrapToView("datasetsummary","Block.Path",sql)
@@ -5690,7 +5690,7 @@ Save query as:
            page=head+page+"</table>"
         if html:
            if titleList:
-              t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList}]).respond()
+              t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList,'iface':method}]).respond()
               page = str(t)+page
         return page
 

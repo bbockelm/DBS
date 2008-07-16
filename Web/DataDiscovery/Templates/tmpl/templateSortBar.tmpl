@@ -26,7 +26,7 @@ View results:
 <td>
 #if len($titleList)
 #set sortName=$titleList[0]
-<select id="sel_sortName" onchange="javascript:ReloadASearch();">
+<select id="sel_sortName" onchange="javascript:ReloadASearch('$iface');">
 #for item in $titleList
 #if not $excludeList.count($item)
 <option value="$item">Sort by $item</option>
@@ -39,10 +39,10 @@ View results:
 </td>
 <td>
 #if len($titleList)
-<a href="javascript:SortDesc();ReloadASearch();">
+<a href="javascript:SortDesc();ReloadASearch('$iface');">
 <span id="sortDesc" class="td_underline_pad">desc</span></a>
 |
-<a href="javascript:SortAsc();ReloadASearch();">
+<a href="javascript:SortAsc();ReloadASearch('$iface');">
 <span id="sortAsc" class="">asc</span></a>
 #end if
 </td>
@@ -103,13 +103,21 @@ function UpdateSortOrder() {
    //Update_aSearchForm();
 }
 UpdateSortOrder();
-function ReloadASearch() {
+function ReloadASearch(iface) {
    var dbsInst=\$('dbsInst').value;
    var caseSens=\$('caseSensitive').value;
    var userMode=\$('userMode').value;
    var userInput=\$('userInput').value;
    var sortName=\$('sel_sortName').value;
    var sortOrder=\$('sortOrder').value;
+   if (iface=='dbsapi') {
+      if (userInput.search('order by')>0) {
+         alert('Your input excepression contains order by, ignore GUI sorting');
+         return;
+      } else {
+         userInput=userInput+' order by '+sortName+' '+sortOrder;
+      }
+   }
    var view=GetCookie('DBSDD_view');
    var grid=0;
    if(view=='grid') {
