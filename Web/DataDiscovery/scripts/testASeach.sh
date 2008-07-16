@@ -63,7 +63,9 @@ done
 
 echo "### TEST DBS-QL using DBSAPI ###"
 for input in \
-"find primds where primds.createdate > 2007-04-20"
+"find primds where primds.createdate > 2007-04-20" \
+"find dataset where site like T2_UK*" \
+"*QCD*"
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input" --iface=dbsapi
