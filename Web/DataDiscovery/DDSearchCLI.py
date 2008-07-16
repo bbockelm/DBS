@@ -30,7 +30,9 @@ class DDOptionParser:
          help="request output for files in CMS cff format")
     self.parser.add_option("--host",action="store",type="string",dest="host",
          help="specify a host name of Data Discovery service, e.g. https://cmsweb.cern.ch/dbs_discovery/")
-    self.parser.add_option("--iface",action="store",default="dbsapi",type="string",dest="iface",
+    self.parser.add_option("--port",action="store",type="string",dest="port",
+         help="specify a port to be used by Data Discovery host")
+    self.parser.add_option("--iface",action="store",default="dd",type="string",dest="iface",
          help="specify which interface to use for queries dd or dbsapi, default is dbsapi.")
     self.parser.add_option("--details",action="store_true",dest="details",
          help="show detailed output")
@@ -46,7 +48,7 @@ class DDOptionParser:
     """
     return self.parser.parse_args()
 
-def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',iface='dbsapi',details=0,cff=0,debug=0):
+def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',iface='dd',details=0,cff=0,debug=0):
     """
        Send message to server, message should be an well formed XML document.
     """
@@ -71,7 +73,10 @@ def sendMessage(host,port,dbsInst,userInput,page,limit,xml=0,case='on',iface='db
        hs=host.split("/")
        host=hs[0]
        prefix_path='/'.join(hs[1:])
+    if host.find(":")!=-1:
+       host,port=host.split(":")
     port=int(port)
+#    print "\n\n+++",host,port
     if port==443:
        http_conn = httplib.HTTPS(host,port)
     else:
@@ -114,8 +119,12 @@ if __name__ == "__main__":
     if opts.host: host=opts.host
     if host.find("http://")!=-1:
        host=host.replace("http://","")
+#    if host.find(":")!=-1:
+#       host,port=host.split(":")
     if host[-1]!="/":
        host+="/"
+    if opts.port:
+       port = opts.port
     if opts.dbsInst: dbsInst=opts.dbsInst
     if opts.input:
        if os.path.isfile(opts.input):
