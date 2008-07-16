@@ -2603,26 +2603,13 @@ All LFNs in a block
     def formatLFNList(self,lfnList,what="txt",idx=-1):
         if not lfnList:
            return ""
-        page="""<pre>\n"""
         if what=="cff":
-           page+="replace PoolSource.fileNames = {\n"
-        lastItem=lfnList[-1]
-        if idx>=0:
-           lastItem=lastItem[idx]
-        for item in lfnList:
-            lfn=item
-            if idx>=0:
-               lfn=item[idx]
-            if  what=="cff":
-                if lfn==lastItem:
-                   page+="'%s'\n"%lfn
-                else:
-                   page+="'%s',\n"%lfn
-            else:
-                page+="%s\n"%lfn
-        if what=="cff": page+="}"
-        page+="\n</pre>"
-        return page
+           t = templateFormatLfn_cff(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
+        elif what=="py" or format=="python":
+           t = templateFormatLfn_py(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
+        else:
+           t = templateFormatLfn_txt(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
+        return str(t)
 
     def getLFN_txt(self,dbsInst,blockName,dataset="",userMode='user',run='*',what="txt"):
         """
@@ -2699,51 +2686,13 @@ All LFNs in a block
     getLFNsWithParents.exposed = True
     
     def formatLFNPoolSource(self,lfnList,parentLfnList,format="cff"):
-        p1=""
-        for lfn in lfnList:
-            if lfn==lfnList[-1]:
-               p1+="""            '%s'\n"""%lfn
-            else:
-               p1+="""            '%s',\n"""%lfn
-        p2=""
-        if (len(parentLfnList)):
-           if format=="python":
-              p2+="\nsecondaryFileNames = cms.untracked.vstring (\n"
-           else:
-              p2+="\nuntracked vstring secondaryFileNames = {\n"
-        for lfn in parentLfnList:
-            if lfn==parentLfnList[-1]:
-               p2+="""            '%s'\n"""%lfn
-            else:
-               p2+="""            '%s',\n"""%lfn
-        if (len(parentLfnList)):
-           if format=="python":
-              p2+="\n     )\n"
-           else:
-              p2+="\n     }\n"
-        if format=="python":
-            page="""
-<pre>
-maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-   source = cms.Source ("PoolSource",
-       fileNames = cms.untracked.vstring (
-%s
-      ),
-%s
-   )
-</pre>"""%(p1,p2)
+        if format=="cff":
+           t = templateFormatLfn_cff(searchList=[{'lfnList':lfnList,'pfnList':parentLfnList}]).respond()
+        elif format=="py" or format=="python":
+           t = templateFormatLfn_py(searchList=[{'lfnList':lfnList,'pfnList':parentLfnList}]).respond()
         else:
-            page="""
-<pre>
-untracked PSet maxEvents = {untracked int32 input = -1}
-   source = PoolSource {
-       untracked vstring fileNames = {
-%s
-      }
-%s
-   }
-</pre>"""%(p1,p2)
-        return page 
+           t = templateFormatLfn_txt(searchList=[{'lfnList':lfnList,'pfnList':parentLfnList}]).respond()
+        return str(t)
 
     def getLFNsForSite(self,dbsInst,site,datasetPath,what="cff",userMode='user',run="*"):
         """

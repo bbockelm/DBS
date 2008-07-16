@@ -1,0 +1,32 @@
+<!-- templateFormatLFN_py -->
+<pre>
+#if len($pfnList)
+untracked PSet maxEvents = {untracked int32 input = -1}
+   source = PoolSource {
+       untracked vstring fileNames = {
+#else
+replace PoolSource.fileNames = {
+#end if
+#for lfn in $lfnList
+#if $lfn!=$lfnList[-1]
+        '$lfn',
+#else
+        '$lfn'
+#end if
+#end for
+#if len($pfnList)
+      }
+       untracked vstring secondaryFileNames = {
+#for pfn in $pfnList
+#if $pfn!=$pfnList[-1]
+        '$pfn',
+#else
+        '$pfn'
+#end if
+#end for
+      }
+#end if
+}
+</pre>
+
+<!-- end of templateFormatLFN_py -->
