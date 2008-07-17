@@ -82,7 +82,7 @@ public class QueryBuilder {
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
 			if(Util.isSame(aKw, "dataset")) {
 				allKws = addUniqueInList(allKws, "Block");
-				query += "Block.Path";
+				query += "Block.Path AS PATH";
 				if(iLumi | sumPresent | countPresent) groupByQuery += "Block.Path,";
 			} else if(Util.isSame(aKw, "ilumi")) {
 				query += getIntLumiSelectQuery();
@@ -180,7 +180,7 @@ public class QueryBuilder {
 								"\t\tON " + real + "." + personField + " = " + tmpTableName + ".ID\n";
 						}
 						String fqName = tmpTableName + ".DistinguishedName";
-						query += fqName + makeAs(tmpTableName + "DN");			
+						query += fqName + makeAs(tmpTableName + "_DN");			
 						addQuery = false;
 					}
 					
@@ -513,7 +513,8 @@ public class QueryBuilder {
 			}
 			if(db.equals("oracle")) {
 				bindIntValues.add(new Integer(eInt));
-				query =  "SELECT * FROM (SELECT x.*, rownum as rnum FROM (\n" + query + "\n) x) where rnum between ? and ?";
+				//query =  "SELECT * FROM (SELECT x.*, rownum as rnum FROM (\n" + query + "\n) x) where rnum between ? and ?";
+				query =  genOraclePageQuery(query);
 			}
 		}
 
@@ -523,6 +524,38 @@ public class QueryBuilder {
 	private String makeAs(String in) {
 		return " AS " + in.replace('.', '_') + " ";
 	}
+	
+	private String genOraclePageQuery(String query) {
+		System.out.println(query);
+		String tokenAS = "AS";
+		String tokenFrom = "FROM";
+		String tokenDistinct = "DISTINCT";
+		int indexOfFrom = query.indexOf(tokenFrom);
+		int indexOfDistinct = query.indexOf(tokenDistinct);
+		if(indexOfFrom == -1 || indexOfDistinct == -1) return query;
+		//System.out.println(indexOfFrom);
+		//System.out.println(indexOfDistinct);
+		String tmpStr = query.substring(indexOfDistinct + tokenDistinct.length(), indexOfFrom);
+		//System.out.println("tmp str " +  tmpStr);
+		StringTokenizer st = new StringTokenizer(tmpStr, ",");
+		int numberOfKeywords = st.countTokens();
+		String toReturn = "SELECT ";
+		for(int i = 0; i != numberOfKeywords; ++i) {
+			String tmpToken = st.nextToken();
+			int indexOfAs = tmpToken.indexOf(tokenAS);
+			if(indexOfAs == -1)  return query;
+			String finalKeyword = tmpToken.substring(indexOfAs + tokenAS.length(), tmpToken.length()).trim();
+			//System.out.println("Keyword " + finalKeyword);	
+			if(i != 0) toReturn += ", ";
+			toReturn += finalKeyword;
+
+		}
+		toReturn += " FROM (SELECT x.*, rownum as rnum FROM (\n" + query + "\n) x) where rnum between ? and ?";
+		return toReturn;
+			
+			
+	}
+
 	private String makeQueryFromDefaults(Vertex v){
 		String realVal = u.getRealFromVertex(v);
 		StringTokenizer st = new StringTokenizer(u.getDefaultFromVertex(v), ",");
