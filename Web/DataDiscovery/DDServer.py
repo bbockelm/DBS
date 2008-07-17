@@ -229,6 +229,11 @@ class DDServer(DDLogger,Controller):
         self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_2_1','retry':2}
         print "+++ DDServer URL '%s'"%self.dbsdd
         print "+++ Using %s interface"%self.iface
+        try:
+            self.outputConfigMap()
+        except:
+            traceback.print_exc()
+            pass
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
                            'siteForm': ("",""), # (dbsInst,site)
@@ -5923,7 +5928,37 @@ Save query as:
         return page
     aSearch.exposed=True
 
+    def outputConfigMap(self):
+        """Log server configuration parameters"""
+        serverVars = [
+                      'httpservers',
+                      'instance',
+                      'interrupt',
+                      'max_request_body_size',
+                      'max_request_header_size',
+                      'protocol_version',
+                      'ssl_certificate',
+                      'ssl_private_key',
+                      'socket_host',
+                      'socket_port',
+                      'socket_file',
+                      'reverse_dns',
+                      'socket_queue_size',
+                      'thread_pool',
+                     ]
+        msg="+++ CherryPy serer configuration:"
+        print msg
+        self.writeLog(msg)
+        for var in serverVars:
+            msg="    %s: %s" % (var, getattr(cherrypy.server,var))
+            self.writeLog(msg)
+            print msg
+
     def setConfig(self,base=""):
+        # used thread_pool, queue_size parameters to tune up server performance
+        # see discussion on http://amix.dk/blog/viewEntry/119
+        cherrypy.server.thread_pool = 40
+        cherrypy.server.socket_queue_size = 15
         mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
         httpHeader=[('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
                                ('Accept-Encoding','gzip'),
