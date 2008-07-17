@@ -244,7 +244,7 @@ executeQuery () {
 
 	#$CMD query="find run,file  order by file, run"
 	#$CMD query="find  dataset.createdate  where file.size > 0"
-	$CMD query="find  file.count, dataset  where dataset like * "
+	$CMD query="find file,file.createby, sum(file.size) where dataset=/chaintest/CMSSW_2_0_5-Test-stuartw-1215537045-unmerged/GEN"
 	#$CMD query="find  dataset where dataset.era  = test_Era_a13dd785-452b-420b-9905-dc3407cebe56"
 	#$CMD query="find count ( file ) , dataset where file.size > 0"
 	#$CMD query="find sum(file.size) where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM and site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"

@@ -181,6 +181,7 @@ public class QueryBuilder {
 						}
 						String fqName = tmpTableName + ".DistinguishedName";
 						query += fqName + makeAs(tmpTableName + "_DN");			
+						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
 						addQuery = false;
 					}
 					
@@ -198,6 +199,7 @@ public class QueryBuilder {
 						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
+						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
 						addQuery = false;
 					}
 		
@@ -209,6 +211,7 @@ public class QueryBuilder {
 						if(!dontJoin) childJoinQuery += handleChild(tmpTableName, "Files", "FileParentage");
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
+						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
 						addQuery = false;
 					}
 				
@@ -219,6 +222,7 @@ public class QueryBuilder {
 						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
 						String fqName = tmpTableName + ".Name";
 						query += fqName + makeAs(fqName);			
+						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
 						addQuery = false;
 					}
 
@@ -231,6 +235,7 @@ public class QueryBuilder {
 						if(!dontJoin) pathParentWhereQuery += handlePathParent();
 						String fqName = "Block.Path AS Dataset_Parent";
 						query += fqName;			
+						if(iLumi | sumPresent | countPresent) groupByQuery +=  "Block.Path ,";			
 						addQuery = false;
 					}
 
