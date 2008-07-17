@@ -1,6 +1,6 @@
 /**
- $Revision: 1.140 $"
- $Id: DBSApiLogic.java,v 1.140 2008/06/26 21:08:47 sekhri Exp $"
+ $Revision: 1.141 $"
+ $Id: DBSApiLogic.java,v 1.141 2008/07/08 21:45:32 sekhri Exp $"
  *
  */
 
@@ -280,7 +280,7 @@ public class DBSApiLogic {
 				out.write(((String) "<result "));
 				for (int i = 0; i != numberOfColumns; ++i) {
 					out.write(((String) colNames[i] + "='"));
-					if(colNames[i].indexOf("Date") != -1) {
+					if(colNames[i].toLowerCase().indexOf("date") != -1) {
 						out.write(((String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)) + "' "));
 							
 						/*out.write(((String) 

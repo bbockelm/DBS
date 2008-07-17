@@ -90,15 +90,16 @@ public class DateUtil {
 	
 	
 		try{
-			String epoch = "1203006252000";
+			String epoch = "1195123429000";
 			System.out.println("epoch is " + epoch + " Our Date " + DateUtil.epoch2DateStr(epoch));
-
+	
+			/*
 			String dStr = "2008-02-14 10:24";
 			Date d = DateUtil.getNextDate(dStr);
 			String epoch1 = String.valueOf(DateUtil.dateStr2Epoch(dStr));
 			String epoch2 = String.valueOf(d.getTime());
 			System.out.println("Epoch 1  " + epoch1);
-			System.out.println("Epoch 2  " + epoch2);
+			System.out.println("Epoch 2  " + epoch2);*/
 			
 			/*
 			//System.out.println("ERA: " + calendar.get(Calendar.ERA));

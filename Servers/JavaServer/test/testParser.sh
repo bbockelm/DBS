@@ -10,6 +10,8 @@ cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
 CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
+#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.qb.DateUtil"
+#$CMD
 executeQuery () {
 	echo "Executing executeQuery API..."
 	$CMD query="find file where file.release=CMSSW_1_7_1"
@@ -241,6 +243,11 @@ executeQuery () {
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
 	#$CMD query="find run,file  order by file, run"
-	#$CMD query="find sum ( file.size ) , dataset where file.size > 0"
-	$CMD query="find count ( file ) , dataset where file.size > 0"
+	#$CMD query="find  dataset.createdate  where file.size > 0"
+	#$CMD query="find  file.count, dataset  where dataset like * "
+	#$CMD query="find  dataset where dataset.era  = test_Era_a13dd785-452b-420b-9905-dc3407cebe56"
+	#$CMD query="find count ( file ) , dataset where file.size > 0"
+	#$CMD query="find sum(file.size) where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM and site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
+	#$CMD query="find site, dataset where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM"
+	
 #	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 

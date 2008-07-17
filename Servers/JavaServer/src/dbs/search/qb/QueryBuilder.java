@@ -72,7 +72,7 @@ public class QueryBuilder {
 		}
 		for (int i =0 ; i!= kws.size(); ++i) {
 			String aKw = (String)kws.get(i);
-			if(aKw.toLowerCase().startsWith("count")) countPresent = true;
+			if(aKw.toLowerCase().startsWith("count") || aKw.toLowerCase().endsWith("count")) countPresent = true;
 			if(aKw.toLowerCase().startsWith("sum")) sumPresent = true;
 		}
 		String query = "SELECT DISTINCT \n\t";
@@ -159,7 +159,7 @@ public class QueryBuilder {
 					}
 
 					if(Util.isSame(token2, "count")) {
-						query += "COUNT(*)";			
+						query += "COUNT(*) AS COUNT";			
 						addQuery = false;
 					}
 
@@ -180,7 +180,7 @@ public class QueryBuilder {
 								"\t\tON " + real + "." + personField + " = " + tmpTableName + ".ID\n";
 						}
 						String fqName = tmpTableName + ".DistinguishedName";
-						query += fqName + makeAs(fqName);			
+						query += fqName + makeAs(tmpTableName + "DN");			
 						addQuery = false;
 					}
 					
@@ -234,6 +234,9 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 
+					if(Util.isSame(token, "dataset")) {
+						allKws = addUniqueInList(allKws, "ProcessedDataset");
+					}
 
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
@@ -300,7 +303,7 @@ public class QueryBuilder {
 				String key = (String)o.getKey();
 				if(Util.isSame(key, "dataset")) {
 					if(!isIn(allKws, "Files")) allKws = addUniqueInList(allKws, "Block");
-				}
+				}else if(key.startsWith("dataset")) allKws = addUniqueInList(allKws, "ProcessedDataset");
 			}
 		}
 		if(allKws.size() > 0) {
