@@ -5957,8 +5957,8 @@ Save query as:
     def setConfig(self,base=""):
         # used thread_pool, queue_size parameters to tune up server performance
         # see discussion on http://amix.dk/blog/viewEntry/119
-        cherrypy.server.thread_pool = 40
-        cherrypy.server.socket_queue_size = 15
+#        cherrypy.server.thread_pool = 40
+#        cherrypy.server.socket_queue_size = 15
         mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
         httpHeader=[('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
                                ('Accept-Encoding','gzip'),
