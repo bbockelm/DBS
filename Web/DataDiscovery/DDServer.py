@@ -5815,7 +5815,10 @@ Save query as:
            if xml:
               page="""<?xml version="1.0" encoding="utf-8"?>\n<ddresponse>\n"""
               page+="<userinput>\n  <input>%s</input>\n  <timeStamp>%s</timeStamp>\n</userinput>\n"%(urllib.unquote(userInput),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
-              bParams=self.qmaker.extractBindParams(query)
+              if method=="dbsapi":
+		 bParams=bindDict
+	      else:
+                 bParams=self.qmaker.extractBindParams(query)
               bindParams="\n"
               for key in bParams:
                   bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
@@ -5925,6 +5928,8 @@ Save query as:
            page+="</ddresponse>"
            page=page.replace("__time__","%f sec"%queryTime)
            page=page.replace("__fulltime__","%f sec"%(time.time()-t0))
+	if self.verbose:
+           print "aSearch time:",(time.time()-t0)
         return page
     aSearch.exposed=True
 
@@ -5957,8 +5962,8 @@ Save query as:
     def setConfig(self,base=""):
         # used thread_pool, queue_size parameters to tune up server performance
         # see discussion on http://amix.dk/blog/viewEntry/119
-#        cherrypy.server.thread_pool = 40
-#        cherrypy.server.socket_queue_size = 15
+	cherrypy.server.thread_pool = 30
+	cherrypy.server.socket_queue_size = 15
         mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
         httpHeader=[('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
                                ('Accept-Encoding','gzip'),

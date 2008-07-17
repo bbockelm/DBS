@@ -2462,7 +2462,7 @@ MCDescription:      %s
          for r in run:
              runUrl+="%s,"%r
          iParams['RUN']=runUrl[:-1]
-      http_handler = MyHTTPHandler(timeout = 15) # timeout in seconds
+      http_handler = MyHTTPHandler(timeout = 60) # timeout in seconds
       opener = urllib2.build_opener(http_handler)
       req    = urllib2.Request(url,urllib.urlencode(iParams,doseq=True))
       data   = opener.open(req).read()
