@@ -2131,6 +2131,75 @@ MCDescription:      %s
       prim="*"
       tier="*"
       proc="*"
+      if dataset and dataset!="*":
+         empty,prim,proc,tier=string.split(dataset,"/")
+      con = self.connectToDB()
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          tb   = self.alias('Block','tb')
+          tf   = self.alias('Files','tf')
+          tfs  = self.alias('FileStatus','tfs')
+          tft  = self.alias('FileType','tft')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tr   = self.alias('Runs','tr')
+          oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents'),self.col(tf,'Checksum')]
+          sel  = sqlalchemy.select(oSel,
+                 from_obj=[
+                     tprd.join(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                         .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                         .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                         .join(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
+                         .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+                         .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
+                     ],distinct=True,order_by=oSel
+                                  )
+          if  run and run!="*":                        
+              sel  = sqlalchemy.select(oSel,
+                     from_obj=[
+                         tprd.join(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                             .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                             .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                             .join(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
+                             .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+                             .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
+                             .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
+                             .outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
+                         ],distinct=True,order_by=oSel
+                                      )
+          sel.append_whereclause(self.col(tf,'Block')==self.col(tb,'ID'))
+          if proc and proc!="*":
+             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if tier and tier!="*":
+             self.joinTiers(sel,tpds,tier,tprd)
+          if blockName and blockName!="*":
+             sel.append_whereclause(self.col(tb,'Name')==blockName)
+          if run and run!="*":
+             sel.append_whereclause(self.col(tr,'RunNumber')==run)
+          if lfn and lfn!="*":
+             sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
+          sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+#          print self.printQuery(sel),blockName,dataset,run
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNs"
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item)
+      self.closeConnection(con)
+      return oList
+
+  def getLFNs_newfromv18(self,blockName,dataset,run="*",lfn="*"):
+      prim="*"
+      tier="*"
+      proc="*"
       con = self.connectToDB()
       try:
           tb   = self.alias('Block','tb')
