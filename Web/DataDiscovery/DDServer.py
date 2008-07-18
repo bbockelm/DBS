@@ -5629,6 +5629,9 @@ Save query as:
                    t = templateDatasetXML(searchList=[nameSpace]).respond()
                    page+=str(t)
                 else:
+                   for idx in xrange(0,len(seNames)):
+                       if not seNames[idx]:
+                          seNames[idx]="N/A"
                    page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
             counter+=1
         if grid:
