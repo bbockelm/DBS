@@ -2610,7 +2610,7 @@ All LFNs in a block
            return ""
         if what=="cff":
            t = templateFormatLfn_cff(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
-        elif what=="py" or format=="python":
+        elif what=="py" or what=="python":
            t = templateFormatLfn_py(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
         else:
            t = templateFormatLfn_txt(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
