@@ -2792,6 +2792,7 @@ All LFNs in a block
            @rtype : string
            @return: returns HTML code
         """
+        self.helperInit(dbsInst)
         lfnList = self.helper.getLFNs(blockName,dataset,run)
         nameSpace = {
                      'host'      : self.dbsdd,
