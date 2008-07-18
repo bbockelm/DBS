@@ -54,6 +54,8 @@ public class QueryBuilder {
 		String childJoinQuery = "";
 		String pathParentWhereQuery = "";
 		String groupByQuery = "";
+		String sumGroupByQuery = "";
+		String sumQuery = "";
 		boolean invalidFile = false;
 		boolean modByAdded = false;
 		boolean createByAdded = false;
@@ -80,28 +82,53 @@ public class QueryBuilder {
 			String aKw = (String)kws.get(i);
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
-			if(Util.isSame(aKw, "dataset")) {
-				allKws = addUniqueInList(allKws, "Block");
-				query += "Block.Path AS PATH";
-				if(iLumi | sumPresent | countPresent) groupByQuery += "Block.Path,";
-			} else if(Util.isSame(aKw, "ilumi")) {
+			if(Util.isSame(aKw, "ilumi")) {
 				query += getIntLumiSelectQuery();
 			//System.out.println("line 2.1.1");
-			} else if(aKw.toLowerCase().startsWith("count")) {
-				aKw = aKw.toLowerCase();
-				query += "COUNT(*) AS COUNT";
-				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
-				entity = entity.trim();
-				//System.out.println("entity = " + entity);
-				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
 			} else if(aKw.toLowerCase().startsWith("sum")) {
 				aKw = aKw.toLowerCase();
 				String keyword = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
 				keyword = keyword.trim();
+				String asKeyword = keyword.replace('.', '_');
 				String entity = (new StringTokenizer(keyword, ".")).nextToken();
 				//System.out.println("entity " + entity);
-				allKws = addUniqueInList(allKws, u.getMappedRealName(entity));
-				query += "SUM(" + km.getMappedValue(keyword, true) + ") AS SUM_" + keyword.replace('.', '_') ;
+				String realName = u.getMappedRealName(entity);
+				allKws = addUniqueInList(allKws, realName);
+				sumQuery = "SELECT SUM(" + asKeyword + ") AS SUM_" + asKeyword + " ";
+				//query += "SUM(" + km.getMappedValue(keyword, true) + ") AS SUM_" + keyword.replace('.', '_') ;
+				String tmpKw = km.getMappedValue(keyword, true);
+				query +=  tmpKw + " AS " + asKeyword ;
+				if(iLumi) groupByQuery += tmpKw + ",";
+				String tmp =  makeQueryFromDefaults(u.getMappedVertex(entity));
+				tmp = tmp.substring(0, tmp.length() - 1); // To get rid of last space
+				query += "\n\t," + tmp + "_SUM ";
+			} else if(aKw.toLowerCase().startsWith("count")) {
+				aKw = aKw.toLowerCase();
+				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
+				entity = entity.trim();
+				//System.out.println("entity = " + entity);
+				String realName = u.getMappedRealName(entity);
+				allKws = addUniqueInList(allKws, realName);
+
+				String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
+				if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use count(" + entity + ")");
+				//query += "COUNT(DISTINCT " + realName + "." + defaultStr + ") AS COUNT";
+				query += realName + "." + defaultStr + " AS COUNT_SUB_" + realName;
+				if(sumQuery.length() != 0) sumQuery += ",\n\t";
+				else sumQuery += "SELECT ";
+				sumQuery += "COUNT(DISTINCT COUNT_SUB_" + realName + ") AS COUNT_" + realName;
+				/*if(sumPresent) {
+					sumQuery += ",\n\t COUNT AS COUNT";
+					sumGroupByQuery += " COUNT ,";
+				}*/
+			} else if(Util.isSame(aKw, "dataset")) {
+				allKws = addUniqueInList(allKws, "Block");
+				query += "Block.Path AS PATH";
+				if(iLumi) groupByQuery += "Block.Path,";
+				if(sumPresent || countPresent) {
+					sumQuery += ",\n\t PATH AS PATH";
+					sumGroupByQuery += " PATH ,";
+				}
 			} else {
 			//System.out.println("line 2.2");
 				if(iLumi && (i < 2) ) {
@@ -122,8 +149,17 @@ public class QueryBuilder {
 				if(count == 1) {
 					//Get default from vertex
 			//System.out.println("line 5");
-					query += makeQueryFromDefaults(vFirst);
-					if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(vFirst);			
+					String tmp =  makeQueryFromDefaults(vFirst);	
+					query += tmp;
+					if(iLumi) groupByQuery += makeGroupQueryFromDefaults(vFirst);			
+					if(sumPresent || countPresent) {
+						String toSelect = makeSumSelect(tmp);
+						if(toSelect.length() != 0) {
+							sumQuery += ",\n\t" + toSelect + " AS" + toSelect;
+							sumGroupByQuery += toSelect + ",";
+						}
+					}
+						
 				} else {
 
 			//System.out.println("line 6");
@@ -145,21 +181,52 @@ public class QueryBuilder {
 							Util.isSame(token2, "tier")) {
 						String realName = u.getMappedRealName(token2);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
-						query += makeQueryFromDefaults(u.getVertex(realName));			
-						if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
+						String tmp = makeQueryFromDefaults(u.getVertex(realName));
+						query += tmp;	
+						if(iLumi) groupByQuery += makeGroupQueryFromDefaults(u.getVertex(realName));
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(tmp);
+							if(toSelect.length() != 0) {
+								sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+
 						addQuery = false;
 					}
 
 					if(Util.isSame(token, "release")) {
 						String realName = u.getMappedRealName(token);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
-						query += makeQueryFromDefaults(u.getVertex(realName));			
-						if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(u.getVertex(realName));			
+						String tmp = makeQueryFromDefaults(u.getVertex(realName));
+						query += tmp;			
+						if(iLumi) groupByQuery += makeGroupQueryFromDefaults(u.getVertex(realName));
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(tmp);
+							if(toSelect.length() != 0) {
+								sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+
 						addQuery = false;
 					}
 
 					if(Util.isSame(token2, "count")) {
-						query += "COUNT(*) AS COUNT";			
+						String realName = u.getMappedRealName(token);
+
+						String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
+						if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use count(" + token + ")");
+						query += realName + "." + defaultStr + " AS COUNT_SUB_" + realName;
+						if(sumQuery.length() != 0) sumQuery += ",\n\t";
+						else sumQuery += "SELECT ";
+						sumQuery += "COUNT(DISTINCT COUNT_SUB_" + realName + ") AS COUNT_" + realName;
+
+						/*query += "COUNT(DISTINCT " + realName + "." + defaultStr + ") AS COUNT";
+						if(sumPresent) {
+							sumQuery += ",\n\t COUNT AS COUNT ";
+							sumGroupByQuery += " COUNT ,";
+						}*/
 						addQuery = false;
 					}
 
@@ -181,7 +248,11 @@ public class QueryBuilder {
 						}
 						String fqName = tmpTableName + ".DistinguishedName";
 						query += fqName + makeAs(tmpTableName + "_DN");			
-						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
+						if(iLumi) groupByQuery += fqName + ",";
+						if(sumPresent || countPresent) {
+							sumQuery += ",\n\t" + tmpTableName + "_DN AS " + tmpTableName + "_DN ";
+							sumGroupByQuery += tmpTableName + "_DN ,";
+						}
 						addQuery = false;
 					}
 					
@@ -199,7 +270,15 @@ public class QueryBuilder {
 						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
-						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
+						if(iLumi) groupByQuery += fqName + ",";
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(toSelect.length() != 0) {
+							       	sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+			
 						addQuery = false;
 					}
 		
@@ -211,7 +290,15 @@ public class QueryBuilder {
 						if(!dontJoin) childJoinQuery += handleChild(tmpTableName, "Files", "FileParentage");
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
-						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
+						if(iLumi) groupByQuery += fqName + ",";			
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(toSelect.length() != 0) {
+								sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+	
 						addQuery = false;
 					}
 				
@@ -222,7 +309,15 @@ public class QueryBuilder {
 						if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
 						String fqName = tmpTableName + ".Name";
 						query += fqName + makeAs(fqName);			
-						if(iLumi | sumPresent | countPresent) groupByQuery += fqName + ",";			
+						if(iLumi) groupByQuery += fqName + ",";	
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(toSelect.length() != 0) {
+							       	sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+				
 						addQuery = false;
 					}
 
@@ -235,7 +330,12 @@ public class QueryBuilder {
 						if(!dontJoin) pathParentWhereQuery += handlePathParent();
 						String fqName = "Block.Path AS Dataset_Parent";
 						query += fqName;			
-						if(iLumi | sumPresent | countPresent) groupByQuery +=  "Block.Path ,";			
+						if(iLumi) groupByQuery +=  "Block.Path ,";		
+						if(sumPresent || countPresent) {
+							sumQuery += ",\n\t Dataset_Parent AS Dataset_Parent ";
+							sumGroupByQuery += " Dataset_Parent ,";
+						}
+			
 						addQuery = false;
 					}
 
@@ -249,13 +349,32 @@ public class QueryBuilder {
 							String mapVal =  km.getMappedValue(aKw, true);
 							//if(mapVal.equals(aKw)) throw new Exception("The keyword " + aKw + " not yet implemented in Query Builder" );
 							query += mapVal + makeAs(mapVal); 
-							if(iLumi | sumPresent | countPresent) groupByQuery += mapVal + ",";
+							if(iLumi) groupByQuery += mapVal + ",";
+							if(sumPresent || countPresent) {
+								String toSelect = makeSumSelect(makeAs(mapVal));
+								if(toSelect.length() != 0) {
+									sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+									sumGroupByQuery += toSelect + ",";
+								}
+							}
+
+
 						}
 					} else {
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 						if(addQuery) {
-							query += makeQueryFromDefaults(vCombined);			
-							if(iLumi | sumPresent | countPresent) groupByQuery += makeGroupQueryFromDefaults(vCombined);			
+							String tmp = makeQueryFromDefaults(vCombined);
+							query += tmp;			
+							if(iLumi) groupByQuery += makeGroupQueryFromDefaults(vCombined);
+							if(sumPresent || countPresent) {
+								String toSelect = makeSumSelect(tmp);
+								if(toSelect.length() != 0) {
+									sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+									sumGroupByQuery += toSelect + ",";
+								}
+							}
+
+
 						}
 						
 					}
@@ -505,7 +624,14 @@ public class QueryBuilder {
 			query += orderToken;
 			orderOnce = true;
 		}
-			
+		
+		if(sumQuery.length() != 0) {
+			query = sumQuery + " FROM (" +  query + ") sumtable ";
+			if(sumGroupByQuery.length() > 0) {
+				sumGroupByQuery = sumGroupByQuery.substring(0, sumGroupByQuery.length() - 1);// to get rid of extra comma
+				query += "\n GROUP BY " + sumGroupByQuery;
+			}
+		}
 		//countQuery = "SELECT COUNT(*) " + query.substring(query.indexOf("FROM"));
 		countQuery = "SELECT COUNT(*) FROM (" + query + ") x";
 		if(!begin.equals("") && !end.equals("")) {
@@ -524,6 +650,15 @@ public class QueryBuilder {
 		}
 
 		return query;
+	}
+	
+	private String makeSumSelect(String tmp) {
+		String asStr = "AS";
+		int asIndex = tmp.indexOf(asStr);
+		if(asIndex != -1) {	
+			return  tmp.substring(asIndex + asStr.length(), tmp.length()).trim();
+		}
+		return "";
 	}
 
 	private String makeAs(String in) {
