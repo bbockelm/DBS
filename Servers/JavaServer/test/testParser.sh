@@ -173,8 +173,8 @@ executeQuery () {
 	#$CMD query="find  dataset where dataset.era  = test_Era_a13dd785-452b-420b-9905-dc3407cebe56"
 	#$CMD query="find count ( file ) , dataset where file.size > 0"
 	#$CMD query="find count ( file )  where dataset = /chaintest_standalone/CMSSW_2_0_5-Test-stuartw-1215618413-unmerged/GEN-SIM-DIGI-RECO"
-	#$CMD query="find sum(file.numevents), count(file), dataset  where file.size > 0"
-	$CMD query="find sum(file.numevents), file.count, run.count, dataset  where file.size > 0"
+	$CMD query="find sum(file.numevents), count(file), dataset  where file.size > 0"
+	#$CMD query="find sum(file.numevents), file.count, run.count, dataset  where file.size > 0"
 	
 	#$CMD query="find  sum(file.numevents), file.count, dataset where dataset like *"
 	#$CMD query="find  sum(file.numevents), file.count where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
