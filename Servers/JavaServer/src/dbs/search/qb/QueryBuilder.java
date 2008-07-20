@@ -94,7 +94,9 @@ public class QueryBuilder {
 				//System.out.println("entity " + entity);
 				String realName = u.getMappedRealName(entity);
 				allKws = addUniqueInList(allKws, realName);
-				sumQuery = "SELECT SUM(" + asKeyword + ") AS SUM_" + asKeyword + " ";
+				if(sumQuery.length() != 0) sumQuery += ",\n\t";
+				else sumQuery += "SELECT ";
+				sumQuery += "SUM(" + asKeyword + ") AS SUM_" + asKeyword + " ";
 				//query += "SUM(" + km.getMappedValue(keyword, true) + ") AS SUM_" + keyword.replace('.', '_') ;
 				String tmpKw = km.getMappedValue(keyword, true);
 				query +=  tmpKw + " AS " + asKeyword ;
