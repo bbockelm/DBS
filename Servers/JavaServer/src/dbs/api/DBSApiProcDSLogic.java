@@ -1,6 +1,6 @@
 /**
- $Revision: 1.61 $"
- $Id: DBSApiProcDSLogic.java,v 1.61 2008/05/13 16:35:55 sekhri Exp $"
+ $Revision: 1.62 $"
+ $Id: DBSApiProcDSLogic.java,v 1.62 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -688,7 +688,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			if(!blockPresent) writeWarning(out, "No Blocks", "1021", "ProcessedDataset " + path + " has no blocks");
 			//Delete the actual dataset
 			deleteName(conn, out, "ProcessedDataset", "ID", procDSID);
-			if(this.data.getGlobalCache() != null) this.data.getGlobalCache().resetCache(conn);
+			//if(this.data.getGlobalCache() != null) this.data.getGlobalCache().resetCache(conn);
 			//Record history in TimeLog
 			insertTimeLog(conn, "deleteProcDS", "Delete processed Dataset called By User",
 				"deleteProcDS",
@@ -750,10 +750,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String[] data = parseDSPath(path);
 		
 		//Looking in Global Cache 
-		if(!isNull( id = this.data.getGlobalCache().getProcessedDSID(conn, path)))  {
+		/*if(!isNull( id = this.data.getGlobalCache().getProcessedDSID(conn, path)))  {
 			this.data.localPDPath.put(path, id);
 			return id;
-		}
+		}*/
 
 
 		id = getProcessedDSID(conn, data[1], data[2], excep);

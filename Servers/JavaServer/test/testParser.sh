@@ -175,7 +175,10 @@ executeQuery () {
 	#$CMD query="find count ( file )  where dataset = /chaintest_standalone/CMSSW_2_0_5-Test-stuartw-1215618413-unmerged/GEN-SIM-DIGI-RECO"
 	#$CMD query="find sum(file.numevents), count(file), dataset  where file.size > 0"
 	#$CMD query="find  count(file), sum(file.numevents), dataset"
-	$CMD query="find sum(file.size) where dataset like *ain*"
+	#$CMD query="find sum(file.size), dataset where dataset like *"
+	#$CMD query="find  count(run), sum(file.size), run, count(file), dataset where dataset like *"
+	#$CMD query="find   sum(file.numevents), dataset where dataset like *"
+	$CMD query="find   dataset, file.count where dataset like *"
 	#$CMD query="find sum(file.numevents), file.count, run.count, dataset  where file.size > 0"
 	
 	#$CMD query="find  sum(file.numevents), file.count, dataset where dataset like *"

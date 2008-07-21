@@ -56,6 +56,7 @@ public class QueryBuilder {
 		String groupByQuery = "";
 		String sumGroupByQuery = "";
 		String sumQuery = "";
+		String selectStr = "SELECT ";
 		boolean invalidFile = false;
 		boolean modByAdded = false;
 		boolean createByAdded = false;
@@ -77,6 +78,8 @@ public class QueryBuilder {
 			if(aKw.toLowerCase().startsWith("count") || aKw.toLowerCase().endsWith("count")) countPresent = true;
 			if(aKw.toLowerCase().startsWith("sum")) sumPresent = true;
 		}
+		
+		if(sumPresent || countPresent) sumQuery += selectStr;
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
 			String aKw = (String)kws.get(i);
@@ -94,8 +97,8 @@ public class QueryBuilder {
 				//System.out.println("entity " + entity);
 				String realName = u.getMappedRealName(entity);
 				allKws = addUniqueInList(allKws, realName);
-				if(sumQuery.length() != 0) sumQuery += ",\n\t";
-				else sumQuery += "SELECT ";
+				//if(!sumQuery.startsWith("SELECT")) sumQuery += " SELECT ";
+				if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
 				sumQuery += "SUM(" + asKeyword + ") AS SUM_" + asKeyword + " ";
 				//query += "SUM(" + km.getMappedValue(keyword, true) + ") AS SUM_" + keyword.replace('.', '_') ;
 				String tmpKw = km.getMappedValue(keyword, true);
@@ -116,8 +119,9 @@ public class QueryBuilder {
 				if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use count(" + entity + ")");
 				//query += "COUNT(DISTINCT " + realName + "." + defaultStr + ") AS COUNT";
 				query += realName + "." + defaultStr + " AS COUNT_SUB_" + realName;
-				if(sumQuery.length() != 0) sumQuery += ",\n\t";
-				else sumQuery += "SELECT ";
+				if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+				//if(sumQuery.length() != 0) sumQuery += ",\n\t";
+				//else if(!sumQuery.startsWith("SELECT")) sumQuery += "SELECT ";
 				sumQuery += "COUNT(DISTINCT COUNT_SUB_" + realName + ") AS COUNT_" + realName;
 				/*if(sumPresent) {
 					sumQuery += ",\n\t COUNT AS COUNT";
@@ -128,7 +132,8 @@ public class QueryBuilder {
 				query += "Block.Path AS PATH";
 				if(iLumi) groupByQuery += "Block.Path,";
 				if(sumPresent || countPresent) {
-					sumQuery += ",\n\t PATH AS PATH";
+					if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+					sumQuery += " PATH AS PATH";
 					sumGroupByQuery += " PATH ,";
 				}
 			} else {
@@ -157,7 +162,8 @@ public class QueryBuilder {
 					if(sumPresent || countPresent) {
 						String toSelect = makeSumSelect(tmp);
 						if(toSelect.length() != 0) {
-							sumQuery += ",\n\t" + toSelect + " AS" + toSelect;
+							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							sumQuery += toSelect + " AS " + toSelect;
 							sumGroupByQuery += toSelect + ",";
 						}
 					}
@@ -189,7 +195,8 @@ public class QueryBuilder {
 						if(sumPresent || countPresent) {
 							String toSelect = makeSumSelect(tmp);
 							if(toSelect.length() != 0) {
-								sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+								sumQuery += toSelect + " AS " + toSelect + " ";
 								sumGroupByQuery += toSelect + ",";
 							}
 						}
@@ -206,7 +213,8 @@ public class QueryBuilder {
 						if(sumPresent || countPresent) {
 							String toSelect = makeSumSelect(tmp);
 							if(toSelect.length() != 0) {
-								sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+								sumQuery += toSelect + " AS " + toSelect + " ";
 								sumGroupByQuery += toSelect + ",";
 							}
 						}
@@ -220,8 +228,9 @@ public class QueryBuilder {
 						String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
 						if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use count(" + token + ")");
 						query += realName + "." + defaultStr + " AS COUNT_SUB_" + realName;
-						if(sumQuery.length() != 0) sumQuery += ",\n\t";
-						else sumQuery += "SELECT ";
+						if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+						//if(sumQuery.length() != 0) sumQuery += ",\n\t";
+						//else sumQuery += "SELECT ";
 						sumQuery += "COUNT(DISTINCT COUNT_SUB_" + realName + ") AS COUNT_" + realName;
 
 						/*query += "COUNT(DISTINCT " + realName + "." + defaultStr + ") AS COUNT";
@@ -252,7 +261,8 @@ public class QueryBuilder {
 						query += fqName + makeAs(tmpTableName + "_DN");			
 						if(iLumi) groupByQuery += fqName + ",";
 						if(sumPresent || countPresent) {
-							sumQuery += ",\n\t" + tmpTableName + "_DN AS " + tmpTableName + "_DN ";
+							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							sumQuery += tmpTableName + "_DN AS " + tmpTableName + "_DN ";
 							sumGroupByQuery += tmpTableName + "_DN ,";
 						}
 						addQuery = false;
@@ -276,7 +286,8 @@ public class QueryBuilder {
 						if(sumPresent || countPresent) {
 							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
 							if(toSelect.length() != 0) {
-							       	sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							       	sumQuery += toSelect + " AS " + toSelect + " ";
 								sumGroupByQuery += toSelect + ",";
 							}
 						}
@@ -296,7 +307,8 @@ public class QueryBuilder {
 						if(sumPresent || countPresent) {
 							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
 							if(toSelect.length() != 0) {
-								sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+								sumQuery += toSelect + " AS " + toSelect + " ";
 								sumGroupByQuery += toSelect + ",";
 							}
 						}
@@ -315,7 +327,8 @@ public class QueryBuilder {
 						if(sumPresent || countPresent) {
 							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
 							if(toSelect.length() != 0) {
-							       	sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							       	sumQuery += toSelect + " AS " + toSelect + " ";
 								sumGroupByQuery += toSelect + ",";
 							}
 						}
@@ -334,7 +347,8 @@ public class QueryBuilder {
 						query += fqName;			
 						if(iLumi) groupByQuery +=  "Block.Path ,";		
 						if(sumPresent || countPresent) {
-							sumQuery += ",\n\t Dataset_Parent AS Dataset_Parent ";
+							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							sumQuery += " Dataset_Parent AS Dataset_Parent ";
 							sumGroupByQuery += " Dataset_Parent ,";
 						}
 			
@@ -355,7 +369,8 @@ public class QueryBuilder {
 							if(sumPresent || countPresent) {
 								String toSelect = makeSumSelect(makeAs(mapVal));
 								if(toSelect.length() != 0) {
-									sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+									if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+									sumQuery += toSelect + " AS " + toSelect + " ";
 									sumGroupByQuery += toSelect + ",";
 								}
 							}
@@ -371,7 +386,8 @@ public class QueryBuilder {
 							if(sumPresent || countPresent) {
 								String toSelect = makeSumSelect(tmp);
 								if(toSelect.length() != 0) {
-									sumQuery += ",\n\t" + toSelect + " AS " + toSelect + " ";
+									if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+									sumQuery += toSelect + " AS " + toSelect + " ";
 									sumGroupByQuery += toSelect + ",";
 								}
 							}
@@ -671,7 +687,8 @@ public class QueryBuilder {
 		System.out.println(query);
 		String tokenAS = "AS";
 		String tokenFrom = "FROM";
-		String tokenDistinct = "DISTINCT";
+		//String tokenDistinct = "DISTINCT";
+		String tokenDistinct = "SELECT";
 		int indexOfFrom = query.indexOf(tokenFrom);
 		int indexOfDistinct = query.indexOf(tokenDistinct);
 		if(indexOfFrom == -1 || indexOfDistinct == -1) return query;
