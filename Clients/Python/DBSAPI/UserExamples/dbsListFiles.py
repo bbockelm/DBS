@@ -45,7 +45,7 @@ try:
 		    ]
 
   #for afile in api.listFiles(path="/Upsilon2S/Summer08_STARTUP_V2_Upsilon2S_v3/GEN-SIM-RAW", retriveList=allowedRetriveValue, otherDetails = False):
-  for afile in api.listFiles(path="/test_Primary_aeb5e2ff-b8b5-405f-977f-825092a4bf39/test_processed_2_aeb5e2ff-b8b5-405f-977f-825092a4bf39/GEN-SIM", retriveList=allowedRetriveValue, otherDetails = True):
+  for afile in api.listFiles(path="/RelValMinBias/CMSSW_2_1_0_pre8-RelVal-STARTUP_V4_InitialLumiPileUp_v1-2nd-STARTUP_V4/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO", retriveList=allowedRetriveValue, otherDetails = True):
   #for afile in api.listFiles(patternLFN="/store/mc/2007/10/1/HLT-Wmunu-1191261655/0005/E2E68481-EE86-DC11-81A7-0019B9E4FE51.root", details=True):
   #for afile in api.listFiles(analysisDataset="/test00_testbeam_HCalEcalCombined/h2tb2007_default_v1/RAW/VijayTestADS", retriveList=allowedRetriveValue):
      print "  %s" % afile

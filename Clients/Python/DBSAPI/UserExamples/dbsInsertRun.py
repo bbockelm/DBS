@@ -32,7 +32,6 @@ try:
     		print "Creating run", aRun
 	
     		api.insertRun (run)
-	"""
 
 	run = DbsRun (
                 RunNumber=1,
@@ -43,6 +42,15 @@ try:
                 StartOfRun= 12345,
                 EndOfRun= 45678,
                 )
+
+	"""
+	run = DbsRun (
+                RunNumber=134272,
+                NumberOfEvents= 0,
+                TotalLuminosity= 0,
+                StoreNumber= 0,
+                )
+
 
 	api.insertRun (run)
 

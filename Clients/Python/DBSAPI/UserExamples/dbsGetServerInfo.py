@@ -20,6 +20,7 @@ try:
   serverInfo = api.getServerInfo()
   print "Server Version : ", serverInfo['ServerVersion']
   print "Schema Version : ", serverInfo['SchemaVersion']
+  print serverInfo
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

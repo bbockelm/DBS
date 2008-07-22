@@ -39,8 +39,8 @@ try:
     # ALL Valid Options below
     #print api.insertBlock (proc)
     #print api.insertBlock (proc, block)
-    print api.insertBlock ("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN-SIM#123456")
-    #print api.insertBlock ("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN-SIM#123456" , ['se1', 'se2', 'se3'])
+    #print api.insertBlock ("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN-SIM#123456")
+    print api.insertBlock ("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN-SIM#123456" , ['se1', 'se2', 'se3'])
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
