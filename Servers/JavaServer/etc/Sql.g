@@ -74,6 +74,8 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 
 where	:('WHERE' | 'where');
 dotValue        : VALUE 
+		| 'in'
+		| VALUE DOT 'in'
 		| VALUE DOT VALUE
 		| VALUE DOT VALUE DOT 'in'
 		| VALUE DOT VALUE DOT VALUE

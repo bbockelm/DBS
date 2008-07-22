@@ -178,7 +178,7 @@ executeQuery () {
 	#$CMD query="find sum(file.size), dataset where dataset like *"
 	#$CMD query="find  count(run), sum(file.size), run, count(file), dataset where dataset like *"
 	#$CMD query="find   sum(file.numevents), dataset where dataset like *"
-	$CMD query="find   dataset, file.count where dataset like *"
+	$CMD query="find   dataset, file.count where site  = in"
 	#$CMD query="find sum(file.numevents), file.count, run.count, dataset  where file.size > 0"
 	
 	#$CMD query="find  sum(file.numevents), file.count, dataset where dataset like *"
