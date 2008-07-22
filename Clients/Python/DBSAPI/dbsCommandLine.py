@@ -1874,7 +1874,6 @@ class ApiDispatcher:
                 self.new_file=0
                 self.dataset_once=1
 		self.sql_once=1
-		self.columns = True
 
            def startElement(self, name, attrs):
                 if name == 'sql':
@@ -1891,19 +1890,8 @@ class ApiDispatcher:
 		if name == 'result':
 			#result FILES_LOGICALFILENAME 	PATH
 			out=""
-			if self.columns:
-				self.columns = False
-				cout = ""
-				for akey in attrs.keys():
-					cout += akey + '\t'
-				print cout
-				print '_________________________________________________________________________________'
-
-			for akey in attrs.keys():
-				out += str(attrs[akey]) + '\t'
-
-			#for aval in attrs.values():
-			#	out += "    " +str(aval)
+			for aval in attrs.values():
+				out += "    " +str(aval)
 			if not quiet: print out
 			if  attrs.has_key('FILES_LOGICALFILENAME'):
 				aFile={}

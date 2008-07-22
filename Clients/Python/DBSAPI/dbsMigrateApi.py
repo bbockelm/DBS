@@ -140,11 +140,7 @@ class DbsMigrateApi:
 				self.apiDst.insertDatasetContents(self.pruneBranchesFromFile(fileName))
 
 		except DbsBadRequest, ex:
-			print "----------------------------------------EXCEPTION ---------------------------------------"
 			print ex
-			print "----------------------------------------EXCEPTION CODE---------------------------------------"
-			print  int(ex.getErrorCode())
-			print "----------------------------------------DONE---------------------------------------"
 			# If not block excep then raise it again
 			if int(ex.getErrorCode()) != 1024:
 				raise ex
@@ -164,7 +160,6 @@ class DbsMigrateApi:
 				self.apiDst.insertDatasetContents(self.pruneBranchesFromFile(fileName), True)
 			
 		except DbsBadRequest, ex:
-			print "----------------------------------------EXCEPTION ---------------------------------------"
 			print ex
 			if int(ex.getErrorCode()) != 1024:
 				raise ex

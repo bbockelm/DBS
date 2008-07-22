@@ -27,7 +27,7 @@ class DbsDQOptionParser(optparse.OptionParser):
 
       self.add_option("--run", action="store", type="int", dest="run", help="specify a valid run number")
 
-      self.add_option("--flag", action="store", type="string", dest="flag", help="Quality Information Mask")
+      self.add_option("--tag", action="store", type="string", dest="tag", help="Quality Information Mask")
 
       self.add_option("--value", action="store", type="string", dest="value", 
 		help="Value can be GOOD, BAD and UNKNOWN or a INTEGER value")
@@ -53,8 +53,8 @@ if __name__ == "__main__":
                         print "You must specify a valid run number, use --run= or --help"
                         sys.exit(0)
 
-                if opts['flag'] in ('', None):
-                        print "You must specify a valid QIM, use --flag= or --help"
+                if opts['tag'] in ('', None):
+                        print "You must specify a valid QIM, use --tag= or --help"
                         sys.exit(0)
 
                 if opts['value'] in ('', None):
@@ -62,7 +62,7 @@ if __name__ == "__main__":
                         sys.exit(0)
 
 		flag = DbsDQFlag (
-			Name = opts['flag'],
+			Name = opts['tag'],
 			Value = opts['value'],
 			)
 		run_dq = DbsRunLumiDQ (
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 		api = DbsApi(opts)
 
 		api.updateRunLumiDQ([run_dq])
-		print "%s is set %s for run: %s" %(opts['flag'], opts['value'], opts['run'])
+		print "%s is set %s for run: %s" %(opts['tag'], opts['value'], opts['run'])
 
 		
 	except DbsApiException, ex:
