@@ -9,9 +9,9 @@ export DBSCMD_HOME=$CLIENTHOME/DBSAPI
 # DBS Commandline tool
 #
 #
-chmod +x $DBSCMD_HOME/dbsCommandLine.py 
+#chmod +x $DBSCMD_HOME/dbsCommandLine.py 
 #
-alias dbs='$DBSCMD_HOME/dbsCommandLine.py -c '
+alias dbs='python $DBSCMD_HOME/dbsCommandLine.py -c '
 #
 #
 #Primary Datasets
