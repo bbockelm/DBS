@@ -219,6 +219,7 @@ Examples
 	       if noParentsReadOnly:
 		       transfer.migrateBlockRO(path, block_name)
                else:
+		       #print "calling transfer.migrateBlock"
 		       transfer.migrateBlock(path, block_name)
 	       
        else :

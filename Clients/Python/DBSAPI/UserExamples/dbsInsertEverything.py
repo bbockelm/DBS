@@ -92,7 +92,7 @@ lumi2 = DbsLumiSection (
 
 myfile1= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'NEW_TEST0001',
+        LogicalFileName= 'NEW_TEST00016',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -106,7 +106,7 @@ myfile1= DbsFile (
 
 myfile2= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0002',
+        LogicalFileName= 'NEW_TEST00026',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -122,7 +122,7 @@ myfile2= DbsFile (
 
 myfile3= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'NEW_TEST0004',
+        LogicalFileName= 'NEW_TEST00046',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -132,12 +132,12 @@ myfile3= DbsFile (
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
-        ParentList = ['NEW_TEST0001']  
+        ParentList = ['NEW_TEST00016']  
          )
 
 myfile4= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0005',
+        LogicalFileName= 'NEW_TEST00056',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -148,13 +148,13 @@ myfile4= DbsFile (
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
         BranchList=['testbranch01', 'testbranch02'],
-        ParentList = ['NEW_TEST0002']  
+        ParentList = ['NEW_TEST00026']  
          )
 
 
 myfile31= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'NEW_TEST0004xxxxxx',
+        LogicalFileName= 'NEW_TEST0004xxxxxx6',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -164,12 +164,12 @@ myfile31= DbsFile (
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
-        ParentList = ['NEW_TEST0001']  
+        ParentList = ['NEW_TEST00016']  
          )
 
 myfile41= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0005xxxxxxxxxx',
+        LogicalFileName= 'NEW_TEST0005xxxxxxxxxx6',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -188,7 +188,7 @@ myfile41= DbsFile (
  
 myfile5= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'NEW_TEST0005',
+        LogicalFileName= 'NEW_TEST00056',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -198,12 +198,12 @@ myfile5= DbsFile (
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
-        ParentList = ['NEW_TEST0004']  
+        ParentList = ['NEW_TEST00046']  
          )
 
 myfile6= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0006',
+        LogicalFileName= 'NEW_TEST00066',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -214,29 +214,29 @@ myfile6= DbsFile (
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
         BranchList=['testbranch01', 'testbranch02'],
-        ParentList = ['NEW_TEST0005']  
+        ParentList = ['NEW_TEST00056']  
          )
 
 
                   
 block = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
+	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#123456"
          )
 
 block2 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#44444"
+	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#444446"
          )
 
 block21 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#3333"
+	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#33336"
          )
 
 block3 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS003/GEN-SIM#3333"
+	 Name="/test_primary_001/TestProcessedDS003/GEN-SIM#33336"
          )
 
 try:

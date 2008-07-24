@@ -84,10 +84,14 @@ class DbsMigrateApi:
 			##logging.log(DBSWARNING, "The dataset path " + path + " will not be checked for existance in the destination DBS.\n If you want to enforce the checking of path existance before transefrring, use force=False option in this API")
 			return False
 		tokens = path.split('/')
+		#print "checking path existinace %s " %path
 		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
 		if datasets in [[], None] :
+			#print "NO path found for tokens prim %s " %tokens[1]
+			#print "proc %s " %tokens[2]
 			return False;
 		else:
+			#print "Path Found "
 			##logging.log(DBSWARNING, "The dataset path " + path + " already exists in the destination DBS and will NOT be transferred. If you want to  remove the existance check before transferring, use force=True option in this API")
 			return True;
 			
@@ -177,6 +181,7 @@ class DbsMigrateApi:
 			for dataset in datasets:
 				#Dont Check for existance of path if Block is given
 				#if not self.doesPathExist(self.apiDst, dataset):
+				#print "calling self.migratePath"
 				self.migratePath( dataset)
 		self.migrateBlockBasic(path, blockName)
 		

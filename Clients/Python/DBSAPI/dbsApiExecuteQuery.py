@@ -25,7 +25,7 @@ def dbsApiImplExecuteQuery(self, query="*", begin="", end="", type="exe"):
       ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
       # Invoke Server.    
-      data = self._server._call ({ 'api' : 'executeQuery', 'query' : query , 
+      data = self._server._callOriginal ({ 'api' : 'executeQuery', 'query' : query , 
 		      'begin':str(begin),
 		      'end':str(end),
 		      'type':type,

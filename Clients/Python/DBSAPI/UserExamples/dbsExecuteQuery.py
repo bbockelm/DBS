@@ -50,8 +50,8 @@ if __name__ == "__main__":
                 api = DbsApi(opts)
 		print opts['query']
 		#print api.executeQuery(opts['query'], 2, 5, "query")
-		print api.executeQuery(opts['query'], 1,5,type="exe")
-		#print api.executeQuery(opts['query'])
+		#print api.executeQuery(opts['query'], 1,5,type="exe")
+		print api.executeQuery(opts['query'])
   		#print api.executeQuery("select file,ls where path=/GlobalMar08-Express/Online/RAW")
 
 	except DbsApiException, ex:
