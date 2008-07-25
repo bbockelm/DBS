@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.19 $"
- $Id: DBSConfig.java,v 1.19 2008/05/16 20:10:44 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSConfig.java,v 1.20 2008/05/21 21:21:54 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -34,6 +34,7 @@ public class DBSConfig {
         private String dbDriver;
         private String dbURL;
         private String regServiceURL;
+        private String cfgServiceURL;
         private String alias;
         private String adminEmail;
         private String adminDN;
@@ -148,6 +149,9 @@ public class DBSConfig {
 			  adminName = (String)atribs.get("admin_name");
 			  adminDN = (String)atribs.get("admin_dn");
                        }
+			if ( name.equals("Cfgindex") ) {
+                          cfgServiceURL = (String)atribs.get("service");
+                       }
 
 
                        if ( name.equals("SupportedClientVersions") ){ 
@@ -201,6 +205,10 @@ public class DBSConfig {
 		    if (regServiceURL == null ) {
                       throw new DBSException("Configuration Error", "1056", "Registration Service URL not found in Config File");
                     }
+		    if (cfgServiceURL == null ) {
+                      throw new DBSException("Configuration Error", "1056", "Config Index  Service URL not found in Config File");
+                    }
+
 		    if (adminDN == null ) {
                       throw new DBSException("Configuration Error", "1056", "Admin DN not found in Config File");
                     }
@@ -219,6 +227,7 @@ public class DBSConfig {
                     DBSUtil.writeLog("dbURL: "+dbURL);
                     DBSUtil.writeLog("supportedSchemaVersion: "+supportedSchemaVersion);
                     DBSUtil.writeLog("regServiceURL: "+regServiceURL);
+                    DBSUtil.writeLog("cfggServiceURL: "+cfgServiceURL);
                     DBSUtil.writeLog("alias: "+alias);
                     DBSUtil.writeLog("supportedClientVersions: "+supportedClientVersions);
                	} catch (DBSException ex) {
@@ -269,6 +278,9 @@ public class DBSConfig {
 
 	public String getRegServiceURL() {
             return regServiceURL;
+        }
+	public String getCfgServiceURL() {
+            return cfgServiceURL;
         }
 
 	public String getAlias() {
