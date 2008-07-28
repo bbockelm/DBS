@@ -35,10 +35,10 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
 
 try:
-	unmerged1 = sys.argv[1]
-	unmerged2 = sys.argv[2]
-	merged1 = sys.argv[3]
-	merged2 = sys.argv[4]
+	#unmerged1 = sys.argv[1]
+	#unmerged2 = sys.argv[2]
+	merged1 = sys.argv[1]
+	merged2 = sys.argv[2]
 
 	merged2FileList = api.listFiles(path = merged2, retriveList=['retrive_parent'])
 	merged1FileList = api.listFiles(path = merged1, retriveList=['retrive_parent'])
@@ -46,10 +46,16 @@ try:
 	for afile in merged2FileList:
 		print afile['LogicalFileName']
 		parentList = afile['ParentList']
-		for aparent in parentList:
-			print '\t %s' %aparent['LogicalFileName']
+		#for aparent in parentList:
+		#	print '\t %s' %aparent['LogicalFileName']
 		realParent = getRealParent(parentList, merged1FileList)	
 		print '\t REAL PARENT %s' %realParent
+		if realParent not in (None, ""):
+			for aparent in parentList:
+				print 'Deleting the parent %s' %aparent['LogicalFileName']
+				api.deleteFileParent(afile['LogicalFileName'], aparent['LogicalFileName'])
+		print 'Inserting the real parent %s' %realParent
+		api.insertFileParent(afile['LogicalFileName'], realParent)
 
 	"""
 	
