@@ -567,6 +567,38 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+  def deleteFromBlock(self, block, storage_element):
+     try:
+       #Calling the Implementation function
+       from dbsApiDeleteReplicaFromBlock import dbsApiImplDeleteReplicaFromBlock
+       return  dbsApiImplDeleteReplicaFromBlock(self, block, storage_element)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def deleteFileParent(self, file, parentFile):
+     try:
+       #Calling the Implementation function
+       from dbsApiInsertFiles import dbsApiImplDeleteFileParent
+       return  dbsApiImplDeleteFileParent(self, file, parentFile)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+  def insertFileParent(self, file, parentFile):
+     try:
+       #Calling the Implementation function
+       from dbsApiInsertFiles import dbsApiImplInsertFileParent
+       return  dbsApiImplInsertFileParent(self, file, parentFile)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
   def renameSE(self, storage_element_from, storage_element_to):
      try:
        #Calling the Implementation function

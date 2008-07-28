@@ -248,3 +248,26 @@ def dbsApiImplInsertFiles(self, dataset=None, files=[], block=None):
         ###logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
+
+def dbsApiImplDeleteFileParent(self, file, parentFile):
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    #logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    data = self._server._call ({ 'api' : 'deleteFileParent',
+			  'lfn' : file_name(file),
+			  'parent_lfn' : parentFile
+			  }, 'POST')
+
+def dbsApiImplInsertFileParent(self, file, parentFile):
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    #logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += " <file lfn='" + file_name(file) + "'/>" 
+    xmlinput += "</dbs>"
+
+
+    data = self._server._call ({ 'api' : 'insertParentInFile',
+			  'xmlinput' : xmlinput,
+			  'parent_lfn' : parentFile
+			  }, 'POST')
+
