@@ -44,16 +44,17 @@ try:
 	merged1FileList = api.listFiles(path = merged1, retriveList=['retrive_parent'])
 	#unmerged1FileList = api.listFiles(path = unmerged1, retriveList=['retrive_child'])
 	for afile in merged2FileList:
-		print afile['LogicalFileName']
+		print "Checking File %s" %afile['LogicalFileName']
 		parentList = afile['ParentList']
 		#for aparent in parentList:
 		#	print '\t %s' %aparent['LogicalFileName']
 		realParent = getRealParent(parentList, merged1FileList)	
-		print '\t REAL PARENT %s' %realParent
+		#print '\t REAL PARENT %s' %realParent
 		if realParent not in (None, ""):
 			for aparent in parentList:
-				print 'Deleting the parent %s' %aparent['LogicalFileName']
-				api.deleteFileParent(afile['LogicalFileName'], aparent['LogicalFileName'])
+				if aparent['LogicalFileName'] != realParent:
+					print 'Deleting the parent %s' %aparent['LogicalFileName']
+					api.deleteFileParent(afile['LogicalFileName'], aparent['LogicalFileName'])
 		print 'Inserting the real parent %s' %realParent
 		api.insertFileParent(afile['LogicalFileName'], realParent)
 
