@@ -29,16 +29,13 @@ PROMPT Create VIEW RunSummary
 drop VIEW RunSummary
 /
 
-CREATE VIEW RunSummary (RunNumber, CreationDate, CreatedBy, ModificationDate, ModifiedBy, TotLumi, StoreNumber, StartOfRun, EndOfRun, NumberOfEvents, StartEvent, EndEvent, NumberOfLumis)
-AS SELECT tr.RunNumber, tr.CreationDate, tp.DistinguishedName, 
-tr.LastModificationDate, tp2.DistinguishedName,
-tr.TotalLuminosity, tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvents,
+CREATE VIEW RunSummary (RunNumber, CreationDate, CreatedBy, TotLumi, StoreNumber, StartOfRun, EndOfRun, StartEvent, EndEvent, NumberOfLumis) 
+AS SELECT tr.RunNumber, tr.CreationDate, tp.DistinguishedName, tr.TotalLuminosity, tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, 
 tls.StartEventNumber, tls.EndEventNumber, count(tls.LumiSectionNumber) 
 FROM Runs tr JOIN LumiSection tls ON tr.ID=tls.RunNumber 
 JOIN person tp ON tr.CreatedBy = tp.ID 
-JOIN person tp2 ON tr.LastModifiedBy = tp2.IDGROUP BY tr.RunNumber, tr.CreationDate, tp.DistinguishedName, 
-tr.LastModificationDate, tp2.DistinguishedName, tr.TotalLuminosity,
-tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvents, tls.StartEventNumber, tls.EndEventNumber
+GROUP BY tr.RunNumber, tr.CreationDate, tp.DistinguishedName, tr.TotalLuminosity, 
+tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tls.StartEventNumber, tls.EndEventNumber
 /
 
 PROMPT Create VIEW RunManagerSummary
@@ -135,48 +132,6 @@ JOIN person tp ON tprd.CreatedBy = tp.ID
 GROUP BY tblk.Path, tprd.CreationDate, tp.DistinguishedName
 /
 
-PROMPT CREATE VIEW AdsBigSummary
-
-drop VIEW AdsBigSummary
-/
-
-CREATE VIEW AdsBigSummary 
-(Name, Version, Path, Type, Status, PhGroup, CreationDate, CreatedBy, DefName, DefPath, DefDesc, DefInput, DefQuery)
-AS 
-SELECT 
-tads.Name, tads.Version, tads.Path, 
-tadstype.Type, tadsstat.Status, 
-tpg.PhysicsGroupName, 
-tads.CreationDate, tp.DistinguishedName, 
-tadsdef.Name, tadsdef.Path,  
-tadsdef.Description, tadsdef.UserInput, tadsdef.SQLQuery 
-FROM AnalysisDataset tads 
-JOIN AnalysisDSDef tadsdef ON tads.Definition=tadsdef.ID 
-JOIN AnalysisDSStatus tadsstat ON tads.Status=tadsstat.ID 
-JOIN AnalysisDSType tadstype ON tads.Type=tadstype.ID 
-JOIN PhysicsGroup tpg ON tads.PhysicsGroup=tpg.ID 
-JOIN person tp ON tads.CreatedBy = tp.ID 
-/
-
-PROMPT CREATE VIEW AdsSummary
-
-drop VIEW AdsSummary
-/
-
-CREATE VIEW AdsSummary 
-(Name, Version, Path, Type, Status, PhGroup, CreationDate, CreatedBy)
-AS 
-SELECT
-tads.Name, tads.Version, tads.Path, 
-tadstype.Type, tadsstat.Status, 
-tpg.PhysicsGroupName, tads.CreationDate, tp.DistinguishedName 
-FROM AnalysisDataset tads 
-JOIN AnalysisDSStatus tadsstat ON tads.Status=tadsstat.ID 
-JOIN AnalysisDSType tadstype ON tads.Type=tadstype.ID 
-JOIN PhysicsGroup tpg ON tads.PhysicsGroup=tpg.ID 
-JOIN person tp ON tads.CreatedBy = tp.ID
-/
-
 PROMPT Grant select on FileSummary to  '@build.schema.owner.name@_READER'
 Grant select on FileSummary to @build.schema.owner.name@_READER
 /
@@ -212,12 +167,4 @@ Grant select on TierSummary to @build.schema.owner.name@_READER
 
 PROMPT Grant select on DatasetSummary to  '@build.schema.owner.name@_READER'
 Grant select on DatasetSummary to @build.schema.owner.name@_READER
-/
-
-PROMPT Grant select on AdsBigSummary to  '@build.schema.owner.name@_READER'
-Grant select on AdsBigSummary to @build.schema.owner.name@_READER
-/
-
-PROMPT Grant select on AdsSummary to  '@build.schema.owner.name@_READER'
-Grant select on AdsSummary to @build.schema.owner.name@_READER
 /
