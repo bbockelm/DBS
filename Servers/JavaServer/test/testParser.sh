@@ -164,7 +164,7 @@ executeQuery () {
 	#$CMD query="find file where dataset=/test_primary_001/TestProcessedDS111/SIM-GEN" 
 	#$CMD query="find sum(file.size), dataset where file.size > 0"
 	#$CMD query="find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
-executeQuery
+#executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
 	#$CMD query="find run,file  order by file, run"
@@ -188,3 +188,5 @@ executeQuery
 	#$CMD query="find site, dataset where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM"
 	
 #	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 
+	#$CMD query="find file  where  pset = associatorL25PixelTauIsolated.coneSize 0 "
+	$CMD query="find file  where run.createdate = 2008-05-01 12:05 "

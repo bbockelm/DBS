@@ -99,18 +99,23 @@ dotValue        : VALUE
 //dateValue	: (DIGIT);
 
 valueList	:dotValue ( spaces COMMA spaces dotValue )*;
+//cfgList		:dotValue ( spaces AMP spaces dotValue )*;
 compOpt		:(EQ)
 		|(LT)
 		|(GT)
 		|(EQ)(GT)
 		|(EQ)(LT)
 		|(LT)(EQ)
-		|(GT)(EQ);
+		|(GT)(EQ)
+		|(likeLeft)
+		|(likeRight);
 genValue	:dotValue
 		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
+//cfgValue	: genValue (spaces AMP spaces genValue)*;
+
 likeValue 	:(dotValue| STAR)+;
 logicalOp	:(and|or);
-entity		: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset');
+entity		: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group'| 'pset' );
 attr		:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' );
 funct		:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
 select		:('select' | 'SELECT' | 'find' | 'FIND');
@@ -123,6 +128,9 @@ not		:('not' | 'NOT');
 like		:('like' | 'LIKE');
 count		:('count' | 'COUNT');
 sum		:('sum' | 'SUM');
+likeLeft	:('likeLeft');
+likeRight	:('likeRight');
+//pset		:('pset');
 VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#' )+ ;
 //DIGIT		:('0'..'9');
 //DASH		:('-');

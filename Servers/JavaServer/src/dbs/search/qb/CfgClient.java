@@ -51,15 +51,24 @@ public class CfgClient {
 		for(int i = 0 ; i!= numOfTokens ; ++i) {
 			String token = st.nextToken().trim();
 			//System.out.println("token " + token);
-			String[] data = token.split(" ");
+			String dop = ">";
+			String[] data = token.split(dop);
+			//System.out.println("len " + data.length);
+			if(data.length != 2) {dop = "<"; data = token.split(dop);}
+			if(data.length != 2) {dop = "="; data = token.split(dop);}
+			if(data.length != 2) {dop = ">="; data = token.split(dop);}
+			if(data.length != 2) {dop = "<="; data = token.split(dop);}
+			if(data.length != 2) {dop = "like"; data = token.split(dop);}
+			if(data.length != 2) {dop = "likeLeft"; data = token.split(dop);}
+			if(data.length != 2) {dop = "likeRight"; data = token.split(dop);}
 			
-			if(data.length != 3) throw new Exception("Invalid Input. Example input should be like 'associatorL25PixelTauIsolated.coneSize > 0");
+			if(data.length != 2) throw new Exception("Invalid Input. Example input should be like 'associatorL25PixelTauIsolated.coneSize>0");
 			String iStr = String.valueOf(i);
 			if(i != 0 ) tmpUrl += "&";
 			tmpUrl += pName + iStr + "=" + data[0].trim();
-			tmpUrl += "&" + op + iStr + "=" + data[1].trim();
-			tmpUrl += "&" + val + iStr + "=" + data[2].trim();
-			tmpUrl += "&" + pType + iStr + "=" + getPType(data[1].trim());
+			tmpUrl += "&" + op + iStr + "=" + dop;
+			tmpUrl += "&" + val + iStr + "=" + data[1].trim();
+			tmpUrl += "&" + pType + iStr + "=" + getPType(dop);
 		}
 		tmpUrl += "&num=" + String.valueOf(numOfTokens); 
 		System.out.println("tmpUrl " + tmpUrl);
@@ -86,7 +95,7 @@ public class CfgClient {
 		//DBSConfig dbsConfig = DBSConfig.getInstance();
 		//CfgClient cc = new CfgClient(dbsConfig.getCfgServiceURL());
 		CfgClient cc = new CfgClient();
-		List<String> hashs = cc.getPsetHash("associatorL25PixelTauIsolated.coneSize > 0 & associatorL25SingleTau.coneSize > 0 & associatorL25SingleTau.jets like a");
+		List<String> hashs = cc.getPsetHash("associatorL25PixelTauIsolated.coneSize>0 & associatorL25SingleTau.coneSize>0 & associatorL25SingleTau.jetslikea");
 		for (String aHash: hashs) {
 			System.out.println("Hash is " + aHash);
 		}

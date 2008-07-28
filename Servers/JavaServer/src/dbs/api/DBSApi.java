@@ -1,6 +1,6 @@
 /**
- $Revision: 1.135 $"
- $Id: DBSApi.java,v 1.135 2008/07/08 21:45:32 sekhri Exp $"
+ $Revision: 1.136 $"
+ $Id: DBSApi.java,v 1.136 2008/07/15 16:00:23 sekhri Exp $"
  *
 */
 
@@ -595,7 +595,11 @@ public class DBSApi {
 						DBSApiParser.parse(getXml(table), "file"),
 						get(table, "parent_lfn", true), 
 						dbsUser);
-				
+			} else if (apiStr.equals("deleteFileParent")) {
+				(new DBSApiFileLogic(this.data)).deleteFileParent(conn, out,
+						  get(table, "lfn", true),
+						  get(table, "parent_lfn", true),
+						  dbsUser);
 			} else if (apiStr.equals("insertAlgoInFile")) {
 				(new DBSApiFileLogic(this.data)).insertAlgoInFile(conn, out,
 						DBSApiParser.parse(getXml(table), "file"),

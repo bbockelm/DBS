@@ -1,6 +1,6 @@
 /**
- $Revision: 1.101 $"
- $Id: DBSApiFileLogic.java,v 1.101 2008/07/08 21:45:32 sekhri Exp $"
+ $Revision: 1.102 $"
+ $Id: DBSApiFileLogic.java,v 1.102 2008/07/15 16:00:23 sekhri Exp $"
  *
  */
 
@@ -1711,8 +1711,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}
-
-
+	public void deleteFileParent(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
+		deleteMap(conn, out, "FileParentage", "ThisFile", "itsParent",
+				getFileID(conn, lfn, true),
+				getFileID(conn, parentLFN, true));
+	}
 	/**
 	 * Insert a algorithm in a file. 
 	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
