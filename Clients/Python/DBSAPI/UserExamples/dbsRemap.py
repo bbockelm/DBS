@@ -69,8 +69,9 @@ try:
 						api.insertFileParent(aFileLFN, fileM1LFN)
 
 
-			print 'Deleting the parent %s from Merged dataset2' %aparentLFN
-			api.deleteFileParent(aFileLFN, aparentLFN)
+			if not isIn(aparent, merged1FileList):
+				print 'Deleting the parent %s from Merged dataset2' %aparentLFN
+				api.deleteFileParent(aFileLFN, aparentLFN)
 
 	# Delete all the parents of merged1 dataset
 	for afile in merged1FileList:
