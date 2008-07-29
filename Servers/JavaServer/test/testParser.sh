@@ -5,7 +5,7 @@ if [ "${JAVA_HOME}" = "" ]; then
 fi
 savePWD=$PWD
 cd $BASE/../../LibValut
-CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.1.7.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar
+CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.1.7.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar:$PWD/msclient.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
@@ -140,7 +140,8 @@ executeQuery () {
 	$CMD query="find file,run where phygrp in (BPositive,Any )" 
 	$CMD query="find phygrp.id, phygrp.name" 
 	$CMD query="find phygrp, phygrp.id, phygrp.createdate , phygrp.moddate, phygrp.createby, phygrp.modby" 
-
+	$CMD query="find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a"
+	$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
 
 
 
@@ -187,6 +188,9 @@ executeQuery () {
 	#$CMD query="find sum(file.size), count(file), run where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM and site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
 	#$CMD query="find site, dataset where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM"
 	
-#	$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 
+#	CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 
 	#$CMD query="find file  where  pset = associatorL25PixelTauIsolated.coneSize 0 "
-	$CMD query="find file  where run.createdate = 2008-05-01 12:05 "
+	#$CMD query="find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0"
+	#$CMD query="find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jetslikea"
+
+	$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"

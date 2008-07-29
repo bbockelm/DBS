@@ -415,6 +415,8 @@ public class QueryBuilder {
 					else addUniqueInList(allKws, "FileAlgo");
 				} else if(Util.isSame(key, "dq")) {
 					allKws = addUniqueInList(allKws, km.getMappedValue(key, false));
+				} else if(Util.isSame(key, "pset")) {
+					allKws = addUniqueInList(allKws, km.getMappedValue(key, false));
 				} else {
 					if(Util.isSame(key, "file.status")) invalidFile = false;
 					StringTokenizer st = new StringTokenizer(key, ".");
@@ -497,6 +499,10 @@ public class QueryBuilder {
 				} else if(Util.isSame(key, "dq")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operator should be = . Invalid operator given " + op);
 					queryWhere += "\tRuns.ID" + handleDQ(val);	
+				} else if(Util.isSame(key, "pset")) {
+					if(!Util.isSame(op, "=")) throw new Exception("When pset is provided operator should be = . Invalid operator given " + op);
+					queryWhere += "\tQueryableParameterSet.Hash" + handlePset(val);	
+
 				} else if(Util.isSame(key, "release")) {
 					//FIXME add FILEALGO and ProcALgo first
 					boolean useAnd = false;
@@ -923,6 +929,24 @@ public class QueryBuilder {
 		//List<String> bindValuesFromDQ = ; //Get from DQ function
 		//for(String s: bindValues) bindValues.add(s);
 		String query = " IN ( \n" + dqQuery + ")";
+		return query;
+	}
+
+	private String handlePset(String val) throws Exception {
+		System.out.println("VAL is " + val);
+		CfgClient cc = new CfgClient();
+		List<String> hashs = cc.getPsetHash(val);
+		String query = " IN ( \n";
+		int count = 0;
+		for (String aHash: hashs) {
+			//System.out.println("Hash is " + aHash);
+			if(count != 0) query += ",";
+			++count;
+			query += "?";
+			bindValues.add(aHash);
+				
+		}
+		query += "\n)";
 		return query;
 	}
 

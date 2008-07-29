@@ -98,6 +98,7 @@ dotValue        : VALUE
 		| VALUE SPACE VALUE SPACE VALUE;
 //dateValue	: (DIGIT);
 
+//cfgValue        : VALUE DOT VALUE SPACE LT SPACE VALUE;
 valueList	:dotValue ( spaces COMMA spaces dotValue )*;
 //cfgList		:dotValue ( spaces AMP spaces dotValue )*;
 compOpt		:(EQ)
@@ -107,8 +108,7 @@ compOpt		:(EQ)
 		|(EQ)(LT)
 		|(LT)(EQ)
 		|(GT)(EQ)
-		|(likeLeft)
-		|(likeRight);
+		|(LT)(GT);
 genValue	:dotValue
 		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
 //cfgValue	: genValue (spaces AMP spaces genValue)*;
@@ -128,10 +128,12 @@ not		:('not' | 'NOT');
 like		:('like' | 'LIKE');
 count		:('count' | 'COUNT');
 sum		:('sum' | 'SUM');
-likeLeft	:('likeLeft');
-likeRight	:('likeRight');
+//likeLeft	:('LikeLeft');
+//likeRight	:('LikeRight');
+//likeCfg		:('<like>');
 //pset		:('pset');
 VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#' )+ ;
+//DVALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'.' )+ ;
 //DIGIT		:('0'..'9');
 //DASH		:('-');
 //COLON		:(':');

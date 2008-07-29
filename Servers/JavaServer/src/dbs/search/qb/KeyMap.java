@@ -76,6 +76,7 @@ public class KeyMap {
 
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
+		map.put("pset", "QueryableParameterSet");
 	}
 	public String getMappedValue(String key, boolean excep) throws Exception{
 		if(!map.containsKey(key.toLowerCase())) {

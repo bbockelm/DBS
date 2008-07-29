@@ -51,16 +51,17 @@ public class CfgClient {
 		for(int i = 0 ; i!= numOfTokens ; ++i) {
 			String token = st.nextToken().trim();
 			//System.out.println("token " + token);
-			String dop = ">";
+			String dop = "<>";
 			String[] data = token.split(dop);
+			dop = "like";
 			//System.out.println("len " + data.length);
 			if(data.length != 2) {dop = "<"; data = token.split(dop);}
 			if(data.length != 2) {dop = "="; data = token.split(dop);}
 			if(data.length != 2) {dop = ">="; data = token.split(dop);}
 			if(data.length != 2) {dop = "<="; data = token.split(dop);}
-			if(data.length != 2) {dop = "like"; data = token.split(dop);}
-			if(data.length != 2) {dop = "likeLeft"; data = token.split(dop);}
-			if(data.length != 2) {dop = "likeRight"; data = token.split(dop);}
+			if(data.length != 2) {dop = ">"; data = token.split(dop);}
+			if(data.length != 2) {dop = "LikeLeft"; data = token.split(dop);}
+			if(data.length != 2) {dop = "LikeRight"; data = token.split(dop);}
 			
 			if(data.length != 2) throw new Exception("Invalid Input. Example input should be like 'associatorL25PixelTauIsolated.coneSize>0");
 			String iStr = String.valueOf(i);
@@ -86,8 +87,8 @@ public class CfgClient {
 		if(op.equals(">=")) return "2";
 		if(op.equals("<=")) return "2";
 		if(op.equals("like")) return "2";
-		if(op.equals("likeLeft")) return "2";
-		if(op.equals("likeRight")) return "2";
+		if(op.equals("LikeLeft")) return "2";
+		if(op.equals("LikeRight")) return "2";
 		return "0";
 	}
 	
@@ -95,7 +96,7 @@ public class CfgClient {
 		//DBSConfig dbsConfig = DBSConfig.getInstance();
 		//CfgClient cc = new CfgClient(dbsConfig.getCfgServiceURL());
 		CfgClient cc = new CfgClient();
-		List<String> hashs = cc.getPsetHash("associatorL25PixelTauIsolated.coneSize>0 & associatorL25SingleTau.coneSize>0 & associatorL25SingleTau.jetslikea");
+		List<String> hashs = cc.getPsetHash("associatorL25PixelTauIsolated.coneSize>0 & associatorL25SingleTau.coneSize>0 & associatorL25SingleTau.jets<>a");
 		for (String aHash: hashs) {
 			System.out.println("Hash is " + aHash);
 		}
