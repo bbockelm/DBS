@@ -16,8 +16,8 @@ def isIn(aparent, parentList):
 			return True
 		return False
 	
-
-def getRealParent(merged2ParentList, merged1FileList):
+"""
+def getRealParent_OLD(merged2ParentList, merged1FileList):
 	for afile in merged1FileList:
 		parentList = afile['ParentList']
 		for aparent in parentList:
@@ -28,7 +28,17 @@ def getRealParent(merged2ParentList, merged1FileList):
 			#	return afile[LogicalFileName]
 			
 	
-
+def getRealParent(merged2ParentList, merged1FileList):
+	for afile in merged1FileList:
+		parentListM1 = afile['ParentList']
+		for aparentM1 in parentListM1:
+			if isIn(aparentM1, parentList):
+				return afile['LogicalFileName']
+			#print 'checking %s ' %aparent
+			#if aparent in merged2ParentList:
+			#	return afile[LogicalFileName]
+			
+"""
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
@@ -44,20 +54,24 @@ try:
 	merged1FileList = api.listFiles(path = merged1, retriveList=['retrive_parent'])
 	#unmerged1FileList = api.listFiles(path = unmerged1, retriveList=['retrive_child'])
 	for afile in merged2FileList:
-		print "Checking File %s in Merged dataset2" %afile['LogicalFileName']
-		parentList = afile['ParentList']
-		#for aparent in parentList:
-		#	print '\t %s' %aparent['LogicalFileName']
-		realParent = getRealParent(parentList, merged1FileList)	
-		#print '\t REAL PARENT %s' %realParent
-		if realParent not in (None, ""):
-			for aparent in parentList:
-				if aparent['LogicalFileName'] != realParent:
-					print 'Deleting the parent %s from Merged dataset2' %aparent['LogicalFileName']
-					api.deleteFileParent(afile['LogicalFileName'], aparent['LogicalFileName'])
-			print 'Inserting the real parent %s in Merged dataset2' %realParent
-			api.insertFileParent(afile['LogicalFileName'], realParent)
-			
+		aFileLFN = afile['LogicalFileName']
+		print "Checking File %s in Merged dataset2" %aFileLFN
+		parentListM2 = afile['ParentList']
+		for aparent in parentListM2:
+			aparentLFN = aparent['LogicalFileName']
+			grandParentList = api.listFiles(patternLFN=aparentLFN, retriveList=['retrive_parent'])
+			for agrandParent in grandParentList:
+				for aFileInM1 in merged1FileList:
+					parentListM1 = aFileInM1['ParentList']
+					if isIn(agrandParent, parentListM1):
+						fileM1LFN = aFileInM1['LogicalFileName']
+						print 'Inserting the real parent %s in Merged dataset2' %fileM1LFN
+						api.insertFileParent(aFileLFN, fileM1LFN)
+
+
+			print 'Deleting the parent %s from Merged dataset2' %aparentLFN
+			api.deleteFileParent(aFileLFN, aparentLFN)
+
 	# Delete all the parents of merged1 dataset
 	for afile in merged1FileList:
 		print "Cheking File %s in Merged dataset1" %afile['LogicalFileName']
