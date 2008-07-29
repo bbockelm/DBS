@@ -1,6 +1,6 @@
 /**
- $Revision: 1.102 $"
- $Id: DBSApiFileLogic.java,v 1.102 2008/07/15 16:00:23 sekhri Exp $"
+ $Revision: 1.103 $"
+ $Id: DBSApiFileLogic.java,v 1.103 2008/07/28 19:11:23 sekhri Exp $"
  *
  */
 
@@ -1141,14 +1141,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					valueVec.clear();
 					for (int j = 0; j < parentVector.size(); ++j) 
 						valueVec.add(getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true));
-					insertMapBatch(conn, out, "FileParentage", "ThisFile", "itsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+					insertMapBatch(conn, out, "FileParentage", "ThisFile", "ItsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 				}
 				
                                 //Insert FileParentage for all the child of give by the client. Used during Merge operation
+				//ANZAR you SUCKS. You are inserting the child as the parents.
 				valueVec.clear();
 				for (int j = 0; j < childVector.size(); ++j)
 					valueVec.add(getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true));
-				insertMapBatch(conn, out, "FileParentage", "ThisFile", "itsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				insertMapBatch(conn, out, "FileParentage", "ItsParent", "ThisFile", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 
 //----------------------------Lumi/Run mapping 				
                                 //Insert FileLumi table by first inserting and then fetching Lumi Section ID
