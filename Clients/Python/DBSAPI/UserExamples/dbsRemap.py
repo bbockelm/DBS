@@ -44,7 +44,7 @@ try:
 	merged1FileList = api.listFiles(path = merged1, retriveList=['retrive_parent'])
 	#unmerged1FileList = api.listFiles(path = unmerged1, retriveList=['retrive_child'])
 	for afile in merged2FileList:
-		print "Checking File %s" %afile['LogicalFileName']
+		print "Checking File %s in Merged dataset2" %afile['LogicalFileName']
 		parentList = afile['ParentList']
 		#for aparent in parentList:
 		#	print '\t %s' %aparent['LogicalFileName']
@@ -53,10 +53,20 @@ try:
 		if realParent not in (None, ""):
 			for aparent in parentList:
 				if aparent['LogicalFileName'] != realParent:
-					print 'Deleting the parent %s' %aparent['LogicalFileName']
+					print 'Deleting the parent %s from Merged dataset2' %aparent['LogicalFileName']
 					api.deleteFileParent(afile['LogicalFileName'], aparent['LogicalFileName'])
-		print 'Inserting the real parent %s' %realParent
-		api.insertFileParent(afile['LogicalFileName'], realParent)
+			print 'Inserting the real parent %s in Merged dataset2' %realParent
+			api.insertFileParent(afile['LogicalFileName'], realParent)
+			
+	# Delete all the parents of merged1 dataset
+	for afile in merged1FileList:
+		print "Cheking File %s in Merged dataset1" %afile['LogicalFileName']
+		parentList = afile['ParentList']
+		for aparent in parentList:
+			print 'Deleting the parent %s from Merged dataset1' %aparent['LogicalFileName']
+			api.deleteFileParent(afile['LogicalFileName'], aparent['LogicalFileName'])
+
+		
 
 	"""
 	
