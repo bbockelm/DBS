@@ -12,33 +12,11 @@ from DBSAPI.dbsApi import DbsApi
 
 def isIn(aparent, parentList):
 	for i in parentList:
+		#print "checking ---> %s " %i['LogicalFileName']
 		if i['LogicalFileName'] == aparent['LogicalFileName']:
 			return True
-		return False
+	return False
 	
-"""
-def getRealParent_OLD(merged2ParentList, merged1FileList):
-	for afile in merged1FileList:
-		parentList = afile['ParentList']
-		for aparent in parentList:
-			if isIn(aparent, parentList):
-				return afile['LogicalFileName']
-			#print 'checking %s ' %aparent
-			#if aparent in merged2ParentList:
-			#	return afile[LogicalFileName]
-			
-	
-def getRealParent(merged2ParentList, merged1FileList):
-	for afile in merged1FileList:
-		parentListM1 = afile['ParentList']
-		for aparentM1 in parentListM1:
-			if isIn(aparentM1, parentList):
-				return afile['LogicalFileName']
-			#print 'checking %s ' %aparent
-			#if aparent in merged2ParentList:
-			#	return afile[LogicalFileName]
-			
-"""
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
@@ -59,45 +37,41 @@ try:
 		parentListM2 = afile['ParentList']
 		for aparent in parentListM2:
 			aparentLFN = aparent['LogicalFileName']
-			grandParentList = api.listFiles(patternLFN=aparentLFN, retriveList=['retrive_parent'])
-			for agrandParent in grandParentList:
-				for aFileInM1 in merged1FileList:
-					parentListM1 = aFileInM1['ParentList']
-					if isIn(agrandParent, parentListM1):
-						fileM1LFN = aFileInM1['LogicalFileName']
-						print 'Inserting the real parent %s in Merged dataset2' %fileM1LFN
-						api.insertFileParent(aFileLFN, fileM1LFN)
-
+			print "Getting  parent of %s ( is grandparent of original file)" %aparentLFN
+			tmpParentList = api.listFiles(patternLFN=aparentLFN, retriveList=['retrive_parent'])
+			for atmpParent in tmpParentList:
+				grandParentList = atmpParent['ParentList']
+				for agrandParent in grandParentList:
+					print "Going to check the grand parent %s" %agrandParent['LogicalFileName']
+					for aFileInM1 in merged1FileList:
+						parentListM1 = aFileInM1['ParentList']
+						#print "checking the grandparent in %s" %parentListM1
+						if isIn(agrandParent, parentListM1):
+							fileM1LFN = aFileInM1['LogicalFileName']
+							print '__________________________________________________________'
+							print 'INSERTING the real parent %s in Merged dataset2' %fileM1LFN
+							print '__________________________________________________________\n\n'
+							api.insertFileParent(aFileLFN, fileM1LFN)
+						else:
+							print "Grand parent  and parent did not match"
 
 			if not isIn(aparent, merged1FileList):
-				print 'Deleting the parent %s from Merged dataset2' %aparentLFN
+				print '****************************************************************************'
+				print 'DELETING the parent %s from Merged dataset2' %aparentLFN
+				print '****************************************************************************\n\n'
 				api.deleteFileParent(aFileLFN, aparentLFN)
-
+			
 	# Delete all the parents of merged1 dataset
 	for afile in merged1FileList:
 		print "Cheking File %s in Merged dataset1" %afile['LogicalFileName']
 		parentList = afile['ParentList']
 		for aparent in parentList:
-			print 'Deleting the parent %s from Merged dataset1' %aparent['LogicalFileName']
+			print '****************************************************************************'
+			print 'DELETING the parent %s from Merged dataset1' %aparent['LogicalFileName']
+			print '****************************************************************************\n\n'
 			api.deleteFileParent(afile['LogicalFileName'], aparent['LogicalFileName'])
 
-		
 
-	"""
-	
-	for afile in merged1FileList:
-		print afile['LogicalFileName']
-		parentList = afile['ParentList']
-		for aparent in parentList:
-			print '\t %s' %aparent['LogicalFileName']
-
-	for afile in unmerged1FileList:
-		print afile['LogicalFileName']
-		childList = afile['ChildList']
-		for achild in childList:
-			print '\t %s' %achild['LogicalFileName']
-		print "-----------------------UNMERGED-----------------------"
-	"""
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
