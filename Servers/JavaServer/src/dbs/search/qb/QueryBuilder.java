@@ -503,6 +503,10 @@ public class QueryBuilder {
 					if(!Util.isSame(op, "=")) throw new Exception("When pset is provided operator should be = . Invalid operator given " + op);
 					queryWhere += "\tQueryableParameterSet.Hash" + handlePset(val);	
 
+				} else if(Util.isSame(key, "site")) {
+					if(!Util.isSame(op, "=")) throw new Exception("When site is provided operator should be = . Invalid operator given " + op);
+					queryWhere += "\tStorageElement.SEName" + handleSite(val);	
+
 				} else if(Util.isSame(key, "release")) {
 					//FIXME add FILEALGO and ProcALgo first
 					boolean useAnd = false;
@@ -945,6 +949,32 @@ public class QueryBuilder {
 			query += "?";
 			bindValues.add(aHash);
 				
+		}
+		if(count == 0) {
+			query += "?";
+			bindValues.add("HASH_NOT_RETURNED_FROM_INDEX_SERVICE");
+		}
+		query += "\n)";
+		return query;
+	}
+
+	private String handleSite(String val) throws Exception {
+		System.out.println("VAL is " + val);
+		SiteClient cc = new SiteClient();
+		List<String> sites = cc.getSE(val);
+		String query = " IN ( \n";
+		int count = 0;
+		for (String aSite: sites) {
+			//System.out.println("Hash is " + aSite);
+			if(count != 0) query += ",";
+			++count;
+			query += "?";
+			bindValues.add(aSite);
+				
+		}
+		if(count == 0) {
+			query += "?";
+			bindValues.add("SITE_NOT_RETURNED_FROM_SITE_DB");
 		}
 		query += "\n)";
 		return query;
