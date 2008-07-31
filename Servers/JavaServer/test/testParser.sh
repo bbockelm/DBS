@@ -191,6 +191,6 @@ executeQuery () {
 #	CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD" 
 	#$CMD query="find file  where  pset = associatorL25PixelTauIsolated.coneSize 0 "
 	#$CMD query="find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0"
-	#$CMD query="find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jetslikea"
+	$CMD query="find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a"
 
-	$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
+	#$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
