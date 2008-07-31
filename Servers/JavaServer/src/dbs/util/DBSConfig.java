@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.20 $"
- $Id: DBSConfig.java,v 1.20 2008/05/21 21:21:54 afaq Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSConfig.java,v 1.21 2008/07/25 20:28:11 sekhri Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -35,6 +35,9 @@ public class DBSConfig {
         private String dbURL;
         private String regServiceURL;
         private String cfgServiceURL;
+        private String siteServiceURL;
+        private String hostcert;
+        private String certpass;
         private String alias;
         private String adminEmail;
         private String adminDN;
@@ -152,6 +155,15 @@ public class DBSConfig {
 			if ( name.equals("Cfgindex") ) {
                           cfgServiceURL = (String)atribs.get("service");
                        }
+		       if ( name.equals("Sitedb") ) {
+                          siteServiceURL = (String)atribs.get("service");
+                       }
+		       if ( name.equals("Certificate") ) {
+                          hostcert = (String)atribs.get("hostcert");
+                          certpass = (String)atribs.get("certpass");
+                       }
+
+
 
 
                        if ( name.equals("SupportedClientVersions") ){ 
@@ -208,6 +220,18 @@ public class DBSConfig {
 		    if (cfgServiceURL == null ) {
                       throw new DBSException("Configuration Error", "1056", "Config Index  Service URL not found in Config File");
                     }
+		    if (siteServiceURL == null ) {
+                      throw new DBSException("Configuration Error", "1056", "Site DB  Service URL not found in Config File");
+                    }
+		    if (hostcert == null ) {
+                      throw new DBSException("Configuration Error", "1056", "Host Certificate not found in Config File");
+                    }
+		    if (certpass == null ) {
+                      throw new DBSException("Configuration Error", "1056", "Certificate Password not found in Config File");
+                    }
+
+
+
 
 		    if (adminDN == null ) {
                       throw new DBSException("Configuration Error", "1056", "Admin DN not found in Config File");
@@ -227,7 +251,9 @@ public class DBSConfig {
                     DBSUtil.writeLog("dbURL: "+dbURL);
                     DBSUtil.writeLog("supportedSchemaVersion: "+supportedSchemaVersion);
                     DBSUtil.writeLog("regServiceURL: "+regServiceURL);
-                    DBSUtil.writeLog("cfggServiceURL: "+cfgServiceURL);
+                    DBSUtil.writeLog("cfgServiceURL: "+cfgServiceURL);
+                    DBSUtil.writeLog("siteServiceURL: "+siteServiceURL);
+                    DBSUtil.writeLog("hostcert: "+hostcert);
                     DBSUtil.writeLog("alias: "+alias);
                     DBSUtil.writeLog("supportedClientVersions: "+supportedClientVersions);
                	} catch (DBSException ex) {
@@ -282,6 +308,17 @@ public class DBSConfig {
 	public String getCfgServiceURL() {
             return cfgServiceURL;
         }
+	public String getSiteServiceURL() {
+            return siteServiceURL;
+        }
+	public String getHostcert() {
+            return hostcert;
+        }
+	public String getCertpass() {
+            return certpass;
+        }
+
+
 
 	public String getAlias() {
             return alias;
