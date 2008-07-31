@@ -125,7 +125,7 @@ myfile2= DbsFile (
 
 myfile3= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'NEW_TEST0004' + mytime,
+        LogicalFileName= 'NEW_TEST0003' + mytime,
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -140,7 +140,7 @@ myfile3= DbsFile (
 
 myfile4= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0005' + mytime,
+        LogicalFileName= 'NEW_TEST0004' + mytime,
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -201,7 +201,7 @@ myfile5= DbsFile (
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
-        ParentList = ['NEW_TEST0004' + mytime]  
+        ParentList = ['NEW_TEST0003' + mytime]  
          )
 
 myfile6= DbsFile (
@@ -217,7 +217,7 @@ myfile6= DbsFile (
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
         BranchList=['testbranch01', 'testbranch02'],
-        ParentList = ['NEW_TEST0005' + mytime]  
+        ParentList = ['NEW_TEST0004' + mytime]  
          )
 
 
@@ -278,7 +278,6 @@ try:
     print "\n\nInserting Files %s" % [myfile31, myfile41]	
     print api.insertFiles (procChild, [myfile31, myfile41], block21)
 
-    """
     
     print "\n\nInserting Grand Child Processed %s" % procGrandChild
     print api.insertProcessedDataset (procGrandChild)
@@ -289,7 +288,6 @@ try:
     print "\n\nInserting Files %s" % [myfile5, myfile6]	
     print api.insertFiles (procGrandChild, [myfile5, myfile6], block3)
 
-    """
     
 
 

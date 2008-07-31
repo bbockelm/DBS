@@ -22,7 +22,7 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
 
 
-primary = DbsPrimaryDataset (Name = "test_primary_001", Type="test")
+primary = DbsPrimaryDataset (Name = "test_primary_0011", Type="test")
 
 algo = DbsAlgorithm (
          ExecutableName="TestExe01",
@@ -49,7 +49,7 @@ procChild = DbsProcessedDataset (
         Status="Valid",
         TierList=['SIM', 'GEN'],
         AlgoList=[algo],
-	ParentList=['/test_primary_001/TestProcessedDS001/GEN-SIM']
+	ParentList=['/test_primary_0011/TestProcessedDS0011/GEN-SIM']
         )
 
 procGrandChild = DbsProcessedDataset (
@@ -59,7 +59,7 @@ procGrandChild = DbsProcessedDataset (
         Status="Valid",
         TierList=['SIM', 'GEN'],
         AlgoList=[algo],
-	ParentList=['/test_primary_001/TestProcessedDS002/GEN-SIM']
+	ParentList=['/test_primary_0011/TestProcessedDS0021/GEN-SIM']
         )
 
 run = DbsRun (
@@ -221,22 +221,22 @@ myfile6= DbsFile (
                   
 block = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#123456"
+	 Name="/test_primary_0011/TestProcessedDS0011/GEN-SIM#123456"
          )
 
 block2 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#444446"
+	 Name="/test_primary_0011/TestProcessedDS0021/GEN-SIM#444446"
          )
 
 block21 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#33336"
+	 Name="/test_primary_0011/TestProcessedDS0021/GEN-SIM#33336"
          )
 
 block3 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS003/GEN-SIM#33336"
+	 Name="/test_primary_0011/TestProcessedDS0031/GEN-SIM#33336"
          )
 
 try:
@@ -275,7 +275,7 @@ try:
     print "\n\nInserting Files %s" % [myfile31, myfile41]	
     print api.insertFiles (procChild, [myfile31, myfile41], block21)
 
-    """
+    #"""
     
     print "\n\nInserting Grand Child Processed %s" % procGrandChild
     print api.insertProcessedDataset (procGrandChild)
@@ -286,7 +286,7 @@ try:
     print "\n\nInserting Files %s" % [myfile5, myfile6]	
     print api.insertFiles (procGrandChild, [myfile5, myfile6], block3)
 
-    """
+    #"""
     
 
 
