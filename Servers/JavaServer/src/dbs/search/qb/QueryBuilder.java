@@ -504,8 +504,8 @@ public class QueryBuilder {
 					queryWhere += "\tQueryableParameterSet.Hash" + handlePset(val);	
 
 				} else if(Util.isSame(key, "site")) {
-					if(!Util.isSame(op, "=")) throw new Exception("When site is provided operator should be = . Invalid operator given " + op);
-					queryWhere += "\tStorageElement.SEName" + handleSite(val);	
+					//if(!Util.isSame(op, "=") && !Util.isSame(op, "in")) throw new Exception("When site is provided operator should be = . Invalid operator given " + op);
+					queryWhere += "\tStorageElement.SEName" + handleSite(val, op);	
 
 				} else if(Util.isSame(key, "release")) {
 					//FIXME add FILEALGO and ProcALgo first
@@ -958,24 +958,46 @@ public class QueryBuilder {
 		return query;
 	}
 
-	private String handleSite(String val) throws Exception {
+	private String handleSite(String val, String op) throws Exception {
 		System.out.println("VAL is " + val);
-		SiteClient cc = new SiteClient();
-		List<String> sites = cc.getSE(val);
 		String query = " IN ( \n";
-		int count = 0;
-		for (String aSite: sites) {
-			//System.out.println("Hash is " + aSite);
-			if(count != 0) query += ",";
-			++count;
-			query += "?";
-			bindValues.add(aSite);
-				
+		SiteClient cc = new SiteClient();
+		if(op.equals("in")) {
+			StringTokenizer st = new StringTokenizer(val, ",");
+			int numTokens =  st.countTokens();
+			for(int k = 0 ; k != numTokens ; ++k) {
+				List<String> sites = cc.getSE(st.nextToken().trim());
+				int count = 0;
+				for (String aSite: sites) {
+					//System.out.println("Hash is " + aSite);
+					if(k != 0 || count != 0) query += ",";
+					++count;
+					query += "?";
+					bindValues.add(aSite);
+				}
+			}
+		} else {
+			val = val.replace('*', '%');
+			List<String> sites = cc.getSE(val);
+			if(sites.size() == 1) {
+				 query = " LIKE ?";
+				 bindValues.add((String)sites.get(0));
+				 return query;
+			}
+			int count = 0;
+			for (String aSite: sites) {
+				//System.out.println("Hash is " + aSite);
+				if(count != 0) query += ",";
+				++count;
+				query += "?";
+				bindValues.add(aSite);
+			}
+			/*if(count == 0) {
+				query += "?";
+				bindValues.add("SITE_NOT_RETURNED_FROM_SITE_DB");
+			}*/
 		}
-		if(count == 0) {
-			query += "?";
-			bindValues.add("SITE_NOT_RETURNED_FROM_SITE_DB");
-		}
+			
 		query += "\n)";
 		return query;
 	}

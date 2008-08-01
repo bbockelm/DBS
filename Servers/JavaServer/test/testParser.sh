@@ -142,6 +142,15 @@ executeQuery () {
 	$CMD query="find phygrp, phygrp.id, phygrp.createdate , phygrp.moddate, phygrp.createby, phygrp.modby" 
 	$CMD query="find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a"
 	$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
+	$CMD query="find dataset  where site = T1_FR_CCIN2P3"
+	$CMD query="find dataset  where site in ( T1_FR_CCIN2P3, T1_TW_ASGC)"
+	$CMD query="find dataset  where site like *A*"
+	$CMD query="find dataset  where site like castorsrm.cr.cnaf*"
+	$CMD query="find dataset  where site = castorsrm.cr.cnaf.infn.it"
+	$CMD query="find dataset  where site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
+	$CMD query="find dataset, site"
+	$CMD query="find site"
+
 
 
 
@@ -194,10 +203,6 @@ executeQuery () {
 	#$CMD query="find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0"
 	#$CMD query="find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a"
 	#$CMD query="find dataset  where site = T1_FR_CCIN2P3"
-	$CMD query="find file, site  where site = T1_FR_CCIN2P3"
-	#$CMD query="find dataset  where site = castorsrm.cr.cnaf.infn.it"
-	#$CMD query="find dataset  where site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
-	#$CMD query="find dataset, site"
-	#$CMD query="find site"
+	#$CMD query="find file, site  where site = T1_FR_CCIN2P3"
 
 	#$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
