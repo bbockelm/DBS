@@ -792,6 +792,17 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+  def remap(self, merged1, merged2, blockName):
+     try:
+       #Calling the Implementation function
+       from dbsApiRemap import dbsApiImplRemap
+       return  dbsApiImplRemap(self, merged1, merged2, blockName)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
   def remap_DEPRECATED(self, files, outFile):
      try:
        #Calling the Implementation function
