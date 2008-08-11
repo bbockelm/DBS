@@ -715,9 +715,16 @@ class DDServer(DDLogger,Controller):
             pass
         return dn
 
+    def checkParam(self,p):
+        if p.find("<")!=-1 or p.find(">")!=-1:
+           msg="Invalid input parameter, '%s'"%p
+           raise msg
+
     ################## Menu init methods
     def _navigator(self,dbsInst=DBSGLOBAL,userMode="user",**kwargs):
         try:
+            for p in [dbsInst,userMode]+kwargs.keys():
+                self.checkParam(p)
             page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
             auto=0
@@ -2605,15 +2612,21 @@ All LFNs in a block
             return str(t)
     getLFNlist.exposed = True
  
-    def formatLFNList(self,lfnList,what="txt",idx=-1):
-        if not lfnList:
+    def formatLFNList(self,iList,what="txt",idx=-1):
+        if not iList:
            return ""
-        if what=="cff":
-           t = templateFormatLfn_cff(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
-        elif what=="py" or what=="python":
-           t = templateFormatLfn_py(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
+        lfnList=[]
+        if idx!=-1:
+           for i in xrange(0,len(iList)):
+               lfnList.append(iList[i][idx])
         else:
-           t = templateFormatLfn_txt(searchList=[{'lfnList':lfnList,'pfnList':[]}]).respond()
+           lfnList=iList
+        if what=="cff":
+           t = templateFormatLfn_cff(searchList=[{'lfnList':lfnList,'pfnList':None}]).respond()
+        elif what=="py" or what=="python":
+           t = templateFormatLfn_py(searchList=[{'lfnList':lfnList,'pfnList':None}]).respond()
+        else:
+           t = templateFormatLfn_txt(searchList=[{'lfnList':lfnList,'pfnList':None}]).respond()
         return str(t)
 
     def getLFN_txt(self,dbsInst,blockName,dataset="",userMode='user',run='*',what="txt"):
@@ -5732,7 +5745,10 @@ Save query as:
         sortOrder = getArg(kwargs,'sortOrder','desc')
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         try :
-            sel = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case,method)
+            if method!="dbsapi":
+               sel=self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case,method)
+            else:
+               sel = userInput
         except:
             if not html:
                return traceback.format_exc()
@@ -5786,6 +5802,7 @@ Save query as:
                 sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
                 query=sql
                 nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict)
+                print "\n#### nResults",nResults
             except:
                 if not html:
                    return traceback.format_exc()
