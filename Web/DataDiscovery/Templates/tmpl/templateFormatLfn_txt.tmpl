@@ -4,7 +4,8 @@
 $lfn
 #end for
 
-#if len($pfnList)
+#import types
+#if type($pfnList) is types.ListType
 \# Parents
 #for pfn in $pfnList
 #if $pfn!=$pfnList[-1]

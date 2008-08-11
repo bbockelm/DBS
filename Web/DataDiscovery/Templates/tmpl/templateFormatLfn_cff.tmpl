@@ -1,6 +1,7 @@
 <!-- templateFormatLFN_py -->
 <pre>
-#if len($pfnList)
+#import types
+#if type($pfnList) is types.ListType
 untracked PSet maxEvents = {untracked int32 input = -1}
    source = PoolSource {
        untracked vstring fileNames = {
@@ -14,9 +15,9 @@ replace PoolSource.fileNames = {
         '$lfn'
 #end if
 #end for
-#if len($pfnList)
-      }
-       untracked vstring secondaryFileNames = {
+#if type($pfnList) is types.ListType
+}
+untracked vstring secondaryFileNames = {
 #for pfn in $pfnList
 #if $pfn!=$pfnList[-1]
         '$pfn',
@@ -24,9 +25,12 @@ replace PoolSource.fileNames = {
         '$pfn'
 #end if
 #end for
-      }
-#end if
 }
+}
+#else
+}
+}
+#end if
 </pre>
 
 <!-- end of templateFormatLFN_py -->
