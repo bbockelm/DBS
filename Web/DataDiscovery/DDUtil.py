@@ -473,13 +473,13 @@ def getExceptionInHTML():
        returns exception type/value in HTML form
     """
     exp = sys.exc_info()
-    e1  = str(exp[0])
+    e1  = str(exp[0]).replace('\n',' ').replace('<','&lt;').replace('>','&gt;')
     e2  = str(exp[1]).replace('\n',' ').replace('<','&lt;').replace('>','&gt;')
     msg = """
     <table>
     <tr>
     <td align="right"><b>Exception type:</b></td>
-    <td><em>%s</em></td>
+    <td><pre>%s</pre></td>
     </tr>
     <tr>
     <td align="right"><b>Exception value:</b></td>
