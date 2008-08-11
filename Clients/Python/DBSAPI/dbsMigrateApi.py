@@ -95,6 +95,18 @@ class DbsMigrateApi:
 			##logging.log(DBSWARNING, "The dataset path " + path + " already exists in the destination DBS and will NOT be transferred. If you want to  remove the existance check before transferring, use force=True option in this API")
 			return True;
 			
+		
+	def isBlockIn(self, blockToCheck, blockList):
+		#print 'checking block %s ' %blockToCheck
+		#print "in blockList %s " %blockList
+		for aBlock in blockList:
+			if aBlock['Name'] == blockToCheck['Name']:
+				 if aBlock['NumberOfEvents'] != blockToCheck['NumberOfEvents']: return False
+				 if aBlock['BlockSize'] != blockToCheck['BlockSize']: return False
+				 #if aBlock['LastModificationDate'] != blockToCheck['LastModificationDate']: return False
+				 return True
+		return False
+		
 	def migratePath(self, path):
 		
 		#Get the parents of the path
@@ -106,6 +118,14 @@ class DbsMigrateApi:
 				if not self.doesPathExist(self.apiDst, dataset):
 					#Transfer all the blocks in this parent dataset
 					self.migratePath(dataset)
+				else :
+					blockInSrc = self.apiSrc.listBlocks(dataset)
+					blockInDst = self.apiDst.listBlocks(dataset)
+					for aBlockInSrc in blockInSrc:
+						if not self.isBlockIn(aBlockInSrc, blockInDst):
+							self.migratePath(dataset)
+							break
+							
 					
 		#print "checking path %s in dest " %path
 		if not self.doesPathExist(self.apiDst, path):
@@ -119,9 +139,24 @@ class DbsMigrateApi:
 
 
 	def migratePathBasic(self, path):
-
-		for block in self.apiSrc.listBlocks(path):
-			self.migrateBlockBasic(path, block['Name'])
+		blockInSrc = self.apiSrc.listBlocks(path)
+		#print 'blockInSrc %s' %blockInSrc
+		blockInDst = []
+		try:
+			blockInDst = self.apiDst.listBlocks(path)
+			#print 'blockIndST %s' %blockInDst
+		except DbsBadRequest, ex:
+			#print int(ex.getErrorCode())
+			if int(ex.getErrorCode()) != 1008: raise ex
+		for aBlockInSrc in blockInSrc:
+			if not self.isBlockIn(aBlockInSrc, blockInDst):
+				self.migrateBlockBasic(path, aBlockInSrc['Name'])
+			else :
+				print "-----------------------------------------------------------------------------------"
+				print "Ignoring path %s " %path
+				print "            block %s " %aBlockInSrc['Name']
+				print "because it already exist in the destination DBS and has NOT changed in source DBS"
+				print "-----------------------------------------------------------------------------------\n"
 
 	def migratePathROBasic(self, path):
 		for block in self.apiSrc.listBlocks(path):
@@ -131,8 +166,10 @@ class DbsMigrateApi:
 	
 	def migrateBlockBasic(self, path, blockName):
 		try:
+			print "-----------------------------------------------------------------------------------"
 			print "Transferring path %s " %path
 			print "            block %s " %blockName
+			print "-----------------------------------------------------------------------------------\n"
 			if( not self.pBranches):
 				self.apiDst.insertDatasetContents(self.apiSrc.listDatasetContents(path,  blockName))
 			else:
@@ -144,19 +181,21 @@ class DbsMigrateApi:
 				self.apiDst.insertDatasetContents(self.pruneBranchesFromFile(fileName))
 
 		except DbsBadRequest, ex:
-			print "----------------------------------------EXCEPTION ---------------------------------------"
-			print ex
-			print "----------------------------------------EXCEPTION CODE---------------------------------------"
-			print  int(ex.getErrorCode())
-			print "----------------------------------------DONE---------------------------------------"
+			#print "----------------------------------------EXCEPTION ---------------------------------------"
+			#print ex
+			#print "----------------------------------------EXCEPTION CODE---------------------------------------"
+			#print  int(ex.getErrorCode())
+			#print "----------------------------------------DONE---------------------------------------"
 			# If not block excep then raise it again
 			if int(ex.getErrorCode()) != 1024:
 				raise ex
 		
 	def migrateBlockROBasic(self, path, blockName):
 		try:
+			print "-----------------------------------------------------------------------------------"
 			print "Transferring path %s " %path
 			print "            block %s " %blockName
+			print "-----------------------------------------------------------------------------------\n"
 			if(not self.pBranches):
 				self.apiDst.insertDatasetContents(self.apiSrc.listDatasetContents(path,  blockName), True)
 			else:

@@ -335,7 +335,8 @@ class DbsHttpService:
 		elif statusCode_i in [1080, 3003, 2001, 4001]:
 		    raise DbsToolError(args=exmsg, code=statusCode)
 
-                if statusCode_i < 2000 and  statusCode_i > 1000 : 
+                if statusCode_i < 2000 and  statusCode_i > 1000 :
+                   #print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ status code %s" %statusCode_i 
                    raise DbsBadRequest (args=exmsg, code=statusCode)
 
                 if statusCode_i < 3000 and  statusCode_i >= 2000 :
