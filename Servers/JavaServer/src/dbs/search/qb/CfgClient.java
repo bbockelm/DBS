@@ -10,9 +10,11 @@ import xml.Element;
 import dbs.util.DBSConfig;
 import fnal.gov.client.util.HttpUtil;
 import fnal.gov.client.DbsWebApi;
+import fnal.gov.client.util.Util;
 
 public class CfgClient {
 	private HttpUtil hu;
+	private Util u;
 	private String url;
 	private DbsWebApi dwApi;
 	
@@ -21,10 +23,11 @@ public class CfgClient {
 		hu = new HttpUtil(dbsConfig.getHostcert(), dbsConfig.getCertpass());
 		this.url = dbsConfig.getCfgServiceURL();
 		dwApi = new DbsWebApi(url);
+		u = new Util();
 		//dbsConfig = DBSConfig.getInstance();
 
 	}
-	/*public List<String> parse(String inputXml, String tag, String key) throws Exception {
+	public List<String[]> parse(String inputXml, String tag, String key1, String key2) throws Exception {
 		if(u.isException(inputXml)) throw new Exception(inputXml);
 		Vector toReturn = new Vector();
 		DBSXMLParser dbsParser = new DBSXMLParser();
@@ -34,12 +37,17 @@ public class CfgClient {
 			Element e = (Element)allElement.elementAt(i);
 			if (e.name.equals(tag) ) {
 				//System.out.println("parsing .......");
-				 String name = u.get(e.attributes, key);
-				 toReturn.add(name);
+				 String key1Val = u.get(e.attributes, key1);
+				 String key2Val = u.get(e.attributes, key1);
+				 String[] nameVal = new String[2];
+				 nameVal[0] = key1Val;
+				 nameVal[1] = key2Val;
+				 toReturn.add(nameVal);
 			}
 		}
 		return toReturn;
-	}*/
+	}
+	
 	public List<String> getPsetHash(String psetStr) throws Exception {
 		String pName = "pname";
 		String pType = "ptype";
@@ -74,7 +82,7 @@ public class CfgClient {
 		tmpUrl += "&num=" + String.valueOf(numOfTokens); 
 		System.out.println("tmpUrl " + tmpUrl);
 		//String param = "pname1=associatorL25SingleTau.coneSize&pname0=associatorL25PixelTauIsolated.coneSize&op2=like&pname2=associatorL25SingleTau.jets&ptype2=2&ptype0=1&ptype1=1&num=3&val2=a&op0=>&val1=0&val0=0&op1=>";
-		String instanceUrl = this.url + "?" + tmpUrl;
+		String instanceUrl = this.url + "getPsetHash.jsp?" + tmpUrl;
 		String xml = hu.readUrl(instanceUrl);
 		//System.out.println(xml);
 		//return null;
@@ -92,6 +100,17 @@ public class CfgClient {
 		return "0";
 	}
 	
+	public List<String[]> getPset(String hash) throws Exception {
+		String tmpUrl = "hash=" + hash; 
+		System.out.println("tmpUrl " + tmpUrl);
+		String instanceUrl = this.url + "getPset.jsp?" + tmpUrl;
+		String xml = hu.readUrl(instanceUrl);
+		//System.out.println(xml);
+		//return null;
+		return parse(xml, "hash", "pname", "value");
+	}
+	
+   
 	public static void main(String args[]) throws Exception{
 		//DBSConfig dbsConfig = DBSConfig.getInstance();
 		//CfgClient cc = new CfgClient(dbsConfig.getCfgServiceURL());
@@ -100,6 +119,12 @@ public class CfgClient {
 		for (String aHash: hashs) {
 			System.out.println("Hash is " + aHash);
 		}
+		List<String[]> pset = cc.getPset("1cc23342c6bc24be5b46e0331a1809c9");
+		for (String[] aPset: pset) {
+			System.out.println("Pname is " + aPset[0]);
+			System.out.println("Val is " + aPset[1]);
+		}
+
 	}
 		
 
