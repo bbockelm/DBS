@@ -83,6 +83,8 @@ class DbsMigrateApi:
 		if (self.force):
 			##logging.log(DBSWARNING, "The dataset path " + path + " will not be checked for existance in the destination DBS.\n If you want to enforce the checking of path existance before transefrring, use force=False option in this API")
 			return False
+		return self.doesPathExistNoForce(api, path)
+		"""
 		tokens = path.split('/')
 		#print "checking path existinace %s " %path
 		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
@@ -94,8 +96,16 @@ class DbsMigrateApi:
 			#print "Path Found "
 			##logging.log(DBSWARNING, "The dataset path " + path + " already exists in the destination DBS and will NOT be transferred. If you want to  remove the existance check before transferring, use force=True option in this API")
 			return True;
-			
-		
+		"""	
+	
+	def doesPathExistNoForce(self, api, path):
+		tokens = path.split('/')
+		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
+		if datasets in [[], None] :
+			return False;
+		else:
+			return True;
+	
 	def isBlockIn(self, blockToCheck, blockList):
 		#print 'checking block %s ' %blockToCheck
 		#print "in blockList %s " %blockList
@@ -120,7 +130,11 @@ class DbsMigrateApi:
 					self.migratePath(dataset)
 				else :
 					blockInSrc = self.apiSrc.listBlocks(dataset)
-					blockInDst = self.apiDst.listBlocks(dataset)
+					blockInDst = []
+					try :
+						blockInDst = self.apiDst.listBlocks(dataset)
+					except DbsBadRequest, ex:
+						if int(ex.getErrorCode()) != 1008: raise ex
 					for aBlockInSrc in blockInSrc:
 						if not self.isBlockIn(aBlockInSrc, blockInDst):
 							self.migratePath(dataset)
@@ -143,11 +157,14 @@ class DbsMigrateApi:
 		#print 'blockInSrc %s' %blockInSrc
 		blockInDst = []
 		try:
-			blockInDst = self.apiDst.listBlocks(path)
+			if self.doesPathExistNoForce(self.apiDst, path):
+				blockInDst = self.apiDst.listBlocks(path)
 			#print 'blockIndST %s' %blockInDst
 		except DbsBadRequest, ex:
 			#print int(ex.getErrorCode())
 			if int(ex.getErrorCode()) != 1008: raise ex
+		#except Exception, ge:
+		#	print 'excpeiton was rasied'
 		for aBlockInSrc in blockInSrc:
 			if not self.isBlockIn(aBlockInSrc, blockInDst):
 				self.migrateBlockBasic(path, aBlockInSrc['Name'])
@@ -222,7 +239,24 @@ class DbsMigrateApi:
 				#if not self.doesPathExist(self.apiDst, dataset):
 				#print "calling self.migratePath"
 				self.migratePath( dataset)
-		self.migrateBlockBasic(path, blockName)
+				
+		if self.doesPathExistNoForce(self.apiDst, path):
+			 blockInDst = self.apiDst.listBlocks(path)
+			 for aBlockInDst in blockInDst:
+				 if aBlockInDst['Name'] == blockName:
+					 #print aBlockInDst
+					 if aBlockInDst['OpenForWriting'] == '0':
+						 print 'Opening the Block in the destination DBS for writing'
+						 self.apiDst.openBlock(aBlockInDst)
+						 self.migrateBlockBasic(path, blockName)
+						 print 'Closing the Block in the destination DBS'
+						 self.apiDst.closeBlock(aBlockInDst)
+					 else:
+						 self.migrateBlockBasic(path, blockName)
+					 break
+					 
+			
+		#self.migrateBlockBasic(path, blockName)
 		
 		
 	def getDatasetStatus(self, path):

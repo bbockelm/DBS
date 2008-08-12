@@ -338,6 +338,7 @@ class DbsHttpService:
                 if statusCode_i < 2000 and  statusCode_i > 1000 :
                    #print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ status code %s" %statusCode_i 
                    raise DbsBadRequest (args=exmsg, code=statusCode)
+                   #raise Exception (exmsg, statusCode)
 
                 if statusCode_i < 3000 and  statusCode_i >= 2000 :
                    raise DbsDatabaseError (args=exmsg, code=statusCode) 
