@@ -14,6 +14,7 @@ import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.Edge;
 
 public class QueryBuilder {
+	int MAX_ITERATION = 999;
 	KeyMap km;
 	//RelationMap rm = new RelationMap();
 	private ArrayList bindValues;
@@ -754,12 +755,14 @@ public class QueryBuilder {
 
 	private String genJoins(ArrayList lKeywords) throws Exception {
 		//ArrayList uniquePassed = new ArrayList();
+		int iter = 0 ;
 		String prev = "";
 		String query = "\nFROM\n\t"  + owner() + (String)lKeywords.get(0) + "\n";
 		int len = lKeywords.size();
 		for(int i = 1 ; i != len ; ++i ) {
-			
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			for(int j = (i-1) ; j != -1 ; --j ) {
+					++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 					String v1 = (String)lKeywords.get(i);
 					String v2 = (String)lKeywords.get(j);
 					//if(! (isIn(uniquePassed, v1 + "," + v2 )) && !(isIn(uniquePassed, v2 + "," + v1))) {
@@ -1075,7 +1078,7 @@ public class QueryBuilder {
 
 
 
-	private ArrayList makeCompleteListOfVertexsOld(ArrayList lKeywords) {
+	private ArrayList makeCompleteListOfVertexsOld(ArrayList lKeywords)  throws Exception  {
 		int len = lKeywords.size();
 		if(len <= 1) return lKeywords;
 		for(int i = 0 ; i != len ; ++i ) {
@@ -1107,17 +1110,21 @@ public class QueryBuilder {
 	}
 
 
-	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords) {
+	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords)  throws Exception {
 		ArrayList myRoute = new ArrayList();
 		myRoute.add(lKeywords.get(0));
 		lKeywords.remove(0);
 		int len = lKeywords.size();
 		int prevLen = 0;
+		int iter = 0;
 		while(len != 0) {
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			boolean breakFree = false;
 			for(int i = 0 ; i != len ; ++i ) {
+				++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 				int lenRount = myRoute.size();
 				for(int j = 0 ; j != lenRount ; ++j ) {
+					++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 					String keyInMyRoute = (String)myRoute.get(j);
 					String keyInArray = (String)lKeywords.get(i);
 					if(keyInArray.equals(keyInMyRoute)) {
@@ -1141,6 +1148,7 @@ public class QueryBuilder {
 					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getFirstNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getSecondNameFromEdge(e));
+					++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 				}
 				if(lEdges.size() > 0) lKeywords.remove(0);
 				else {
@@ -1158,7 +1166,7 @@ public class QueryBuilder {
 
 
 	
-	public ArrayList sortVertexs(ArrayList lKeywords) {
+	public ArrayList sortVertexs(ArrayList lKeywords)  throws Exception {
 		//System.out.println("INSIDE sortVertexs");
 		int len = lKeywords.size();
 		String leaf = "";
@@ -1176,9 +1184,13 @@ public class QueryBuilder {
 		toReturn.add(leaf);
 		
 		int reps = -1;
+		int iter = 0;
 		while( toReturn.size() != len) {
 			++reps;
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			for(int j = 0 ; j != len ; ++j ) {
+				++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+				if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 				String aVertex = (String)lKeywords.get(j);
 				if(!aVertex.equals(leaf)) {
 					if(!isIn(toReturn, aVertex)) {
@@ -1192,6 +1204,7 @@ public class QueryBuilder {
 							}
 						} else {
 							for (int k = (toReturn.size() - 1) ; k != -1 ; --k) {
+								++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 								//System.out.println("Cheking edge between " + (String)toReturn.get(k) + " and " + aVertex);
 								if(u.doesEdgeExist((String)toReturn.get(k), aVertex)) {
 									toReturn = addUniqueInList(toReturn, aVertex);
