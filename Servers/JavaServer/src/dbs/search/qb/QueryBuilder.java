@@ -68,6 +68,7 @@ public class QueryBuilder {
 		boolean iLumi = isInList(kws, "ilumi");
 		boolean countPresent = false;
 		boolean sumPresent = false;
+		int iter = 0;
 		ArrayList allKws = new ArrayList();
 		if(isInList(kws, "file") || isInList(kws, "file.status")) {
 			invalidFile = true;
@@ -75,6 +76,7 @@ public class QueryBuilder {
 
 		}
 		for (int i =0 ; i!= kws.size(); ++i) {
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			String aKw = (String)kws.get(i);
 			if(aKw.toLowerCase().startsWith("count") || aKw.toLowerCase().endsWith("count")) countPresent = true;
 			if(aKw.toLowerCase().startsWith("sum")) sumPresent = true;
@@ -83,6 +85,7 @@ public class QueryBuilder {
 		if(sumPresent || countPresent) sumQuery += selectStr;
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			String aKw = (String)kws.get(i);
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
@@ -406,6 +409,7 @@ public class QueryBuilder {
 		}
 
 		for (int i =0 ; i!= cs.size(); ++i) {
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
 				Constraint o = (Constraint)obj;
@@ -442,6 +446,7 @@ public class QueryBuilder {
 		//If File is not there then add Block
 		//Otherwise
 		for (int i =0 ; i!= cs.size(); ++i) {
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
 				Constraint o = (Constraint)obj;
@@ -477,6 +482,7 @@ public class QueryBuilder {
 		if (cs.size() > 0) queryWhere += "\nWHERE\n";
 		
 		for (int i =0 ; i!= cs.size(); ++i) {
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
 				Constraint co = (Constraint)obj;
@@ -640,6 +646,7 @@ public class QueryBuilder {
 
 		boolean orderOnce = false;
 		for(Object o: okws){
+			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 			String orderBy = (String)o;
 			if(!orderOnce) {
 				query += " ORDER BY ";
