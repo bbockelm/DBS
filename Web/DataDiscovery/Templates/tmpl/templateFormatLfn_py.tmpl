@@ -4,27 +4,28 @@ import FWCore.ParameterSet.Config as cms
 
 maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 readFiles = cms.untracked.vstring()
-   source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
+source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 #set $counter=0
-   readFiles.extend( ( 
+readFiles.extend( ( 
 #for $lfn in $lfnList
 #if $lfn!=$lfnList[-1] and $counter < 256
        '$lfn',
 #else
        '$lfn') );
-   #set $counter=0
-   #if $lfn!=$lfnList[-1]
-   readFiles.extend( (
-   #end if
+#set $counter=0
+#if $lfn!=$lfnList[-1]
+readFiles.extend( (
+#end if
+
 #end if
 #set $counter+=1
 #end for
 
 #import types
 #if type($pfnList) is types.ListType
-   secFiles.extend( (
+source.secFiles.extend( (
 #if not $pfnList
-                  ) )
+               ) )
 #end if
 #set $counter=0
 #for $pfn in $pfnList
@@ -32,41 +33,17 @@ readFiles = cms.untracked.vstring()
        '$pfn',
 #else
        '$pfn') );
-   #set $counter=0
-   #if $lfn!=$lfnList[-1]
-   secFiles.extend( (
-   #end if
+
+#set $counter=0
+#if $lfn!=$lfnList[-1]
+secFiles.extend( (
+#end if
+
 #end if
 #set $counter+=1
 #end for
 #end if
 
-#*
-   source = cms.Source ("PoolSource",
-       fileNames = cms.untracked.vstring (
-#set counter=0
-#for lfn in $lfnList
-#if $lfn!=$lfnList[-1]
-       '$lfn',
-#else
-       '$lfn'
-#end if
-#end for
-#import types
-#if type($pfnList) is types.ListType
-      ),
-       secondaryFileNames = cms.untracked.vstring (
-#for pfn in $pfnList
-#if $pfn!=$pfnList[-1]
-       '$pfn',
-#else
-       '$pfn'
-#end if
-#end for
-#end if
-      )
-)
-*#
 </pre>
 
 <!-- end of templateFormatLFN_py -->
