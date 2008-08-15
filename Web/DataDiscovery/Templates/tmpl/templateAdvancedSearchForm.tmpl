@@ -9,6 +9,7 @@
 <input type="hidden" name="sortOrder" id="sortOrder" value="desc" />
 <input type="hidden" name="sortName" id="sortName" value="" />
 <input type="hidden" name="grid" id="grid" value="0" />
+<input type="hidden" name="method" id="method" value="dd" />
 </div>
 
 ## add table with case sensitivity and choice of dbs instance (in expert mode)
@@ -261,10 +262,26 @@ look-up total number of files and list runs for given dataset name
 Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 </p>
 #end if
+#if $userMode=='dbsExpert'
+<p>
+<input type="checkbox" id="checkMethod" onChange="ChangeMethod()" checked='unchecked' /> check this box if you want to use DBS-QL, uncheck for DD interface
+</p>
+#end if
 
 </div> <!-- end of center -->
 
 <script type="text/javascript">
+function ChangeMethod() {
+   var id=document.getElementById('method');
+   var jd=document.getElementById('checkMethod');
+   if (jd.checked==true) {
+       id.value='dbsapi';
+       SetCookie('DBSDD_method','dbsapi')
+   } else {
+       id.value='dd';
+       SetCookie('DBSDD_method','dd')
+   }
+}
 #if $len($userInput)
 SetCookie('DBSDD_ainput','$userInput')
 #else
@@ -278,6 +295,31 @@ function UpdateCaseSens() {
   }
 }
 UpdateCaseSens();
+function UpdateMethodUsage() {
+   var mid=document.getElementById('checkMethod');
+   var url=window.location.href;
+   if(url.search("method=dd")>0) {
+      //SetCookie('DBSDD_method','dd');
+      mid.checked=false;
+   } else if(url.search("method=dbsapi")>0) {
+      //SetCookie('DBSDD_method','dbsapi');
+      mid.checked=true;
+   } else {
+       var method=GetCookie('DBSDD_method');
+       if (method) {
+          if (method=='dd') {
+              mid.checked=false;
+          } else {
+              mid.checked=true;
+          }
+       }  else {
+  //        SetCookie('DBSDD_method','dd');
+          mid.checked=false;
+       }
+   }
+   ChangeMethod();
+}
+UpdateMethodUsage();
 function UpdateUserView() {
    var grid=document.getElementById('grid');
    var url=window.location.href;
