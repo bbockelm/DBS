@@ -561,7 +561,7 @@ class DDServer(DDLogger,Controller):
              pass
         return self.cmsNames
 
-    def helperInit(self,dbsInst):
+    def helperInit(self,dbsInst,iface="dd"):
         """
            Initialize L{DBSHelper} with given DBS instances
            @type  dbsInst: string 
@@ -570,8 +570,11 @@ class DDServer(DDLogger,Controller):
            @return: none
         """
         self.dbs = dbsInst
-        self.helper.setDBSDLS(dbsInst)
-        self.qmaker.initDBS(dbsInst)
+        if  iface=="dbsapi":
+            self.qmaker.initDBS(dbsInst,iface)
+        else:
+            self.helper.setDBSDLS(dbsInst)
+            self.qmaker.initDBS(dbsInst)
 
     def genTopHTML(self,intro=False,userMode='user',onload=''):
         """
@@ -5688,11 +5691,14 @@ Save query as:
         return oDict
 
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+        print kwargs
         t0=time.time()
-        self.helperInit(dbsInst)
-
         _idx=int(_idx)
         method = getArg(kwargs,'method',self.iface)
+        if getArg(kwargs,'results',0):
+            self.helperInit(dbsInst,method) # NEW, pass method as iface to speed-up DB connection
+        else:
+            self.helperInit(dbsInst)
         pagerStep = int(pagerStep)
         html      = getArg(kwargs,'html',1)
         if not int(html):
@@ -5776,7 +5782,7 @@ Save query as:
                      tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
                   except: pass
               
-        self.qmaker.initDBS(dbsInst)
+#        self.qmaker.initDBS(dbsInst)
         if method=="dbsapi":
             try:
                 dbsApi = self.getDbsApi(dbsInst)
@@ -5801,9 +5807,10 @@ Save query as:
                    self.writeLog(res)
                 sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
                 query=sql
-                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict)
-                print "\n#### nResults",nResults
+                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface="dbsapi")
             except:
+                if getArg(kwargs,'results',0):
+                   return "N/A"
                 if not html:
                    return traceback.format_exc()
                 msg ="<pre>%s</pre>"%getExcMessage(userMode)
@@ -5821,8 +5828,12 @@ Save query as:
                 return page
             nResults = self.qmaker.countSel(query,tabCol)
 
+        # check if asked to return results only
+        if getArg(kwargs,'results',0):
+           return nResults
+
         # construct output kwargs
-        kDict=self.update_kwargs(kwargs,query=query,output=output,tabCol=tabCol,sortName=sortName,sortOrder=sortOrder,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,case=case,cff=cff,method=method)
+        kDict=self.update_kwargs(kwargs,query=query,output=output,tabCol=tabCol,sortName=sortName,sortOrder=sortOrder,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,caseSensitive=case,case=case,cff=cff,method=method)
 
         if html:
            page = self.genTopHTML(userMode=userMode)
@@ -5953,6 +5964,28 @@ Save query as:
            print "aSearch time:",(time.time()-t0)
         return page
     aSearch.exposed=True
+
+    def multiSearch(self,userInput,**kwargs):
+        # check params for cross-checking security flaw
+        for p in [userInput]+kwargs.keys():
+            self.checkParam(p)
+        resList = []
+        userMode = getArg(kwargs,'userMore','user')
+        method  = "dbsapi"
+        dbsList = list(self.dbsList)
+        for ins in dbsList:
+            try:
+                res = self.aSearch(dbsInst=ins,userMode=userMode,userInput=userInput,results=1,method=method)
+                resList.append(res)
+            except:
+                resList.append("N/A")
+        nameSearch = {'site':'CERN','url':self.dbsdd,'dbsInstList':dbsList,'input':userInput,'resList':resList,'userMode':userMode,'method':method}
+        t = templateSiteBanner(searchList=[nameSearch]).respond()
+        page=self.genTopHTML()
+        page+= str(t)
+        page+=self.genBottomHTML()
+        return page
+    multiSearch.exposed=True
 
     def outputConfigMap(self):
         """Log server configuration parameters"""

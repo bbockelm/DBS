@@ -60,7 +60,7 @@ class DDQueryMaker(DDLogger):
       self.dbManager   = dbManager
       self.initDBS(self.dbsInstance)
 
-  def initDBS(self,dbsInst):
+  def initDBS(self,dbsInst,iface="dd"):
       """
          Set DBS instance to use at given time.
       """
@@ -72,7 +72,7 @@ class DDQueryMaker(DDLogger):
          raise msg
       self.dbsInstance = dbsInst
       self.writeLog("DBS Instnace: %s"%dbsInst)
-      con = self.connectToDB()
+      con = self.connectToDB(iface)
       self.closeConnection(con)
 
   def closeConnection(self,con):
@@ -83,19 +83,19 @@ class DDQueryMaker(DDLogger):
 #      con.close()
       return
 
-  def connectToDB(self):
+  def connectToDB(self,iface="dd"):
       con=""
       try:
-          con = self.dbManager.connect(self.dbsInstance)
+          con = self.dbManager.connect(self.dbsInstance,iface)
       except:
          try:
-             con = self.dbManager.connect(self.dbsInstance)
+             con = self.dbManager.connect(self.dbsInstance,iface)
          except:
              try:
                  # try second time, but sleep for 2 seconds before retry
                  time.sleep(2)
                  self.dbManager.clear()
-                 con = self.dbManager.connect(self.dbsInstance)
+                 con = self.dbManager.connect(self.dbsInstance,iface)
              except Exception, ex:
                  raise DbsDatabaseError(args=ex)
              pass
@@ -672,8 +672,8 @@ class DDQueryMaker(DDLogger):
       self.closeConnection(con)
       return oList,tList
 
-  def executeDBSCountQuery(self,count_sql,count_bindDict):
-      con  = self.connectToDB()
+  def executeDBSCountQuery(self,count_sql,count_bindDict,iface="dd"):
+      con  = self.connectToDB(iface)
       res=""
       bparams=[]
       for key in count_bindDict.keys():

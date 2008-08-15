@@ -153,7 +153,7 @@ class DBManager(DDLogger):
       self.lowTables = {}
       self.metaDict  = {}
         
-  def connect(self,dbsInst):
+  def connect(self,dbsInst,iface="dd"):
       t_ini=time.time()
       eType='oracle' # default DB back-end
       if  not self.engine.has_key(dbsInst):
@@ -192,6 +192,7 @@ class DBManager(DDLogger):
           self.vQuery[dbsInst] = vQuery
 
       con = self.engine[dbsInst].connect()
+      if iface=="dbsapi": return con
 
       if  not self.dbTables.has_key(dbsInst):
           dbsMeta = sqlalchemy.MetaData()
