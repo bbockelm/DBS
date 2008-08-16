@@ -2127,7 +2127,8 @@ MCDescription:      %s
       self.closeConnection(con)
       return res
 
-  def getLFNs(self,blockName,dataset,run="*",lfn="*"):
+#  def getLFNs(self,blockName,dataset,run="*",lfn="*"):
+  def getLFNs_orig(self,blockName,dataset,run="*",lfn="*"):
       prim="*"
       tier="*"
       proc="*"
@@ -2183,7 +2184,7 @@ MCDescription:      %s
           if lfn and lfn!="*":
              sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
-#          print self.printQuery(sel),blockName,dataset,run
+          print self.printQuery(sel),blockName,dataset,run
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
@@ -2197,9 +2198,7 @@ MCDescription:      %s
       return oList
 
   def getLFNs_newfromv18(self,blockName,dataset,run="*",lfn="*"):
-      prim="*"
-      tier="*"
-      proc="*"
+#  def getLFNs(self,blockName,dataset,run="*",lfn="*"):
       con = self.connectToDB()
       try:
           tb   = self.alias('Block','tb')
@@ -2226,6 +2225,58 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
 #          print self.printQuery(sel),blockName,dataset,run
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNs"
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item)
+      self.closeConnection(con)
+      return oList
+
+#  def getLFNs_new(self,blockName,dataset,run="*",lfn="*"):
+  def getLFNs(self,blockName,dataset,run="*",lfn="*"):
+      con  = self.connectToDB()
+      tb   = self.alias('Block','tb')
+      tf   = self.alias('Files','tf')
+      tfs  = self.alias('FileStatus','tfs')
+      tft  = self.alias('FileType','tft')
+      tfrl = self.alias('FileRunLumi','tfrl')
+      tr   = self.alias('Runs','tr')
+      fList= []
+      if  run and run!="*":                        
+          try:
+              oSel = [self.col(tf,'ID')]
+              tobj = tf.join(tfrl,self.col(tf,'ID')==self.col(tfrl,'Fileid'))
+              tobj = tobj.join(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
+              sel  = sqlalchemy.select(oSel,from_obj=[tobj],distinct=True)
+              sel.append_whereclause(self.col(tr,'RunNumber')==run)
+              result = self.getSQLAlchemyResult(con,sel)
+          except:
+              msg="\n### Query:\n"+str(sel)
+              self.printExcept(msg)
+              raise "Fail in getLFNs"
+          for item in result:
+              if not item[0]: continue
+              fList.append(item[0])
+      try:
+          oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents'),self.col(tf,'Checksum')]
+          tobj = tb.join(tf,self.col(tf,'Block')==self.col(tb,'ID'))
+          tobj = tobj.outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+          tobj = tobj.outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
+          sel  = sqlalchemy.select(oSel,from_obj=[tobj],distinct=True,order_by=oSel)
+          if blockName and blockName!="*":
+             sel.append_whereclause(self.col(tb,'Name')==blockName)
+          if dataset and dataset!="*":
+             sel.append_whereclause(self.col(tb,'Path')==dataset)
+          if lfn and lfn!="*":
+             sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
+          sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+          if run and run!="*" and fList:
+             sel.append_whereclause(self.col(tf,'ID').in_(*fList))
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
