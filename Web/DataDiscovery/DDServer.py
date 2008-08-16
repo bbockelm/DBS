@@ -14,6 +14,7 @@ import os, string, logging, types, time, socket, socket, urlparse, random, urlli
 import thread, smtplib, tempfile, zlib, traceback
 import xml.sax, xml.sax.handler
 from   xml.sax.saxutils import escape
+from xml.dom import *
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -153,6 +154,7 @@ class DDServer(DDLogger,Controller):
         self.msApi=""
         try:
             self.msApi = DBS_MS(url=self.adminUrl)
+            print "\n+++ Loaded DBS MS API",self.adminUrl
         except:
             if verbose:
                traceback.print_exc()
@@ -313,7 +315,7 @@ class DDServer(DDLogger,Controller):
         except:
            pass
 
-    def redirectPage(self):
+    def redirectPage(self,**kwargs):
         page = self.genTopHTML()
         nameSpace = { 'localtime':time.asctime() }
         t = templateRedirect(searchList=[nameSpace]).respond()
@@ -1381,7 +1383,7 @@ class DDServer(DDLogger,Controller):
         return result
 
     def adminRequest(self,**kwargs):
-        print "\n\n+++adminRequest",kwargs
+#        print "\n\n+++adminRequest",kwargs
         if kwargs.has_key('submit'): del kwargs['submit']
         if kwargs.has_key('choice'): del kwargs['choice']
         debug=1
