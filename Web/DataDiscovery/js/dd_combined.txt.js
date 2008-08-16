@@ -1714,6 +1714,9 @@ function ChangeUserMode(mode) {
      if(url.search("userMode=runManager")>0) {
         newurl=url.replace(/userMode=runManager/g,'userMode='+mode);
      }
+     if(url.search("userMode=dbsExpert")>0) {
+        newurl=url.replace(/userMode=dbsExpert/g,'userMode='+mode);
+     }
   } else {
     if(url.search(/\?/)>0) {
        newurl=url+"&userMode="+mode;
