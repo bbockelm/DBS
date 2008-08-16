@@ -1007,6 +1007,11 @@ table.sortable span.sortarrow {
   color: white;
   background-color: gray;
 }
+.box_tab {
+  padding: 5px 3px;
+  color: #0000FF;
+  background: #CDBECD;
+}
 
 /*
  * Visibility settings
