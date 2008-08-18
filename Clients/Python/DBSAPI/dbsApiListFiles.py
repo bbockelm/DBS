@@ -94,6 +94,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 		    'retrive_date',
 		    'retrive_person',
 		    'retrive_parent',
+		    'retrive_parent_block',
 		    'retrive_child',
 		    'retrive_algo',
 		    'retrive_tier',

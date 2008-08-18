@@ -34,19 +34,21 @@ try:
 		    #'retrive_block',
 		    #'retrive_date',
 		    #'retrive_person',
-		    #'retrive_parent',
+		    'retrive_parent',
+		    #'retrive_parent_block',
 		    #'retrive_child',
 		    #'retrive_algo',
 		    #'retrive_tier',
-		    'retrive_lumi',
+		    #'retrive_lumi',
 		    #'retrive_lumi_excluded',
-		    'retrive_run',
+		    #'retrive_run',
 		    #'retrive_branch',
 		    ]
 
   #for afile in api.listFiles(path="/Upsilon2S/Summer08_STARTUP_V2_Upsilon2S_v3/GEN-SIM-RAW", retriveList=allowedRetriveValue, otherDetails = False):
   #for afile in api.listFiles(path="/RelValMinBias/CMSSW_2_1_0_pre8-RelVal-STARTUP_V4_InitialLumiPileUp_v1-2nd-STARTUP_V4/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO", retriveList=allowedRetriveValue, otherDetails = True):
-  for afile in api.listFiles(patternLFN="/store/Qdata/h2tb2007/testbeam_HCalAlone/RAW/default_v1/h2.00033990.9999.edm.storageManager.0.0000.root", retriveList=allowedRetriveValue):
+  #for afile in api.listFiles(patternLFN="/store/unmerged/mc/2008/7/29/Test-chaintest-stuartw-1217326137/GEN-SIM-DIGI-RECO/0000/B8CE7019-7969-DD11-893A-003048772E0E.root", retriveList=allowedRetriveValue, otherDetails = True):
+  for afile in api.listFiles(patternLFN="/store/unmerged/mc/2008/7/29/Test-chaintest-stuartw-1217326137/GEN-SIM-DIGI-RECO/0000/B8CE7019-7969-DD11-893A-003048772E0E.root", retriveList=allowedRetriveValue):
   #for afile in api.listFiles(patternLFN="/store/mc/2007/10/1/HLT-Wmunu-1191261655/0005/E2E68481-EE86-DC11-81A7-0019B9E4FE51.root", details=True):
   #for afile in api.listFiles(analysisDataset="/test00_testbeam_HCalEcalCombined/h2tb2007_default_v1/RAW/VijayTestADS", retriveList=allowedRetriveValue):
      print "  %s" % afile
