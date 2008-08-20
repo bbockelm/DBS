@@ -1,6 +1,6 @@
 /**
- $Revision: 1.104 $"
- $Id: DBSApiFileLogic.java,v 1.104 2008/07/29 16:33:03 sekhri Exp $"
+ $Revision: 1.105 $"
+ $Id: DBSApiFileLogic.java,v 1.105 2008/08/18 18:42:02 sekhri Exp $"
  *
  */
 
@@ -967,12 +967,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 open_for_writing= Integer.parseInt((String)get(rs, "OPEN_FOR_WRITING"));
 			}
 			else {
-				throw new DBSException("Do Not Exist", "1039",
+				throw new DBSException("Do Not Exist", "1068",
                                                         "Provided BlockName do not exist in DBS, please verify");
                         }
 
                 } catch(Exception e) {
-			throw new DBSException("Database Exception", "1039", e.getMessage());
+			throw new DBSException("Database Exception", "1069", e.getMessage());
                 } finally {
 			if (rs != null) rs.close();
                         if (ps != null) ps.close();
