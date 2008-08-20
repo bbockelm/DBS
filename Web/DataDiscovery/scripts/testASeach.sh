@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export PATH=$PWD:$PATH
 cmd=DDSearchCLI.py
 if [ $# -ne 1 ]; then
@@ -31,6 +31,8 @@ for input in \
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input" --iface=dd
+    echo -e '\E[47;32m'"\033[1mABOVE TEST SHOULD PASS\033[0m"
+    echo
 done
 
 echo "### TEST xml output ###"
@@ -43,6 +45,8 @@ for input in \
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input" --iface=dd --details --xml
+    echo -e '\E[47;32m'"\033[1mABOVE TEST SHOULD PASS\033[0m"
+    echo
 done
 
 echo "### TEST cff output ###"
@@ -51,6 +55,8 @@ for input in \
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input" --iface=dd --cff
+    echo -e '\E[47;32m'"\033[1mABOVE TEST SHOULD PASS\033[0m"
+    echo
 done
 
 echo "### TEST xml output ###"
@@ -59,14 +65,26 @@ for input in \
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input" --iface=dd --details --xml --limit=-1
+    echo -e '\E[47;32m'"\033[1mABOVE TEST SHOULD PASS\033[0m"
+    echo
 done
 
 echo "### TEST DBS-QL using DBSAPI ###"
 for input in \
 "find primds where primds.createdate > 2007-04-20" \
-"find dataset where site like T2_UK*" \
+"find dataset where site like T2_UK*" 
+do
+    echo "input=\"$input\""
+    $cmd --host=$host --input="$input" --iface=dbsapi
+    echo -e '\E[47;32m'"\033[1mABOVE TEST SHOULD PASS\033[0m"
+    echo
+done
+
+for input in \
 "*QCD*"
 do
     echo "input=\"$input\""
     $cmd --host=$host --input="$input" --iface=dbsapi
+    echo -e '\E[47;31m'"\033[1mABOVE TEST SHOULD FAIL\033[0m"
+    echo
 done
