@@ -175,7 +175,7 @@ executeQuery () {
 	#$CMD query="find file where dataset=/test_primary_001/TestProcessedDS111/SIM-GEN" 
 	#$CMD query="find sum(file.size), dataset where file.size > 0"
 	#$CMD query="find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
-#executeQuery
+executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
 	#$CMD query="find run,file  order by file, run"

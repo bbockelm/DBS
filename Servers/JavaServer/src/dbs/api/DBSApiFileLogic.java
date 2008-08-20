@@ -1,6 +1,6 @@
 /**
- $Revision: 1.103 $"
- $Id: DBSApiFileLogic.java,v 1.103 2008/07/28 19:11:23 sekhri Exp $"
+ $Revision: 1.105 $"
+ $Id: DBSApiFileLogic.java,v 1.105 2008/08/18 18:42:02 sekhri Exp $"
  *
  */
 
@@ -379,9 +379,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				out.write(toSend);
 				this.data.localFile = new Hashtable();
 				this.data.localFile.put(lfn, fileID);
+				boolean otherDetailsOfParent = allOtherDetails;
+				if(DBSUtil.contains(attributes, "retrive_parent_block")) otherDetailsOfParent = true;
 				if(oldClients && detail.equals("True")) {
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles, allOtherDetails);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles, allOtherDetails);//Children
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent);//Children
 					listFileAlgorithms(conn, out, lfn, allOtherDetails);
 					listFileTiers(conn, out, lfn, allOtherDetails);
 					listFileLumis(conn, out, lfn, allOtherDetails);
@@ -389,8 +391,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					listBranch(conn, out, get(rs, "FILE_BRANCH"), allOtherDetails);
 
 				}else if( detail.equals("True")) {	
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles, allOtherDetails);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles, allOtherDetails);//Children
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles,otherDetailsOfParent);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent);//Children
 					listFileAlgorithms(conn, out, lfn, allOtherDetails);
 					listFileTiers(conn, out, lfn, allOtherDetails);
 					listFileLumis(conn, out, lfn, allOtherDetails);
@@ -399,8 +401,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 					
 				} else {	
-					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles, allOtherDetails);//Parents
-					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles, allOtherDetails);//Children
+					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent);//Parents
+					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent);//Children
 					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn, allOtherDetails);
 					if(DBSUtil.contains(attributes, "retrive_tier")) listFileTiers(conn, out, lfn, allOtherDetails);
 					if(DBSUtil.contains(attributes, "retrive_lumi")) {
@@ -965,12 +967,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 open_for_writing= Integer.parseInt((String)get(rs, "OPEN_FOR_WRITING"));
 			}
 			else {
-				throw new DBSException("Do Not Exist", "1039",
+				throw new DBSException("Do Not Exist", "1068",
                                                         "Provided BlockName do not exist in DBS, please verify");
                         }
 
                 } catch(Exception e) {
-			throw new DBSException("Database Exception", "1039", e.getMessage());
+			throw new DBSException("Database Exception", "1069", e.getMessage());
                 } finally {
 			if (rs != null) rs.close();
                         if (ps != null) ps.close();
