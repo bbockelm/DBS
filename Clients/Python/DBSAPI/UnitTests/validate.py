@@ -531,6 +531,9 @@ class Test8(unittest.TestCase):
 	def testMergedFile(self):
 		print 'testMergedFile'
 		api.insertBlock (procObjM, blockObjM, [seM])
+		#print fileName1
+		#print fileName2
+		#print fileObjM
 		api.insertMergedFile([fileName1, fileName2], fileObjM)
 		fileList = api.listFiles(path = pathM, retriveList = ['all'], otherDetails = True)
 		self.assertEqual(len(fileList), 1)
@@ -574,7 +577,8 @@ class Test8(unittest.TestCase):
 					self.assertEqual(1, 2)
 
 			parentList = fileInDBS['ParentList']
-			self.assertEqual(len(parentList), 2)
+			#print parentList
+			self.assertEqual(len(parentList), 1)
 			for parentInDBS in parentList:
 				if(parentInDBS['LogicalFileName'] == fileName1):
 					assertFile(self, fileObj1, parentInDBS)

@@ -21,7 +21,7 @@ api = DbsApi(opts.__dict__)
 
 
 block = DbsFileBlock (
-	Name="/Wmunu/CMSSW_1_6_0-CSA07-2479/RAW#dd92dc6f-7538-4bde-9168-0a47922d83af"
+	Name="/SiStripCommissioning08-edm/Online/RAW#e7fff7a5-7681-4361-8dd1-cd568eafd362"
 	#Name="/Wmunu/CMSSW_1_6_0-HLT-1191261655/GEN-SIM-DIGI-RECO#0c8376b7-3467-48e5-ace1-31f53492d6c1"
          )
 
@@ -29,6 +29,7 @@ print "Opening a block %s" % block
 
 try:
     print api.openBlock (block)
+    #print api.closeBlock (block)
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):

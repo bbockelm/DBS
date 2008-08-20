@@ -18,7 +18,9 @@ try:
   #for block in api.listBlocks("/TestPrimary_001_20070315_03h12m26s/TestProcessed_20070315_03h12m26s/GEN-SIM"):
   #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM"):
   #for block in api.listBlocks("/chi1/CMSSW_1_6_7-CSA07-3268/GEN-SIM-DIGI-RAW"):
-  for block in api.listBlocks("/dataset_PD_110/CRUZET3-v1-unmerged/RAW"):
+  #for block in api.listBlocks("/dataset_PD_110/CRUZET3-v1-unmerged/RAW"):
+
+  for block in api.listBlocks("/RelValSingleMuPt10/CMSSW_2_1_2_IDEAL_V6_v3/GEN-SIM-RECO"):
   #for block in api.listBlocks(block_name="/test_primary_001*"):
   #for block in api.listBlocks("", "/TestPrimary_001_20070315_02h26m11s/TestProcessed_20070315_02h26m11s/GEN-SIM#016712"):
   #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN*"):
