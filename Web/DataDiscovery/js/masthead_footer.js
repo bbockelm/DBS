@@ -9,6 +9,7 @@ function _footerMenuText(mode){
 {label: "Sites", link: "_siteSearch?userMode="+mode, title: "Site search: site-based search"},
 {label: "Runs", link: "_runs?userMode="+mode, title: "Run search: run-based search"},
 //{label: "Pages", link: "_pages?userMode="+mode, title: "Data discovery world-wide pages"},
+{label: "Admin", link: "_admin?userMode=expert", title: "Administrate dataset/block/LFNs in DBS"},
 {label: "Help", link: "_help?userMode="+mode, title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: "_contact?userMode="+mode, title: "Contact DBS support team"},
 {label: "View", id:"", link: "javascript:ChangeView()", title: "Define the data view", position: "right"}

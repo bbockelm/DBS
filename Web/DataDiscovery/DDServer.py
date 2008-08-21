@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#-*- coding: ISO-8859-1 -*-
 #
 # Copyright 2006 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
@@ -703,9 +701,34 @@ class DDServer(DDLogger,Controller):
            dn=kwargs['dn'][1:-1] # the DN I get from browser has extra quotes at beg/end of string
            if not dn: return ""
            return decryptCookie(dn, self.securityApi)
+        return self.getUserFromCookie()
+        cookie=cherrypy.request.headers['cookie']
+        for elem in cookie.split(";"):
+            item=elem.strip()
+            if len(item)>4 and item[0:3]=="dn=":
+               dn = item[3:].replace("\"","")
+               return decryptCookie(dn,self.securityApi)
         return ""
+
     def getEmail(self,userName):
         return "%s@cern.ch"%userName
+
+    def getUserEmail(self):
+#        userName=self.decodeUserName(**kwargs)
+#        dn=urllib.quote(self.getDN(userName))
+#        email=self.getEmail(self.getDN(userName))
+        user=self.getUserFromCookie()
+        return "%s@cern.ch"%user
+
+    def getUserFromCookie(self):
+        user = ""
+        cookie=cherrypy.request.headers['cookie']
+        for elem in cookie.split(";"):
+            item=elem.strip()
+            if len(item)>4 and item[0:3]=="dn=":
+               dn = item[3:].replace("\"","")
+               user=decryptCookie(dn,self.securityApi)
+        return user
 
     def getDN(self,userName):
         """
@@ -1248,12 +1271,35 @@ class DDServer(DDLogger,Controller):
     genNavigatorMenuDict.exposed = True
 
     #################### ADMIN FORMS #######################
-#    @is_authorized (Role("Global Admin"), Group("DBS"), 
+    def _admin(self,**kwargs):
+        page = self.genTopHTML()
+        nameSpace = { 'dbsInst':self.dbs, 'userMode':'expert', 'user': self.getUserFromCookie() }
+        t = templateAdministrateForm(searchList=[nameSpace]).respond()
+        page+= str(t)
+        page+= self.genBottomHTML()
+        return page
+    _admin.exposed=True
+
+    def redirectAdminPage(self,**kwargs):
+        page = self.genTopHTML()
+        page+= "<div><b>You have unsufficient privileges to administrate datasets. Please contact cms-dbs-support [at] cern [dot] ch with this request.</b></div><br/><br/>"
+        nameSpace = { 'dbsInst':self.dbs, 'userMode':'expert', 'user': self.getUserFromCookie() }
+        t = templateAdministrateForm(searchList=[nameSpace]).respond()
+        page+= str(t)
+        page+= self.genBottomHTML()
+        return page
+    redirectAdminPage.exposed=True     
+        
     @is_authorized (Role("DBSExpert"), Group("DBS"), 
-                    onFail=RedirectToLocalPage ("/redirectPage"))
-    def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
+                    onFail=RedirectToLocalPage ("/redirectAdminPage"))
+    def adminDataset(self,dbsInst,dataset,userMode,siteList="[]",**kwargs):
         page = self.genTopHTML(userMode=userMode)
-#        page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
+        # check that supplied instance and dataset are real
+        nRes = self.aSearch(dbsInst,userInput="find dataset where dataset = '%s'"%dataset)
+        if nRes!=1:
+           page+="<p>No '%s' dataset found in DBS"%dataset
+           page+= self.genBottomHTML()
+           return page
         page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin tasks',userMode)
 
         # auto-competion form for processed datasets
@@ -1280,7 +1326,7 @@ class DDServer(DDLogger,Controller):
                   'userMode': userMode,
                   'adminUrl': self.adminUrl,
                   'apiversion': self.adminVer,
-                  'email'   : "vk@mail.lns.cornell.edu"
+                  'email'   : self.getUserEmail(),
                   }
         t = templateAdminDatasets(searchList=[nameSpace]).respond()
         page+= str(t)
@@ -1289,6 +1335,7 @@ class DDServer(DDLogger,Controller):
     adminDataset.exposed=True
 
     def ms_deleteRequest(self,**kwargs):
+        userMode=getArg(kwargs,'userMode','expert')
         try:
             srcUrl = kwargs['srcUrl']
             dstUrl = kwargs['dstUrl']
@@ -1300,7 +1347,10 @@ class DDServer(DDLogger,Controller):
             result = getExcMessage(kwargs['userMode'])
             pass
         page   = self.genTopHTML(userMode=userMode)
-        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
+        rList  = [result]
+        if type(result) is types.ListType:
+            rList = result
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'rList':rList}]).respond()
         page  += str(t)
         page  += self.genBottomHTML()
         return page
@@ -1318,7 +1368,10 @@ class DDServer(DDLogger,Controller):
             result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
-        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
+        rList  = [result]
+        if type(result) is types.ListType:
+            rList = result
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'rList':rList}]).respond()
         page  += str(t)
         page  += self.genBottomHTML()
         return page
@@ -1333,7 +1386,10 @@ class DDServer(DDLogger,Controller):
             result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
-        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
+        rList  = [result]
+        if type(result) is types.ListType:
+            rList = result
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'rList':rList}]).respond()
         page  += str(t)
         page  += self.genBottomHTML()
         return page
@@ -1348,7 +1404,10 @@ class DDServer(DDLogger,Controller):
             result = getExcMessage(userMode)
             pass
         page   = self.genTopHTML(userMode=userMode)
-        t      = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
+        rList  = [result]
+        if type(result) is types.ListType:
+            rList = result
+        t      = templateAdminPage(searchList=[{'userMode':userMode,'rList':rList}]).respond()
         page  += str(t)
         page  += self.genBottomHTML()
         return page
@@ -1487,8 +1546,11 @@ class DDServer(DDLogger,Controller):
         if  kwargs['api']=="addRequest":
 #            result=self.adminRequest(**kwargs)
             result=self.ms_addRequest(**kwargs)
-            t     = templateAdminPage(searchList=[{'userMode':userMode,'result':result}]).respond()
-            page += str(t)
+            rList  = [result]
+            if type(result) is types.ListType:
+                rList = result
+            t      = templateAdminPage(searchList=[{'userMode':userMode,'rList':rList}]).respond()
+            page  += str(t)
         else:
             skipList=['submit','title','submit request','choice','dbsInst_from','dbsInst_to','dn']
             input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
@@ -5693,7 +5755,6 @@ Save query as:
         return oDict
 
     def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
-        print kwargs
         t0=time.time()
         _idx=int(_idx)
         method = getArg(kwargs,'method',self.iface)
