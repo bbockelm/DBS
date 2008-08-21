@@ -1,0 +1,31 @@
+<!-- templateSiteBanner.tmpl -->
+
+<table class="dbs_table">
+
+<tr>
+
+<td valign="top">
+$site
+</td>
+<td>
+#for $idx in xrange(0,len($dbsInstList))
+#set $ins=$dbsInstList[$idx]
+#set $res=$resList[$idx]
+<p>
+<div>
+<a href="$url/aSearch?dbsInst=$ins&amp;userMode=$userMode&amp;method=$method&amp;userInput=$input">
+$ins.upper()
+</a>, 
+found $res results
+</div>
+</p>
+#end for
+</td>
+
+</tr>
+
+</table>
+<hr class="dbs" />
+
+<!-- end of templateSiteBanner.tmpl -->
+
