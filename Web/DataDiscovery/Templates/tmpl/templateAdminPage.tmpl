@@ -33,20 +33,24 @@ Check requests by status:
 </tr>
 </table>
 
+#import types
+#for $result in $rList
 <hr class="dbs" />
 
-#import types
-####if $result and $type($result) is $types.ListType
 #if $result and $type($result) is $types.InstanceType
 <table>
-####for req in $result
 #set req=$result
 <tr>
 <td>
 source URL
 </td>
 <td>
+#try
 $req._srcUrl._url
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -55,7 +59,12 @@ $req._srcUrl._url
 destination URL
 </td>
 <td>
+#try
 $req._dstUrl._url
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -64,7 +73,12 @@ $req._dstUrl._url
 dataset path
 </td>
 <td>
+#try
 $req._path
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -73,7 +87,12 @@ $req._path
 with force
 </td>
 <td>
+#try
 $req._withForce
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -82,7 +101,12 @@ $req._withForce
 with parents
 </td>
 <td>
+#try
 $req._withParents
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -91,7 +115,12 @@ $req._withParents
 Notify
 </td>
 <td>
+#try
 $req._notify
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -101,7 +130,12 @@ $req._notify
 Status
 </td>
 <td>
+#try
 $req._status
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -110,7 +144,12 @@ $req._status
 Progress
 </td>
 <td>
+#try
 $req._progress
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -119,7 +158,26 @@ $req._progress
 Details
 </td>
 <td>
+#try
 $req._detail
+#except
+N/A
+#pass
+#end try
+</td>
+</tr>
+
+<tr>
+<td>
+Id
+</td>
+<td>
+#try
+$req._id
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
 
@@ -128,10 +186,14 @@ $req._detail
 <b>Delete:</b>
 </td>
 <td>
+#try
 <a href="ms_deleteRequest?userMode=$userMode&srcUrl=$req._srcUrl._url&dstUrl=$req._dstUrl._url&path=$req._path">request</a>
+#except
+N/A
+#pass
+#end try
 </td>
 </tr>
-#####end for
 </table>
 #elif $type($result) is $types.StringType
 $result
@@ -141,5 +203,6 @@ Got unknown result type for your request.
 $str($result)
 </pre>
 #end if
+#end for
 <!-- end of templateAdminPage -->
 
