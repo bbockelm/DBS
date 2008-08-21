@@ -60,24 +60,35 @@ def indexDict(modName, modRef):
             if isinstance(value,vstring):
                 # special case, if vstring is pythia parameter set, expand
                 #print "key",key.find("pythia")
-                """ this still needs to be fixed, the following example does not work, need to figure out general case
-                vstring PythiaSource.PythiaParameters.parameterSets=['pythiaUESettings', 'processParameters']
-                vstring PythiaSource.PythiaParameters.processParameters=['MSEL=1               ! QCD hight pT processes',
-                'CKIN(3)=170.          ! minimum pt hat for hard interactions', 'CKIN(4)=230.          ! maximum pt hat for hard interactions']
+                """ this still needs to be fixed, the following example does not
+                    work, need to figure out general case vstring PythiaSource.
+                    PythiaParameters.parameterSets=['pythiaUESettings', 'processParameters']
+                    vstring PythiaSource.PythiaParameters.processParameters=
+                    ['MSEL=1 ! QCD hight pT processes',
+                     'CKIN(3)=170.          ! minimum pt hat for hard interactions',
+                     'CKIN(4)=230.          ! maximum pt hat for hard interactions']
 
-                I think the solution is to find the "PythiaParameters" and look for each entry in the list i.e. in this
-                case 'pythiaUESettings' and 'processParameters'. Need to find out . LL 5/21/2008
+                    I think the solution may be to find the "PythiaParameters" and
+                    look for each entry in the list i.e. in this
+                    case 'pythiaUESettings' and 'processParameters'.
+                    Need to find out . LL 5/21/2008 (fix for PythiaParameters LL 7/2/2008)
                 """
-                if key.find("pythia")>=0:
+                if key.find("pythiaUESettings")>=0 or key.find("processParameters")>=0 :
                     #pdb.set_trace()
                     for param in value.value():
+                       #found case with "=1. 0" (extra space)
+                       param=param.replace(" ","")
                        name,val=strip(param.split("!")[0]).split("=")
                        result.append(("double", "%s.%s.%s=%s" % ( modName, key, name, val)))
                 else:
                     # not a pythia parameter
                     valueOrValues=value.value()
-                    result.append((value.configTypeName(), "%s.%s=%s" % ( modName, key, valueOrValues)))
-                continue    
+                    result.append((value.configTypeName(), "%s.%s=%s%s%s" % ( modName, key,'"', valueOrValues,'"'))) #needs to have quotes
+                continue
+            if isinstance(value,double) or isinstance(value, int32) or isinstance(value, bool) or isinstance(value, uint32) :
+                valueOrValues=value.value()
+                result.append((value.configTypeName(), "%s.%s=%s" % ( modName, key, valueOrValues)))
+                continue
             if isinstance(value,VInputTag):
                 # VInputTags need to be converted to a list. There may be others that also need conversion
                 valueOrValues=[]
@@ -91,12 +102,12 @@ def indexDict(modName, modRef):
                 #valueOrValues={}
                 #for  i in value.value(): valueOrValues.append(i.getModuleLabel())
                 #valueOrValues=value.value() #this is not correct, needs to be fixed.
-            elif isinstance(value,string):
+            elif isinstance(value,string) or isinstance(value,vstring) :
                 #string needs to have "" around it
-                valueOrValues='"'+value.value()+'"'
+                valueOrValues=value.value()
             else:
                 valueOrValues=value.value()
-            result.append((value.configTypeName(), "%s.%s=%s" % ( modName, key, valueOrValues)))
+            result.append((value.configTypeName(), "%s.%s=%s%s%s" % ( modName, key,'"', valueOrValues, '"')))
         else:
             #  //
             # // Recursively descend into PSet
