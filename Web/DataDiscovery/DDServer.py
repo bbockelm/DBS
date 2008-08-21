@@ -1295,11 +1295,13 @@ class DDServer(DDLogger,Controller):
     def adminDataset(self,dbsInst,dataset,userMode,siteList="[]",**kwargs):
         page = self.genTopHTML(userMode=userMode)
         # check that supplied instance and dataset are real
-        nRes = self.aSearch(dbsInst,userInput="find dataset where dataset = '%s'"%dataset)
+        nRes = self.aSearch(dbsInst,userInput="find dataset where dataset = '%s'"%dataset,results=1)
         if nRes!=1:
            page+="<p>No '%s' dataset found in DBS"%dataset
            page+= self.genBottomHTML()
            return page
+        if siteList=="[]":
+           siteList=str(self.helper.getSiteList(dataset.strip()))
         page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin tasks',userMode)
 
         # auto-competion form for processed datasets
@@ -1314,14 +1316,14 @@ class DDServer(DDLogger,Controller):
         if kwargs.has_key("site"):
            site=kwargs["site"]
         blkList=self.helper.getBlocksFromSite(site=site,datasetPath=dataset)
-        siteDict=sortSitesByDomain(siteList[1:-1].replace(" ","").replace("'","").split(","))
+#        siteDict=sortSitesByDomain(siteList[1:-1].replace(" ","").replace("'","").split(","))
         nameSpace={
                   'dbsInst' : dbsInst,
                   'dataset' : dataset,
                   'dbsList' : dbsList,
                   'dbsListOrig': self.dbsList,
                   'blkList' : blkList,
-                  'siteDict': siteDict,
+                  'siteList': siteList[1:-1].replace("'",""),
                   'style'   : "",
                   'userMode': userMode,
                   'adminUrl': self.adminUrl,
