@@ -5758,7 +5758,7 @@ Save query as:
             oDict[key]=kwargs[key]
         return oDict
 
-    def aSearch(self,dbsInst,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+    def aSearch(self,dbsInst=DBSGLOBAL,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         t0=time.time()
         _idx=int(_idx)
         method = getArg(kwargs,'method',self.iface)
