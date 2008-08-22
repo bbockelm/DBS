@@ -43,6 +43,9 @@ __version__ = "$Name:  $"
 #DBSWARNING=3
 
 
+clientVersion = __version__.replace("$Name:", "")
+clientVersion = clientVersion.replace("$", "").strip()
+
 def makeAPI(url):
 		#args = {}
 		#args['url'] = url

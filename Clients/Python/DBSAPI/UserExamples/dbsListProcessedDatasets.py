@@ -23,6 +23,7 @@ try:
   path = '/RelValMinBias/CMSSW_2_1_2_STARTUP_V5_v3/GEN-SIM-RECO'
   params = path.split('/')
   for proc in api.listProcessedDatasets(patternPrim=params[1],  patternProc = params[2]):
+     """
      algoList =  proc['AlgoList']
      for aAlgo in algoList:
 	     print aAlgo['ApplicationVersion']
@@ -32,7 +33,7 @@ try:
 	     tmpAlgoList =  api.listAlgorithms( patternVer=aAlgo['ApplicationVersion'], patternFam=aAlgo['ApplicationFamily'], patternExe=aAlgo['ExecutableName'], patternPS=aAlgo['ParameterSetID']['Hash'])
 	     for atmpAlgo in tmpAlgoList :
 		     print atmpAlgo['ParameterSetID']['Content']
-  
+     """
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

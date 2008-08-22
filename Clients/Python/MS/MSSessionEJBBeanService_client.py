@@ -16,7 +16,8 @@ import ZSI
 # Locator
 class MSSessionEJBBeanServiceLocator:
     #MSSessionEJBBeanPort_address = "http://plasma.dhcp.fnal.gov:8080/ms-msejb/MSSessionEJB"
-    MSSessionEJBBeanPort_address = "http://cmssrv48.fnal.gov:8585/ms-msejb/MSSessionEJB"
+    #MSSessionEJBBeanPort_address = "http://cmssrv48.fnal.gov:8585/ms-msejb/MSSessionEJB"
+    MSSessionEJBBeanPort_address = "http://vocms25.cern.ch:8080/ms-msejb/MSSessionEJB"
     def getMSSessionEJBBeanPortAddress(self):
         return MSSessionEJBBeanServiceLocator.MSSessionEJBBeanPort_address
     def getMSSessionEJBBeanPort(self, url=None, **kw):
