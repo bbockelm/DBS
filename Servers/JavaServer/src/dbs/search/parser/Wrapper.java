@@ -23,6 +23,8 @@ public class Wrapper {
 	public String getQuery(String query, String begin, String end, String db) throws Exception {
 
 		String queryToReturn ="";
+		//System.out.println("Query " + query);
+			
 
 		try{		
 			//ByteArrayInputStream bis = new ByteArrayInputStream(query.getBytes());

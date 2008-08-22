@@ -47,6 +47,9 @@ public class QueryBuilder {
 	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws) throws Exception{
 		return genQuery(kws, cs, okws, "", "");
 	}
+	private void checkMax(int iter) throws Exception {
+		if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+	}
 	//public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
 	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String begin, String end) throws Exception{
 		//Store all the keywors both from select and where in allKws
@@ -76,7 +79,7 @@ public class QueryBuilder {
 
 		}
 		for (int i =0 ; i!= kws.size(); ++i) {
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			String aKw = (String)kws.get(i);
 			if(aKw.toLowerCase().startsWith("count") || aKw.toLowerCase().endsWith("count")) countPresent = true;
 			if(aKw.toLowerCase().startsWith("sum")) sumPresent = true;
@@ -85,7 +88,7 @@ public class QueryBuilder {
 		if(sumPresent || countPresent) sumQuery += selectStr;
 		String query = "SELECT DISTINCT \n\t";
 		for (int i =0 ; i!= kws.size(); ++i) {
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			String aKw = (String)kws.get(i);
 			if (i!=0) query += "\n\t,";
 			//If path supplied in select then always use block path. If supplied in where then user procDS ID
@@ -93,6 +96,7 @@ public class QueryBuilder {
 				query += getIntLumiSelectQuery();
 			//System.out.println("line 2.1.1");
 			} else if(aKw.toLowerCase().startsWith("sum")) {
+				checkMax(iter);
 				aKw = aKw.toLowerCase();
 				String keyword = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
 				keyword = keyword.trim();
@@ -112,6 +116,7 @@ public class QueryBuilder {
 				tmp = tmp.substring(0, tmp.length() - 1); // To get rid of last space
 				query += "\n\t," + tmp + "_SUM ";
 			} else if(aKw.toLowerCase().startsWith("count")) {
+				checkMax(iter);
 				aKw = aKw.toLowerCase();
 				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
 				entity = entity.trim();
@@ -132,6 +137,7 @@ public class QueryBuilder {
 					sumGroupByQuery += " COUNT ,";
 				}*/
 			} else if(Util.isSame(aKw, "dataset")) {
+				checkMax(iter);
 				allKws = addUniqueInList(allKws, "Block");
 				query += "Block.Path AS PATH";
 				if(iLumi) groupByQuery += "Block.Path,";
@@ -145,6 +151,7 @@ public class QueryBuilder {
 				if(iLumi && (i < 2) ) {
 					allKws = addUniqueInList(allKws, "Runs");
 					allKws = addUniqueInList(allKws, "LumiSection");
+					checkMax(iter);
 				}
 				
 
@@ -160,6 +167,7 @@ public class QueryBuilder {
 				if(count == 1) {
 					//Get default from vertex
 			//System.out.println("line 5");
+					checkMax(iter);
 					String tmp =  makeQueryFromDefaults(vFirst);	
 					query += tmp;
 					if(iLumi) groupByQuery += makeGroupQueryFromDefaults(vFirst);			
@@ -175,6 +183,7 @@ public class QueryBuilder {
 				} else {
 
 			//System.out.println("line 6");
+					checkMax(iter);
 					boolean addQuery = true;
 					String token2 = st.nextToken();
 					String tmpTableName =  token + "_" + token2;
@@ -191,6 +200,7 @@ public class QueryBuilder {
 					}*/
 					if(Util.isSame(token2, "release") ||
 							Util.isSame(token2, "tier")) {
+						checkMax(iter);
 						String realName = u.getMappedRealName(token2);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
 						String tmp = makeQueryFromDefaults(u.getVertex(realName));
@@ -209,6 +219,7 @@ public class QueryBuilder {
 					}
 
 					if(Util.isSame(token, "release")) {
+						checkMax(iter);
 						String realName = u.getMappedRealName(token);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
 						String tmp = makeQueryFromDefaults(u.getVertex(realName));
@@ -227,6 +238,7 @@ public class QueryBuilder {
 					}
 
 					if(Util.isSame(token2, "count")) {
+						checkMax(iter);
 						String realName = u.getMappedRealName(token);
 
 						String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
@@ -246,6 +258,7 @@ public class QueryBuilder {
 					}
 
 					if(Util.isSame(token2, "modby") || Util.isSame(token2, "createby")) {
+						checkMax(iter);
 						boolean dontJoin = false;
 						String personField = "CreatedBy";
 						if(Util.isSame(token2, "modby")) {
@@ -280,6 +293,7 @@ public class QueryBuilder {
 					}
 
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
+						checkMax(iter);
 						boolean dontJoin = false;
 						if(fileParentAdded) dontJoin = true;
 						fileParentAdded = true;
@@ -300,6 +314,7 @@ public class QueryBuilder {
 					}
 		
 					if(Util.isSame(token2, "child") && Util.isSame(token, "file")) {
+						checkMax(iter);
 						boolean dontJoin = false;
 						if(fileChildAdded) dontJoin = true;
 						fileChildAdded = true;
@@ -321,6 +336,7 @@ public class QueryBuilder {
 					}
 				
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
+						checkMax(iter);
 						boolean dontJoin = false;
 						if(procDsParentAdded) dontJoin = true;
 						procDsParentAdded = true;
@@ -342,6 +358,7 @@ public class QueryBuilder {
 
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "dataset")) {
 			//System.out.println("line 8");
+						checkMax(iter);
 						allKws = addUniqueInList(allKws, "Block");
 						boolean dontJoin = false;
 						if(datasetParentAdded) dontJoin = true;
@@ -360,11 +377,13 @@ public class QueryBuilder {
 					}
 
 					if(Util.isSame(token, "dataset")) {
+						checkMax(iter);
 						allKws = addUniqueInList(allKws, "ProcessedDataset");
 					}
 
 					Vertex vCombined = u.getMappedVertex(aKw);
 					if(vCombined == null) {
+						checkMax(iter);
 						if(addQuery) {
 							String mapVal =  km.getMappedValue(aKw, true);
 							//if(mapVal.equals(aKw)) throw new Exception("The keyword " + aKw + " not yet implemented in Query Builder" );
@@ -383,7 +402,9 @@ public class QueryBuilder {
 						}
 					} else {
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
+						checkMax(iter);
 						if(addQuery) {
+							checkMax(iter);
 							String tmp = makeQueryFromDefaults(vCombined);
 							query += tmp;			
 							if(iLumi) groupByQuery += makeGroupQueryFromDefaults(vCombined);
@@ -403,13 +424,14 @@ public class QueryBuilder {
 				}
 			}
 		}
+		checkMax(iter);
 		if(iLumi && (cs.size() > 0) ) {
 			allKws = addUniqueInList(allKws, "Runs");
 			allKws = addUniqueInList(allKws, "LumiSection");
 		}
 
 		for (int i =0 ; i!= cs.size(); ++i) {
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
 				Constraint o = (Constraint)obj;
@@ -446,7 +468,7 @@ public class QueryBuilder {
 		//If File is not there then add Block
 		//Otherwise
 		for (int i =0 ; i!= cs.size(); ++i) {
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
 				Constraint o = (Constraint)obj;
@@ -482,7 +504,7 @@ public class QueryBuilder {
 		if (cs.size() > 0) queryWhere += "\nWHERE\n";
 		
 		for (int i =0 ; i!= cs.size(); ++i) {
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
 			if(i%2 == 0) {
 				Constraint co = (Constraint)obj;
@@ -646,7 +668,7 @@ public class QueryBuilder {
 
 		boolean orderOnce = false;
 		for(Object o: okws){
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			String orderBy = (String)o;
 			if(!orderOnce) {
 				query += " ORDER BY ";
@@ -701,7 +723,7 @@ public class QueryBuilder {
 		return " AS " + in.replace('.', '_') + " ";
 	}
 	
-	private String genOraclePageQuery(String query) {
+	private String genOraclePageQuery(String query) throws Exception{
 		System.out.println(query);
 		String tokenAS = "AS";
 		String tokenFrom = "FROM";
@@ -717,7 +739,9 @@ public class QueryBuilder {
 		StringTokenizer st = new StringTokenizer(tmpStr, ",");
 		int numberOfKeywords = st.countTokens();
 		String toReturn = "SELECT ";
+		int iter = 0 ;
 		for(int i = 0; i != numberOfKeywords; ++i) {
+			++iter; checkMax(iter);
 			String tmpToken = st.nextToken();
 			int indexOfAs = tmpToken.indexOf(tokenAS);
 			if(indexOfAs == -1)  return query;
@@ -733,12 +757,14 @@ public class QueryBuilder {
 			
 	}
 
-	private String makeQueryFromDefaults(Vertex v){
+	private String makeQueryFromDefaults(Vertex v)  throws Exception {
 		String realVal = u.getRealFromVertex(v);
 		StringTokenizer st = new StringTokenizer(u.getDefaultFromVertex(v), ",");
 		int countDefTokens = st.countTokens();
 		String query = "";
+		int iter = 0 ;
 		for (int j = 0; j != countDefTokens; ++j) {
+			++iter; checkMax(iter);
 			if(j != 0) query += ",";
 			String token = st.nextToken();
 			query += realVal + "." + token + makeAs(realVal + "." + token);
@@ -747,12 +773,14 @@ public class QueryBuilder {
 
 	}
 	
-	private String makeGroupQueryFromDefaults(Vertex v){
+	private String makeGroupQueryFromDefaults(Vertex v)  throws Exception {
 		String realVal = u.getRealFromVertex(v);
 		StringTokenizer st = new StringTokenizer(u.getDefaultFromVertex(v), ",");
 		int countDefTokens = st.countTokens();
 		String query = "";
+		int iter = 0 ;
 		for (int j = 0; j != countDefTokens; ++j) {
+			++iter; checkMax(iter);
 			String token = st.nextToken();
 			query += realVal + "." + token + ",";
 		}
@@ -767,9 +795,9 @@ public class QueryBuilder {
 		String query = "\nFROM\n\t"  + owner() + (String)lKeywords.get(0) + "\n";
 		int len = lKeywords.size();
 		for(int i = 1 ; i != len ; ++i ) {
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			for(int j = (i-1) ; j != -1 ; --j ) {
-					++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+					++iter;	checkMax(iter);
 					String v1 = (String)lKeywords.get(i);
 					String v2 = (String)lKeywords.get(j);
 					//if(! (isIn(uniquePassed, v1 + "," + v2 )) && !(isIn(uniquePassed, v2 + "," + v1))) {
@@ -792,9 +820,11 @@ public class QueryBuilder {
 		return query;
 	}
 	
-	private boolean isIn(ArrayList aList, String key) {
+	private boolean isIn(ArrayList aList, String key)  throws Exception {
+		int iter = 0 ;
 		for (int i = 0 ; i != aList.size(); ++i) {
 			if( ((String)(aList.get(i) )).equals(key)) return true;
+			++iter; checkMax(iter);
 		}
 		return false;
 	}
@@ -837,11 +867,13 @@ public class QueryBuilder {
 		return "LIKE ?";
 	}
 
-	private String handleIn(String val) {
+	private String handleIn(String val)  throws Exception {
     		String query = "IN (";
     		StringTokenizer st = new StringTokenizer(val, ",");
 		int count =  st.countTokens();
+		int iter = 0 ;
 		for(int k = 0 ; k != count ; ++k) {
+			++iter; checkMax(iter);
 			if(k != 0) query += ",";
 			//query += "'" + st.nextToken() + "'";
 			query += "?";
@@ -850,7 +882,7 @@ public class QueryBuilder {
 		query += ")";
 		return query;
 	}
-	private String handleOp(String op, String val) {
+	private String handleOp(String op, String val)  throws Exception {
 		String query = "";
 		if(Util.isSame(op, "in")) query += handleIn(val);
 		else if(Util.isSame(op, "like")) query += handleLike(val);
@@ -936,8 +968,11 @@ public class QueryBuilder {
 		if(sqlObj.size() == 2) {
 			dqQuery = (String)sqlObj.get(0);
 			Vector bindVals = (Vector)sqlObj.get(1);
-			
-			for(Object s: bindVals) bindValues.add((String)s);
+			int iter = 0 ;
+			for(Object s: bindVals) {
+				++iter; checkMax(iter);
+				bindValues.add((String)s);
+			}
 		}
 		//call DQ function
 		//List<String> bindValuesFromDQ = ; //Get from DQ function
@@ -952,7 +987,9 @@ public class QueryBuilder {
 		List<String> hashs = cc.getPsetHash(val);
 		String query = " IN ( \n";
 		int count = 0;
+		int iter = 0 ;
 		for (String aHash: hashs) {
+			++iter; checkMax(iter);
 			//System.out.println("Hash is " + aHash);
 			if(count != 0) query += ",";
 			++count;
@@ -972,10 +1009,12 @@ public class QueryBuilder {
 		System.out.println("VAL is " + val);
 		String query = " IN ( \n";
 		SiteClient cc = new SiteClient();
+		int iter = 0 ;
 		if(op.equals("in")) {
 			StringTokenizer st = new StringTokenizer(val, ",");
 			int numTokens =  st.countTokens();
 			for(int k = 0 ; k != numTokens ; ++k) {
+				++iter; checkMax(iter);
 				List<String> sites = cc.getSE(st.nextToken().trim());
 				int count = 0;
 				for (String aSite: sites) {
@@ -996,6 +1035,7 @@ public class QueryBuilder {
 			}
 			int count = 0;
 			for (String aSite: sites) {
+				++iter; checkMax(iter);
 				//System.out.println("Hash is " + aSite);
 				if(count != 0) query += ",";
 				++count;
@@ -1085,7 +1125,7 @@ public class QueryBuilder {
 
 
 
-	private ArrayList makeCompleteListOfVertexsOld(ArrayList lKeywords)  throws Exception  {
+	/*private ArrayList makeCompleteListOfVertexsOld(ArrayList lKeywords)  throws Exception  {
 		int len = lKeywords.size();
 		if(len <= 1) return lKeywords;
 		for(int i = 0 ; i != len ; ++i ) {
@@ -1114,7 +1154,7 @@ public class QueryBuilder {
 			}
 		}
 		return lKeywords;
-	}
+	}*/
 
 
 	private ArrayList makeCompleteListOfVertexs(ArrayList lKeywords)  throws Exception {
@@ -1125,13 +1165,13 @@ public class QueryBuilder {
 		int prevLen = 0;
 		int iter = 0;
 		while(len != 0) {
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			boolean breakFree = false;
 			for(int i = 0 ; i != len ; ++i ) {
-				++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+				++iter;	checkMax(iter);
 				int lenRount = myRoute.size();
 				for(int j = 0 ; j != lenRount ; ++j ) {
-					++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+					++iter;	checkMax(iter);
 					String keyInMyRoute = (String)myRoute.get(j);
 					String keyInArray = (String)lKeywords.get(i);
 					if(keyInArray.equals(keyInMyRoute)) {
@@ -1155,7 +1195,7 @@ public class QueryBuilder {
 					//System.out.println("PATH " + u.getFirstNameFromEdge(e) + "  --- " + u.getSecondNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getFirstNameFromEdge(e));
 					myRoute = addUniqueInList(myRoute, u.getSecondNameFromEdge(e));
-					++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+					++iter;	checkMax(iter);
 				}
 				if(lEdges.size() > 0) lKeywords.remove(0);
 				else {
@@ -1177,7 +1217,9 @@ public class QueryBuilder {
 		//System.out.println("INSIDE sortVertexs");
 		int len = lKeywords.size();
 		String leaf = "";
+		int iter = 0;
 		for(int i = 0 ; i != len ; ++i ) {
+			++iter; checkMax(iter);
 			String aVertex = (String)lKeywords.get(i);
 			if(isLeaf(aVertex, lKeywords)) {
 				leaf = aVertex;
@@ -1191,13 +1233,11 @@ public class QueryBuilder {
 		toReturn.add(leaf);
 		
 		int reps = -1;
-		int iter = 0;
 		while( toReturn.size() != len) {
 			++reps;
-			++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+			++iter;	checkMax(iter);
 			for(int j = 0 ; j != len ; ++j ) {
-				++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
-				if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+				++iter;	checkMax(iter);
 				String aVertex = (String)lKeywords.get(j);
 				if(!aVertex.equals(leaf)) {
 					if(!isIn(toReturn, aVertex)) {
@@ -1211,7 +1251,7 @@ public class QueryBuilder {
 							}
 						} else {
 							for (int k = (toReturn.size() - 1) ; k != -1 ; --k) {
-								++iter;	if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
+								++iter;	checkMax(iter);
 								//System.out.println("Cheking edge between " + (String)toReturn.get(k) + " and " + aVertex);
 								if(u.doesEdgeExist((String)toReturn.get(k), aVertex)) {
 									toReturn = addUniqueInList(toReturn, aVertex);
@@ -1229,10 +1269,12 @@ public class QueryBuilder {
 		
 		return toReturn;
 	}
-	private boolean isLeaf(String aVertex, ArrayList lKeyword) {
+	private boolean isLeaf(String aVertex, ArrayList lKeyword)  throws Exception {
 		int count = 0;
 		Set s = u.getVertex(aVertex).getNeighbors();
+		int iter = 0;
 		for (Iterator eIt = s.iterator(); eIt.hasNext(); ) {
+			++iter; checkMax(iter);
 			String neighbor = u.getRealFromVertex((Vertex) eIt.next());
 			//System.out.println("neighbour " + neighbor);
 			if(isIn(lKeyword, neighbor)) ++count;

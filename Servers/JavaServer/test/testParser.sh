@@ -206,3 +206,5 @@ executeQuery
 	#$CMD query="find file, site  where site = T1_FR_CCIN2P3"
 
 	#$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
+	#$CMD query="find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0"
+	#$CMD query="find dataset" 

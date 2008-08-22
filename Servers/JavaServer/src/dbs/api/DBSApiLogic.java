@@ -1,6 +1,6 @@
 /**
- $Revision: 1.141 $"
- $Id: DBSApiLogic.java,v 1.141 2008/07/08 21:45:32 sekhri Exp $"
+ $Revision: 1.142 $"
+ $Id: DBSApiLogic.java,v 1.142 2008/07/17 20:42:49 sekhri Exp $"
  *
  */
 
@@ -187,15 +187,17 @@ public class DBSApiLogic {
 		Wrapper wr = new Wrapper();
 		String finalQuery = wr.getQuery(userQuery, begin, end, db);
 		List<String> bindValues = wr.getBindValues();
-		List<Integer> bindIntValues = wr.getBindIntValues();
+		List<Integer> bindIntValues = wr.getBindIntValues();*/
+		System.out.println("executeQuery DATE :" + (new Date()).toString());
 		System.out.println("____________________________________ User Query ___________________________________");
 		System.out.println(userQuery);
 		System.out.println("___________________________________________________________________________________");
-		System.out.println("_________________________________ Generated Query _________________________________");
-		System.out.println(finalQuery);
-		System.out.println("___________________________________________________________________________________");*/
 		ArrayList objList = executeQuery(conn, out, userQuery, begin, end);
 		String finalQuery = (String)objList.get(1);
+		System.out.println("_________________________________ Generated Query _________________________________");
+		System.out.println(finalQuery);
+		System.out.println("___________________________________________________________________________________");
+
 		//String valentinQuery = finalQuery;
 		List<String> bindValues = (List<String>)objList.get(2);
 		List<Integer> bindIntValues = (List<Integer>)objList.get(3);
@@ -261,21 +263,59 @@ public class DBSApiLogic {
 		if(type.equals("query")) return;
 			
 		PreparedStatement ps = null;
-		ResultSet rs =  null;
+		DBSApiExecuteQuery querier = null;
+		//ResultSet rs =  null;
 		try {
 			ps = DBSSql.getQuery(conn, finalQuery, bindValues, bindIntValues);
-			//out.write("<readable_query>\n");
-			//out.write(StringEscapeUtils.escapeXml(ps.toString()) + "\n");
-			//out.write("</readable_query>\n");
 			pushQuery(ps);
-			rs = ps.executeQuery();
+			querier = new DBSApiExecuteQuery();
+			QueryThread queryThread = new QueryThread(out, querier, finalQuery, ps);
+			/*Thread queryThread = new Thread(){
+				public void run() {
+					String threadName = Thread.currentThread().getName();
+					try {
+						querier.runQuery(out, finalQuery, ps);
+						System.out.println("Thread " + threadName + " completed");
+					} catch (Exception e) {
+						System.out.println("\tInterruptedException in thread " + threadName);
+					}
+				}
+			};*/
+
+			long startTime = (new Date()).getTime();
+			final long TIMEOUT = 120000;
+			final long SLEEPINTERVAL = 1000;
+			queryThread.start();
+			while(true) {
+				long endTime = (new Date()).getTime();
+				if((endTime - startTime ) < TIMEOUT) {
+					System.out.println("Start time " + startTime + "  end time " + endTime + "  diff " + (endTime - startTime ));
+					if(!queryThread.isAlive()) {
+						//System.out.println("cheked to see if alive . NOT ALIVE");
+						return;
+					}
+					//} else {
+						//System.out.println("cheked to see if alive . ITS ALIVE");
+					//}
+					//System.out.println("Thread sleeping ");
+					Thread.sleep(SLEEPINTERVAL);
+					//System.out.println("Thread slept DONE");
+				} else {
+					//System.out.println("Intrupting thread");
+					queryThread.interrupt();
+					throw new Exception("Your query " + userQuery + "took too long to execute . It is killed. The generated query is " + finalQuery);
+					//System.out.println("Intrupting thread DONE");
+					//return;
+				}
+			}
+			
+			/*rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int numberOfColumns = rsmd.getColumnCount();
 			String[] colNames =new String[numberOfColumns];
 			for (int i = 0; i != numberOfColumns; ++i) {
 				colNames[i] = rsmd.getColumnName(i + 1);
 			}
-			//out.write("****************************** OUTPUT ***************************************\n");
 			while(rs.next()) {
 				out.write(((String) "<result "));
 				for (int i = 0; i != numberOfColumns; ++i) {
@@ -283,25 +323,17 @@ public class DBSApiLogic {
 					if(colNames[i].toLowerCase().indexOf("date") != -1) {
 						out.write(((String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)) + "' "));
 							
-						/*out.write(((String) 
-									(new Timestamp(Long.valueOf( get(rs, colNames[i])) * 1000
-										       ).toString() +"' "
-									 ) 
-							));*/
 					}
 					else out.write(((String) get(rs, colNames[i] ) +"' "));
 				}
 				out.write(((String) "/>\n"));
-			}
-			//out.write("****************************** OUTPUT ***************************************\n\n\n");
-
-		//} catch (Exception ex) {
-		//	System.out.println("" + ex.getMessage() );
-		//	throw ex;
-
+			}*/
+			
 		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
+			//if (rs != null) rs.close();
+			//if (ps != null) ps.close();
+			if (querier != null) querier.close();
+			System.out.println("_______________________________EXECUTE QUERY DONE _________________________");
 		}
 	}
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.136 $"
- $Id: DBSApi.java,v 1.136 2008/07/15 16:00:23 sekhri Exp $"
+ $Revision: 1.137 $"
+ $Id: DBSApi.java,v 1.137 2008/07/28 19:11:23 sekhri Exp $"
  *
 */
 
@@ -722,6 +722,7 @@ public class DBSApi {
 						get(table, "tag", false)
 						);
 			} else if (apiStr.equals("executeQuery")) {
+				System.out.println("executeQuery invoked by " + get(dbsUser, "user_dn", false));
                                 (new DBSApiLogic(this.data)).executeQuery(conn, out, 
 									  get(table, "query", true),
 									  get(table, "begin", false),
