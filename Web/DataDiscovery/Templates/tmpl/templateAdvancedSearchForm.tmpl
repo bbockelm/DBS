@@ -274,7 +274,7 @@ Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 function ChangeMethod() {
    var id=document.getElementById('method');
    var jd=document.getElementById('checkMethod');
-   if (jd.checked==true) {
+   if (jd && jd.checked==true) {
        id.value='dbsapi';
        SetCookie('DBSDD_method','dbsapi')
    } else {
@@ -300,21 +300,21 @@ function UpdateMethodUsage() {
    var url=window.location.href;
    if(url.search("method=dd")>0) {
       //SetCookie('DBSDD_method','dd');
-      mid.checked=false;
+      if(mid) mid.checked=false;
    } else if(url.search("method=dbsapi")>0) {
       //SetCookie('DBSDD_method','dbsapi');
-      mid.checked=true;
+      if(mid) mid.checked=true;
    } else {
        var method=GetCookie('DBSDD_method');
        if (method) {
           if (method=='dd') {
-              mid.checked=false;
+              if(mid) mid.checked=false;
           } else {
-              mid.checked=true;
+              if(mid) mid.checked=true;
           }
        }  else {
   //        SetCookie('DBSDD_method','dd');
-          mid.checked=false;
+          if(mid) mid.checked=false;
        }
    }
    ChangeMethod();
