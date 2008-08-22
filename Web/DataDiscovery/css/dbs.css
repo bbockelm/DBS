@@ -17,7 +17,8 @@
 .main  {
   margin-left: 1.2em;
   margin-right: 1.2em;
-  margin-top: 1.2em;
+/*  margin-top: 1.2em;*/
+  margin-top: 0em;
   margin-bottom: 1.2em;
   font-size: 12px;
   font-weight: normal;
@@ -1429,7 +1430,7 @@ table.selMenu th {
 }
 
 .submenu {
-    margin-top:-5px;
+    margin-top:-10px;
     background-color:rgb(100, 105, 115);
     font-size: 11px;
 /*    font-size: 0.625em;*/
