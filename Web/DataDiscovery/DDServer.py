@@ -2793,6 +2793,7 @@ All LFNs in a block
             else:
                page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\''%site,userMode)
             bList=[]
+            lfnList=[]
             try:
                 lfnList=self.helper.getLFNsFromSite(site,datasetPath,run)
             except:
@@ -2800,7 +2801,6 @@ All LFNs in a block
                    self.writeLog(getExcept())
                 printExcept()
                 page+="No LFNs found for site '%s'\n"%site
-                lfnLIst=[]
                 pass
             if what=="py":
                page+=self.formatLFNPoolSource(lfnList,[],what)
