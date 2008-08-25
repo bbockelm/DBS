@@ -5709,14 +5709,17 @@ Save query as:
                 prdDate,cBy,nblks,blkSize,nFiles,nEvts=mDict.values()[0]
                 seNames=dDict.keys()
                 if xml:
-                   nameSpace={'path':dataset,'date':prdDate,'nEvts':nEvts,'nFiles':nFiles,'nBlks':nblks,'blkSize':blkSize,'sites':seNames}
+                   nameSpace={'path':dataset,'date':prdDate,'nEvts':nEvts,'nFiles':nFiles,'nBlks':nblks,'blkSize':blkSize,'sites':seNames,'dDict':dDict}
                    t = templateDatasetXML(searchList=[nameSpace]).respond()
                    page+=str(t)
                 else:
                    for idx in xrange(0,len(seNames)):
                        if not seNames[idx]:
                           seNames[idx]="N/A"
-                   page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
+#                   page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
+                   page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located "%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize))
+                   for site in dDict.keys():
+                       page+="%s (files %s/%s) "%(site,dDict[site][4],nFiles) 
             counter+=1
         if grid:
            head=""
