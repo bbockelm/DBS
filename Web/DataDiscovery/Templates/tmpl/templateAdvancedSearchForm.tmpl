@@ -262,9 +262,9 @@ look-up total number of files and list runs for given dataset name
 Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 </p>
 #end if
-#if $userMode=='dbsExpert'
+#if $userMode=='expert'
 <p>
-<input type="checkbox" id="checkMethod" onChange="ChangeMethod()" checked='unchecked' /> check this box if you want to use DBS-QL, uncheck for DD interface
+<input type="checkbox" id="checkMethod" onChange="ChangeMethod()" checked='checked' /> check this box if you want to use DBS-QL, uncheck for DD QL implementation
 </p>
 #end if
 
@@ -282,6 +282,7 @@ function ChangeMethod() {
        SetCookie('DBSDD_method','dd')
    }
 }
+SetCookie('DBSDD_method','dbsapi');
 #if $len($userInput)
 SetCookie('DBSDD_ainput','$userInput')
 #else
