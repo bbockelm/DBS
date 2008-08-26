@@ -70,14 +70,14 @@ if __name__ == "__main__":
     iParams['XML']=1
     iParams['RUN']="47041,47042,47011,46972,46986,46992,46998,46999,47064,47068"
     url = "http://cmsmon.cern.ch/cmsdb/servlet/RunSummary"
-    http_handler = MyHTTPHandler(timeout = 15)
+    http_handler = MyHTTPHandler(timeout = 60)
     opener = urllib2.build_opener(http_handler)
     req = urllib2.Request(url,urllib.urlencode(iParams,doseq=True))
     data = opener.open(req).read()
     print data
 
     # Now let's fetch a URL
-#    http_handler = MyHTTPHandler(timeout = 15)
+#    http_handler = MyHTTPHandler(timeout = 60)
 #    opener = urllib2.build_opener(http_handler)
 #    req = urllib2.Request("http://tiinker.com")
 #    try:
