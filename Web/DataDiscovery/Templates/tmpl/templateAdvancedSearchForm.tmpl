@@ -100,8 +100,8 @@ specify what you're looking for. For example, run keyword instruct QL that you'r
 run number. Every keyword followed by constrain operator, such as equal "=". You can combine
 any number of constrains by using AND|OR keywords.
 <br/>
-A full description of the language can be found 
-<a href="https://twiki.cern.ch/twiki/bin/view/CMS/CMS-DBS-eXaqt">here</a>. Please note that
+A full description of the Query Language can be found 
+<a href="https://twiki.cern.ch/twiki/bin/view/CMS/QL">here</a>. Please note that
 it is still under development.
 <br/>
 <hr class="dbs"/>
@@ -143,6 +143,7 @@ $aSearchKeys
 <hr class="dbs"/>
 <br/>
 
+<!--
 <table width="100%"><tr><td align="left">
 <a name="SHORTCUTS">
 <span class="sectionhead">SHORTCUTS</span>
@@ -163,6 +164,7 @@ e.g. <span class="box_blue">find run where dataset=/Commissioning2008Ecal-A/*</s
 <br/>
 <hr class="dbs"/>
 <br/>
+-->
 
 <table width="100%"><tr><td align="left">
 <a name="EXAMPLES">
@@ -171,14 +173,16 @@ e.g. <span class="box_blue">find run where dataset=/Commissioning2008Ecal-A/*</s
 </td><td align="right">
 <a href="javascript:HideTag('aSearchHELP')">close &#8855;</a>
 </td></tr></table>
+<!--
 <em class="box_blue">
 *QCD*
 </em>
 <br/>
 shortcut for look-up all datasets whose name matched QCD pattern.
 <br/><br/>
+-->
 <em class="box_blue">
-dataset like *
+find dataset where dataset like *
 </em>
 <br/>
 look-up all datasets in DBS
@@ -201,13 +205,14 @@ dataset like *Online* and site=srm.cern.ch
 look-up datasets with dataset path matched pattern *Online* and located at srm.cern.ch.
 <br/><br/>
 <em class="box_blue">
-dataset like *Online* and site=T2_UK*
+dataset like *Online* and site like T2_UK*
 </em>
 <br/>
 look-up datasets with dataset path matched pattern *Online* and located at all T2_UK sites
 <br/><br/>
 <em class="box_blue">
-find dataset where run between 34850-36000 or run in 34850,34890
+##find dataset where run between 34850-36000 or run in 34850,34890
+find dataset where run between 34850 and 36000 or run in (34850,34890)
 </em>
 <br/>
 look-up dataset with runs within a given run ranges. The
@@ -238,11 +243,19 @@ find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW
 <br/>
 look-up files and runs for given dataset name
 <br/><br/>
+<!--
 <em class="box_blue">
 find total(file),run where dataset=/Commissioning2008Ecal-A/Online/RAW
 </em>
 <br/>
 look-up total number of files and list runs for given dataset name
+<br/>
+-->
+<em class="box_blue">
+find sum(file.size),run where dataset=/Commissioning2008Ecal-A/Online/RAW
+</em>
+<br/>
+look-up total size of files and list runs for given dataset name
 <br/>
 <hr class="dbs"/>
 </td>
