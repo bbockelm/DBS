@@ -1430,13 +1430,15 @@ table.selMenu th {
 }
 
 .submenu {
-    margin-top:-10px;
     background-color:rgb(100, 105, 115);
     font-size: 11px;
-/*    font-size: 0.625em;*/
-/*    color:rgb(129, 136, 149);*/
     color: #ffffff;
-    padding: 5px 5px 5px 5px;
+/*    padding: 5px 5px 5px 5px;*/
+/*  the dmws setup body margin and padding. Firefox/Safari treat it differently.
+    To avoid that I add more padding for top and use margin to align page. 
+    This way submenu looks ok in both browsers */ 
+    margin-top:-10px;
+    padding: 15px 5px 5px 5px;
     text-decoration: none;
 }
 a.submenu
