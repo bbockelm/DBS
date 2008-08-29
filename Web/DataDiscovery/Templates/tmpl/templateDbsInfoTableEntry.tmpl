@@ -17,14 +17,12 @@
 #end if
 </tr>
 
-#from DDUtil import sizeFormat, colorSizeHTMLFormat
-###from DDUtil import splitString 
+#from utils.DDUtil import sizeFormat, colorSizeHTMLFormat
 #for dbsDict in $dbsList
 #set prdName=$dbsDict['ProcDSName']
 #set pName="/"+$prdName[1:].replace("/","<br>/")
 #set blockName=$dbsDict['Name']
 #set bName=$blockName.replace('#','%23')
-###set sName=$splitString($dbsDict['Name'],30,"\\n")
 #set sName=$blockName.replace('#','<br />#')
 <tr>
 <td align="left" >$pName</td>

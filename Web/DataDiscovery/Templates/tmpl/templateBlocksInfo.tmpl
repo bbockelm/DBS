@@ -28,8 +28,8 @@ contains $len($blkList) block(s)
 <td>Modification time</td>
 #end if
 </tr>
-#from DDUtil import sizeFormat, colorSizeHTMLFormat
-#from DDUtil import splitString 
+#from utils.DDUtil import sizeFormat, colorSizeHTMLFormat
+#from utils.DDUtil import splitString 
 #for item in $blkList
 #set blk=item[0]
 #set blockName=$blk
@@ -42,7 +42,7 @@ contains $len($blkList) block(s)
 #set mBy=item[7]
 #set mDate=item[8]
 #set seList=item[9]
-#from DDUtil import list2String
+#from utils.DDUtil import list2String
 #set seName=$list2String($seList,"html")
 #set bName=$blockName.replace('#','%23')
 #set sName=$blockName.replace('#',"<br />#")

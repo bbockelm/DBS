@@ -36,7 +36,7 @@ you may specify run ranges below in a form: minR-maxR,minR-maxR,...
 #set path=$block.replace("/","___")
 #set pname,bid=$block.split("#")
 #set tid=$bid.replace("-","_")
-#from DDUtil import sizeFormat, colorSizeHTMLFormat, list2String
+#from utils.DDUtil import sizeFormat, colorSizeHTMLFormat, list2String
 #set seName=$list2String($seList,"html")
 <li class="moreInfo">
 <input type="checkbox" name="block" value="$block" id="block_$tid" />
