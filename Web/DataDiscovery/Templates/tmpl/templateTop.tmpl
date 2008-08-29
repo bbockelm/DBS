@@ -14,8 +14,7 @@
 <link rel="icon" 
       type="image/png" 
       href="images/CMSLogo.png" />
-<link rel="stylesheet" type="text/css" href="css/dbs.css" />
-###<link rel="stylesheet" type="text/css" href="css/masthead_dbs.css" />
+<link rel="stylesheet" type="text/css" href="${host}/css/dbs.css" />
 
 <!-- YUI CSS -->
 <!--
@@ -23,22 +22,22 @@
 <link rel="stylesheet" type="text/css" href="${baseUrl}YUI/treeview/assets/tree.css">
 <link rel="stylesheet" type="text/css" href="${baseUrl}YUI/treeview/assets/skins/sam/treeview.css ">
 -->
-<link rel="stylesheet" type="text/css" href="YUI/container/assets/container.css" />
-<link rel="stylesheet" type="text/css" href="YUI/treeview/assets/tree.css" />
-<!-- <link rel="stylesheet" type="text/css" href="YUI/treeview/assets/skins/sam/treeview.css " /> -->
+<link rel="stylesheet" type="text/css" href="${host}/YUI/container/assets/container.css" />
+<!-- <link rel="stylesheet" type="text/css" href="${host}/YUI/treeview/assets/tree.css" /> -->
+<link rel="stylesheet" type="text/css" href="${host}/YUI/treeview/assets/skins/sam/treeview.css " />
 
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
 <!-- if JavaScripts enables, turn visiable content on -->
 
 <!-- YUI and WEBTOOLS -->
-<script type="text/javascript" src="js/yui_combined.txt.js"></script>
+<script type="text/javascript" src="${host}/js/yui_combined.txt.js"></script>
 
 <!-- <script type="text/javascript" src="${mastheadUrl}"></script> -->
-<script type="text/javascript" src="js/masthead.js"></script>
+<script type="text/javascript" src="${host}/js/masthead.js"></script>
 
 <!-- DD and its dependencies -->
-<script type="text/javascript" src="js/dd_combined.txt.js"></script>
+<script type="text/javascript" src="${host}/js/dd_combined.txt.js"></script>
 <script type="text/javascript">
 function footerMenuText() {
    return _footerMenuText('$userMode');
@@ -63,6 +62,9 @@ use a different browser with JavaScript support to use this page.
 </table>
 </noscript>
 
+<div id="main" class="hide">
+<script type="text/javascript">SetMain()</script>
+
 <div id="view_menu" class="hide" align="right">
 <table id="submenu" class="submenu">
 <tr>
@@ -78,8 +80,5 @@ use a different browser with JavaScript support to use this page.
 </tr>
 </table>
 </div>
-
-<div id="main" class="hide">
-<script type="text/javascript">SetMain()</script>
 
 <!-- end of templateTop.tmpl -->
