@@ -9,7 +9,7 @@
 <input type="hidden" name="sortOrder" id="sortOrder" value="desc" />
 <input type="hidden" name="sortName" id="sortName" value="" />
 <input type="hidden" name="grid" id="grid" value="0" />
-<input type="hidden" name="method" id="method" value="dd" />
+<input type="hidden" name="method" id="method" value="dbsapi" />
 </div>
 
 ## add table with case sensitivity and choice of dbs instance (in expert mode)
@@ -279,6 +279,8 @@ Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 <p>
 <input type="checkbox" id="checkMethod" onChange="ChangeMethod()" checked='checked' /> check this box if you want to use DBS-QL, uncheck for DD QL implementation
 </p>
+#else
+<input type="hidden" id="checkMethod" checked='checked' />
 #end if
 
 </div> <!-- end of center -->
