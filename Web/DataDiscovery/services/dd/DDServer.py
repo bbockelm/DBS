@@ -5294,7 +5294,7 @@ Save query as:
                if not html:
                   return traceback.format_exc()
                msg ="<pre>%s</pre>"%getExcMessage(userMode)
-               page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+               page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                return page
            result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if parents:
@@ -5798,7 +5798,7 @@ Save query as:
         except:
             if html:
                msg ="<pre>%s</pre>"%getExcMessage(userMode)
-               page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+               page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
             else:
                page=getExcMessage(userMode)
             return page
@@ -5831,7 +5831,7 @@ Save query as:
             if not html:
                return traceback.format_exc()
             msg ="<pre>%s</pre>"%getExcMessage(userMode)
-            page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+            page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
             return page
 
         fromRow  =_idx*pagerStep
@@ -5886,7 +5886,7 @@ Save query as:
                 if not html:
                    return traceback.format_exc()
                 msg ="<pre>%s</pre>"%getExcMessage(userMode)
-                page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+                page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                 return page
         else:
 
@@ -5896,7 +5896,7 @@ Save query as:
                 if not html:
                    return traceback.format_exc()
                 msg ="<pre>%s</pre>"%getExcMessage(userMode)
-                page = self._advanced(dbsInst=DBSGLOBAL,userMode=userMode,msg=msg)
+                page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                 return page
             nResults = self.qmaker.countSel(query,tabCol)
 
