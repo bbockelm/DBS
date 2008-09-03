@@ -1,8 +1,39 @@
 package dbs.search.qb.help;
 import java.util.Hashtable;
 import java.util.List;
+import java.io.Writer;
+
 public class Help {
 	private Hashtable map = new Hashtable();
+
+	private void printHelp(Writer out, Keyword kw) throws Exception {
+		out.write("<dbs-ql>\n" +
+			"\t<key>\n" +
+			 "\t<name>" + kw.entity + "</name>\n");
+		for(String attr: kw.attrs) out.write("\t<attr>" + attr + "</attr>\n");
+		out.write("\t<example>\n");
+		for(Example example: kw.examples) {
+			out.write("\t\t<desc>" + example.desc + "</desc>\n");
+			out.write("\t\t<query>" + example.query + "</query>\n");
+		}
+		out.write("\t</example>\n" +
+			 "\t</key>\n" +
+			 "</dbs-ql>\n");
+		out.flush();
+	}
+	
+	public void getHelp(Writer out, String entityIn) throws Exception {
+		entityIn = entityIn.toLowerCase();
+		if(!map.containsKey(entityIn)) {
+			out.write("This Keyword " + entityIn + " is NOT implemented. No help available.");
+			return;
+		} 
+		Keyword kw = (Keyword)map.get(entityIn);
+		printHelp(out, kw);
+		
+	}
+
+	
 	public Help() {
 		Example e;
 		Keyword kw;
@@ -527,6 +558,12 @@ public class Help {
 		//-------------------------------------------------------------------------
 
 
+
+	}
+
+	public static void main(String args[]) throws Exception{
+		Help h = new Help();
+		h.getHelp(new java.io.PrintWriter(System.out), args[0]);
 
 	}
 }

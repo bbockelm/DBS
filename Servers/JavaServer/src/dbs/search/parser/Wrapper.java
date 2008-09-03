@@ -59,7 +59,9 @@ public class Wrapper {
 			Token t =  nvae.token;
 			String msg = "Invalid Token " + t.getText() + " on line " + t.getLine() + " at column " + t.getCharPositionInLine() + "\n";
 			msg += "QUERY    " + query + "\nPOSITION ";
-			for(int i = 0; i != t.getCharPositionInLine(); ++i) msg += " ";
+			int pos = t.getCharPositionInLine();
+			if ( pos > 0 )	for(int i = 0; i != pos; ++i) msg += " ";
+			//for(int i = 0; i != pos; ++i) msg += " ";
 			msg += "^\n";
 			//System.out.println("col " + nvae.getColumn());
 			//System.out.println("file name " + nvae.getFilename());

@@ -175,7 +175,7 @@ executeQuery () {
 	#$CMD query="find file where dataset=/test_primary_001/TestProcessedDS111/SIM-GEN" 
 	#$CMD query="find sum(file.size), dataset where file.size > 0"
 	#$CMD query="find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
-executeQuery
+#executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
 	#$CMD query="find run,file  order by file, run"
@@ -203,8 +203,16 @@ executeQuery
 	#$CMD query="find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0"
 	#$CMD query="find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a"
 	#$CMD query="find dataset  where site = T1_FR_CCIN2P3"
-	#$CMD query="find file, site  where site = T1_FR_CCIN2P3"
+	#$CMD query="find dataset  where site like T1_FR_*"
+	#$CMD query="find dataset  where site in (T1_FR_CCIN2P3, dcache-se-cms.desy.de)"
 
 	#$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
 	#$CMD query="find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0"
 	#$CMD query="find dataset" 
+	#$CMD query="find dataset where dataset like *-CRUZET4*RECO or dataset like *-CRUZET4*RAW or dataset like *_CRUZET4*ALCARECO" 
+	#$CMD query="*tes t_primary_00" 
+	#$CMD query="find dataset where dataset like *csa*" 
+	#$CMD query="find dataset where dataset like *csa*" 
+	#$CMD query="find dataset where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
+	#$CMD query="find dataset where dataset like /csa07* or file like abc* or file.size > 0" 
+	$CMD query="find ilumi where run > 0"

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.142 $"
- $Id: DBSApiLogic.java,v 1.142 2008/07/17 20:42:49 sekhri Exp $"
+ $Revision: 1.143 $"
+ $Id: DBSApiLogic.java,v 1.143 2008/08/22 21:36:21 sekhri Exp $"
  *
  */
 
@@ -188,6 +188,8 @@ public class DBSApiLogic {
 		String finalQuery = wr.getQuery(userQuery, begin, end, db);
 		List<String> bindValues = wr.getBindValues();
 		List<Integer> bindIntValues = wr.getBindIntValues();*/
+		String tokens[] = userQuery.split(" ");
+		if (tokens.length == 1) userQuery = "find dataset where dataset like %" + userQuery + "%";
 		System.out.println("executeQuery DATE :" + (new Date()).toString());
 		System.out.println("____________________________________ User Query ___________________________________");
 		System.out.println(userQuery);

@@ -86,6 +86,9 @@ public class KeyMap {
 		return (String)map.get(key.toLowerCase());
 
 	}
+	public Hashtable getMap() {
+		return map;
+	}
 
 }
 
