@@ -39,6 +39,7 @@ from   utils.DDWS          import *
 # experiment
 from model.dd.DDQueryMaker import *
 from model.dd.DDRules      import *
+from model.dbs.Rules       import *
 
 #from   DDLucene  import *
 # load DBS history tables module
@@ -172,6 +173,7 @@ class DDServer(DDLogger,Controller):
         self.helper     = DDHelper(self.dbManager,self.dbs,self.iface,verbose,html=1)
         self.asearch    = DDSearch(dbsHelper=self.helper)
         self.ddrules    = DDRules(verbose)
+        self.dbsrules   = DbsRules(verbose)
         self.qmaker     = DDQueryMaker(self.dbManager,self.dbs)
         self.qmaker.setVerbose(verbose)
         self.dbsdls     = self.helper.getDbsDls()
@@ -5826,6 +5828,7 @@ Save query as:
             if method!="dbsapi":
                sel=self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case,method)
             else:
+               userInput = self.dbsrules.preParseInput(userInput)
                sel = userInput
         except:
             if not html:
