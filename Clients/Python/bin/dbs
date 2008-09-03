@@ -1,0 +1,2 @@
+python $DBSCMD_HOME/dbsCommandLine.py -c $@
+
