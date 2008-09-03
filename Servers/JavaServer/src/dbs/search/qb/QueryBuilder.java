@@ -615,9 +615,11 @@ public class QueryBuilder {
 						//Vertex vFirst = u.getMappedVertex(token);
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined == null) {
-							queryWhere += "\t" + km.getMappedValue(key, true) + " " ;
+							if(Util.isSame(op, "like")) queryWhere += "\t upper(" + km.getMappedValue(key, true) + ") " ;
+							else queryWhere += "\t" + km.getMappedValue(key, true) + " " ;
 						} else {
-						        queryWhere += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
+							if(Util.isSame(op, "like")) queryWhere += "\t upper(" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + ") ";
+							else queryWhere += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
 							//FIXME default can be list
 						}
 					}
@@ -864,7 +866,7 @@ public class QueryBuilder {
 	}
 	private String handleLike(String val) {
 		bindValues.add(val.replace('*','%'));
-		return "LIKE ?";
+		return "LIKE upper(?)";
 	}
 
 	private String handleIn(String val)  throws Exception {
@@ -948,9 +950,10 @@ public class QueryBuilder {
 		String query = " IN ( \n" +
 			"SELECT \n" +
 			"\tBlock.ID FROM " + owner() + "Block" +
-			"\tWHERE \n" + 
+			"\tWHERE \n" ;
 			//"\tBlock.Path " + op + " '" + path + "'\n" +
-			"\tBlock.Path ";// + op + " ?\n" +
+			if(Util.isSame(op, "like")) query += "\tupper(Block.Path) ";
+			else query += "\tBlock.Path ";// + op + " ?\n" +
 			//")";
 		/*if(Util.isSame(op, "in")) query += handleIn(path);
 		else if(Util.isSame(op, "like")) query += handleLike(path);
@@ -1007,15 +1010,25 @@ public class QueryBuilder {
 
 	private String handleSite(String val, String op) throws Exception {
 		System.out.println("VAL is " + val);
+		String extraQuery = "";
+		if(Util.isSame(op, "like")) extraQuery = "\tupper(StorageElement.SEName) ";
+		else extraQuery = "\tStorageElement.SEName ";
 		String query = " IN ( \n";
 		SiteClient cc = new SiteClient();
 		int iter = 0 ;
+		Vector tmpList = new Vector();
 		if(op.equals("in")) {
+			extraQuery += "IN (" ;
 			StringTokenizer st = new StringTokenizer(val, ",");
 			int numTokens =  st.countTokens();
 			for(int k = 0 ; k != numTokens ; ++k) {
 				++iter; checkMax(iter);
-				List<String> sites = cc.getSE(st.nextToken().trim());
+				String nextToken = st.nextToken().trim();
+				if(k != 0) extraQuery += ",";
+				extraQuery += "?";
+				tmpList.add(nextToken);
+
+				List<String> sites = cc.getSE(nextToken);
 				int count = 0;
 				for (String aSite: sites) {
 					//System.out.println("Hash is " + aSite);
@@ -1025,12 +1038,21 @@ public class QueryBuilder {
 					bindValues.add(aSite);
 				}
 			}
+			extraQuery += ")\n";
 		} else {
 			val = val.replace('*', '%');
+			if(Util.isSame(op, "like")) extraQuery += " LIKE upper(?) \n";
+			else extraQuery += " = ? \n";
+			tmpList.add(val);
+
 			List<String> sites = cc.getSE(val);
 			if(sites.size() == 1) {
-				 query = " LIKE ?";
+				 if(Util.isSame(op, "like")) query = " LIKE ? ";
+				 if(Util.isSame(op, "in")) query = " IN (?) ";
+				 if(Util.isSame(op, "=")) query = " = ?  ";
 				 bindValues.add((String)sites.get(0));
+				 query += "\n OR \n" + extraQuery;
+				 for(Object o: tmpList) bindValues.add((String)o);
 				 return query;
 			}
 			int count = 0;
@@ -1049,6 +1071,8 @@ public class QueryBuilder {
 		}
 			
 		query += "\n)";
+		query += "\n OR \n" + extraQuery;
+		for(Object o: tmpList) bindValues.add((String)o);
 		return query;
 	}
 
