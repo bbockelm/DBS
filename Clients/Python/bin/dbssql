@@ -1,1 +1,1 @@
-python $DBSCMD_HOME/dbsCommandLine.py -c search --query=\"$@\"
+python $DBSCMD_HOME/dbsCommandLine.py -c search --query="$@"
