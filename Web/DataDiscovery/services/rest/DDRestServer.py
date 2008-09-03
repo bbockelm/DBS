@@ -48,7 +48,6 @@ class DDRestServer(DDLogger,Controller):
         # see discussion on http://amix.dk/blog/viewEntry/119
         cherrypy.server.thread_pool = 30
         cherrypy.server.socket_queue_size = 15
-#        conf = {'/':{'request.dispatch':cherrypy.dispatch.MethodDispatcher()}}
         mime_types=self.rest.supportTypes
         httpHeader=[('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
                                ('Accept-Encoding','gzip'),
