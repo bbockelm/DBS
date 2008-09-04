@@ -737,6 +737,14 @@ executeQuery () {
 	out=`$CMD api=executeQuery query="select file.name where run.number=35672"`
 	echo "$out"
 }
+getHelp () {
+	message="Executing getHelp API..."
+	echo $message
+	#out=`$CMD api=getHelp entity=primds`
+	out=`$CMD api=getHelp`
+	echo "$out"
+}
+getHelp
 #getIntegratedLuminosity
 #executeQuery
 #getIntegratedLuminosity	
@@ -765,7 +773,7 @@ executeQuery () {
 #listRuns
 #listTiers
 #listBlocks
-listFiles
+#listFiles
 #listLFNs
 #listDatasetSummary
 ##listDatasetContents

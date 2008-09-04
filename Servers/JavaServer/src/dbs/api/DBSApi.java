@@ -1,6 +1,6 @@
 /**
- $Revision: 1.137 $"
- $Id: DBSApi.java,v 1.137 2008/07/28 19:11:23 sekhri Exp $"
+ $Revision: 1.138 $"
+ $Id: DBSApi.java,v 1.138 2008/08/22 21:36:21 sekhri Exp $"
  *
 */
 
@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import dbs.data.DBSDataCache;
 import dbs.util.DBSConfig;
 import dbs.api.parser.DBSApiParser;
+import dbs.search.qb.help.Help;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
@@ -729,6 +730,8 @@ public class DBSApi {
 									  get(table, "end", false),
 									  get(table, "type", false)
 									  );
+			} else if (apiStr.equals("getHelp")) {
+				Help.getInstance().getHelp(out, get(table, "entity", false));
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;

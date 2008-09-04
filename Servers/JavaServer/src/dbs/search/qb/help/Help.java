@@ -1,10 +1,13 @@
 package dbs.search.qb.help;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Enumeration;
 import java.io.Writer;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class Help {
 	private Hashtable map = new Hashtable();
+	private static Help helpObj;
 
 	private void printHelp(Writer out, Keyword kw) throws Exception {
 		out.write("<dbs-ql>\n" +
@@ -13,28 +16,48 @@ public class Help {
 		for(String attr: kw.attrs) out.write("\t<attr>" + attr + "</attr>\n");
 		out.write("\t<example>\n");
 		for(Example example: kw.examples) {
-			out.write("\t\t<desc>" + example.desc + "</desc>\n");
-			out.write("\t\t<query>" + example.query + "</query>\n");
+			out.write("\t\t<desc>" + StringEscapeUtils.escapeXml(example.desc) + "</desc>\n");
+			out.write("\t\t<query>" + StringEscapeUtils.escapeXml(example.query) + "</query>\n");
 		}
 		out.write("\t</example>\n" +
 			 "\t</key>\n" +
 			 "</dbs-ql>\n");
-		out.flush();
 	}
 	
+	private void getAllHelp(Writer out) throws Exception {
+		Enumeration e = map.keys();
+		while (e.hasMoreElements()) printHelp(out, (Keyword)map.get(e.nextElement()));
+	}
 	public void getHelp(Writer out, String entityIn) throws Exception {
-		entityIn = entityIn.toLowerCase();
-		if(!map.containsKey(entityIn)) {
-			out.write("This Keyword " + entityIn + " is NOT implemented. No help available.");
-			return;
-		} 
-		Keyword kw = (Keyword)map.get(entityIn);
-		printHelp(out, kw);
+		try {
+			if(entityIn == null) {
+				getAllHelp(out);
+				return;
+			}
+			if(entityIn.length() == 0) {
+				getAllHelp(out);
+				return;
+			}
+			
+			entityIn = entityIn.toLowerCase();
+			if(!map.containsKey(entityIn)) {
+				out.write("<dbs-ql>\n\t<error>\nThis Keyword " + entityIn + " is NOT implemented. No help available. \n\t</error>\n</dbs-ql>\n");
+				return;
+			} 
+			Keyword kw = (Keyword)map.get(entityIn);
+			printHelp(out, kw);
+		} finally { 
+			out.flush();
+		}
 		
 	}
 
-	
-	public Help() {
+	public static synchronized Help getInstance() {
+		if (Help.helpObj == null) Help.helpObj =  new Help();
+		return Help.helpObj;
+	}
+
+	private Help() {
 		Example e;
 		Keyword kw;
 		String attr;
@@ -562,8 +585,9 @@ public class Help {
 	}
 
 	public static void main(String args[]) throws Exception{
-		Help h = new Help();
+		Help h = Help.getInstance();
 		h.getHelp(new java.io.PrintWriter(System.out), args[0]);
+		//h.getHelp(new java.io.PrintWriter(System.out), "");
 
 	}
 }
