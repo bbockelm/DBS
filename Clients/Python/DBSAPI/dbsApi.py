@@ -980,6 +980,18 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+	
+  def getHelp(self, entity = ""):
+
+     try:
+        #Calling the Implementation function
+        from dbsApiHelp import dbsApiImplGetHelp
+        return  dbsApiImplGetHelp(self, entity)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
   def deleteADS(self, ads, version):
 
