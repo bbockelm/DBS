@@ -2772,6 +2772,7 @@ All LFNs in a block
                page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\''%site,userMode)
             bList=[]
             lfnList=[]
+            if site=="None": site="*"
             try:
                 lfnList=self.helper.getLFNsFromSite(site,datasetPath,run)
             except:
@@ -6120,6 +6121,10 @@ Save query as:
                                'tools.response_headers.headers':httpHeader
                               },
                 '/rss'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'rss'},
+                '/xml'      : {'tools.staticdir.on': True, 
+                               'tools.staticdir.dir': 'xml',
+                               'tools.staticdir.content_types':{'xml':'application/xml'}
+                              },
                 '/css'      : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
                                'tools.staticdir.on':True,
