@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','ns','global_dd','dbsprimary']
+    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -64,6 +64,14 @@ class DDConfig:
     if not self.configDict.has_key('admin_ver'):
        return ""
     return self.configDict['admin_ver']
+  def dbsUrl(self):
+    if not self.configDict.has_key('dbs_url'):
+       return ""
+    return self.configDict['dbs_url']
+  def dbsVer(self):
+    if not self.configDict.has_key('dbs_ver'):
+       return ""
+    return self.configDict['dbs_ver']
   def masthead(self):
     if not self.configDict.has_key('masthead'):
        raise DDException(args="Data Discovery configuration, DBSDD.conf, missing MASTHEAD parameter")
