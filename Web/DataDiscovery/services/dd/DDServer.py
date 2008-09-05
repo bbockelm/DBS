@@ -5749,16 +5749,28 @@ Save query as:
     aSearchCLI.exposed=True
 
     def aSearchKeys(self):
-        allKeys=self.ddrules.keywords
-        sKeys  =""
-        for key in allKeys:
-            if key.find(".")!=-1:
-               k1,k2 = key.split(".")
-               # TEMP, do not show composed keys until all details about key.attr will be sorted out
-#               sKeys+="\n<p><b>%s</b>: composed key, %s for %s</p>"%(key,self.ddrules.longName[k2],self.ddrules.longName[k1])
-            else:
-               sKeys+="\n<p><b>%s</b>: %s</p>"%(key,self.ddrules.tooltip[key])
-        return sKeys
+        if  self.iface=="dbsapi":
+            try:
+                helpList = self.dbsApi.getHelp("")
+#                dbsUrl = self.ddConfig.dbsUrl()
+#                dbsVer = self.ddConfig.dbsVer()
+#                dbsConfig={'url':dbsUrl,'mode':'POST','version':dbsVer,'retry':2}
+#                dbsApi = DbsApi(dbsConfig)
+#                helpList = dbsApi.getHelp("")
+            except:
+                helpList = []
+                pass
+            t = templateQLHelp(searchList=[{'helpList':helpList,'showExample':1,'msg':""}]).respond()
+            return str(t)
+        else:
+            allKeys=self.ddrules.keywords
+            sKeys  =""
+            for key in allKeys:
+                if key.find(".")!=-1:
+                   k1,k2 = key.split(".")
+                else:
+                   sKeys+="\n<p><b>%s</b>: %s</p>"%(key,self.ddrules.tooltip[key])
+            return sKeys
 
     def update_kwargs(self,kDict,**kwargs):
         oDict=dict(kDict)
