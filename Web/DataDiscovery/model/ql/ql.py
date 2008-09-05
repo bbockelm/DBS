@@ -23,9 +23,9 @@ from utils.Utils import *
 from DBSAPI.dbsApi import DbsApi
 
 class QL(object):
-    def __init__(self):
+    def __init__(self,verbose=0):
         self.dbs       = DBSGLOBAL
-        self.verbose   = 1
+        self.verbose   = verbose
         self.dbManager = DBManager('OBSOLETE need to be removed',self.verbose)
         self.qmaker    = DDQueryMaker(self.dbManager,self.dbs)
         self.dbsConfig = {}
@@ -49,8 +49,10 @@ class QL(object):
     def queryDBS(self,**kwargs):
         try:
             userInput=getArg(kwargs,'userInput',"").strip()
-            idx=int(getArg(kwargs,'idx',0))
-            pagerStep=int(getArg(kwargs,'pagerStep',RES_PER_PAGE))
+#            idx=int(getArg(kwargs,'idx',0))
+#            pagerStep=int(getArg(kwargs,'pagerStep',RES_PER_PAGE))
+            idx=int(getArg(kwargs,'page',0))
+            pagerStep=int(getArg(kwargs,'index',RES_PER_PAGE))
             qtype=getArg(kwargs,'type',"query")
             dbsInst=getArg(kwargs,'dbsInst',DBSGLOBAL)
 
@@ -59,7 +61,6 @@ class QL(object):
                print dbsApi.getServerUrl()
             fromRow=idx*pagerStep
             toRow=idx*pagerStep+pagerStep
-#            print "\n#### queryDBS",userInput,fromRow,toRow,qtype
             if pagerStep==-1:
                res=dbsApi.executeQuery(userInput,type=qtype)
             else:
@@ -70,17 +71,19 @@ class QL(object):
 
     def fetch(self,userInput,**kwargs):
         what = getArg(kwargs,'return',"exe")
-        if what=="nresults":
-           return self.nResults(userInput=userInput)
+        kwargs['userInput']=userInput
+        if what=="total":
+           return self.nResults(**kwargs)
         elif what=="query":
-           return self.query(userInput=userInput)
+           return self.query(**kwargs)
         else:
-           return self.execute(userInput=userInput)
+           return self.execute(**kwargs)
 
     def query(self,**kwargs):
         res = self.queryDBS(**kwargs)
-        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-        return (sql.replace('\n',''),bindDict,count_sql.replace('\n',''),count_bindDict)
+        return res
+#        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+#        return (sql.replace('\n',''),bindDict,count_sql.replace('\n',''),count_bindDict)
 
     def execute(self,**kwargs):
         kwargs['type']="exe"
