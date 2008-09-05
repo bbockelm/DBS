@@ -8,6 +8,7 @@ from services.rest.RestService import *
 from utils.Utils import *
 from utils.DDConfig    import *
 from utils.webtools_modules import *
+from DBSAPI.dbsApi import DbsApi
 
 class Service(object):
     @cherrypy.expose
@@ -37,10 +38,16 @@ class DDRestServer(DDLogger,Controller):
         self.baseUrl   = opts.baseUrl
         self.rest._url = opts.baseUrl+"/services"
         self.rest._mUrl= self.baseUrl+"sitedb/Common/masthead"
-        self.rest._mUrl= self.baseUrl+"sitedb/Common/footer"
+        self.rest._fUrl= self.baseUrl+"sitedb/Common/footer"
         self.rest._dbs = self.ddConfig.dbsprimary()
         self.rest._host= self.ddConfig.url()
+        dbsUrl = self.ddConfig.dbsUrl()
+        dbsVer = self.ddConfig.dbsVer()
+        dbsConfig={'url':dbsUrl,'mode':'POST','version':dbsVer,'retry':2}
+        self.rest._dbsApi= DbsApi(dbsConfig)
         print "+++ %s url %s"%(self.name,self.rest._url)
+        print "+++ %s use DBS-url %s"%(self.name,dbsUrl)
+        print "+++ %s use DBS-version %s"%(self.name,dbsVer)
         cherrypy.config.update ({'request.dispatch':cherrypy.dispatch.MethodDispatcher()})
 
     def setConfig(self,base=""):

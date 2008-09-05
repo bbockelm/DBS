@@ -95,15 +95,23 @@ if __name__ == "__main__":
     url="dbs_discovery_test/services/rest/site/srm.cern.ch/dataset"
     server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
     params={}
-    for ctype in ['application/xml','text/json','text/html']:
+    for ctype in ['application/xml','text/json']:
         print "\n### GET message via",ctype
         page = server.sendMessage("GET",url,ctype,params,debug=1)
         print page
 
-    url="dbs_discovery_test/services/rest/site/srm.cern.ch/dataset,release"
+    url="dbs_discovery_test/services/rest/site/srm.cern.ch/?return=query"
     server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
     params={}
-    for ctype in ['application/xml','text/json','text/html']:
+    for ctype in ['application/xml','text/json']:
+        print "\n### GET message via",ctype
+        page = server.sendMessage("GET",url,ctype,params,debug=1)
+        print page
+
+    url="dbs_discovery_test/services/rest/site/?return=total"
+    server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
+    params={}
+    for ctype in ['application/xml','text/json']:
         print "\n### GET message via",ctype
         page = server.sendMessage("GET",url,ctype,params,debug=1)
         print page

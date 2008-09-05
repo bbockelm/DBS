@@ -35,16 +35,13 @@ class RestService(Resource):
     _verbose = 1
     _model = None
     # define internal url used by Resource
-    _url = "http://localhost:8080/service/rest"
     # to be defined by DDRestServer at run time
-    _host = "" 
-    _fUrl = ""
-    _mUrl = ""
-    _dbs  = ""
-#    def __init__(self,url,verbose=1):
-#        self._verbose=verbose
-#        Resource.__init__(self,url,verbose)
-#        print "+++ Init RestService"
+    _url   = ""
+    _host  = "" 
+    _fUrl  = ""
+    _mUrl  = ""
+    _dbs   = ""
+    _dbsApi= ""
     def GET(self,*args,**kwargs):
         return self.handle_GET(args,kwargs)
     def POST(self,*args,**kwargs):
