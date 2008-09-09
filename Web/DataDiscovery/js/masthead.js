@@ -91,10 +91,10 @@ function addLoginObject (item){
             }
 	    },
 	    failure: function (o) {
-        	var loginObject = "<span class='LoginObject'>You are not logged in, click ";
+        	var loginObject = "<span class='LoginObject'>";
         	loginObject += "<a href='https://cmsweb.cern.ch/sitedb/SecurityModule/login?";
         	loginObject += "requestedPage=" + redirectionLocation + "'>";
-        	loginObject += "here</a> to login.</span>";	        
+        	loginObject += "Login</a></span>";	        
                 item.innerHTML = loginObject;	        
 	    },
             timeout : 3000
