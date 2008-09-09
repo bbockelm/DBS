@@ -534,7 +534,8 @@ public class QueryBuilder {
 
 				} else if(Util.isSame(key, "site")) {
 					//if(!Util.isSame(op, "=") && !Util.isSame(op, "in")) throw new Exception("When site is provided operator should be = . Invalid operator given " + op);
-					queryWhere += "\tStorageElement.SEName" + handleSite(val, op);	
+					queryWhere += "\t(StorageElement.SEName" + handleSite(val, op) + ")";	
+					//queryWhere += "\tStorageElement.SEName" + handleSite(val, op);	
 
 				} else if(Util.isSame(key, "release")) {
 					//FIXME add FILEALGO and ProcALgo first
@@ -1071,7 +1072,7 @@ public class QueryBuilder {
 		}
 			
 		query += "\n)";
-		query += "\n OR \n" + extraQuery;
+		query += "\n OR \n" + extraQuery ;
 		for(Object o: tmpList) bindValues.add((String)o);
 		return query;
 	}
