@@ -1616,13 +1616,15 @@ class DDServer(DDLogger,Controller):
     createADS.exposed=True
 
     def createADSFromRunRange(self,dbsInst,dataset,runRanges,userMode="user",**kwargs):
+        cherrypy.response.headers['Content-Type']='text/plain'
         self.helperInit(dbsInst)
-        page = self.genTopHTML(userMode=userMode)
+        page = ""
+#        page = self.genTopHTML(userMode=userMode)
         # TODO: I need to validate user input, runRanges
         # it should be in a form minR-maxRun,minRun-maxRun,...
         lfnList=self.helper.getLFNsFromRunRanges(dataset,runRanges)
         page+=self.formatLFNList(lfnList,"cff",idx=0)
-        page+= self.genBottomHTML()
+#        page+= self.genBottomHTML()
         return page
     createADSFromRunRange.exposed=True
 
@@ -2674,18 +2676,20 @@ All LFNs in a block
            @rtype : string
            @return: returns HTML code
         """
+        cherrypy.response.headers['Content-Type']='text/plain'
         try:
             self.helperInit(dbsInst)
-            page = self.genTopHTML(userMode=userMode)
+            page = ""
+#            page = self.genTopHTML(userMode=userMode)
             t="dataset"
             v=dataset
             if blockName and blockName!="*":
                t="block"
                v=blockName
-            if run and run!='*':
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
-            else:
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
+#            if run and run!='*':
+#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
+#            else:
+#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
 #            userInput = "find file where"
 #            wClause   = ""
 #            if  blockName and blockName!='*': wClause+=" block=%s "%blockName
@@ -2700,7 +2704,7 @@ All LFNs in a block
 #            lfnList = self.aSearchResults(dbsInst,userInput,fromRow=-1,limit=-1,method=self.iface)
             lfnList = self.helper.getLFNs(blockName,dataset,run)
             page+=self.formatLFNList(lfnList,what,idx=0)
-            page+= self.genBottomHTML()
+#            page+= self.genBottomHTML()
             return page
         except:
             t=self.errorReport("Fail in getLFN_txt function")
@@ -2718,31 +2722,33 @@ All LFNs in a block
            @rtype : string
            @return: returns HTML code
         """
+        cherrypy.response.headers['Content-Type']='text/plain'
         try:
             self.helperInit(dbsInst)
             format = getArg(kwargs,'format','cff')
-            page = self.genTopHTML(userMode=userMode)
+            page = ""
+#            page = self.genTopHTML(userMode=userMode)
             t="dataset"
             v=dataset
             if blockName and blockName!="*":
                t="block"
                v=blockName
-            if run and run!='*':
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
-            else:
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
+#            if run and run!='*':
+#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
+#            else:
+#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
             nLfns = self.helper.countLFNs(blockName=blockName,dataset=dataset,run=run)
 #            print "\n\n#### parents nLFNS",nLfns,dataset
             if  nLfns>10000:
-                page+="<dev>This dataset has %s LFNs, but Data Discovery allows to look-up all parent LFNs only for dataset with less 10K LFNs</dev>"%nLfns
-                page+= self.genBottomHTML()
+                page+="This dataset has %s LFNs, but Data Discovery allows to look-up all parent LFNs only for dataset with less 10K LFNs"%nLfns
+#                page+= self.genBottomHTML()
             else:
                 lfnList = self.helper.getLFNs(blockName=blockName,dataset=dataset,run=run)
                 justLFNs= []
                 for lfn in lfnList: justLFNs.append(lfn[0])
                 parentLFNList = self.helper.getLFNParents(justLFNs)
                 page+=self.formatLFNPoolSource(justLFNs,parentLFNList,format)
-                page+= self.genBottomHTML()
+#                page+= self.genBottomHTML()
             return page
         except:
             t=self.errorReport("Fail in getLFNsWithParents function")
@@ -2763,13 +2769,15 @@ All LFNs in a block
         """
            Generates a list of LFNs for given site
         """
+        cherrypy.response.headers['Content-Type']='text/plain'
         try:
             self.helperInit(dbsInst)
-            page = self.genTopHTML(userMode=userMode)
-            if run and run!="*":
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\', run %s'%(site,run),userMode)
-            else:
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\''%site,userMode)
+#            page = self.genTopHTML(userMode=userMode)
+            page =""
+#            if run and run!="*":
+#               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\', run %s'%(site,run),userMode)
+#            else:
+#               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\''%site,userMode)
             bList=[]
             lfnList=[]
             if site=="None": site="*"
@@ -2785,7 +2793,7 @@ All LFNs in a block
                page+=self.formatLFNPoolSource(lfnList,[],what)
             else:
                page+=self.formatLFNList(lfnList,what)
-            page+= self.genBottomHTML()
+#            page+= self.genBottomHTML()
             return page
         except:
             t=self.errorReport("Fail in getLFNsForSite function")
@@ -2828,14 +2836,16 @@ All LFNs in a block
            @rtype : string
            @return: returns HTML code
         """
+        cherrypy.response.headers['Content-Type']='text/plain'
         try:
 #            self.htmlInit()
             self.helperInit(dbsInst)
-            page = self.genTopHTML(userMode=userMode)
-            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
+            page=""
+#            page = self.genTopHTML(userMode=userMode)
+#            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
             lfnList = self.helper.getLFNs(blockName,dataset)
             page+=self.formatLFNList(lfnList,what="cff",idx=0)
-            page+= self.genBottomHTML()
+#            page+= self.genBottomHTML()
             return page
         except:
             t=self.errorReport("Fail in getLFN_cfg function")
@@ -4855,7 +4865,7 @@ Save query as:
         return page
 
     def addTreeElement(self,parent,node,**kwargs):
-        cherrypy.response.headerMap['Content-Type'] = "text/xml"
+        cherrypy.response.headers['Content-Type']='text/xml'
         page="""<ajax-response><response type="object" id="treeViewInfo">
 %s</response></ajax-response>"""%self.genTreeElement(parent,node)
         if self.verbose==2:
