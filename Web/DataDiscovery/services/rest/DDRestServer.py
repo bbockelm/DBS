@@ -5,7 +5,7 @@ from services.rest import *
 from services.rest.RestService import *
 
 # DD specific modules
-from utils.Utils import *
+from utils.DDUtil import *
 from utils.DDConfig    import *
 from utils.webtools_modules import *
 from DBSAPI.dbsApi import DbsApi
