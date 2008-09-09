@@ -11,13 +11,13 @@ The Data Discovery REST service works with
 key/attributes while they are specified via the following pattern
 </div>
 <pre>
-$host/services/rest/iKey[.iAttribute]/value/iKey[.iAttribute]/value/oKey[.oAttribute],oKey[.oAttribute],...
+$host/services/rest/iKey[.iAttr]/value/iKey[.iAttr]/value/oKey[.oAttr],oKey[.oAttr],...
 </pre>
 <div>
-Here the <em>iKey, iAttribute</em> represents a key/attribute you provide with given value to
-DBS while <em>oKey, oAttribute</em> stands for those you would like to look-up from DBS.
+Here the <em>iKey, iAttr</em> represents a key/attribute you provide with given value to
+DBS while <em>oKey, oAttr</em> stands for those you would like to look-up from DBS.
 <br/>
-The <em>oKey, oAttribute</em> are optional and can be skipped. In this case a dataset is always default output key. You can also combine multiple input keys and their values as shown below in EXAMPLES section.
+The <em>oKey, oAttr</em> are optional and can be skipped. In this case a dataset is always default output key. You can also combine multiple input keys and their values as shown below in EXAMPLES section.
 <br/>
 <br/>
 This service also support variety of formats representation of the data, including
@@ -37,6 +37,7 @@ $host/services/rest/dataset/*CRUZET4*/site/srm.cern.ch/file
 $host/services/rest/run/
 $host/services/rest/run/16288
 $host/services/rest/run/16288/file
+$host/services/rest/run/16288/dataset/TestBeam2007-combined/Online-CMSSW_1_4_7/RAW/site
 
 $host/services/rest/dataset/*CRUZET4*/site/srm.cern.ch/file.createby,file
 </pre>
