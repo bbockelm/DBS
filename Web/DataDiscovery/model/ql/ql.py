@@ -17,7 +17,7 @@ from xml.dom import *
 
 # experiment
 from model.dd.DDQueryMaker import *
-from utils.Utils import *
+from utils.DDUtil import *
 
 # DBS framework in order to make migration
 from DBSAPI.dbsApi import DbsApi
@@ -49,22 +49,26 @@ class QL(object):
     def queryDBS(self,**kwargs):
         try:
             userInput=getArg(kwargs,'userInput',"").strip()
-#            idx=int(getArg(kwargs,'idx',0))
-#            pagerStep=int(getArg(kwargs,'pagerStep',RES_PER_PAGE))
-            idx=int(getArg(kwargs,'page',0))
-            pagerStep=int(getArg(kwargs,'index',RES_PER_PAGE))
+#            idx=int(getArg(kwargs,'page',0))
+#            pagerStep=int(getArg(kwargs,'index',RES_PER_PAGE))
+            idx=int(getArg(kwargs,'page',-1))
+            pagerStep=int(getArg(kwargs,'index',-1))
             qtype=getArg(kwargs,'type',"query")
             dbsInst=getArg(kwargs,'dbsInst',DBSGLOBAL)
 
             dbsApi = self.getDbsApi(dbsInst)
-            if self.verbose:
-               print dbsApi.getServerUrl()
-            fromRow=idx*pagerStep
-            toRow=idx*pagerStep+pagerStep
-            if pagerStep==-1:
-               res=dbsApi.executeQuery(userInput,type=qtype)
+            if  self.verbose:
+                print dbsApi.getServerUrl()
+            if  idx==-1 and pagerStep==-1:
+                fromRow=""
+                toRow=""
             else:
-               res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type=qtype)
+                fromRow=idx*pagerStep
+                toRow=idx*pagerStep+pagerStep
+            if  pagerStep==-1:
+                res=dbsApi.executeQuery(userInput,type=qtype)
+            else:
+                res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type=qtype)
         except:
             return traceback.format_exc()
         return res
