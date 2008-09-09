@@ -5232,7 +5232,7 @@ Save query as:
         dbsApi = self.getDbsApi(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         if  method=="dbsapi":
-            if fromRow==-1 and limit==-1:
+            if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
                fromRow=""
                limit=""
             res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
@@ -5286,6 +5286,9 @@ Save query as:
 #        print "\n\n+++aSearchShowAll",kwargs
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
+           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+              limit=""
+              fromRow=""
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
@@ -5403,6 +5406,9 @@ Save query as:
 #        print "\n\n+++aSearchSummary",kwargs
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
+           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+              limit=""
+              fromRow=""
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
            tableView = output+"summary"
@@ -5653,6 +5659,9 @@ Save query as:
         userInput= kwargs['userInput']
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
+           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+              limit=""
+              fromRow=""
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
            if  self.helper.dbManager.getTableNames(dbsInst).count("datasetsummary"):
@@ -5889,7 +5898,10 @@ Save query as:
                 if pagerStep==-1:
                    res=dbsApi.executeQuery(userInput,type="query")
                 else:
-                   res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+                       if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+                          limit=""
+                          fromRow=""
+                       res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
                 if self.verbose>1:
                    print res
                    self.writeLog(res)
@@ -5988,8 +6000,11 @@ Save query as:
         link=""
         for key in kDict:
             if key=='query': continue
+            val=kDict[key]
+            if key=='limit': val=-1
+            if key=='_idx' : val=0
             if link: link+="&amp;"
-            link+="%s=%s"%(key,kDict[key])
+            link+="%s=%s"%(key,val)
         link="aSearchShowAll?"+link
         kDict['num']=nResults
         kDict['oname']=_out
