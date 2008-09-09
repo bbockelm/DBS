@@ -106,13 +106,17 @@ def decodeDBSXML(data,tag="result"):
         raise msg
     sql   = ""
     oDict = {}
+    success=None
     for i in elem:
-        if i.tag=="result":
+        if i.tag.lower()=="result":
            for k in i.attrib:
                res = i.attrib[k]
                if oDict.has_key(k): oDict[k]+=[res]
                else: oDict[k]=[res]
+        if i.tag.lower()=="success":
+            success=1
     if  not oDict:
+        if success: return "No results"
         return printET(elem)
     return oDict
 
@@ -160,9 +164,9 @@ class Resource(object):
                             'text/json', 'text/x-json', 'application/json',
                             'text/html']
         self.defaultType  = 'text/html'
+        self.qlKeys       = []
         print "+++ Init Resource",self._url
         
-#    @classmethod
     def printResponse(self):
         headers = cherrypy.response.headers
         for key in headers:
@@ -170,7 +174,46 @@ class Resource(object):
         print cherrypy.response.body
         print cherrypy.response.status
 
-#    @classmethod
+    def buildWClause(self,params):
+        # we got a list of parameters: (key, val1, val2, key, val, key, ...)
+        # will construct a where clause
+        #
+        def append(wClause,rval):
+            if  len(rval):
+                if len(rval)>1: rvalue='/'+'/'.join(rval)
+                else: rvalue=rval[0]
+                if  rvalue.find("*")!=-1:
+                    wClause+=" like %s"%rvalue
+                else:
+                    wClause+="=%s"%rvalue
+                return wClause
+            return ""
+
+        if  not self.qlKeys:
+            for d in self._dbsApi.getHelp(""):
+                name = d['name']
+                attr = d['attrs']
+                self.qlKeys.append(name)
+                for i in attr: self.qlKeys.append("%s.%s"%(name,i))
+        if  self.qlKeys.count(params[-1]) or params[-1].find(",")!=-1: # it's a key
+            lookup= params[-1]
+            pList = params[:-1]
+        else:
+            lookup= "dataset"
+            pList = params
+        wClause=""
+        rval   =[]
+        rvalue =""
+        for p in pList:
+            if  self.qlKeys.count(p):
+                wClause=append(wClause,rval)
+                if wClause: wClause+=" AND "
+                wClause+=" %s"%p
+                rval=[]
+            else:
+                rval.append(p)
+        return lookup,append(wClause,rval)
+
     def query(self,params):
         # analyze input and construct a query out of it
         # for example:
@@ -180,15 +223,18 @@ class Resource(object):
         #     http://host/service/rest/site/srm.cern.ch/dataset,block
         #     http://host/service/rest/block/123456/lfn
         query = None
-        lookup='dataset' # default
+#        lookup='dataset' # default
         try:
             method=params[0]
             if  len(params)>1:
-                rvalue=params[1]
-                if  len(params)==3:
-                    lookup=params[2]
-                    if not lookup: lookup='dataset'
-                query = "find %s where %s=%s"%(lookup,method,rvalue)
+                lookup,wCaluse = self.buildWClause(params)
+                query = "find %s where %s"%(lookup,wCaluse)
+#                print "QUERY",params,query
+#                rvalue=params[1]
+#                if  len(params)==3:
+#                    lookup=params[2]
+#                    if not lookup: lookup='dataset'
+#                query = "find %s where %s=%s"%(lookup,method,rvalue)
             else:
                 query = "find %s where %s like *"%(method,method)
         except:
