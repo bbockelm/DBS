@@ -1,6 +1,6 @@
 /**
- $Revision: 1.105 $"
- $Id: DBSApiFileLogic.java,v 1.105 2008/08/18 18:42:02 sekhri Exp $"
+ $Revision: 1.106 $"
+ $Id: DBSApiFileLogic.java,v 1.106 2008/08/20 19:55:57 sekhri Exp $"
  *
  */
 
@@ -340,6 +340,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
+
 				String fileID = get(rs, "ID");
 				String lfn = get(rs, "LFN");
 				String toSend = "<file id='" + fileID +
@@ -348,6 +349,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
 					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") + "'";
+					if (!DBSUtil.isNull(get(rs, "AUTO_CROSS_SECTION"))) toSend += "' auto_cross_section='" + get(rs, "AUTO_CROSS_SECTION");
 				
 					if(oldClients) {
 						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + 	"' status='" + get(rs, "STATUS") + "'";
@@ -1084,6 +1086,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                             valStatusID,
                                             get(file, "queryable_meta_data", false),
                                             branchID,
+					    get(file, "auto_cross_section", false),
                                             cbUserID, lmbUserID, creationDate);
 
 					pushQuery(ps);
@@ -1501,6 +1504,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 							valStatusID,
 							get(file, "queryable_meta_data", false), 
 							branchID,
+							get(file, "auto_cross_section", false),
 							cbUserID, lmbUserID, creationDate);
 					pushQuery(ps);
 					ps.execute();

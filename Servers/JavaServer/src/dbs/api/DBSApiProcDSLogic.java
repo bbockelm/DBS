@@ -1,6 +1,6 @@
 /**
- $Revision: 1.62 $"
- $Id: DBSApiProcDSLogic.java,v 1.62 2008/05/30 16:40:04 sekhri Exp $"
+ $Revision: 1.63 $"
+ $Id: DBSApiProcDSLogic.java,v 1.63 2008/07/21 18:58:46 sekhri Exp $"
  *
  */
 
@@ -120,8 +120,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
 							"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
 							"' created_by='" + get(rs, "CREATED_BY") +
-							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-							"'>\n"));
+							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY")+ "'" )) ;
+							
+							if (!DBSUtil.isNull(get(rs, "XT_CROSS_SECTION"))) 
+								out.write(((String) "' external_cross_section='" + get(rs, "XT_CROSS_SECTION") ));
+
+							out.write(((String) "'>\n"));
 					first = false;
 					prevDS = procDSID;
 		        		dtVec = new HashSet();// Or dtVec.removeAllElements();
@@ -440,6 +444,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getID(conn, "ProcDSStatus", "Status", status, true), 
 					get(dataset, "acquisition_era", false),
 					get(dataset, "global_tag", false),
+					get(dataset, "external_cross_section", false),
 					cbUserID,
 					lmbUserID,
 					creationDate);

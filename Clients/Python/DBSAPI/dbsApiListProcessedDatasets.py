@@ -85,9 +85,11 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
 	    self.procName = str(attrs['processed_datatset_name'])	  
 	    self.primName = str(attrs['primary_datatset_name'])	  
             ds_status='VALID'
+	    ext_cross_sec=0.0
             if attrs.has_key('status'):
 		ds_status=str(attrs['status'])
-	    
+	    if attrs.has_key('external_cross_section'):
+		ext_cross_sec=str(attrs['external_cross_section'])	    
             self.currDataset = DbsProcessedDataset ( 
                                                 Name=self.procName,     
 						PhysicsGroup=str(attrs['physics_group_name']),
@@ -97,6 +99,7 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
 						GlobalTag=str(attrs.get('global_tag', '')),
                                                 #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=self.primName),
+						XtCrossSection=ext_cross_sec,
                                                 CreationDate=str(attrs['creation_date']),
                                                 CreatedBy=str(attrs['created_by']),
                                                 LastModificationDate=str(attrs['last_modification_date']),

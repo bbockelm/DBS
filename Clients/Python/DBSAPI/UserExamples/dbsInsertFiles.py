@@ -88,7 +88,8 @@ myfile1= DbsFile (
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
 	BranchHash="001234565798685",
-        #ParentList = ['NEW_TEST0003']  
+        #ParentList = ['NEW_TEST0003'],
+	AutoCrossSection=0.0  
          )
 
 myfile2= DbsFile (
@@ -233,7 +234,7 @@ print "Inserting files in processDS %s" % proc
 
 try:
 
-    #api.insertFiles (proc, [myfile1], block)
+    api.insertFiles (proc, [myfile1], block)
 
     ##api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22])
 

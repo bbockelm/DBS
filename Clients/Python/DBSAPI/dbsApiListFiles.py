@@ -155,7 +155,11 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 
         def startElement(self, name, attrs):
           #DbsXmlBaseHandler.startElement(self, name, attrs)
+	  auto_x_sec=0.0
           if name == 'file':
+	     if attrs.has_key('auto_cross_section'):
+	     	auto_x_sec=float(attrs['auto_cross_section'])
+		print "XXXXXXXXXXXXXXXXXXXX SEC::: %s" %auto_x_sec
              self.currFile = DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=getLong(attrs['size']),
@@ -165,6 +169,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                        FileType=str(self.get(attrs,'type')),
                                        Checksum=str(attrs['checksum']),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
+				       AutoCrossSection=auto_x_sec,
                                        CreationDate=str(self.get(attrs,'creation_date')),
                                        CreatedBy=str(self.get(attrs,'created_by')),
                                        LastModificationDate=str(self.get(attrs,'last_modification_date')),

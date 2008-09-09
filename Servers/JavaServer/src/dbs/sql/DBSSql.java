@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.183 $"
- $Id: DBSSql.java,v 1.183 2008/07/07 19:21:55 sekhri Exp $"
+ $Revision: 1.184 $"
+ $Id: DBSSql.java,v 1.184 2008/07/08 21:45:32 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1249,7 +1249,7 @@ public class DBSSql {
 	// SQL for inserting ProcessedDatatset and its related tables.
 	// ____________________________________________________
 
-	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String aquisitionEra, String globalTag, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String aquisitionEra, String globalTag, String xtCrossSection, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Name", name);
 		table.put("PrimaryDataset", primDSID);
@@ -1258,6 +1258,7 @@ public class DBSSql {
 		table.put("Status", statusID);
 		if (!DBSUtil.isNull(aquisitionEra)) table.put("AquisitionEra", aquisitionEra);
 		if (!DBSUtil.isNull(globalTag)) table.put("GlobalTag", globalTag);
+		if (!DBSUtil.isNull(xtCrossSection)) table.put("XtCrossSection", xtCrossSection);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);
@@ -1279,7 +1280,7 @@ public class DBSSql {
 	// ____________________________________________________
 	
 	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID) throws SQLException {
-	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String branchHash, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String branchHash, String autoCrossSection, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("LogicalFileName", lfn);
 		table.put("Dataset", procDSID);
@@ -1292,6 +1293,7 @@ public class DBSSql {
 		table.put("ValidationStatus", valStatusID);
 		table.put("QueryableMetadata", qMetaData);
 		if (!DBSUtil.isNull(branchHash)) table.put("FileBranch", branchHash);
+		if (!DBSUtil.isNull(autoCrossSection)) table.put("AutoCrossSection", autoCrossSection);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);
@@ -1887,6 +1889,7 @@ public class DBSSql {
 			"pds.Status as STATUS, \n" +
 			"procds.AquisitionEra as ACQUISITION_ERA, \n" +
 			"procds.GlobalTag as GLOBAL_TAG, \n" +
+                        "procds.XtCrossSection as XT_CROSS_SECTION, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
@@ -2798,6 +2801,7 @@ public class DBSSql {
 			"f.Checksum as CHECKSUM, \n" +
 			"f.FileSize as FILESIZE, \n" +
                         "f.FileBranch as FILE_BRANCH, \n" +
+			"f.AutoCrossSection as AUTO_CROSS_SECTION, \n" +
 			"f.QueryableMetaData as QUERYABLE_META_DATA, \n";
 		if(DBSUtil.contains(attributes, "retrive_date")) 
 			sql += "f.CreationDate as CREATION_DATE, \n" + 

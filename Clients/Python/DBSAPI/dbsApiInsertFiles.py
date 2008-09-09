@@ -167,6 +167,7 @@ def dbsApiImplInsertFiles(self, dataset=None, files=[], block=None):
        xmlinput += " queryable_meta_data='"+file.get('QueryableMetadata', '')+"'"
        xmlinput += " file_assoc='"+file_name(file.get('FileAssoc', ''))+"'"
        xmlinput += " branch_hash='"+file.get('BranchHash', '')+"'"
+       xmlinput += " auto_cross_section='"+str(file.get('AutoCrossSection', ''))+"'"
        xmlinput += " >" 
 
        for lumi in file.get('LumiList', []):

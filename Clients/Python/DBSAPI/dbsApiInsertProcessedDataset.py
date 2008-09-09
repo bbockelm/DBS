@@ -78,6 +78,7 @@ def dbsApiImplInsertProcessedDataset(self, dataset):
     xmlinput += " physics_group_convener='"+dataset.get('PhysicsGroupConverner', "")+"'"
     xmlinput += " acquisition_era='"+dataset.get('AcquisitionEra', "")+"'"
     xmlinput += " global_tag='"+dataset.get('GlobalTag', "")+"'"
+    xmlinput += " external_cross_section='"+str(dataset.get('XtCrossSection', ""))+"'"
     xmlinput += " status='"+dataset.get('Status', "")+"'>" 
     
     for tier in dataset.get('TierList',[]):

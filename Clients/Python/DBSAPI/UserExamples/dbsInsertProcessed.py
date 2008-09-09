@@ -45,6 +45,7 @@ proc = DbsProcessedDataset (
                             AlgoList=[algo],
                             RunsList=[1],   # Provide a Run Number List that goes with this ProcDS
 			    #ADSParent="/TestPrimary_001_20080320_13h37m20s/TestProcessed_20080320_13h37m20s/GEN-SIM/TestAnalysisDSDef_005_20080320_13h37m20s"
+			    XtCrossSection=1.1
                             )
                              
 print "Creating a processed dataset %s" % proc
