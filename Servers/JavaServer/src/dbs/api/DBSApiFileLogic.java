@@ -1,6 +1,6 @@
 /**
- $Revision: 1.106 $"
- $Id: DBSApiFileLogic.java,v 1.106 2008/08/20 19:55:57 sekhri Exp $"
+ $Revision: 1.107 $"
+ $Id: DBSApiFileLogic.java,v 1.107 2008/09/09 21:16:44 afaq Exp $"
  *
  */
 
@@ -1913,6 +1913,24 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		checkString(value, "queryable_meta_data");
 		updateValue(conn, out, "Files",  getFileID(conn, lfn, true), "QueryableMetadata", value, personApi.getUserID(conn, dbsUser));
 	}
+
+
+
+        public void updateFileAutoCrossSection(Connection conn, Writer out, String lfn, String xSection, Hashtable dbsUser) throws Exception {
+                PreparedStatement ps = null;
+                try {
+
+                String fileID = getFileID(conn, lfn, true);
+
+                        ps =  DBSSql.updateFileAutoCrossSection(conn, fileID, xSection, personApi.getUserID(conn, dbsUser));
+                        pushQuery(ps);
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+        }
+
+
 
 
 	private String getFileID(Connection conn, String lfn, boolean excep) throws Exception {

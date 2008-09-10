@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.184 $"
- $Id: DBSSql.java,v 1.184 2008/07/08 21:45:32 sekhri Exp $"
+ $Revision: 1.185 $"
+ $Id: DBSSql.java,v 1.185 2008/09/09 21:16:45 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -108,7 +108,8 @@ public class DBSSql {
 	}
 
 
-	public static PreparedStatement updateName(Connection conn, String tableName, String key, String valueFrom, String valueTo, String lmbUserID) throws Exception {
+	public static PreparedStatement updateName(Connection conn, String tableName, String key, String valueFrom, String valueTo, String lmbUserID) 
+	throws Exception {
 		String sql = "UPDATE " +  owner()+tableName + " \n" +
 			"SET " + key + " = ?, \n" +
 			"LastModifiedBy = ? \n" +
@@ -122,7 +123,34 @@ public class DBSSql {
 		return ps;
 	}
 
-	
+	 public static PreparedStatement updateProcDSXtCrossSection(Connection conn, String procDSID, String xSection, String lmbUserID) throws SQLException {
+                String sql = "UPDATE " +  owner()+"ProcessedDataset \n" +
+			"SET XtCrossSection = ?, \n" +
+			"LastModifiedBy = ? \n" +
+			"WHERE ID = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, xSection);
+                ps.setString(columnIndx++, lmbUserID);
+                ps.setString(columnIndx++, procDSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+       public static PreparedStatement updateFileAutoCrossSection(Connection conn, String fileID, String xSection, String lmbUserID) throws SQLException {
+                String sql = "UPDATE " +  owner()+"Files \n" +
+			"SET AutoCrossSection = ?, \n" +
+			"LastModifiedBy = ? \n" +
+			"WHERE ID = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, xSection);
+                ps.setString(columnIndx++, lmbUserID);
+                ps.setString(columnIndx++, fileID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
        public static PreparedStatement insertTimeLog(Connection conn, String action, String cause, 
 									String effect, String description,
 									String cbUserID, String cDate) throws SQLException {

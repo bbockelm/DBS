@@ -1,6 +1,6 @@
 /**
- $Revision: 1.63 $"
- $Id: DBSApiProcDSLogic.java,v 1.63 2008/07/21 18:58:46 sekhri Exp $"
+ $Revision: 1.64 $"
+ $Id: DBSApiProcDSLogic.java,v 1.64 2008/09/09 21:16:44 afaq Exp $"
  *
  */
 
@@ -614,7 +614,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getTime(table, "creation_date", false));
 	}
 
-
 	/**
 	 * Insert a run parent in processed dataset. 
 	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
@@ -642,7 +641,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				getTime(table, "creation_date", false));
 	}
 
-	
 	/**
 	 * Updates the status of a processed dataset. 
 	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
@@ -672,8 +670,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 	}
 
-
-	
 
 	public void deleteProcDS(Connection conn, Writer out, String path, Hashtable dbsUser, String clientVersion) throws Exception {
 		checkDatasetChildern(conn, out, path);
@@ -738,6 +734,23 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 
 	}
+
+
+        public void updateProcDSXtCrossSection(Connection conn, Writer out, String path, String xSection, Hashtable dbsUser) throws Exception {
+                PreparedStatement ps = null;
+                try {
+
+		String procDSID = getProcessedDSID(conn, path, true);
+
+                        ps =  DBSSql.updateProcDSXtCrossSection(conn, procDSID, xSection, personApi.getUserID(conn, dbsUser));
+                        pushQuery(ps);
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+        }
+
+
 
 	/**
 	 * Gets a processed data set ID from the datbase by using the dataset path. This method calls another private method getProcessedDSID after spliting the dataset path.

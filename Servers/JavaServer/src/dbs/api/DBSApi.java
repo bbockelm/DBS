@@ -1,6 +1,6 @@
 /**
- $Revision: 1.138 $"
- $Id: DBSApi.java,v 1.138 2008/08/22 21:36:21 sekhri Exp $"
+ $Revision: 1.139 $"
+ $Id: DBSApi.java,v 1.139 2008/09/04 18:49:17 sekhri Exp $"
  *
 */
 
@@ -490,9 +490,14 @@ public class DBSApi {
 				
 			} else if (apiStr.equals("insertProcessedDataset")) {
 				(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out,  DBSApiParser.parsePD(getXml(table)), dbsUser);
-				
+
+                        } else if (apiStr.equals("updateProcDSXtCrossSection")) {
+                                (new DBSApiProcDSLogic(this.data)).updateProcDSXtCrossSection(conn, out, get(table, "path", true),
+													 get(table, "xSection", true), 
+														dbsUser);
 			} else if (apiStr.equals("createAnalysisDatasetDefinition")) {
-				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetDefinition(conn, out,  DBSApiParser.parse(getXml(table), "analysis_dataset_definition"), dbsUser);
+				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetDefinition(conn, out,  DBSApiParser.parse(getXml(table), 
+														"analysis_dataset_definition"), dbsUser);
 				//(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetDefinition(conn, out,  DBSApiParser.parseADD(getXml(table)), dbsUser);
 
 			} else if (apiStr.equals("createCompositeAnalysisDataset")) {
@@ -543,15 +548,16 @@ public class DBSApi {
 						get(table, "queryable_meta_data", true),
 						dbsUser);
 	
-
 			} else if (apiStr.equals("updateFileType")) {
 				(new DBSApiFileLogic(this.data)).updateFileType(conn, out,
 						get(table, "lfn", true),
 						get(table, "type", true),
 						dbsUser);
 
-
-
+                        } else if (apiStr.equals("updateFileAutoCrossSection")) {
+                                (new DBSApiFileLogic(this.data)).updateFileAutoCrossSection(conn, out, get(table, "lfn", true),
+                                                                                                         get(table, "xSection", true),
+                                                                                                                dbsUser);
 			} else if (apiStr.equals("remapFiles")) {
 				DBSApiParser.remapFiles(conn, out, getXml(table), dbsUser);
 			
