@@ -1,6 +1,6 @@
 /**
- $Revision: 1.143 $"
- $Id: DBSApiLogic.java,v 1.143 2008/08/22 21:36:21 sekhri Exp $"
+ $Revision: 1.144 $"
+ $Id: DBSApiLogic.java,v 1.144 2008/09/03 22:04:09 sekhri Exp $"
  *
  */
 
@@ -1359,7 +1359,7 @@ public class DBSApiLogic {
 		}
 
                 if (found) {
-			//System.out.println("makeOrderedTierList: Found the right TierOrder: "+currRow);
+			System.out.println("makeOrderedTierList: Found the right TierOrder: "+currRow);
 			return currRow;
 		}
 

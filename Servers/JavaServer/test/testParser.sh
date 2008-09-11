@@ -175,7 +175,7 @@ executeQuery () {
 	#$CMD query="find file where dataset=/test_primary_001/TestProcessedDS111/SIM-GEN" 
 	#$CMD query="find sum(file.size), dataset where file.size > 0"
 	#$CMD query="find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0"
-#executeQuery
+executeQuery
 	#$CMD query="find file.parent where file.name = NEW_TEST0005" 
 
 	#$CMD query="find run,file  order by file, run"
@@ -215,4 +215,7 @@ executeQuery () {
 	#$CMD query="find dataset where dataset like *csa*" 
 	#$CMD query="find dataset where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO" 
 	#$CMD query="find dataset where dataset like /csa07* or file like abc* or file.size > 0" 
-	$CMD query="find ilumi where run > 0"
+	#$CMD query="find ilumi where run > 0"
+	#$CMD query="find dataset where dataset like /RelValSingleMuPt10/CMSSW_2_1_0_pre10_IDEAL_V5_v4/GEN-SIM-DIGI-RAW-HLTDEBUG and site=srm.cern.ch"
+	#$CMD query="find dataset  where site in ( T1_FR_CCIN2P3, T1_TW_ASGC) and dataset = /Cosmics/CRUZET3-v1/RAW"
+	#$CMD query="find file  where dataset in (/Cosmics/CRUZET3-v1/RAWaa) or file = *RAW/v1/000/051/453/8CFF4A0C-CA50-DD11-82DC-000423*"

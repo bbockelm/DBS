@@ -70,7 +70,7 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 		spaces 
 	op2=	like 		{c.setOp($op2.text);} 
 		spaces 
-	val2=	likeValue 		{c.setValue($val2.text); constraints.add(c);};                  
+	val2=	dotValue 		{c.setValue($val2.text); constraints.add(c);};                  
 
 where	:('WHERE' | 'where');
 dotValue        : VALUE 
@@ -113,7 +113,8 @@ genValue	:dotValue
 		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
 //cfgValue	: genValue (spaces AMP spaces genValue)*;
 
-likeValue 	:(dotValue| STAR)+;
+//likeValue 	:(dotValue| STAR)+;
+//likeValue 	:(dotValue)+;
 logicalOp	:(and|or);
 entity		: ('ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group'| 'pset' );
 attr		:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' );
@@ -132,7 +133,7 @@ sum		:('sum' | 'SUM');
 //likeRight	:('LikeRight');
 //likeCfg		:('<like>');
 //pset		:('pset');
-VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#' )+ ;
+VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' )+ ;
 //DVALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'.' )+ ;
 //DIGIT		:('0'..'9');
 //DASH		:('-');
@@ -146,7 +147,7 @@ GT		:('>');
 LT		:('<');
 EQ		:('=');
 AMP		:('&');
-STAR		:('*'|'%');
+//STAR		:('*'|'%');
 NL		:('\n');
 WS 		: ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ 	{ $channel = HIDDEN; } ;
 

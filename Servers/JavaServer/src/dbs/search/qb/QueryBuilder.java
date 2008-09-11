@@ -50,9 +50,31 @@ public class QueryBuilder {
 	private void checkMax(int iter) throws Exception {
 		if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
 	}
+	private void fixConstForLike(ArrayList cs) throws Exception {
+		int iter = 0;
+		for (int i =0 ; i!= cs.size(); ++i) {
+			++iter;	checkMax(iter);
+			Object obj = cs.get(i);
+			if(i%2 == 0) {
+				Constraint co = (Constraint)obj;
+				String key = (String)co.getKey();
+				String op = (String)co.getOp();
+				String val = (String)co.getValue();
+
+				if((val.indexOf('%') != -1 ) || (val.indexOf('*') != -1) ) {
+					if(Util.isSame(op, "in")) throw new Exception("Operator in CANNOT be used with values that have * or % in them");
+					//System.out.println("Fixing conts");
+					co.setOp("like");
+				}
+			}
+		}
+	}
+	
 	//public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
 	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String begin, String end) throws Exception{
 		//Store all the keywors both from select and where in allKws
+		fixConstForLike(cs);
+
 		String personJoinQuery = "";
 		String parentJoinQuery = "";
 		String childJoinQuery = "";

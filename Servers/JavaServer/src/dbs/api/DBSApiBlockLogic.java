@@ -1,6 +1,6 @@
 /**
- $Revision: 1.57 $"
- $Id: DBSApiBlockLogic.java,v 1.57 2008/05/30 16:40:04 sekhri Exp $"
+ $Revision: 1.58 $"
+ $Id: DBSApiBlockLogic.java,v 1.58 2008/06/02 16:42:25 sekhri Exp $"
  *
  */
 
@@ -184,6 +184,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String correctedPath = "/" + datapath[1] + "/" + datapath[2]
                                                                 + "/"+ makeOrderedTierList(conn, pathTierVec);
 
+		System.out.println("correctedPath " + correctedPath);
 		if (!isNull(name)) {
 			checkBlock(name);
 			String[] data = name.split("#");
