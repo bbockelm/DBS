@@ -5,11 +5,15 @@ $msg
 <hr class="dbs" />
 <table class="dbs_table">
 <tr>
-<th>
+<th class="th_left">
 KEYS
 </th>
-<th>
+<th class="th_left">
+#if $showExample
 ATTRIBUTES
+#else
+KEY.ATTRIBUTE
+#end if
 </th>
 #if $showExample
 <th class="th_left">
@@ -39,7 +43,11 @@ $key
 </td>
 <td class="td_left">
 #for x in $attr
+#if $showExample
 $x<br/>
+#else
+$key.$x 
+#end if
 #end for
 </td>
 #if $showExample
