@@ -17,6 +17,7 @@ def parseDBSoutput(data,oDict={},verbose=1):
     # <result SUM_FILE_SIZE='25155849149393' FILE_CREATEBY_DN='mlmiller@vocms19.cern.ch' />
     # I wanted this script be completely stand-alone, so I don't want to use XML parsers
     # which may not be installed on remote site, so plain filter on <result will work here.
+    oList = []
     for item in data.split('\n'):
         if item.find("<result")==-1: continue
         r   = item.split("'")
@@ -31,14 +32,18 @@ def parseDBSoutput(data,oDict={},verbose=1):
             oDict[cby]=size+_size
         else:
             oDict[cby]=size
-        if verbose:
+        oList.append((size,cby))
+    if verbose:
+        oList.sort()
+        oList.reverse()
+        for size,cby in oList:
             print sizeFormat(size),parseCreatedBy(cby)
 
 def parseCreatedBy(input):
     if input and type(input) is types.StringType:
        try:
            dnList=input.split('/')
-           lastItem = dnList[-1].replace("CN=","")
+           lastItem = dnList[-1].replace("CN=","").replace("E=","")
            itemList = []
            for item in lastItem.split():
                if  not re.match("[0-9]",item):
