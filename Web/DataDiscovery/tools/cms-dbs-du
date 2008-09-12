@@ -71,10 +71,10 @@ class DDOptionParser:
   def __init__(self):
     self.parser = OptionParser()
     self.parser.add_option("--dbsInst",action="store", type="string", dest="dbsInst",
-         help="specify DBS instance to use, e.g. --dbsInst=cms_dbs_prod_global")
-    self.parser.add_option("--site",action="store",type="string",dest="site",
+         help="specify DBS instance to use, e.g. --dbsInst=cms_dbs_prod_global, by default we scan all known DBS instances.")
+    self.parser.add_option("-s","--site",action="store",type="string",dest="site",
          help="specify a site name or pattern")
-    self.parser.add_option("--file",action="store",type="string",dest="file",
+    self.parser.add_option("-f","--file",action="store",type="string",dest="file",
          help="specify a file name or pattern")
     self.parser.add_option("-v","--verbose",action="store_true", default=False, dest="verbose",
          help="specify verbosity level")
