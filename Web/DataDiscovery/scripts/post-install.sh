@@ -32,6 +32,7 @@ cat >> $DIR/DBSDD.conf << EOF
 # URL=$host
 # PORT=$port
 LOGGERDIR=$DDHOME/Logs
+DBS_VER=`echo $DBS_CLIENT_VERSION | sed "s/-cmp[0-9]//g"`
 EOF
 
 cat > $DIR/DBParam << EOF
