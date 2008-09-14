@@ -5156,7 +5156,7 @@ Save query as:
 #            print runs
 #            print runInfoList
         except:
-            t=self.errorReport("Fail in getRunDBInfo function")
+#            t=self.errorReport("Fail in getRunDBInfo function")
             pass
         page="""<ajax-response>\n"""
         for run,runInfoDict in runInfoList:
