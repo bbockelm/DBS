@@ -211,7 +211,7 @@ class DDServer(DDLogger,Controller):
             raise traceback.format_exc()
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
-        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':'DBS_1_2_1','retry':2}
+        self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':self.ddConfig.dbsVer(),'retry':2}
         print "+++ DDServer URL '%s'"%self.dbsdd
         print "+++ Using %s interface"%self.iface
         try:
@@ -1086,7 +1086,7 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _runs.exposed=True
 
-    def _tools(self,userMode):
+    def _tools(self,userMode='user'):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= templateTools(searchList=[{}]).respond()
@@ -1097,10 +1097,10 @@ class DDServer(DDLogger,Controller):
             pass
             return str(t)
     _tools.exposed=True
-    def tool_cli(self):
+    def tool_cli(self,userMode='user'):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
-            page+= templateDBSCLI(searchList=[{'ver':'DBS_2_0_2'}]).respond()
+            page+= templateDBSCLI(searchList=[{'ver':self.ddConfig.dbsVer()}]).respond()
             page+= self.genBottomHTML()
             return page
         except:
@@ -5225,7 +5225,7 @@ Save query as:
             xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='%s' lumi_section_number='' /></dbs>"""%run
 #            xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='298' lumi_section_number='' /></dbs>"""
 
-            params={'apiversion':'DBS_1_0_9','api':'listRunLumiDQ','xmlinput':xmlinput}
+            params={'apiversion':self.ddConfig.dbsVer(),'api':'listRunLumiDQ','xmlinput':xmlinput}
 #            f = urllib.urlopen("http://cmssrv17.fnal.gov:8989/DBS_116pre1/servlet/DBSServlet?%s"%urllib.urlencode(params))
             dbsUrl=DBS_INST_URL[dbsInst]
             dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
@@ -5802,12 +5802,8 @@ Save query as:
     def aSearchKeys(self):
         if  self.iface=="dbsapi":
             try:
-                helpList = self.dbsApi.getHelp("")
-#                dbsUrl = self.ddConfig.dbsUrl()
-#                dbsVer = self.ddConfig.dbsVer()
-#                dbsConfig={'url':dbsUrl,'mode':'POST','version':dbsVer,'retry':2}
-#                dbsApi = DbsApi(dbsConfig)
-#                helpList = dbsApi.getHelp("")
+                dbsApi = self.getDbsApi(DBSGLOBAL)
+                helpList = dbsApi.getHelp("")
             except:
                 helpList = []
                 pass
