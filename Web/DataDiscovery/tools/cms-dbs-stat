@@ -6,7 +6,7 @@
 # Author:  Valentin Kuznetsov, 2008
 
 """
-CMS DBS du command
+CMS DBS stat command
 """
 
 import httplib, urllib, types, string, os, sys, re, urllib, urllib2, time
