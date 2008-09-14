@@ -1086,6 +1086,38 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _runs.exposed=True
 
+    def _tools(self,userMode):
+        try:
+            page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= templateTools(searchList=[{}]).respond()
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in tools init function")
+            pass
+            return str(t)
+    _tools.exposed=True
+    def tool_cli(self):
+        try:
+            page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= templateDBSCLI(searchList=[{'ver':'DBS_2_0_2'}]).respond()
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in tools init function")
+            pass
+            return str(t)
+    tool_cli.exposed=True
+    def tool_du(self):
+        return serve_file(os.path.join(os.getcwd(),'tools/cms-dbs-du'),content_type='text/plain')
+    tool_du.exposed=True
+    def tool_ls(self):
+        return serve_file(os.path.join(os.getcwd(),'tools/cms-dbs-ls'),content_type='text/plain')
+    tool_ls.exposed=True
+    def tool_stat(self):
+        return serve_file(os.path.join(os.getcwd(),'tools/cms-dbs-stat'),content_type='text/plain')
+    tool_stat.exposed=True
+
     ################## END OF init methods
     def whereMsg(self,msg,userMode):
         t = templateWhere(searchList=[{'where':'DBS discovery :: '+msg,'userMode':userMode}]).respond()
