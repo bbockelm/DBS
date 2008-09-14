@@ -14,6 +14,7 @@
 {label: "Runs", link: host+"_runs?userMode="+mode, title: "Run search: run-based search"},
 //{label: "Pages", link: "_pages?userMode="+mode, title: "Data discovery world-wide pages"},
 {label: "Admin", link: host+"_admin?userMode=expert", title: "Administrate dataset/block/LFNs in DBS"},
+{label: "Tools", link: host+"_tools?userMode="+mode, title: "DBS user-friendly tools"},
 {label: "Help", link: host+"_help?userMode="+mode, title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: host+"_contact?userMode="+mode, title: "Contact DBS support team"},
 {label: "View", id:"", link: "javascript:ChangeView()", title: "Define the data view", position: "right"}
