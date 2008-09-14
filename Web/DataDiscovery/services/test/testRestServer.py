@@ -6,7 +6,7 @@
 # Author:  Valentin Kuznetsov, 2007
 
 # system modules
-import os, string, logging, types, time, socket
+import sys, os, string, logging, types, time, socket
 import httplib, urllib, inspect, urllib2
 
 class DDParamServer(object): 
@@ -91,6 +91,15 @@ if __name__ == "__main__":
 #        print "\n### POST message via",ctype
 #        page = server.sendPostMessage(url,params,ctype,debug=1)
 #        print page
+    url="dbs_discovery_test/services/rest/dataset/GlobalNov07-A/Online-CMSSW_1_7_1*/site/srm.cern.ch"
+#    url="dbs_discovery_test/services/rest/block//ElectronGun_novtxsmear/CMSSW_1_2_3-Spring07-PFlowTau-1174326024/GEN-SIM#a6652b51-766d-4710-9806-8e4490ef6c76"
+    server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
+    params={}
+    for ctype in ['application/xml']:
+        print "\n### GET message via",ctype
+        page = server.sendMessage("GET",url,ctype,params,debug=1)
+        print page
+    sys.exit(0)
 
     url="dbs_discovery_test/services/rest/site/srm.cern.ch/dataset"
     server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
