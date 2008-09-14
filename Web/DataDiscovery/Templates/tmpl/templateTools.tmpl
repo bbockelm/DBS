@@ -78,112 +78,37 @@ DBS TOOLS
 
 <div id="navcontainer">
 <ul id="navlist">
+
+<!-- new item -->
+
 <li>
 <a href="tool_cli">DBS CLI</a>
 <div class="explain">
 comprehensive command line toolkit to retrieve and manipulate data in DBS. 
+<br/>
+<span class="box_red">NOTE:</span>
 This toolkit depends on
 DBS API and installed as a part of CMS dbs-client RPM.
 <div id="_dbscli"><a href="javascript:ShowTag('dbscli')">more</a></div>
 </div>
 <div class="hide" id="dbscli">
+#set usage=os.popen('dbs --help').read()
 <pre>
-usage: dbs --help or dbs --command [options]
-
-options:
-  --version             show program's version number and exit
-  -h, --help            show this help message and exit
-  --url=URL             specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/
-                        DBS/servlet/DBSServlet, If no url is provided default
-                        url from dbs.config is attempted
-  --q, --quiet          if specified the output of certain commands will be
-                        supressed, generally used with 'search'
-  --p=PATH, --path=PATH
-                        specify dataset path, e.g. -p=/primary/tier/processed,
-                        or --path=/primary/tier/processed, supports shell glob
-  --pattern=PATTERN     some commands scope could be restricted with pattern,
-                        e.g. listPrimaryDataset, supports shell glob for
-                        Primary Dataset Names, Use --doc or individual
-                        commands with --help
-  --run=RUN             Run number, can be used by list files or search
-                        commands
-  --algopattern=ALGOPATTERN
-                        Algorithms can be specified as algopattern
-                        /appname/appversion/appfamily/pset_hash, supports
-                        shell glob
-  --blockpattern=BLOCKPATTERN
-                        BlockName pattern for listBlocks and other calls in
-                        format /primary/tier/processed#guid, supports shell
-                        glob
-  --sepattern=SEPATTERN
-                        Storage Element Name pattern for glob search
-  --lfnpattern=LFNPATTERN
-                        Logical File Name pattern for glob search
-  --storequery=STOREQUERY
-                        Store the search query as ADS Definition (must be used
-                        with --search)
-  --storetemplatequery=STORETEMPLATEQUERY
-                        Store the search query as ADS Template Definition
-                        (must be used with --search)
-  --query=QUERY         Search query used to perform data serach, create ADS
-                        Definitions etc
-  --createPADS=CREATEPADS
-                        Create Personal Analysis Dataset for the search query
-                        (must be used with --search, or --usequery=)
-  --createADS           Create Analysis Dataset for the search query (must be
-                        used with --search, or --usequery=)
-  --createCFG           Creates crab.cfg for the search query (must be used
-                        with --search, or --usequery=)
-  --createCFF=CREATECFF
-                        Create .cff file for the search query (must be used
-                        with --search, or --usequery=)
-  --usequery=USEQUERY   Specifies the ADS Def/Query to be used for creating
-                        PADS/ADS (must be used with --createPADS= or
-                        --createADS=)
-  --dbsmartfile=DBSMARTFILE
-                        Location of the dbs mart file, absolute path or
-                        relative to ADSHOME
-  --useASearch          If supplied, ASearch (Search DBS Discovery Page) is
-                        used instead of DBS Server
-  --report              If you add this option with some listCommands the
-                        output is generated in a detailed report format
-  --adsversion=ADSVERSION
-                        Use this with lsads (listing Analysis Dataset) to list
-                        a specific version
-  --doc                 Generates a detailed documentation for reference,
-                        overrides all other cmdline options (use --wiki_help
-                        to produces help document in wiki format [dbs --doc
-                        --wiki_help])
-  --notwril             If provided, tool will not show 'Progressing...' Twril
-                        on screen (can be useful when redirecting output to
-                        files)
-  -c COMMAND, --command=COMMAND
-                        Command line command, e.g. -c lsp, or
-                        --command=listPrimaryDataset, Also you can use --help
-                        with individual commands, e.g, -c lsp --help
-
-   Some possible commands are:
-           listProcessedDatasets or lsd, can provide --path
-           listAlgorithms or lsa, can provide --path
-           listFiles or lsf, must provide --path
-           listAnalysisDatasetDefinition or lsadef
-           listAnalysisDataset or lsads
-           myAnalysisDatasetDef or myadsdef or --myadsdef
-           myAnalysisDataset or myads
-           search or --search
-
- EXAMPLE: python dbsCommandLine.py -c lsd --path=/*/*/RAW
- Note: most commands can print greater details with --report
- Please use --doc for details
+$usage
 </pre>
 </div>
 <br/>
 <br/>
 </li>
+
+<!-- new item -->
+
 <li>
 <a href="tool_cli">dbssql</a> 
 <div class="explain">
 simple querying tool.
+<br/>
+<span class="box_red">NOTE:</span>
 This toolkit depends on
 DBS API and installed as a part of CMS dbs-client RPM.
 <div id="_dbssql"><a href="javascript:ShowTag('dbssql')">more</a></div>
@@ -212,24 +137,47 @@ srm.grid.sinica.edu.tw
 <br/>
 <br/>
 </li>
+
+<!-- new item -->
+
+<li>
+<a href="aSearchCLI">DDSearchCLI.py</a>
+<div class="explain">
+a CLI counterpart for Data Discovery.
+<br/>
+<span class="box_red">NOTE:</span>
+No installation is required, just download the script and change its permission to be executable.
+<div id="_aSearchCLI"><a href="javascript:ShowTag('aSearchCLI')">more</a></div>
+</div>
+<div class="hide" id="aSearchCLI">
+#set usage=os.popen('./tools/DDSearchCLI.py --help').read()
+<pre>
+$usage
+</pre>
+<div class="sectionhead">EXAMPLE:</div>
+<pre>
+./DDSearchCLI.py --input="find dataset where dataset like *"
+</pre>
+</div>
+<br/>
+<br/>
+</li>
+
+<!-- new item -->
+
 <li>
 <a href="tool_du">cms-dbs-du</a>
 <div class="explain">
 DBS "disk utility", counts a disk usage in DBS instance(s). Please note it is based only on information from DBS and not from actual disk usage at given tier site, therefore it prove a "roof" estimate of disk usage. It does not distinguished data across different DBS instances.
+<br/>
+<span class="box_red">NOTE:</span>
+No installation is required, just download the script and change its permission to be executable.
 <div id="_cms-dbs-du"><a href="javascript:ShowTag('cms-dbs-du')">more</a></div>
 </div>
 <div class="hide" id="cms-dbs-du">
+#set usage=os.popen('./tools/cms-dbs-du --help').read()
 <pre>
-Usage: cms-dbs-du [options]
-
-Options:
-  -h, --help            show this help message and exit
-  --dbsInst=DBSINST     specify DBS instance to use, e.g.
-                        --dbsInst=cms_dbs_prod_global, by default we scan all
-                        known DBS instances.
-  -s SITE, --site=SITE  specify a site name or pattern
-  -f FILE, --file=FILE  specify a file name or pattern
-  -v, --verbose         specify verbosity level
+$usage
 </pre>
 <div class="sectionhead">EXAMPLE:</div>
 Count disk space usage at T2_IT_Legnaro site for all files found in DBS global instance
@@ -257,6 +205,9 @@ cms-dbs-du --site=T2_IT_Legnaro --file=* --dbsInst=cms_dbs_prod_global
 <br/>
 <br/>
 </li>
+
+<!-- new item -->
+
 <li>
 <a href="tool_ls">cms-dbs-ls</a>
 <div class="explain">
@@ -264,23 +215,15 @@ DBS "list utility" which list files and their attributes for given dataset|site|
 By default it prints a list of files, while long view provides information about
 total size of the file, total number of events in a file, file status, release associate with a file
 its creation timestamp, file creator, modification time stamp, file modicifator and file name.
+<br/>
+<span class="box_red">NOTE:</span>
+No installation is required, just download the script and change its permission to be executable.
 <div id="_cms-dbs-ls"><a href="javascript:ShowTag('cms-dbs-ls')">more</a></div>
 </div>
 <div class="hide" id="cms-dbs-ls">
+#set usage=os.popen('./tools/cms-dbs-ls --help').read()
 <pre>
-Usage: cms-dbs-ls [options]
-
-Options:
-  -h, --help            show this help message and exit
-  --dbsInst=DBSINST     specify DBS instance to use, default
-                        cms_dbs_prod_global
-  -s SITE, --site=SITE  specify a site name or pattern
-  -f FILE, --file=FILE  specify a file name or pattern
-  -d DATASET, --dataset=DATASET
-                        specify a dataset name or pattern
-  -l, --long            specify extended list options
-  -t, --titles          list titles for help
-  -v, --verbose         specify verbosity level
+$usage
 </pre>
 <div class="sectionhead">EXAMPLE:</div>
 List all files for dataset /qqH120_WW/CMSSW_1_2_0-1166726234/GEN-SIM-DIGI-RECO at castersc.grid.sinica.edu.tw storage element
@@ -296,29 +239,24 @@ cms-dbs-ls --s castorsc.grid.sinica.edu.tw --dataset=/qqH120_WW/CMSSW_1_2_0-1166
 <br/>
 <br/>
 </li>
+
+<!-- new item -->
+
 <li>
 <a href="tool_stat">cms-dbs-stat</a>
 <div class="explain">
 tool which provides DBS "statistics" at given site|dataset. It present the following information:
 dataset name, storage element, total number of files in a dataset, total size of all files in
-a dataset, total number of events in a dataset
+a dataset, total number of events in a dataset.
+<br/>
+<span class="box_red">NOTE:</span>
+No installation is required, just download the script and change its permission to be executable.
 <div id="_cms-dbs-stat"><a href="javascript:ShowTag('cms-dbs-stat')">more</a></div>
 </div>
 <div class="hide" id="cms-dbs-stat">
+#set usage=os.popen('./tools/cms-dbs-stat --help').read()
 <pre>
-Usage: cms-dbs-stat [options]
-
-Options:
-  -h, --help            show this help message and exit
-  --dbsInst=DBSINST     specify DBS instance to use, default
-                        cms_dbs_prod_global
-  -s SITE, --site=SITE  specify a site name or pattern
-  -f FILE, --file=FILE  specify a file name or pattern
-  -d DATASET, --dataset=DATASET
-                        specify a dataset name or pattern
-  -l, --long            specify extended list options
-  -t, --titles          list titles for help
-  -v, --verbose         specify verbosity level
+$usage
 </pre>
 <div class="sectionhead">EXAMPLE:</div>
 <pre>
