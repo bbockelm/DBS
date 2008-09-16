@@ -70,7 +70,7 @@
 	<edge directed="false"	wt="1"	source="PrimaryDataset" 		target="ProcessedDataset"	relation="PrimaryDataset.ID = ProcessedDataset.PrimaryDataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcDSParent" 		relation="ProcessedDataset.ID = ProcDSParent.ThisDataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcAlgo" 		relation="ProcessedDataset.ID = ProcAlgo.Dataset"/>
-	<edge directed="false"	wt="0.5"	source="ProcessedDataset" 	target="ProcDSRuns" 		relation="ProcessedDataset.ID = ProcDSRuns.Dataset"/>
+	<edge directed="false"	wt="1.5"	source="ProcessedDataset" 	target="ProcDSRuns" 		relation="ProcessedDataset.ID = ProcDSRuns.Dataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcDSTier" 		relation="ProcessedDataset.ID = ProcDSTier.Dataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="AnalysisDataset"	relation="ProcessedDataset.ID = AnalysisDataset.ProcessedDS"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="Block"			relation="ProcessedDataset.ID = Block.Dataset"/>
@@ -95,7 +95,7 @@
 	<edge directed="false"	wt="1"	source="AnalysisDataset" 		target="AnalysisDSDef"		relation="AnalysisDataset.Definition = AnalysisDSDef.ID"/>
 	<edge directed="false"	wt="1"	source="AnalysisDataset"	 	target="PhysicsGroup"		relation="AnalysisDataset.PhysicsGroup = PhysicsGroup.ID"/>
 	
-	<edge directed="false"	wt="2"	source="AnalysisDSFileLumi" 	target="LumiSection"		relation="AnalysisDSFileLumi.Lumi = LumiSection.ID"/>
+	<edge directed="false"	wt="3"	source="AnalysisDSFileLumi" 	target="LumiSection"		relation="AnalysisDSFileLumi.Lumi = LumiSection.ID"/>
 	<edge directed="false"	wt="0.4"	source="AnalysisDSFileLumi" 	target="Files"			relation="AnalysisDSFileLumi.Fileid = Files.ID"/>
 	
 	
