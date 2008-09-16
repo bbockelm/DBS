@@ -1,6 +1,6 @@
 /**
- $Revision: 1.59 $"
- $Id: DBSApiBlockLogic.java,v 1.59 2008/09/11 18:33:17 sekhri Exp $"
+ $Revision: 1.60 $"
+ $Id: DBSApiBlockLogic.java,v 1.60 2008/09/16 17:30:25 afaq Exp $"
  *
  */
 
@@ -189,7 +189,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String correctedPath = "/" + datapath[1] + "/" + datapath[2]
                                                                 + "/"+ makeOrderedTierList(conn, pathTierVec);
 
-		System.out.println("correctedPath " + correctedPath);
+		//System.out.println("correctedPath " + correctedPath);
 		if (!isNull(name)) {
 			checkBlock(name);
 			String[] data = name.split("#");
@@ -248,17 +248,26 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		} else {
 			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
 		}
-		//Storage Element will be added to an existing block
-		String blockID = "";
-		//System.out.println("seVector.size() " + seVector.size() );
-       		if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
-		//System.out.println("BLOCK ID is " + blockID);
-		for (int j = 0; j < seVector.size(); ++j) {
-			String seName = get((Hashtable)seVector.get(j), "storage_element_name");
-			//System.out.println("storage_element_name " + seName);
-			insertStorageElement(conn, out, blockID, seName , cbUserID, lmbUserID, creationDate);
-		}
 
+		//Anzar Afaq - 09/16/2008
+		//SEs will only be added if its not a GLOBAL instance
+		//SE info in DBS Global is not maintained anymore (done in Phedex)
+		if (!this.data.instanceName.equals("GLOBAL")) {
+
+			//Storage Element will be added to an existing block
+			String blockID = "";
+			//System.out.println("seVector.size() " + seVector.size() );
+       			if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
+			//System.out.println("BLOCK ID is " + blockID);
+			for (int j = 0; j < seVector.size(); ++j) {
+				String seName = get((Hashtable)seVector.get(j), "storage_element_name");
+				//System.out.println("storage_element_name " + seName);
+				insertStorageElement(conn, out, blockID, seName , cbUserID, lmbUserID, creationDate);
+			}
+		} else {
+			writeWarning(out, "No SE in GLOBAL instance", "11000", 
+						"SE info in DBS Global is not maintained anymore (done in Phedex)");
+		}
                         
 		out.write("<block block_name='" + name + "'/>");
 	}
@@ -286,11 +295,20 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}
 	
 	private void insertStorageElement(Connection conn, Writer out, String blockID, String seName, String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		insertNameInfo(conn, out, "StorageElement", "SEName", seName , cbUserID, lmbUserID, creationDate);
-		insertMap(conn, out, "SEBlock", "SEID", "BlockID", 
+
+                //Anzar Afaq - 09/16/2008
+                //SEs will only be added if its not a GLOBAL instance
+                //SE info in DBS Global is not maintained anymore (done in Phedex)
+                if (this.data.instanceName.equals("GLOBAL")) {
+			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+		} else {
+
+			insertNameInfo(conn, out, "StorageElement", "SEName", seName , cbUserID, lmbUserID, creationDate);
+			insertMap(conn, out, "SEBlock", "SEID", "BlockID", 
 					getID(conn, "StorageElement", "SEName", seName , true),
 					blockID, 
 					cbUserID, lmbUserID, creationDate);
+                }
 
 	}
 
@@ -306,26 +324,34 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}*/
 	
 	public void deleteSEFromBlock(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-		String seName = get(table, "storage_element_name", true);
-		String seID = getID(conn, "StorageElement", "SEName", seName , true);
-		deleteMap(conn,	out, "SEBlock", "SEID", "BlockID", 
+
+                //Anzar Afaq - 09/16/2008
+                //SEs will only be added if its not a GLOBAL instance
+                //SE info in DBS Global is not maintained anymore (done in Phedex)
+                if (this.data.instanceName.equals("GLOBAL")) {
+			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                } else {
+
+			String seName = get(table, "storage_element_name", true);
+			String seID = getID(conn, "StorageElement", "SEName", seName , true);
+			deleteMap(conn,	out, "SEBlock", "SEID", "BlockID", 
 				seID, 
 				getBlockID(conn, getBlock(table, "block_name", true), false, true));
 		
-		PreparedStatement ps = null;
-		ResultSet rs =  null;
-		try {
-			ps =  DBSSql.getMap(conn, "SEBlock", "SEID", "BlockID", seID, "");
-			pushQuery(ps);
-			rs =  ps.executeQuery();
-			if(!rs.next()) {
-				deleteName(conn, out, "StorageElement", "SEName", seName);
+			PreparedStatement ps = null;
+			ResultSet rs =  null;
+			try {
+				ps =  DBSSql.getMap(conn, "SEBlock", "SEID", "BlockID", seID, "");
+				pushQuery(ps);
+				rs =  ps.executeQuery();
+				if(!rs.next()) {
+					deleteName(conn, out, "StorageElement", "SEName", seName);
+				}
+			} finally {
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
 		}
-
 	}
 
 	//insertBlock USED by dbsManagedBlockID
@@ -383,47 +409,58 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void updateSEName(Connection conn, Writer out, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
-		String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , false);
-		String seIDOld = getID(conn, "StorageElement", "SEName", seNameFrom , true);
-		String deleteSeMaps = "";
-		String updatedSE = "";
-		if (isNull(seIDNew)) {
-			updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
-			insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName", 
+
+                //Anzar Afaq - 09/16/2008
+                //SEs will only be added if its not a GLOBAL instance
+                //SE info in DBS Global is not maintained anymore (done in Phedex)
+                if (this.data.instanceName.equals("GLOBAL")) {
+			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                } else {
+
+
+
+			String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , false);
+			String seIDOld = getID(conn, "StorageElement", "SEName", seNameFrom , true);
+			String deleteSeMaps = "";
+			String updatedSE = "";
+			if (isNull(seIDNew)) {
+				updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
+				insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName", 
 						"Renamed "+seNameFrom+" to "+seNameTo,
 						"The new SE "+seNameTo+" provided was not in DBS, so older SE "+seNameFrom+" is changed to newer",
 						dbsUser);
-		} else {
-			Vector oldBlockIDs = getBlockIDListFromMap(conn, seIDOld);
-			Vector newBlockIDs = getBlockIDListFromMap(conn, seIDNew);
-			for (int i = 0; i != oldBlockIDs.size() ; ++i) {
-				String blockID = (String)oldBlockIDs.elementAt(i);
-				if(newBlockIDs.contains(blockID)) {
-					//Delete this entry beacuse of duplication
-					deleteMap(conn, out, "SEBlock", "BlockID", "SEID", blockID, seIDOld);
-					//System.out.println("deleting SEID " + seIDOld + " blockID " + blockID);
+			} else {
+				Vector oldBlockIDs = getBlockIDListFromMap(conn, seIDOld);
+				Vector newBlockIDs = getBlockIDListFromMap(conn, seIDNew);
+				for (int i = 0; i != oldBlockIDs.size() ; ++i) {
+					String blockID = (String)oldBlockIDs.elementAt(i);
+					if(newBlockIDs.contains(blockID)) {
+						//Delete this entry beacuse of duplication
+						deleteMap(conn, out, "SEBlock", "BlockID", "SEID", blockID, seIDOld);
+						//System.out.println("deleting SEID " + seIDOld + " blockID " + blockID);
 
-					deleteSeMaps += "blockID:" + blockID + "seID:" + seIDOld + " deleted ";
+						deleteSeMaps += "blockID:" + blockID + "seID:" + seIDOld + " deleted ";
 					
-				} else {
-					//Just change the SE for this Block
-					updateMap(conn, out, "SEBlock", "BlockID", "SEID", 
+					} else {
+						//Just change the SE for this Block
+						updateMap(conn, out, "SEBlock", "BlockID", "SEID", 
 							blockID,
 							seIDNew,
 							seIDOld,
 							personApi.getUserID(conn, dbsUser));
-					updatedSE += "Updating SEID:" + seIDOld + " blockID: " + blockID + " to SEID: " + seIDNew;
-					//System.out.println("updating SEID " + seIDOld + " blockID " + blockID + " to SEID " + seIDNew);
+						updatedSE += "Updating SEID:" + seIDOld + " blockID: " + blockID + " to SEID: " + seIDNew;
+						//System.out.println("updating SEID " + seIDOld + " blockID " + blockID + " to SEID " + seIDNew);
 
+					}
 				}
-			}
-			//Finally delete the old Storage Element
-			deleteName(conn, out, "StorageElement", "SEName", seNameFrom);
-			insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName",
+				//Finally delete the old Storage Element
+				deleteName(conn, out, "StorageElement", "SEName", seNameFrom);
+				insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName",
 					"Some older SE-Block maps may have been deleted, or renamed",
 					deleteSeMaps + updatedSE + ".Further Old Storage Element " + seNameFrom + "is deleted ",
 					dbsUser);
 	
+			}
 		}
 	
 	}
@@ -433,6 +470,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		Vector toReturn = new Vector();
 		try {
+
 			ps =  DBSSql.getMap(conn, "SEBlock", "SEID", "BlockID", seID, "");
 			pushQuery(ps);
 			rs =  ps.executeQuery();
@@ -447,23 +485,39 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	
 
 	public void updateSEBlock(Connection conn, Writer out, String blockName, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
-		String blockID = getBlockID(conn, blockName, false, true);
-		String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , true);
-		if( !isNull(getMapID(conn, "SEBlock", "SEID", "BlockID", seIDNew, blockID, false)))  
-			throw new DBSException("Already exists", "1082", "Block " + blockName + "  with Storage Element " + seNameTo + "  Already exists. Cannot change storage element " + seNameFrom + " to " + seNameTo);
-		updateMap(conn, out, "SEBlock", "BlockID", "SEID", 
+
+                //Anzar Afaq - 09/16/2008
+                //SEs will only be added if its not a GLOBAL instance
+                //SE info in DBS Global is not maintained anymore (done in Phedex)
+                if (this.data.instanceName.equals("GLOBAL")) {
+			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                } else {
+
+			String blockID = getBlockID(conn, blockName, false, true);
+			String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , true);
+			if( !isNull(getMapID(conn, "SEBlock", "SEID", "BlockID", seIDNew, blockID, false)))  
+				throw new DBSException("Already exists", "1082", "Block " + blockName + "  with Storage Element " + seNameTo + "  Already exists. Cannot change storage element " + seNameFrom + " to " + seNameTo);
+			updateMap(conn, out, "SEBlock", "BlockID", "SEID", 
 				blockID,
 				seIDNew,
 				getID(conn, "StorageElement", "SEName", seNameFrom , true),
 				personApi.getUserID(conn, dbsUser));
+		}
 
 	}
 
 	public void updateSEBlockRole(Connection conn, Writer out, String blockName, String seName, String role, Hashtable dbsUser) throws Exception {
-		if(!role.equals("N") && !role.equals("Y")) 
-			throw new DBSException("Invalid Role", "1098", "Role can have just these values Y or N. Given " + role);
+                //Anzar Afaq - 09/16/2008
+                //SEs will only be added if its not a GLOBAL instance
+                //SE info in DBS Global is not maintained anymore (done in Phedex)
+                if (this.data.instanceName.equals("GLOBAL")) {
+			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                } else {
+
+			if(!role.equals("N") && !role.equals("Y")) 
+				throw new DBSException("Invalid Role", "1098", "Role can have just these values Y or N. Given " + role);
 			
-		updateValue(conn, out, "SEBlock", 
+			updateValue(conn, out, "SEBlock", 
 				getMapID(conn, "SEBlock", "SEID", "BlockID", 
 					getID(conn, "StorageElement", "SEName", seName , true), 
 					getBlockID(conn, blockName, false, true),
@@ -471,12 +525,11 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				"Roles", 
 				role, 
 				personApi.getUserID(conn, dbsUser));
-		insertTimeLog(conn, "updateSEBlockRole", "User called updateSEBlockRole", 
+			insertTimeLog(conn, "updateSEBlockRole", "User called updateSEBlockRole", 
 						"Chaged role to " + role,
 						"The Role in Block " + blockName + " Storage Element " + seName + " is changed to  " + role,
 						dbsUser);
-
-
+		}
 	}
 
 	public void updateBlock(Connection conn, Writer out,  String blockID, String lmbUserID) throws Exception {
@@ -715,6 +768,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		sout.write(DBSConstants.XML_SUCCESS);
 		sout.write(DBSConstants.XML_FOOTER);
 		sout.flush();
+
 
 		//System.out.println("XML is " + sout.toString());
 		//Write the XML in Recycle Bin
