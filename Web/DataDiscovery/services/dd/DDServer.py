@@ -5855,6 +5855,7 @@ Save query as:
         except:
             traceback.print_exc()
             raise "aSearch require input query"
+        userInput = urllib.unquote(userInput)
         try:
             if method!="dbsapi":
                self.ddrules.checkSyntax(userInput)
