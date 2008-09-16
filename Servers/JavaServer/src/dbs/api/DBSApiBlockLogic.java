@@ -1,6 +1,6 @@
 /**
- $Revision: 1.58 $"
- $Id: DBSApiBlockLogic.java,v 1.58 2008/06/02 16:42:25 sekhri Exp $"
+ $Revision: 1.59 $"
+ $Id: DBSApiBlockLogic.java,v 1.59 2008/09/11 18:33:17 sekhri Exp $"
  *
  */
 
@@ -88,7 +88,12 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'>\n"));
 				}
-				String role = get(rs, "ROLES");
+
+
+				//Anzar Afaq -09/16/2008 (Temporary HACK, setting roles to 
+				//EMPTY (Normal User, ROLES are now managed in DLS-Phedex), instead of getting it from DB
+				//String role = get(rs, "ROLES");
+				String role = "";
 				//System.out.println("Role is " + role);
 				if(!isNull(role)) {
 					if(role.equals("Y") || userType.equals("SUPER")) {
