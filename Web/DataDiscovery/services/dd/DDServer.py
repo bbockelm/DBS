@@ -214,7 +214,7 @@ class DDServer(DDLogger,Controller):
         self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':self.ddConfig.dbsVer(),'retry':2}
         print "+++ DDServer URL '%s'"%self.dbsdd
         print "+++ Using %s interface"%self.iface
-        print "+++ Using % dbs-client version"%self.ddConfig.dbsVer()
+        print "+++ Using %s dbs-client version"%self.ddConfig.dbsVer()
         try:
             self.outputConfigMap()
         except:
