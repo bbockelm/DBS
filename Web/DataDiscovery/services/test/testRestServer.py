@@ -81,30 +81,34 @@ class DDParamServer(object):
 #
 if __name__ == "__main__":
 
-    # test ProdRequest status response call
-#    url="/service/rest/site/srm.cern.ch/dataset?what=nresults"
-#    server = DDParamServer(server="localhost:8080/",verbose=1)
-
 #    url="dbs_discovery_test/services/rest/site/srm.cern.ch/dataset"
 #    server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
-#    for ctype in ['application/xml','text/json','text/html']:
-#        print "\n### POST message via",ctype
-#        page = server.sendPostMessage(url,params,ctype,debug=1)
+#    params={}
+#    for ctype in ['text/json']:
+#        print "\n### GET message via",ctype
+#        page = server.sendMessage("GET",url,ctype,params,debug=1)
 #        print page
-    url="dbs_discovery_test/services/rest/dataset/GlobalNov07-A/Online-CMSSW_1_7_1*/site/srm.cern.ch"
-#    url="dbs_discovery_test/services/rest/block//ElectronGun_novtxsmear/CMSSW_1_2_3-Spring07-PFlowTau-1174326024/GEN-SIM#a6652b51-766d-4710-9806-8e4490ef6c76"
+
+    url="dbs_discovery_test/services/rest/dataset/GlobalNov*/Online-CMSSW_1_*/site/srm.cern.ch"
     server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
     params={}
-    for ctype in ['application/xml']:
+    for ctype in ['application/xml','text/plain']:
         print "\n### GET message via",ctype
         page = server.sendMessage("GET",url,ctype,params,debug=1)
         print page
-    sys.exit(0)
 
-    url="dbs_discovery_test/services/rest/site/srm.cern.ch/dataset"
+    url="dbs_discovery_test/services/rest/dataset/GlobalNov*/Online-CMSSW_1_*/dataset,site"
     server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
     params={}
-    for ctype in ['application/xml','text/json']:
+    for ctype in ['text/plain']:
+        print "\n### GET message via",ctype
+        page = server.sendMessage("GET",url,ctype,params,debug=1)
+        print page
+
+    url="dbs_discovery_test/services/rest/dataset/GlobalNov*/Online-CMSSW_1_*/site"
+    server = DDParamServer(server="https://cmsweb.cern.ch",verbose=1)
+    params={}
+    for ctype in ['text/plain']:
         print "\n### GET message via",ctype
         page = server.sendMessage("GET",url,ctype,params,debug=1)
         print page

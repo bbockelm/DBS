@@ -36,6 +36,8 @@ import elementtree.ElementTree as ET
 from   Cheetah.Template import Template
 from   Templates   import *
 
+from utils.DDUtil import parseDBSQuery
+
 __all__ = ['Resource','DataCache']
 
 def genTopHTML(host,url,mastheadUrl,footerUrl,dbsInst,userMode="user",onload=""):
@@ -104,8 +106,11 @@ def decodeDBSXML(data,tag="result"):
     except:
         msg="ERROR: fail to decode DBS data: "+str(data)+str(type(data))
         raise msg
-    sql   = ""
     oDict = {}
+    sql   = ""
+    bDict = {}
+    count_sql = ""
+    count_bDict = {}
     success=None
     for i in elem:
         if i.tag.lower()=="result":
@@ -113,10 +118,14 @@ def decodeDBSXML(data,tag="result"):
                res = i.attrib[k]
                if oDict.has_key(k): oDict[k]+=[res]
                else: oDict[k]=[res]
+        if i.tag.lower()=="python_query":
+           sql,bDict=parseDBSQuery(i)
+        elif i.tag.lower()=="count_query":
+           count_sql,count_bDict=parseDBSQuery(i)
         if i.tag.lower()=="success":
             success=1
     if  not oDict:
-        if success: return "No results"
+        if success: {'sql':sql,'params':bDict,'count_sql':count_sql,'count_params':count_bDict}
         return printET(elem)
     return oDict
 
@@ -130,8 +139,32 @@ class DataCache(object):
         self.data = data
     def to_xml(self):
         if not self.data:
-           return noDataXML
-        return self.data
+            return noDataXML
+        elif type(self.data) is not types.StringType:
+            return """<?xml version='1.0' standalone='yes'?><dbs>%s</dbs>"""%self.data
+        elif self.data.find("xml")!=-1:
+            return """<?xml version='1.0' standalone='yes'?><dbsreturn>%s</dbsreturn>"""%self.data
+        else:
+            return self.data
+    def to_txt(self):
+        if not self.data:
+           return {}
+        data = decodeDBSXML(self.data)
+        try:
+            page = ""
+            if  data.has_key('sql'):
+                for k,v in data.iteritems():
+                    page+="%s:%s\n"%(k,v)
+            else:
+                page="Results for %s\n"%data.keys()
+                for row in zip(*data.values()):
+                    for item in row: page+="%s "%item
+                    page+="\n"
+                page+="\n"
+            return page
+        except:
+            traceback.print_exc()
+            return str(data)
     def to_json(self):
         if not self.data:
            return {}
@@ -162,7 +195,7 @@ class Resource(object):
         self.xmlReturnType= 'application/xml'
         self.supportTypes =['application/xml', 'application/atom+xml',
                             'text/json', 'text/x-json', 'application/json',
-                            'text/html']
+                            'text/html','text/plain']
         self.defaultType  = 'text/html'
         self.qlKeys       = []
         print "+++ Init Resource",self._url
@@ -313,6 +346,9 @@ class Resource(object):
            rType= self.xmlReturnType
         elif dataType in ['text/json', 'text/x-json', 'application/json']:
            data = form.to_json()
+           rType= dataType
+        elif dataType in ['text/plain']:
+           data = form.to_txt()
            rType= dataType
         elif dataType in ['text/html']:
            data = form.to_html(self._host,self._url,self._mUrl,self._fUrl,self._dbs)
