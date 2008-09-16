@@ -5299,27 +5299,27 @@ Save query as:
         return result 
 
     def aSearchShowAll(self,**kwargs):
-        tabCol   = kwargs['tabCol']
+        tabCol   = getArg(kwargs,'tabCol','Table.Column')
         if not tabCol:
            tabCol= "Table.Column"
         tableName,colName=tabCol.split(".")
         tableName= tableName.lower()
         colName  = colName.lower()
-        sortName = kwargs['sortName']
-        sortOrder= kwargs['sortOrder']
-        fromRow  = int(kwargs['fromRow'])
-        limit    = int(kwargs['limit'])
+        sortName = getArg(kwargs,'sortName','')
+        sortOrder= getArg(kwargs,'sortOrder','desc')
+        fromRow  = int(getArg(kwargs,'fromRow',-1))
+        limit    = int(getArg(kwargs,'limit',-1))
         # if user pass limit/fromRow as -1 we should not apply the limit
         if limit==-1 or fromRow==-1:
            limit = 0
            fromRow=0
         userInput= kwargs['userInput']
-        dbsInst  = kwargs['dbsInst']
-        html     = kwargs['html']
-        xml      = kwargs['xml']
-        case     = kwargs['caseSensitive']
-        userMode = kwargs['userMode']
-        output   = kwargs['output']
+        dbsInst  = getArg(kwargs,'dbsInst',DBSGLOBAL)
+        html     = getArg(kwargs,'html',1)
+        xml      = getArg(kwargs,'xml',0)
+        case     = getArg(kwargs,'caseSensitive','on')
+        userMode = getArg(kwargs,'userMode','user')
+        output   = getArg(kwargs,'output','')
         parents  = getArg(kwargs,'parents','')
         cff      = int(getArg(kwargs,'cff',0))
         self.qmaker.initDBS(dbsInst)
@@ -6043,6 +6043,7 @@ Save query as:
             if key=='limit': val=-1
             if key=='_idx' : val=0
             if link: link+="&amp;"
+            if key=='userInput': val=urllib.quote(val)
             link+="%s=%s"%(key,val)
         link="aSearchShowAll?"+link
         kDict['num']=nResults
