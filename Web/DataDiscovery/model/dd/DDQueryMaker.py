@@ -685,7 +685,6 @@ class DDQueryMaker(DDLogger):
          print self.extractBindParams(sel)
       try:
           result = self.getSQLAlchemyResult(con,sel)
-          print result
           res = result.fetchone()[0]
       except:
           msg="\n### Query:\n"+str(sel)
