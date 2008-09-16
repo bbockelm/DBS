@@ -518,7 +518,7 @@ def getExcMessage(userMode='user'):
     if exStr.find(".")==-1: 
        ex="raise "
     else:
-       ex=exStr.split(".")[1]
+       ex=exStr.split(".")[-1]
     counter=0
     msg=""
     for m in  traceback.format_exc().split("\n"):
