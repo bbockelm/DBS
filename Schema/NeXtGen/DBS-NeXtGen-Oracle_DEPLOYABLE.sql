@@ -467,6 +467,7 @@ REM ======================================================================
 CREATE TABLE RunLumiQuality
   (
     ID                    integer,
+    Dataset               integer,
     Run                   integer   not null,
     Lumi                  integer,
     SubSystem             integer   not null,
@@ -476,7 +477,7 @@ CREATE TABLE RunLumiQuality
     LastModificationDate  integer,
     LastModifiedBy        integer,
     primary key(ID),
-    unique(Run,Lumi,SubSystem)
+    unique(Dataset,Run,Lumi,SubSystem)
   );
 
 REM ======================================================================
@@ -484,6 +485,7 @@ REM ======================================================================
 CREATE TABLE RunLumiDQInt
   ( 
     ID                    integer,
+    Dataset               integer,
     Run                   integer  not null,
     Lumi                  integer,
     SubSystem             integer  not null,
@@ -503,6 +505,7 @@ CREATE TABLE QualityHistory
     ID                    integer,
     HistoryOf             integer,
     HistoryTimeStamp      integer   not null,
+    Dataset               integer,
     Run                   integer   not null,
     Lumi                  integer,
     SubSystem             integer   not null,
@@ -513,6 +516,26 @@ CREATE TABLE QualityHistory
     LastModifiedBy        integer,
     primary key(ID),
     unique(HistoryTimeStamp,Run,Lumi,SubSystem,DQValue)
+  );
+    
+REM ======================================================================
+  
+CREATE TABLE IntQualityHistory
+  (
+    ID                    integer,
+    HistoryOf             integer,
+    HistoryTimeStamp      integer   not null,
+    Dataset               integer,
+    Run                   integer   not null,
+    Lumi                  integer,
+    SubSystem             integer   not null,
+    IntDQValue            integer   not null,
+    CreationDate          integer,
+    CreatedBy             integer,
+    LastModificationDate  integer,
+    LastModifiedBy        integer,
+    primary key(ID),
+    unique(HistoryTimeStamp,Run,Lumi,SubSystem, IntDQValue)
   );
 
 REM ======================================================================
@@ -1167,6 +1190,9 @@ ALTER TABLE SubSystem ADD CONSTRAINT
     SubSystem_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE RunLumiQuality ADD CONSTRAINT
+    RunLumiQuality_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+/
 ALTER TABLE RunLumiQuality ADD CONSTRAINT 
     RunLumiQuality_Run_FK foreign key(Run) references Runs(ID)
 /
@@ -1186,7 +1212,9 @@ ALTER TABLE RunLumiQuality ADD CONSTRAINT
     RunLumiQualityLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-
+ALTER TABLE RunLumiDQInt ADD CONSTRAINT
+    RunLumiDQInt_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+/
 ALTER TABLE RunLumiDQInt ADD CONSTRAINT
     RunLumiDQInt_Run_FK foreign key(Run) references Runs(ID)
 /
@@ -1202,10 +1230,11 @@ ALTER TABLE RunLumiDQInt ADD CONSTRAINT
 ALTER TABLE RunLumiDQInt ADD CONSTRAINT
     RunLumiDQIntLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
-
-
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiQuality(ID)
+/
+ALTER TABLE QualityHistory ADD CONSTRAINT
+    QualityHistory_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
 /
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistory_Run_FK foreign key(Run) references Runs(ID)
@@ -1225,7 +1254,27 @@ ALTER TABLE QualityHistory ADD CONSTRAINT
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistoryLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
-
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiDQInt(ID)
+/
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_Run_FK foreign key(Run) references Runs(ID)
+/
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+/
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+/
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQHistLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
 ALTER TABLE QualityVersion ADD CONSTRAINT 
     QualityVersion_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -1640,6 +1689,8 @@ PROMPT creating sequence seq_runlumiquality ;
 create sequence seq_runlumiquality ;
 PROMPT creating sequence seq_runlumidqint ;
 create sequence seq_runlumidqint ;
+PROMPT creating sequence seq_intqualityhistory ;
+create sequence seq_intqualityhistory ;
 PROMPT creating sequence seq_qualityhistory ;
 create sequence seq_qualityhistory ;
 PROMPT creating sequence seq_qualityversion ;
@@ -1938,6 +1989,13 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: runlumidqint
 
 PROMPT AUTO INC TRIGGER FOR Trigger for Table: qualityhistory
  CREATE OR REPLACE TRIGGER qualityhistory_TRIG before insert on qualityhistory    for each row begin     if inserting then       if :NEW.ID is null then          select seq_qualityhistory.nextval into :NEW.ID from dual;       end if;    end if; end;
+/
+
+-- ====================================================
+-- AUTO INC TRIGGER FOR intqualityhistory.ID using SEQ seq_intqualityhistory
+
+PROMPT AUTO INC TRIGGER FOR Trigger for Table: intqualityhistory;
+ CREATE OR REPLACE TRIGGER intqualityhistory_TRIG before insert on intqualityhistory    for each row begin     if inserting then       if :NEW.ID is null then          select seq_intqualityhistory.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
 -- ====================================================
