@@ -467,7 +467,7 @@ REM ======================================================================
 CREATE TABLE RunLumiQuality
   (
     ID                    integer,
-    Dataset               integer,
+    Dataset               integer   not null,
     Run                   integer   not null,
     Lumi                  integer,
     SubSystem             integer   not null,
@@ -485,7 +485,7 @@ REM ======================================================================
 CREATE TABLE RunLumiDQInt
   ( 
     ID                    integer,
-    Dataset               integer,
+    Dataset               integer  not null,
     Run                   integer  not null,
     Lumi                  integer,
     SubSystem             integer  not null,
@@ -505,7 +505,7 @@ CREATE TABLE QualityHistory
     ID                    integer,
     HistoryOf             integer,
     HistoryTimeStamp      integer   not null,
-    Dataset               integer,
+    Dataset               integer   not null,
     Run                   integer   not null,
     Lumi                  integer,
     SubSystem             integer   not null,
@@ -525,7 +525,7 @@ CREATE TABLE IntQualityHistory
     ID                    integer,
     HistoryOf             integer,
     HistoryTimeStamp      integer   not null,
-    Dataset               integer,
+    Dataset               integer   not null,
     Run                   integer   not null,
     Lumi                  integer,
     SubSystem             integer   not null,
