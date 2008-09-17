@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.185 $"
- $Id: DBSSql.java,v 1.185 2008/09/09 21:16:45 afaq Exp $"
+ $Revision: 1.186 $"
+ $Id: DBSSql.java,v 1.186 2008/09/10 19:32:22 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -383,11 +383,12 @@ public class DBSSql {
 
 /*------- Data Quality Calls Collected in one place, later we can separate them out ------*/
 
-        public static PreparedStatement insertDQFlag(Connection conn, String runID, String lumiID,
+        public static PreparedStatement insertDQFlag(Connection conn, String procDSID, String runID, String lumiID,
                                                         String flagID, String valueID,
                                                         String cbUserID, String lmbUserID, String cDate) throws SQLException
 	{
                 Hashtable table = new Hashtable();
+		table.put("Dataset", procDSID);
                 table.put("Run", runID);
                 if (!DBSUtil.isNull(lumiID)) table.put("Lumi", lumiID);
                 table.put("SubSystem", flagID);
@@ -398,11 +399,12 @@ public class DBSSql {
                 return getInsertSQL(conn, "RunLumiQuality", table);
         }
 
-        public static PreparedStatement insertDQIntFlag(Connection conn, String runID, String lumiID,
+        public static PreparedStatement insertDQIntFlag(Connection conn, String procDSID, String runID, String lumiID,
                                                         String flagID, String valueID,
                                                         String cbUserID, String lmbUserID, String cDate) throws SQLException
         {
                 Hashtable table = new Hashtable();
+		table.put("Dataset", procDSID);
                 table.put("Run", runID);
                 if (!DBSUtil.isNull(lumiID)) table.put("Lumi", lumiID);
                 table.put("SubSystem", flagID);
@@ -832,7 +834,49 @@ public class DBSSql {
 				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5; 	
 
 	********/
-        public static PreparedStatement listFilesForRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
+
+
+        public static PreparedStatement listFilesForRunLumiDQ(Connection conn, String query, String timeStamp)
+        throws SQLException
+        {
+                String file_sql = "SELECT distinct F.LogicalFilename as LFN \n" +
+                                        " ,R.RunNumber as RUN \n" +
+                                        " FROM "+owner()+"Files F \n" +
+                                        " join "+owner()+"FileRunLumi FRL \n"+
+                                        " on FRL.Fileid = F.id \n" +
+                                        " join "+owner()+"Runs R \n" +
+                                        " on FRL.Run = R.ID \n" +
+                                        " WHERE FRL.Run in (";
+
+                ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(conn, query);
+                String run_sql = "";
+		Vector bindVals = null;
+                if(sqlObj.size() == 2) {
+                        run_sql = (String)sqlObj.get(0);
+                        bindVals = (Vector)sqlObj.get(1);
+		}
+
+		String sql = file_sql+run_sql+")";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+
+                for (int i=0; i != bindVals.size(); ++i)
+                        ps.setString(columnIndx++, (String)bindVals.elementAt(i) );
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	}
+
+	/*      
+		M. Anzar Afaq 09/17/2008  - Commenting out listFilesForRunLumiDQ-Older implementation
+		
+		listRunsForRunLumiDQ can be called from listFilesForRunLumiDQ to avoid a LOT of 
+		duplication that was left in the code for clarity and readability earlier
+		now we have a better understaindg and we can avoid duplication 
+	*/
+
+        /*   
+	public static PreparedStatement listFilesForRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
         throws SQLException
         {
                 String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
@@ -1022,6 +1066,10 @@ public class DBSSql {
                 return ps;
 
 	}
+
+	*/
+
+
 
         public static PreparedStatement getDQFlag(Connection conn, String runID, String lumiID,
                                                         String flagID,

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.17 $"
- $Id: DBSApiDQLogic.java,v 1.17 2008/06/11 15:37:53 afaq Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSApiDQLogic.java,v 1.18 2008/07/01 21:10:36 afaq Exp $"
  *
  */
 
@@ -327,8 +327,9 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 }
 	}
 
-	public void listFilesForRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
 
+	//public void listFilesForRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
+	public void listFilesForRunLumiDQ(Connection conn, Writer out, String query, String timeStamp, String dqVersion) throws Exception {
 		/*
 		String query = "TIB_Percentage>100&RunNumber=2&TIB_Local=GOOD&Tracker_Global=BAD&RunNumber=3&TCS_DCS=UNKNOWN";
 		DBSSql.listRunsForRunLumiDQ(conn, query);
@@ -348,7 +349,8 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 }
 
                 try {
-                        ps = DBSSql.listFilesForRunLumiDQ(conn, runDQList, timeStamp);
+                        //ps = DBSSql.listFilesForRunLumiDQ(conn, runDQList, timeStamp);
+                        ps = DBSSql.listFilesForRunLumiDQ(conn, query, timeStamp);
 			pushQuery(ps);
                         rs =  ps.executeQuery();
 
