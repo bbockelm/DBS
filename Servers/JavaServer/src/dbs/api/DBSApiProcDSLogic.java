@@ -1,6 +1,6 @@
 /**
- $Revision: 1.65 $"
- $Id: DBSApiProcDSLogic.java,v 1.65 2008/09/10 19:32:22 afaq Exp $"
+ $Revision: 1.66 $"
+ $Id: DBSApiProcDSLogic.java,v 1.66 2008/09/16 17:06:55 afaq Exp $"
  *
  */
 
@@ -193,6 +193,33 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	}
+
+
+
+         public ArrayList listDatasetParentIDs(Connection conn, String path) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                ArrayList parentsVec =  new ArrayList();
+                String procDSID = getProcessedDSID(conn, path, true);
+                try {
+                        ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                System.out.println("get(rs, 'ID'):::::"+get(rs, "ID"));
+                                parentsVec.add((String)get(rs, "ID"));
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+
+                parentsVec.add((String)procDSID);
+                return parentsVec;
+        }
+
+
+
 
 
 

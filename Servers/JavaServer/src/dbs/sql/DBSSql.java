@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.186 $"
- $Id: DBSSql.java,v 1.186 2008/09/10 19:32:22 afaq Exp $"
+ $Revision: 1.187 $"
+ $Id: DBSSql.java,v 1.187 2008/09/17 22:05:49 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -451,7 +451,10 @@ public class DBSSql {
 
 	}
 
-       public static PreparedStatement listRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
+
+	//I WILL deprecate this method VERY SOON  -ANZAR AFAQ 09/18/2008
+
+       public static PreparedStatement listRunLumiDQ(Connection conn, java.util.ArrayList dsParents, Vector runDQList, String timeStamp)
         throws SQLException
         {
 
@@ -488,9 +491,18 @@ public class DBSSql {
                                 "join "+owner()+"SubSystem ss \n"+
                                         "on ss.ID = rq.SubSystem \n";
 
+		sql += " WHERE Dataset IN (?";
+		sqlInt += " WHERE Dataset IN (?";
+                for (int i=0; i != dsParents.size();++i){
+                        if (i!=0) {sql+=",?"; sqlInt+=",?";};
+			
+                }
+                sql+=")";
+		sqlInt+=")";
+
 		if (runDQList.size() > 0 || !DBSUtil.isNull(timeStamp)) {
-			sql += " WHERE ";	
-			sqlInt += " WHERE ";
+			sql += " AND ";
+			sqlInt += " AND ";
 
 		}
 
@@ -516,10 +528,12 @@ public class DBSSql {
 							ts_bindvar=false;				
 							bindvals.add(timeStamp);
 							bindvals.add(timeStamp);
+						}
+						bindvals.add(runnumber);
+						if (!DBSUtil.isNull(timeStamp)) {
 							bindvals.add(timeStamp);
 							bindvals.add(timeStamp);
 						}
-						bindvals.add(runnumber);
 					}
 	
                               	}
@@ -553,8 +567,10 @@ public class DBSSql {
 			}
 		}
 
+
 		sql += rlsql;
 		sqlInt += rlsql;
+
 		
 		if (!DBSUtil.isNull(timeStamp)) {
 	                        sql += " rq.CreationDate <=? \n";
@@ -569,6 +585,12 @@ public class DBSSql {
 					bindvals.add(timeStamp);
 					bindvals.add(timeStamp);
 				}
+		}
+		//These two BIND Vars contain the procDSID at the 
+		//START (of bind vars) of the whole SQL statement
+                for (int i=0; i != dsParents.size(); ++i) {
+			bindvals.add(0, (String)dsParents.get(i));
+                	bindvals.add(bindvals.size()/2+1, (String)dsParents.get(i));
 		}
 
 		sql += " UNION \n" + sqlInt;
@@ -632,7 +654,7 @@ public class DBSSql {
 
 
         //public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
-        public static ArrayList listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
+        public static ArrayList listRunsForRunLumiDQ(Connection conn, ArrayList dsBinds, String query) throws SQLException {
 
                 String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
                                         +"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
@@ -664,6 +686,10 @@ public class DBSSql {
 		String[] key_vals = query.split("&");
      		for (int i=0; i<key_vals.length; i++) {
 			String[] key_val = key_vals[i].split("=");
+			if (key_val[0].equals("Dataset")) {
+				//System.out.println("DATASET KEY FOUND and MUST BE IGNORED");
+				continue;
+			}
 			if (key_val[0].equals("RunNumber")) {
 				if (firstrun==0) {
                                                 rlsql += " (select ID from Runs where RunNumber in (?";
@@ -680,6 +706,16 @@ public class DBSSql {
 				subSys.add(key_vals[i]);
 		}
 		
+
+		//Lets handle Dataset and it Parents
+		//java.util.ArrayList dsBinds = new java.util.ArrayList();
+		//dsBinds.add("1");dsBinds.add("2");dsBinds.add("3");
+		String dsSql=" Dataset in (?";
+		for (int i=0; i != dsBinds.size();++i){
+			if (i!=0) dsSql+=",?";
+		}
+		dsSql+=")";
+		
                 if (!DBSUtil.isNull(rlsql)) rlsql += ") )";
                                 //Loop over each item and make good, bad, unknown queries
                                 for (int j = 0; j < subSys.size() ; ++j) {
@@ -694,10 +730,18 @@ public class DBSSql {
 
                                         String subsys=key_val[0];
                                         String value=key_val[1];
-                                        if (j == 0) {
+
+                                       if (j == 0) {
                                                 run_sql += " where ";
                                         }
+
+					if (value.trim().startsWith("/")) 
+					{ //System.out.println("FOUND PATH value:="+value); 
+						continue;
+					}
+ 
                                         if ( ! valueList.contains(value) && !subsys.equals("RunNumber")) {
+
                                                 //Probably its a number
                                                 //lets test that 
                                                 try {
@@ -720,6 +764,8 @@ public class DBSSql {
 
                                         	if (value.equals("GOOD")) {
                                                 	if ( goodSysCount == 0 ) {
+								good_clause += dsSql + " AND ";
+								bindvals.addAll(dsBinds);			
                                                         	if (!DBSUtil.isNull(rlsql))  {
                                                                 	good_clause += " RQ.Run in " + rlsql + " AND ";
 	                                                                bindvals.addAll(rbindvals);
@@ -737,6 +783,8 @@ public class DBSSql {
 
                         	                if (value.equals("BAD")) {
                                 	                if ( badSysCount == 0 ) {
+								bad_clause += dsSql + " AND ";
+								bindvals.addAll(dsBinds);			
                                         	                if (!DBSUtil.isNull(rlsql))  {
                                                 	                bad_clause += " RQ.Run in " + rlsql + " AND ";
                                                         	        bindvals.addAll(rbindvals);
@@ -754,6 +802,8 @@ public class DBSSql {
 
                         	                if (value.equals("UNKNOWN")) {
                                 	                if ( unknownSysCount == 0 ) {
+								unknown_clause += dsSql + " AND ";
+								bindvals.addAll(dsBinds);			
                                         	                if (!DBSUtil.isNull(rlsql))  {
                                                 	                unknown_clause += " RQ.Run in " + rlsql + " AND ";
 	                                                                bindvals.addAll(rbindvals);
@@ -811,20 +861,19 @@ public class DBSSql {
                         }
                 }
 
+
 		ArrayList toReturn = new ArrayList();
 		toReturn.add(sql);
 		bindvals.addAll(intersectBinds);
 		toReturn.add(bindvals);
-		return toReturn;
 
                 /*PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;*/
-		
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");*/
 
+		return toReturn;
 	}
 
 	/*********
@@ -848,7 +897,7 @@ public class DBSSql {
                                         " on FRL.Run = R.ID \n" +
                                         " WHERE FRL.Run in (";
 
-                ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(conn, query);
+                ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(conn, null, query);
                 String run_sql = "";
 		Vector bindVals = null;
                 if(sqlObj.size() == 2) {
@@ -1071,7 +1120,7 @@ public class DBSSql {
 
 
 
-        public static PreparedStatement getDQFlag(Connection conn, String runID, String lumiID,
+        public static PreparedStatement getDQFlag(Connection conn, String procDSID, String runID, String lumiID,
                                                         String flagID,
                                                         String value) throws SQLException
         {
@@ -1096,7 +1145,7 @@ public class DBSSql {
         }
 
 
-        public static PreparedStatement getDQIntFlag(Connection conn, String runID, String lumiID,
+        public static PreparedStatement getDQIntFlag(Connection conn, String procDSID, String runID, String lumiID,
                                                         String flagID,
                                                         String value) throws SQLException
         {

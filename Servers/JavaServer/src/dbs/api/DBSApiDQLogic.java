@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApiDQLogic.java,v 1.18 2008/07/01 21:10:36 afaq Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSApiDQLogic.java,v 1.19 2008/09/17 22:05:48 afaq Exp $"
  *
  */
 
@@ -36,7 +36,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 
         //Updates value of a FLAG
-        public void updateDQIntFlag(Connection conn, Writer out, String runID, String lumiID,
+        public void updateDQIntFlag(Connection conn, Writer out, String procDSID, String runID, String lumiID,
                                                                 String flag, String value,
                                                                 String cbUserID, String creationDate,
                                                                 String lmbUserID
@@ -44,7 +44,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
         {
 		//First get the ID of the row to be changed (Also checks that such an entry DOES exists)
 		//Whatever is the value of this FLAG doesn't matter !!
-		String rowID = getDQIntFlagID(conn, runID, lumiID, flag, "", true);
+		String rowID = getDQIntFlagID(conn, procDSID, runID, lumiID, flag, "", true);
 
 		//THERE is NO History table YET for the INT type of FLAGS (this is next !) 
 		//AA-06/12/2008
@@ -73,7 +73,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
         }
 
 	//Updates value of a FLAG
-        public void updateDQFlag(Connection conn, Writer out, String runID, String lumiID,
+        public void updateDQFlag(Connection conn, Writer out, String procDSID, String runID, String lumiID,
                                                                 String flag, String value,
                                                                 String cbUserID, String creationDate,
                                                                 String lmbUserID
@@ -81,7 +81,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
         {
 		//Find the flag
 		//NO Need to Pass the value, this is the UPDATED Value actually
-                String rowID =  getDQFlagID(conn, runID, lumiID, flag, "", true);
+                String rowID =  getDQFlagID(conn, procDSID, runID, lumiID, flag, "", true);
 
         	//INSERT into HISTORY table FIRST
                 PreparedStatement ps = null;
@@ -110,7 +110,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 	//Insert a FLAG and returns its ID (Even if it already exists)	
 	//public String  AA-04/28-2008 no one need the ID back anymore
-	public void insertDQFlag(Connection conn, Writer out, String runID, String lumiID, 
+	public void insertDQFlag(Connection conn, Writer out, String procDSID, String runID, String lumiID, 
 								String flag, String value,
 								String cbUserID, String creationDate,
 								String lmbUserID
@@ -118,7 +118,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 	{
 		//ONLY insert if its NOT already present, why the F*** the MySQL MUL-UQ doesn't work ?
 		String flagID =  null;
-		if ( ! isNull(flagID = getDQFlagID(conn, runID, lumiID, flag, "", false))) {
+		if ( ! isNull(flagID = getDQFlagID(conn, procDSID, runID, lumiID, flag, "", false))) {
 			DBSUtil.writeLog("FLAG:="+flag+" for This Run (LumiSection) already exixts with value:="+value);
 			writeWarning(out, "Already Exists", "1020", "FLAG:="+flag+
 							" for This Run (LumiSection) already exixts with value:="+value );	
@@ -127,7 +127,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 PreparedStatement ps = null;
                 try {
-                        ps = DBSSql.insertDQFlag(conn, runID, lumiID, 
+                        ps = DBSSql.insertDQFlag(conn, procDSID, runID, lumiID, 
                                                         getIDNoCheck(conn, "SubSystem", "Name", flag, true),
                                                         getID(conn, "QualityValues", "Value", value, true),
                                                         cbUserID, lmbUserID, creationDate);
@@ -143,7 +143,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
         }
 
 	//Insert a DQ Flag with Integer value
-        public void insertDQIntFlag(Connection conn, Writer out, String runID, String lumiID,
+        public void insertDQIntFlag(Connection conn, Writer out, String procDSID, String runID, String lumiID,
                                                                 String flag, String value,
                                                                 String cbUserID, String creationDate,
                                                                 String lmbUserID
@@ -151,7 +151,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
         {
                 //ONLY insert if its NOT already present, why the F*** the MySQL MUL-UQ doesn't work ?
                 String flagID =  null;
-                if ( ! isNull(flagID = getDQIntFlagID(conn, runID, lumiID, flag, "", false))) {
+                if ( ! isNull(flagID = getDQIntFlagID(conn, procDSID, runID, lumiID, flag, "", false))) {
                         DBSUtil.writeLog("FLAG:="+flag+" for This Run (LumiSection) already exixts with value:="+value);
                         writeWarning(out, "Already Exists", "1020", "FLAG:="+flag+
                                                         " for This Run (LumiSection) already exixts with value:="+value );
@@ -160,7 +160,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 PreparedStatement ps = null;
                 try {
-                        ps = DBSSql.insertDQIntFlag(conn, runID, lumiID,
+                        ps = DBSSql.insertDQIntFlag(conn, procDSID, runID, lumiID,
                                                         getIDNoCheck(conn, "SubSystem", "Name", flag, true),
                                                         value,
                                                         cbUserID, lmbUserID, creationDate);
@@ -195,7 +195,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 
 	
-        private String getDQFlagID(Connection conn, String runID, String lumiID, String flag, String value, boolean excep)
+        private String getDQFlagID(Connection conn, String procDSID, String runID, String lumiID, String flag, String value, boolean excep)
                 throws Exception 
         {
 
@@ -210,7 +210,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		if (!isNull(value)) valueid = getID(conn, "QualityValues", "Value", value, true);
 
                 try {
-                        ps = DBSSql.getDQFlag(conn, runID, lumiID, flagid,  valueid);
+                        ps = DBSSql.getDQFlag(conn, procDSID, runID, lumiID, flagid,  valueid);
 			pushQuery(ps);
                         rs =  ps.executeQuery();
 
@@ -230,7 +230,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		return id;	
 	}
 
-        private String getDQIntFlagID(Connection conn, String runID, String lumiID, String flag, String value, boolean excep)
+        private String getDQIntFlagID(Connection conn, String procDSID, String runID, String lumiID, String flag, String value, boolean excep)
                 throws Exception
         {
 
@@ -245,7 +245,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 //if (!isNull(value)) valueid = getID(conn, "QualityValues", "Value", value, true);
 
                 try {
-                        ps = DBSSql.getDQIntFlag(conn, runID, lumiID, flagid,  value);
+                        ps = DBSSql.getDQIntFlag(conn, procDSID, runID, lumiID, flagid,  value);
 			pushQuery(ps);
                         rs =  ps.executeQuery();
 
@@ -365,8 +365,37 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 }
 	}
 
+	private static String getPathFromQuery(String query) {
+        	int dataset_ptr=query.indexOf("Dataset=");
+        	String tmp1=query.substring(dataset_ptr);
+        	int emp_ptr=tmp1.indexOf("&");
+		int eq_ptr=tmp1.indexOf("=");
+        	String tmp2=tmp1.substring(eq_ptr+1, emp_ptr);
+		return tmp2;
+	}
+	
+	public java.util.ArrayList listRunsForRunLumiDQ(Connection conn, String query) throws Exception {
 
-        public void listRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
+		String path=getPathFromQuery(query);
+		//Get the list of parents
+		java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDs(conn, path);
+		//Pass this list and the query to the listRunsForRunLumiDQ() to get DQ
+		return DBSSql.listRunsForRunLumiDQ(conn, dsParents, query);
+	}
+
+        public void listRunLumiDQ(Connection conn, Writer out, String path, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
+		/* JUST a test Block used time to time for debugging 
+		String query="Dataset=/mcTestCeballos_z2jet_VBFHiggsTo2Taugen-alpgen/CMSSW_1_6_7-CSA07-1195931857/GEN-SIM-DIGI-RAW&RunNumber=1&CSC_Global=GOOD&TCS_Tracker=BAD";
+		java.util.ArrayList sqlObj = listRunsForRunLumiDQ(conn, query);
+                String dqQuery = (String)sqlObj.get(0);
+                Vector bindVals = (Vector)sqlObj.get(1);
+		System.out.println("DQ Query"+dqQuery);
+		return;
+		*/
+
+		//String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+		java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDs(conn, path);
+
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
 
@@ -384,7 +413,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 		boolean first = true;
                 try {
-                        ps = DBSSql.listRunLumiDQ(conn, runDQList, timeStamp);
+                        ps = DBSSql.listRunLumiDQ(conn, dsParents, runDQList, timeStamp);
 			pushQuery(ps);
                         rs =  ps.executeQuery();
 
@@ -425,7 +454,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		if (!first) out.write( (String) "</run>");
         }
 
-        public void updateRunLumiDQ(Connection conn, Writer out, Vector runDQList, Hashtable dbsUser) throws Exception {
+        public void updateRunLumiDQ(Connection conn, Writer out, String path, Vector runDQList, Hashtable dbsUser) throws Exception {
 
                 String cbUserID = null;
                 String creationDate = null;
@@ -438,7 +467,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                 valueList.add("GOOD");
                 valueList.add("BAD");
                 valueList.add("UNKNOWN");
-
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 
  		for (int i = 0; i < runDQList.size() ; ++i) {
                         //Get the Run
@@ -482,11 +511,11 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                         } catch (java.lang.NumberFormatException e) {
                                                 throw new DBSException("Incorrect Data", "7012", "Invalid value: " + value + " For QIM " + name );
                                         }
-					updateDQIntFlag(conn, out, runID, lumiID, name, value, cbUserID, creationDate, lmbUserID);
+					updateDQIntFlag(conn, out, procDSID, runID, lumiID, name, value, cbUserID, creationDate, lmbUserID);
                                 } else {
 
                         		//Let us UPDATE THIS FLAG
-                        		updateDQFlag(conn, out, runID, lumiID,
+                        		updateDQFlag(conn, out, procDSID, runID, lumiID,
                                                 name, value,
                                                 cbUserID, creationDate,
                         		                        lmbUserID);
@@ -504,7 +533,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                 		DBSUtil.writeLog("      Flag: Sub Value..."+subvalue);
 
                                 		//Let us update THIS FLAG
-                                		updateDQFlag(conn, out, runID, lumiID,
+                                		updateDQFlag(conn, out, procDSID, runID, lumiID,
                                                                 subname, subvalue,
                                                                 cbUserID, creationDate,
                                                                 lmbUserID);
@@ -546,9 +575,10 @@ public class DBSApiDQLogic extends DBSApiLogic {
 	
 	}
 
-        public void insertLumiRangeDQ(Connection conn, Writer out, String runNumber, String stratLumi, String endLumi,
+        public void insertLumiRangeDQ(Connection conn, Writer out, String path, String runNumber, String stratLumi, String endLumi,
                                                         Vector dqFlags, Hashtable dbsUser) throws Exception {
 
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 		String runID = getID(conn, "Runs", "RunNumber", runNumber, false);
 
 		if (isNull (runID )){
@@ -573,7 +603,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                                         ", cannot add DQ Flags");
 
                         }	
-			insertDQFlags(conn, out, runID, lumiID, dqFlags, dbsUser);
+			insertDQFlags(conn, out, procDSID, runID, lumiID, dqFlags, dbsUser);
 		}
 
 
@@ -609,11 +639,12 @@ public class DBSApiDQLogic extends DBSApiLogic {
         }
 
 
-	public void insertRunRangeDQ(Connection conn, Writer out, String startRun, String endRun, 
+	public void insertRunRangeDQ(Connection conn, Writer out, String path, String startRun, String endRun, 
 							Vector dqFlags, Hashtable dbsUser) throws Exception {
 
 		//We do not need lumiID
 		String lumiID = null;
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 
 		for (int i = Integer.parseInt(startRun); i <= Integer.parseInt(endRun); ++i) {
 			//See if Run Exists, It must, else throw error
@@ -625,20 +656,22 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                                         "RunNumber: "+ i +", Do Not eixst in DBS, cannot add DQ Flags");
                         }
 
-			insertDQFlags(conn, out, runID, lumiID, dqFlags, dbsUser);
+			insertDQFlags(conn, out, procDSID, runID, lumiID, dqFlags, dbsUser);
 			
 		}	
 
 	}
 		
-	public void insertRunLumiDQ(Connection conn, Writer out, 
+	public void insertRunLumiDQ(Connection conn, Writer out, String path,
 							Vector runDQList, Hashtable dbsUser) throws Exception {
 
 	        //String cbUserID = null;
                 //String creationDate = null;
 		//String lmbUserID = personApi.getUserID(conn, dbsUser);
 
-		 for (int i = 0; i < runDQList.size() ; ++i) {
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+
+		for (int i = 0; i < runDQList.size() ; ++i) {
 			//Get the Run
                         Hashtable runDQ = (Hashtable) runDQList.get(i);
 
@@ -684,14 +717,14 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 			//Get the sub-system Vector
 			Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
-			insertDQFlags(conn, out, runID, lumiID, subSys, dbsUser);
+			insertDQFlags(conn, out, procDSID, runID, lumiID, subSys, dbsUser);
 		}
 
 	}
 
 
 	// AA - 04/28/2008 This was desperate attempt to do batch inserts, I'll pass on this at this moment
-	private void insertDQFlags(Connection conn, Writer out, String runID, String lumiID,
+	private void insertDQFlags(Connection conn, Writer out, String procDSID, String runID, String lumiID,
                                                         Vector subSys, Hashtable dbsUser) throws Exception {
 
                 String cbUserID = null;
@@ -706,6 +739,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 		//This can move into DBSSQL later on !!!
 		java.util.ArrayList keys = new java.util.ArrayList();
+		keys.add("Dataset");
 		keys.add("Run");
 		keys.add("Lumi");
 		keys.add("SubSystem");
@@ -742,11 +776,12 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                 //For the time being not using BATCH for INT type of Flags,
 				//Not expecting Too many, but Batch can be done easily later on.
 				// AA 05/01/2008
-                         	insertDQIntFlag(conn, out, runID, lumiID,
+                         	insertDQIntFlag(conn, out, procDSID, runID, lumiID,
                                                                name, value,
                                                                cbUserID, creationDate,
                                                                lmbUserID);
 			} else {
+				values.add(procDSID);
 				values.add(runID);
 				values.add(lumiID);
 				values.add(getIDNoCheck(conn, "SubSystem", "Name", name, true));
@@ -776,11 +811,12 @@ public class DBSApiDQLogic extends DBSApiLogic {
                                 	//For the time being not using BATCH for INT type of Flags,
                                 	//Not expecting Too many, but Batch can be done easily later on.
                                 	// AA 05/01/2008
-                                	insertDQIntFlag(conn, out, runID, lumiID,
+                                	insertDQIntFlag(conn, out, procDSID, runID, lumiID,
                                                                name, subvalue,
                                                                cbUserID, creationDate,
                                                                lmbUserID);
                         	} else {
+					values.add(procDSID);
                         		values.add(runID);
 		                	values.add(lumiID);
                         		values.add(getIDNoCheck(conn, "SubSystem", "Name", subname, true));

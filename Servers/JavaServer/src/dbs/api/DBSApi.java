@@ -1,6 +1,6 @@
 /**
- $Revision: 1.139 $"
- $Id: DBSApi.java,v 1.139 2008/09/04 18:49:17 sekhri Exp $"
+ $Revision: 1.140 $"
+ $Id: DBSApi.java,v 1.140 2008/09/10 19:32:22 afaq Exp $"
  *
 */
 
@@ -675,13 +675,17 @@ public class DBSApi {
 				(new DBSApiRecycleBin(this.data)).deleteRecycleBin(conn, out,
 						get(table, "path", true),
 						get(table, "block_name", true));
+
+
 	
                         } else if (apiStr.equals("insertRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunLumiDQ(conn, out,
+						get(table, "dataset", true),
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),
                                                 dbsUser);
                         } else if (apiStr.equals("insertRunRangeDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunRangeDQ(conn, out,
+						get(table, "dataset", true),
 						get(table, "start_run", true),
 						get(table, "end_run", true),
                                                 DBSApiParser.parseDQFlags(getXml(table)),
@@ -692,6 +696,7 @@ public class DBSApi {
                                                 dbsUser);
                         } else if (apiStr.equals("insertLumiRangeDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertLumiRangeDQ(conn, out,
+						get(table, "dataset", true),
 						get(table, "run_number", true),
                                                 get(table, "start_lumi", true),
                                                 get(table, "end_lumi", true),
@@ -699,18 +704,25 @@ public class DBSApi {
                                                 dbsUser);
                         } else if (apiStr.equals("updateRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).updateRunLumiDQ(conn, out,
+						get(table, "dataset", true),
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),
                                                 dbsUser);
                         } else if (apiStr.equals("listRunLumiDQ")) {
                                 (new DBSApiDQLogic(this.data)).listRunLumiDQ(conn, out,
+						get(table, "dataset", true),
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),
 						get(table, "time_stamp",false),
 						get(table, "dq_version", false) );
                         } else if (apiStr.equals("listFilesForRunLumiDQ")) {
                                 (new DBSApiDQLogic(this.data)).listFilesForRunLumiDQ(conn, out,
-                                                DBSApiParser.parseDQRunLumi(getXml(table)),
+						get(table, "dq_query", false),
                                                 get(table, "time_stamp",false),
                                                 get(table, "dq_version", false) );
+                        /*} else if (apiStr.equals("listFilesForRunLumiDQ")) {
+                                (new DBSApiDQLogic(this.data)).listFilesForRunLumiDQ(conn, out,
+                                                DBSApiParser.parseDQRunLumi(getXml(table)),
+                                                get(table, "time_stamp",false),
+                                                get(table, "dq_version", false) ); */
 			} else if (apiStr.equals("versionDQ")) {
 				(new DBSApiDQLogic(this.data)).versionDQ(conn, out,
 						DBSApiParser.parse(getXml(table), "dq_version"),
@@ -719,6 +731,10 @@ public class DBSApi {
                                 (new DBSApiDQLogic(this.data)).listSubSystems(conn, out);
 
                         } else if (apiStr.equals("listDQVersions")) {
+
+
+
+
 
                                 (new DBSApiDQLogic(this.data)).listDQVersions(conn, out);
 			} else if (apiStr.equals("getIntegratedLuminosity")) {
