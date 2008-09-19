@@ -14,7 +14,7 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplUpdateRunLumiDQ(self, runLumiDQList):
+def dbsApiImplUpdateRunLumiDQ(self, dataset, runLumiDQList):
     """
     This API is used to UPDATE Data Quality information for a Run, a List of Runs, a LumiSection within a Run, or a List of Lumi Sections
     
@@ -45,7 +45,7 @@ def dbsApiImplUpdateRunLumiDQ(self, runLumiDQList):
 
     ###logging.log(DBSDEBUG, xmlinput)
 
-    data = self._server._call ({ 'api' : 'updateRunLumiDQ',
+    data = self._server._call ({ 'api' : 'updateRunLumiDQ','dataset':dataset,
                          'xmlinput' : xmlinput }, 'POST')
     ###logging.log(DBSDEBUG, data)
 

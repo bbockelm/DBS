@@ -17,19 +17,22 @@ api = DbsApi(opts.__dict__)
 
                             
 run = DbsRun (
-         RunNumber=1,
+         RunNumber=1111,
          NumberOfEvents= 100,
          NumberOfLumiSections= 20,
          TotalLuminosity= 2222,
          StoreNumber= 123,
-         StartOfRun= 'now',
-         EndOfRun= 'never',
+         StartOfRun= 0,
+         EndOfRun= 0,
          )
  
-print "Creating a run"
-
 try:
-    api.insertRunInPD ("/test_primary_001/TestProcessedDS001/GEN-SIM", 1111)
+    print "Creating a run"
+    api.insertRun (run)
+
+    print "adding it to proc DS"
+    #api.insertRunInPD ("/mcTestCeballos_z2jet_VBFHiggsTo2Taugen-alpgen/CMSSW_1_4_6-CSA07-2119/GEN-SIM", 1111)
+    api.insertRunInPD ("/mcTestCeballos_z2jet_VBFHiggsTo2Taugen-alpgen/CMSSW_1_6_7-CSA07-1195931857/GEN-SIM-DIGI-RAW", 1111)
 
     print "Result: %s" % run
 

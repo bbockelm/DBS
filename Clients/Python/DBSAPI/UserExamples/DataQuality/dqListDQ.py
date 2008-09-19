@@ -55,8 +55,13 @@ flag3 = DbsDQFlag (
 
 #Create RunDQ Object, for RunNumber , RunNumber  already exists in DBS
 
+
+dataset="/mcTestCeballos_z2jet_VBFHiggsTo2Taugen-alpgen/CMSSW_1_4_6-CSA07-2119/GEN-SIM"
+
+
 run_dq_search_criteria = DbsRunLumiDQ (
-        RunNumber=43434,
+        RunNumber=1111,
+        #RunNumber=43434,
 	#LumiSectionNumber can be part of this serach criteria
         #LumiSectionNumber=123,
         #DQFlagList = [flag1]
@@ -64,7 +69,6 @@ run_dq_search_criteria = DbsRunLumiDQ (
         )
 
 try:
-
 
     # One can pass a LIST of DbsRunLumiDQ Objects, that tells the API
     # What Runs/LumiSections to Look for and what Flags to look for
@@ -77,7 +81,7 @@ try:
     # Mind that run_dq_search_criteria is just one object, API takes a LIST of such objects
     # So you must pass it as list
 
-    dqHierarchyList =  api.listRunLumiDQ(  runLumiDQList=[run_dq_search_criteria]  )
+    dqHierarchyList =  api.listRunLumiDQ(  dataset, runLumiDQList=[run_dq_search_criteria]  )
     print_flags_nice(dqHierarchyList)
  
     # ALL of them, ARE U CRAZY ?
@@ -91,11 +95,13 @@ try:
     print "\n-------------------Version DQ_00_00_00..."
     dqHierarchyList =  api.listRunLumiDQ(dqVersion="DQ_00_00_00")
     print_flags_nice(dqHierarchyList)
+    """ 
 
     print "\n-------------------Version DQ_00_00_01..."
-    dqHierarchyList =  api.listRunLumiDQ(dqVersion="DQ_00_00_01")
-    print_flags_nice(dqHierarchyList)
+    #dqHierarchyList =  api.listRunLumiDQ(runLumiDQList=[run_dq_search_criteria] , dqVersion="DQ_00_00_01")
+    #print_flags_nice(dqHierarchyList)
 
+    """ 
     print "\n-------------------Version DQ_00_00_02..."
     dqHierarchyList =  api.listRunLumiDQ(dqVersion="DQ_00_00_02")
     print_flags_nice(dqHierarchyList)

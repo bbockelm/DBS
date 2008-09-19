@@ -18,7 +18,8 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
+
+def dbsApiImplListRunLumiDQ(self, dataset, runLumiDQList=[], timeStamp="", dqVersion=""):
 
     """
     Lists the Run/LumiSection DQ information based on the input criteria 
@@ -67,6 +68,9 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
 
+
+
+
     for aRunLumiDQ in runLumiDQList:
         xmlinput += "<run run_number='"+str(get_run(aRunLumiDQ.get('RunNumber'))) + "'"
         xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
@@ -83,6 +87,7 @@ def dbsApiImplListRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
     ###logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'listRunLumiDQ',
+			'dataset': dataset,
                          'xmlinput' : xmlinput, 
 			'time_stamp':timeStamp, 
 			'dq_version':dqVersion }, 'POST')

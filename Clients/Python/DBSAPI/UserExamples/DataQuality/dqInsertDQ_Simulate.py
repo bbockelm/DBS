@@ -146,6 +146,8 @@ tag_int_dqs=[
 "HF_Percentage"
 ]
 
+dataset="/mcTestCeballos_z2jet_VBFHiggsTo2Taugen-alpgen/CMSSW_1_6_7-CSA07-1195931857/GEN-SIM-DIGI-RAW"
+
 run_dq_list=[]
 run_dq_int_list=[]
 
@@ -172,7 +174,7 @@ for aRun in range (23201, 24000):
                  )
 
          # Single Run, Multiple Flags (Some sub systems have sub-sub systems, some don't)
-         api.insertRunLumiDQ( [run_dq] )
+         api.insertRunLumiDQ(dataset, [run_dq] )
 	 print aRun
 
 

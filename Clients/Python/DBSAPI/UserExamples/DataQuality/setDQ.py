@@ -27,6 +27,8 @@ class DbsDQOptionParser(optparse.OptionParser):
 
       self.add_option("--run", action="store", type="int", dest="run", help="specify a valid run number")
 
+      self.add_option("--dataset", action="store", type="string", dest="dataset", help="specify a valid dataset path")
+
       self.add_option("--tag", action="store", type="string", dest="tag", help="Quality Information Mask")
 
       self.add_option("--value", action="store", type="string", dest="value", 
@@ -48,6 +50,10 @@ if __name__ == "__main__":
 		#if opts['url'] in ('', None, 'BADURL'):
 		#	print "You must specify a valid DBS URL, use --url= or --help"
 		#	sys.exit(0)
+
+		if opts['dataset'] in ('', None):
+                        print "You must specify a valid dataset path, use --run= or --help"
+                        sys.exit(0)
 
                 if opts['run'] in ('', None):
                         print "You must specify a valid run number, use --run= or --help"
@@ -73,7 +79,7 @@ if __name__ == "__main__":
 
 		api = DbsApi(opts)
 
-		api.insertRunLumiDQ( [run_dq] )
+		api.insertRunLumiDQ( opts['dataset'], [run_dq] )
 
 		
 	except DbsApiException, ex:

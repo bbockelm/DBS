@@ -25,6 +25,8 @@ class DbsDQOptionParser(optparse.OptionParser):
       self.add_option("--url=",action="store", type="string", dest="url", 
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
+      self.add_option("--dataset", action="store", type="string", dest="dataset", help="specify a valid dataset path")
+
       self.add_option("--run", action="store", type="int", dest="run", help="specify a valid run number")
 
       self.add_option("--flag", action="store", type="string", dest="flag", help="Quality Information Mask")
@@ -48,6 +50,10 @@ if __name__ == "__main__":
 		#if opts['url'] in ('', None, 'BADURL'):
 		#	print "You must specify a valid DBS URL, use --url= or --help"
 		#	sys.exit(0)
+
+                if opts['dataset'] in ('', None):
+                        print "You must specify a valid dataset path, use --run= or --help"
+                        sys.exit(0)
 
                 if opts['run'] in ('', None):
                         print "You must specify a valid run number, use --run= or --help"
@@ -73,7 +79,7 @@ if __name__ == "__main__":
 
 		api = DbsApi(opts)
 
-		api.updateRunLumiDQ([run_dq])
+		api.updateRunLumiDQ(opts['dataset'], [run_dq])
 		print "%s is set %s for run: %s" %(opts['flag'], opts['value'], opts['run'])
 
 		

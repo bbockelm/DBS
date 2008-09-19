@@ -883,31 +883,31 @@ class DbsApi(DbsConfig):
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
 
-  def listRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
+  def listRunLumiDQ(self, dataset, runLumiDQList=[], timeStamp="", dqVersion=""):
      try:
        #Calling the Implementation function
        from dbsApiListRunLumiDQ import dbsApiImplListRunLumiDQ
-       return  dbsApiImplListRunLumiDQ(self, runLumiDQList, timeStamp, dqVersion)
+       return  dbsApiImplListRunLumiDQ(self, dataset, runLumiDQList, timeStamp, dqVersion)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
-  def updateRunLumiDQ(self, runLumiDQList):
+  def updateRunLumiDQ(self, dataset, runLumiDQList):
      try:
        #Calling the Implementation function
        from dbsApiUpdateRunLumiDQ import dbsApiImplUpdateRunLumiDQ
-       return  dbsApiImplUpdateRunLumiDQ(self, runLumiDQList)
+       return  dbsApiImplUpdateRunLumiDQ(self, dataset, runLumiDQList)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
-  def insertRunLumiDQ(self, runLumiDQList):
+  def insertRunLumiDQ(self, dataset, runLumiDQList):
      try:
        #Calling the Implementation function
        from dbsApiInsertRunLumiDQ import dbsApiImplInsertRunLumiDQ
-       return  dbsApiImplInsertRunLumiDQ(self, runLumiDQList)
+       return  dbsApiImplInsertRunLumiDQ(self, dataset, runLumiDQList)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex

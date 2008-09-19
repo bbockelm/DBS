@@ -38,6 +38,8 @@ class DbsDQOptionParser(optparse.OptionParser):
       self.add_option("--url=",action="store", type="string", dest="url", 
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
+      self.add_option("--dataset", action="store", type="string", dest="dataset", help="specify a valid dataset path")
+
       self.add_option("--run", action="store", type="int", dest="run", help="specify a valid run number")
 
 if __name__ == "__main__":
@@ -50,6 +52,10 @@ if __name__ == "__main__":
 		if opts['url'] in ('', None, 'BADURL'):
                         configDict = DbsConfig(opts)
                         opts['url'] = str(configDict.url())
+
+                if opts['dataset'] in ('', None):
+                        print "You must specify a valid dataset path, use --run= or --help"
+                        sys.exit(0)
 
                 if opts['run'] in ('', None):
                         print "You must specify a valid run number, use --run= or --help"
@@ -64,7 +70,7 @@ if __name__ == "__main__":
         	)
 
 		api = DbsApi(opts)
-		dqHierarchyList =  api.listRunLumiDQ(  runLumiDQList=[run_dq_search_criteria]  )
+		dqHierarchyList =  api.listRunLumiDQ(  opts['dataset'], runLumiDQList=[run_dq_search_criteria]  )
     		print_flags_nice(dqHierarchyList)
 
 	except DbsApiException, ex:
