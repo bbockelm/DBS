@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApiDQLogic.java,v 1.19 2008/09/17 22:05:48 afaq Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiDQLogic.java,v 1.20 2008/09/19 21:45:53 afaq Exp $"
  *
  */
 
@@ -410,6 +410,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		 	timeStamp = getDQVerTimeStamp(conn, dqVersion);	
 		}
 		Vector alreadyGotID = new Vector();
+		Vector alreadyGotFLAG = new Vector();
 
 		boolean first = true;
                 try {
@@ -431,19 +432,27 @@ public class DBSApiDQLogic extends DBSApiLogic {
 					prevLumi = lumiNumber;
 					first = false;
 				}
+				String flag = get(rs, "DQ_FLAG");
 				String parent = get(rs, "PARENT");
 				String entryID = get(rs, "ID");
-                                if(!alreadyGotID.contains(entryID)) {
+
+				//System.out.println("ID:"+entryID+" LUD:"+get(rs, "LASTMODIFICATIONDATE")+" DATASET:"+get(rs, "DATASET")+" DQ_FLAG:"+flag+" VALUE:"+get(rs, "QVALUE"));
+
+				//Assuming that CHILD entries are added AFTER Parent Dataset entries
+				//And we can just skip over Child IDs
+                                //if(!alreadyGotID.contains(entryID)) {
+                                if(!alreadyGotFLAG.contains(flag)) {
 					if ( parent.equals("CMS")) {
-                                                out.write((String) "<dq_sub_system name='"+get(rs, "DQ_FLAG")+"'"+
+                                                out.write((String) "<dq_sub_system name='"+flag+"'"+
                                                         " value='"+get(rs, "QVALUE")+"'");
                                         } else {
-                                                out.write((String) "<dq_sub_subsys name='"+get(rs, "DQ_FLAG")+"'"+
+                                                out.write((String) "<dq_sub_subsys name='"+flag+"'"+
                                                         " value='"+get(rs, "QVALUE")+"'");
                                         }
                                         out.write( (String) " parent='"+parent+"' />" );
 					//AND STORE IT AS WELL
-                                        alreadyGotID.add(entryID);
+                                        //alreadyGotID.add(entryID);
+					alreadyGotFLAG.add(flag);
                                 }
 			}
 

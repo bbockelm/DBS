@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.187 $"
- $Id: DBSSql.java,v 1.187 2008/09/17 22:05:49 afaq Exp $"
+ $Revision: 1.188 $"
+ $Id: DBSSql.java,v 1.188 2008/09/19 21:45:53 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -461,8 +461,10 @@ public class DBSSql {
                 //JUST for testing 
                 //timeStamp = "1182285735";
 		java.util.Vector bindvals = new java.util.Vector();
+		String sql = "";
 
-                String sql = "SELECT distinct rq.ID as ID, r.RunNumber as RUN_NUMBER, \n"+
+                String sqlStr = "SELECT distinct rq.ID as ID, r.RunNumber as RUN_NUMBER, \n"+
+				"rq.Dataset as DATASET, \n"+
 				"ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
 				"ss.Name as DQ_FLAG, qv.Value as QVALUE, \n"+
 				"ss.Parent as PARENT, \n"+
@@ -475,10 +477,11 @@ public class DBSSql {
 				"join "+owner()+"SubSystem ss \n"+
 			       		"on ss.ID = rq.SubSystem \n"+
 				"join "+owner()+"QualityValues qv \n"+
-       					"on qv.ID = rq.DQValue \n";
-
+       					"on qv.ID = rq.DQValue\n" +
+				" WHERE \n";
 
 		String sqlInt = "SELECT distinct rq.ID as ID, r.RunNumber as RUN_NUMBER, \n"+
+				"rq.Dataset as DATASET, \n"+
                                 "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
                                 "ss.Name as DQ_FLAG, TO_CHAR(rq.IntDQValue) as QVALUE, \n"+
                                 "ss.Parent as PARENT, \n"+
@@ -489,25 +492,18 @@ public class DBSSql {
                                 "LEFT OUTER JOIN "+owner()+"LumiSection ls \n"+
                                        "on ls.ID = rq.Lumi \n"+
                                 "join "+owner()+"SubSystem ss \n"+
-                                        "on ss.ID = rq.SubSystem \n";
+                                        "on ss.ID = rq.SubSystem \n"+
+				" WHERE \n";
 
-		sql += " WHERE Dataset IN (?";
-		sqlInt += " WHERE Dataset IN (?";
-                for (int i=0; i != dsParents.size();++i){
-                        if (i!=0) {sql+=",?"; sqlInt+=",?";};
-			
+		String dsSql = " Dataset IN (?";
+		for (int i=0; i != dsParents.size();++i){
+                        if (i!=0) dsSql+=",?"; 
+			bindvals.add((String)dsParents.get(i));
                 }
-                sql+=")";
-		sqlInt+=")";
+                dsSql+=")";
 
-		if (runDQList.size() > 0 || !DBSUtil.isNull(timeStamp)) {
-			sql += " AND ";
-			sqlInt += " AND ";
-
-		}
-
-		///////////BIND VAR. NIRA CHUTIYAPA !!!!!!!!!!!!!!
-		boolean ts_bindvar=true;
+		sqlStr += dsSql;
+		sqlInt += dsSql;
 
                 String rlsql = "";
                 if (runDQList.size() > 0) {
@@ -518,28 +514,17 @@ public class DBSSql {
                                 String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
 
                                 if (!DBSUtil.isNull(runnumber)) {
-                                	if (i==0) rlsql = " ( r.RunNumber = ? ";
+                                	if (i==0) rlsql = " AND ( r.RunNumber = ? ";
                                         else    rlsql = " OR ( r.RunNumber = ? ";
                                         if ( !DBSUtil.isNull(lumisec) ) {
 						rlsql += " AND ";
 					} else {
 						bindvals.add(runnumber);
-						if (!DBSUtil.isNull(timeStamp)) {
-							ts_bindvar=false;				
-							bindvals.add(timeStamp);
-							bindvals.add(timeStamp);
-						}
-						bindvals.add(runnumber);
-						if (!DBSUtil.isNull(timeStamp)) {
-							bindvals.add(timeStamp);
-							bindvals.add(timeStamp);
-						}
 					}
-	
                               	}
 
                                 else {
-                                	if (i==0) rlsql = " ( ";
+                                	if (i==0) rlsql = " AND ( ";
                                         else rlsql = " OR ( ";
          
                  	        }
@@ -548,57 +533,33 @@ public class DBSSql {
 					rlsql += "ls.LumiSectionNumber=? ";
 					bindvals.add(runnumber);
 					bindvals.add(lumisec);
-					if (!DBSUtil.isNull(timeStamp)) {
-							ts_bindvar=false;				
-                                                        bindvals.add(timeStamp);
-                                                        bindvals.add(timeStamp);
-                                        }
-					bindvals.add(runnumber);
-					bindvals.add(lumisec);
-					if (!DBSUtil.isNull(timeStamp)) {
-                                                        bindvals.add(timeStamp);
-                                                        bindvals.add(timeStamp);
-                                        }
 				}
 				if (!DBSUtil.isNull(rlsql) )
 					rlsql += " ) ";
-				if (!DBSUtil.isNull(timeStamp))
-					rlsql += " and ";
 			}
-		}
 
-
-		sql += rlsql;
+		sqlStr += rlsql;
 		sqlInt += rlsql;
 
-		
-		if (!DBSUtil.isNull(timeStamp)) {
-	                        sql += " rq.CreationDate <=? \n";
-                               	sql += " and rq.LastModificationDate <= ? \n";
-
-			        sqlInt += " rq.CreationDate <=? \n";
-                               	sqlInt += " and rq.LastModificationDate <= ? \n";
-
-				if (ts_bindvar) {
-					bindvals.add(timeStamp);
-					bindvals.add(timeStamp);
-					bindvals.add(timeStamp);
-					bindvals.add(timeStamp);
-				}
-		}
-		//These two BIND Vars contain the procDSID at the 
-		//START (of bind vars) of the whole SQL statement
-                for (int i=0; i != dsParents.size(); ++i) {
-			bindvals.add(0, (String)dsParents.get(i));
-                	bindvals.add(bindvals.size()/2+1, (String)dsParents.get(i));
 		}
 
-		sql += " UNION \n" + sqlInt;
-
-		//NO History YET for the INT Variables
+		String tsSql="";	
 		if (!DBSUtil.isNull(timeStamp)) {
-				sql += " UNION \n"+
-				"SELECT distinct qh.HistoryOf as ID, r.RunNumber as RUN_NUMBER, \n"+
+	                tsSql += " AND rq.CreationDate <=? \n";
+                        tsSql +=   " AND rq.LastModificationDate <= ? \n";
+			bindvals.add(timeStamp);
+			bindvals.add(timeStamp);
+			sqlStr += tsSql;
+			sqlInt += tsSql;
+		}
+
+		String sqlStrHist = "";
+		String sqlIntHist = "";
+
+		if (!DBSUtil.isNull(timeStamp)) {
+				sqlStrHist += "SELECT distinct qh.HistoryOf as ID, \n"+
+				" r.RunNumber as RUN_NUMBER, \n"+
+				"qh.Dataset as DATASET, \n"+
 				"ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
 				"ss.Name as DQ_FLAG, qv.Value as QVALUE, \n"+
 				"ss.Parent as PARENT, \n"+
@@ -612,13 +573,15 @@ public class DBSSql {
        					"on ss.ID = qh.SubSystem \n"+
 				"join "+owner()+"QualityValues qv \n"+
        					"on qv.ID = qh.DQValue \n" +
-				"where qh.CreationDate <=?  and \n"+
+				" WHERE ";
+				sqlStrHist += dsSql;
+				if (runDQList.size() > 0) sqlStrHist += rlsql;
+				sqlStrHist += " AND qh.CreationDate <=?  AND \n"+
 				"qh.LastModificationDate <=?  \n";
-				bindvals.add(timeStamp);
-				bindvals.add(timeStamp);
-	
-                                sql += " UNION \n"+
-                                "SELECT distinct qh.HistoryOf as ID, r.RunNumber as RUN_NUMBER, \n"+
+
+                                sqlIntHist += "SELECT distinct qh.HistoryOf as ID, \n" +
+				" r.RunNumber as RUN_NUMBER, \n"+
+				"qh.Dataset as DATASET, \n"+
                                 "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
                                 "ss.Name as DQ_FLAG, TO_CHAR(qh.IntDQValue) as QVALUE, \n"+
                                 "ss.Parent as PARENT, \n"+
@@ -630,21 +593,26 @@ public class DBSSql {
                                         "on ls.ID = qh.Lumi \n"+
                                 "join "+owner()+"SubSystem ss \n"+
                                         "on ss.ID = qh.SubSystem \n" +
-				"where qh.CreationDate <=?  and \n"+
+				" WHERE ";
+                                sqlIntHist += dsSql;
+				if (runDQList.size() > 0) sqlIntHist += rlsql;
+				sqlIntHist += " AND qh.CreationDate <=?  AND \n"+
                                 "qh.LastModificationDate <=?  \n";
-                                bindvals.add(timeStamp);
-                                bindvals.add(timeStamp);
-	
-					//"and qh.HistoryTimeStamp <= "+timeStamp+" \n";
 		}
 
-		//sql += "order by LASTMODIFICATIONDATE, RUN_NUMBER desc "; 
-		//sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE desc "; 
-		sql += " order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC";
+		int bindCnt=2; //Add the bind variables two times
+		sql = sqlStr + "\n UNION \n" + sqlInt; 
+		if (!DBSUtil.isNull(timeStamp)) {
+				sql += "\n UNION \n" + sqlStrHist + "\n UNION \n" + sqlIntHist;
+				bindCnt += 2; //Add the bind variables two times more
+		}
+
+		sql += " order by DATASET DESC, LASTMODIFICATIONDATE DESC";
 		//Order by is very important, Change it ONLY if BUSH becomes president third times!
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 
+		for (int j=0; j != bindCnt; ++j)
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
