@@ -68,21 +68,19 @@ def dbsApiImplListRunLumiDQ(self, dataset, runLumiDQList=[], timeStamp="", dqVer
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
 
-
-
-
     for aRunLumiDQ in runLumiDQList:
-        xmlinput += "<run run_number='"+str(get_run(aRunLumiDQ.get('RunNumber'))) + "'"
-        xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
-        xmlinput += " />"
+	if aRunLumiDQ not in (None, '', []):
+        	xmlinput += "<run run_number='"+str(get_run(aRunLumiDQ.get('RunNumber'))) + "'"
+        	xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
+        	xmlinput += " />"
 
-        for aFlag in aRunLumiDQ.get('DQFlagList'):
-                xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
-                # Sub sub system list
-                for aSubFlag in aFlag.get('SubSysFlagList'):
-                        xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+        	for aFlag in aRunLumiDQ.get('DQFlagList'):
+                	xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
+                	# Sub sub system list
+                	for aSubFlag in aFlag.get('SubSysFlagList'):
+                        	xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
 
-    xmlinput += "</dbs>"
+    	xmlinput += "</dbs>"
 
     ###logging.log(DBSDEBUG, xmlinput)
 
