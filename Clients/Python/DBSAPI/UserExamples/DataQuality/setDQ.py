@@ -29,7 +29,7 @@ class DbsDQOptionParser(optparse.OptionParser):
 
       self.add_option("--dataset", action="store", type="string", dest="dataset", help="specify a valid dataset path")
 
-      self.add_option("--tag", action="store", type="string", dest="tag", help="Quality Information Mask")
+      self.add_option("--flag", action="store", type="string", dest="flag", help="Quality Information Mask")
 
       self.add_option("--value", action="store", type="string", dest="value", 
 		help="Value can be GOOD, BAD and UNKNOWN or a INTEGER value")
@@ -59,8 +59,8 @@ if __name__ == "__main__":
                         print "You must specify a valid run number, use --run= or --help"
                         sys.exit(0)
 
-                if opts['tag'] in ('', None):
-                        print "You must specify a valid QIM, use --tag= or --help"
+                if opts['flag'] in ('', None):
+                        print "You must specify a valid QIM, use --flag= or --help"
                         sys.exit(0)
 
                 if opts['value'] in ('', None):
@@ -68,7 +68,7 @@ if __name__ == "__main__":
                         sys.exit(0)
 
 		flag = DbsDQFlag (
-			Name = opts['tag'],
+			Name = opts['flag'],
 			Value = opts['value'],
 			)
 		run_dq = DbsRunLumiDQ (
