@@ -27,7 +27,9 @@ public class Home {
     
     public Home(){
         //u = new Util("jnp://plasma.dhcp.fnal.gov:1099");
-        u = new Util("jnp://vocms25.cern.ch:1099");
+        //u = new Util("jnp://vocms25.cern.ch:1099");
+        u = new Util("jnp://cmsdbssrv.cern.ch:1099");
+        //u = new Util("jnp://venom.dhcp.fnal.gov:1099");
         Object obj = u.getEJB("rs/RSSessionEJB/local");
         if(obj != null) myBean = (RSSessionEJBLocal) obj;
     }

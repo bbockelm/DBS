@@ -42,9 +42,9 @@ xmlns:ui="http://java.sun.com/jsf/facelets">
                                         <h:outputText value="#{resultVar.url}" binding="#{home.url}" />
                                     </h:commandLink>
                                 </rich:column>
-                                <rich:column><h:outputText value="#{resultVar.status}"/></rich:column>
-                                <rich:column><h:outputText value="#{resultVar.schemaVersion}"/></rich:column>
-                                <rich:column><h:outputText value="#{resultVar.serverVersion}"/></rich:column>
+                                <rich:column style="color: #{resultVar.status == 'active' ? 'black' : 'red'}"><h:outputText value="#{resultVar.status}"/></rich:column>
+                                <rich:column style="color: #{resultVar.status == 'active' ? 'black' : 'red'}"><h:outputText value="#{resultVar.schemaVersion}"/></rich:column>
+                                <rich:column style="color: #{resultVar.status == 'active' ? 'black' : 'red'}"><h:outputText value="#{resultVar.serverVersion}"/></rich:column>
                                 <f:facet name="footer">
                                         <rich:datascroller ajaxSingle="true"
                                                 for="dataTable1"
