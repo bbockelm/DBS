@@ -549,7 +549,7 @@ public class QueryBuilder {
 					}
 				} else if(Util.isSame(key, "dq")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operator should be = . Invalid operator given " + op);
-					queryWhere += "\tRuns.ID" + handleDQ(val);	
+					queryWhere += "\tRuns.ID" + handleDQ(val, cs);	
 				} else if(Util.isSame(key, "pset")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When pset is provided operator should be = . Invalid operator given " + op);
 					queryWhere += "\tQueryableParameterSet.Hash" + handlePset(val);	
@@ -646,7 +646,7 @@ public class QueryBuilder {
 							//FIXME default can be list
 						}
 					}
-					queryWhere += handleOp(op, val);
+					queryWhere += handleOp(op, val, bindValues);
 				}
 
 			} else {
@@ -887,12 +887,12 @@ public class QueryBuilder {
 		
 		return sql;
 	}
-	private String handleLike(String val) {
+	private String handleLike(String val, List<String> bindValues) {
 		bindValues.add(val.replace('*','%'));
 		return "LIKE upper(?)";
 	}
 
-	private String handleIn(String val)  throws Exception {
+	private String handleIn(String val, List<String> bindValues)  throws Exception {
     		String query = "IN (";
     		StringTokenizer st = new StringTokenizer(val, ",");
 		int count =  st.countTokens();
@@ -907,10 +907,10 @@ public class QueryBuilder {
 		query += ")";
 		return query;
 	}
-	private String handleOp(String op, String val)  throws Exception {
+	private String handleOp(String op, String val, List<String> bindValues)  throws Exception {
 		String query = "";
-		if(Util.isSame(op, "in")) query += handleIn(val);
-		else if(Util.isSame(op, "like")) query += handleLike(val);
+		if(Util.isSame(op, "in")) query += handleIn(val, bindValues);
+		else if(Util.isSame(op, "like")) query += handleLike(val, bindValues);
 		else {
 			query += op + " ?\n";
 			bindValues.add(val);
@@ -984,17 +984,51 @@ public class QueryBuilder {
 			query += op + " ?\n";
 			bindValues.add(path);
 		}*/
-		query += handleOp(op, path) + ")";
+		query += handleOp(op, path, bindValues) + ")";
 		return query;
 	}
-	private String handleDQ(String val) throws Exception {
-		//System.out.println("VAL is " + val);
-		ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, val);
+	private String handleDQ(String dqVal, List<?> cs) throws Exception {
+		boolean found = false;
+		int iter = 0;
+		List<String> tmpBindValues = new ArrayList<String>();
+		StringBuffer dsQueryForDQ = new StringBuffer("SELECT BLOCK.PATH FROM \n");
+		dsQueryForDQ.append(owner());
+		dsQueryForDQ.append("BLOCK WHERE \n");
+		Object lastObj = new String("");
+		for (int i =0 ; i!= cs.size(); ++i) {
+			++iter;	checkMax(iter);
+			Object obj = cs.get(i);
+			if(i%2 == 0) {
+				Constraint co = (Constraint)obj;
+				String key = (String)co.getKey();
+				String op = (String)co.getOp();
+				String val = (String)co.getValue();
+				if(Util.isSame(key, "dataset")) {
+					if(found)  {
+						dsQueryForDQ.append("\n");
+						dsQueryForDQ.append(((String)lastObj).toUpperCase());
+						dsQueryForDQ.append("\n");
+					}
+					if(Util.isSame(op, "like")) dsQueryForDQ.append("\tupper(Block.Path) ");
+					else dsQueryForDQ.append("\tBlock.Path ");
+					dsQueryForDQ.append(handleOp(op, val, tmpBindValues));
+					found = true;
+				}
+			}
+			lastObj = obj;
+		}
+		System.out.println("QUERY is " + dsQueryForDQ.toString());
+		for (String s: tmpBindValues) System.out.println("BValue " + s);
+
+		if(!found) throw new Exception("dataset is required when using dq queries. Please provide a dataset name in the query. Example query would be : find run where dq=blahblah and dataset = /prim/proc/tier");
+		//System.out.println("VAL is " + dqVal);
+		//Pass in dsQueryForDQ.toString() and tmpBindValues to DBSSql.listRunsForRunLumiDQ
+		ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, dqVal);
 		String dqQuery = "";
 		if(sqlObj.size() == 2) {
 			dqQuery = (String)sqlObj.get(0);
 			Vector bindVals = (Vector)sqlObj.get(1);
-			int iter = 0 ;
+			iter = 0 ;
 			for(Object s: bindVals) {
 				++iter; checkMax(iter);
 				bindValues.add((String)s);
@@ -1109,7 +1143,7 @@ public class QueryBuilder {
 			"\tAlgorithmConfig.ID " + genJoins(route) +
 			"WHERE \n" + 
 			//"\tAppVersion.Version = '" + version + "'\n" +
-			"\tAppVersion.Version " + handleOp(op, version) + "\n" +
+			"\tAppVersion.Version " + handleOp(op, version, bindValues) + "\n" +
 			")";
 		return query;
 	}
@@ -1121,7 +1155,7 @@ public class QueryBuilder {
 			"SELECT \n" +
 			"\tDataTier.ID FROM " + owner() + "DataTier "  +
 			"WHERE \n" + 
-			"\tDataTier.Name " + handleOp(op, tier) + "\n" +
+			"\tDataTier.Name " + handleOp(op, tier, bindValues) + "\n" +
 			")";
 		return query;
 	}
