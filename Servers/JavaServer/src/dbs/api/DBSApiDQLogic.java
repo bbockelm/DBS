@@ -1,11 +1,12 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiDQLogic.java,v 1.20 2008/09/19 21:45:53 afaq Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApiDQLogic.java,v 1.21 2008/09/22 21:09:27 afaq Exp $"
  *
  */
 
 package dbs.api;
 import java.sql.Connection;
+import db.DBManagement;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.io.Writer;
@@ -15,6 +16,8 @@ import dbs.util.DBSUtil;
 import dbs.DBSException;
 import java.util.Vector;
 import java.util.Date;
+import dbs.data.DBSDataCache;
+import java.util.ArrayList;
 
 /**
 * A class that has the core business logic of all the Primary dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -328,43 +331,58 @@ public class DBSApiDQLogic extends DBSApiLogic {
 	}
 
 
-	//public void listFilesForRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
 	public void listFilesForRunLumiDQ(Connection conn, Writer out, String query, String timeStamp, String dqVersion) throws Exception {
-		/*
-		String query = "TIB_Percentage>100&RunNumber=2&TIB_Local=GOOD&Tracker_Global=BAD&RunNumber=3&TCS_DCS=UNKNOWN";
-		DBSSql.listRunsForRunLumiDQ(conn, query);
-		return; */
+		writeWarning(out, "API Deprecated", "17009",
+                                "listFilesForRunLumiDQ API is deprecated, same functionality can be achieved via QueryLanguage");
+	}
 
+        public ArrayList listRunsForRunLumiDQ(Connection conn, String dsQueryForDQ, 
+								ArrayList dsQueryBindValues, String dqQuery)  throws Exception {
+
+		Boolean con_mng=false;
+		ArrayList ret = new ArrayList();
+		java.util.ArrayList dsParents = new ArrayList();
 		PreparedStatement ps = null;
-                ResultSet rs =  null;
+		ResultSet rs = null;
+		try {
+                        if (conn==null) {
+                                conn = DBManagement.getDBConnManInstance().getConnection();
+                                if (conn == null) throw new DBSException("Unable to create database connection");
+				con_mng=true;
+                        }
 
-                if (!isNull(timeStamp) && !isNull(dqVersion)) {
-                        throw new DBSException("Duplicate information supplied", "7006",
-                                                                "You have provided both a TimeStamp:="+timeStamp+" and DQ Version:="+dqVersion);
-		}
+                        DBSApiData data = new DBSApiData() ;
+                        DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
+                        data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(conn));
 
-                if (!isNull(dqVersion)) {
-                        //Get the time stamp from the version table
-                        timeStamp = getDQVerTimeStamp(conn, dqVersion);
-                }
+			ps = DBSSql.getSelectSQL(conn, dsQueryForDQ, dsQueryBindValues);
+			//pushQuery(ps);
+			rs =  ps.executeQuery();
 
-                try {
-                        //ps = DBSSql.listFilesForRunLumiDQ(conn, runDQList, timeStamp);
-                        ps = DBSSql.listFilesForRunLumiDQ(conn, query, timeStamp);
-			pushQuery(ps);
-                        rs =  ps.executeQuery();
-
-                        while(rs.next()) {
-				String lfn = get(rs, "LFN");
-				//System.out.println("LFN: "+ lfn );
-                                out.write( (String) "<file lfn='"+lfn+"' run_number='"+get(rs, "RUN")+"' />" ); 
+			//For each dataset, lets find it parent
+			while (rs.next() ) {		
+				String path=get(rs, "PATH");
+				//returns parents and also ID of passed dataset
+				dsParents.addAll((new DBSApiProcDSLogic(data)).listDatasetParentIDs(conn, path));
 			}
+			removeDuplicate(dsParents);
+			ret = DBSSql.listRunsForRunLumiDQ(conn, dsParents, dqQuery);
                 } finally {
+                        if(con_mng) conn.close();
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
                 }
+                return ret;
 	}
 
+	private static void removeDuplicate(ArrayList arlList) {
+   		java.util.HashSet h = new java.util.HashSet(arlList);
+   		arlList.clear();
+   		arlList.addAll(h);
+  	}
+
+	//Not used anymore
+	/*
 	private static String getPathFromQuery(String query) {
         	int dataset_ptr=query.indexOf("Dataset=");
         	String tmp1=query.substring(dataset_ptr);
@@ -373,29 +391,39 @@ public class DBSApiDQLogic extends DBSApiLogic {
         	String tmp2=tmp1.substring(eq_ptr+1, emp_ptr);
 		return tmp2;
 	}
-	
-	public java.util.ArrayList listRunsForRunLumiDQ(Connection conn, String query) throws Exception {
+
+	public java.util.ArrayList listRunsForRunLumiDQ_OLD(Connection conn, String query) throws Exception {
 
 		String path=getPathFromQuery(query);
-		//Get the list of parents
-		java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDs(conn, path);
-		//Pass this list and the query to the listRunsForRunLumiDQ() to get DQ
-		return DBSSql.listRunsForRunLumiDQ(conn, dsParents, query);
-	}
+		Boolean con_mng=false;
+		java.util.ArrayList tmp=new java.util.ArrayList();
+		try {
+			if (conn==null) {
+				conn = DBManagement.getDBConnManInstance().getConnection();
+                		if (conn == null) throw new DBSException("Unable to create database connection");
+			}
+
+			System.out.println(".........CONNECTION CREATED...............");
+			DBSApiData data = new DBSApiData() ;
+ 			DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
+                        data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(conn));
+			System.out.println(".........CACHE CREATED...............");
+			//Get the list of parents
+			java.util.ArrayList dsParents=(new DBSApiProcDSLogic(data)).listDatasetParentIDs(conn, path);
+			System.out.println(".............GOT LIST of PARENTS......"+dsParents.size());
+			//Pass this list and the query to the listRunsForRunLumiDQ() to get DQ
+			tmp=DBSSql.listRunsForRunLumiDQ(conn, dsParents, query);
+		} finally {
+			if(con_mng) conn.close();
+		}
+		return tmp;
+		
+	}*/
 
         public void listRunLumiDQ(Connection conn, Writer out, String path, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
-		/* JUST a test Block used time to time for debugging 
-		String query="Dataset=/mcTestCeballos_z2jet_VBFHiggsTo2Taugen-alpgen/CMSSW_1_6_7-CSA07-1195931857/GEN-SIM-DIGI-RAW&RunNumber=1&CSC_Global=GOOD&TCS_Tracker=BAD";
-		java.util.ArrayList sqlObj = listRunsForRunLumiDQ(conn, query);
-                String dqQuery = (String)sqlObj.get(0);
-                Vector bindVals = (Vector)sqlObj.get(1);
-		System.out.println("DQ Query"+dqQuery);
-		return;
-		*/
 
-		//String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+		//returns parents and also ID of passed dataset
 		java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDs(conn, path);
-
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
 
@@ -436,7 +464,8 @@ public class DBSApiDQLogic extends DBSApiLogic {
 				String parent = get(rs, "PARENT");
 				String entryID = get(rs, "ID");
 
-				//System.out.println("ID:"+entryID+" LUD:"+get(rs, "LASTMODIFICATIONDATE")+" DATASET:"+get(rs, "DATASET")+" DQ_FLAG:"+flag+" VALUE:"+get(rs, "QVALUE"));
+				//System.out.println("ID:"+entryID+" LUD:"+get(rs, "LASTMODIFICATIONDATE")+" DATASET:"
+								//+get(rs, "DATASET")+" DQ_FLAG:"+flag+" VALUE:"+get(rs, "QVALUE"));
 
 				//Assuming that CHILD entries are added AFTER Parent Dataset entries
 				//And we can just skip over Child IDs

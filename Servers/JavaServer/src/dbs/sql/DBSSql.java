@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.188 $"
- $Id: DBSSql.java,v 1.188 2008/09/19 21:45:53 afaq Exp $"
+ $Revision: 1.189 $"
+ $Id: DBSSql.java,v 1.189 2008/09/22 21:08:20 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -306,6 +306,7 @@ public class DBSSql {
 
                 return ps;
         }
+/*------- Data Quality Calls Collected in one place, later we can separate them out ------*/
 
         public static PreparedStatement insertDQFlagHistory(Connection conn, String rowID) throws SQLException {
 
@@ -381,7 +382,6 @@ public class DBSSql {
                 return ps;
         }
 
-/*------- Data Quality Calls Collected in one place, later we can separate them out ------*/
 
         public static PreparedStatement insertDQFlag(Connection conn, String procDSID, String runID, String lumiID,
                                                         String flagID, String valueID,
@@ -450,9 +450,6 @@ public class DBSSql {
                 return ps;
 
 	}
-
-
-	//I WILL deprecate this method VERY SOON  -ANZAR AFAQ 09/18/2008
 
        public static PreparedStatement listRunLumiDQ(Connection conn, java.util.ArrayList dsParents, Vector runDQList, String timeStamp)
         throws SQLException
@@ -620,8 +617,6 @@ public class DBSSql {
 
 	}
 
-
-        //public static PreparedStatement listRunsForRunLumiDQ(Connection conn, String query) throws SQLException {
         public static ArrayList listRunsForRunLumiDQ(Connection conn, ArrayList dsBinds, String query) throws SQLException {
 
                 String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
@@ -652,8 +647,12 @@ public class DBSSql {
 		int onlyRun=1;
 
 		String[] key_vals = query.split("&");
-     		for (int i=0; i<key_vals.length; i++) {
+		System.out.println("key_vals.length::"+key_vals.length);
+     		for (int i=0; i!= key_vals.length; ++i) {
 			String[] key_val = key_vals[i].split("=");
+
+			System.out.println("key_:"+key_val[0]);
+
 			if (key_val[0].equals("Dataset")) {
 				//System.out.println("DATASET KEY FOUND and MUST BE IGNORED");
 				continue;
@@ -669,15 +668,12 @@ public class DBSSql {
                                                 rbindvals.add(key_val[1]);
                                         }
 			}
-			
-			if (!subSys.contains(key_vals[i]))
+			if (!subSys.contains(key_vals[i])){
 				subSys.add(key_vals[i]);
+			}
 		}
 		
-
 		//Lets handle Dataset and it Parents
-		//java.util.ArrayList dsBinds = new java.util.ArrayList();
-		//dsBinds.add("1");dsBinds.add("2");dsBinds.add("3");
 		String dsSql=" Dataset in (?";
 		for (int i=0; i != dsBinds.size();++i){
 			if (i!=0) dsSql+=",?";
@@ -686,15 +682,16 @@ public class DBSSql {
 		
                 if (!DBSUtil.isNull(rlsql)) rlsql += ") )";
                                 //Loop over each item and make good, bad, unknown queries
-                                for (int j = 0; j < subSys.size() ; ++j) {
+                                for (int j = 0; j != subSys.size() ; ++j) {
 
 					String oper = null;
-					String[] key_val = key_vals[j].split(">=");
-					if ( key_val.length == 1) { key_val=key_vals[j].split("<="); oper = " <= "; } 
-					if ( key_val.length == 1) { key_val=key_vals[j].split(">"); oper = " > "; }
-					if ( key_val.length == 1) { key_val=key_vals[j].split("<"); oper = " < "; }
-					if ( key_val.length == 1) { key_val=key_vals[j].split("="); oper = " = "; }
-					if ( key_val.length == 1) throw new SQLException("Incorrect Data, Invalid operator used in : "+key_vals[j]);
+					String[] key_val = ((String)subSys.get(j)).split(">=");
+
+					if ( key_val.length == 1) { key_val=((String)subSys.get(j)).split("<="); oper = " <= "; } 
+					if ( key_val.length == 1) { key_val=((String)subSys.get(j)).split(">"); oper = " > "; }
+					if ( key_val.length == 1) { key_val=((String)subSys.get(j)).split("<"); oper = " < "; }
+					if ( key_val.length == 1) { key_val=((String)subSys.get(j)).split("="); oper = " = "; }
+					if ( key_val.length == 1) throw new SQLException("Incorrect Data, Invalid operator used in : "+((String)subSys.get(j)));
 
                                         String subsys=key_val[0];
                                         String value=key_val[1];
@@ -707,6 +704,7 @@ public class DBSSql {
 					{ //System.out.println("FOUND PATH value:="+value); 
 						continue;
 					}
+					System.out.println("subsys: "+subsys+" value:"+value);
  
                                         if ( ! valueList.contains(value) && !subsys.equals("RunNumber")) {
 
@@ -790,9 +788,9 @@ public class DBSSql {
                                 	}
 			}
 
-                        if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)="+goodSysCount;
-                        if (!DBSUtil.isNull(bad_clause)) bad_clause+=") group by RQ.Run having count(*)="+badSysCount;
-                        if (!DBSUtil.isNull(unknown_clause)) unknown_clause+=") group by RQ.Run having count(*)="+unknownSysCount;
+                        if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)>="+goodSysCount;
+                        if (!DBSUtil.isNull(bad_clause)) bad_clause+=") group by RQ.Run having count(*)>="+badSysCount;
+                        if (!DBSUtil.isNull(unknown_clause)) unknown_clause+=") group by RQ.Run having count(*)>="+unknownSysCount;
 
                 String sql = "";
                 if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause) && (intersects.size() <= 0)
@@ -801,12 +799,6 @@ public class DBSSql {
 			if ( onlyRun==0 ) sql += ")" ;
                         bindvals.addAll(rbindvals);
                 }
-
-                /*else {
-                        if (!DBSUtil.isNull(good_clause)) sql += run_sql + good_clause ;
-                        if (!DBSUtil.isNull(bad_clause)) sql += " UNION "+ run_sql + bad_clause ;
-                        if (!DBSUtil.isNull(unknown_clause)) sql += " UNION "+ run_sql + unknown_clause;
-                }*/
 
 		else {
                         int put_first_intersect=0;
@@ -829,264 +821,19 @@ public class DBSSql {
                         }
                 }
 
-
 		ArrayList toReturn = new ArrayList();
 		toReturn.add(sql);
 		bindvals.addAll(intersectBinds);
 		toReturn.add(bindvals);
-
-                /*PreparedStatement ps = DBManagement.getStatement(conn, sql);
+/*
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");*/
-
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+*/
 		return toReturn;
 	}
-
-	/*********
-				//select Run from RunLumiQuality where DQValue=1 and 
-				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5 
-				//union  select Run from RunLumiQuality where DQValue=2 and 
-				//SubSystem in (1,2,3,4,5) group by Run having count(*)=5; 	
-
-	********/
-
-
-        public static PreparedStatement listFilesForRunLumiDQ(Connection conn, String query, String timeStamp)
-        throws SQLException
-        {
-                String file_sql = "SELECT distinct F.LogicalFilename as LFN \n" +
-                                        " ,R.RunNumber as RUN \n" +
-                                        " FROM "+owner()+"Files F \n" +
-                                        " join "+owner()+"FileRunLumi FRL \n"+
-                                        " on FRL.Fileid = F.id \n" +
-                                        " join "+owner()+"Runs R \n" +
-                                        " on FRL.Run = R.ID \n" +
-                                        " WHERE FRL.Run in (";
-
-                ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(conn, null, query);
-                String run_sql = "";
-		Vector bindVals = null;
-                if(sqlObj.size() == 2) {
-                        run_sql = (String)sqlObj.get(0);
-                        bindVals = (Vector)sqlObj.get(1);
-		}
-
-		String sql = file_sql+run_sql+")";
-
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-
-                for (int i=0; i != bindVals.size(); ++i)
-                        ps.setString(columnIndx++, (String)bindVals.elementAt(i) );
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-	}
-
-	/*      
-		M. Anzar Afaq 09/17/2008  - Commenting out listFilesForRunLumiDQ-Older implementation
-		
-		listRunsForRunLumiDQ can be called from listFilesForRunLumiDQ to avoid a LOT of 
-		duplication that was left in the code for clarity and readability earlier
-		now we have a better understaindg and we can avoid duplication 
-	*/
-
-        /*   
-	public static PreparedStatement listFilesForRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
-        throws SQLException
-        {
-                String run_sql = "select RQ.Run from "+owner()+"RunLumiQuality RQ  join "+owner()
-					+"SubSystem SS on SS.ID = RQ.SubSystem JOIN "+owner()+"QualityValues QV on RQ.DQValue=QV.ID \n";
-
-		String good_clause="";
-		String bad_clause="";
-		String unknown_clause="";
-		String rlsql="";
-
-		java.util.Vector bindvals = new java.util.Vector();
-		java.util.Vector rbindvals = new java.util.Vector();
-		java.util.Vector subSys = new java.util.Vector();	
-
-
-		java.util.ArrayList intersects = new java.util.ArrayList();
-		java.util.ArrayList intersectBinds = new java.util.ArrayList();
-
-                //This should probably be loaded from database in the cache once !
-                java.util.ArrayList valueList = new java.util.ArrayList();
-                valueList.add("GOOD");
-                valueList.add("BAD");
-                valueList.add("UNKNOWN");
-
-		int goodSysCount = 0;
-		int badSysCount = 0;
-		int unknownSysCount = 0;
-		int firstRun=0;
-
-		if (runDQList.size() > 0) {
-                        for (int i = 0; i < runDQList.size() ; ++i) {
-				//ADD RUN and LUMI to the Query as well, make life so simple
-                                Hashtable runDQ = (Hashtable) runDQList.get(i);
-                                String runnumber = DBSUtil.get(runDQ, "run_number");
-                                if (!DBSUtil.isNull(runnumber)) {
-                                	if (firstRun==0) {
-                                        	rlsql += " (select ID from Runs where RunNumber in (?";   
-                                                rbindvals.add(runnumber);
-						firstRun=1;
-                                        }
-                                        else {
-                                        	rlsql += " ,?";
-                                                rbindvals.add(runnumber);
-                                        }
-                                }
-
-				Vector thisrunSubSys = DBSUtil.getVector(runDQ, "dq_sub_system");
-				// for some reason cannot avoid duplication here, and what the heck
-				for (int j = 0; j < thisrunSubSys.size() ; ++j) {
-                                        Hashtable dqFlag = (Hashtable) thisrunSubSys.get(j);
-					if (!subSys.contains(dqFlag))
-						subSys.add(dqFlag);
-				}
-			}
-			if (!DBSUtil.isNull(rlsql)) rlsql += ") )";
-		}
-
-				//Loop over each item and make good, bad, unknown queries
-                                for (int j = 0; j < subSys.size() ; ++j) {
-                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
-
-					String subsys=DBSUtil.get(dqFlag, "name");
-					String value=DBSUtil.get(dqFlag, "value");
-
-					if (j == 0) {
-                                                run_sql += " where ";
-                                        }
-					if ( ! valueList.contains(value) ) {
-                                		//Probably its a number
-                                		//lets test that 
-                                		try {
-                                        		int i = Integer.valueOf(value).intValue();
-                                		} catch (java.lang.NumberFormatException e) {
-                                        		throw new SQLException("Incorrect Data, Invalid value: " + value + " For QIM " + subsys);
-                                		}
-
-						String oper=DBSUtil.get(dqFlag, "oper");
-						String query = "SELECT RQI.Run from "+owner()+"RunLumiDQInt RQI join "+owner()+"SubSystem SSI ";
-							query += " on SSI.ID = RQI.SubSystem where SSI.Name=? and IntDQValue "+oper+" ?";
-						intersectBinds.add(subsys);
-						intersectBinds.add(value);
-						if (!DBSUtil.isNull(rlsql))  {
-                                                                query += " AND RQI.Run in " + rlsql ;//+ " ) ";
-                                                                intersectBinds.addAll(rbindvals);
-                                                }
-						intersects.add(query);
-					} else {
-						if (value.equals("GOOD")) {
-							if ( goodSysCount == 0 ) {
-								if (!DBSUtil.isNull(rlsql))  {
-									good_clause += " RQ.Run in " + rlsql + " AND ";
-									bindvals.addAll(rbindvals);
-								}
-								good_clause += " QV.Value='GOOD' and SS.Name in (?";
-								bindvals.add(subsys);
-								goodSysCount++;
-							} else {
-								good_clause += ",?";
-								bindvals.add(subsys);
-								goodSysCount++;
-							}
-						}
-                                        	else if (value.equals("BAD")) {
-                                                	if ( badSysCount == 0 ) {
-                                                        	if (!DBSUtil.isNull(rlsql))  {
-                                                                	bad_clause += " RQ.Run in " + rlsql + " AND ";
-                                                                	bindvals.addAll(rbindvals);
-                                                        	}
-                                                        	bad_clause += " QV.Value='BAD' and SS.Name in (?";
-                                                        	bindvals.add(subsys);
-                                                        	badSysCount++;
-                                                	} else {
-                                                        	bad_clause += ",?";
-                                                        	bindvals.add(subsys);
-                                                        	badSysCount++;
-                                                	}
-                                        	}
-                                        	else if (value.equals("UNKNOWN")) {
-                                                	if ( unknownSysCount == 0 ) {
-                                                        	if (!DBSUtil.isNull(rlsql))  {
-                                                                	unknown_clause += " RQ.Run in " + rlsql + " AND ";
-                                                                	bindvals.addAll(rbindvals);
-                                                        	}
-                                                        	unknown_clause += " QV.Value='UNKNOWN' and SS.Name in (?";
-                                                        	bindvals.add(subsys);
-                                                        	unknownSysCount++;
-                                                	} else {
-                                                        	unknown_clause += ",?";
-                                                        	bindvals.add(subsys);
-                                                        	unknownSysCount++;
-                                                	}
-                                        	}
-					}
-				}
-			if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)="+goodSysCount;
-			if (!DBSUtil.isNull(bad_clause)) bad_clause+=") group by RQ.Run having count(*)="+badSysCount;
-			if (!DBSUtil.isNull(unknown_clause)) unknown_clause+=") group by RQ.Run having count(*)="+unknownSysCount;
-
-                String file_sql = "SELECT distinct F.LogicalFilename as LFN \n" +
-                                        " ,R.RunNumber as RUN \n" +
-                                        " FROM "+owner()+"Files F \n" +
-                                        " join "+owner()+"FileRunLumi FLR \n"+
-                                        " on FLR.Fileid = F.id \n" +
-                                        " join "+owner()+"Runs R \n" +
-                                        " on FLR.Run = R.ID \n" +
-                                        " WHERE FLR.Run in (";
-
-
-		String sql = "";
-		if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause) && (intersects.size() <= 0)
-				&& !DBSUtil.isNull(rlsql) )  {
-			sql += file_sql + rlsql + ")" ;
-			bindvals.addAll(rbindvals);
-		}
-
-                else {
-			int put_first_intersect=0;
-			sql += file_sql;
-			if (!DBSUtil.isNull(good_clause)) { sql += run_sql + good_clause ; put_first_intersect=1; }
-			if (!DBSUtil.isNull(bad_clause)) { sql += " UNION "+ run_sql + bad_clause ; put_first_intersect=1; }
-			if (!DBSUtil.isNull(unknown_clause)) { sql += " UNION "+ run_sql + unknown_clause; put_first_intersect=1; }
-			for (int i=0; i!= intersects.size(); ++i) {
-				if (i==0 && put_first_intersect==1) sql += " INTERSECT ";
-				//if (i==0) sql +=  run_sql + intersects.get(i); 
-				if (i==0) sql +=  intersects.get(i); 
-				//else sql += " INTERSECT "+ run_sql + intersects.get(i);
-				else sql += " INTERSECT "+ intersects.get(i);
-			}
-		}
-
-		if ( !DBSUtil.isNull(good_clause) || 
-				!DBSUtil.isNull(bad_clause) || 
-					!DBSUtil.isNull(unknown_clause) 
-								|| intersects.size() > 0 ) sql += ")";
-
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-
-                int columnIndx = 1;
-                for (int i=0; i != bindvals.size(); ++i)
-                        ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
-
-		for (int i=0; i != intersectBinds.size(); ++i)
-			ps.setString(columnIndx++, (String)intersectBinds.get(i) );
-
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-
-                return ps;
-
-	}
-
-	*/
-
-
 
         public static PreparedStatement getDQFlag(Connection conn, String procDSID, String runID, String lumiID,
                                                         String flagID,
@@ -3822,6 +3569,17 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
                 return ps;
+	}
+
+
+	public static PreparedStatement getSelectSQL (Connection conn, String sql, ArrayList bindvals) throws SQLException  {
+
+                        PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                        int columnIndx = 1;
+                        for (int i=0; i != bindvals.size(); ++i)
+                                ps.setString(columnIndx++, (String)bindvals.get(i) );
+                        DBSUtil.writeLog("\n\n" + ps + "\n\n");
+			return ps;
 	}
 
 

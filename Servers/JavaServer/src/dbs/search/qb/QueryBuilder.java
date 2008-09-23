@@ -12,6 +12,7 @@ import dbs.sql.DBSSql;
 import dbs.util.Validate;
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.Edge;
+import dbs.api.DBSApiDQLogic;
 
 public class QueryBuilder {
 	int MAX_ITERATION = 999;
@@ -990,8 +991,9 @@ public class QueryBuilder {
 	private String handleDQ(String dqVal, List<?> cs) throws Exception {
 		boolean found = false;
 		int iter = 0;
-		List<String> tmpBindValues = new ArrayList<String>();
-		StringBuffer dsQueryForDQ = new StringBuffer("SELECT BLOCK.PATH FROM \n");
+		ArrayList tmpBindValues = new ArrayList<String>();
+		//List<String> tmpBindValues = new ArrayList<String>();
+		StringBuffer dsQueryForDQ = new StringBuffer("SELECT DISTINCT BLOCK.PATH AS PATH FROM \n");
 		dsQueryForDQ.append(owner());
 		dsQueryForDQ.append("BLOCK WHERE \n");
 		Object lastObj = new String("");
@@ -1018,12 +1020,14 @@ public class QueryBuilder {
 			lastObj = obj;
 		}
 		System.out.println("QUERY is " + dsQueryForDQ.toString());
-		for (String s: tmpBindValues) System.out.println("BValue " + s);
+		//for (String s: tmpBindValues) System.out.println("BValue " + s);
 
 		if(!found) throw new Exception("dataset is required when using dq queries. Please provide a dataset name in the query. Example query would be : find run where dq=blahblah and dataset = /prim/proc/tier");
 		//System.out.println("VAL is " + dqVal);
 		//Pass in dsQueryForDQ.toString() and tmpBindValues to DBSSql.listRunsForRunLumiDQ
-		ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, dqVal);
+		//ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, dqVal);
+		ArrayList sqlObj = (new DBSApiDQLogic(null)).listRunsForRunLumiDQ(null, dsQueryForDQ.toString(), tmpBindValues, dqVal);
+
 		String dqQuery = "";
 		if(sqlObj.size() == 2) {
 			dqQuery = (String)sqlObj.get(0);

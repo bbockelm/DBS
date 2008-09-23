@@ -1,6 +1,6 @@
 /**
- $Revision: 1.66 $"
- $Id: DBSApiProcDSLogic.java,v 1.66 2008/09/16 17:06:55 afaq Exp $"
+ $Revision: 1.67 $"
+ $Id: DBSApiProcDSLogic.java,v 1.67 2008/09/19 21:45:53 afaq Exp $"
  *
  */
 
@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.ArrayList;
 import java.util.HashSet;
 import dbs.DBSConstants;
 import dbs.sql.DBSSql;
@@ -788,9 +789,27 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 	public String getProcessedDSID(Connection conn, String path, boolean excep) throws Exception {
 		String id = "";
+
+
+
+
+
+
+
+
+		System.out.println("BEFORE THIS..........");
+
+
+
+
+
+
+
+
 		if(!isNull( id = get(this.data.localPDPath, path) )) {
 			return id;
 		}
+		System.out.println("AFTER THIS..........");
 		if(isNull(path) && !excep) return "";
 		String[] data = parseDSPath(path);
 		
