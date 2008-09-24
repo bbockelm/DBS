@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.17 $"
- $Id: DBSUtil.java,v 1.17 2008/03/21 22:10:21 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSUtil.java,v 1.18 2008/05/16 20:10:44 sekhri Exp $"
  *
 */
 
@@ -30,9 +30,9 @@ import db.DBManagement;
 import dbs.DBSConstants;
 import dbs.util.DBSConfig;
 
-import fnal.gov.rs.entity.Person;
-import fnal.gov.rs.entity.Registration;
-import fnal.gov.rs.client.api.RegApi;
+import gov.fnal.rs.dm.entity.Person;
+import gov.fnal.rs.dm.entity.Registration;
+import gov.fnal.rs.client.api.RegApi;
 /**
 * A util class that has a few utility menthods. All of the methods are static methods and do not need instance of this class to be called.
 * @author sekhri
