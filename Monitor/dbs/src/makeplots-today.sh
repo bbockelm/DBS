@@ -9,12 +9,13 @@
 #
 # Set up root
 #
-#if [ -z "$ROOTSYS" ]
-#then
-export ROOTSYS="/afs/cern.ch/sw/lcg/external/root/5.16.00/slc4_ia32_gcc34/root"
-PATH="${PATH}:$ROOTSYS/bin"
-export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
-#fi
+#export ROOTSYS="/afs/cern.ch/sw/lcg/external/root/5.16.00/slc4_ia32_gcc34/root"
+#PATH="${PATH}:$ROOTSYS/bin"
+#export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
+export ROOTSYS="/afs/cern.ch/cms/sw/slc4_amd64_gcc345/lcg/root/5.18.00-CMS19a/"
+export PATH="$ROOTSYS/bin:${PATH}"
+#X11R6="/usr/X11R6/lib64"
+export LD_LIBRARY_PATH="$ROOTSYS/lib:$ORACLE_HOME/lib:$LD_LIBRARY_PATH"
 echo "ROOTSYS $ROOTSYS"
 echo "PATH $PATH"
 echo "LD_LIBRARY_PATH $LD_LIBRARY_PATH"
@@ -25,10 +26,11 @@ which root
 #
 servicenames="cmsdbs cmst0dbs cmsdevdbs"  
 # cmstestdbs"
-workdir=/data/dbs_logs/temp
-plotdir=/data/cmsdbs/public/dbsplots
-srcdir=/data/dbs_logs/src
-logdir=/data/dbs_logs
+basedir=/home/dbfrontier
+workdir=$basedir/data/dbs_logs/temp
+plotdir=$basedir/local/apache/dbsplots
+srcdir=$basedir/apps/DBS/Monitor/dbs/src
+logdir=$basedir/data/dbs_logs
 today="`date +%Y-%m-%d`"
 #today="2007-12-17" #for testing purposes only
 month="`date +%b`"
