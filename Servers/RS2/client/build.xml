@@ -3,7 +3,7 @@
 	<property name="targetDir" value="${basedir}/build"/>
 	<property name="configSrcDir" value="${basedir}/etc"/>
 	<property name="libraryDir" value="${basedir}/lib"/>
-	<property name="app.name" value="rswebapp"/>
+	<property name="app.name" value="rsclient"/>
 	<property environment="env"/>
 	<property name="jredir" value="${env.JAVA_HOME}/jre/lib"/>
 		      
@@ -28,5 +28,9 @@
 		</javac>
 							    
 	</target>
+	<target name="jar" depends="compile" description="Create binary distribution">
+		<jar jarfile="${basedir}/../build/${app.name}.jar" basedir="${targetDir}"/>
+	</target>
+
 
 </project>

@@ -30,6 +30,6 @@
 		</copy>
 	</target>
 	<target name="jar" depends="compile" description="Create binary distribution">
-		<jar jarfile="${basedir}/../build/${app.name}.jar" basedir="${targetDir}"/>
+		<jar jarfile="${basedir}/../build/${app.name}.jar" basedir="${targetDir}" manifest="${configSrcDir}/MANIFEST.MF"/>
 	</target>
 </project>
