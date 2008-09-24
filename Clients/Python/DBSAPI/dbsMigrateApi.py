@@ -254,6 +254,8 @@ class DbsMigrateApi:
 					 else:
 						 self.migrateBlockBasic(path, blockName)
 					 break
+		else:
+			 self.migrateBlockBasic(path, blockName)
 					 
 			
 		#self.migrateBlockBasic(path, blockName)
