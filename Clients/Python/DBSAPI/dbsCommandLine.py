@@ -622,6 +622,9 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
+      self.add_option("--alias",action="store", type="string", dest="alias", default="NOALIAS",
+           help="specify DBS instance alias, e.g. --alias=Prod_GLOBAL_R, If no alias is provided default url/alias from dbs.config is attempted")
+
       #self.add_option("-v","--verbose", action="store", type="string", default="ERROR", dest="level",
       #     help="specify verbose level, e.g. --verbose=DBSDEBUG, The possible values are, CRITICAL, ERROR, DBSWARNING, DBSDEBUG, DBSINFO, where DBSINFO is most verbose, and ERROR is default")
 
@@ -825,6 +828,9 @@ class ApiDispatcher:
     # If NO URL is provided, URL from dbs.config will be used
     if opts.__dict__['url'] == "BADURL":
         del(opts.__dict__['url']) 
+
+    if opts.__dict__['alias'] == 'NOALIAS':
+	del(opts.__dict__['alias'])
 
     self.api = DbsApi(opts.__dict__)
     self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))

@@ -81,14 +81,19 @@ class DbsApi(DbsConfig):
  
     if self.configDict.has_key('retry'):
        Args['retry'] = self.configDict['retry']
- 
+
+    if self.configDict.has_key('url') and self.configDict.has_key('alias'):
+	raise DbsApiException(args="Incorrect parameters: You cannot use 'url' and 'alias' together", code="6991")
+
+    if self.configDict.has_key('alias'):
+       self.configDict['url']=self.setServerUrl()
 
     if self.verbose():
        print "configuration dictionary:", self.configDict
        print "using version",self.version()
        print "using mode   ",self.mode()
-
-    #Store infor about current user
+    #
+    #Store info about current user
     #
     if not self.configDict.has_key('userID'):
     	#Args['userID'] = os.getlogin()+'@'+socket.gethostname()
@@ -96,7 +101,6 @@ class DbsApi(DbsConfig):
     #
     # Connect to the Server proxy
     #
-
     self._server = ""
     if not self.configDict.has_key('mode'):
 	self.configDict['mode'] = "POST"  
@@ -125,6 +129,44 @@ class DbsApi(DbsConfig):
 
     """
     return self.url()
+
+
+  def setServerUrl(self):
+    """
+    Sets Server URL from Registration Service, an unnecessary indirection :=)
+
+    """
+    try: 
+	dbsSrvcs={}
+	two_days=86400 * 2
+	cachedir=os.path.expandvars("$HOME/.DBS")
+	cachefile=os.path.join(cachedir, "dbsurl.cache")
+	if not os.path.exists(cachedir) :
+		os.mkdir(cachedir)	
+	if os.path.exists(cachefile):
+		import time
+		if int (time.time()-os.stat(cachefile).st_mtime ) > two_days:	
+			os.remove(cachefile)
+	if not os.path.exists(cachefile):
+		urlcache=open(cachefile, "w")
+		from RS.Wrapper import RegService
+		rsapi=RegService()
+		result = rsapi.queryRegistrationFindAll()
+		for aSrvc in result:
+			dbsSrvcs[aSrvc._alias]=aSrvc._url
+		urlcache.write('dbsSrvcs=')
+		urlcache.write(str(dbsSrvcs))
+		urlcache.close()
+	if dbsSrvcs in ({}, None):
+		import imp
+		urlcache=open(cachefile, "r")
+		dbsurlmodule = imp.new_module("dbsurlcache")
+		exec urlcache in dbsurlmodule.__dict__	
+		dbsSrvcs=dbsurlmodule.dbsSrvcs
+	# Return the key, if it exists, else throws an exception
+	return dbsSrvcs[self.configDict.get('alias')]
+    except Exception, ex:
+	raise DbsApiException(args="Incorrect parameters: no URL found for the provided Alias %s" %self.configDict.get('alias', ''), code="6991")	
 
   def setApiVersion(self):
     """
