@@ -12,7 +12,7 @@ RSSessionEJBWebService_queryRegistrationFindByURLResponse = GED("http://session.
 RSSessionEJBWebService_removeRegistration = GED("http://session.dm.rs.fnal.gov/", "removeRegistration").pyclass
 RSSessionEJBWebService_removeRegistrationResponse = GED("http://session.dm.rs.fnal.gov/", "removeRegistrationResponse").pyclass
 
-class API:
+class RegService:
 	def __init__(self, url=None):
 		self.stub = RSSessionEJBBeanServiceLocator().getRSSessionEJBBeanPort(url=url)
 	def queryRegistrationFindAll(self):

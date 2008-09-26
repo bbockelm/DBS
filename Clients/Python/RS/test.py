@@ -1,4 +1,5 @@
-from Wrapper import API
+#from Wrapper import API
+from Wrapper import RegService
 
 def printReg(reg):
 	print "_____________________________________________________________________"
@@ -18,14 +19,14 @@ def printReg(reg):
 	print "_____________________________________________________________________"
 	
 try :
-	api = API()
-	#result = api.queryRegistrationFindAll()
-	#for i in result:
-	#	printReg(i)
-	
-	result = api.queryRegistrationFindByAlias("Prod_Global")
+	api = RegService()
+	result = api.queryRegistrationFindAll()
 	for i in result:
 		printReg(i)
+	
+	#result = api.queryRegistrationFindByAlias("Prod_Global")
+	#for i in result:
+		#printReg(i)
 except Exception, ex:
 	print "Exception "
 	print ex
