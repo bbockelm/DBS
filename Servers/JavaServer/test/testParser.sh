@@ -192,7 +192,7 @@ executeQuery () {
 	#$CMD query="find   dataset, file.count where site  like abc.in"
 	#$CMD query="find sum(file.numevents), file.count, run.count, dataset  where file.size > 0"
 	
-	#$CMD query="find  sum(file.numevents), file.count, dataset where dataset like *"
+	#$CMD query="find  sum(file.numevents),  dataset where dataset like *"
 	#$CMD query="find  sum(file.numevents), file.count where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
 	#$CMD query="find release where release like *"
 	#$CMD query="find sum(file.size), count(file), run where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM and site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
@@ -224,6 +224,8 @@ executeQuery () {
 	#$CMD query="find ads, lumi, run where dataset = /BeamHalo/Commissioning08-GRtoBeam_v1/RAW"
 	#$CMD query="find run where ads = /BeamHalo/Commissioning08-GRtoBeam_v1/RAW"
 	#$CMD query="find run, lumi, file where procds = Commissioning08-GRtoBeam_v1"
-	$CMD query="find primds where run = 20"
+	#$CMD query="find file where dataset.release = CMS"
+	$CMD query="find tier where dataset = /BeamHalo/Commissioning08-GRtoBeam_v1/RAW or dataset.tier = SIM"
+	#$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD and dataset like *Commissioning08-GRtoBeam_v1/RAW or dataset = /BeamHalo/Commissioning08-GRtoBeam_v1/RAW and dataset in (/Cosmics/CRUZET3-v1/RAWaa, /BeamHalo/Commissioning08-GRtoBeam_v1/RAW)" 
 	
 	

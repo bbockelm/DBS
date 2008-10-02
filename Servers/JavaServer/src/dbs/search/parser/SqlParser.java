@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.0.1 Sql.g 2008-09-11 13:21:17
+// $ANTLR 3.0.1 Sql.g 2008-10-02 13:11:25
 
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class SqlParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "SPACE", "COMMA", "DOT", "VALUE", "EQ", "LT", "GT", "AMP", "NL", "WS", "'('", "')'", "'WHERE'", "'where'", "'in'", "'ads'", "'dataset'", "'release'", "'site'", "'block'", "'file'", "'primds'", "'procds'", "'run'", "'lumi'", "'dq'", "'ilumi'", "'phygrp'", "'group'", "'pset'", "'createdate'", "'moddate'", "'starttime'", "'endtime'", "'createby'", "'modby'", "'name'", "'version'", "'number'", "'startevnum'", "'endevnum'", "'numevents'", "'numlss'", "'size'", "'count'", "'status'", "'type'", "'id'", "'parent'", "'child'", "'tier'", "'def'", "'evnum'", "'era'", "'tag'", "'numruns()'", "'numfiles()'", "'dataquality()'", "'latest()'", "'parentrelease()'", "'childrelease()'", "'intluminosity()'", "'findevents()'", "'select'", "'SELECT'", "'find'", "'FIND'", "'and'", "'AND'", "'order'", "'ORDER'", "'by'", "'BY'", "'or'", "'OR'", "'IN'", "'not'", "'NOT'", "'like'", "'LIKE'", "'COUNT'", "'sum'", "'SUM'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "SPACE", "COMMA", "DOT", "VALUE", "EQ", "LT", "GT", "AMP", "NL", "WS", "'('", "')'", "'WHERE'", "'where'", "'in'", "'ads'", "'dataset'", "'release'", "'tier'", "'site'", "'block'", "'file'", "'primds'", "'procds'", "'run'", "'lumi'", "'dq'", "'ilumi'", "'phygrp'", "'group'", "'pset'", "'createdate'", "'moddate'", "'starttime'", "'endtime'", "'createby'", "'modby'", "'name'", "'version'", "'number'", "'startevnum'", "'endevnum'", "'numevents'", "'numlss'", "'size'", "'count'", "'status'", "'type'", "'id'", "'parent'", "'child'", "'def'", "'evnum'", "'era'", "'tag'", "'numruns()'", "'numfiles()'", "'dataquality()'", "'latest()'", "'parentrelease()'", "'childrelease()'", "'intluminosity()'", "'findevents()'", "'select'", "'SELECT'", "'find'", "'FIND'", "'and'", "'AND'", "'order'", "'ORDER'", "'by'", "'BY'", "'or'", "'OR'", "'IN'", "'not'", "'NOT'", "'like'", "'LIKE'", "'COUNT'", "'sum'", "'SUM'"
     };
     public static final int COMMA=5;
     public static final int SPACE=4;
@@ -430,13 +430,14 @@ public class SqlParser extends Parser {
             case 31:
             case 32:
             case 33:
+            case 34:
                 {
                 int LA5_1 = input.LA(2);
 
                 if ( (LA5_1==DOT) ) {
                     int LA5_4 = input.LA(3);
 
-                    if ( ((LA5_4>=20 && LA5_4<=21)||(LA5_4>=34 && LA5_4<=58)) ) {
+                    if ( ((LA5_4>=20 && LA5_4<=22)||(LA5_4>=35 && LA5_4<=58)) ) {
                         alt5=2;
                     }
                     else if ( ((LA5_4>=59 && LA5_4<=66)) ) {
@@ -460,7 +461,7 @@ public class SqlParser extends Parser {
                 }
                 }
                 break;
-            case 48:
+            case 49:
             case 84:
                 {
                 alt5=4;
@@ -2688,13 +2689,13 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start entity
-    // Sql.g:119:1: entity : ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' ) ;
+    // Sql.g:119:1: entity : ( 'ads' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' ) ;
     public final void entity() throws RecognitionException {
         try {
-            // Sql.g:119:9: ( ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' ) )
-            // Sql.g:119:11: ( 'ads' | 'dataset' | 'release' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' )
+            // Sql.g:119:9: ( ( 'ads' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' ) )
+            // Sql.g:119:11: ( 'ads' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' )
             {
-            if ( (input.LA(1)>=19 && input.LA(1)<=33) ) {
+            if ( (input.LA(1)>=19 && input.LA(1)<=34) ) {
                 input.consume();
                 errorRecovery=false;
             }
@@ -2726,14 +2727,14 @@ public class SqlParser extends Parser {
             // Sql.g:120:7: ( ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' ) )
             // Sql.g:120:8: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' )
             {
-            if ( (input.LA(1)>=20 && input.LA(1)<=21)||(input.LA(1)>=34 && input.LA(1)<=58) ) {
+            if ( (input.LA(1)>=20 && input.LA(1)<=22)||(input.LA(1)>=35 && input.LA(1)<=58) ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_attr1313);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_attr1317);    throw mse;
             }
 
 
@@ -2765,7 +2766,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct1427);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_funct1430);    throw mse;
             }
 
 
@@ -2797,7 +2798,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select1465);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_select1468);    throw mse;
             }
 
 
@@ -2829,7 +2830,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and1486);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_and1489);    throw mse;
             }
 
 
@@ -2861,7 +2862,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_order1499);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_order1502);    throw mse;
             }
 
 
@@ -2893,7 +2894,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_by1512);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_by1515);    throw mse;
             }
 
 
@@ -2925,7 +2926,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or1525);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_or1528);    throw mse;
             }
 
 
@@ -2962,7 +2963,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in1538);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_in1541);    throw mse;
             }
 
 
@@ -2996,7 +2997,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not1551);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_not1554);    throw mse;
             }
 
 
@@ -3033,7 +3034,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like1564);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_like1567);    throw mse;
             }
 
 
@@ -3060,14 +3061,14 @@ public class SqlParser extends Parser {
             // Sql.g:130:8: ( ( 'count' | 'COUNT' ) )
             // Sql.g:130:9: ( 'count' | 'COUNT' )
             {
-            if ( input.LA(1)==48||input.LA(1)==84 ) {
+            if ( input.LA(1)==49||input.LA(1)==84 ) {
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_count1577);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_count1580);    throw mse;
             }
 
 
@@ -3099,7 +3100,7 @@ public class SqlParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_sum1590);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_sum1593);    throw mse;
             }
 
 
@@ -3162,16 +3163,16 @@ public class SqlParser extends Parser {
         "\4\1\22\2\7\2\22\1\4\1\10\1\6\4\4\1\22\1\7\1\10\2\4\1\22\1\4";
     static final String DFA1_maxS =
         "\1\106\2\126\1\112\2\16\1\102\1\112\1\126\1\uffff\1\126\1\uffff"+
-        "\1\16\1\41\1\16\1\41\2\112\1\126\1\112\2\16\1\126\1\123\2\16\1\41"+
-        "\1\17\1\41\1\6\1\102\1\16\1\41\1\16\1\41\1\102\1\123\1\16\4\22\1"+
-        "\16\1\41\1\16\1\41\1\17\1\112\1\72\2\112\1\41\1\17\1\41\1\6\2\123"+
-        "\1\16\2\22\2\116\2\22\2\116\4\22\1\41\1\17\1\41\1\6\2\17\1\112\1"+
+        "\1\16\1\42\1\16\1\42\2\112\1\126\1\112\2\16\1\126\1\123\2\16\1\42"+
+        "\1\17\1\42\1\6\1\102\1\16\1\42\1\16\1\42\1\102\1\123\1\16\4\22\1"+
+        "\16\1\42\1\16\1\42\1\17\1\112\1\72\2\112\1\42\1\17\1\42\1\6\2\123"+
+        "\1\16\2\22\2\116\2\22\2\116\4\22\1\42\1\17\1\42\1\6\2\17\1\112\1"+
         "\72\1\22\2\17\1\22\1\116\2\126\2\uffff\1\116\1\22\1\116\3\22\1\17"+
         "\1\123\1\72\1\17\1\112\1\17\1\22\1\17\1\22\1\116\1\17\3\116\1\126"+
         "\1\123\2\16\5\116\5\22\2\17\1\112\3\17\1\22\2\17\1\22\1\116\1\102"+
-        "\1\123\1\16\4\22\1\16\1\41\1\16\1\41\1\22\1\116\1\22\1\116\1\22"+
+        "\1\123\1\16\4\22\1\16\1\42\1\16\1\42\1\22\1\116\1\22\1\116\1\22"+
         "\1\17\1\123\1\22\1\17\1\22\1\17\3\116\2\123\1\16\2\22\2\116\6\22"+
-        "\2\116\1\41\1\17\1\41\1\6\6\116\2\12\6\17\2\22\2\17\1\22\1\116\4"+
+        "\2\116\1\42\1\17\1\42\1\6\6\116\2\12\6\17\2\22\2\17\1\22\1\116\4"+
         "\22\1\116\1\17\1\123\1\72\2\22\1\116\1\7\6\22\1\17\2\116\1\22\1"+
         "\17\1\22\1\116\1\17\3\116\2\22\2\116\3\22\3\116\1\17\5\116\3\12"+
         "\2\22\2\116\3\22\5\17\1\22\3\17\1\22\2\17\1\22\1\116\1\22\1\116"+
@@ -3192,42 +3193,42 @@ public class SqlParser extends Parser {
         "\u0294\uffff}>";
     static final String[] DFA1_transitionS = {
             "\4\1",
-            "\1\2\16\uffff\17\3\16\uffff\1\4\43\uffff\1\4\2\5",
-            "\1\2\16\uffff\17\3\16\uffff\1\4\43\uffff\1\4\2\5",
+            "\1\2\16\uffff\20\3\16\uffff\1\4\42\uffff\1\4\2\5",
+            "\1\2\16\uffff\20\3\16\uffff\1\4\42\uffff\1\4\2\5",
             "\1\7\1\10\1\6\11\uffff\2\12\67\uffff\2\11",
             "\1\14\11\uffff\1\15",
             "\1\16\11\uffff\1\17",
-            "\2\21\14\uffff\31\21\10\20",
+            "\3\21\14\uffff\30\21\10\20",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
-            "\1\22\16\uffff\17\23\16\uffff\1\24\43\uffff\1\24\2\25",
+            "\1\22\16\uffff\20\23\16\uffff\1\24\42\uffff\1\24\2\25",
             "",
-            "\1\26\16\uffff\17\27\16\uffff\1\30\43\uffff\1\30\2\31",
+            "\1\26\16\uffff\20\27\16\uffff\1\30\42\uffff\1\30\2\31",
             "",
             "\1\14\11\uffff\1\15",
-            "\1\32\16\uffff\17\33",
+            "\1\32\16\uffff\20\33",
             "\1\16\11\uffff\1\17",
-            "\1\34\16\uffff\17\35",
+            "\1\34\16\uffff\20\35",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
-            "\1\22\16\uffff\17\23\16\uffff\1\24\43\uffff\1\24\2\25",
+            "\1\22\16\uffff\20\23\16\uffff\1\24\42\uffff\1\24\2\25",
             "\1\7\1\10\1\36\11\uffff\2\12\67\uffff\2\11",
             "\1\37\11\uffff\1\40",
             "\1\41\11\uffff\1\42",
-            "\1\26\16\uffff\17\27\16\uffff\1\30\43\uffff\1\30\2\31",
+            "\1\26\16\uffff\20\27\16\uffff\1\30\42\uffff\1\30\2\31",
             "\1\44\1\uffff\1\43\1\uffff\1\47\1\50\1\51\7\uffff\1\45\74\uffff"+
             "\1\45\2\uffff\2\46",
             "\1\52\11\uffff\1\53",
             "\1\54\11\uffff\1\55",
-            "\1\32\16\uffff\17\33",
+            "\1\32\16\uffff\20\33",
             "\1\56\12\uffff\1\57",
-            "\1\34\16\uffff\17\35",
+            "\1\34\16\uffff\20\35",
             "\1\60",
-            "\2\61\14\uffff\31\61\10\62",
+            "\3\61\14\uffff\30\61\10\62",
             "\1\37\11\uffff\1\40",
-            "\1\63\16\uffff\17\64",
+            "\1\63\16\uffff\20\64",
             "\1\41\11\uffff\1\42",
-            "\1\65\16\uffff\17\66",
-            "\2\70\14\uffff\31\70\10\67",
+            "\1\65\16\uffff\20\66",
+            "\3\70\14\uffff\30\70\10\67",
             "\1\44\3\uffff\1\47\1\50\1\51\7\uffff\1\45\74\uffff\1\45\2\uffff"+
             "\2\46",
             "\1\71\11\uffff\1\72",
@@ -3236,17 +3237,17 @@ public class SqlParser extends Parser {
             "\1\77\2\uffff\1\100\1\103\1\uffff\1\104\7\uffff\1\101",
             "\1\77\2\uffff\1\100\1\105\11\uffff\1\101",
             "\1\52\11\uffff\1\53",
-            "\1\106\16\uffff\17\107",
+            "\1\106\16\uffff\20\107",
             "\1\54\11\uffff\1\55",
-            "\1\110\16\uffff\17\111",
+            "\1\110\16\uffff\20\111",
             "\1\56\12\uffff\1\57",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
-            "\2\112\14\uffff\31\112",
+            "\3\112\14\uffff\30\112",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
-            "\1\63\16\uffff\17\64",
+            "\1\63\16\uffff\20\64",
             "\1\113\12\uffff\1\114",
-            "\1\65\16\uffff\17\66",
+            "\1\65\16\uffff\20\66",
             "\1\115",
             "\1\44\3\uffff\1\47\1\50\1\51\7\uffff\1\45\74\uffff\1\45\2\uffff"+
             "\2\46",
@@ -3267,21 +3268,21 @@ public class SqlParser extends Parser {
             "\1\77\2\uffff\1\100\12\uffff\1\101",
             "\1\77\2\uffff\1\100\12\uffff\1\101",
             "\1\77\2\uffff\1\100\12\uffff\1\101",
-            "\1\106\16\uffff\17\107",
+            "\1\106\16\uffff\20\107",
             "\1\135\12\uffff\1\136",
-            "\1\110\16\uffff\17\111",
+            "\1\110\16\uffff\20\111",
             "\1\137",
             "\1\140\12\uffff\1\141",
             "\1\113\12\uffff\1\114",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
-            "\2\142\14\uffff\31\142",
+            "\3\142\14\uffff\30\142",
             "\1\116\2\uffff\1\117\12\uffff\1\120",
             "\1\144\1\145\1\143\10\uffff\1\146",
             "\1\147\1\145\11\uffff\1\146",
             "\1\150\12\uffff\1\151",
             "\1\127\2\uffff\1\152\77\uffff\2\123\2\125\2\uffff\2\124",
-            "\1\153\16\uffff\17\154\16\uffff\1\155\43\uffff\1\155\2\156",
-            "\1\153\16\uffff\17\154\16\uffff\1\155\43\uffff\1\155\2\156",
+            "\1\153\16\uffff\20\154\16\uffff\1\155\42\uffff\1\155\2\156",
+            "\1\153\16\uffff\20\154\16\uffff\1\155\42\uffff\1\155\2\156",
             "",
             "",
             "\1\127\102\uffff\2\123\2\125\2\uffff\2\124",
@@ -3293,7 +3294,7 @@ public class SqlParser extends Parser {
             "\1\135\12\uffff\1\136",
             "\1\44\3\uffff\1\47\1\50\1\51\7\uffff\1\45\74\uffff\1\45\2\uffff"+
             "\2\46",
-            "\2\171\14\uffff\31\171",
+            "\3\171\14\uffff\30\171",
             "\1\140\12\uffff\1\141",
             "\1\7\1\10\12\uffff\2\12\67\uffff\2\11",
             "\1\172\12\uffff\1\173",
@@ -3305,7 +3306,7 @@ public class SqlParser extends Parser {
             "\1\127\1\uffff\1\u0082\100\uffff\2\123\2\125\2\uffff\2\124",
             "\1\127\102\uffff\2\123\2\125\2\uffff\2\124",
             "\1\u0083\102\uffff\2\123\2\125\2\uffff\2\124",
-            "\1\153\16\uffff\17\154\16\uffff\1\155\43\uffff\1\155\2\156",
+            "\1\153\16\uffff\20\154\16\uffff\1\155\42\uffff\1\155\2\156",
             "\1\u0085\1\uffff\1\u0084\1\uffff\1\u0087\1\u0088\1\u0089\7\uffff"+
             "\1\u0086\74\uffff\1\u0086\2\uffff\2\u008a",
             "\1\u008b\11\uffff\1\u008c",
@@ -3335,7 +3336,7 @@ public class SqlParser extends Parser {
             "\1\147\1\145\11\uffff\1\146",
             "\1\u009a\12\uffff\1\u009b",
             "\1\127\2\uffff\1\u009c\77\uffff\2\123\2\125\2\uffff\2\124",
-            "\2\u009d\14\uffff\31\u009d\10\u009e",
+            "\3\u009d\14\uffff\30\u009d\10\u009e",
             "\1\u0085\3\uffff\1\u0087\1\u0088\1\u0089\7\uffff\1\u0086\74"+
             "\uffff\1\u0086\2\uffff\2\u008a",
             "\1\u009f\11\uffff\1\u00a0",
@@ -3344,9 +3345,9 @@ public class SqlParser extends Parser {
             "\1\u00a1\2\uffff\1\u00a2\1\u00a8\11\uffff\1\u00a3",
             "\1\u00a9\2\uffff\1\u00aa\12\uffff\1\u00ab",
             "\1\u008b\11\uffff\1\u008c",
-            "\1\u00ac\16\uffff\17\u00ad",
+            "\1\u00ac\16\uffff\20\u00ad",
             "\1\u008d\11\uffff\1\u008e",
-            "\1\u00ae\16\uffff\17\u00af",
+            "\1\u00ae\16\uffff\20\u00af",
             "\1\u00b0\12\uffff\1\u00b1",
             "\1\127\2\uffff\1\u00b2\77\uffff\2\123\2\125\2\uffff\2\124",
             "\1\u00b3\12\uffff\1\u00b4",
@@ -3381,9 +3382,9 @@ public class SqlParser extends Parser {
             "\1\u00a9\2\uffff\1\u00aa\12\uffff\1\u00ab",
             "\1\u00c8\1\uffff\1\u00c7\100\uffff\2\123\2\125\2\uffff\2\124",
             "\1\127\102\uffff\2\123\2\125\2\uffff\2\124",
-            "\1\u00ac\16\uffff\17\u00ad",
+            "\1\u00ac\16\uffff\20\u00ad",
             "\1\u00c9\12\uffff\1\u00ca",
-            "\1\u00ae\16\uffff\17\u00af",
+            "\1\u00ae\16\uffff\20\u00af",
             "\1\u00cb",
             "\1\127\1\uffff\1\u00cc\1\uffff\1\132\1\133\1\134\74\uffff\2"+
             "\123\2\125\2\uffff\2\124",
@@ -3417,7 +3418,7 @@ public class SqlParser extends Parser {
             "\1\u00c9\12\uffff\1\u00ca",
             "\1\u0085\3\uffff\1\u0087\1\u0088\1\u0089\7\uffff\1\u0086\74"+
             "\uffff\1\u0086\2\uffff\2\u008a",
-            "\2\u00eb\14\uffff\31\u00eb",
+            "\3\u00eb\14\uffff\30\u00eb",
             "\1\u00ec\12\uffff\1\u00ed",
             "\1\u00ee\12\uffff\1\u00ef",
             "\1\127\2\uffff\1\u00f0\77\uffff\2\123\2\125\2\uffff\2\124",
@@ -4147,14 +4148,14 @@ public class SqlParser extends Parser {
     static final String DFA7_minS =
         "\1\23\4\4\2\uffff\1\24\1\uffff\11\4\1\6\2\4\1\24\3\4";
     static final String DFA7_maxS =
-        "\1\126\1\123\2\16\1\123\2\uffff\1\102\1\uffff\1\16\1\41\1\16\1\41"+
-        "\2\123\1\41\1\17\1\41\1\6\1\17\1\123\1\72\2\17\1\123";
+        "\1\126\1\123\2\16\1\123\2\uffff\1\102\1\uffff\1\16\1\42\1\16\1\42"+
+        "\2\123\1\42\1\17\1\42\1\6\1\17\1\123\1\72\2\17\1\123";
     static final String DFA7_acceptS =
         "\5\uffff\1\1\1\2\1\uffff\1\3\20\uffff";
     static final String DFA7_specialS =
         "\31\uffff}>";
     static final String[] DFA7_transitionS = {
-            "\17\1\16\uffff\1\2\43\uffff\1\2\2\3",
+            "\20\1\16\uffff\1\2\42\uffff\1\2\2\3",
             "\1\4\1\uffff\1\7\1\uffff\3\5\7\uffff\1\6\74\uffff\1\6\2\uffff"+
             "\2\10",
             "\1\11\11\uffff\1\12",
@@ -4162,21 +4163,21 @@ public class SqlParser extends Parser {
             "\1\4\3\uffff\3\5\7\uffff\1\6\74\uffff\1\6\2\uffff\2\10",
             "",
             "",
-            "\2\15\14\uffff\31\15\10\16",
+            "\3\15\14\uffff\30\15\10\16",
             "",
             "\1\11\11\uffff\1\12",
-            "\1\17\16\uffff\17\20",
+            "\1\17\16\uffff\20\20",
             "\1\13\11\uffff\1\14",
-            "\1\21\16\uffff\17\22",
+            "\1\21\16\uffff\20\22",
             "\1\4\3\uffff\3\5\7\uffff\1\6\74\uffff\1\6\2\uffff\2\10",
             "\1\4\3\uffff\3\5\7\uffff\1\6\74\uffff\1\6\2\uffff\2\10",
-            "\1\17\16\uffff\17\20",
+            "\1\17\16\uffff\20\20",
             "\1\23\12\uffff\1\24",
-            "\1\21\16\uffff\17\22",
+            "\1\21\16\uffff\20\22",
             "\1\25",
             "\1\23\12\uffff\1\24",
             "\1\4\3\uffff\3\5\7\uffff\1\6\74\uffff\1\6\2\uffff\2\10",
-            "\2\26\14\uffff\31\26",
+            "\3\26\14\uffff\30\26",
             "\1\27\12\uffff\1\30",
             "\1\27\12\uffff\1\30",
             "\1\4\3\uffff\3\5\7\uffff\1\6\74\uffff\1\6\2\uffff\2\10"
@@ -4269,80 +4270,80 @@ public class SqlParser extends Parser {
     }
  
 
-    public static final BitSet FOLLOW_select_in_stmt27 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt29 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_select_in_stmt27 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt29 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_selectList_in_stmt31 = new BitSet(new long[]{0x0000000000030010L});
     public static final BitSet FOLLOW_spaces_in_stmt33 = new BitSet(new long[]{0x0000000000030000L});
-    public static final BitSet FOLLOW_where_in_stmt35 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt37 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_where_in_stmt35 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt37 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_constraintList_in_stmt39 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_spaces_in_stmt41 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt47 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt49 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_select_in_stmt47 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt49 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_selectList_in_stmt51 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_spaces_in_stmt53 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt58 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt60 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_select_in_stmt58 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt60 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_selectList_in_stmt62 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000600L});
     public static final BitSet FOLLOW_spaces_in_stmt64 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000600L});
     public static final BitSet FOLLOW_order_in_stmt66 = new BitSet(new long[]{0x0000000000000010L,0x0000000000001800L});
     public static final BitSet FOLLOW_spaces_in_stmt68 = new BitSet(new long[]{0x0000000000000000L,0x0000000000001800L});
-    public static final BitSet FOLLOW_by_in_stmt70 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt72 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_by_in_stmt70 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt72 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_orderList_in_stmt74 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_spaces_in_stmt76 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_stmt81 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt83 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_select_in_stmt81 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt83 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_selectList_in_stmt85 = new BitSet(new long[]{0x0000000000030010L});
     public static final BitSet FOLLOW_spaces_in_stmt87 = new BitSet(new long[]{0x0000000000030000L});
-    public static final BitSet FOLLOW_where_in_stmt89 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt91 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_where_in_stmt89 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt91 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_constraintList_in_stmt93 = new BitSet(new long[]{0x0000000000000010L,0x0000000000000600L});
     public static final BitSet FOLLOW_spaces_in_stmt95 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000600L});
     public static final BitSet FOLLOW_order_in_stmt97 = new BitSet(new long[]{0x0000000000000010L,0x0000000000001800L});
     public static final BitSet FOLLOW_spaces_in_stmt99 = new BitSet(new long[]{0x0000000000000000L,0x0000000000001800L});
-    public static final BitSet FOLLOW_by_in_stmt101 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_stmt103 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_by_in_stmt101 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_stmt103 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_orderList_in_stmt105 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_spaces_in_stmt107 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SPACE_in_spaces117 = new BitSet(new long[]{0x0000000000000012L});
     public static final BitSet FOLLOW_keyword_in_orderList130 = new BitSet(new long[]{0x0000000000000032L});
     public static final BitSet FOLLOW_spaces_in_orderList143 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COMMA_in_orderList147 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_orderList151 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_COMMA_in_orderList147 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_orderList151 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_keyword_in_orderList158 = new BitSet(new long[]{0x0000000000000032L});
     public static final BitSet FOLLOW_keyword_in_selectList184 = new BitSet(new long[]{0x0000000000000032L});
     public static final BitSet FOLLOW_spaces_in_selectList197 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COMMA_in_selectList201 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_selectList205 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_COMMA_in_selectList201 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_selectList205 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_keyword_in_selectList212 = new BitSet(new long[]{0x0000000000000032L});
     public static final BitSet FOLLOW_entity_in_keyword237 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_entity_in_keyword243 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_keyword245 = new BitSet(new long[]{0x07FFFFFC00300000L});
+    public static final BitSet FOLLOW_DOT_in_keyword245 = new BitSet(new long[]{0x07FFFFF800700000L});
     public static final BitSet FOLLOW_attr_in_keyword247 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_entity_in_keyword252 = new BitSet(new long[]{0x0000000000000040L});
     public static final BitSet FOLLOW_DOT_in_keyword254 = new BitSet(new long[]{0xF800000000000000L,0x0000000000000007L});
     public static final BitSet FOLLOW_funct_in_keyword256 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_count_in_keyword261 = new BitSet(new long[]{0x0000000000004010L});
     public static final BitSet FOLLOW_spaces_in_keyword263 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_keyword265 = new BitSet(new long[]{0x00000003FFF80010L});
-    public static final BitSet FOLLOW_spaces_in_keyword267 = new BitSet(new long[]{0x00000003FFF80000L});
+    public static final BitSet FOLLOW_14_in_keyword265 = new BitSet(new long[]{0x00000007FFF80010L});
+    public static final BitSet FOLLOW_spaces_in_keyword267 = new BitSet(new long[]{0x00000007FFF80000L});
     public static final BitSet FOLLOW_entity_in_keyword269 = new BitSet(new long[]{0x0000000000008010L});
     public static final BitSet FOLLOW_spaces_in_keyword271 = new BitSet(new long[]{0x0000000000008000L});
     public static final BitSet FOLLOW_15_in_keyword273 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_sum_in_keyword278 = new BitSet(new long[]{0x0000000000004010L});
     public static final BitSet FOLLOW_spaces_in_keyword280 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_keyword282 = new BitSet(new long[]{0x00000003FFF80010L});
-    public static final BitSet FOLLOW_spaces_in_keyword284 = new BitSet(new long[]{0x00000003FFF80000L});
+    public static final BitSet FOLLOW_14_in_keyword282 = new BitSet(new long[]{0x00000007FFF80010L});
+    public static final BitSet FOLLOW_spaces_in_keyword284 = new BitSet(new long[]{0x00000007FFF80000L});
     public static final BitSet FOLLOW_entity_in_keyword286 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_keyword288 = new BitSet(new long[]{0x07FFFFFC00300000L});
+    public static final BitSet FOLLOW_DOT_in_keyword288 = new BitSet(new long[]{0x07FFFFF800700000L});
     public static final BitSet FOLLOW_attr_in_keyword290 = new BitSet(new long[]{0x0000000000008010L});
     public static final BitSet FOLLOW_spaces_in_keyword292 = new BitSet(new long[]{0x0000000000008000L});
     public static final BitSet FOLLOW_15_in_keyword294 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_constraint_in_constraintList303 = new BitSet(new long[]{0x0000000000000012L,0x0000000000006180L});
     public static final BitSet FOLLOW_spaces_in_constraintList307 = new BitSet(new long[]{0x0000000000000000L,0x0000000000006180L});
-    public static final BitSet FOLLOW_logicalOp_in_constraintList314 = new BitSet(new long[]{0x00010003FFF80010L,0x0000000000700000L});
-    public static final BitSet FOLLOW_spaces_in_constraintList322 = new BitSet(new long[]{0x00010003FFF80000L,0x0000000000700000L});
+    public static final BitSet FOLLOW_logicalOp_in_constraintList314 = new BitSet(new long[]{0x00020007FFF80010L,0x0000000000700000L});
+    public static final BitSet FOLLOW_spaces_in_constraintList322 = new BitSet(new long[]{0x00020007FFF80000L,0x0000000000700000L});
     public static final BitSet FOLLOW_constraint_in_constraintList324 = new BitSet(new long[]{0x0000000000000012L,0x0000000000006180L});
     public static final BitSet FOLLOW_keyword_in_constraint337 = new BitSet(new long[]{0x0000000000000710L});
     public static final BitSet FOLLOW_spaces_in_constraint346 = new BitSet(new long[]{0x0000000000000700L});
@@ -4622,17 +4623,17 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_and_in_logicalOp1237 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_or_in_logicalOp1239 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_entity1248 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_attr1313 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_funct1427 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_select1465 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_and1486 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_order1499 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_by1512 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_or1525 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_in1538 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_not1551 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_like1564 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_count1577 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_sum1590 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_attr1317 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_funct1430 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_select1468 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_and1489 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_order1502 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_by1515 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_or1528 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_in1541 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_not1554 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_like1567 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_count1580 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_sum1593 = new BitSet(new long[]{0x0000000000000002L});
 
 }

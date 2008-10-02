@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
 
+import dbs.api.DBSApiDQLogic;
 import dbs.search.parser.Constraint;
 import dbs.search.graph.GraphUtil;
 import dbs.sql.DBSSql;
 import dbs.util.Validate;
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.Edge;
-import dbs.api.DBSApiDQLogic;
 
 public class QueryBuilder {
 	int MAX_ITERATION = 999;
@@ -241,7 +241,7 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 
-					if(Util.isSame(token, "release")) {
+					if(Util.isSame(token, "release") || Util.isSame(token, "tier")) {
 						checkMax(iter);
 						String realName = u.getMappedRealName(token);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
@@ -463,6 +463,9 @@ public class QueryBuilder {
 				} else if(Util.isSame(key, "release")) {
 					if(isInList(kws, "procds") || isInList(kws, "dataset")) allKws = addUniqueInList(allKws, "ProcAlgo");
 					else addUniqueInList(allKws, "FileAlgo");
+				} else if(Util.isSame(key, "tier")) {
+					if(isInList(kws, "procds") || isInList(kws, "dataset")) allKws = addUniqueInList(allKws, "ProcDSTier");
+					else addUniqueInList(allKws, "FileTier");
 				} else if(Util.isSame(key, "dq")) {
 					allKws = addUniqueInList(allKws, km.getMappedValue(key, false));
 				} else if(Util.isSame(key, "pset")) {
@@ -561,7 +564,6 @@ public class QueryBuilder {
 					//queryWhere += "\tStorageElement.SEName" + handleSite(val, op);	
 
 				} else if(Util.isSame(key, "release")) {
-					//FIXME add FILEALGO and ProcALgo first
 					boolean useAnd = false;
 					if(isInList(kws, "procds") || isInList(kws, "dataset")) {
 						queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
@@ -570,6 +572,16 @@ public class QueryBuilder {
 						if(useAnd)  queryWhere += "\tAND\n";
 						queryWhere += "\tFileAlgo.Algorithm " + handleRelease(op, val);
 					}
+				} else if(Util.isSame(key, "tier")) {
+					boolean useAnd = false;
+					if(isInList(kws, "procds") || isInList(kws, "dataset")) {
+						queryWhere += "\tProcDSTier.DataTier " + handleTier(op, val);
+						useAnd = true;
+					} else {
+						if(useAnd)  queryWhere += "\tAND\n";
+						queryWhere += "\tFileTier.DataTier " + handleTier(op, val);
+					}
+
 				} else if(Util.isSame(key, "file.release")) {
 					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(op, val);
 				} else if(Util.isSame(key, "file.tier")) {
@@ -577,9 +589,9 @@ public class QueryBuilder {
 				} else if(Util.isSame(key, "lumi.evnum")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When evnum is provided operator should be = . Invalid operator given " + op);
 					queryWhere += handleEvNum(val);
-				} else if(Util.isSame(key, "procds.release")) {
+				} else if(Util.isSame(key, "procds.release") || Util.isSame(key, "dataset.release")) {
 					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
-				} else if(Util.isSame(key, "procds.tier")) {
+				} else if(Util.isSame(key, "procds.tier") || Util.isSame(key, "dataset.tier") ) {
 					queryWhere += "\tProcDSTier.DataTier" + handleTier(op, val);
 				} else if(key.endsWith("createdate") ||  key.endsWith("moddate")) {
 					queryWhere += "\t" + km.getMappedValue(key, true) + handleDate(op, val);
@@ -991,9 +1003,8 @@ public class QueryBuilder {
 	private String handleDQ(String dqVal, List<?> cs) throws Exception {
 		boolean found = false;
 		int iter = 0;
-		ArrayList tmpBindValues = new ArrayList<String>();
-		//List<String> tmpBindValues = new ArrayList<String>();
-		StringBuffer dsQueryForDQ = new StringBuffer("SELECT DISTINCT BLOCK.PATH AS PATH FROM \n");
+		ArrayList<String> tmpBindValues = new ArrayList<String>();
+		StringBuffer dsQueryForDQ = new StringBuffer("SELECT BLOCK.PATH FROM \n");
 		dsQueryForDQ.append(owner());
 		dsQueryForDQ.append("BLOCK WHERE \n");
 		Object lastObj = new String("");
@@ -1027,7 +1038,6 @@ public class QueryBuilder {
 		//Pass in dsQueryForDQ.toString() and tmpBindValues to DBSSql.listRunsForRunLumiDQ
 		//ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, dqVal);
 		ArrayList sqlObj = (new DBSApiDQLogic(null)).listRunsForRunLumiDQ(null, dsQueryForDQ.toString(), tmpBindValues, dqVal);
-
 		String dqQuery = "";
 		if(sqlObj.size() == 2) {
 			dqQuery = (String)sqlObj.get(0);
