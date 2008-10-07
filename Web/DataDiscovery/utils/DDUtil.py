@@ -921,6 +921,7 @@ def getCMSNames():
 def parseDBSQuery(i):
     sql=""
     bDict={}
+    val=re.compile("[0-9]")
     for k in i.getchildren():
         name=""
         rval=""
@@ -928,7 +929,10 @@ def parseDBSQuery(i):
            sql=k.text
         if k.tag=="bindparams":
            for j in k:
-               bDict[j.tag]=j.text
+               if val.match(j.text) and j.text.find(".")==-1:
+                  bDict[j.tag]=int(j.text)
+               else:
+                  bDict[j.tag]=j.text
     return sql,bDict
 def getDBSQuery(data,tag="python_query"):
     elem  = ET.fromstring(data)
