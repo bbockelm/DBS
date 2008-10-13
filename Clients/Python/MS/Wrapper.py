@@ -1,16 +1,17 @@
 from MSSessionEJBBeanService_client import MSSessionEJBBeanServiceLocator
 from ZSI.schema import GED
 
-MSSessionEJBWS_addRequest = GED("http://session.ejb.gov.fnal/", "addRequest").pyclass
-MSSessionEJBWS_addRequestResponse = GED("http://session.ejb.gov.fnal/", "addRequestResponse").pyclass
-MSSessionEJBWS_deleteRequest = GED("http://session.ejb.gov.fnal/", "deleteRequest").pyclass
-MSSessionEJBWS_deleteRequestResponse = GED("http://session.ejb.gov.fnal/", "deleteRequestResponse").pyclass
-MSSessionEJBWS_getRequestById = GED("http://session.ejb.gov.fnal/", "getRequestById").pyclass
-MSSessionEJBWS_getRequestByIdResponse = GED("http://session.ejb.gov.fnal/", "getRequestByIdResponse").pyclass
-MSSessionEJBWS_getRequestByStatus = GED("http://session.ejb.gov.fnal/", "getRequestByStatus").pyclass
-MSSessionEJBWS_getRequestByStatusResponse = GED("http://session.ejb.gov.fnal/", "getRequestByStatusResponse").pyclass
-MSSessionEJBWS_getRequestByUser = GED("http://session.ejb.gov.fnal/", "getRequestByUser").pyclass
-MSSessionEJBWS_getRequestByUserResponse = GED("http://session.ejb.gov.fnal/", "getRequestByUserResponse").pyclass
+MSSessionEJBWS_addRequest = GED("http://session.dm.ms.fnal.gov/", "addRequest").pyclass
+MSSessionEJBWS_addRequestResponse = GED("http://session.dm.ms.fnal.gov/", "addRequestResponse").pyclass
+MSSessionEJBWS_deleteRequest = GED("http://session.dm.ms.fnal.gov/", "deleteRequest").pyclass
+MSSessionEJBWS_deleteRequestResponse = GED("http://session.dm.ms.fnal.gov/", "deleteRequestResponse").pyclass
+MSSessionEJBWS_getRequestById = GED("http://session.dm.ms.fnal.gov/", "getRequestById").pyclass
+MSSessionEJBWS_getRequestByIdResponse = GED("http://session.dm.ms.fnal.gov/", "getRequestByIdResponse").pyclass
+MSSessionEJBWS_getRequestByStatus = GED("http://session.dm.ms.fnal.gov/", "getRequestByStatus").pyclass
+MSSessionEJBWS_getRequestByStatusResponse = GED("http://session.dm.ms.fnal.gov/", "getRequestByStatusResponse").pyclass
+MSSessionEJBWS_getRequestByUser = GED("http://session.dm.ms.fnal.gov/", "getRequestByUser").pyclass
+MSSessionEJBWS_getRequestByUserResponse = GED("http://session.dm.ms.fnal.gov/", "getRequestByUserResponse").pyclass
+
 class API:
 	def __init__(self, url=None):
 		self.stub = MSSessionEJBBeanServiceLocator().getMSSessionEJBBeanPort(url=url)

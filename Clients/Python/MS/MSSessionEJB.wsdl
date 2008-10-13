@@ -1,6 +1,6 @@
-<definitions name='MSSessionEJBBeanService' targetNamespace='http://session.ejb.gov.fnal/' xmlns='http://schemas.xmlsoap.org/wsdl/' xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' xmlns:tns='http://session.ejb.gov.fnal/' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
+<definitions name='MSSessionEJBBeanService' targetNamespace='http://session.dm.ms.fnal.gov/' xmlns='http://schemas.xmlsoap.org/wsdl/' xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' xmlns:tns='http://session.dm.ms.fnal.gov/' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
  <types>
-  <xs:schema targetNamespace='http://session.ejb.gov.fnal/' version='1.0' xmlns:tns='http://session.ejb.gov.fnal/' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+  <xs:schema targetNamespace='http://session.dm.ms.fnal.gov/' version='1.0' xmlns:tns='http://session.dm.ms.fnal.gov/' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
    <xs:element name='Exception' type='tns:Exception'/>
    <xs:element name='addRequest' type='tns:addRequest'/>
    <xs:element name='addRequestResponse' type='tns:addRequestResponse'/>
@@ -12,20 +12,14 @@
    <xs:element name='getRequestByStatusResponse' type='tns:getRequestByStatusResponse'/>
    <xs:element name='getRequestByUser' type='tns:getRequestByUser'/>
    <xs:element name='getRequestByUserResponse' type='tns:getRequestByUserResponse'/>
-   <xs:complexType name='addRequest'>
+   <xs:complexType name='getRequestById'>
     <xs:sequence>
-     <xs:element minOccurs='0' name='srcUrl' type='xs:string'/>
-     <xs:element minOccurs='0' name='dstUrl' type='xs:string'/>
-     <xs:element minOccurs='0' name='path' type='xs:string'/>
-     <xs:element minOccurs='0' name='dn' type='xs:string'/>
-     <xs:element minOccurs='0' name='withParents' type='xs:string'/>
-     <xs:element minOccurs='0' name='withForce' type='xs:string'/>
-     <xs:element minOccurs='0' name='notify' type='xs:string'/>
+     <xs:element minOccurs='0' name='id' type='xs:long'/>
     </xs:sequence>
    </xs:complexType>
-   <xs:complexType name='addRequestResponse'>
+   <xs:complexType name='getRequestByIdResponse'>
     <xs:sequence>
-     <xs:element minOccurs='0' name='return' type='tns:request'/>
+     <xs:element maxOccurs='unbounded' minOccurs='0' name='return' type='tns:request'/>
     </xs:sequence>
    </xs:complexType>
    <xs:complexType name='request'>
@@ -60,15 +54,15 @@
      <xs:element minOccurs='0' name='message' type='xs:string'/>
     </xs:sequence>
    </xs:complexType>
-   <xs:complexType name='deleteRequest'>
+   <xs:complexType name='getRequestByUser'>
     <xs:sequence>
-     <xs:element minOccurs='0' name='srcUrl' type='xs:string'/>
-     <xs:element minOccurs='0' name='dstUrl' type='xs:string'/>
-     <xs:element minOccurs='0' name='path' type='xs:string'/>
+     <xs:element minOccurs='0' name='dn' type='xs:string'/>
     </xs:sequence>
    </xs:complexType>
-   <xs:complexType name='deleteRequestResponse'>
-    <xs:sequence/>
+   <xs:complexType name='getRequestByUserResponse'>
+    <xs:sequence>
+     <xs:element maxOccurs='unbounded' minOccurs='0' name='return' type='tns:request'/>
+    </xs:sequence>
    </xs:complexType>
    <xs:complexType name='getRequestByStatus'>
     <xs:sequence>
@@ -80,48 +74,45 @@
      <xs:element maxOccurs='unbounded' minOccurs='0' name='return' type='tns:request'/>
     </xs:sequence>
    </xs:complexType>
-   <xs:complexType name='getRequestByUser'>
+   <xs:complexType name='deleteRequest'>
     <xs:sequence>
+     <xs:element minOccurs='0' name='srcUrl' type='xs:string'/>
+     <xs:element minOccurs='0' name='dstUrl' type='xs:string'/>
+     <xs:element minOccurs='0' name='path' type='xs:string'/>
+    </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name='deleteRequestResponse'>
+    <xs:sequence/>
+   </xs:complexType>
+   <xs:complexType name='addRequest'>
+    <xs:sequence>
+     <xs:element minOccurs='0' name='srcUrl' type='xs:string'/>
+     <xs:element minOccurs='0' name='dstUrl' type='xs:string'/>
+     <xs:element minOccurs='0' name='path' type='xs:string'/>
      <xs:element minOccurs='0' name='dn' type='xs:string'/>
+     <xs:element minOccurs='0' name='withParents' type='xs:string'/>
+     <xs:element minOccurs='0' name='withForce' type='xs:string'/>
+     <xs:element minOccurs='0' name='notify' type='xs:string'/>
     </xs:sequence>
    </xs:complexType>
-   <xs:complexType name='getRequestByUserResponse'>
+   <xs:complexType name='addRequestResponse'>
     <xs:sequence>
-     <xs:element maxOccurs='unbounded' minOccurs='0' name='return' type='tns:request'/>
-    </xs:sequence>
-   </xs:complexType>
-   <xs:complexType name='getRequestById'>
-    <xs:sequence>
-     <xs:element minOccurs='0' name='id' type='xs:long'/>
-    </xs:sequence>
-   </xs:complexType>
-   <xs:complexType name='getRequestByIdResponse'>
-    <xs:sequence>
-     <xs:element maxOccurs='unbounded' minOccurs='0' name='return' type='tns:request'/>
+     <xs:element minOccurs='0' name='return' type='tns:request'/>
     </xs:sequence>
    </xs:complexType>
   </xs:schema>
  </types>
- <message name='MSSessionEJBWS_getRequestByUser'>
-  <part element='tns:getRequestByUser' name='getRequestByUser'></part>
- </message>
- <message name='MSSessionEJBWS_getRequestById'>
-  <part element='tns:getRequestById' name='getRequestById'></part>
- </message>
  <message name='MSSessionEJBWS_getRequestByStatus'>
   <part element='tns:getRequestByStatus' name='getRequestByStatus'></part>
  </message>
  <message name='MSSessionEJBWS_addRequestResponse'>
   <part element='tns:addRequestResponse' name='addRequestResponse'></part>
  </message>
- <message name='MSSessionEJBWS_getRequestByStatusResponse'>
-  <part element='tns:getRequestByStatusResponse' name='getRequestByStatusResponse'></part>
+ <message name='MSSessionEJBWS_getRequestByUser'>
+  <part element='tns:getRequestByUser' name='getRequestByUser'></part>
  </message>
- <message name='MSSessionEJBWS_getRequestByIdResponse'>
-  <part element='tns:getRequestByIdResponse' name='getRequestByIdResponse'></part>
- </message>
- <message name='MSSessionEJBWS_deleteRequest'>
-  <part element='tns:deleteRequest' name='deleteRequest'></part>
+ <message name='MSSessionEJBWS_getRequestById'>
+  <part element='tns:getRequestById' name='getRequestById'></part>
  </message>
  <message name='Exception'>
   <part element='tns:Exception' name='Exception'></part>
@@ -134,6 +125,15 @@
  </message>
  <message name='MSSessionEJBWS_getRequestByUserResponse'>
   <part element='tns:getRequestByUserResponse' name='getRequestByUserResponse'></part>
+ </message>
+ <message name='MSSessionEJBWS_getRequestByStatusResponse'>
+  <part element='tns:getRequestByStatusResponse' name='getRequestByStatusResponse'></part>
+ </message>
+ <message name='MSSessionEJBWS_getRequestByIdResponse'>
+  <part element='tns:getRequestByIdResponse' name='getRequestByIdResponse'></part>
+ </message>
+ <message name='MSSessionEJBWS_deleteRequest'>
+  <part element='tns:deleteRequest' name='deleteRequest'></part>
  </message>
  <portType name='MSSessionEJBWS'>
   <operation name='addRequest' parameterOrder='addRequest'>
@@ -227,7 +227,7 @@
  </binding>
  <service name='MSSessionEJBBeanService'>
   <port binding='tns:MSSessionEJBWSBinding' name='MSSessionEJBBeanPort'>
-   <soap:address location='http://plasma.dhcp.fnal.gov:8080/ms-msejb/MSSessionEJB'/>
+   <soap:address location='http://venom.dhcp.fnal.gov:8080/ms-msejb/MSSessionEJB'/>
   </port>
  </service>
 </definitions>
