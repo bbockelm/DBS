@@ -1,6 +1,6 @@
 /**
- $Revision: 1.60 $"
- $Id: DBSApiBlockLogic.java,v 1.60 2008/09/16 17:30:25 afaq Exp $"
+ $Revision: 1.61 $"
+ $Id: DBSApiBlockLogic.java,v 1.61 2008/09/16 21:12:32 afaq Exp $"
  *
  */
 
@@ -252,7 +252,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		//Anzar Afaq - 09/16/2008
 		//SEs will only be added if its not a GLOBAL instance
 		//SE info in DBS Global is not maintained anymore (done in Phedex)
-		if (!this.data.instanceName.equals("GLOBAL")) {
+		//AA-13102008 if (!this.data.instanceName.equals("GLOBAL")) {
 
 			//Storage Element will be added to an existing block
 			String blockID = "";
@@ -264,10 +264,10 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				//System.out.println("storage_element_name " + seName);
 				insertStorageElement(conn, out, blockID, seName , cbUserID, lmbUserID, creationDate);
 			}
-		} else {
-			writeWarning(out, "No SE in GLOBAL instance", "11000", 
-						"SE info in DBS Global is not maintained anymore (done in Phedex)");
-		}
+		//AA-13102008 } else {
+		//AA-13102008 	writeWarning(out, "No SE in GLOBAL instance", "11000", 
+		//AA-13102008 				"SE info in DBS Global is not maintained anymore (done in Phedex)");
+		//AA-13102008 }
                         
 		out.write("<block block_name='" + name + "'/>");
 	}
@@ -299,16 +299,16 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 //Anzar Afaq - 09/16/2008
                 //SEs will only be added if its not a GLOBAL instance
                 //SE info in DBS Global is not maintained anymore (done in Phedex)
-                if (this.data.instanceName.equals("GLOBAL")) {
-			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
-		} else {
+                //AA-13102008 if (this.data.instanceName.equals("GLOBAL")) {
+		//AA-13102008 	throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+		//AA-13102008 } else {
 
 			insertNameInfo(conn, out, "StorageElement", "SEName", seName , cbUserID, lmbUserID, creationDate);
 			insertMap(conn, out, "SEBlock", "SEID", "BlockID", 
 					getID(conn, "StorageElement", "SEName", seName , true),
 					blockID, 
 					cbUserID, lmbUserID, creationDate);
-                }
+                //AA-13102008 }
 
 	}
 
@@ -328,9 +328,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 //Anzar Afaq - 09/16/2008
                 //SEs will only be added if its not a GLOBAL instance
                 //SE info in DBS Global is not maintained anymore (done in Phedex)
-                if (this.data.instanceName.equals("GLOBAL")) {
-			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
-                } else {
+                //AA-13102008 if (this.data.instanceName.equals("GLOBAL")) {
+		//AA-13102008 	throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                //AA-13102008 } else {
 
 			String seName = get(table, "storage_element_name", true);
 			String seID = getID(conn, "StorageElement", "SEName", seName , true);
@@ -351,7 +351,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
 			}
-		}
+		//AA-13102008 }
 	}
 
 	//insertBlock USED by dbsManagedBlockID
@@ -413,9 +413,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 //Anzar Afaq - 09/16/2008
                 //SEs will only be added if its not a GLOBAL instance
                 //SE info in DBS Global is not maintained anymore (done in Phedex)
-                if (this.data.instanceName.equals("GLOBAL")) {
-			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
-                } else {
+                //AA-13102008 if (this.data.instanceName.equals("GLOBAL")) {
+		//AA-13102008 	throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                //AA-13102008 } else {
 
 
 
@@ -461,7 +461,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					dbsUser);
 	
 			}
-		}
+		//AA-13102008 }
 	
 	}
 
@@ -489,9 +489,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 //Anzar Afaq - 09/16/2008
                 //SEs will only be added if its not a GLOBAL instance
                 //SE info in DBS Global is not maintained anymore (done in Phedex)
-                if (this.data.instanceName.equals("GLOBAL")) {
-			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
-                } else {
+                //AA-13102008 if (this.data.instanceName.equals("GLOBAL")) {
+		//AA-13102008 	throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                //AA-13102008 } else {
 
 			String blockID = getBlockID(conn, blockName, false, true);
 			String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , true);
@@ -502,7 +502,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				seIDNew,
 				getID(conn, "StorageElement", "SEName", seNameFrom , true),
 				personApi.getUserID(conn, dbsUser));
-		}
+		//AA-13102008 }
 
 	}
 
@@ -510,9 +510,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 //Anzar Afaq - 09/16/2008
                 //SEs will only be added if its not a GLOBAL instance
                 //SE info in DBS Global is not maintained anymore (done in Phedex)
-                if (this.data.instanceName.equals("GLOBAL")) {
-			throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
-                } else {
+                //AA-13102008 if (this.data.instanceName.equals("GLOBAL")) {
+		//AA-13102008 	throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+                //AA-13102008 } else {
 
 			if(!role.equals("N") && !role.equals("Y")) 
 				throw new DBSException("Invalid Role", "1098", "Role can have just these values Y or N. Given " + role);
@@ -529,7 +529,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 						"Chaged role to " + role,
 						"The Role in Block " + blockName + " Storage Element " + seName + " is changed to  " + role,
 						dbsUser);
-		}
+		//AA-13102008 }
 	}
 
 	public void updateBlock(Connection conn, Writer out,  String blockID, String lmbUserID) throws Exception {
