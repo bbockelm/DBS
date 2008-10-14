@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.189 $"
- $Id: DBSSql.java,v 1.189 2008/09/22 21:08:20 afaq Exp $"
+ $Revision: 1.190 $"
+ $Id: DBSSql.java,v 1.190 2008/09/23 17:54:29 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -312,9 +312,9 @@ public class DBSSql {
 
 		//HistoryTimeStamp  MUSt be provided by Trigger later ON.
                 String sql = "INSERT INTO "+owner()+"QualityHistory \n "+
-                                " (HistoryOf, Run,  Lumi, SubSystem, DQValue, \n" +
+                                " (HistoryOf, Dataset, Run,  Lumi, SubSystem, DQValue, \n" +
                                 " CreationDate, CreatedBy, LastModificationDate, LastModifiedBy, \n"+
-                                " HistoryTimeStamp) select ID, Run, Lumi, SubSystem, DQValue, CreationDate, \n" +
+                                " HistoryTimeStamp) select ID, Dataset, Run, Lumi, SubSystem, DQValue, CreationDate, \n" +
                                 " CreatedBy, LastModificationDate, LastModifiedBy, " + 
 				Long.toString( (new Date()).getTime() / 1000 ) +
                                 " from "+ owner()+"RunLumiQuality where ID = ?";
@@ -331,7 +331,7 @@ public class DBSSql {
                 String sql = "INSERT INTO "+owner()+"IntQualityHistory \n "+
                                 " (HistoryOf, Run,  Lumi, SubSystem, IntDQValue, \n" +
                                 " CreationDate, CreatedBy, LastModificationDate, LastModifiedBy, \n"+
-                                " HistoryTimeStamp) select ID, Run, Lumi, SubSystem, IntDQValue, CreationDate, \n" +
+                                " HistoryTimeStamp) select ID, Dataset, Run, Lumi, SubSystem, IntDQValue, CreationDate, \n" +
                                 " CreatedBy, LastModificationDate, LastModifiedBy, " +
                                 Long.toString( (new Date()).getTime() / 1000 ) +
                                 " from "+ owner()+"RunLumiDQInt where ID = ?";
@@ -888,7 +888,7 @@ public class DBSSql {
 
         public static PreparedStatement listDQVersions(Connection conn) throws SQLException
 	{
-		String sql = "SELECT Version as DQ_VERSION, VersionTimeStamp as TIME_STAMP from QualityVersion";
+		String sql = "SELECT Version as DQ_VERSION, VersionTimeStamp as TIME_STAMP from "+owner()+"QualityVersion";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -1951,7 +1951,7 @@ public class DBSSql {
 				"ON pdst.Dataset = procds.id \n" +
 			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
-			"JOIN ProcDSParent dp \n" +
+			"JOIN "+owner()+"ProcDSParent dp \n" +
 				joinStr +
 			"LEFT OUTER JOIN "+owner()+"Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +
