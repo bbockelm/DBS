@@ -33,9 +33,14 @@ Check requests by status:
 </tr>
 </table>
 
+#if not len($rList)
+<hr class="dbs" />
+Your don't have outstanding requests in Migration Service.
+#end if
 #import types
 #for $result in $rList
 <hr class="dbs" />
+List of current/pending requests:
 
 #if $result and $type($result) is $types.InstanceType
 <table>

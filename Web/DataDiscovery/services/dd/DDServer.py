@@ -1275,6 +1275,10 @@ class DDServer(DDLogger,Controller):
         nameSpace = { 'dbsInst':self.dbs, 'userMode':'expert', 'user': self.getUserFromCookie() }
         t = templateAdministrateForm(searchList=[nameSpace]).respond()
         page+= str(t)
+#        page+= """<hr class="dbs" />"""
+        page+= """<br/><div class="sectionhead">CHECK YOUR REQUESTS:</div>"""
+        kwargs['fullpage'] = 0
+        page+= self.ms_getRequestByUser(**kwargs)
         page+= self.genBottomHTML()
         return page
     _admin.exposed=True
@@ -1358,6 +1362,7 @@ class DDServer(DDLogger,Controller):
     ms_deleteRequest.exposed=True
 
     def ms_getRequestByUser(self,userMode="user",**kwargs):
+        fullpage = getArg(kwargs,'fullpage',1)
         dn=""
         try:
             userName=self.decodeUserName(**kwargs)
@@ -1368,13 +1373,17 @@ class DDServer(DDLogger,Controller):
                traceback.print_exc()
             result = getExcMessage(userMode)
             pass
-        page   = self.genTopHTML(userMode=userMode)
+        if  fullpage:
+            page   = self.genTopHTML(userMode=userMode)
+        else:
+            page   = ""
         rList  = [result]
         if type(result) is types.ListType:
             rList = result
         t      = templateAdminPage(searchList=[{'userMode':userMode,'rList':rList}]).respond()
         page  += str(t)
-        page  += self.genBottomHTML()
+        if  fullpage:
+            page  += self.genBottomHTML()
         return page
     ms_getRequestByUser.exposed=True
 
@@ -1436,8 +1445,10 @@ class DDServer(DDLogger,Controller):
             notify = kwargs['notify']
             result = self.msApi.addRequest(srcUrl,dstUrl,path,dn,force,parents,notify)
         except:
-            if self.verbose:
-               traceback.print_exc()
+            if  self.verbose:
+                print "Fail in ms_addRequest"
+                print kwargs
+                traceback.print_exc()
             result = getExcMessage(getArg(kwargs,'userMode','user'))
             pass
         return result
