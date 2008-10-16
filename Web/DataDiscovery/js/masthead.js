@@ -14,7 +14,7 @@ function buildMenu(page,title){
 	var mainUlL = document.createElement ("ul");
 
 	var logo  = document.createElement ("img");
-	logo.setAttribute ("src","https://cmsweb.cern.ch/sitedb/Common/images/logomini.png");
+	logo.setAttribute ("src","https://cmsweb.cern.ch/base/Common/images/logomini.png");
 	logo.setAttribute ("height","16");
 	logo.setAttribute ("width","16");
 	logo.setAttribute ("alt","CMS - Compact Muon Solenoid");
@@ -71,12 +71,12 @@ function addLoginObject (item){
 	        dn = user.getAttribute ("dn");
 	        if (!dn)
 	        {
-	            window.location.href = "https://cmsweb.cern.ch/sitedb" + 
+	            window.location.href = "https://cmsweb.cern.ch/base" + 
 	                                   "/SecurityModule/logout?redirect=" + window.location.href;
 	        }else if ( dn == "None" || dn == "guest" || dn == "Unknown" )
 	        {
             	var loginObject = "<span class='LoginObject'>";
-            	loginObject += "<a href='https://cmsweb.cern.ch/sitedb/SecurityModule/login?";
+            	loginObject += "<a href='https://cmsweb.cern.ch/base/SecurityModule/login?";
             	loginObject += "requestedPage=" + window.location.href + "'>";
             	loginObject += "Login</a></span>";	        
                 item.innerHTML = loginObject;	        
@@ -84,7 +84,7 @@ function addLoginObject (item){
 	        else
 	        {
     	        var loginObject = "<span class='LoginObject'>" + dn + " &#187; <span>";
-    	        loginObject += "<a href=\"https://cmsweb.cern.ch/sitedb/SecurityModule/logout?redirect=";
+    	        loginObject += "<a href=\"https://cmsweb.cern.ch/base/SecurityModule/logout?redirect=";
     	        loginObject += redirectionLocation;
     	        loginObject += "\">logout</a>";
                 item.innerHTML = loginObject;
@@ -92,7 +92,7 @@ function addLoginObject (item){
 	    },
 	    failure: function (o) {
         	var loginObject = "<span class='LoginObject'>";
-        	loginObject += "<a href='https://cmsweb.cern.ch/sitedb/SecurityModule/login?";
+        	loginObject += "<a href='https://cmsweb.cern.ch/base/SecurityModule/login?";
         	loginObject += "requestedPage=" + redirectionLocation + "'>";
         	loginObject += "Login</a></span>";	        
                 item.innerHTML = loginObject;	        
@@ -101,7 +101,7 @@ function addLoginObject (item){
 	};
 
 //try{
-	YAHOO.util.Connect.asyncRequest ("GET", "https://cmsweb.cern.ch/sitedb/SecurityModule/userInfo", callback);
+	YAHOO.util.Connect.asyncRequest ("GET", "https://cmsweb.cern.ch/base/SecurityModule/userInfo", callback);
 //} catch(x) {
 //   alert('Fail in YAHOO.util.Connect.asyncRequest, error='+x);
 //}
@@ -112,7 +112,7 @@ function doStyle(page){
 	var cssNode = document.createElement('link');
 	cssNode.setAttribute('rel', 'stylesheet');
 	cssNode.setAttribute('type', 'text/css');
-	cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_main.css');	
+	cssNode.setAttribute('href', 'https://cmsweb.cern.ch/base/Common/css/dmwt_main.css');	
 	document.getElementsByTagName('head')[0].appendChild(cssNode); 
 	
 	cssNode = document.createElement('link');
@@ -120,16 +120,16 @@ function doStyle(page){
 	cssNode.setAttribute('type', 'text/css');
 	var ie = (document.all) ? true : false;
 	if (ie) {
-		cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_masthead_ie.css');
+		cssNode.setAttribute('href', 'https://cmsweb.cern.ch/base/Common/css/dmwt_masthead_ie.css');
 	} else { 
-		cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_masthead.css');
+		cssNode.setAttribute('href', 'https://cmsweb.cern.ch/base/Common/css/dmwt_masthead.css');
 	}
 	document.getElementsByTagName('head')[0].appendChild(cssNode); 
 	
 	cssNode = document.createElement('link');
 	cssNode.setAttribute('rel', 'stylesheet');
 	cssNode.setAttribute('type', 'text/css');
-	cssNode.setAttribute('href', 'https://cmsweb.cern.ch/sitedb/Common/css/dmwt_masthead_' + page + '.css');
+	cssNode.setAttribute('href', 'https://cmsweb.cern.ch/base/Common/css/dmwt_masthead_' + page + '.css');
 	document.getElementsByTagName('head')[0].appendChild(cssNode); 
 }
 	
@@ -138,12 +138,12 @@ function menuText(){
 	return [/*{title: "ASAP - Job submission and monitoring. Currently not available.", link: "na", label: "ASAP"}, */
 	{title: "CMS Dashboard - Monitorring of jobs, transfers, IO rate, Tier 0.", link: "http://arda-dashboard.cern.ch/cms/", label: "Dashboard", id: "dashboard"}, 
 	{title: "DBS/DLS Discovery - Data set book keeping and location.", link: "https://cmsweb.cern.ch/dbs_discovery/", label: "DBS Discovery", id:"dbs"},
-	{title: "ProdRequest - Request large scale official production of samples.", link: "https://cmsweb.cern.ch/prodrequest/", label: "ProdRequest", id:"prodrequest"},
-	{title: "PhEDEx - Data placement, transfer monitoring", link: "http://cmsweb.cern.ch/phedex/", label: "PhEDEx", id:"phedex"},
-    //{title: "Data placement, transfer, monitoring", link: "http://cmsweb.cern.ch/Common/datatransfer", label: "DataTransfer", id:"phedex"},
+	//{title: "ProdRequest - Request large scale official production of samples.", link: "https://cmsweb.cern.ch/prodrequest/", label: "ProdRequest", id:"prodrequest"},
+	//{title: "PhEDEx - Data placement, transfer monitoring", link: "http://cmsweb.cern.ch/phedex/", label: "PhEDEx", id:"phedex"},
+    {title: "Data placement, transfer, monitoring", link: "http://cmsweb.cern.ch/base/Common/datatransfer", label: "DataTransfer", id:"phedex"},
 	{title: "SiteDB - Site information and aggregate monitoring", link: "https://cmsweb.cern.ch/sitedb/sitelist/", label: "SiteDB", id: "sitedb"},
 	{title: "CondDB - Conditions Database", link: "https://cmsweb.cern.ch/conddb/", label: "CondDB", id: "conddb"},
-	{title: "Web Tools Support - File a bug report, ask for help, read our FAQ", link: "https://cmsweb.cern.ch/sitedb/Common/help", label: "Support", id: "help"}]
+	{title: "Web Tools Support - File a bug report, ask for help, read our FAQ", link: "https://cmsweb.cern.ch/base/Common/help", label: "Support", id: "help"}]
 }
 function createSiteMasthead(title){
 	YAHOO.namespace("cms.dmwt");
