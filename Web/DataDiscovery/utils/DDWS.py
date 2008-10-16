@@ -3,12 +3,12 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.12 2008/01/04 01:15:27 valya Exp $
+# Version: $Id: DDWS.py,v 1.1 2008/08/29 18:44:17 valya Exp $
 """
 Web services toolkit
 """
 
-import os, sys, string, sre, httplib, urllib, urlparse, inspect
+import os, sys, string, re, httplib, urllib, urlparse, inspect
 import types, smtplib, traceback, time, socket
 
 # As of Python 2.3 you can specify how long a socket should wait 
@@ -223,10 +223,10 @@ if __name__ == "__main__":
 	       ss=string.split(item,"=")
 	       name = ss[0]
 	       value= ss[1]
-	    if sre.match("\A\d+\.\d+\Z", value):
+	    if re.match("\A\d+\.\d+\Z", value):
                 value=float(value)
 	    else:
-		if sre.match("\A\d+\Z", value):
+		if re.match("\A\d+\Z", value):
                     value=int(value)
             aDict[name]=value
 	    x+=1
