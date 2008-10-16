@@ -37,6 +37,7 @@ def checkSQLAlchemyVersion():
     try:
        ver=sqlalchemy.__version__
        rel,max,min=ver.split(".")
+       min = min.split("p")[0]
     except:
        print "##### DD ERROR: Cannot determine SQLAlchemy version"
        sys.__stdout__.flush()
