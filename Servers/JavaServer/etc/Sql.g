@@ -109,6 +109,7 @@ valueList	:dotValue ( spaces COMMA spaces dotValue )*;
 compOpt		:(EQ)
 		|(LT)
 		|(GT)
+		|(NOT)(EQ)
 		|(EQ)(GT)
 		|(EQ)(LT)
 		|(LT)(EQ)
@@ -153,6 +154,7 @@ DOT		:('.');
 GT		:('>');
 LT		:('<');
 EQ		:('=');
+NOT		:('!');
 AMP		:('&');
 //STAR		:('*'|'%');
 NL		:('\n');
