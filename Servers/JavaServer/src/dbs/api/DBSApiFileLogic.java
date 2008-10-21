@@ -1,6 +1,6 @@
 /**
- $Revision: 1.107 $"
- $Id: DBSApiFileLogic.java,v 1.107 2008/09/09 21:16:44 afaq Exp $"
+ $Revision: 1.108 $"
+ $Id: DBSApiFileLogic.java,v 1.108 2008/09/10 19:32:22 afaq Exp $"
  *
  */
 
@@ -349,7 +349,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
 					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") + "'";
-					if (!DBSUtil.isNull(get(rs, "AUTO_CROSS_SECTION"))) toSend += "' auto_cross_section='" + get(rs, "AUTO_CROSS_SECTION");
+					if (!DBSUtil.isNull(get(rs, "AUTO_CROSS_SECTION"))) toSend += " auto_cross_section='" + get(rs, "AUTO_CROSS_SECTION") + "'";
 				
 					if(oldClients) {
 						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + 	"' status='" + get(rs, "STATUS") + "'";

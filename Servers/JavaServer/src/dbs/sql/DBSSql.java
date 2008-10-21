@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.190 $"
- $Id: DBSSql.java,v 1.190 2008/09/23 17:54:29 afaq Exp $"
+ $Revision: 1.191 $"
+ $Id: DBSSql.java,v 1.191 2008/10/14 17:30:16 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -736,7 +736,8 @@ public class DBSSql {
                                                                 	good_clause += " RQ.Run in " + rlsql + " AND ";
 	                                                                bindvals.addAll(rbindvals);
         	                                                }
-                	                                        good_clause += " QV.Value='GOOD' and SS.Name in (?";
+                	                                        good_clause += " QV.Value=? and SS.Name in (?";
+								bindvals.add("GOOD");
                         	                                bindvals.add(subsys);
                                 	                        goodSysCount++;
 
@@ -755,7 +756,8 @@ public class DBSSql {
                                                 	                bad_clause += " RQ.Run in " + rlsql + " AND ";
                                                         	        bindvals.addAll(rbindvals);
 	                                                        }
-        	                                                bad_clause += " QV.Value='BAD' and SS.Name in (?";
+        	                                                bad_clause += " QV.Value=? and SS.Name in (?";
+								bindvals.add("BAD");
                 	                                        bindvals.add(subsys);
                         	                                badSysCount++;
 
@@ -774,7 +776,8 @@ public class DBSSql {
                                                 	                unknown_clause += " RQ.Run in " + rlsql + " AND ";
 	                                                                bindvals.addAll(rbindvals);
         	                                                }
-                	                                        unknown_clause += " QV.Value='UNKNOWN' and SS.Name in (?";
+                	                                        unknown_clause += " QV.Value=? and SS.Name in (?";
+								bindvals.add("UNKNOWN");
                         	                                bindvals.add(subsys);
                                 	                        unknownSysCount++;
 

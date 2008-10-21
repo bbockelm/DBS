@@ -1,6 +1,6 @@
 /**
- $Revision: 1.67 $"
- $Id: DBSApiProcDSLogic.java,v 1.67 2008/09/19 21:45:53 afaq Exp $"
+ $Revision: 1.68 $"
+ $Id: DBSApiProcDSLogic.java,v 1.68 2008/09/23 17:54:29 afaq Exp $"
  *
  */
 
@@ -124,7 +124,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY")+ "'" )) ;
 							
 							if (!DBSUtil.isNull(get(rs, "XT_CROSS_SECTION"))) 
-								out.write(((String) "' external_cross_section='" + get(rs, "XT_CROSS_SECTION")+ "'" ));
+								out.write(((String) " external_cross_section='" + get(rs, "XT_CROSS_SECTION")+ "'" ));
 
 							out.write(((String) ">\n"));
 					first = false;
