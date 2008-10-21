@@ -99,7 +99,7 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
 						GlobalTag=str(attrs.get('global_tag', '')),
                                                 #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=self.primName),
-						XtCrossSection=ext_cross_sec,
+						XtCrossSection=float(ext_cross_sec),
                                                 CreationDate=str(attrs['creation_date']),
                                                 CreatedBy=str(attrs['created_by']),
                                                 LastModificationDate=str(attrs['last_modification_date']),
