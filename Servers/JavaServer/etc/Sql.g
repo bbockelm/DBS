@@ -10,6 +10,7 @@ import java.util.ArrayList;
 ArrayList kws = new ArrayList();
 ArrayList okws = new ArrayList();
 ArrayList constraints = new ArrayList();
+String orderingkw = "";
 }
 @rulecatch {
 catch (RecognitionException e) {
@@ -19,20 +20,24 @@ catch (RecognitionException e) {
 
 stmt	: select spaces selectList spaces where spaces constraintList spaces 
 	| select spaces selectList spaces
-	| select spaces selectList spaces order spaces by spaces orderList spaces
-	| select spaces selectList spaces where spaces constraintList spaces order spaces by spaces orderList spaces;
+	| select spaces selectList spaces order spaces by spaces orderList
+	| select spaces selectList spaces where spaces constraintList spaces order spaces by spaces orderList;
 
 
 spaces	: (SPACE)*;
-	
+
 orderList	:okw=	keyword 		{okws.add($okw.text);}
  		(
 		spaces
 		COMMA
 		spaces
  	okw=	keyword  		{okws.add($okw.text);}
- 		)*;		 
-	 
+ 		)*
+		spaces
+	oing = 	ordering {orderingkw=$oing.text;}
+		; 
+
+ordering 	: (asc|desc)?;	 
 selectList	:kw=	keyword 		{kws.add($kw.text);}
  		(
 		spaces
@@ -129,6 +134,8 @@ not		:('not' | 'NOT');
 like		:('like' | 'LIKE');
 count		:('count' | 'COUNT');
 sum		:('sum' | 'SUM');
+asc		:('asc' | 'ASC');
+desc		:('desc' | 'DESC');
 //likeLeft	:('LikeLeft');
 //likeRight	:('LikeRight');
 //likeCfg		:('<like>');

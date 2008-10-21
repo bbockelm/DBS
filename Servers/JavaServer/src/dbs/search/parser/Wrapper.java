@@ -39,6 +39,9 @@ public class Wrapper {
 			ArrayList kws = parser.kws;
 			ArrayList okws = parser.okws;
 			ArrayList cs = parser.constraints;
+			String orderingkw = parser.orderingkw;
+			if (orderingkw == null) System.out.println("orderingkw is NULLLLLLLLLLLLLLL");
+			else System.out.println("ordering is "+ orderingkw);
 			for (int i =0 ; i!= kws.size(); ++i) 
 				System.out.println("KEWORD\t" + kws.get(i));
 		
@@ -51,7 +54,7 @@ public class Wrapper {
 				}//else System.out.println("REL " + (String)obj);
 			}*/
 			QueryBuilder qb = new QueryBuilder(db);
-			queryToReturn = qb.genQuery(kws, cs, okws, begin, end);
+			queryToReturn = qb.genQuery(kws, cs, okws, orderingkw, begin, end);
 			bindValues = qb.getBindValues();
 			bindIntValues = qb.getBindIntValues();
 			countQuery = qb.getCountQuery();

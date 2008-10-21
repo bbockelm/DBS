@@ -225,7 +225,8 @@ executeQuery () {
 	#$CMD query="find run where ads = /BeamHalo/Commissioning08-GRtoBeam_v1/RAW"
 	#$CMD query="find run, lumi, file where procds = Commissioning08-GRtoBeam_v1"
 	#$CMD query="find file where dataset.release = CMS"
-	$CMD query="find tier where dataset = /BeamHalo/Commissioning08-GRtoBeam_v1/RAW or dataset.tier = SIM"
+	$CMD query="find dataset where dataset = /*RAW order by dataset asc   "
+	#$CMD query="find dataset where dataset = /*RAW"
 	#$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD and dataset like *Commissioning08-GRtoBeam_v1/RAW or dataset = /BeamHalo/Commissioning08-GRtoBeam_v1/RAW and dataset in (/Cosmics/CRUZET3-v1/RAWaa, /BeamHalo/Commissioning08-GRtoBeam_v1/RAW)" 
 	
 	

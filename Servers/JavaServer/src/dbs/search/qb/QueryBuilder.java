@@ -46,7 +46,7 @@ public class QueryBuilder {
 	}
 
 	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws) throws Exception{
-		return genQuery(kws, cs, okws, "", "");
+		return genQuery(kws, cs, okws, "", "", "");
 	}
 	private void checkMax(int iter) throws Exception {
 		if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
@@ -72,7 +72,7 @@ public class QueryBuilder {
 	}
 	
 	//public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
-	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String begin, String end) throws Exception{
+	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String orderingkw, String begin, String end) throws Exception{
 		//Store all the keywors both from select and where in allKws
 		fixConstForLike(cs);
 
@@ -713,12 +713,19 @@ public class QueryBuilder {
 			}
 			if(orderOnce) query += ",";
 			String orderToken = "";
-			Vertex vCombined = u.getMappedVertex(orderBy);
-			if(vCombined == null) orderToken = km.getMappedValue(orderBy, true);
-			else orderToken = u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined);
+			if(Util.isSame(orderBy, "dataset")) orderToken = "Block.Path";
+			else {
+				Vertex vCombined = u.getMappedVertex(orderBy);
+				if(vCombined == null) orderToken = km.getMappedValue(orderBy, true);
+				else orderToken = u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined);
+			}
 
 			query += orderToken;
 			orderOnce = true;
+		}
+		if(okws.size() > 0) {
+			if (Util.isSame(orderingkw, "asc")) query += " ASC";
+			else if (Util.isSame(orderingkw, "desc")) query += " DESC";
 		}
 		
 		if(sumQuery.length() != 0) {
@@ -1390,7 +1397,7 @@ public class QueryBuilder {
 
 		//tmp.add("PrimaryDataset");
 		tmp.add("file");
-		System.out.println(qb.genQuery(tmp, new ArrayList(),new ArrayList(), "4", "10"));		
+		System.out.println(qb.genQuery(tmp, new ArrayList(),new ArrayList(),"", "4", "10"));		
 		//tmp.add("Runs");
 		//tmp.add("FileRunLumi");
 		
