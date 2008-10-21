@@ -3,8 +3,10 @@ export CLIENTHOME=$PWD
 export PYTHONPATH=$CLIENTHOME:$PYTHONPATH
 export DBS_CLIENT_CONFIG=$PWD/DBSAPI/dbs.config
 
-# Setup the ALIAS for dbsCommandLine.py
+# Setup the ALIAS and PATH for dbsCommandLine.py
 export DBSCMD_HOME=$CLIENTHOME/DBSAPI
+#
+export PATH=$PATH:$CLIENTHOME/bin
 #
 # DBS Commandline tool
 #
