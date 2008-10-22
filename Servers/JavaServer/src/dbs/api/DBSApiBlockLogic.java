@@ -1,6 +1,6 @@
 /**
- $Revision: 1.61 $"
- $Id: DBSApiBlockLogic.java,v 1.61 2008/09/16 21:12:32 afaq Exp $"
+ $Revision: 1.62 $"
+ $Id: DBSApiBlockLogic.java,v 1.62 2008/10/13 09:39:02 afaq Exp $"
  *
  */
 
@@ -89,20 +89,20 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 						"'>\n"));
 				}
 
-
-				//Anzar Afaq -09/16/2008 (Temporary HACK, setting roles to 
-				//EMPTY (Normal User, ROLES are now managed in DLS-Phedex), instead of getting it from DB
-				//String role = get(rs, "ROLES");
-				String role = "";
-				//System.out.println("Role is " + role);
-				if(!isNull(role)) {
-					if(role.equals("Y") || userType.equals("SUPER")) {
-						String se = get(rs, "STORAGE_ELEMENT_NAME");
-						//System.out.println("SE name is " + se);
-						if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' role='" + role + "'/>\n"));
+                               //if (this.data.instanceName.equals("GLOBAL")) {
+                               //        String se = get(rs, "STORAGE_ELEMENT_NAME");
+                               //        if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' />\n"));
+                               //} else {
+					String role = get(rs, "ROLES");
+					//System.out.println("Role is " + role);
+					if(!isNull(role)) {
+						if(role.equals("Y") || userType.equals("SUPER")) {
+							String se = get(rs, "STORAGE_ELEMENT_NAME");
+							//System.out.println("SE name is " + se);
+							if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' role='" + role + "'/>\n"));
+						}
 					}
-				}
-
+				//}
 				prevBlock = blockID;
 				first = false;
 			}
