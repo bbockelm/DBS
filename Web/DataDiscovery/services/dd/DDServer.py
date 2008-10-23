@@ -842,8 +842,19 @@ class DDServer(DDLogger,Controller):
 
     def _advanced(self,dbsInst=DBSGLOBAL,userMode="user",msg="",**kwargs):
         try:
-            dbsList=list(self.dbsList)
-            dbsList.remove(dbsInst)
+            dbsList = []
+            for dbs in self.dbsList:
+                if  userMode=="user":
+                    if  dbs==DBSGLOBAL or dbs.find("ph_analys")!=-1:
+                        dbsList.append(dbs)
+                else:
+                    dbsList.append(dbs)
+            try:
+                dbsList.remove(dbsInst)
+            except:
+                pass
+#            dbsList=list(self.dbsList)
+#            dbsList.remove(dbsInst)
             dbsList=[dbsInst]+dbsList
             if msg: userHelp=0
             else:   userHelp=1
@@ -5964,7 +5975,11 @@ Save query as:
                    return "N/A"
                 if not html:
                    return traceback.format_exc()
-                msg ="<pre>%s</pre>"%getExcMessage(userMode)
+                msg = ""
+                if  userMode=="dbsExpert":
+                    msg+= "<pre>%s</pre>"%sql
+                    msg+= "<pre>%s</pre>"%str(bindDict)
+                msg+="<pre>%s</pre>"%getExcMessage(userMode)
                 page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                 return page
         else:
@@ -5988,8 +6003,19 @@ Save query as:
 
         if html:
            page = self.genTopHTML(userMode=userMode)
-           dbsList=list(self.dbsList)
-           dbsList.remove(dbsInst)
+           dbsList = []
+           for dbs in self.dbsList:
+               if  userMode=="user":
+                   if  dbs==DBSGLOBAL or dbs.find("ph_analys")!=-1:
+                       dbsList.append(dbs)
+               else:
+                   dbsList.append(dbs)
+           try:
+               dbsList.remove(dbsInst)
+           except:
+               pass
+#           dbsList=list(self.dbsList)
+#           dbsList.remove(dbsInst)
            dbsList=[dbsInst]+dbsList
            nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput,'aSearchKeys':self.aSearchKeys(),'showHelp':0}
            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
