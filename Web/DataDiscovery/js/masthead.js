@@ -140,7 +140,7 @@ function menuText(){
 	{title: "DBS/DLS Discovery - Data set book keeping and location.", link: "https://cmsweb.cern.ch/dbs_discovery/", label: "DBS Discovery", id:"dbs"},
 	//{title: "ProdRequest - Request large scale official production of samples.", link: "https://cmsweb.cern.ch/prodrequest/", label: "ProdRequest", id:"prodrequest"},
 	//{title: "PhEDEx - Data placement, transfer monitoring", link: "http://cmsweb.cern.ch/phedex/", label: "PhEDEx", id:"phedex"},
-    {title: "Data placement, transfer, monitoring", link: "http://cmsweb.cern.ch/base/Common/datatransfer", label: "DataTransfer", id:"phedex"},
+    {title: "Data placement, transfer, monitoring", link: "https://cmsweb.cern.ch/base/Common/datatransfer", label: "DataTransfer", id:"phedex"},
 	{title: "SiteDB - Site information and aggregate monitoring", link: "https://cmsweb.cern.ch/sitedb/sitelist/", label: "SiteDB", id: "sitedb"},
 	{title: "CondDB - Conditions Database", link: "https://cmsweb.cern.ch/conddb/", label: "CondDB", id: "conddb"},
 	{title: "Web Tools Support - File a bug report, ask for help, read our FAQ", link: "https://cmsweb.cern.ch/base/Common/help", label: "Support", id: "help"}]
