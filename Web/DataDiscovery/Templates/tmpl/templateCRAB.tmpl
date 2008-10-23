@@ -1,5 +1,6 @@
 <!-- templateCRAB.tmpl -->
 
+#*
 <pre>
 ###### For more information please consult
 ###### http://www.uscms.org/SoftwareComputing/UserComputing/Tutorials/Crab.html
@@ -34,4 +35,26 @@ lcg_catalog_type        = lfc
 lfc_host                = lfc-cms-test.cern.ch
 lfc_home                = /grid/cms
 </pre>
+*#
+
+<pre>
+[CRAB]
+
+jobtype = cmssw
+scheduler = glite
+server_name = bari
+
+[CMSSW]
+datasetpath=$dataset
+pset=INSERT YOUR PSET HERE
+total_number_of_events=-1
+event_per_jobs = 1000
+
+[USER]
+return_data = 1
+</pre>
+<br/>
+<br/>
+for more information about CRAB configuration please use CRAB
+<a href="https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCrab">config page</a>.
 <!-- end of templateCRAB.tmpl -->
