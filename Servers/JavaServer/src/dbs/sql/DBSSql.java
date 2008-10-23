@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.191 $"
- $Id: DBSSql.java,v 1.191 2008/10/14 17:30:16 afaq Exp $"
+ $Revision: 1.192 $"
+ $Id: DBSSql.java,v 1.192 2008/10/21 17:03:09 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2264,7 +2264,7 @@ public class DBSSql {
         }
 
 
-	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName) throws SQLException {
+	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName, String isGlobal) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
 			"b.Path as PATH, \n" +
@@ -2274,9 +2274,9 @@ public class DBSSql {
 			"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"b.CreationDate as CREATION_DATE, \n" +
 			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-			"se.SEName as STORAGE_ELEMENT_NAME, \n" +
-			"seb.Roles as ROLES, \n" +
-			"percb.DistinguishedName as CREATED_BY, \n" +
+			"se.SEName as STORAGE_ELEMENT_NAME, \n";
+			if (isGlobal.equals("GLOBAL")) sql += " seb.Roles as ROLES, \n";
+			sql = "percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Block b \n" +
 			"LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
