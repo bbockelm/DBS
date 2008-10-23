@@ -121,6 +121,7 @@ genValue	:dotValue
 
 //likeValue 	:(dotValue| STAR)+;
 //likeValue 	:(dotValue)+;
+//likes		:(not)? spaces like;
 logicalOp	:(and|or);
 entity		: ('ads' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group'| 'pset' );
 attr		:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numlss' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag');
@@ -132,7 +133,8 @@ by		:('by' | 'BY');
 or		:('or' | 'OR');
 in		:('in' | 'IN');
 not		:('not' | 'NOT');
-like		:('like' | 'LIKE');
+like		:('like' | 'LIKE' | 'not' spaces 'like' | 'NOT' spaces 'LIKE');
+//like		:('like' | 'LIKE');
 count		:('count' | 'COUNT');
 sum		:('sum' | 'SUM');
 asc		:('asc' | 'ASC');

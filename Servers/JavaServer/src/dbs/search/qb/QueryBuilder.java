@@ -61,16 +61,22 @@ public class QueryBuilder {
 				String key = (String)co.getKey();
 				String op = (String)co.getOp();
 				String val = (String)co.getValue();
-
+				if(isNotLike(op)) co.setOp("not like");
 				if((val.indexOf('%') != -1 ) || (val.indexOf('*') != -1) ) {
 					if(Util.isSame(op, "in")) throw new Exception("Operator in CANNOT be used with values that have * or % in them");
 					//System.out.println("Fixing conts");
-					co.setOp("like");
+					if(Util.isSame(op, "!=") || isNotLike(op)) co.setOp("not like");
+					else co.setOp("like");
 				}
 			}
 		}
 	}
-	
+	private boolean isNotLike(String token) {
+		if(token == null) return false;
+		token = token.toLowerCase();
+		if(token.startsWith("not") && (token.endsWith("like"))) return true;
+		return false;
+	}
 	//public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
 	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String orderingkw, String begin, String end) throws Exception{
 		//Store all the keywors both from select and where in allKws
@@ -651,10 +657,10 @@ public class QueryBuilder {
 						//Vertex vFirst = u.getMappedVertex(token);
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined == null) {
-							if(Util.isSame(op, "like")) queryWhere += "\t upper(" + km.getMappedValue(key, true) + ") " ;
+							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += "\t upper(" + km.getMappedValue(key, true) + ") " ;
 							else queryWhere += "\t" + km.getMappedValue(key, true) + " " ;
 						} else {
-							if(Util.isSame(op, "like")) queryWhere += "\t upper(" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + ") ";
+							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += "\t upper(" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + ") ";
 							else queryWhere += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
 							//FIXME default can be list
 						}
@@ -911,6 +917,10 @@ public class QueryBuilder {
 		bindValues.add(val.replace('*','%'));
 		return "LIKE upper(?)";
 	}
+	private String handleNotLike(String val, List<String> bindValues) {
+		bindValues.add(val.replace('*','%'));
+		return "NOT LIKE upper(?)";
+	}
 
 	private String handleIn(String val, List<String> bindValues)  throws Exception {
     		String query = "IN (";
@@ -931,6 +941,7 @@ public class QueryBuilder {
 		String query = "";
 		if(Util.isSame(op, "in")) query += handleIn(val, bindValues);
 		else if(Util.isSame(op, "like")) query += handleLike(val, bindValues);
+		else if(Util.isSame(op, "not like")) query += handleNotLike(val, bindValues);
 		else {
 			query += op + " ?\n";
 			bindValues.add(val);
@@ -973,7 +984,7 @@ public class QueryBuilder {
 
 	private String handleDate(String op, String val) throws Exception {
 		if(Util.isSame(op, "in")) throw new Exception("Operator IN not supported with date. Please use =, < or >");
-		if(Util.isSame(op, "like")) throw new Exception("Operator LIKE not supported with date. Please use =, < or >");
+		if(Util.isSame(op, "like") || Util.isSame(op, "not like")) throw new Exception("Operator LIKE is not supported with date. Please use =, < or >");
 		String query = "";
 		String epoch1 = String.valueOf(DateUtil.dateStr2Epoch(val) / 1000);
 		if(Util.isSame(op, "=")) {
@@ -995,7 +1006,7 @@ public class QueryBuilder {
 			"\tBlock.ID FROM " + owner() + "Block" +
 			"\tWHERE \n" ;
 			//"\tBlock.Path " + op + " '" + path + "'\n" +
-			if(Util.isSame(op, "like")) query += "\tupper(Block.Path) ";
+			if(Util.isSame(op, "like") || Util.isSame(op, "not like")) query += "\tupper(Block.Path) ";
 			else query += "\tBlock.Path ";// + op + " ?\n" +
 			//")";
 		/*if(Util.isSame(op, "in")) query += handleIn(path);
@@ -1029,7 +1040,7 @@ public class QueryBuilder {
 						dsQueryForDQ.append(((String)lastObj).toUpperCase());
 						dsQueryForDQ.append("\n");
 					}
-					if(Util.isSame(op, "like")) dsQueryForDQ.append("\tupper(Block.Path) ");
+					if(Util.isSame(op, "like") || Util.isSame(op, "not like")) dsQueryForDQ.append("\tupper(Block.Path) ");
 					else dsQueryForDQ.append("\tBlock.Path ");
 					dsQueryForDQ.append(handleOp(op, val, tmpBindValues));
 					found = true;
@@ -1090,6 +1101,7 @@ public class QueryBuilder {
 		System.out.println("VAL is " + val);
 		String extraQuery = "";
 		if(Util.isSame(op, "like")) extraQuery = "\tupper(StorageElement.SEName) ";
+		if(Util.isSame(op, "not like")) throw new Exception("NOT LIKE is not supported with site");
 		else extraQuery = "\tStorageElement.SEName ";
 		String query = " IN ( \n";
 		SiteClient cc = new SiteClient();
