@@ -19,7 +19,7 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
  
-
+isGlobal = api.getServerInfo()['InstanceName']
 def genRandom():
 	return  os.popen('uuidgen').readline().strip()
 
@@ -187,6 +187,7 @@ procObj1 = DbsProcessedDataset (
 		Status = procStatus,
 		TierList = [tier1, tier2],
 		AlgoList = [algoObj1, algoObj2],
+		XtCrossSection=1.1
 		)
 
 procObj2 = DbsProcessedDataset (
@@ -199,7 +200,8 @@ procObj2 = DbsProcessedDataset (
 		TierList = [tier1, tier2],
 		AlgoList = [algoObj1, algoObj2],
 		ParentList = [path1],
-		RunsList = [runNumber]
+		RunsList = [runNumber],
+		XtCrossSection=2.2
 		)
 
 procObjM = DbsProcessedDataset (
@@ -211,7 +213,8 @@ procObjM = DbsProcessedDataset (
 		Status = procStatus,
 		TierList = [tier1, tier2],
 		AlgoList = [algoObjM],
-		RunsList = [runNumber]
+		RunsList = [runNumber],
+		XtCrossSection=3.3
 		)
 
 lumiObj1 = DbsLumiSection (
@@ -256,7 +259,8 @@ fileObj1 = DbsFile (
 		Dataset = procObj1,
 		AlgoList = [algoObj1],
 		LumiList = [lumiObj1],
-		TierList = [tier1, tier2]
+		TierList = [tier1, tier2],
+		AutoCrossSection=1.0
 		)
 
 fileObj2 = DbsFile (
@@ -271,7 +275,8 @@ fileObj2 = DbsFile (
 		AlgoList = [algoObj2],
 		LumiList = [lumiObj2],
 		TierList = [tier1, tier2],
-		ParentList = [fileName1]
+		ParentList = [fileName1],
+		AutoCrossSection=2.0
 		)
 
 fileObjM = DbsFile (
@@ -285,7 +290,8 @@ fileObjM = DbsFile (
 		Dataset = procObjM,
 		AlgoList = [algoObjM],
 		TierList = [tier1, tier2],
-		Block = blockObjM
+		Block = blockObjM,
+		AutoCrossSection=3.0
 		)
 
 
@@ -311,6 +317,7 @@ def assertProc(test, procIn1, procIn2):
 	test.assertEqual(procIn1['GlobalTag'], procIn2['GlobalTag'])
 	test.assertEqual(procIn1['PhysicsGroup'], procIn2['PhysicsGroup'])
 	test.assertEqual(procIn1['Status'], procIn2['Status'])
+	test.assertEqual(procIn1['XtCrossSection'], procIn2['XtCrossSection'])
 
 def assertRun(test, runIn1, runIn2):
 	test.assertEqual(runIn1['RunNumber'], runIn2['RunNumber'])
@@ -329,6 +336,7 @@ def assertFile(test, fileIn1, fileIn2):
 	test.assertEqual(fileIn1['Status'], fileIn2['Status'])
 	#test.assertEqual(fileIn1['ValidationStatus'], fileIn2['ValidationStatus'])
 	test.assertEqual(fileIn1['FileType'], fileIn2['FileType'])
+	test.assertEqual(fileIn1['AutoCrossSection'], fileIn2['AutoCrossSection'])
 	
 def assertLumi(test, lumiIn1, lumiIn2):
 	test.assertEqual(lumiIn1['LumiSectionNumber'], lumiIn2['LumiSectionNumber'])
@@ -415,11 +423,12 @@ class Test4(unittest.TestCase):
 			#print blockInDBS
 			self.assertEqual(blockName1, blockInDBS['Name'])
 			self.assertEqual(path1, blockInDBS['Path'])
-			self.assertEqual(len(blockInDBS['StorageElementList']), 2)
-			for seInDBS in blockInDBS['StorageElementList']:
-				if(seInDBS['Name'] != se1 and seInDBS['Name'] != se2):
-					print 'storage element %s is not expected', seInDBS
-					self.assertEqual(1, 2)
+			if isGlobal != "GLOBAL": 
+				self.assertEqual(len(blockInDBS['StorageElementList']), 2)
+				for seInDBS in blockInDBS['StorageElementList']:
+					if(seInDBS['Name'] != se1 and seInDBS['Name'] != se2):
+						print 'storage element %s is not expected', seInDBS
+						self.assertEqual(1, 2)
 
 				
 
@@ -503,6 +512,8 @@ class Test7(unittest.TestCase):
 		procList = api.listProcessedDatasets(patternPrim = primName, patternProc = procNameM)
 		self.assertEqual(len(procList), 1)
 		for processedInDBS in procList:
+			# Auto CRosss section for Merged Datasets will not be equal
+			processedInDBS['XtCrossSection']=procObjM['XtCrossSection']
 			assertProc(self, procObjM, processedInDBS)
 			self.assertEqual(len(processedInDBS['AlgoList']), 3)
 			

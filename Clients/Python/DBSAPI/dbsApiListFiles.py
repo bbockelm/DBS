@@ -159,7 +159,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
           if name == 'file':
 	     if attrs.has_key('auto_cross_section'):
 	     	auto_x_sec=float(attrs['auto_cross_section'])
-		print "XXXXXXXXXXXXXXXXXXXX SEC::: %s" %auto_x_sec
+		#print "XXXXXXXXXXXXXXXXXXXX SEC::: %s" %auto_x_sec
              self.currFile = DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=getLong(attrs['size']),
@@ -223,6 +223,9 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 							 		)
                                               ) ) 
           if name == 'file_parent':
+	     auto_x_sec=0.0	
+	     if attrs.has_key('auto_cross_section'):
+               	auto_x_sec=float(attrs['auto_cross_section'])
              self.currFile['ParentList'].append(DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=getLong(attrs['size']),
@@ -232,6 +235,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
+				       AutoCrossSection=auto_x_sec,
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),
                                        LastModificationDate=str(attrs['last_modification_date']),
