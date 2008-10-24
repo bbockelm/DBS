@@ -9,6 +9,7 @@
 		password="XXXXXXXXXXXXXXXXXXXX" 
 		driverClassName="com.mysql.jdbc.Driver"
 		url="jdbc:mysql://localhost:3306/DBS_1_0_9?autoReconnect=true"/-->
+
 	<!--Resource name="jdbc/dbs"
 		auth="Container"
 		type="javax.sql.DataSource"

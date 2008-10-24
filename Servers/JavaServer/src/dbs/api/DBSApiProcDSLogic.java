@@ -1,6 +1,6 @@
 /**
- $Revision: 1.68 $"
- $Id: DBSApiProcDSLogic.java,v 1.68 2008/09/23 17:54:29 afaq Exp $"
+ $Revision: 1.69 $"
+ $Id: DBSApiProcDSLogic.java,v 1.69 2008/10/21 17:03:09 afaq Exp $"
  *
  */
 
@@ -790,26 +790,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	public String getProcessedDSID(Connection conn, String path, boolean excep) throws Exception {
 		String id = "";
 
-
-
-
-
-
-
-
-		System.out.println("BEFORE THIS..........");
-
-
-
-
-
-
-
-
 		if(!isNull( id = get(this.data.localPDPath, path) )) {
 			return id;
 		}
-		System.out.println("AFTER THIS..........");
 		if(isNull(path) && !excep) return "";
 		String[] data = parseDSPath(path);
 		

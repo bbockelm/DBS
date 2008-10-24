@@ -1,6 +1,6 @@
 /**
- $Revision: 1.108 $"
- $Id: DBSApiFileLogic.java,v 1.108 2008/09/10 19:32:22 afaq Exp $"
+ $Revision: 1.109 $"
+ $Id: DBSApiFileLogic.java,v 1.109 2008/10/21 17:03:09 afaq Exp $"
  *
  */
 
@@ -462,9 +462,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles, detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
+			
 			String tag = "";
 			if(parentOrChild) tag = "file_parent";
 			else tag = "file_child";
+
 			while(rs.next()) {
 				out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
 					"' lfn='" + get(rs, "LFN") +
@@ -480,7 +482,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + getNoExcep(rs, "CREATED_BY") +
 					"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
+					"' auto_cross_section='" + getNoExcep(rs, "AUTO_CROSS_SECTION") +
 					"'/>\n"));
+
 			}
 		} finally { 
 			if (rs != null) rs.close();

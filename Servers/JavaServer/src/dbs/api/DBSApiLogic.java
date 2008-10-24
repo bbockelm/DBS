@@ -1,6 +1,6 @@
 /**
- $Revision: 1.145 $"
- $Id: DBSApiLogic.java,v 1.145 2008/09/11 18:33:17 sekhri Exp $"
+ $Revision: 1.146 $"
+ $Id: DBSApiLogic.java,v 1.146 2008/09/16 21:12:32 afaq Exp $"
  *
  */
 
@@ -1258,7 +1258,7 @@ public class DBSApiLogic {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int numberOfColumns = rsmd.getColumnCount();
 		for(int i = 1 ; i != numberOfColumns + 1; ++i) 
-			if(rsmd.getColumnName(i).equals(key)) return get(rs, key);
+			if(rsmd.getColumnLabel(i).equals(key) ) return get(rs, key);
 		return "";
 	}
 

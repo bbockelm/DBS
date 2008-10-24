@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.192 $"
- $Id: DBSSql.java,v 1.192 2008/10/21 17:03:09 afaq Exp $"
+ $Revision: 1.193 $"
+ $Id: DBSSql.java,v 1.193 2008/10/23 20:12:27 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2275,8 +2275,8 @@ public class DBSSql {
 			"b.CreationDate as CREATION_DATE, \n" +
 			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"se.SEName as STORAGE_ELEMENT_NAME, \n";
-			if (isGlobal.equals("GLOBAL")) sql += " seb.Roles as ROLES, \n";
-			sql = "percb.DistinguishedName as CREATED_BY, \n" +
+			if (isGlobal.equals("LOCAL")) sql += " seb.Roles as ROLES, \n";
+			sql += "percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Block b \n" +
 			"LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
@@ -2787,6 +2787,7 @@ public class DBSSql {
 				"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 				"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 				"f.ValidationStatus as VALIDATION_STATUS, \n" +
+				"f.AutoCrossSection as AUTO_CROSS_SECTION, \n" +
 				"st.Status as STATUS, \n" +
 				"ty.Type as TYPE, \n" +
                         	"b.Name as BLOCK_NAME, \n"+ 
