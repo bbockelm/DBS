@@ -5234,22 +5234,25 @@ Save query as:
         return page
     getIntegratedLumi.exposed=True
 
-    def getDQInfo(self,dbsInst,run,**kwargs):
+    def getDQInfo(self,dbsInst,dataset,run,dqid,**kwargs):
         self.setContentType('xml')
-        ajax=getArg(kwargs,'ajax',1)
-        admin=int(getArg(kwargs,'admin',0))
+        ajax  = getArg(kwargs,'ajax',1)
+        admin = int(getArg(kwargs,'admin',0))
+#        dqid  = "%s_%s" % (run,dataset.replace("/","___").replace("-","_"))
         if ajax:
             page="""<ajax-response>"""
-            page+="""<response type='object' id="dq_run_%s">\n"""%run
+            page+="""<response type='object' id="%s">\n""" % dqid
+#            page+="""<response type='object' id="dq_run_%s">\n"""%run
 #            page+="""<response type='element' id="dq_run_%s">\n"""%run
         else:
             page=""
         try:
             xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='%s' lumi_section_number='' /></dbs>"""%run
-#            xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='298' lumi_section_number='' /></dbs>"""
 
-            params={'apiversion':self.ddConfig.dbsVer(),'api':'listRunLumiDQ','xmlinput':xmlinput}
-#            f = urllib.urlopen("http://cmssrv17.fnal.gov:8989/DBS_116pre1/servlet/DBSServlet?%s"%urllib.urlencode(params))
+            params={'apiversion':self.ddConfig.dbsVer(),
+                    'api':'listRunLumiDQ',
+                    'dataset':dataset,
+                    'xmlinput':xmlinput}
             dbsUrl=DBS_INST_URL[dbsInst]
             dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
 #            print "\n\n####Lookup-DQ",dbsInst,dbsUrl,params
@@ -5257,9 +5260,9 @@ Save query as:
             data=f.read()
 #            print "\n\n####GetDQ",data
             sysDict,subDict=getDQInfo(data)
-            nameSpace={'tag':"dq_%s"%run,'sysDict':sysDict,'subDict':subDict,'admin':0}
+#            nameSpace={'tag':"dq_%s"%run,'sysDict':sysDict,'subDict':subDict,'admin':0}
+            nameSpace={'tag':"dq_%s"%dqid,'sysDict':sysDict,'subDict':subDict,'admin':0}
             token = SecurityToken()
-#            if self.context.SecurityDBApi.hasGroupResponsibility(token.dn,"DataQuality","Global Admin"):
             if admin and self.securityApi.hasGroupResponsibility(token.dn,"DataQuality","Global Admin"):
                 nameSpace['admin']=1
                 t = templateDQInfo(searchList=[nameSpace]).respond()
@@ -5279,6 +5282,7 @@ Save query as:
             page+="</ajax-response>"
         if  self.verbose==2:
             self.writeLog(page)
+#        print page
         return page
     getDQInfo.exposed=True
 
@@ -6275,8 +6279,6 @@ Save query as:
                                'tools.staticdir.on':True,
                                'tools.staticdir.root': os.getcwd(),
                                'tools.staticdir.dir':'YUI',
-                               'tools.staticdir.content_types':{'js':'text/javascript'},
-                               'tools.response_headers.on':True,
                                'tools.response_headers.headers':httpHeader
                               },
                }

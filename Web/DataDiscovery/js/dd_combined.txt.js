@@ -7215,8 +7215,8 @@ function registerAjaxUserMenuCalls() {
 
 }
 
-function ajaxGetDQInfo(dbsInst,run,admin) {
-  ajaxEngine.sendRequest('ajaxGetDQInfo','dbsInst='+dbsInst,'run='+run,'admin='+admin);
+function ajaxGetDQInfo(dbsInst,dataset,run,dqid,admin) {
+  ajaxEngine.sendRequest('ajaxGetDQInfo','dbsInst='+dbsInst,'dataset='+dataset,'run='+run,'dqid='+dqid,'admin='+admin);
 }
 function ajaxGetIntegratedLumi(dbsInst,dataset) {
   ajaxEngine.sendRequest('ajaxGetIntegratedLumi','dbsInst='+dbsInst,'dataset='+dataset);

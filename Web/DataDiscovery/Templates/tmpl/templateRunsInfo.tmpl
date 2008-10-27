@@ -93,8 +93,8 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 <td style="$tstyle">LFNs</td>
 #end if
 <td style="$tstyle">Transfer</td>
-<td style="$tstyle">Run Summary</td>
 <td style="$tstyle">Data Quality</td>
+<td style="$tstyle">Run Summary</td>
 </tr>
 ###for dbsDict in $runList
 #* (run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path) *#
@@ -103,7 +103,10 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 #set _run_=0
 #set rowColor="#FFFADC"
 
+### use counter to make new tags on a page, to place DQ info for run/dataset pairs
+#set counter=0
 #for item in $runList
+#set counter=$counter+1
 #set run    = item[0]
 #set nEvts  = item[1]
 #set nLumis = item[2]
@@ -294,6 +297,22 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
 
 </td>
 
+
+### Here is DQ flags
+<td style="$tstyle">
+<hr class="dbs"/>
+
+### use counter as tag id, thid dqid is used later in JavaScript, see below
+#set dqid="dq_run_"+str($counter)
+<div id="$dqid" name="$dqid"></div>
+
+<script type="text/javascript">
+var dqUpdater = new IdUpdater('$dqid','replace');
+ajaxEngine.registerAjaxObject('$dqid',dqUpdater);
+</script>
+
+</td>
+
 #### Here is Run summary status call for each run
 <td style="$tstyle">
 <div id="runSummary_key_$run" name="runSummary_key_$run"></div>
@@ -317,14 +336,7 @@ var runUpdater_h = new IdUpdater('runSummary_hlt_$run');
 ajaxEngine.registerAjaxObject('runSummary_hlt_$run',runUpdater_h);
 </script>
 </td>
-### Here is DQ flags
-<td style="$tstyle">
-<div id="dq_run_$run" name="dq_run_$run"></div>
-<script type="text/javascript">
-var dqUpdater = new IdUpdater('dq_run_$run','replace');
-ajaxEngine.registerAjaxObject('dq_run_$run',dqUpdater);
-</script>
-</td>
+
 </tr>
 #set _run_=$run
 #end for
@@ -361,8 +373,15 @@ function hidePhedexInfo() {
 }
 ajaxRunSummary('$runs');
 function getAllDQ() {
-#for run in $datasetDict.keys()
-   ajaxGetDQInfo('$dbsInst','$run','$admin');
+### use counter to make new tags on a page, to place DQ info for run/dataset pairs
+#set counter=0
+#for item in $runList
+#set counter=$counter+1
+#set run    = item[0]
+#set procDS = item[12]
+### the dqid should match with one shown above on a page
+#set dqid="dq_run_"+str($counter)
+   ajaxGetDQInfo('$dbsInst','$procDS','$run','$dqid','$admin');
    //YAHOO.util.Event.addListener(window, "load", treeInitdq_${run}); // treeInitdq_$run shipts via AJAX
 #end for
 }

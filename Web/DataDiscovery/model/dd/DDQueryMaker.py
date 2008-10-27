@@ -608,7 +608,7 @@ class DDQueryMaker(DDLogger):
          return self.executeQueryFromTable(output,tabCol,sortName,sortOrder,query,fromRow,limit)
       
   def wrapToView(self,view,field,query):
-      print "\n\n#### call wrapToView",view,field,query
+#      print "\n\n#### call wrapToView",view,field,query
       query=query.replace('\n',' ').replace('\t',' ').strip()
       # HACK, to select only parts selected for single view for ORACLE DB
 #      if self.dbManager.dbType[self.dbsInstance]=='oracle':

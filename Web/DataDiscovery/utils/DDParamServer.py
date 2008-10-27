@@ -115,12 +115,22 @@ if __name__ == "__main__":
     optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
 
-    # test ProdRequest status response call
-    url="/ProdRequest/getRequestsByDataset"
-    server = DDParamServer(server="https://cmsweb.cern.ch/prodrequest",verbose=1)
-    params={'primary_dataset':'PhotonJet_500-7000','id':'1'}
+    # test DBS
+    dataset='/Monitor/Commissioning08-v1/RAW'
+    run=66423
+    xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='%s' lumi_section_number='' /></dbs>"""%run
+    params={'apiversion':'DBS_2_0_2','api':'listRunLumiDQ','xmlinput':xmlinput,'dataset':dataset}
+    url="cms_dbs_prod_global_writer/servlet/DBSServlet"
+    server = DDParamServer(server="cmsdbsprod.cern.ch")
     page = server.sendPostMessage(url,params,debug=1)
     print page
+
+    # test ProdRequest status response call
+#    url="/ProdRequest/getRequestsByDataset"
+#    server = DDParamServer(server="https://cmsweb.cern.ch/prodrequest",verbose=1)
+#    params={'primary_dataset':'PhotonJet_500-7000','id':'1'}
+#    page = server.sendPostMessage(url,params,debug=1)
+#    print page
 
     # test Phedex status response call
     url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
