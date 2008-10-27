@@ -1,6 +1,6 @@
 /**
- $Revision: 1.69 $"
- $Id: DBSApiProcDSLogic.java,v 1.69 2008/10/21 17:03:09 afaq Exp $"
+ $Revision: 1.70 $"
+ $Id: DBSApiProcDSLogic.java,v 1.70 2008/10/24 17:21:31 afaq Exp $"
  *
  */
 
@@ -456,6 +456,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		
 		String procDSID = "";
 		String primaryName = get(dataset, "primary_datatset_name", true);
+		
+		String global_tag=DBSUtil.get(dataset, "global_tag");
+		if (isNull(global_tag)) global_tag="";
 		//Insert a Processed Datatset before by fetching the primDSID, status
 		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
 		String path =  "/" + primaryName + "/" + procDSName +  "/nothing";
@@ -471,7 +474,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 					getID(conn, "ProcDSStatus", "Status", status, true), 
 					get(dataset, "acquisition_era", false),
-					get(dataset, "global_tag", false),
+					global_tag,
+					//getStr(dataset, "global_tag", false),
 					get(dataset, "external_cross_section", false),
 					cbUserID,
 					lmbUserID,
