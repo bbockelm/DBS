@@ -12,7 +12,7 @@
 
 	<Register service="jnp://cmsdbssrv.cern.ch:1099"
 		alias=""	
-		phy_location="__phy_location__"<!-- FNAL,CERN -->	
+		phy_location="__phy_location__"<!-- FNAL,CERN /-->	
 		critical="N"
 		admin_email="__admin_email__"	
 		admin_dn="__admin_dn__"
