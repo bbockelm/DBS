@@ -50,7 +50,7 @@ public class DBSApiExecuteQuery {
 			int numberOfColumns = rsmd.getColumnCount();
 			String[] colNames =new String[numberOfColumns];
 			for (int i = 0; i != numberOfColumns; ++i) {
-				colNames[i] = rsmd.getColumnName(i + 1);
+				colNames[i] = rsmd.getColumnLabel(i + 1);
 			}
 			while(rs.next()) {
 				out.write(((String) "<result "));

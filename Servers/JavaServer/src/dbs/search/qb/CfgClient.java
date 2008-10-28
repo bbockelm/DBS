@@ -8,9 +8,9 @@ import java.util.StringTokenizer;
 import xml.DBSXMLParser;
 import xml.Element;
 import dbs.util.DBSConfig;
-import fnal.gov.client.util.HttpUtil;
-import fnal.gov.client.DbsWebApi;
-import fnal.gov.client.util.Util;
+import gov.fnal.ms.client.util.HttpUtil;
+import gov.fnal.ms.client.DbsWebApi;
+import gov.fnal.ms.client.util.Util;
 
 public class CfgClient {
 	private HttpUtil hu;

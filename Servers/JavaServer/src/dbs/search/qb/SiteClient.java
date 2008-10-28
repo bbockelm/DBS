@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import dbs.util.DBSConfig;
-import fnal.gov.client.util.HttpUtil;
-import fnal.gov.client.DbsWebApi;
+import gov.fnal.ms.client.util.HttpUtil;
 
 public class SiteClient {
 	private HttpUtil hu;

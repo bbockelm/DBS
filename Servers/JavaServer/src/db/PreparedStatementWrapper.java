@@ -639,6 +639,60 @@ public class PreparedStatementWrapper implements PreparedStatement {
 		return embedded.executeQuery(sql);
 	}
 	
+	/**
+	* {@inheritDoc}
+	public void setNClob(int parameterIndex, java.io.Reader r)  throws SQLException {
+		embedded.setNClob(parameterIndex, r);
+		bindParams.put(new Integer(parameterIndex), r);
+		
+	}
+	public void setClob(int parameterIndex, java.io.Reader r)  throws SQLException {
+		embedded.setClob(parameterIndex, r);
+		bindParams.put(new Integer(parameterIndex), r);
+		
+	}
+	public void setNCharacterStream(int parameterIndex, java.io.Reader r)  throws SQLException {
+		embedded.setNCharacterStream(parameterIndex, r);
+		bindParams.put(new Integer(parameterIndex), r);
+		
+	}
+	public void setCharacterStream(int parameterIndex, java.io.Reader r)  throws SQLException {
+		embedded.setCharacterStream(parameterIndex, r);
+		bindParams.put(new Integer(parameterIndex), r);
+		
+	}
+	public void setCharacterStream(int parameterIndex, java.io.Reader r, long l)  throws SQLException {
+		embedded.setCharacterStream(parameterIndex, r, l);
+		bindParams.put(new Integer(parameterIndex), r);
+		
+	}
+
+
+	public void setBlob(int parameterIndex, java.io.InputStream i)  throws SQLException {
+		embedded.setBlob(parameterIndex, i);
+		bindParams.put(new Integer(parameterIndex), i);
+		
+	}
+	public void setBinaryStream(int parameterIndex, java.io.InputStream i)  throws SQLException {
+		embedded.setBinaryStream(parameterIndex, i);
+		bindParams.put(new Integer(parameterIndex), i);
+		
+	}
+	public void setAsciiStream(int parameterIndex, java.io.InputStream i)  throws SQLException {
+		embedded.setAsciiStream(parameterIndex, i);
+		bindParams.put(new Integer(parameterIndex), i);
+		
+	}
+	public void setBinaryStream(int parameterIndex, java.io.InputStream i, long l)  throws SQLException {
+		embedded.setBinaryStream(parameterIndex, i, l);
+		bindParams.put(new Integer(parameterIndex), i);
+		
+	}
+
+	*/
+
+
+
 	/*protected void finalize() throws Exception {
 		ResultSet rs = this.getResultSet();
 		if (rs != null) {
