@@ -6035,7 +6035,7 @@ Save query as:
               bindParams="\n"
               for key in bParams:
                   bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
-              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s  </bindparams>\n   <executiontime>__time__</executiontime>\n   <asearchtime>__fulltime__</asearchtime>\n</query>\n"""%(formatQuery(str(query)),bindParams)
+              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s  </bindparams>\n   <executiontime>__time__</executiontime>\n   <asearchtime>__fulltime__</asearchtime>\n</query>\n"""%(formatQuery(str(query).replace("<","&lt;").replace(">","gt;")),bindParams)
               page+="<results>\n"
               page+="<total>%s</total>\n"%nResults
               if pagerStep!=-1:
