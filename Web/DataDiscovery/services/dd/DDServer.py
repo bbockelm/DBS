@@ -5301,7 +5301,8 @@ Save query as:
         dbsApi = self.getDbsApi(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         if  method=="dbsapi":
-            if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+#            if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+            if (not limit and not fromRow) or limit==-1:
                fromRow=""
                limit=""
             res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
@@ -5355,7 +5356,8 @@ Save query as:
 #        print "\n\n+++aSearchShowAll",kwargs
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
-           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+#           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+           if (not limit and not fromRow) or limit==-1:
               limit=""
               fromRow=""
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
@@ -5475,7 +5477,8 @@ Save query as:
 #        print "\n\n+++aSearchSummary",kwargs
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
-           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+#           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+           if (not limit and not fromRow) or limit==-1:
               limit=""
               fromRow=""
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
@@ -5728,7 +5731,8 @@ Save query as:
         userInput= kwargs['userInput']
         if method=="dbsapi":
            dbsApi = self.getDbsApi(dbsInst)
-           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+#           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+           if (not limit and not fromRow) or limit==-1:
               limit=""
               fromRow=""
            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
@@ -5964,7 +5968,8 @@ Save query as:
                 if pagerStep==-1:
                    res=dbsApi.executeQuery(userInput,type="query")
                 else:
-                       if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+#                       if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+                       if (not limit and not fromRow) or limit==-1:
                           limit=""
                           fromRow=""
                        res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
