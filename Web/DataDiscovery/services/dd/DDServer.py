@@ -5957,7 +5957,7 @@ Save query as:
                    print dbsApi.getServerUrl()
                 fromRow=_idx*pagerStep
                 toRow=_idx*pagerStep+pagerStep
-                if self.verbose:
+                if self.verbose>1:
                    msg="\n\n### While using DBS-QL DBSAPI, transform user input"
                    msg+="\n'%s'"%userInput
                    msg+="\n'%s'"%sel
