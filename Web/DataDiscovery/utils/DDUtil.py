@@ -787,14 +787,20 @@ class DDLogger:
          msg="Not enough permissions to create a DDServer log file in '%s'"%self.dir
          raise msg
       hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'midnight', 1, 7 )
-#      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'M', 1, 7 )
       formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
       hdlr.setFormatter( formatter )
       self.loggerHandler=hdlr
       self.setLogger()
 
   def setLevel(self,level):
-      self.logLevel=level
+      self.verbose=level
+      if level==1:
+         self.logLevel = logging.INFO
+      elif level==2:
+         self.logLevel = logging.DEBUG
+      else:
+         self.logLevel = logging.NOTSET
+      self.setLogger()
 
   def getHandler(self):
       return self.loggerHandler
@@ -810,12 +816,11 @@ class DDLogger:
           @rtype : none
           @return: none
       """
+      print "\nwriteLog",self.verbose,msg
       if self.verbose==1:
          self.logger.info(msg)
       elif self.verbose>=2:
          self.logger.debug(msg)
-      else:
-         pass
 
   def setLogger(self):
       """

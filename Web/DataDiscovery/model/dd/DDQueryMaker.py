@@ -38,7 +38,7 @@ class DDQueryMaker(DDLogger):
   """
       DDQueryMaker class
   """
-  def __init__(self,dbManager,dbsInst=""):
+  def __init__(self,dbManager,dbsInst="",verbose=1):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -53,7 +53,7 @@ class DDQueryMaker(DDLogger):
       if not dbsInst:
          dbsInst=self.ddConfig.dbsprimary()
       self.dbsInstance = dbsInst
-      self.verbose     = 0
+      self.verbose     = verbose
       self.html        = 0
       self.ddrules     = DDRules(self.verbose)
       DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDQueryMaker",self.verbose)
@@ -127,6 +127,7 @@ class DDQueryMaker(DDLogger):
   def setVerbose(self,level):
       self.verbose=level
       self.dbManager.setVerbose(level)
+      self.setLevel(level) # set logger level
 
   def alias(self,tableName,aliasName=""):
       return self.dbManager.getTable(self.dbsInstance,tableName,aliasName)
@@ -692,7 +693,7 @@ class DDQueryMaker(DDLogger):
           traceback.print_exc()
           msg+=getExcept()
           self.writeLog(msg)
-          raise "Fail in executeDBSQuery"
+          raise "Fail in executeDBSCountQuery"
       # end of number of results
       self.closeConnection(con)
       return res

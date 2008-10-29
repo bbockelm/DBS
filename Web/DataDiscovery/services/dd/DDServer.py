@@ -174,8 +174,7 @@ class DDServer(DDLogger,Controller):
         self.asearch    = DDSearch(dbsHelper=self.helper)
         self.ddrules    = DDRules(verbose)
         self.dbsrules   = DbsRules(verbose)
-        self.qmaker     = DDQueryMaker(self.dbManager,self.dbs)
-        self.qmaker.setVerbose(verbose)
+        self.qmaker     = DDQueryMaker(self.dbManager,self.dbs,verbose)
         self.dbsdls     = self.helper.getDbsDls()
         self.dbsList    = self.dbsdls.keys()
         self.dbsList.sort()
@@ -269,6 +268,7 @@ class DDServer(DDLogger,Controller):
         self.qmaker.setVerbose(opts.verbose)
         self.helper.setVerbose(opts.verbose)
         self.ddrules.setVerbose(opts.verbose)
+        self.setLevel(opts.verbose) # set logger level
         self.baseUrl = opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
         self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
