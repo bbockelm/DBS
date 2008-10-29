@@ -104,7 +104,8 @@ Url                     servlet URL
              if lines[0]=="AuthDBPassword":
                 self.passwd = lines[1]
              if lines[0]=="Host":
-                self.host = lines[1]
+                if len(lines)>1:
+                   self.host = lines[1]
              if lines[0]=="Url":
                 url = lines[1]
                 self.url = url
