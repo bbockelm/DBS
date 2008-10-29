@@ -816,7 +816,6 @@ class DDLogger:
           @rtype : none
           @return: none
       """
-      print "\nwriteLog",self.verbose,msg
       if self.verbose==1:
          self.logger.info(msg)
       elif self.verbose>=2:
