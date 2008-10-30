@@ -132,6 +132,7 @@ ValidationTable = {
          "RunsList" : { "Comment" : "List of THIS file's Runs", "Validator" : isListType },
          "ParentList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "BranchList" : { "Comment" : "List of ROOT Branch names", "Validator" : isListType },
+	 "BranchHash" : { "Comment" : "HASH for ROOT Branch names, Optional", "Validator" : isStringType},
 	 "AutoCrossSection" : { "Comment" : "User may not need to set this variable always", "Validator" : isFloatType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
