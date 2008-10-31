@@ -495,7 +495,7 @@ CREATE TABLE RunLumiDQInt
     LastModificationDate  integer,
     LastModifiedBy        integer,
     primary key(ID),
-    unique(Run,Lumi,SubSystem)
+    unique(Dataset, Run,Lumi,SubSystem)
   );
 
 REM ======================================================================
@@ -515,7 +515,7 @@ CREATE TABLE QualityHistory
     LastModificationDate  integer,
     LastModifiedBy        integer,
     primary key(ID),
-    unique(HistoryTimeStamp,Run,Lumi,SubSystem,DQValue)
+    unique(HistoryTimeStamp,Dataset, Run,Lumi,SubSystem,DQValue)
   );
     
 REM ======================================================================
@@ -535,7 +535,7 @@ CREATE TABLE IntQualityHistory
     LastModificationDate  integer,
     LastModifiedBy        integer,
     primary key(ID),
-    unique(HistoryTimeStamp,Run,Lumi,SubSystem, IntDQValue)
+    unique(HistoryTimeStamp,Dataset, Run,Lumi,SubSystem, IntDQValue)
   );
 
 REM ======================================================================

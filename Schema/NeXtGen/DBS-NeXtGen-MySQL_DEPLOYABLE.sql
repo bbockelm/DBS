@@ -4,9 +4,9 @@
 -- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_1_1_5;
-create database DBS_1_1_5;
-use DBS_1_1_5;
+drop database if exists DBS_2_0_3;
+create database DBS_2_0_3;
+use DBS_2_0_3;
 
 -- ======================================================================
 
@@ -871,6 +871,7 @@ CREATE TABLE SubSystem
 CREATE TABLE RunLumiQuality
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
+    Dataset               BIGINT UNSIGNED   not null,
     Run                   BIGINT UNSIGNED   not null,
     Lumi                  BIGINT UNSIGNED,
     SubSystem             BIGINT UNSIGNED   not null,
@@ -890,6 +891,7 @@ CREATE TABLE RunLumiQuality
 CREATE TABLE RunLumiDQInt
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
+    Dataset               BIGINT UNSIGNED   not null,
     Run                   BIGINT UNSIGNED   not null,
     Lumi                  BIGINT UNSIGNED,
     SubSystem             BIGINT UNSIGNED   not null,
@@ -910,6 +912,7 @@ CREATE TABLE QualityHistory
     ID                    BIGINT UNSIGNED not null auto_increment,
     HistoryOf             BIGINT UNSIGNED,
     HistoryTimeStamp      BIGINT            not null,
+    Dataset               BIGINT UNSIGNED   not null,
     Run                   BIGINT UNSIGNED   not null,
     Lumi                  BIGINT UNSIGNED,
     SubSystem             BIGINT UNSIGNED   not null,
@@ -922,6 +925,26 @@ CREATE TABLE QualityHistory
     primary key(ID),
     unique(HistoryTimeStamp,Run,Lumi,SubSystem,DQValue)
   ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE IntQualityHistory
+  (
+    ID                    integer,
+    HistoryOf             integer,
+    HistoryTimeStamp      integer   not null,
+    Dataset               integer   not null,
+    Run                   integer   not null,
+    Lumi                  integer,
+    SubSystem             integer   not null,
+    IntDQValue            integer   not null,
+    CreationDate          integer,
+    CreatedBy             integer,
+    LastModificationDate  integer,
+    LastModifiedBy        integer,
+    primary key(ID),
+    unique(HistoryTimeStamp,Run,Lumi,SubSystem, IntDQValue)
+  );
 
 -- ======================================================================
 
@@ -1593,6 +1616,36 @@ ALTER TABLE QualityHistory ADD CONSTRAINT
     QualityHistoryLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiDQInt(ID)
+;
+   
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_Run_FK foreign key(Run) references Runs(ID)
+;
+   
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+;
+   
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+;
+   
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+;
+   
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQualityHistory_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+
+ALTER TABLE IntQualityHistory ADD CONSTRAINT
+    IntQHistLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+; 
+
+
 ALTER TABLE QualityVersion ADD CONSTRAINT 
     QualityVersion_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -1992,7 +2045,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_2', 'LOCAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_2_0_3', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
@@ -2026,8 +2079,9 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-HLTDEBUG-RECO', 'ADDED DURING CSA08');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG', 'ADDED');
 
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()), ('HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI', UNIX_TIMESTAMP()), ('GEN-SIM-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP());
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()), ('HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI', UNIX_TIMESTAMP()), ('GEN-SIM-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('HLTDEBUG', UNIX_TIMESTAMP());
 
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
