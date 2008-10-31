@@ -1461,7 +1461,7 @@ function LoadGetRuns(dbsInst,dataset,idx,ajax,userMode,pagerId) {
    var url='getRuns?dbsInst='+dbsInst+'&dataset='+dataset+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
-function LoadASearch(dbsInst,userMode,idx,pagerId,userInput) {
+function LoadASearch(dbsInst,userMode,fromRow,idx,pagerId,userInput) {
    var pagerStep=$('pagerStep'+pagerId).value;
    var view=GetCookie('DBSDD_view');
    var grid=0;
@@ -1469,7 +1469,7 @@ function LoadASearch(dbsInst,userMode,idx,pagerId,userInput) {
    var sortName=GetCookie('DBSDD_sortName');
    var sortOrder=GetCookie('DBSDD_sortOrder');
    var caseSensitive=GetCookie('DBSDD_caseSensitive');
-   var url='aSearch?dbsInst='+dbsInst+'&userMode='+userMode+'&_idx='+idx+'&pagerStep='+pagerStep+'&userInput='+userInput+'&sortName='+sortName+'&sortOrder='+sortOrder+'&caseSensitive='+caseSensitive+'&grid='+grid;
+   var url='aSearch?dbsInst='+dbsInst+'&userMode='+userMode+'&fromRow='+fromRow+'&_idx='+idx+'&pagerStep='+pagerStep+'&userInput='+userInput+'&sortName='+sortName+'&sortOrder='+sortOrder+'&caseSensitive='+caseSensitive+'&grid='+grid;
    load(url);
 }
 function Disable2EnableTag(tag) {

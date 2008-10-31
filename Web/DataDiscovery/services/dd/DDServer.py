@@ -5969,10 +5969,12 @@ Save query as:
                    res=dbsApi.executeQuery(userInput,type="query")
                 else:
 #                       if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
+                       start = fromRow
+                       end   = limit
                        if (not limit and not fromRow) or limit==-1:
-                          limit=""
-                          fromRow=""
-                       res=dbsApi.executeQuery(userInput,begin=fromRow,end=toRow,type="query")
+                           start = ""
+                           end   = ""
+                       res=dbsApi.executeQuery(userInput,begin=start,end=end,type="query")
                 if self.verbose>1:
                    print res
                    self.writeLog(res)
@@ -6140,7 +6142,7 @@ Save query as:
                         'pagerId'  : pagerId,
 #                        'nameForPager': _out+"s",
                         'nameForPager': "results",
-                        'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s')"%(dbsInst,userMode,_idx,pagerId,userInput)
+                        'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s','%s')"%(dbsInst,userMode,fromRow,_idx,pagerId,userInput)
                        }
            t = templatePagerStep(searchList=[_nameSpace]).respond()
            page+="""<hr class="dbs" />"""
