@@ -176,7 +176,9 @@ class DbsApi(DbsConfig):
     Note: Config (dbs.config) and Constructor 
       arguments have higher presedence 
     """
-
+    if __version__ in ("$Name:  $", ""):
+	raise DbsApiException(args="Incorrect parameters: client version not specified use 'version' in dbs.config or pass in CTOR")
+	return
     return __version__
 
   def getApiVersion(self):
@@ -1096,7 +1098,8 @@ if __name__ == "__main__":
     optManager  = DbsOptionParser()
     (opts,args) = optManager.getOpt()
     args={}
-    url_list=['https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+    url_list=['http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet']
+    url_list_old=['https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
 		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
 		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet',
 		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_03_writer/servlet/DBSServlet',
