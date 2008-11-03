@@ -8,11 +8,11 @@
 		username="__insert_username__" 
 		password="__insert_password__" 
 		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3306/DBS_1_1_4?autoReconnect=true"/>
+		url="jdbc:mysql://localhost:3316/DBS_2_0_3?autoReconnect=true"/>
 
 	<Register service="jnp://cmsdbssrv.cern.ch:1099"
 		alias=""	
-		phy_location="__phy_location__"<!-- FNAL,CERN /-->	
+		phy_location="__phy_location__"
 		critical="N"
 		admin_email="__admin_email__"	
 		admin_dn="__admin_dn__"
@@ -24,7 +24,7 @@
 	<Certificate hostcert="___cert_file___"	certpass="___cert_password___"	/>
 
 	<SchemaOwner schemaowner="__MYSQL__"/> <!-- Possible vales are schema_owner, EMPTY STRING and __MYSQL__ /-->
-	<SupportedSchemaVersion schemaversion="DBS_1_1_2" />
+	<SupportedSchemaVersion schemaversion="DBS_2_0_3" />
 	<SupportedClientVersions clientversions="DBS_1_0_1, DBS_1_0_5, DBS_1_0_7, DBS_1_0_8, DBS_1_0_9, DBS_1_1_2, DBS_1_2_0, DBS_1_2_1, DBS_1_2_3, DBS_1_2_4, DBS_1_2_5, DBS_1_2_6, DBS_1_2_7, DBS_1_2_8, DBS_1_2_9, DBS_2_0_0, DBS_2_0_2, DBS_2_0_3" />
 	<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
 </Context>
