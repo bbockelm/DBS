@@ -81,11 +81,12 @@ do
     echo
 done
 
-#for input in \
-#"*QCD*"
-#do
-#    echo "input=\"$input\""
-#    $cmd --host=$host --input="$input" --iface=dbsapi
-#    echo -e '\E[47;31m'"\033[1mABOVE TEST SHOULD FAIL\033[0m"
-#    echo
-#done
+input="find dataset where dataset like *"
+dbsList=`cat DBParam  | grep Section | grep -v "#" | awk '{print $2}'`
+for dbsInst in $dbsList
+do
+    echo "TEST for $dbsInst"
+    $cmd --host=$host --input="$input" --iface=dbsapi --dbsInst=$dbsInst
+    echo -e '\E[47;32m'"\033[1mABOVE TEST SHOULD PASS\033[0m"
+    echo
+done
