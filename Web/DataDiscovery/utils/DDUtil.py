@@ -124,6 +124,8 @@ def swapDict2(d):
     return new
 
 def normUrl(url):
+    if  url.find("http://") == -1 or url.find("https://") == -1:
+        return url
     try:
         path = url.split("http://")[1]
         return "http://"+os.path.normpath(path)
