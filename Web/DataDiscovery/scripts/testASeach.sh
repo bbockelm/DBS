@@ -82,7 +82,7 @@ do
 done
 
 input="find dataset where dataset like *"
-dbsList=`cat DBParam  | grep Section | grep -v "#" | awk '{print $2}'`
+dbsList=`cat $DDHOME/DBParam  | grep Section | grep -v "#" | awk '{print $2}'`
 for dbsInst in $dbsList
 do
     echo "TEST for $dbsInst"
