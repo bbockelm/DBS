@@ -279,7 +279,7 @@ class DDServer(DDLogger,Controller):
         self.topUrl=self.baseUrl
         # I only need this if webtools force to use a new URL structure.
 #        self.dbsdd=self.dbsdd+"/DDServer/"
-        self.dbsdd=self.dbsdd
+#        self.dbsdd=self.dbsdd
         try:
            self.verbose=opts.verbose
            self.helper.setVerbose(self.verbose)
