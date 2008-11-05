@@ -32,7 +32,10 @@ cat >> $DIR/DBSDD.conf << EOF
 # URL=$host
 # PORT=$port
 LOGGERDIR=$DDHOME/Logs
-DBS_VER=`echo $DBS_CLIENT_VERSION | sed "s/-cmp[0-9]//g"`
+### Until DBS team will settle down how DBS Client version 
+### should be set I'll use fixed one, which should work.
+### DBS_VER=`echo $DBS_CLIENT_VERSION | sed "s/-cmp[0-9]//g"`
+DBS_VER=DBS_2_0_2
 EOF
 
 cat > $DIR/DBParam << EOF
