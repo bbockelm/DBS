@@ -241,9 +241,11 @@ class DbsMigrateApi:
 				self.migratePath( dataset)
 				
 		if self.doesPathExistNoForce(self.apiDst, path):
+			 found = False
 			 blockInDst = self.apiDst.listBlocks(path)
 			 for aBlockInDst in blockInDst:
 				 if aBlockInDst['Name'] == blockName:
+					 found = True
 					 #print aBlockInDst
 					 if aBlockInDst['OpenForWriting'] == '0':
 						 print 'Opening the Block in the destination DBS for writing'
@@ -254,6 +256,8 @@ class DbsMigrateApi:
 					 else:
 						 self.migrateBlockBasic(path, blockName)
 					 break
+			 if  not found:
+				self.migrateBlockBasic(path, blockName)
 		else:
 			 self.migrateBlockBasic(path, blockName)
 					 
