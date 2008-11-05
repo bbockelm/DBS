@@ -255,11 +255,13 @@ class DDServer(DDLogger,Controller):
         dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
         if self.verbose:
            print "dbsUrl",dbsUrl
-        self.dbsConfig['url']=dbsUrl
+#        self.dbsConfig['url']=dbsUrl
+        config = dict(self.dbsConfig)
+        config['url']=dbsUrl
         if self.dbsApi.has_key(dbsInst):
            return self.dbsApi[dbsInst]
         else:
-           dbsApi = DbsApi(self.dbsConfig)
+           dbsApi = DbsApi(config)
            self.dbsApi[dbsInst]=dbsApi
            return dbsApi
 
