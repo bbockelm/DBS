@@ -689,6 +689,7 @@ class DDQueryMaker(DDLogger):
           res = result.fetchone()[0]
       except:
           msg="\n### Query:\n"+str(sel)
+          msg+=str(result)
           print msg
           traceback.print_exc()
           msg+=getExcept()
