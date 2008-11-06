@@ -1,6 +1,6 @@
 /**
- $Revision: 1.146 $"
- $Id: DBSApiLogic.java,v 1.146 2008/09/16 21:12:32 afaq Exp $"
+ $Revision: 1.147 $"
+ $Id: DBSApiLogic.java,v 1.147 2008/10/24 17:21:31 afaq Exp $"
  *
  */
 
@@ -293,7 +293,8 @@ public class DBSApiLogic {
 				if((endTime - startTime ) < TIMEOUT) {
 					System.out.println("Start time " + startTime + "  end time " + endTime + "  diff " + (endTime - startTime ));
 					if(!queryThread.isAlive()) {
-						//System.out.println("cheked to see if alive . NOT ALIVE");
+						System.out.println("cheked to see if alive . NOT ALIVE");
+						if(queryThread.getError() != null) throw queryThread.getError();
 						return;
 					}
 					//} else {

@@ -25,7 +25,7 @@
 	<node id="FileValidStatus" 		user="file.vstatus" 	real="FileValidStatus" 			default="Status"/>
 	<node id="FileTriggerTag" 		user="ftrigger" 	real="FileTriggerTag" 			default="Fileid,TriggerTag"/>
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
-	<node id="ProcDSTier" 			user="procds.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
+	<node id="ProcDSTier" 			user="procds.tier,dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
 	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent"/>
 	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"/>
 	<node id="AnalysisDataset" 		user="ads" 		real="AnalysisDataset" 			default="Name,Version"/>
