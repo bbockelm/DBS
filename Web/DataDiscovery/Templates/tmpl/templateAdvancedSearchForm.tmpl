@@ -1,3 +1,4 @@
+
 <!-- templateAdvancedSearchForm.tmpl -->
 
 <span id="defaultPage"></span>
@@ -274,19 +275,19 @@ look-up total size of files and list runs for given dataset name
 </table>
 </div>
 
-#if $userHelp
 #*
+#if $userHelp
 <p>
 <b class="yellow_box" onclick="javascript:aSearchHelp('SYNTAX')">Syntax</b>,
 <b class="yellow_box" onclick="javascript:aSearchHelp('KEYWORDS')">Keywords</b>,
 <b class="yellow_box" onclick="javascript:aSearchHelp('SHORTCUTS')">Shortcuts</b>,
 <b class="yellow_box" onclick="javascript:aSearchHelp('EXAMPLES')">Examples</b>.
 </p>
-*#
 <p>
 Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 </p>
 #end if
+*#
 #if $userMode=='expert'
 <p>
 <input type="checkbox" id="checkMethod" onChange="ChangeMethod()" checked='checked' /> check this box if you want to use DBS-QL, uncheck for DD QL implementation
