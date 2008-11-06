@@ -75,7 +75,14 @@ constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);}
 		spaces 
 	op2=	like 		{c.setOp($op2.text);} 
 		spaces 
-	val2=	dotValue 		{c.setValue($val2.text); constraints.add(c);};                  
+	val2=	dotValue 		{c.setValue($val2.text); constraints.add(c);}
+		|
+ 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
+		spaces 
+	op3=	between		{c.setOp($op3.text);} 
+		spaces 
+	val3=	betValue 		{c.setValue($val3.text); constraints.add(c);};                  
+                 
 
 where	:('WHERE' | 'where');
 dotValue        : VALUE 
@@ -115,8 +122,10 @@ compOpt		:(EQ)
 		|(LT)(EQ)
 		|(GT)(EQ)
 		|(LT)(GT);
+
 genValue	:dotValue
 		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
+betValue	:dotValue spaces and spaces dotValue;
 //cfgValue	: genValue (spaces AMP spaces genValue)*;
 
 //likeValue 	:(dotValue| STAR)+;
@@ -139,6 +148,7 @@ count		:('count' | 'COUNT');
 sum		:('sum' | 'SUM');
 asc		:('asc' | 'ASC');
 desc		:('desc' | 'DESC');
+between		:('between' | 'BETWEEN');
 //likeLeft	:('LikeLeft');
 //likeRight	:('LikeRight');
 //likeCfg		:('<like>');

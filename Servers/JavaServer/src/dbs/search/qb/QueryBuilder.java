@@ -917,6 +917,14 @@ public class QueryBuilder {
 		bindValues.add(val.replace('*','%'));
 		return "LIKE upper(?)";
 	}
+	private String handleBetween(String val, List<String> bindValues) throws Exception {
+		String token[] = val.split("and");
+		if(token.length != 2) throw new Exception("Invalid syntax is used for between keyword \n " + val + "\n The valid syntax exmaple is where abc between 34 and 13");
+		bindValues.add(token[0]);
+		bindValues.add(token[1]);
+		return "BETWEEN ? AND ?";
+	}
+
 	private String handleNotLike(String val, List<String> bindValues) {
 		bindValues.add(val.replace('*','%'));
 		return "NOT LIKE upper(?)";
@@ -942,6 +950,7 @@ public class QueryBuilder {
 		if(Util.isSame(op, "in")) query += handleIn(val, bindValues);
 		else if(Util.isSame(op, "like")) query += handleLike(val, bindValues);
 		else if(Util.isSame(op, "not like")) query += handleNotLike(val, bindValues);
+		else if(Util.isSame(op, "between")) query += handleBetween(val, bindValues);
 		else {
 			query += op + " ?\n";
 			bindValues.add(val);

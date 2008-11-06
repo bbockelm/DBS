@@ -150,6 +150,8 @@ executeQuery () {
 	$CMD query="find dataset  where site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
 	$CMD query="find dataset, site"
 	$CMD query="find site"
+	$CMD query="find dataset where run between 51437 and 51450 or run between 0 and 30000" 
+	$CMD query="find dataset where dataset.id between 1 and 2 or dataset like *on*" 
 
 
 
@@ -213,7 +215,9 @@ executeQuery () {
 	#$CMD query="*tes t_primary_00" 
 	#$CMD query="find dataset where dataset like *csa*" 
 	#$CMD query="find dataset where dataset like *csa* and dataset not    like *online*" 
-	$CMD query="find dataset where dataset.tier = RAW " 
+	#$CMD query="find dataset where dataset.tier = RAW " 
+	#$CMD query="find dataset where dataset.id between 1   and   2 or dataset like *on*" 
+	$CMD query="find dataset where run between 51437 and 51450 or run between 0 and 30000" 
 	#$CMD query="find dataset where procds.tier = RAW " 
 	#$CMD query="find dataset where file.tier = RAW " 
 	#$CMD query="find dataset where dataset = *RAW " 
