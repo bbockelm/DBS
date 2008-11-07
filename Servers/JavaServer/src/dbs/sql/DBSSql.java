@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.193 $"
- $Id: DBSSql.java,v 1.193 2008/10/23 20:12:27 afaq Exp $"
+ $Revision: 1.194 $"
+ $Id: DBSSql.java,v 1.194 2008/10/24 17:21:32 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3272,7 +3272,7 @@ public class DBSSql {
                         "pg.PhysicsGroupName as PHYSICS_GROUP_NAME \n" +
 
                         "FROM "+owner()+"AnalysisDataset ads \n" +
-                        "JOIN CompADSMap compadsmap \n"+
+                        "JOIN "+owner()+"CompADSMap compadsmap \n"+
                                 "ON ads.ID = compadsmap.ADS \n"+
                         "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = ads.CreatedBy \n" +
