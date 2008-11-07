@@ -871,7 +871,7 @@ class DDServer(DDLogger,Controller):
             if msg:
                page+=msg
             if userMode=="user":
-               page+="""<hr class="dbs" />"""
+#               page+="""<hr class="dbs" />"""
                page+="""<p class="sectionhead">MENU-DRIVEN INTERFACE</p>"""
                auto=0
                if kwargs.has_key('auto') and kwargs['auto']=='on':

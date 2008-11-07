@@ -42,10 +42,12 @@
 </td>
 ####end if
 <td>
+<span id="case" name='case' class="hide">
 Case-sensitivity:
 <a href="javascript:CaseSensitiveOn();"><span id="caseOn" class="td_underline_pad">on</span></a> 
 | 
 <a href="javascript:CaseSensitiveOff();"><span id="caseOff" class="">off</span></a>
+</span>
 </td>
 <td align="right">
 &nbsp;&nbsp;&nbsp;
@@ -292,7 +294,7 @@ Command line tool for this interface is available <a href="aSearchCLI">here</a>.
 *#
 #if $userMode=='expert'
 <p>
-<input type="checkbox" id="checkMethod" onChange="ChangeMethod()" checked='checked' /> check this box if you want to use DBS-QL, uncheck for DD QL implementation
+<input type="checkbox" id="checkMethod" name="checkMethod" onChange="ChangeMethod()" checked='checked' /> check this box if you want to use DBS-QL, uncheck for DD QL implementation
 </p>
 #else
 <input type="hidden" id="checkMethod" checked='checked' />
@@ -306,10 +308,12 @@ function ChangeMethod() {
    var jd=document.getElementById('checkMethod');
    if (jd && jd.checked==true) {
        id.value='dbsapi';
-       SetCookie('DBSDD_method','dbsapi')
+       SetCookie('DBSDD_method','dbsapi');
+       HideTag('case');
    } else {
        id.value='dd';
-       SetCookie('DBSDD_method','dd')
+       SetCookie('DBSDD_method','dd');
+       ShowTag('case');
    }
 }
 SetCookie('DBSDD_method','dbsapi');
@@ -401,6 +405,15 @@ function aSearchKeys() {
    id.className="float_aSearch_help";
 }
 //SetDefaultPageMessage('aSearch');
+function CheckCaseUsage() {
+   var id=document.getElementById('method');
+   var cd=document.getElementById('case');
+   if (id=='dd') {
+       ShowTag('case');
+   } else {
+       HideTag('case');
+   }
+}
 </script>
 <p></p>
 

@@ -1528,18 +1528,26 @@ function CaseSensitiveOn() {
    var id=$('caseSensitive');
    id.value='on';
    id=$('caseOn');
-   id.className='td_underline_pad';
+   if (id) {
+       id.className='td_underline_pad';
+   }
    id=$('caseOff');
-   id.className='';
+   if (id) {
+       id.className='';
+   }
 }
 function CaseSensitiveOff() {
    SetCookie('DBSDD_caseSensitive','off');
    var id=$('caseSensitive');
    id.value='off';
    id=$('caseOff');
-   id.className='td_underline_pad';
+   if (id) {
+       id.className='td_underline_pad';
+   }
    id=$('caseOn');
-   id.className='';
+   if (id) {
+       id.className='';
+   }
 }
 function SortDesc() {
    SetCookie('DBSDD_sortOrder','desc');
