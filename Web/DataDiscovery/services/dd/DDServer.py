@@ -1027,6 +1027,7 @@ class DDServer(DDLogger,Controller):
                          'host'         : self.dbsdd,
                          'userMode'     : userMode,
                          'glossary'     : self.glossary(),
+                         'dbs_ql'       : self.aSearchKeys(),
                          'section'      : section,
                         }
             t = templateMenuHelp(searchList=[nameSpace]).respond()
@@ -1874,7 +1875,7 @@ class DDServer(DDLogger,Controller):
         return page
     findDatasetsFromLFN.exposed=True
 
-    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
+    def getDataHelperViaASearch(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -1891,6 +1892,80 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
+        query = "find dataset "
+        cond  = ""
+        if  site:
+            if  site.lower() == 'any':
+                site = "*"
+            if  site == "*":
+                cond += ""
+            elif  site.find('*') != -1:
+                cond += "and site like %s " % site
+            else:
+                cond += "and site = %s " % site
+        if  group:
+            if  group.lower() == 'any':
+                group = "*"
+            if  group == "*":
+                cond += ""
+            elif  group.find('*') != -1:
+                cond += "and phygrp like %s " % group
+            else:
+                cond += "and phygrp = %s " % group
+        if  app:
+            if  app and app[0]=="/": # keep backward compatible options
+                app=app.split("/")[1]
+            if  app.lower() == 'any':
+                app = "*"
+            if  app == "*":
+                cond += ""
+            elif  app.find('*') != -1:
+                cond += "and release like %s " % app
+            else:
+                cond += "and release = %s " % app
+        if  primD:
+            if  primD.lower() == 'any':
+                primD = "*"
+            if  primD == "*":
+                cond += ""
+            elif  primD.find('*') != -1:
+                cond += "and primds like %s " % primD
+            else:
+                cond += "and primds = %s " % primD
+        if  tier:
+            if  tier.lower() == 'any':
+                tier = "*"
+            if  tier == "*":
+                cond += ""
+            elif  tier.find('*') != -1:
+                cond += "and dataset.tier like %s " % tier
+            else:
+                cond += "and dataset.tier = %s " % tier
+        if  proc:
+            if  proc.lower() == 'any':
+                proc = "*"
+            if  proc == "*":
+                cond += ""
+            elif  proc.find('*') != -1:
+                cond += "and procds like %s " % proc
+            else:
+                cond += "and procds = %s " % proc
+#        if  primType:
+        if  date:
+            if  date.lower() == 'any':
+                date = "*"
+            if  date.find('*') == -1:
+                cond += "and dataset.createdate = %s " % date
+        if  cond:
+            query = "find dataset where " + cond[4:] # eliminate first "and "
+        else:
+            query = "find dataset where dataset like *"
+        print "\n\n#### query",query
+        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query)
+        return page
+    getDataHelperViaASearch.exposed=True
+
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         self.helperInit(dbsInst)
         self.dbs  = dbsInst
         self.site = site
@@ -2222,6 +2297,7 @@ class DDServer(DDLogger,Controller):
            if hist:
               page+=hist
            result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex,**kwargs)
+#           return self.getDataHelperViaASearch(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
            page+= result
            page+=self.genBottomHTML()
         if self.verbose==2:
