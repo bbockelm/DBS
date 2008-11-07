@@ -24,8 +24,10 @@ try:
   api = DbsApi(opts.__dict__)
 
   # List all parameter sets
-  for compADS in api.listCompADS('*'):
-     print "  %s" % compADS
+  for compADS in api.listCompADS('TestCompAnalysisANZAR'):
+     print "  %s" % compADS['Name']
+     for anADS in compADS['ADSList']:
+	print anADS['Name']
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
