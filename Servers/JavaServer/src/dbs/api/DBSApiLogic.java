@@ -1,6 +1,6 @@
 /**
- $Revision: 1.147 $"
- $Id: DBSApiLogic.java,v 1.147 2008/10/24 17:21:31 afaq Exp $"
+ $Revision: 1.148 $"
+ $Id: DBSApiLogic.java,v 1.148 2008/11/06 19:42:58 sekhri Exp $"
  *
  */
 
@@ -286,6 +286,7 @@ public class DBSApiLogic {
 
 			long startTime = (new Date()).getTime();
 			final long TIMEOUT = 120000;
+			//final long TIMEOUT = 4000;
 			final long SLEEPINTERVAL = 1000;
 			queryThread.start();
 			while(true) {
@@ -306,7 +307,7 @@ public class DBSApiLogic {
 				} else {
 					//System.out.println("Intrupting thread");
 					queryThread.interrupt();
-					throw new Exception("Your query " + userQuery + "took too long to execute . It is killed. The generated query is " + finalQuery);
+					throw new Exception("Your query " + userQuery + "took too long to execute . It is killed. The generated query is " + StringEscapeUtils.escapeXml(finalQuery));
 					//System.out.println("Intrupting thread DONE");
 					//return;
 				}
