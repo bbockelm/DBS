@@ -28,6 +28,9 @@ try:
      print "  %s" % compADS['Name']
      for anADS in compADS['ADSList']:
 	print anADS['Name']
+	ads_files=api.listFiles(analysisDataset=anADS['Name'])
+	for aFile in ads_files:
+		print aFile['LogicalFileName']
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
