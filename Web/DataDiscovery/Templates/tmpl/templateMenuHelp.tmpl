@@ -1,11 +1,13 @@
 <!-- templateMenuHelp.tmpl -->
 
-#set menuArr=['help_intro','help_glossary','help_wild-card','help_like','help_regexp','help_resources','help_feedback','help_refs','help_browser']
+####set menuArr=['help_itro','help_glossary','help_wild-card','help_like','help_regexp','help_resources','help_feedback','help_refs','help_browser']
+#set menuArr=['help_ql','help_nav','help_glossary','help_wild-card','help_like','help_regexp','help_resources','help_feedback','help_refs','help_browser']
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
 DBS Discovery :: Help
-- <a href="javascript:showResMenu('help_intro',$menuArr)">Introduction</a>
+- <a href="javascript:showResMenu('help_ql',$menuArr)">DBS-QL</a>
+| <a href="javascript:showResMenu('help_nav',$menuArr)">Navigation</a>
 | <a href="javascript:showResMenu('help_glossary',$menuArr)">Glossary</a>
 | <a href="javascript:showResMenu('help_wild-card',$menuArr)">Wild-card</a>
 | <a href="javascript:showResMenu('help_like',$menuArr)">Like search</a>
@@ -46,8 +48,49 @@ DBS Discovery :: Help
 </tr>
 </table>
 *#
+<div id="help_ql" class="show_inline">
+<br/>
+<div class="sectionhead">DBS QUERY LANGUAGE (DBS-QL)</div>
+The QL was designed to help you find out CMS data quickly. It supports a set of keywords which
+specify what you're looking for. For example, run keyword instruct QL that you're looking for
+run number. Every keyword followed by constrain operator, such as equal "=". You can combine
+any number of constrains by using AND|OR keywords.
+<br/>
+A full description of the Query Language can be found 
+<b class="yellow_box" style="text-decoration:underline">
+<a href="https://twiki.cern.ch/twiki/bin/view/CMS/QL">here</a>
+</b>. Please note that
+it is still under development.
+<br/>
+<hr class="dbs"/>
+<br/>
 
-<div id="help_intro" class="show_inline">
+<table width="100%"><tr><td align="left">
+<a name="SYNTAX">
+<span class="sectionhead">SYNTAX</span>
+</a>
+</td></tr></table>
+<b>
+FIND &lt;keyword&gt; WHERE &lt;keyword&gt; &lt;op&gt; &lt;value&gt; AND | OR  ...
+</b>
+<br/>
+Constrain operators: 
+<b>
+&lt;=, &lt;, &gt;=, &gt;, =, not like, like, in, between
+</b>
+<br/>
+words FIND,WHERE,AND,OR can be upper or lower case. 
+<br/>
+#*
+Expressions can be
+groupped together using brackets, e.g. ((a and b) or c)
+<br/>
+*#
+$dbs_ql
+</div>
+
+<div id="help_nav" class="hide">
+<br/>
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
 The purpose of this page to help you navigate through CMS data in
@@ -70,9 +113,9 @@ search interfaces consist of the following output:
 <img src="images/NavigatorOutputExplained.jpg" alt="Navigator output" />
 </p>
 </li>
-<li>Finder is a flexible way to construct your own queires against DBS.
+<li>DBS-QL is a flexible way to construct your own queires against DBS.
 To use this method, please choose
-<a href="_finder?userMode=user">Finder</a> menu
+<a href="_advanced?userMode=user">aSearch</a> menu
 on a left.
 </li>
 #if $userMode!='user'
@@ -90,19 +133,26 @@ All terms used on discovery page are defined in DBS glossary.
 </p>
 </div>
 
-<div id="help_glossary" class="hide">$glossary</div>
+<div id="help_glossary" class="hide">
+<br/>
+$glossary
+</div>
 
 <div id="help_wild-card" class="hide">
+<br/>
 <p>
-Wild-card search form with auto-completion. The
-'%' and '*' wild-cards are supported, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent.
+We support
+'%' and '*' as wild-cards identifiers, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent.
 ###The input form is case-insensitive, e.g. qcd and QCD are equivalent.
 </p>
 </div>
 
 <div id="help_like" class="hide">
+<br/>
 <p>
 Like-search allows you to search datasets whose name will match provided pattern. 
+The like-search expressions are support in 
+<a href="_navigator?userMode=$userMode">Navigator</a> interface.
 You can construct logical expressions by using <em>like:</em> keyword.
 There are two ways to specify the pattern in the dataset path
 <ul>
@@ -139,6 +189,7 @@ rather then a ttbar somewhere in a string.
 </div>
 
 <div id="help_regexp" class="hide">
+<br/>
 
 <p>
 The data discovery page supports regular expressions in input for for
@@ -358,38 +409,14 @@ Table 1: Anchoring Metacharacters</A></span>
 <p />
 <p />
 The DBS data discovery page was designed and well tested using 
-<a href="http://www.mozilla.com/en-US/">Firefox</a> browsers. 
+Firefox, Safari, IE browsers. Some issues still exists for
+IE browsers, therefore we encourage Windows users to use Firefox.
 
 <p />
-All other browser may be luck of some functionality or misbehave.
+All other browsers may be luck of some functionality or misbehave.
 We are trying to come up with features that are compatible among the browsers, but
 we due to different implementation of browsers it is not always possible.
 <p />
-Below we list of some known issues with different browsers:
-<ul>
-<li> Safari
-     <ul>
-     <li> the "Back" button doesn't restore last session state. Example, when you click on
-          &#171; more &#187;, and move forward with one of the link, on your way back,
-          the &#171; more &#187; menu will not pop-up
-     </ul>
-<li> Internet Explorer
-     <ul>
-     <li>
-     </ul>
-<li> Mozilla
-     <ul>
-     <li>
-     </ul>
-<li> Konqueror
-     <ul>
-     <li>
-     </ul>
-<li> Opera
-     <ul>
-     <li>
-     </ul>
-</ul>
 
 </div>
 
