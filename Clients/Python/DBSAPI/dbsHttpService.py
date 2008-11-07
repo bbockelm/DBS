@@ -360,6 +360,12 @@ class DbsHttpService:
                 #####logging.log(DBSINFO, info)
 		
       #print data
+      tokenToSearch = 'took too long to execute'
+      startIndex = data.find(tokenToSearch)
+      
+      if startIndex != -1:
+	      msgToRaise = data[startIndex:]
+	      raise DbsExecutionError(args=msgToRaise, code=4000)
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data
       return data
