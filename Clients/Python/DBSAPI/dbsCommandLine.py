@@ -220,14 +220,14 @@ class cmd_doc_writer:
       if self.wiki_help: command_help += "<verbatim>"
       command_help += "\n\nSome examples:\n"
       command_help += "\npython dbsCommandLine.py --help"
-      command_help += "\npython dbsCommandLine.py -c lsp --pattern=TestPrimary*"
-      command_help += "\npython dbsCommandLine.py -c listPrimaryDatasets --pattern=TestPrimary*"
-      command_help += "\npython dbsCommandLine.py -c listPrimaryDatasets --pattern=*"
-      command_help += "\npython dbsCommandLine.py -c listPrimaryDatasets"
-      command_help += "\npython dbsCommandLine.py -c listProcessedDatasets"
-      command_help += "\npython dbsCommandLine.py -c lsd --p=/QCD_pt_0_15_PU_OnSel/SIM/CMSSW_1_2_0-FEVT-1168294751-unmerged"
-      command_help += "\npython dbsCommandLine.py -c listFiles --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
-      command_help += "\npython dbsCommandLine.py -c lsf --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
+      command_help += "\ndbs lsp --pattern=TestPrimary*"
+      command_help += "\ndbs listPrimaryDatasets --pattern=TestPrimary*"
+      command_help += "\ndbs listPrimaryDatasets --pattern=*"
+      command_help += "\ndbs listPrimaryDatasets"
+      command_help += "\ndbs listProcessedDatasets"
+      command_help += "\ndbs lsd --p=/QCD_pt_0_15_PU_OnSel/SIM/CMSSW_1_2_0-FEVT-1168294751-unmerged"
+      command_help += "\ndbs listFiles --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
+      command_help += "\ndbs lsf --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
       command_help += "\n"
       if self.wiki_help: command_help += "</verbatim>"
       return command_help
@@ -242,7 +242,10 @@ class cmd_doc_writer:
       command_help += "\n           myAnalysisDatasetDef or myadsdef or --myadsdef"
       command_help += "\n           myAnalysisDataset or myads"
       command_help += "\n           search or --search\n"
-      command_help += "\n EXAMPLE: python dbsCommandLine.py -c lsd --path=/*/*/RAW" 
+      command_help += "\n EXAMPLES:"
+      command_help += "\n 	    python dbsCommandLine.py -c lsd --path=/*/*/RAW" 
+      command_help += "\n     OR     Using ALIAS 'dbs' for 'python dbsCommandLine.py -c'\n"
+      command_help += "\n            dbs lsd --path=/*/*/RAW\n"
       command_help += "\n Note: most commands can print greater details with --report"
       command_help += "\n Please use --doc for details"
       return command_help
@@ -258,8 +261,8 @@ class cmd_doc_writer:
                 print "                   --help, displays this message"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c myadsdef"
-                print "         python dbsCommandLine.py -c myadsdef --pattern=MyStoredQuery*"
+                print "         dbs myadsdef"
+                print "         dbs myadsdef --pattern=MyStoredQuery*"
                 if self.wiki_help: print "</verbatim>"
 
   def _help_myadslist(self):
@@ -273,8 +276,8 @@ class cmd_doc_writer:
                 print "                   --help, displays this message"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c myads"
-                print "         python dbsCommandLine.py -c myads --pattern=MyAnalysis*"
+                print "         dbs myads"
+                print "         dbs myads --pattern=MyAnalysis*"
                 if self.wiki_help: print "</verbatim>"
 
 
@@ -292,10 +295,10 @@ class cmd_doc_writer:
                 print "                   --help, displays this message"
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsads"
-                print "         python dbsCommandLine.py -c lsads --pattern=MyAnalysis*"
-                print "         python dbsCommandLine.py -c lsads --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/FEVT"
-                print "         python dbsCommandLine.py -c lsads --pattern=MyAnalysisDatasets4* --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/FEVT"
+                print "         dbs lsads"
+                print "         dbs lsads --pattern=MyAnalysis*"
+                print "         dbs lsads --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/FEVT"
+                print "         dbs lsads --pattern=MyAnalysisDatasets4* --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/FEVT"
 		if self.wiki_help: print "</verbatim>"
 
   #Analysis Dataset Definitions
@@ -310,8 +313,8 @@ class cmd_doc_writer:
                 print "                   --help, displays this message"
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsadef"
-                print "         python dbsCommandLine.py -c lsadef --pattern=WhatILike*"
+                print "         dbs lsadef"
+                print "         dbs lsadef --pattern=WhatILike*"
 		if self.wiki_help: print "</verbatim>"
                 
 
@@ -327,8 +330,8 @@ class cmd_doc_writer:
 		print "                   --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsp"
-                print "         python dbsCommandLine.py -c lsp --pattern=mc*"
+                print "         dbs lsp"
+                print "         dbs lsp --pattern=mc*"
 		if self.wiki_help: print "</verbatim>"
 
   def _help_procdslist(self):
@@ -347,11 +350,11 @@ class cmd_doc_writer:
 		print "                     --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsd"
-                print "         python dbsCommandLine.py -c lsd --report"
-                print "         python dbsCommandLine.py -c lsd --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/*"
-                print "         python dbsCommandLine.py -c lsd --path=/TAC-TIBTOB-120-DAQ-EDM/*/*"
-                print "         python dbsCommandLine.py -c lsd --path=/TAC-TIBTOB-120-DAQ-EDM/*/*  --algopattern=/*/CMSSW_1_2_0/*/*"
+                print "         dbs lsd"
+                print "         dbs lsd --report"
+                print "         dbs lsd --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/*"
+                print "         dbs lsd --path=/TAC-TIBTOB-120-DAQ-EDM/*/*"
+                print "         dbs lsd --path=/TAC-TIBTOB-120-DAQ-EDM/*/*  --algopattern=/*/CMSSW_1_2_0/*/*"
 		if self.wiki_help: print "</verbatim>"
 
   def _help_algolist(self):
@@ -366,9 +369,9 @@ class cmd_doc_writer:
 		print "         --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsa"
-                print "         python dbsCommandLine.py -c lsa --algopattern=/*/CMSSW_1_2_0/*/*"
-                print "         python dbsCommandLine.py -c lsa --algopattern=/*/CMSSW_1_2_0          (equally good)"
+                print "         dbs lsa"
+                print "         dbs lsa --algopattern=/*/CMSSW_1_2_0/*/*"
+                print "         dbs lsa --algopattern=/*/CMSSW_1_2_0          (equally good)"
 		if self.wiki_help: print "</verbatim>"
 
   def _help_filelist(self):
@@ -387,11 +390,11 @@ class cmd_doc_writer:
 		print "                     --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsf --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
-                print "         python dbsCommandLine.py -c lsf --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW --report"
-                print "         python dbsCommandLine.py -c lsf --lfnpattern=*root* --report (don't do that please !)"
-                print "         python dbsCommandLine.py -c lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
-                print "         python dbsCommandLine.py -c lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
+                print "         dbs lsf --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
+                print "         dbs lsf --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW --report"
+                print "         dbs lsf --lfnpattern=*root* --report (don't do that please !)"
+                print "         dbs lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
+                print "         dbs lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
                 print "   Note: --path takes precedence over --blockpattern and --lfnpattern (if --path provided rest are ignored)"
 		if self.wiki_help: print "</verbatim>"
 
@@ -406,9 +409,9 @@ class cmd_doc_writer:
 		print "             --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsse"
-                print "         python dbsCommandLine.py -c lsse --sepattern=*it         (All italian Storage Elements)"
-                print "         python dbsCommandLine.py -c lsse --sepattern=*fnal*         (All FNAL Storage Elements)"
+                print "         dbs lsse"
+                print "         dbs lsse --sepattern=*it         (All italian Storage Elements)"
+                print "         dbs lsse --sepattern=*fnal*         (All FNAL Storage Elements)"
 		if self.wiki_help: print "</verbatim>"
 
   def _help_blocklist(self):
@@ -426,11 +429,11 @@ class cmd_doc_writer:
 		print "                     --help, displays this message"    
 		if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c lsb --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
-                print "         python dbsCommandLine.py -c lsb --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW --report"
-                print "         python dbsCommandLine.py -c lsb --sepattern=*fnal*"
-                print "         python dbsCommandLine.py -c lsb --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
-                print "         python dbsCommandLine.py -c lsb --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
+                print "         dbs lsb --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
+                print "         dbs lsb --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW --report"
+                print "         dbs lsb --sepattern=*fnal*"
+                print "         dbs lsb --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
+                print "         dbs lsb --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
                 print "   Note: --path takes precedece over --blockpattern and --lfnpattern (if --path provided rest are ignored)"
 		if self.wiki_help: print "</verbatim>"
   def _help_storequery(self):
@@ -446,7 +449,7 @@ class cmd_doc_writer:
                 print "                    Where QUERYNAME is a Valid Analysis Dataset Definition Name"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --storequery=MYTESTADSDEF"
+                print "         dbs search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW --storequery=MYTESTADSDEF"
                 if self.wiki_help: print "</verbatim>"
 
   def _help_templatestorequery(self):
@@ -481,7 +484,7 @@ class cmd_doc_writer:
 		print "                Where PADSNAME is a Valid Analysis Dataset Name, QUERYNAME is a Valid Analysis Dataset Definition Name from DBS Mart"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --storequery=ANZARTESTADS --createPADS=MYPADS01"
+                print "         dbs search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --storequery=ANZARTESTADS --createPADS=MYPADS01"
                 print "         python dbsCommandLine.py --createPADS=MYPADS01 --usequery=MYTESTADSDEF"
 		if self.wiki_help: print "</verbatim>"
 
@@ -549,7 +552,7 @@ class cmd_doc_writer:
                 print "                Where ADSNAME is a Valid Analysis Dataset Name, QUERYNAME is a Valid Analysis Dataset Definition Name from DBS Mart"
                 if self.wiki_help: print "<verbatim>"
                 print "   examples:"
-                print "         python dbsCommandLine.py -c search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --storequery=ANZARTESTADS --createADS=MYADS01"
+                print "         dbs search --query=\"find files where dataset=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0/RAW\" --storequery=ANZARTESTADS --createADS=MYADS01"
                 print "         python dbsCommandLine.py --createADS=MYADS01 --usequery=MYTESTADSDEF"
                 if self.wiki_help: print "</verbatim>"
 		
@@ -573,7 +576,7 @@ class cmd_doc_writer:
 					words FIND,WHERE,AND,OR can be upper or lower case.
 					Expressions can be groupped together using brackets, e.g. ((a and b) or c)
 
-			Query Keywords: 	dataset primds , procds , tier , block , file , release , run , lumi , site.
+			Query Keywords: 	dataset primds , procds , tier , block , file , release , run , lumi , site. (etc.)
 
 			Query Examples: 
 				find release where release like *
@@ -734,30 +737,11 @@ class DbsOptionParser(optparse.OptionParser):
         self.doc()
 
       help=False
-      if 'help' in sys.argv:
-                sys.argv.remove('help')
-                help=True
-      if '--help' in sys.argv: 
-		sys.argv.remove('--help')
-		help=True
-      if '-h' in sys.argv: 
-		sys.argv.remove('-h')
-		help=True
-      if '-help' in sys.argv: 
-		sys.argv.remove('-help')
-		help=True
-      if '--h' in sys.argv : 
-		sys.argv.remove('--h')
-		help=True
-      if '?' in sys.argv:
-                sys.argv.remove('?')
-                help=True
-      if '-?' in sys.argv: 
-		sys.argv.remove('-?')
-		help=True
-      if '--?' in sys.argv : 
-		sys.argv.remove('--?') 
-		help=True
+      possible_helps=['help', '--help', '-h', '-help', '--h', '?', '-?', '--?', 'h']
+      for hlpcmd in possible_helps:
+	if hlpcmd in sys.argv:
+                sys.argv.remove(hlpcmd)
+                help=True	
 
       if help==True:
                 if len(sys.argv) < 3:
@@ -989,57 +973,50 @@ class ApiDispatcher:
   def manageHelp(self):
 
 	cmd = self.optdict.get('command', '')
-	#Map generated using JavaServer/etc/genHelp.py
-	entityAttr={'run': {'attr': ['number', 'numevents', 'numlss', 'starttime', 'endtime', 
-			'createdate', 'moddate']}, 'ads': {'attr': ['name', 'version', 'dataset', 
-			'desc', 'procds', 'createdate', 'moddate']}, 'site': {'attr': ['name']}, 
-			'dataset': {'attr': ['parent']}, 'procds': {'attr': ['name', 'createdate', 
-			'moddate']}, 'file': {'attr': ['name', 'size', 'id', 'numevents', 'createdate', 
-			'moddate']}, 'lumi': {'attr': ['startevnum', 'id', 'endevnum', 'number', 
-			'starttime', 'endtime', 'createdate', 'moddate']}, 'primds': {'attr': ['name', 
-			'createdate', 'moddate']}, 'block': {'attr': ['name', 'size', 'path', 'createdate', 
-			'moddate']}, 'dq': {'attr': []}}
 
-	entity_help={}
-	entity_help['ads'] = "Analysis Dataset(s)"	
-	entity_help['dataset'] = ""
-	entity_help['release'] = ""
-	entity_help['site'] = ""
-	entity_help['block'] = ""
-	entity_help['file'] = ""
-	entity_help['primds'] = ""
-	entity_help['procds'] = ""
-	entity_help['run'] = ""
-	entity_help['lumi'] = ""
-	entity_help['dq'] = ""
-
-	if cmd in entityAttr.keys():
-		print entity_help[cmd]
-		print "Possible attributes of %s are: " %cmd
-		for anAttr in entityAttr[cmd]['attr']:
-			print "  %s.%s" % (cmd, anAttr)
-		return True
-
-	if cmd in ("find", "FIND", "Find"):
+        if cmd in ("find", "FIND", "Find"):
                 desc_help="""
-	FIND is used with the search command to query data in DBS
+        FIND is used with the search command to query data in DBS
 
-	Example:   dbs search --query=\"find dataset where dataset like *Online*\""
-	Syntax:    FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
-	Operators: <=, <, >=, >, =, not like, like, in, between
-			words FIND,WHERE,AND,OR can be upper or lower case.
-	"""
-		print desc_help
-		print "Possible keywords are: \n\t", string.join( entityAttr.keys(), '  ' )
-		print "For further help on keywords use:"
-		print "	dbs help <keyword>\n"
-		return True
+        Example:   dbs search --query=\"find dataset where dataset like *Online*\""
+        Syntax:    FIND <keyword> WHERE <keyword> <op> <value> AND | OR <keyword> <op> <value>
+        Operators: <=, <, >=, >, =, not like, like, in, between
+                        words FIND,WHERE,AND,OR can be upper or lower case.
+        """
+                print desc_help
+                #print "Possible keywords are: \n\t", string.join( entityAttr.keys(), '  ' )
+                print "For further help on keywords use:"
+                print " dbs help <keyword>\n"
+		print " dbs help keywords\n"
+		print " dbs help examples\n"
+                return True
 
-	if cmd in ("keyword"):
-		print "Possible keywords are: ", string.join( entityAttr.keys(), '  ' )
-		print "For further help on keywords use:"
+  	entities = self.api.getHelp("")
+	entityNames = [ x['name'] for x in entities]
+
+        if cmd in ("keywords"):
+                print "Possible keywords are: ", string.join( entityNames, '  ' )
+                print "For further help and examples on each keyword use:"
                 print " dbs help <keyword>\n"
                 return True
+
+	cmd_s=cmd.split('.')
+	if (len(cmd_s) > 1 ) : cmd=cmd_s[0]
+	if cmd in entityNames:	
+		self.printGREEN( '\nENTITY\t ' + cmd )
+		print 'ATTRIBUTES'
+		for item in entities:
+			if item['name']==cmd:
+				attrList = item['attrs']
+				examples = item['examples']
+		for attr in attrList:
+			toPrint = '\t' + cmd + '.' + attr
+			self.printGREEN( toPrint )
+		print 'EXAMPLES'
+		for aex in examples:
+			print aex['desc']
+			self.printRED( "     "+aex['query'] )
+		return True
 
 	return False
 		
@@ -1082,7 +1059,7 @@ class ApiDispatcher:
     print self.term.RED+msg+self.term.NORMAL
 
   def printGREEN(self, msg):
-    print self.term.GREEN+msg+self.term.NORMAL
+    print self.term.YELLOW+msg+self.term.NORMAL
 
   def printBLUE(self, msg):
     print self.term.BLUE+msg+self.term.NORMAL
@@ -2246,12 +2223,10 @@ if __name__ == "__main__":
   opts = {}
   args = []
   try:
+
     optManager  = DbsOptionParser()
     (opts,args) = optManager.getOpt()
-    #if opts.__dict__.get('doc'):
-    #	print optManager.doc()
-    #	sys.exit(0)
-    #else:
+
     ApiDispatcher(opts)
 
   except DbsApiException, ex:
