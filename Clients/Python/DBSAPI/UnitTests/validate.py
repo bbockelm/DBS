@@ -11,6 +11,8 @@ from DBSAPI.dbsLumiSection import DbsLumiSection
 from DBSAPI.dbsQueryableParameterSet import DbsQueryableParameterSet
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
+from DBSAPI.dbsDQFlag import DbsDQFlag
+from DBSAPI.dbsRunLumiDQ import DbsRunLumiDQ
 
 from DBSAPI.dbsOptions import DbsOptionParser
 
@@ -125,6 +127,10 @@ fileStatusM = validStatus
 fileValidStatusM = validStatus
 fileTypeM = 'STREAMER'
 
+qim_name1="Tracker_Global"
+qim_name2="TIB_Local"
+qim_name3="TIB_Power"
+qim_int="TIB_Percentage"
 
 primObj = DbsPrimaryDataset (Name = primName, Type = primType)
 algoObj1 = DbsAlgorithm (
@@ -294,6 +300,40 @@ fileObjM = DbsFile (
 		AutoCrossSection=3.0
 		)
 
+qim_value_g = "GOOD"
+qim_value_b = "BAD"
+qim_value_u = "UNKNOWN"
+qim_value_i = 100
+
+qim_flag_g = DbsDQFlag (
+                        Name = qim_name1,
+                        Value = qim_value_g,
+                        )
+qim_flag_b = DbsDQFlag (
+                        Name = qim_name2,
+                        Value = qim_value_g,
+                        )
+
+qim_flag_u = DbsDQFlag (
+                        Name = qim_name3,
+                        Value = qim_value_u,
+                        )
+
+qim_flag_int = DbsDQFlag (
+                        Name = qim_int,
+                        Value = str(qim_value_i),
+                        )
+run_dq = DbsRunLumiDQ (
+                        RunNumber=runNumber,
+			#LumiSectionNumber=lsNumber1,
+                        DQFlagList = [qim_flag_g, qim_flag_b, qim_flag_u, qim_flag_int]
+                        )
+
+run_dq_search_criteria = DbsRunLumiDQ (
+				RunNumber=runNumber,
+                                #LumiSectionNumber=lsNumber1,
+                                DQFlagList = [qim_flag_g, qim_flag_b, qim_flag_u, qim_flag_int]
+                        )
 
 def assertAlgo(test, algoIn1, algoIn2):
 	test.assertEqual(algoIn1['ExecutableName'], algoIn2['ExecutableName'])
@@ -607,9 +647,55 @@ class Test8(unittest.TestCase):
 				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
 				assertRun(self, runObj, runInDBS)
 
-					
+def print_flags_nice(dataset, dqHierarchyList):
+    if len(dqHierarchyList) <= 0:
+        print "No DQ information for this dataset/run found"
+    print dataset
+    for aDQ in dqHierarchyList:
+        print "\nRunNumber: ", aDQ['RunNumber']
+        print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
+        for aSubDQ in aDQ['DQFlagList']:
+                print "      ", aSubDQ['Name'], aSubDQ['Value']
+                for aSubSubDQ in aSubDQ['SubSysFlagList']:
+                        print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
+                        for abSubSubDQ in aSubSubDQ['SubSysFlagList'] :
+                                print "                               ", abSubSubDQ['Name'], abSubSubDQ['Value']
 
-	
+
+class Test9(unittest.TestCase):
+        def testQIM(self):
+		print "testQIM"
+		api.insertSubSystem(qim_name1, parent="CMS")
+		api.insertSubSystem(qim_name2, parent=qim_name1)
+		api.insertSubSystem(qim_name3, parent=qim_name1)
+		api.insertSubSystem(qim_int, parent=qim_name1)
+
+		subSys = api.listSubSystems()
+		self.assertEqual(len(subSys), 4)
+		for aSub in subSys:
+			if aSub['Name'] == qim_name1:
+				aSub['Parent'] == "CMS"
+                        elif aSub['Name'] == qim_name2:
+                                aSub['Parent'] == qim_name1
+                        elif aSub['Name'] == qim_name3:
+                                aSub['Parent'] == qim_name1
+			elif aSub['Name'] == qim_int:
+				aSub['Parent'] == qim_name1
+			else:
+				print "Unable to add QIMs properly, insertSubSystem failed"
+				self.assertEqual(1, 2)
+
+	def testInsertValues(self):	
+		print "testInsertValues"
+		import pdb
+		pdb.set_trace()
+                api.insertRunLumiDQ( procObj2 , [run_dq] )
+                #dqHierarchyList =  api.listRunLumiDQ(dataset=procObj2, runLumiDQList=[run_dq_search_criteria], dqVersion=dqversion  )
+                dqHierarchyList =  api.listRunLumiDQ(dataset=procObj2, runLumiDQList=[run_dq_search_criteria] )
+		print_flags_nice(dataset=procObj2, dqHierarchyList=dqHierarchyList)
+
 
 if __name__ == '__main__':
-	unittest.main()
+
+        unittest.main()
+
