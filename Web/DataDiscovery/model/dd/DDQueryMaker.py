@@ -658,18 +658,13 @@ class DDQueryMaker(DDLogger):
       for item in result:
           if type(item) is types.StringType:
               raise item
-          oList.append(item.values())
-          if not tList:
-             tList=list(item.keys())
-          # item is a sqlalchemy.engine.base.RowProxy object and we can take its values
-#          if self.dbManager.dbType[self.dbsInstance]=='oracle':
-#             oList.append(item.values()[:-1]) # last element is rownum
-#             if not tList:
-#                tList=list(item.keys()[:-1])
-#          else:
-#             oList.append(item.values())
-#             if not tList:
-#                tList=list(item.keys())
+          if  len(item.values()) == 1: # if returned list is in a form [['a'],['b']]
+              oList.append(item.values()[0])
+          else:
+              oList.append(item.values())
+#          oList.append(item.values())
+          if  not tList:
+              tList=list(item.keys())
       self.closeConnection(con)
       return oList,tList
 
