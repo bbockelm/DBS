@@ -658,11 +658,7 @@ class DDQueryMaker(DDLogger):
       for item in result:
           if type(item) is types.StringType:
               raise item
-          if  len(item.values()) == 1: # if returned list is in a form [['a'],['b']]
-              oList.append(item.values()[0])
-          else:
-              oList.append(item.values())
-#          oList.append(item.values())
+          oList.append(item.values())
           if  not tList:
               tList=list(item.keys())
       self.closeConnection(con)

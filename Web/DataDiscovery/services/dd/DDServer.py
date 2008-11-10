@@ -2880,8 +2880,8 @@ All LFNs in a block
             if  cond: # we remove from cond first and
                 query1 += " where " + cond[4:]
                 query2 += " where " + cond[4:]
-            lfnList = self.aSearchResults(dbsInst,query1)
-            parentLFNList = self.aSearchResults(dbsInst,query2)
+            lfnList = [i[0] for i in self.aSearchResults(dbsInst,query1)]
+            parentLFNList = [i[0] for i in self.aSearchResults(dbsInst,query2)]
             page = self.formatLFNPoolSource(lfnList,parentLFNList,format)
             return page
         except:
