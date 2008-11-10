@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
     query  = "find %s where %s"%(sel,wClause)
     if opts.verbose:
-       print "### DBS-QL query: %s"%query
+       print "### DBS-QL query:\n %s"%query
     params = {'apiversion':'DBS_2_0_2','api':'executeQuery','query':query}
     t0     = time.time()
     for dbs in dbsInstList:
