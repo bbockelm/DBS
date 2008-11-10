@@ -311,7 +311,7 @@ qim_flag_g = DbsDQFlag (
                         )
 qim_flag_b = DbsDQFlag (
                         Name = qim_name2,
-                        Value = qim_value_g,
+                        Value = qim_value_b,
                         )
 
 qim_flag_u = DbsDQFlag (
@@ -647,23 +647,9 @@ class Test8(unittest.TestCase):
 				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
 				assertRun(self, runObj, runInDBS)
 
-def print_flags_nice(dataset, dqHierarchyList):
-    if len(dqHierarchyList) <= 0:
-        print "No DQ information for this dataset/run found"
-    print dataset
-    for aDQ in dqHierarchyList:
-        print "\nRunNumber: ", aDQ['RunNumber']
-        print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
-        for aSubDQ in aDQ['DQFlagList']:
-                print "      ", aSubDQ['Name'], aSubDQ['Value']
-                for aSubSubDQ in aSubDQ['SubSysFlagList']:
-                        print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
-                        for abSubSubDQ in aSubSubDQ['SubSysFlagList'] :
-                                print "                               ", abSubSubDQ['Name'], abSubSubDQ['Value']
-
-
+"""
 class Test9(unittest.TestCase):
-        def testQIM(self):
+        def test_01_QIM(self):
 		print "testQIM"
 		api.insertSubSystem(qim_name1, parent="CMS")
 		api.insertSubSystem(qim_name2, parent=qim_name1)
@@ -671,31 +657,48 @@ class Test9(unittest.TestCase):
 		api.insertSubSystem(qim_int, parent=qim_name1)
 
 		subSys = api.listSubSystems()
-		self.assertEqual(len(subSys), 4)
-		for aSub in subSys:
-			if aSub['Name'] == qim_name1:
-				aSub['Parent'] == "CMS"
-                        elif aSub['Name'] == qim_name2:
-                                aSub['Parent'] == qim_name1
-                        elif aSub['Name'] == qim_name3:
-                                aSub['Parent'] == qim_name1
-			elif aSub['Name'] == qim_int:
-				aSub['Parent'] == qim_name1
-			else:
-				print "Unable to add QIMs properly, insertSubSystem failed"
-				self.assertEqual(1, 2)
 
-	def testInsertValues(self):	
+		subSysNames=[x['Name'] for x in subSys]
+
+		if qim_name1 not in subSysNames \
+			or  qim_name2 not in subSysNames \
+				or qim_name3 not in subSysNames \
+					or qim_int not in subSysNames:
+				print "Unable to add QIMs properly, insertSubSystem failed"
+                        	self.assertEqual(1, 2)
+
+	def test_02_InsertValues(self):	
 		print "testInsertValues"
-		import pdb
-		pdb.set_trace()
                 api.insertRunLumiDQ( procObj2 , [run_dq] )
                 #dqHierarchyList =  api.listRunLumiDQ(dataset=procObj2, runLumiDQList=[run_dq_search_criteria], dqVersion=dqversion  )
                 dqHierarchyList =  api.listRunLumiDQ(dataset=procObj2, runLumiDQList=[run_dq_search_criteria] )
-		print_flags_nice(dataset=procObj2, dqHierarchyList=dqHierarchyList)
+
+		self.assertEqual(len(dqHierarchyList), 1)
+    		for aDQ in dqHierarchyList:
+			self.assertEqual(len(aDQ['DQFlagList']), 1)
+        		for aSubDQ in aDQ['DQFlagList']:
+				if aSubDQ['Name'] == qim_name1:
+					self.assertEqual(aSubDQ['Value'], qim_value_g)
+				self.assertEqual(len(aSubDQ['SubSysFlagList']), 3)
+                		for aSubSubDQ in aSubDQ['SubSysFlagList']:
+					if aSubSubDQ['Name'] == qim_name2:
+						self.assertEqual(aSubSubDQ['Value'], qim_value_b)
+                             	   	elif aSubSubDQ['Name'] == qim_name3:
+                                        	self.assertEqual(aSubSubDQ['Value'], qim_value_u)
+                                	elif aSubSubDQ['Name'] == qim_int:
+                                        	self.assertEqual(aSubSubDQ['Value'], str(qim_value_i))
+					else:
+						print "Unable to Add/Retrieve QIM Values, insertRunLumiDQ/listRunLumiDQ APIs failed"
+	                                	self.assertEqual(1, 2)
+"""
+
 
 
 if __name__ == '__main__':
 
         unittest.main()
+
+
+
+
 
