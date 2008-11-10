@@ -1,14 +1,21 @@
 #!/bin/bash
 export PATH=$PWD:$PATH
 cmd=$DDHOME/tools/DDSearchCLI.py
-if [ $# -ne 1 ]; then
-   echo "\nUsage: testASearch.sh prod|test|new\n"
+if [ $# -eq 0 ]; then
+   echo -e "\nUsage: testASearch.sh prod|test|new|testbed\n"
+   echo -e "If testbed is used you MUST provide its URL"
    exit
 fi
-if [ "${1}" == "prod" ]; then
-host=https://cmsweb.cern.ch/dbs_discovery
+if [ "${1}" == "testbed" ]; then
+   if [ -z ${2} ]; then
+      echo -e "If testbed is used you MUST provide its URL"
+      exit
+   fi
+   host=${2}
+elif [ "${1}" == "prod" ]; then
+   host=https://cmsweb.cern.ch/dbs_discovery
 else
-host=https://cmsweb.cern.ch/dbs_discovery_$1
+   host=https://cmsweb.cern.ch/dbs_discovery_$1
 fi
 echo
 echo "Using host=$host"
