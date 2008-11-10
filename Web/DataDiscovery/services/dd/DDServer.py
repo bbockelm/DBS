@@ -2845,7 +2845,51 @@ All LFNs in a block
             return str(t)
     getLFN_txt.exposed = True
 
+    
     def getLFNsWithParents(self,dbsInst,blockName,dataset="",userMode='user',run='*',**kwargs):
+        cherrypy.response.headers['Content-Type'] = 'text/plain'
+        method = getArg(kwargs,'method',self.iface)
+        if  method == "dbsapi":
+            return self.getLFNsWithParents_ql(dbsInst,blockName,dataset,userMode,run,**kwargs)
+        else:
+            return self.getLFNsWithParents_dd(dbsInst,blockName,dataset,userMode,run,**kwargs)
+    getLFNsWithParents.exposed = True
+
+    def getLFNsWithParents_ql(self,dbsInst,blockName,dataset="",userMode='user',run='*',**kwargs):
+        """
+           Retrieves and represents LFN list in ASCII form
+           @type  dataset: string 
+           @param dataset: dataset name
+           @type blockName: string
+           @param blockName: block name
+           @rtype : string
+           @return: returns HTML code
+        """
+        try:
+            self.helperInit(dbsInst)
+            format = getArg(kwargs,'format','cff')
+            query1 = "find file"
+            query2 = "find file.parent"
+            cond   = ""
+            if  blockName and blockName != "*":
+                cond += "and block=%s " % blockName
+            if  dataset and dataset != "*":
+                cond += "and dataset=%s " % dataset
+            if  run and run != "*":
+                cond += "and run=%s " % run
+            if  cond: # we remove from cond first and
+                query1 += " where " + cond[4:]
+                query2 += " where " + cond[4:]
+            lfnList = self.aSearchResults(dbsInst,query1)
+            parentLFNList = self.aSearchResults(dbsInst,query2)
+            page = self.formatLFNPoolSource(lfnList,parentLFNList,format)
+            return page
+        except:
+            t=self.errorReport("Fail in getLFNsWithParents function")
+            pass
+            return str(t)
+
+    def getLFNsWithParents_dd(self,dbsInst,blockName,dataset="",userMode='user',run='*',**kwargs):
         """
            Retrieves and represents LFN list in ASCII form
            @type  dataset: string 
@@ -2859,36 +2903,22 @@ All LFNs in a block
         try:
             self.helperInit(dbsInst)
             format = getArg(kwargs,'format','cff')
-            page = ""
-#            page = self.genTopHTML(userMode=userMode)
-            t="dataset"
-            v=dataset
-            if blockName and blockName!="*":
-               t="block"
-               v=blockName
-#            if run and run!='*':
-#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
-#            else:
-#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
-            nLfns = self.helper.countLFNs(blockName=blockName,dataset=dataset,run=run)
-#            print "\n\n#### parents nLFNS",nLfns,dataset
+            page   = ""
+            nLfns  = self.helper.countLFNs(blockName=blockName,dataset=dataset,run=run)
             if  nLfns>10000:
                 page+="This dataset has %s LFNs, but Data Discovery allows to look-up all parent LFNs only for dataset with less 10K LFNs"%nLfns
-#                page+= self.genBottomHTML()
             else:
                 lfnList = self.helper.getLFNs(blockName=blockName,dataset=dataset,run=run)
                 justLFNs= []
                 for lfn in lfnList: justLFNs.append(lfn[0])
                 parentLFNList = self.helper.getLFNParents(justLFNs)
                 page+=self.formatLFNPoolSource(justLFNs,parentLFNList,format)
-#                page+= self.genBottomHTML()
             return page
         except:
             t=self.errorReport("Fail in getLFNsWithParents function")
             pass
             return str(t)
-    getLFNsWithParents.exposed = True
-    
+
     def formatLFNPoolSource(self,lfnList,parentLfnList,format="cff"):
         if format=="cff":
            t = templateFormatLfn_cff(searchList=[{'lfnList':lfnList,'pfnList':parentLfnList}]).respond()
