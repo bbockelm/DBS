@@ -2045,7 +2045,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_2_0_3', 'LOCAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_3', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
