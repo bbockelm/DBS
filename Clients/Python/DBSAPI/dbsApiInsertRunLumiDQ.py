@@ -61,7 +61,7 @@ def dbsApiImplInsertRunLumiDQ(self, dataset, runLumiDQList):
     ###logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'insertRunLumiDQ',
-                         'dataset' : dataset, 'xmlinput' : xmlinput }, 'POST')
+                         'dataset' : get_path(dataset), 'xmlinput' : xmlinput }, 'POST')
     ###logging.log(DBSDEBUG, data)
 
   #-------------------------------------------------------------------
