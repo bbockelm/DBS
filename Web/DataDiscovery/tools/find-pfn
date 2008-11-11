@@ -62,17 +62,31 @@ class FWManager(object):
     def getFiles(self, site, run = None, dataset = None, lfn = None, protocol = ''):
         if  not site:
             raise Exception("Site is required parameter")
+        orig_site = site
         if  not protocol:
-            protocol = self.sitecfg.protocol(site)
+            try:
+                protocol = self.sitecfg.protocol(site)
+            except:
+                print "WARNING: unable to get site configuration file"
+                print "will use srm as default protocol"
+                protocol = 'srm'
             if  self.verbose:
                 print "Found site protocol", protocol
+        if  not protocol:
+            print 'WARNING: no specific protocol found, will use srm as default'
+            protocol = 'srm'
         if  site.find('.') == -1:
             if  self.verbose:
                 print "Found CMS name", site
             site = self.sdb.getSEName(site)
             if  self.verbose:
                 print "Resolved to", site
-
+        if  not site:
+            print "Unable to resolve %s into SE" % orig_site
+            print "Please contact hn-cms-facilitiesOps@cern.ch to update SiteDB for this site"
+            print "and/or submit Savannah ticket to the following URL"
+            print "https://savannah.cern.ch/support/?func=additem&group=cmscompinfrasup&assigned_to=4435&category_id=108"
+            sys.exit(0)
         if  lfn:
             lfnList = [lfn]
         else:
