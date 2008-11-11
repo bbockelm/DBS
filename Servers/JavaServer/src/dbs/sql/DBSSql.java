@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.194 $"
- $Id: DBSSql.java,v 1.194 2008/10/24 17:21:32 afaq Exp $"
+ $Revision: 1.195 $"
+ $Id: DBSSql.java,v 1.195 2008/11/07 18:32:37 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -628,6 +628,9 @@ public class DBSSql {
                 String rlsql="";
 
                 java.util.Vector bindvals = new java.util.Vector();
+                java.util.Vector good_bindvals = new java.util.Vector();
+                java.util.Vector bad_bindvals = new java.util.Vector();
+                java.util.Vector unknown_bindvals = new java.util.Vector();
                 java.util.Vector rbindvals = new java.util.Vector();
                 java.util.Vector subSys = new java.util.Vector();
 
@@ -731,19 +734,19 @@ public class DBSSql {
                                         	if (value.equals("GOOD")) {
                                                 	if ( goodSysCount == 0 ) {
 								good_clause += dsSql + " AND ";
-								bindvals.addAll(dsBinds);			
+								good_bindvals.addAll(dsBinds);			
                                                         	if (!DBSUtil.isNull(rlsql))  {
                                                                 	good_clause += " RQ.Run in " + rlsql + " AND ";
-	                                                                bindvals.addAll(rbindvals);
+	                                                                good_bindvals.addAll(rbindvals);
         	                                                }
                 	                                        good_clause += " QV.Value=? and SS.Name in (?";
-								bindvals.add("GOOD");
-                        	                                bindvals.add(subsys);
+								good_bindvals.add("GOOD");
+                        	                                good_bindvals.add(subsys);
                                 	                        goodSysCount++;
 
                                         	        } else {
                                                 	        good_clause += ",?";
-                                                        	bindvals.add(subsys);
+                                                        	good_bindvals.add(subsys);
 	                                                        goodSysCount++;
         	                                        }
                 	                        }
@@ -751,19 +754,19 @@ public class DBSSql {
                         	                if (value.equals("BAD")) {
                                 	                if ( badSysCount == 0 ) {
 								bad_clause += dsSql + " AND ";
-								bindvals.addAll(dsBinds);			
+								bad_bindvals.addAll(dsBinds);			
                                         	                if (!DBSUtil.isNull(rlsql))  {
                                                 	                bad_clause += " RQ.Run in " + rlsql + " AND ";
-                                                        	        bindvals.addAll(rbindvals);
+                                                        	        bad_bindvals.addAll(rbindvals);
 	                                                        }
         	                                                bad_clause += " QV.Value=? and SS.Name in (?";
-								bindvals.add("BAD");
-                	                                        bindvals.add(subsys);
+								bad_bindvals.add("BAD");
+                	                                        bad_bindvals.add(subsys);
                         	                                badSysCount++;
 
                                 	                } else {
                                         	                bad_clause += ",?";
-                                                	        bindvals.add(subsys);
+                                                	        bad_bindvals.add(subsys);
 	                                                        badSysCount++;
         	                                        }
                 	                        }
@@ -771,19 +774,19 @@ public class DBSSql {
                         	                if (value.equals("UNKNOWN")) {
                                 	                if ( unknownSysCount == 0 ) {
 								unknown_clause += dsSql + " AND ";
-								bindvals.addAll(dsBinds);			
+								unknown_bindvals.addAll(dsBinds);			
                                         	                if (!DBSUtil.isNull(rlsql))  {
                                                 	                unknown_clause += " RQ.Run in " + rlsql + " AND ";
-	                                                                bindvals.addAll(rbindvals);
+	                                                                unknown_bindvals.addAll(rbindvals);
         	                                                }
                 	                                        unknown_clause += " QV.Value=? and SS.Name in (?";
-								bindvals.add("UNKNOWN");
-                        	                                bindvals.add(subsys);
+								unknown_bindvals.add("UNKNOWN");
+                        	                                unknown_bindvals.add(subsys);
                                 	                        unknownSysCount++;
 
                                         	        } else {
                                                 	        unknown_clause += ",?";
-	                                                        bindvals.add(subsys);
+	                                                        unknown_bindvals.add(subsys);
         	                                                unknownSysCount++;
                 	                                }
                         	                }
@@ -791,9 +794,13 @@ public class DBSSql {
                                 	}
 			}
 
-                        if (!DBSUtil.isNull(good_clause)) good_clause+=") group by RQ.Run having count(*)>="+goodSysCount;
-                        if (!DBSUtil.isNull(bad_clause)) bad_clause+=") group by RQ.Run having count(*)>="+badSysCount;
-                        if (!DBSUtil.isNull(unknown_clause)) unknown_clause+=") group by RQ.Run having count(*)>="+unknownSysCount;
+                        if (!DBSUtil.isNull(good_clause)) { good_clause+=") group by RQ.Run having count(*)>="+goodSysCount;   }
+                        if (!DBSUtil.isNull(bad_clause)) { bad_clause+=") group by RQ.Run having count(*)>="+badSysCount; }
+                        if (!DBSUtil.isNull(unknown_clause)) { unknown_clause+=") group by RQ.Run having count(*)>="+unknownSysCount; }
+
+                        //if (!DBSUtil.isNull(good_clause)) { good_clause+=") group by RQ.Run having count(*)>=?"; good_bindvals.add(goodSysCount);   }
+                        //if (!DBSUtil.isNull(bad_clause)) { bad_clause+=") group by RQ.Run having count(*)>=?"; bad_bindvals.add(badSysCount); }
+                        //if (!DBSUtil.isNull(unknown_clause)) { unknown_clause+=") group by RQ.Run having count(*)>=?"; unknown_bindvals.add(unknownSysCount); }
 
                 String sql = "";
                 if ( DBSUtil.isNull(good_clause) && DBSUtil.isNull(bad_clause) && DBSUtil.isNull(unknown_clause) && (intersects.size() <= 0)
@@ -805,15 +812,16 @@ public class DBSSql {
 
 		else {
                         int put_first_intersect=0;
-                        if (!DBSUtil.isNull(good_clause)) { sql += run_sql + good_clause ; put_first_intersect=1; }
+                        if (!DBSUtil.isNull(good_clause)) { sql += run_sql + good_clause ; put_first_intersect=1; bindvals.addAll(good_bindvals); }
                         if (!DBSUtil.isNull(bad_clause)) { 
 					if (!DBSUtil.isNull(good_clause)) sql += " UNION ";
 					sql += run_sql + bad_clause ; put_first_intersect=1; 
-					
+					bindvals.addAll(bad_bindvals);
 			}
                         if (!DBSUtil.isNull(unknown_clause)) { 
 				if (!DBSUtil.isNull(good_clause) || !DBSUtil.isNull(bad_clause) ) sql += " UNION ";
 				sql += run_sql + unknown_clause; put_first_intersect=1; 
+				bindvals.addAll(unknown_bindvals);
 			}
                         for (int i=0; i!= intersects.size(); ++i) {
                                 if (i==0 && put_first_intersect==1) sql += " INTERSECT ";
@@ -828,6 +836,9 @@ public class DBSSql {
 		toReturn.add(sql);
 		bindvals.addAll(intersectBinds);
 		toReturn.add(bindvals);
+
+		//for (Object s: bindvals) System.out.println("BINDVAL"+(String)s); 
+
 /*
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
