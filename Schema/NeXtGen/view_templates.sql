@@ -36,7 +36,8 @@ tr.TotalLuminosity, tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvent
 tls.StartEventNumber, tls.EndEventNumber, count(tls.LumiSectionNumber) 
 FROM Runs tr JOIN LumiSection tls ON tr.ID=tls.RunNumber 
 JOIN person tp ON tr.CreatedBy = tp.ID 
-JOIN person tp2 ON tr.LastModifiedBy = tp2.IDGROUP BY tr.RunNumber, tr.CreationDate, tp.DistinguishedName, 
+JOIN person tp2 ON tr.LastModifiedBy = tp2.ID
+GROUP BY tr.RunNumber, tr.CreationDate, tp.DistinguishedName, 
 tr.LastModificationDate, tp2.DistinguishedName, tr.TotalLuminosity,
 tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvents, tls.StartEventNumber, tls.EndEventNumber
 /

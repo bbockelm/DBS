@@ -79,59 +79,59 @@ ALTER TABLE IntQualityHistory ADD CONSTRAINT
 
 REM == DQ table grants
 
-grant select on RunLumiQuality to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on RunLumiQuality to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on RunLumiQuality to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on RunLumiQuality to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on RunLumiQuality to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on RunLumiQuality to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on QualityHistory to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on QualityHistory to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on QualityHistory to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on QualityHistory to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on QualityHistory to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on QualityHistory to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on QualityValues to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on QualityValues to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on QualityValues to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on QualityValues to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on QualityValues to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on QualityValues to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on QualityVersion to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on QualityVersion to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on QualityVersion to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on QualityVersion to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on QualityVersion to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on QualityVersion to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on SubSystem to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on SubSystem to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on SubSystem to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on SubSystem to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on SubSystem to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on SubSystem to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on IntQualityHistory to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on IntQualityHistory to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on IntQualityHistory to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on IntQualityHistory to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on IntQualityHistory to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on IntQualityHistory to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on RunLumiDQInt to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on RunLumiDQInt to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on RunLumiDQInt to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on RunLumiDQInt to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on RunLumiDQInt to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on RunLumiDQInt to CMS_DBS___dbabbr___ADMIN_ROLE;
 
 REM == GRANTS on ADS Tables
 
-grant select on CompADSMap to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on CompADSMap to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on CompADSMap to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on CompADSMap to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on CompADSMap to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on CompADSMap to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on AnalysisDataset to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on AnalysisDataset to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on AnalysisDataset to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on AnalysisDataset to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on AnalysisDataset to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on AnalysisDataset to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on AnalysisDSType to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on AnalysisDSType to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on AnalysisDSType to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on AnalysisDSType to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on AnalysisDSType to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on AnalysisDSType to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on AnalysisDSStatus to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on AnalysisDSStatus to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on AnalysisDSStatus to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on AnalysisDSStatus to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on AnalysisDSStatus to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on AnalysisDSStatus to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on AnalysisDSDef to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on AnalysisDSDef to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on AnalysisDSDef to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on AnalysisDSDef to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on AnalysisDSDef to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on AnalysisDSDef to CMS_DBS___dbabbr___ADMIN_ROLE;
 
-grant select on CompositeADS to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on  CompositeADS to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on CompositeADS to CMS_DBS_PRODG_ADMIN_ROLE;
+grant select on CompositeADS to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on  CompositeADS to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on CompositeADS to CMS_DBS___dbabbr___ADMIN_ROLE;
 
 
 rem == schema version upgrade
