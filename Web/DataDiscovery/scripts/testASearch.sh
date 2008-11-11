@@ -24,10 +24,10 @@ echo "### TEST plain text output ###"
 for input in \
 "*QCD*" \
 "dataset like *Online* and site=srm.cern.ch " \
-"find path where path like *" \
-"find path where run between 34850-36000 or run in 34850,34890" \
-"find run where path like *Online*" \
-"find primds where (path like *Online* or path not like *RelVal* ) and release> CMSSW_1_7 " \
+"find dataset where dataset like *" \
+"find dataset where run between 34850-36000 or run in 34850,34890" \
+"find run where dataset like *Online*" \
+"find primds where (path like *Online* or dataset not like *RelVal* ) and release> CMSSW_1_7 " \
 "find file where run=38420" \
 "find file,run where dataset=/Commissioning2008Ecal-A/Online/RAW" \
 "find total(file),run where dataset=/Commissioning2008Ecal-A/Online/RAW" \
