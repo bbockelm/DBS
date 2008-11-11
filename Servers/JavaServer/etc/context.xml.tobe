@@ -21,7 +21,7 @@
 
 	<Cfgindex service="http://cmssrv48.fnal.gov:8383/DBSSearch/"/>
 	<Sitedb service="https://cmsweb.cern.ch/sitedb/json/index/CMSNametoSE"/>
-	<Certificate hostcert="___cert_file___"	certpass="___cert_password___"	/>
+	<Certificate hostcert="" certpass="" />
 
 	<SchemaOwner schemaowner="__MYSQL__"/> <!-- Possible vales are schema_owner, EMPTY STRING and __MYSQL__ /-->
 	<SupportedSchemaVersion schemaversion="DBS_1_1_3" />
