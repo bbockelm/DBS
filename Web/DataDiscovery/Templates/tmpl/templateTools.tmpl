@@ -166,6 +166,38 @@ $usage
 <!-- new item -->
 
 <li>
+<a href="tool_pfn">find-pfn</a>
+<div class="explain">
+DBS "lfn2pfn utility" which look-up PFN for given site and dataset/run/lfn combination.
+Site parameter is required and you're free to provide either dataset, run or lfn or combination
+of those as an input. By default rfio protocol is used, you may change it via --protocol option.
+Supported protocols: rfio, srm, direct.
+<br/>
+<span class="box_red">NOTE:</span>
+No installation is required, just download the script and change its permission to be executable.
+<div id="_find-pfn"><a href="javascript:ShowTag('find-pfn')">more</a></div>
+</div>
+<div class="hide" id="find-pfn">
+#set usage=os.popen('./tools/find-pfn --help').read()
+<pre>
+$usage
+</pre>
+<div class="sectionhead">EXAMPLE:</div>
+Find pfns for dataset /RelVal131QCD_pt20_30/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO at T1_CH_CERN using rfio protocol
+<pre>
+find-pfn --dataset=/RelVal131QCD_pt20_30/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO --site=T1_CH_CERN --protocol=rfio
+rfio:/castor/cern.ch/cms/store/RelVal/2007/4/10/RelVal131QCD_pt20_30/0000/8A3A9871-34E8-DB11-929E-0002B3D8EBFB.root
+rfio:/castor/cern.ch/cms/store/RelVal/2007/4/10/RelVal131QCD_pt20_30/0000/B8C8959E-BCE7-DB11-91B8-0002B3AFAE48.root
+....
+</pre>
+</div>
+<br/>
+<br/>
+</li>
+
+<!-- new item -->
+
+<li>
 <a href="tool_du">cms-dbs-du</a>
 <div class="explain">
 DBS "disk utility", counts a disk usage in DBS instance(s). Please note it is based only on information from DBS and not from actual disk usage at given tier site, therefore it prove a "roof" estimate of disk usage. It does not distinguished data across different DBS instances.
