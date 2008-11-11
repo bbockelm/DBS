@@ -14,9 +14,10 @@ def testAllQueriesInFile(qFile = 'queries.txt'):
 		qList = open(qFile).readlines()
 		for aQuery in qList:
 			aQuery = aQuery.strip()
-			print aQuery,
-			api.executeQuery(aQuery)
-			print '   <<<<<<<< PASSED >>>>>>>>'
+			if not aQuery.startswith('#'):
+				print aQuery,
+				api.executeQuery(aQuery)
+				print '   <<<<<<<< PASSED >>>>>>>>'
 	except:
 		print '   <<<<<<<< FAILED >>>>>>>>'
 		#import sys

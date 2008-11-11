@@ -647,7 +647,6 @@ class Test8(unittest.TestCase):
 				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
 				assertRun(self, runObj, runInDBS)
 
-"""
 class Test9(unittest.TestCase):
         def test_01_QIM(self):
 		print "testQIM"
@@ -690,7 +689,6 @@ class Test9(unittest.TestCase):
 					else:
 						print "Unable to Add/Retrieve QIM Values, insertRunLumiDQ/listRunLumiDQ APIs failed"
 	                                	self.assertEqual(1, 2)
-"""
 
 
 
