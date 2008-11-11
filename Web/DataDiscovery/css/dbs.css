@@ -1462,4 +1462,20 @@ a.submenu:hover
 #dbs-list ul li:before {
     content: "\00BB \0020";
     }
-
+.section_underline {
+/*    line-height:104%;*/
+/*    padding:0;*/
+/*    margin:1em 0 .1em 0;*/
+    font-weight:normal;
+    font-size:150%;
+    display:block;
+    padding:.15em 5px;
+    margin:1.25em -5px .35em -5px;
+    border-width:0 0 1px 1px;
+    height:auto;    
+    text-align:left;
+    border-bottom: 1px solid #CCCCCC;
+    border-left: 1px solid #CCCCCC;
+    background: #F1F3FB;
+    color: #000000;
+}
