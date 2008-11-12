@@ -3014,6 +3014,7 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', (select (sysdate - to_
 INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('HLTDEBUG', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AODSIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
