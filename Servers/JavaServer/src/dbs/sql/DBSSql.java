@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.195 $"
- $Id: DBSSql.java,v 1.195 2008/11/07 18:32:37 afaq Exp $"
+ $Revision: 1.196 $"
+ $Id: DBSSql.java,v 1.196 2008/11/11 21:26:19 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -650,7 +650,7 @@ public class DBSSql {
 		int onlyRun=1;
 
 		String[] key_vals = query.split("&");
-		System.out.println("key_vals.length::"+key_vals.length);
+		//System.out.println("key_vals.length::"+key_vals.length);
      		for (int i=0; i!= key_vals.length; ++i) {
 			String[] key_val = key_vals[i].split("=");
 
@@ -707,7 +707,7 @@ public class DBSSql {
 					{ //System.out.println("FOUND PATH value:="+value); 
 						continue;
 					}
-					System.out.println("subsys: "+subsys+" value:"+value);
+					//System.out.println("subsys: "+subsys+" value:"+value);
  
                                         if ( ! valueList.contains(value) && !subsys.equals("RunNumber")) {
 
