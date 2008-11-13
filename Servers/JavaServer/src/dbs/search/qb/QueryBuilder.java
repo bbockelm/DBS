@@ -627,7 +627,7 @@ public class QueryBuilder {
 							}
 							//String tmpTableName =  token + "_" + token2;
 							if(!dontJoin)
-								personJoinQuery += "\tJOIN Person " + tmpTableName + "\n" +
+								personJoinQuery += "\tJOIN " + owner() + "Person " + tmpTableName + "\n" +
 									"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
 							queryWhere += tmpTableName + ".DistinguishedName ";			
 						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
