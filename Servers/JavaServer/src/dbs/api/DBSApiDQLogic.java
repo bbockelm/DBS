@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiDQLogic.java,v 1.21 2008/09/22 21:09:27 afaq Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiDQLogic.java,v 1.22 2008/09/23 17:54:29 afaq Exp $"
  *
  */
 
@@ -358,13 +358,15 @@ public class DBSApiDQLogic extends DBSApiLogic {
 			ps = DBSSql.getSelectSQL(conn, dsQueryForDQ, dsQueryBindValues);
 			//pushQuery(ps);
 			rs =  ps.executeQuery();
-
+			boolean dsFound=false;
 			//For each dataset, lets find it parent
-			while (rs.next() ) {		
+			while (rs.next() ) {
+				dsFound=true;		
 				String path=get(rs, "PATH");
 				//returns parents and also ID of passed dataset
 				dsParents.addAll((new DBSApiProcDSLogic(data)).listDatasetParentIDs(conn, path));
 			}
+			if (!dsFound) throw new DBSException("Unavailable data", "1008", "No such dataset found" );
 			removeDuplicate(dsParents);
 			ret = DBSSql.listRunsForRunLumiDQ(conn, dsParents, dqQuery);
                 } finally {
