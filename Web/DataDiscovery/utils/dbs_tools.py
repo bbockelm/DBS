@@ -18,6 +18,12 @@ from   DBSAPI.dbsApi import DbsApi
 #from  DBSAPI.dbsMigrateApi import DbsMigrateApi
 #from  MS.Wrapper import API as DBS_MS
 
+def gettitles(userInput):
+    tList   = []
+    findInString(userinput.lower(), 'find', 'where', tList)
+    titles  = tList[0].strip().split(",")
+    return titles
+
 def parsedbsquery(i):
     """
     crwal DBS XML output
@@ -60,14 +66,17 @@ def dbsquery(data, tag = "python_query"):
 
 def dbsparser(data):
     """
-    parse DBS XML output and return results in a list
+    parse DBS XML output and return (resultList, titleList)
     """
     elem  = ET.fromstring(data)
-    oList = []
+    oList = [] # results
+    tList = [] # titles
     for i in elem:
         if  i.tag == "result":
             oList += [i.attrib.values()]
-    return oList
+            if  not tList:
+                tList = i.attrib.keys()
+    return oList, tList
 
 class DBSManager(object):
     """
@@ -78,12 +87,15 @@ class DBSManager(object):
         self.verbose = verbose
         self.dbsapi  = {}
         self.dbsattr = {} # dict[alias]=(url,account,ver)
+        reader = re.compile('_r$')
         try :
             api = RegService()
             result = api.queryRegistrationFindAll()
             for i in result:
                 if  str(i._critical).lower() == 'y' and \
                     i._url and i._accountName and i._serverVersion:
+#                    i._url and i._accountName and i._serverVersion and \
+#                    reader.search(i._alias):
                     dbsdict = {'url':i._url, 'account':i._accountName,
                                'version':i._serverVersion}
                     self.dbsattr[i._alias] = dbsdict
@@ -129,6 +141,17 @@ class DBSManager(object):
         """
         return dbsquery(self.queryxml(dbsalias, userinput))
 
+    def count(self, dbsalias, userinput):
+        """
+        Execute DBS query for given user input and return total number of found results
+        """
+        # TODO: I need to replace executeQuery with new DBS API which will just
+        # return count for provided input
+        dbsapi = self.getapi(dbsalias)
+        dbsxml = dbsapi.executeQuery(userinput)
+        result, titles = dbsparser(dbsxml)
+        return len(result)
+
     def exexml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
         Execute DBS query for given user input and return results in XML format
@@ -144,20 +167,18 @@ class DBSManager(object):
         if  not dbsalias or dbsalias.lower() == 'all':
             for alias in self.aliases():
                 print alias
-                result = dbsparser(
+                result, titles = dbsparser(
                             self.exexml(alias, userinput, q_start, q_end))
                 if  result:
-                    return result
+                    return result, titles
         return dbsparser(self.exexml(dbsalias, userinput, q_start, q_end))
 
     def exehtml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
         Execute DBS query and return results in a form of HTML table
         """
-        results = self.exe(dbsalias, userinput, q_start, q_end)
-        tList   = []
-        findInString(userinput.lower(), 'find', 'where', tList)
-        titles  = tList[0].strip().split(",")
+        results, titles = self.exe(dbsalias, userinput, q_start, q_end)
+        titles = gettitles(userInput)
         nameSearch = {'headers':titles, 'rows':results}
         t = templateGenericTable(searchList=[nameSearch]).respond()
         return str(t)
@@ -167,6 +188,7 @@ class DBSManager(object):
 #
 if __name__ == "__main__":
     dbsmgr = DBSManager()
+    print dbsmgr.dbsattr
     query = "find dataset, site where site like *cern.ch"
 #    query = "find kkksite where site like *"
     print "DBS aliases:"
@@ -176,5 +198,6 @@ if __name__ == "__main__":
         print dbsapi
 #        print dbsmgr.query(dbsalias, query)
 #        print dbsmgr.queryxml(dbsalias, query)
-        print dbsmgr.exe(dbsalias, query, 0, 10)
-    print dbsmgr.exehtml('all', query, 0, 10)
+#        print dbsmgr.exe(dbsalias, query, 0, 10)
+#    print dbsmgr.exehtml('all', query, 0, 10)
+#    print dbsmgr.count('all', query)
