@@ -4673,10 +4673,10 @@ All LFNs in a block
         else:
             page=""
         try:
-            dbsApi = self.getDbsApi(dbsInst)
-            int_lumi= dbsApi.getIntegratedLuminosity(dataset)
-            page+=formatLumi(int_lumi)
-#            page+="N/A"
+#            dbsApi = self.getDbsApi(dbsInst)
+#            int_lumi= dbsApi.getIntegratedLuminosity(dataset)
+#            page+=formatLumi(int_lumi)
+            page+="N/A"
         except:
             page+="N/A"
             traceback.print_exc()
