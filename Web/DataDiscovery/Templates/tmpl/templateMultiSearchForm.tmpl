@@ -7,17 +7,17 @@ CROSS DBS INSTANCE SEARCH INTERFACE
 This interface will search across all registered DBS instances. It only supports DBS-QL,
 so if you need help please use this 
 <a href="_help?userMode=$userMode">page</a>.
+<br/>
+Since queries goes to EVERY DBS instance output results can take some time!!!
 
 <br/>
 <br/>
 
 <span id="defaultPage"></span>
 <div align="center">
-<form action="multiSearch" method="get">
-<div>
+####<form action="multiSearch" method="get">
+<form action="javascript:request()" method="get">
 <input type="hidden" name="userMode" id="userMode" value="$userMode" />
-</div>
-
 <div>
 <input type="text" size="80" name="userInput" id="userInput" value="$userInput" />
 <input type="submit" value="Search" onclick="javascript:SetTagCookie('DBSDD_ainput','userInput')" />
@@ -27,6 +27,26 @@ so if you need help please use this
 </form>
 
 </div> <!-- end of center -->
+<br/>
+<br/>
+
+<div id="kw_multiSearch" name="kw_multiSearch"></div>
+
+<script type="text/javascript">
+function request() {
+    var jd = document.getElementById('kw_multiSearch');
+    if (jd) {
+        jd.innerHTML='please wait ...';
+    }
+    var id = document.getElementById('userInput');
+    if (id) {
+        var userInput = id.value;
+#for dbsInst in $dbsList
+        ajaxMultiSearch('$dbsInst',userInput);
+#end for
+    }
+}
+</script>
 
 <!-- end of templateMultiSearchForm.tmpl -->
 

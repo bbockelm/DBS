@@ -1,6 +1,7 @@
 
 <!-- templateMultiResults.tmpl -->
 
+#*
 <span class="section_underline">
 $site
 </span>
@@ -24,6 +25,28 @@ found $res results
 #end for
 </table>
 <hr class="dbs" />
+*#
+
+<script type="text/javascript">
+function clean() {
+   var id = document.getElementById('kw_multiSearch');
+   if (id) {
+       id.innerHTML=id.innerHTML.replace(/please wait .../g,'');
+   }
+}
+clean();
+</script>
+#for $idx in xrange(0,len($dbsInstList))
+#set $ins=$dbsInstList[$idx]
+#set $res=$resList[$idx]
+<div>
+Found $res results in
+<a href="$url/aSearch?dbsInst=$ins&amp;userMode=$userMode&amp;method=$method&amp;userInput=$input">
+$ins.upper()
+</a>
+</div>
+<hr class="dbs" />
+#end for
 
 <!-- end of templateMultiResults.tmpl -->
 
