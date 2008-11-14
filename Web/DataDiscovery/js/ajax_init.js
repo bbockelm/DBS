@@ -524,53 +524,43 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerAjaxObject('myQueries',finderQUpdater);
 
     ajaxEngine.registerRequest('ajaxGetRunDBInfo','getRunDBInfo');
-//    ajaxEngine.registerRequest('ajaxGetUserNav','genUserNavigator');
-//    ajaxEngine.registerAjaxElement('kw_userNavigator');
     ajaxEngine.registerRequest('ajaxGetLFNs','getLFNs');
     ajaxEngine.registerRequest('ajaxGetLFNs_Runs','getLFNs_Runs');
     ajaxEngine.registerAjaxElement('blockLFNs');
 
     ajaxEngine.registerRequest('ajaxGetIntegratedLumi','getIntegratedLumi');
-//    ajaxEngine.registerAjaxElement('intLumi');
+    ajaxEngine.registerRequest('ajaxMultiSearch','multiSearch');
+    mUpdater = new GetDataUpdater('kw_multiSearch','update','');
+    ajaxEngine.registerAjaxObject('kw_multiSearch',mUpdater);
 }
 function registerAjaxUserMenuCalls() {
     ajaxEngine.registerRequest('ajaxGetPrimDSTypes','getPrimaryDSTypes');
     ptUpdater = new GetDataUpdater('kw_primType_holder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('kw_primType_holder',ptUpdater);
-//    ajaxEngine.registerAjaxElement('kw_primType_holder');
     ajaxEngine.registerRequest('ajaxGetReleases','getSoftwareReleases');
     relUpdater = new GetDataUpdater('kw_release_holder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('kw_release_holder',relUpdater);
-//    ajaxEngine.registerAjaxElement('kw_release_holder');
     ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');
     primUpdater = new GetDataUpdater('kw_prim_holder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('kw_prim_holder',primUpdater);
-//    ajaxEngine.registerAjaxElement('kw_prim_holder');
     ajaxEngine.registerRequest('ajaxGetTiers','getTiers');
     tierUpdater = new GetDataUpdater('kw_tier_holder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('kw_tier_holder',tierUpdater);
-//    ajaxEngine.registerAjaxElement('kw_tier_holder');
     ajaxEngine.registerRequest('ajaxGetSites','getSites');
     siteUpdater = new GetDataUpdater('kw_site_holder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('kw_site_holder',siteUpdater);
-//    ajaxEngine.registerAjaxElement('kw_site_holder');
     ajaxEngine.registerAjaxElement('form2_siteHolder');
     ajaxEngine.registerRequest('ajaxGetGroups','getGroups');
     groupUpdater = new GetDataUpdater('kw_group_holder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('kw_group_holder',groupUpdater);
-//    ajaxEngine.registerAjaxElement('kw_group_holder');
-
     ajaxEngine.registerRequest('ajaxGetRunRange','getRunRange');
-//    rrUpdater = new GetDataUpdater('kw_runRange_holder','replace','noResultsMenu');
-//    ajaxEngine.registerAjaxObject('kw_runRange_holder',rrUpdater);
     ajaxEngine.registerAjaxElement('kw_runRange_holder');
-
-//    ajaxEngine.registerRequest('ajaxGetBranches','getBranches');
-//    ajaxEngine.registerAjaxElement('kw_branch');
-//    ajaxEngine.registerRequest('ajaxGetUserData','getUserData');
-
 }
 
+function ajaxMultiSearch(dbsInst,userInput) {
+   var id = document.getElementById('userInput');
+   ajaxEngine.sendRequest('ajaxMultiSearch','userInput='+userInput,'dbsInst='+dbsInst,'ajax=1');
+}
 function ajaxGetDQInfo(dbsInst,dataset,run,dqid,admin) {
   ajaxEngine.sendRequest('ajaxGetDQInfo','dbsInst='+dbsInst,'dataset='+dataset,'run='+run,'dqid='+dqid,'admin='+admin);
 }
