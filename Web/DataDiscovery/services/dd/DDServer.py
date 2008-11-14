@@ -5585,6 +5585,7 @@ All LFNs in a block
                 raise "Fail in summaryQuery"
 
     def _summaryQuery(self, dbsInst, userInput, fromRow, limit):
+        method = "dbsapi"
         dbsApi = self.getDbsApi(dbsInst)
         if  (not limit and not fromRow) or limit==-1:
             limit=""
