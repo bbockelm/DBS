@@ -35,6 +35,10 @@ from   model.dd.DDSearch   import *
 from   utils.DDParamServer import *
 from   utils.DDWS          import *
 
+from utils.sitedb_tools import SiteDBManager
+from utils.siteconfig_tools import SiteConfigManager
+from utils.phedex_tools import PhedexManager
+from utils.dbs_tools import DBSManager
 
 # experiment
 from model.dd.DDQueryMaker import *
@@ -126,6 +130,12 @@ class DDServer(DDLogger,Controller):
         setSQLAlchemyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
         setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
 
+        # data service managers
+        self.dbsmgr   = DBSManager(verbose)
+        self.sdb      = SiteDBManager(verbose)
+        self.phedex   = PhedexManager(self.sdb, verbose)
+        self.sitecfg  = SiteConfigManager(self.sdb, verbose)
+
         # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
         self.prodRequestServer= DDParamServer(server="cmswt01.cern.ch:8030",verbose=verbose)
         self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
@@ -179,6 +189,10 @@ class DDServer(DDLogger,Controller):
         except:
            pass
         self.dbsList = [DBSGLOBAL]+self.dbsList
+        # made connection to all known DBS instances
+        for dbs in self.dbsList:
+            print "Connecting to",dbs
+            self.dbManager.connect(dbs,self.iface)
         self.dbsTime    = 0
         self.dlsTime    = 0
         self.htmlTime   = 0
@@ -714,6 +728,17 @@ class DDServer(DDLogger,Controller):
            raise msg
 
     ################## Menu init methods
+    def _status(self, userMode="user", **kwargs):
+        page  = self.genTopHTML()
+        dbses = dict(self.dbsmgr.dbsattr)
+        print dbses
+        t     = templateDBSstatus(searchList=[{'dbsdict':dbses}]).respond()
+        page += str(t)
+        page += 'For more information please visit <a href="http://cmsdbssrv.cern.ch/rswebapp/html/home.jsf">RS page</a>'
+        page += self.genBottomHTML()
+        return page
+    _status.exposed = True
+
     def _navigator(self,dbsInst=DBSGLOBAL,userMode="user",**kwargs):
         try:
             for p in [dbsInst,userMode]+kwargs.keys():
@@ -855,7 +880,9 @@ class DDServer(DDLogger,Controller):
 
     def _multiSearch(self, userMode = "user", userInput = "", genTop = 1, **kwargs):
         try:
-            nameSearch={'userMode':userMode, 'userInput': userInput}
+            dbsList = list(self.dbsList)
+            nameSearch={'userMode':userMode, 'userInput': userInput, 
+                        'dbsList':dbsList}
             t = templateMultiSearchForm(searchList=[nameSearch]).respond()
             page = ""
             if  genTop:
@@ -4725,13 +4752,13 @@ All LFNs in a block
         dbsApi = self.getDbsApi(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         if  method=="dbsapi":
-#            if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
-            if (not limit and not fromRow) or limit==-1:
-               fromRow=""
-               limit=""
-            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+            result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
+#            if (not limit and not fromRow) or limit==-1:
+#               fromRow=""
+#               limit=""
+#            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+#            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+#            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
             if fromRow==-1 and limit==-1:
                fromRow=0
@@ -4778,15 +4805,15 @@ All LFNs in a block
         method   = getArg(kwargs,'method',self.iface)
         page     = ""
 #        print "\n\n+++aSearchShowAll",kwargs
-        if method=="dbsapi":
-           dbsApi = self.getDbsApi(dbsInst)
-#           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
-           if (not limit and not fromRow) or limit==-1:
-              limit=""
-              fromRow=""
-           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-           result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        if  method=="dbsapi":
+            result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
+#            dbsApi = self.getDbsApi(dbsInst)
+#            if (not limit and not fromRow) or limit==-1:
+#               limit=""
+#               fromRow=""
+#            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+#            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+#            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
            try:
                sel  = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
@@ -4899,22 +4926,22 @@ All LFNs in a block
         method   = getArg(kwargs,'method','dd')
         userInput= kwargs['userInput']
 #        print "\n\n+++aSearchSummary",kwargs
-        if method=="dbsapi":
-           dbsApi = self.getDbsApi(dbsInst)
-#           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
-           if (not limit and not fromRow) or limit==-1:
-              limit=""
-              fromRow=""
-           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-           tableView = output+"summary"
-           if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
-               tc = "%s.%s"%(tableView,self.ddrules.colName[output])
-               tableView=self.dbManager.getTable(dbsInst,tableView)
-               sqlView = self.qmaker.wrapToView(tableView,tc,sql)
-               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
-           else:
-               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        if  method=="dbsapi":
+            result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
+#           dbsApi = self.getDbsApi(dbsInst)
+#           if (not limit and not fromRow) or limit==-1:
+#              limit=""
+#              fromRow=""
+#           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+#           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+#           tableView = output+"summary"
+#           if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
+#               tc = "%s.%s"%(tableView,self.ddrules.colName[output])
+#               tableView=self.dbManager.getTable(dbsInst,tableView)
+#               sqlView = self.qmaker.wrapToView(tableView,tc,sql)
+#               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
+#           else:
+#               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
            result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if getRes:
@@ -5153,19 +5180,19 @@ All LFNs in a block
         link     = kwargs['link']
         method   = getArg(kwargs,'method','dd')
         userInput= kwargs['userInput']
-        if method=="dbsapi":
-           dbsApi = self.getDbsApi(dbsInst)
-#           if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
-           if (not limit and not fromRow) or limit==-1:
-              limit=""
-              fromRow=""
-           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-           if  self.helper.dbManager.getTableNames(dbsInst).count("datasetsummary"):
-               sqlView = self.qmaker.wrapToView("datasetsummary","Block.Path",sql)
-               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
-           else:
-               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        if  method=="dbsapi":
+            result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
+#           dbsApi = self.getDbsApi(dbsInst)
+#           if (not limit and not fromRow) or limit==-1:
+#              limit=""
+#              fromRow=""
+#           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+#           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+#           if  self.helper.dbManager.getTableNames(dbsInst).count("datasetsummary"):
+#               sqlView = self.qmaker.wrapToView("datasetsummary","Block.Path",sql)
+#               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
+#           else:
+#               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
            result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if len(titleList)<=2: # no view found, 2 to account for rownum while using ORACLE
@@ -5404,7 +5431,8 @@ All LFNs in a block
                    self.writeLog(res)
                 sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
                 query=sql
-                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface="dbsapi")
+#                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface="dbsapi")
+                nResults = self.countQuery(dbsInst, userInput)
             except:
                 if getArg(kwargs,'results',0):
                    return "N/A"
@@ -5581,31 +5609,170 @@ All LFNs in a block
         return page
     aSearch.exposed=True
 
+    def summaryQuery(self, dbsInst, userInput, fromRow, limit):
+        dbsApi = self.getDbsApi(dbsInst)
+        if  (not limit and not fromRow) or limit==-1:
+            limit=""
+            fromRow=""
+        res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+        output    = "dataset"
+        if userInput.lower().find(" where ")!=-1:
+           output=userInput.lower().split(" where ")[0].split("find")[1].strip()
+        tableView = output+"summary"
+        if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
+            tc = "%s.%s"%(tableView,self.ddrules.colName[output])
+            tableView=self.dbManager.getTable(dbsInst,tableView)
+            sqlView = self.qmaker.wrapToView(tableView,tc,sql)
+            result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
+        else:
+            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        return result, titleList
+
+    def exeQuery(self, dbsInst, userInput, fromRow, limit):
+        dbsApi = self.getDbsApi(dbsInst)
+        if (not limit and not fromRow) or limit==-1:
+           fromRow=""
+           limit=""
+        res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+        method = "dbsapi"
+        result = []
+        titleList = []
+        try:
+            self.helperInit(int, method)
+            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+        except:
+            if  self.verbose:
+                traceback.print_exc()
+            time.sleep(2)
+            try:
+                self.helperInit(dbsInst,method)
+                result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+            except:
+                return "N/A"
+        return result, titleList
+
+    def countQuery(self, dbsInst, userInput):
+        dbsApi = self.getDbsApi(dbsInst)
+        res = dbsApi.executeQuery(userInput, type="query")
+        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+        method = "dbsapi"
+        try:
+            self.helperInit(dbsInst, method)
+            nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface=method)
+        except:
+            if  self.verbose:
+                traceback.print_exc()
+            time.sleep(2)
+            try:
+                self.helperInit(dbsInst, method)
+                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface=method)
+            except:
+                return "N/A"
+        return nResults
+
     def multiSearch(self,userInput,**kwargs):
         # check params for cross-checking security flaw
-        for p in [userInput]+kwargs.keys():
+        for p in [userInput] + kwargs.keys():
             self.checkParam(p)
-        resList = []
+        ajax = getArg(kwargs, 'ajax', 0)
+        dbs  = getArg(kwargs, 'dbsInst', '')
+        page = ''
+        if  int(ajax) == 1:
+            self.setContentType('xml')
+            page+="""<ajax-response><response type="object" id="kw_multiSearch">"""
+        resList  = []
         userMode = getArg(kwargs,'userMore','user')
-        method  = "dbsapi"
-        dbsList = list(self.dbsList)
+        method   = "dbsapi"
+        if  not dbs:
+            dbsList  = list(self.dbsList)
+        else:
+            dbsList  = [dbs]
         for ins in dbsList:
-            try:
-                res = self.aSearch(dbsInst = ins,
-                                   userMode = userMode,
-                                   userInput = userInput,
-                                   results = 1, method = method)
-                resList.append(res)
-            except:
-                resList.append("N/A")
+            resList.append(self.countQuery(ins, userInput))
         nameSearch = {'site':'CERN','url':self.dbsdd,'dbsInstList':dbsList,'input':userInput,'resList':resList,'userMode':userMode,'method':method}
         t     = templateMultiResults(searchList=[nameSearch]).respond()
-        page  = self.genTopHTML()
-        page += self._multiSearch(userMode = userMode, userInput = userInput, genTop = 0)
+        if  not int(ajax):
+            page += self._multiSearch(userMode = userMode, userInput = userInput, genTop = 0)
         page += str(t)
-        page += self.genBottomHTML()
+        if  int(ajax)==1:
+            page+="</response></ajax-response>"
+        else:
+            page  = self.genTopHTML()+page
+            page += self.genBottomHTML()
         return page
     multiSearch.exposed=True
+
+    def getPFNsHelper(self, dbsInst, site, 
+                      run = '', dataset = '', lfn = '', protocol = ''):
+        if  not site:
+            raise Exception("Site is required parameter")
+        if  not protocol:
+            try:
+                protocol = self.sitecfg.protocol(site)
+            except:
+                protocol = 'srm'
+        if  not protocol:
+            protocol = 'srm'
+        if  site.find('.') == -1:
+            site = self.sdb.getSEName(site)
+        if  not site:
+            return
+        if  lfn:
+            lfnList = [lfn]
+        else:
+            query   = 'find file where site = %s ' % site
+            if  run:
+                query += ' and run = %s ' % run 
+            if  dataset:
+                query += ' and dataset = %s ' % dataset 
+            res, titles = self.exeQuery(dbsInst, query, fromRow = "", limit = "")
+            lfnList = [i[0] for i in res]
+        print "\n\n###",site, lfnList[:10], protocol
+        pfnList = []
+        step = 100
+        for idx in range(0, len(lfnList), step):
+            if  idx+step < len(lfnList):
+                end = idx+step
+            else:
+                end = len(lfnList)
+            try:
+                pList = self.phedex.getFiles(lfnList[idx:end], site, protocol)
+                pfnList += pList
+            except:
+                pass
+        return pfnList
+
+    def getPFNs(self, dbsInst, site, **kwargs):
+        run      = getArg(kwargs, 'run', '')
+        dataset  = getArg(kwargs, 'dataset', '')
+        lfn      = getArg(kwargs, 'lfn', '')
+        protocol = getArg(kwargs, 'protocol', '')
+#        page = self.genTopHTML()
+#        if  type(site) is types.ListType:
+#            nameSearch = {'sites':site, 'run': run, 'dataset': dataset,
+#                          'lfn':lfn, 'protocol':protocol } 
+#            t = templateSitePFN(searchList=[nameSearch]).respond()
+#            page  = str(t)
+#            page += self.genBottomHTML()
+#            return page
+        cherrypy.response.headers['Content-Type']='text/plain'
+        if  type(site) is types.ListType:
+            siteList = site
+        else:
+            siteList = [site]
+        page = ''
+        for se in siteList:
+            page += 'Site: %s' % se
+            print se, run, dataset, lfn, protocol
+            pfnList  = self.getPFNsHelper(dbsInst, se, run, dataset, lfn, protocol)
+            print pfnList, type(pfnList)
+            for pfn in pfnList:
+                page += pfn + '\n'
+            page += '\n'
+        return page
+    getPFNs.exposed = True
 
     def outputConfigMap(self):
         """Log server configuration parameters"""
