@@ -1946,14 +1946,18 @@ class DDServer(DDLogger,Controller):
             else:
                 cond += "and dataset.tier = %s " % tier
         if  proc:
+            if  proc.find("/") != -1: # it is actually dataset
+                key  = 'dataset'
+            else:
+                key  = 'procds'
             if  proc.lower() == 'any':
                 proc = "*"
             if  proc == "*":
                 cond += ""
             elif  proc.find('*') != -1:
-                cond += "and procds like %s " % proc
+                cond += "and %s like %s " % (key, proc)
             else:
-                cond += "and procds = %s " % proc
+                cond += "and %s = %s " % (key, proc)
 #        if  primType:
         if  date:
             if  date.lower() == 'any':
