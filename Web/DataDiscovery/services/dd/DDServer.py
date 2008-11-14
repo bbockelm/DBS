@@ -4753,12 +4753,6 @@ All LFNs in a block
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         if  method=="dbsapi":
             result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
-#            if (not limit and not fromRow) or limit==-1:
-#               fromRow=""
-#               limit=""
-#            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-#            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-#            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
             if fromRow==-1 and limit==-1:
                fromRow=0
@@ -4769,11 +4763,11 @@ All LFNs in a block
             sortOrder= getArg(kwargs,'sortOrder','desc')
             case     = 'on' # case sensitive
             try:
-                sel  = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
-                query= self.qmaker.processQuery(sel)
+                sel  = self.ddrules.parser(dbsInst,urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
+                query= self.qmaker.processQuery(dbsInst,sel)
             except:
                 return traceback.format_exc()
-            result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+            result,titleList=self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
         return result 
 
     def aSearchShowAll(self,**kwargs):
@@ -4807,24 +4801,17 @@ All LFNs in a block
 #        print "\n\n+++aSearchShowAll",kwargs
         if  method=="dbsapi":
             result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
-#            dbsApi = self.getDbsApi(dbsInst)
-#            if (not limit and not fromRow) or limit==-1:
-#               limit=""
-#               fromRow=""
-#            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-#            sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-#            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
            try:
-               sel  = self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
-               query= self.qmaker.processQuery(sel)
+               sel  = self.ddrules.parser(dbsInst,urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
+               query= self.qmaker.processQuery(dbsInst,sel)
            except:
                if not html:
                   return traceback.format_exc()
                msg ="<pre>%s</pre>"%getExcMessage(userMode)
                page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                return page
-           result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+           result,titleList=self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if parents:
            what,par = output.split(".")
            print "orig. result",result
@@ -4928,22 +4915,8 @@ All LFNs in a block
 #        print "\n\n+++aSearchSummary",kwargs
         if  method=="dbsapi":
             result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
-#           dbsApi = self.getDbsApi(dbsInst)
-#           if (not limit and not fromRow) or limit==-1:
-#              limit=""
-#              fromRow=""
-#           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-#           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-#           tableView = output+"summary"
-#           if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
-#               tc = "%s.%s"%(tableView,self.ddrules.colName[output])
-#               tableView=self.dbManager.getTable(dbsInst,tableView)
-#               sqlView = self.qmaker.wrapToView(tableView,tc,sql)
-#               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
-#           else:
-#               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
-           result,titleList=self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+            result,titleList=self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if getRes:
            return result
         # only take table column names from view's table, otherwise use what was provided by user
@@ -5182,19 +5155,8 @@ All LFNs in a block
         userInput= kwargs['userInput']
         if  method=="dbsapi":
             result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
-#           dbsApi = self.getDbsApi(dbsInst)
-#           if (not limit and not fromRow) or limit==-1:
-#              limit=""
-#              fromRow=""
-#           res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-#           sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-#           if  self.helper.dbManager.getTableNames(dbsInst).count("datasetsummary"):
-#               sqlView = self.qmaker.wrapToView("datasetsummary","Block.Path",sql)
-#               result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
-#           else:
-#               result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
         else:
-           result,titleList = self.qmaker.executeQuery(output,tabCol,sortName,sortOrder,query,fromRow,limit)
+            result,titleList = self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if len(titleList)<=2: # no view found, 2 to account for rownum while using ORACLE
            titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
         excludeList=[]
@@ -5369,7 +5331,7 @@ All LFNs in a block
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         try :
             if method!="dbsapi":
-               sel=self.ddrules.parser(urllib.unquote(userInput),backEnd,sortName,sortOrder,case,method)
+               sel=self.ddrules.parser(dbsInst,urllib.unquote(userInput),backEnd,sortName,sortOrder,case,method)
             else:
                userInput = self.dbsrules.preParseInput(userInput)
                sel = userInput
@@ -5431,7 +5393,7 @@ All LFNs in a block
                    self.writeLog(res)
                 sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
                 query=sql
-#                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface="dbsapi")
+#                nResults=self.qmaker.executeDBSCountQuery(dbsInst,count_sql,count_bindDict,iface="dbsapi")
                 nResults = self.countQuery(dbsInst, userInput)
             except:
                 if getArg(kwargs,'results',0):
@@ -5448,14 +5410,14 @@ All LFNs in a block
         else:
 
             try:
-                query= self.qmaker.processQuery(sel,userMode)
+                query= self.qmaker.processQuery(dbsInst,sel,userMode)
             except:
                 if not html:
                    return traceback.format_exc()
                 msg ="<pre>%s</pre>"%getExcMessage(userMode)
                 page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                 return page
-            nResults = self.qmaker.countSel(query,tabCol)
+            nResults = self.qmaker.countSel(dbsInst,query,tabCol)
 
         # check if asked to return results only
         if getArg(kwargs,'results',0):
@@ -5490,7 +5452,7 @@ All LFNs in a block
               if method=="dbsapi":
 		 bParams=bindDict
 	      else:
-                 bParams=self.qmaker.extractBindParams(query)
+                 bParams=self.qmaker.extractBindParams(dbsInst,query)
               bindParams="\n"
               for key in bParams:
                   bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
@@ -5610,6 +5572,19 @@ All LFNs in a block
     aSearch.exposed=True
 
     def summaryQuery(self, dbsInst, userInput, fromRow, limit):
+        try:
+            return self._summaryQuery(dbsInst, userInput, fromRow, limit)
+        except:
+            if  self.verbose:
+                traceback.print_exc()
+            time.sleep(2)
+            try:
+                return self._summaryQuery(dbsInst, userInput, fromRow, limit)
+            except:
+                traceback.print_exc()
+                raise "Fail in summaryQuery"
+
+    def _summaryQuery(self, dbsInst, userInput, fromRow, limit):
         dbsApi = self.getDbsApi(dbsInst)
         if  (not limit and not fromRow) or limit==-1:
             limit=""
@@ -5623,13 +5598,28 @@ All LFNs in a block
         if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
             tc = "%s.%s"%(tableView,self.ddrules.colName[output])
             tableView=self.dbManager.getTable(dbsInst,tableView)
+            self.helperInit(dbsInst, method)
             sqlView = self.qmaker.wrapToView(tableView,tc,sql)
-            result,titleList=self.qmaker.executeDBSQuery(sqlView,bindDict)
+            result,titleList=self.qmaker.executeDBSQuery(dbsInst,sqlView,bindDict)
         else:
-            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+            self.helperInit(dbsInst, method)
+            result,titleList=self.qmaker.executeDBSQuery(dbsInst,sql,bindDict)
         return result, titleList
 
     def exeQuery(self, dbsInst, userInput, fromRow, limit):
+        try:
+            return self._exeQuery(dbsInst, userInput, fromRow, limit)
+        except:
+            if  self.verbose:
+                traceback.print_exc()
+            time.sleep(2)
+            try:
+                return self._exeQuery(dbsInst, userInput, fromRow, limit)
+            except:
+                traceback.print_exc()
+                raise "Fail in exeQuery"
+
+    def _exeQuery(self, dbsInst, userInput, fromRow, limit):
         dbsApi = self.getDbsApi(dbsInst)
         if (not limit and not fromRow) or limit==-1:
            fromRow=""
@@ -5639,37 +5629,29 @@ All LFNs in a block
         method = "dbsapi"
         result = []
         titleList = []
+        self.helperInit(dbsInst, method)
+        result,titleList=self.qmaker.executeDBSQuery(dbsInst,sql,bindDict)
+        return result, titleList
+
+    def countQuery(self, dbsInst, userInput):
         try:
-            self.helperInit(int, method)
-            result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+            return self._countQuery(dbsInst, userInput)
         except:
             if  self.verbose:
                 traceback.print_exc()
             time.sleep(2)
             try:
-                self.helperInit(dbsInst,method)
-                result,titleList=self.qmaker.executeDBSQuery(sql,bindDict)
+                return self._countQuery(dbsInst, userInput)
             except:
-                return "N/A"
-        return result, titleList
-
-    def countQuery(self, dbsInst, userInput):
+                traceback.print_exc()
+                raise "Fail in countQuery"
+    def _countQuery(self, dbsInst, userInput):
         dbsApi = self.getDbsApi(dbsInst)
         res = dbsApi.executeQuery(userInput, type="query")
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
         method = "dbsapi"
-        try:
-            self.helperInit(dbsInst, method)
-            nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface=method)
-        except:
-            if  self.verbose:
-                traceback.print_exc()
-            time.sleep(2)
-            try:
-                self.helperInit(dbsInst, method)
-                nResults=self.qmaker.executeDBSCountQuery(count_sql,count_bindDict,iface=method)
-            except:
-                return "N/A"
+        self.helperInit(dbsInst, method)
+        nResults=self.qmaker.executeDBSCountQuery(dbsInst,count_sql,count_bindDict,iface=method)
         return nResults
 
     def multiSearch(self,userInput,**kwargs):

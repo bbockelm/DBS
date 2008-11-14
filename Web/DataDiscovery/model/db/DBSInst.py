@@ -205,7 +205,7 @@ class DBManager(DDLogger):
 #          tList = self.engine[dbsInst].table_names()
           for t in tList: 
               tName = t[0].lower()
-              if self.verbose:
+              if self.verbose>1:
                  print "DBS Tables|Views",tName
               if eType=='oracle':
                  tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)

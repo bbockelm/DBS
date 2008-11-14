@@ -425,7 +425,7 @@ class DDRules:
             pass
        return self.cmsNames
 
-   def parser(self,input,backEnd="oracle",sortName='CreationDate',sortOrder='desc',case='on',method='dd'):
+   def parser(self,dbsInst,input,backEnd="oracle",sortName='CreationDate',sortOrder='desc',case='on',method='dd'):
        if self.verbose:
           print "-"*len(input)
           print input
@@ -435,7 +435,7 @@ class DDRules:
        if input.find("'")!=-1 or input.find("\"")!=-1:
           raise "Quotes are not allowed"
        if method=='dd':
-          words=self.parseInput(self.preParseInput(input),backEnd,sortName,sortOrder,case)
+          words=self.parseInput(dbsInst,self.preParseInput(input),backEnd,sortName,sortOrder,case)
        else:
           words=self.preParseInput(input,method)
        return words
@@ -637,7 +637,7 @@ class DDRules:
           tab,col=col.split(".")
        return "%s.%s"%(tab,col)
 
-   def parseInput(self,input,backEnd,sortName,sortOrder,case):
+   def parseInput(self,dbsInst,input,backEnd,sortName,sortOrder,case):
        _input="%s"%input
        idx=input.lower().find('where')
        if idx!=-1:
@@ -735,16 +735,16 @@ class DDRules:
              sortName=self.getTabCol(sortName)
           else:
              sortName=sList[0]
-          fCall="self.makeJoinQuery(toSelect='%s',toJoin='%s',wClause='%s',sortName='%s',sortOrder='%s',case='%s',funcDict=%s)"%(toSelect,toJoin,input,sortName,sortOrder,case,fDict)
+          fCall="self.makeJoinQuery(dbsInst='%s',toSelect='%s',toJoin='%s',wClause='%s',sortName='%s',sortOrder='%s',case='%s',funcDict=%s)"%(dbsInst,toSelect,toJoin,input,sortName,sortOrder,case,fDict)
           if self.verbose:
              print fCall
           return fCall
        # proceed with parsing
        for key in pDict.keys():
-           words[words.index(key)]=self.parsePattern(selKey,sortName,sortOrder,pDict[key],case)
+           words[words.index(key)]=self.parsePattern(dbsInst,selKey,sortName,sortOrder,pDict[key],case)
        return ' '.join(words)
 
-   def parsePattern(self,selKey,sortName,sortOrder,pattern,case):
+   def parsePattern(self,dbsInst,selKey,sortName,sortOrder,pattern,case):
        co_idx=-1
        words=[]
        msg="Fail to parse '%s', no constrain operator found"%pattern
@@ -764,9 +764,9 @@ class DDRules:
           raise msg
        if not words:
           raise msg
-       return self.parseObject(selKey,sortName,sortOrder,[''.join(words)],case)
+       return self.parseObject(dbsInst,selKey,sortName,sortOrder,[''.join(words)],case)
 
-   def parseObject(self,selKey,sortName,sortOrder,input,case):
+   def parseObject(self,dbsInst,selKey,sortName,sortOrder,input,case):
        """
           Create a function call for DDQueryMaker. selKey is an input set of keys which we will
           look-up. The input is a list of conditions which will be applied to the query in a
@@ -822,7 +822,7 @@ class DDRules:
                  _fList=list(fList)
                  _fList.reverse()
                  for func in _fList:
-                     _call+= "self.makeQuery('%s',rval="%func
+                     _call+= "self.makeQuery('%s','%s',rval="%(dbsInst,func)
                      count+=1
                  _call+="'%s',case='%s'"%(v,case)
                  if funcFound:
