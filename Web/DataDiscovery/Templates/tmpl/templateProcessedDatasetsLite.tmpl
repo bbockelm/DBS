@@ -1,5 +1,5 @@
 <!-- templateProcessedDatasetsLite.tmpl -->
-#set cmsName="NO NAME"
+#set cmsName="No SiteDB name"
 #set siteList=$dDict.keys()
 #set empty,prim,proc,tier=$path.split("/")
 #set idPath=$path.replace("/","___")
@@ -67,8 +67,8 @@ LFNs:
 <br />
 All data provided for full dataset, while LFNs links given wrt run=$run
 #end if
-, 
 #*
+, 
 #set look_sites=''
 #for site in $dDict.keys()
 #set look_sites=$look_sites+'site='$site+'&amp;'
@@ -170,7 +170,7 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
   </tr>
 #for site in $dDict.keys()
 
-#set cmsName="NO NAME"
+#set cmsName='<a href="https://savannah.cern.ch/support/?func=additem&group=cmscompinfrasup&assigned_to=4435&category_id=108">No SiteDB name</a>'
 #if $site
 #if $cmsNames.has_key($site)
 #set cmsName=$cmsNames[$site]
