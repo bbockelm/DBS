@@ -12,7 +12,7 @@
 </td>
 <td>
 <div id="$idPath"></div>
-<div id="ProdRequest_$idPath"></div>
+###<div id="ProdRequest_$idPath"></div>
 </td>
 
 <td align="right">
@@ -67,6 +67,16 @@ LFNs:
 <br />
 All data provided for full dataset, while LFNs links given wrt run=$run
 #end if
+, 
+#*
+#set look_sites=''
+#for site in $dDict.keys()
+#set look_sites=$look_sites+'site='$site+'&amp;'
+#end for
+<a href="$host/getPFNs?dbsInst=$dbsInst&amp;${sites}dataset=$path">
+PFNs
+</a>
+*#
 , &#8747;<em>L</em>=<span id="intLumi$idPath"></span>
 <br/>
 <a href="$host/aSearch?dbsInst=$dbsInst&amp;userInput=find+release+where+dataset=$path&amp;userMode=$userMode&amp;caseSensitive=on">
@@ -112,12 +122,14 @@ ADS
 <a href="$host/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
 crab.cfg
 </a>
+#*
 ,
 #set empty,prim,proc,tier=$path.split("/")
 #set idPath=$path.replace("/","___")
 <a href="javascript:GetProdRequestOutput('ProdRequest_$idPath','$prim')">
 ProdRequest
 </a>
+*#
 <p>
 </p>
 
