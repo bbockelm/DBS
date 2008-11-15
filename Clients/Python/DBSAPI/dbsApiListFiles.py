@@ -157,9 +157,11 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
           #DbsXmlBaseHandler.startElement(self, name, attrs)
 	  auto_x_sec=0.0
           if name == 'file':
-	     if attrs.has_key('auto_cross_section'):
-	     	auto_x_sec=float(attrs['auto_cross_section'])
-		#print "XXXXXXXXXXXXXXXXXXXX SEC::: %s" %auto_x_sec
+	     try:
+	     	if attrs.has_key('auto_cross_section'):
+	     		auto_x_sec=float(attrs['auto_cross_section'])
+             except:
+                        auto_x_sec=0.0
              self.currFile = DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=getLong(attrs['size']),
@@ -224,8 +226,11 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                               ) ) 
           if name == 'file_parent':
 	     auto_x_sec=0.0	
-	     if attrs.has_key('auto_cross_section'):
-               	auto_x_sec=float(attrs['auto_cross_section'])
+	     try:
+	     	if attrs.has_key('auto_cross_section'):
+               		auto_x_sec=float(attrs['auto_cross_section'])
+             except:
+                        auto_x_sec=0.0
              self.currFile['ParentList'].append(DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=getLong(attrs['size']),

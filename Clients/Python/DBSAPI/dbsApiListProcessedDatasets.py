@@ -88,8 +88,11 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
 	    ext_cross_sec=0.0
             if attrs.has_key('status'):
 		ds_status=str(attrs['status'])
-	    if attrs.has_key('external_cross_section'):
-		ext_cross_sec=str(attrs['external_cross_section'])	    
+	    try:
+	    	if attrs.has_key('external_cross_section'):
+			ext_cross_sec=str(attrs['external_cross_section'])	    
+	    except:
+		ext_cross_sec=0.0
             self.currDataset = DbsProcessedDataset ( 
                                                 Name=self.procName,     
 						PhysicsGroup=str(attrs['physics_group_name']),
