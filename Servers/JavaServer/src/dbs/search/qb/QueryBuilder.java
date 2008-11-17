@@ -184,7 +184,6 @@ public class QueryBuilder {
 				}
 				
 
-			//System.out.println("line 3");
 				StringTokenizer st = new StringTokenizer(aKw, ".");
 				int count = st.countTokens();
 				String token = st.nextToken();
@@ -411,7 +410,9 @@ public class QueryBuilder {
 					}
 
 					Vertex vCombined = u.getMappedVertex(aKw);
+					//System.out.println("\n\n---Changing vCombined " + aKw);
 					if(vCombined == null) {
+						//System.out.println("IT is NULLLLLLLLLLLLL");
 						checkMax(iter);
 						if(addQuery) {
 							String mapVal =  km.getMappedValue(aKw, true);
@@ -430,6 +431,7 @@ public class QueryBuilder {
 
 						}
 					} else {
+						//System.out.println("in ELSE ---> u.getRealFromVertex " + u.getRealFromVertex(vCombined));
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 						checkMax(iter);
 						if(addQuery) {
@@ -771,7 +773,10 @@ public class QueryBuilder {
 	}
 
 	private String makeAs(String in) {
-		return " AS " + in.replace('.', '_') + " ";
+		int len = in.length();
+		int endIndex = len;
+		if (len > 31) endIndex = 31;
+		return " AS " + in.replace('.', '_').substring(0, endIndex) + " ";
 	}
 	
 	private String genOraclePageQuery(String query) throws Exception{

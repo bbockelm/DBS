@@ -152,6 +152,10 @@ executeQuery () {
 	$CMD query="find site"
 	$CMD query="find dataset where run between 51437 and 51450 or run between 0 and 30000" 
 	$CMD query="find dataset where dataset.id between 1 and 2 or dataset like *on*" 
+	$CMD query="find algo.id, algo.family, algo.exe,algo.hash, algo.content where dataset like *on*" 
+	$CMD query="find dataset where  algo.exe  = *CMS* or algo.family=*C*" 
+	$CMD query="find file where  algo.exe  = *CMS* or algo.family=*C*" 
+	$CMD query="find algo, algo.createby, algo.modby, algo.moddate  where dataset like *on*" 
 
 
 
@@ -210,14 +214,16 @@ executeQuery () {
 
 	#$CMD query="find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0"
 	#$CMD query="find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0"
-	#$CMD query="find dataset" 
+	#$CMD query="find dataset, dataset.modby where dataset = *online*" 
+	#$CMD query="find procds, procds.modby, procds.createby, procds.moddate where dataset = *online*" 
 	#$CMD query="find dataset where dataset like *-CRUZET4*RECO or dataset like *-CRUZET4*RAW or dataset like *_CRUZET4*ALCARECO" 
 	#$CMD query="*tes t_primary_00" 
 	#$CMD query="find dataset where dataset like *csa*" 
 	#$CMD query="find dataset where dataset like *csa* and dataset not    like *online*" 
 	#$CMD query="find dataset where dataset.tier = RAW " 
 	#$CMD query="find dataset where dataset.id between 1   and   2 or dataset like *on*" 
-	$CMD query="find dataset where run between 51437 and 51450 or run between 0 and 30000" 
+	#$CMD query="find dataset where run between 51437 and 51450 or run between 0 and 30000" 
+	#$CMD query="find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD and dataset =/test_primary_001/TestProcessedDS002/GEN-SIM" 
 	#$CMD query="find dataset where procds.tier = RAW " 
 	#$CMD query="find dataset where file.tier = RAW " 
 	#$CMD query="find dataset where dataset = *RAW " 

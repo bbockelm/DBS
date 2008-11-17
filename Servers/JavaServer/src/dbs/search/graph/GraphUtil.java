@@ -66,6 +66,7 @@ public class GraphUtil{
 		for (Iterator eIt = s.iterator(); eIt.hasNext(); ) {
 			Vertex v = (Vertex) eIt.next();
 			String vNameFromGraph =  (String) v.getUserDatum("user");
+			//System.out.println("comparing " + userName+ "  " + vNameFromGraph);
 			if(isEqual(userName, vNameFromGraph)) return v;
 			//if (userName.equals(vNameFromGraph)) return v;
 		}
@@ -74,7 +75,7 @@ public class GraphUtil{
 	private boolean isEqual(String userName, String vNameFromGraph) {
 		StringTokenizer st = new StringTokenizer(vNameFromGraph, ",");
 		while(st.hasMoreTokens()) 
-			if (userName.equals(st.nextToken())) return true;
+			if (userName.trim().equals(st.nextToken().trim())) return true;
 		return false;
 
 	}

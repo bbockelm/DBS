@@ -74,6 +74,15 @@ public class KeyMap {
 		map.put("group.createdate", "PhysicsGroup.CreationDate");
 		map.put("group.moddate", "PhysicsGroup.LastModificationDate");
 
+		map.put("algo.id", "AlgorithmConfig.ID");
+		//map.put("algo.version", "AppVersion.Version");
+		//map.put("algo.family", "AppFamily.FamilyName");
+		//map.put("algo.exe", "AppExecutable.ExecutableName");
+		//map.put("algo.hash", "QueryableParameterSet.Hash");
+		map.put("algo.content", "QueryableParameterSet.Content");
+		map.put("algo.createdate", "AlgorithmConfig.CreationDate");
+		map.put("algo.moddate", "AlgorithmConfig.LastModificationDate");
+
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 		map.put("pset", "QueryableParameterSet");

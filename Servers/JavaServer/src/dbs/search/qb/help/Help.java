@@ -554,6 +554,39 @@ public class Help {
 
 
 		kw = new Keyword();
+		kw.entity = "algo";
+		kw.attrs.add("hash");
+		kw.attrs.add("version");
+		kw.attrs.add("exe");
+		kw.attrs.add("family");
+		kw.attrs.add("content");
+		kw.attrs.add("createdate");
+		kw.attrs.add("moddate");
+		kw.attrs.add("createby");
+		kw.attrs.add("modby");
+		kw.attrs.add("id");
+
+		e = new Example();
+		e.desc = "I want to find all algorithms and its attribute like family, version, executable, hash, modified by, created by, create date and modified date";
+		e.query = "find algo.family, algo.version, algo.exe, algo.hash, almo.modby, algo.createby, algo.createdate, algo.moddate";
+		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find all  datasets that has a specified algo version or a specified algo family";
+		e.query = "find  dataset where algo.version = CMSSW or algo.family = CMS*";
+		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find algo configuration of a specified file ";
+		e.query = "find algo.family, algo.version, algo.exe, algo.hash where file = MyLogocalFileName";
+		kw.examples.add(e);
+		
+		map.put(kw.entity, kw);
+
+
+
+		//-------------------------------------------------------------------------
+
+
+		kw = new Keyword();
 		kw.entity = "ilumi";
 		e = new Example();
 		e.desc = "I want to find integrated luminosity of a set of runs";
