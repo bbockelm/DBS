@@ -138,7 +138,8 @@ class DDServer(DDLogger,Controller):
 
         # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
         self.prodRequestServer= DDParamServer(server="cmswt01.cern.ch:8030",verbose=verbose)
-        self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
+#        self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
+        self.phedexServer= DDParamServer(server="cmsweb.cern.ch",verbose=verbose)
         self.PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
@@ -4589,7 +4590,8 @@ All LFNs in a block
     
     def phedexStatus(self,site,datasetPath,id_suffix,**kwargs):
         self.setContentType('xml')
-        url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
+#        url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
+        url="/phedex/prod/XML::TransferStatus"
         params={}
         if site:
            if site.find(",")!=-1:
