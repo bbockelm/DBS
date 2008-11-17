@@ -87,26 +87,31 @@ class DBSManager(object):
         self.verbose = verbose
         self.dbsapi  = {}
         self.dbsattr = {} # dict[alias]=(url,account,ver)
+        self.dbsall  = {}
         reader = re.compile('_r$')
         try :
             api = RegService()
             result = api.queryRegistrationFindAll()
             for i in result:
                 if  str(i._critical).lower() == 'y' and \
-                    i._url and i._accountName and i._serverVersion:
-#                    i._url and i._accountName and i._serverVersion and \
-#                    reader.search(i._alias):
+                    i._url and i._accountName and i._serverVersion and \
+                    reader.search(i._alias):
                     dbsdict = {'url':i._url, 'account':i._accountName,
                                'version':i._serverVersion}
                     self.dbsattr[i._alias] = dbsdict
+                dbsdict = {'url':i._url, 'account':i._accountName,
+                           'version':i._serverVersion,'critical':i._critical}
+                self.dbsall[i._alias] = dbsdict
         except:
             traceback.print_exc()
             raise Exception("Fail to access DBS RS service")
 
-    def aliases(self):
+    def aliases(self, all = None):
         """
         Return list of known to RS DBS aliases
         """
+        if  all:
+            return self.dbsall.keys()
         return self.dbsattr.keys()
 
     def getapi(self, dbsalias):
@@ -188,14 +193,20 @@ class DBSManager(object):
 #
 if __name__ == "__main__":
     dbsmgr = DBSManager()
-    print dbsmgr.dbsattr
     query = "find dataset, site where site like *cern.ch"
-#    query = "find kkksite where site like *"
     print "DBS aliases:"
-    for dbsalias in dbsmgr.aliases():
+    dbslist = dbsmgr.aliases()
+    dbslist.sort()
+    print dbslist
+    dbsall = dbsmgr.aliases(True)
+    dbsall.sort()
+    for dbsalias in dbsall:
         print dbsalias
-        dbsapi = dbsmgr.getapi(dbsalias)
-        print dbsapi
+        print dbsmgr.dbsall[dbsalias]
+#    for dbsalias in dbsmgr.aliases():
+#        print dbsalias
+#        dbsapi = dbsmgr.getapi(dbsalias)
+#        print dbsapi
 #        print dbsmgr.query(dbsalias, query)
 #        print dbsmgr.queryxml(dbsalias, query)
 #        print dbsmgr.exe(dbsalias, query, 0, 10)
