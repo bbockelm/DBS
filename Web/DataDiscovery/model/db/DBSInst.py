@@ -217,7 +217,7 @@ class DBManager(DDLogger):
               vList = con.execute(self.vQuery[dbsInst])
               for v in vList: 
                   tName=v[0].lower()
-                  if self.verbose:
+                  if self.verbose>1:
                      print "DBS Views",tName
                   if eType=='oracle':
                      tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
