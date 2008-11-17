@@ -165,4 +165,6 @@ find dataset, site
 find site
 find dataset where run between 51437 and 51450 or run between 0 and 30000
 find dataset where dataset.id between 1 and 2 or dataset like *on*
-
+find algo.family, algo.version, algo.exe, algo.hash, almo.modby,algo.createby, algo.createdate, algo.moddate
+find  dataset where algo.version = CMSSW or algo.family = CMS*
+find algo.family, algo.version, algo.exe, algo.hash where file = MyLogocalFileName
