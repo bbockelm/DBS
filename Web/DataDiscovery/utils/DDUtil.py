@@ -818,10 +818,13 @@ class DDLogger:
           @rtype : none
           @return: none
       """
-      if self.verbose==1:
-         self.logger.info(msg)
-      elif self.verbose>=2:
-         self.logger.debug(msg)
+      self.logger.info(msg)
+      if  self.verbose:
+          self.logger.debug(msg)
+#      if  self.verbose==1:
+#          self.logger.info(msg)
+#      elif self.verbose>=2:
+#          self.logger.debug(msg)
 
   def setLogger(self):
       """
