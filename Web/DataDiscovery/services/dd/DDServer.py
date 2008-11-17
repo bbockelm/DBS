@@ -136,12 +136,11 @@ class DDServer(DDLogger,Controller):
         self.phedex   = PhedexManager(self.sdb, verbose)
         self.sitecfg  = SiteConfigManager(self.sdb, verbose)
 
-        # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
-        self.prodRequestServer= DDParamServer(server="cmswt01.cern.ch:8030",verbose=verbose)
-#        self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
         self.phedexServer= DDParamServer(server="cmsweb.cern.ch",verbose=verbose)
         self.PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
-        self.dbs  = DBSGLOBAL
+        self.dbsglobal = DBSGLOBAL
+#        self.dbsglobal = 'global_r'
+        self.dbs  = self.dbsglobal
         self.baseUrl = ""
         self.topUrl= ""
         self.mastheadUrl = self.ddConfig.masthead()
@@ -178,22 +177,19 @@ class DDServer(DDLogger,Controller):
          pass
         self.iface      = self.ddConfig.iface()
         self.helper     = DDHelper(self.dbManager,self.dbs,self.iface,verbose,html=1)
-        self.asearch    = DDSearch(dbsHelper=self.helper)
+#        self.helper     = None
         self.ddrules    = DDRules(verbose)
         self.dbsrules   = DbsRules(verbose)
         self.qmaker     = DDQueryMaker(self.dbManager,self.dbs,verbose)
+#        self.qmaker     = None
         self.dbsdls     = self.helper.getDbsDls()
         self.dbsList    = self.dbsdls.keys()
+#        self.dbsList    = self.dbsmgr.aliases()
         self.dbsList.sort()
         try:
-           self.dbsList.remove(DBSGLOBAL)
+           self.dbsList.remove(self.dbsglobal)
         except:
            pass
-        self.dbsList = [DBSGLOBAL]+self.dbsList
-        # made connection to all known DBS instances
-        for dbs in self.dbsList:
-            print "Connecting to",dbs
-            self.dbManager.connect(dbs,self.iface)
         self.dbsTime    = 0
         self.dlsTime    = 0
         self.htmlTime   = 0
@@ -206,11 +202,7 @@ class DDServer(DDLogger,Controller):
         self.sumPage    = ""
         self.firstSearch=1
         self.quiet      = 0
-        try:
-            self.hostname = socket.gethostbyaddr(socket.gethostname())[0]
-        except:
-            self.hostname = 'localhost'
-            pass
+        self.dbsList = [self.dbsglobal]+self.dbsList
         try:
             self.dbsdd = self.ddConfig.url()
             if self.verbose:
@@ -222,6 +214,15 @@ class DDServer(DDLogger,Controller):
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
         self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':self.ddConfig.dbsVer(),'retry':2}
+        # made connection to all known DBS instances
+        for dbs in self.dbsList:
+            self.dbManager.connect(dbs,self.iface)
+            self.getDbsApi(dbs)
+        try:
+            self.hostname = socket.gethostbyaddr(socket.gethostname())[0]
+        except:
+            self.hostname = 'localhost'
+            pass
         print "+++ DDServer URL '%s'"%self.dbsdd
         print "+++ Using %s interface"%self.iface
         print "+++ Using %s dbs-client version"%self.ddConfig.dbsVer()
@@ -233,7 +234,7 @@ class DDServer(DDLogger,Controller):
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
                            'siteForm': ("",""), # (dbsInst,site)
-                           'searchForm': DBSGLOBAL # (dbsInst,)
+                           'searchForm': self.dbsglobal # (dbsInst,)
                           }
         self.sectionDict={ 
                'Algorithm': ['AppExecutable','AppVersion','AppFamily'],
@@ -262,26 +263,28 @@ class DDServer(DDLogger,Controller):
         self.writeLog("DDServer init")
 
     def getDbsApi(self,dbsInst):
-        dbsUrl=DBS_INST_URL[dbsInst]
-        dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
-        if self.verbose:
-           print "dbsUrl",dbsUrl
-#        self.dbsConfig['url']=dbsUrl
-        config = dict(self.dbsConfig)
-        config['url']=dbsUrl
-        if self.dbsApi.has_key(dbsInst):
-           return self.dbsApi[dbsInst]
+        if  self.dbsApi.has_key(dbsInst):
+            return self.dbsApi[dbsInst]
         else:
-           dbsApi = DbsApi(config)
-           self.dbsApi[dbsInst]=dbsApi
-           return dbsApi
+            dbsUrl=DBS_INST_URL[dbsInst]
+            dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
+            config = dict(self.dbsConfig)
+            config['url']=dbsUrl
+            dbsApi = DbsApi(config)
+            self.dbsApi[dbsInst]=dbsApi
+#            dbsApi=self.dbsmgr.getapi(dbsInst)
+#            self.dbsApi[dbsInst]=dbsApi
+            return dbsApi
 
     def readyToRun(self):
         opts=self.context.CmdLineArgs().opts
-        self.qmaker.setVerbose(opts.verbose)
-        self.helper.setVerbose(opts.verbose)
-        self.ddrules.setVerbose(opts.verbose)
-        self.setLevel(opts.verbose) # set logger level
+        try:
+            self.qmaker.setVerbose(opts.verbose)
+            self.helper.setVerbose(opts.verbose)
+            self.ddrules.setVerbose(opts.verbose)
+            self.setLevel(opts.verbose) # set logger level
+        except:
+            pass
         self.baseUrl = opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
         self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
@@ -576,7 +579,7 @@ class DDServer(DDLogger,Controller):
                      'mastheadUrl' : self.mastheadUrl,
                      'footerUrl'   : self.footerUrl,
                      'title'       : 'DBS Data Discovery Page',
-                     'dbsGlobal'   : DBSGLOBAL,
+                     'dbsGlobal'   : self.dbsglobal,
                      'userMode'    : userMode,
                      'onload'      : onload
                     }
@@ -611,7 +614,7 @@ class DDServer(DDLogger,Controller):
         t = templateBottom(searchList=[nameSpace]).respond()
         return str(t)
 
-    def index(self,dbsInst=DBSGLOBAL,userMode='user',**kwargs): 
+    def index(self,dbsInst='',userMode='user',**kwargs): 
         """
            Construct start up page by invoking L{init} call.
            @type  self: class object
@@ -619,17 +622,8 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
-#        cookie = cherrypy.request.cookie
-#        if cookie.has_key('DBSDD_defaultPage'):
-#           print "DBSDD_defaultPage",cookie['DBSDD_defaultPage'].value
-#           val = cookie['DBSDD_defaultPage'].value
-#           if val=="aSearch":
-#              return self._advanced(dbsInst,userMode)
-#           elif val=="Navigator":
-#              return self._navigator(dbsInst,userMode)
-#           else:
-#              return self._navigator(dbsInst,userMode)
-#        return self._navigator(dbsInst,userMode)
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         return self._advanced(dbsInst,userMode)
     index.exposed = True 
 
@@ -740,7 +734,9 @@ class DDServer(DDLogger,Controller):
         return page
     _status.exposed = True
 
-    def _navigator(self,dbsInst=DBSGLOBAL,userMode="user",**kwargs):
+    def _navigator(self,dbsInst='',userMode="user",**kwargs):
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         try:
             for p in [dbsInst,userMode]+kwargs.keys():
                 self.checkParam(p)
@@ -796,7 +792,9 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _config.exposed=True
 
-    def _analysis(self,dbsInst=DBSGLOBAL,userMode="user"):
+    def _analysis(self,dbsInst='',userMode="user"):
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('Analysis dataset search',userMode)
@@ -825,12 +823,14 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _analysis.exposed=True
 
-    def _advanced(self,dbsInst=DBSGLOBAL,userMode="user",msg="",**kwargs):
+    def _advanced(self,dbsInst='',userMode="user",msg="",**kwargs):
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         try:
             dbsList = []
             for dbs in self.dbsList:
                 if  userMode=="user":
-                    if  dbs==DBSGLOBAL or dbs.find("ph_analys")!=-1:
+                    if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1:
                         dbsList.append(dbs)
                 else:
                     dbsList.append(dbs)
@@ -904,7 +904,7 @@ class DDServer(DDLogger,Controller):
             page+= self.whereMsg('RSS feeds',userMode)
             emptyList=[]    
             nameSearch= {
-                          'dbsInst'     : DBSGLOBAL,
+                          'dbsInst'     : self.dbsglobal,
                           'userMode'    : userMode,
                           'dbsList'     : self.dbsList,
                           'softReleases': emptyList,
@@ -926,7 +926,9 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _rss.exposed=True
 
-    def rssGenerator(self,primD,app="Any",dbsInst=DBSGLOBAL,userMode="user",**kwargs):
+    def rssGenerator(self,primD,app="Any",dbsInst='',userMode="user",**kwargs):
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         self.setContentType('rss')
         if string.lower(app)   =="all" or string.lower(app)   =="any": app="*"
         if string.lower(primD) =="all" or string.lower(primD) =="any": primD="*"
@@ -1063,7 +1065,9 @@ class DDServer(DDLogger,Controller):
 
     @is_authorized (Role("Global Admin"), Group("DBS"), 
 		    onFail=RedirectToLocalPage ("/redirectPage"))
-    def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
+    def _dbsExpert(self,dbsInst='',userMode="dbsExpert"):
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('DBS expert page',userMode)
@@ -1083,13 +1087,15 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _dbsExpert.exposed=True
 
-    def _runs(self,dbsInst=DBSGLOBAL,userMode="user"):
+    def _runs(self,dbsInst='',userMode="user"):
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         try:
             page = self.genTopHTML(intro=False,userMode=userMode,onload="resetRunNav();")
             page+= self.whereMsg('Run search',userMode)
             nameSpace = {
                          'dbsList'      : self.dbsList,
-                         'dbsInst'      : DBSGLOBAL,
+                         'dbsInst'      : self.dbsglobal,
                          'userMode'     : userMode,
                          'style'        : 'width:200px',
                         }
@@ -1219,17 +1225,15 @@ class DDServer(DDLogger,Controller):
         return page
     genUserNavigator.exposed=True 
 
-    def searchForm(self,firstDBS=DBSGLOBAL,userMode='user'):
+    def searchForm(self,firstDBS='',userMode='user'):
         """
            Search any match in DB for given keywords. The search done over
            meta-data tables.
         """
+        if  not firstDBS:
+            firstDBS = self.dbsglobal
 
         searchFunc="javascript:ResetAllResults();ajaxFinderSearch('%s')"%userMode
-
-        # FIXME, TODO: firstDBS should be passed here
-        if not firstDBS: firstDBS=DBSGLOBAL
-
         sectionList=self.sectionDict.keys()
         sectionList.sort()
         tableList = self.sectionDict['Algorithm']
@@ -1251,7 +1255,7 @@ class DDServer(DDLogger,Controller):
                      'dbsList'        : self.dbsList,
                      'searchFunction' : searchFunc,
                      'selectLine'     : selectLine,
-                     'dbsGlobal'      : DBSGLOBAL,
+                     'dbsGlobal'      : self.dbsglobal,
                      'myAlias'        : myAlias,
                     }
         t = templateSearchTable(searchList=[nameSpace]).respond()
@@ -3625,11 +3629,11 @@ All LFNs in a block
         """
            Generates site form request
         """
-        if not firstDBS: firstDBS=DBSGLOBAL
+        if not firstDBS: firstDBS=self.dbsglobal
         if firstSite=="*": firstSite="All"
         if auto:
            # auto-competion form for processed datasets
-           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':DBSGLOBAL,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
+           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':self.dbsglobal,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
            t = templateAutoComplete(searchList=[nameSearch]).respond()
            prdForm=str(t)
         else:
@@ -3643,7 +3647,7 @@ All LFNs in a block
                      'firstDBS' : firstDBS,
                      'firstSite': firstSite,
                      'dbsList'  : self.dbsList,
-                     'dbsGlobal': DBSGLOBAL,
+                     'dbsGlobal': self.dbsglobal,
 #                     'siteList' : siteList,
                      'siteDict' : siteDict,
                      'userMode' : userMode,
@@ -4142,7 +4146,7 @@ All LFNs in a block
            page=""
         dbsList=[]
         if userMode=="user":
-           dbsList.append(DBSGLOBAL)
+           dbsList.append(self.dbsglobal)
         else:
            dbsList=self.dbsList
         for dbs in dbsList:
@@ -4161,35 +4165,6 @@ All LFNs in a block
            self.writeLog(page)
         return page
     getRss.exposed=True
-
-    def getProdRequestPage(self,**kwargs):
-#        data = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=this+is+a+test",{},debug=1)
-#        print data
-        page=self.genTopHTML(onload="registerAjaxProdRequestCalls();")
-        page+="Response from ProdRequest<br/ >"
-        page+="""<a href="javascript:ajaxGetProdRequest()">get</a>"""
-        page+="""<div id="id_ProdRequest"></div>"""
-        page+=self.genBottomHTML()
-        return page
-    getProdRequestPage.exposed=True
-
-    def getProdRequest(self,prim,id,**kwargs):
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=%s&id=%s"%(prim,id),{},debug=1)
-#        page = """
-#<ajax-response><response type="element" id="%s">
-#<div class="float_ProdRequest">
-#<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div>
-#Response from ProdRequest will be placed here<br />
-#primaryDataset='%s'
-#</div>
-#</response></ajax-response>
-#"""%(id,id,prim)
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    getProdRequest.exposed=True
 
     def makeLine(self,id,**kwargs):
         # AJAX wants response as "text/xml" type
@@ -4539,7 +4514,7 @@ All LFNs in a block
             selList  = []
             conDict  = {}
             whereList= []
-            dbsInst=DBSGLOBAL
+            dbsInst=self.dbsglobal
             helper=self.helper
             class Handler (xml.sax.handler.ContentHandler):
                 def startElement(self, name, attrs):
@@ -4755,7 +4730,7 @@ All LFNs in a block
 
     def aSearchResults(self,dbsInst,userInput,fromRow=-1,limit=-1,method="dbsapi",**kwargs):
         self.qmaker.initDBS(dbsInst)
-        dbsApi = self.getDbsApi(dbsInst)
+#        dbsApi = self.getDbsApi(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         if  method=="dbsapi":
             result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
@@ -4792,7 +4767,7 @@ All LFNs in a block
            limit = 0
            fromRow=0
         userInput= kwargs['userInput']
-        dbsInst  = getArg(kwargs,'dbsInst',DBSGLOBAL)
+        dbsInst  = getArg(kwargs,'dbsInst',self.dbsglobal)
         html     = getArg(kwargs,'html',1)
         xml      = getArg(kwargs,'xml',0)
         case     = getArg(kwargs,'caseSensitive','on')
@@ -5252,7 +5227,7 @@ All LFNs in a block
     def aSearchKeys(self):
         if  self.iface=="dbsapi":
             try:
-                dbsApi = self.getDbsApi(DBSGLOBAL)
+                dbsApi = self.getDbsApi(self.dbsglobal)
                 helpList = dbsApi.getHelp("")
             except:
                 helpList = []
@@ -5275,7 +5250,9 @@ All LFNs in a block
             oDict[key]=kwargs[key]
         return oDict
 
-    def aSearch(self,dbsInst=DBSGLOBAL,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+    def aSearch(self,dbsInst='',userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+        if  not dbsInst:
+            dbsInst = self.dbsglobal
         t0=time.time()
         _idx=int(_idx)
         method = getArg(kwargs,'method',self.iface)
@@ -5368,38 +5345,9 @@ All LFNs in a block
                      tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
                   except: pass
               
-#        self.qmaker.initDBS(dbsInst)
         if method=="dbsapi":
             try:
-                dbsApi = self.getDbsApi(dbsInst)
-                if self.verbose:
-                   print dbsApi.getServerUrl()
-                fromRow=_idx*pagerStep
-                toRow=_idx*pagerStep+pagerStep
-                if self.verbose>1:
-                   msg="\n\n### While using DBS-QL DBSAPI, transform user input"
-                   msg+="\n'%s'"%userInput
-                   msg+="\n'%s'"%sel
-                   print msg
-                   self.writeLog(msg)
-                # I need to re-write userInput since DBS-QL
-                userInput = sel.strip()
-                if pagerStep==-1:
-                   res=dbsApi.executeQuery(userInput,type="query")
-                else:
-#                       if (not limit and not fromRow) or (limit==-1 and fromRow==-1):
-                       start = fromRow
-                       end   = limit
-                       if (not limit and not fromRow) or limit==-1:
-                           start = ""
-                           end   = ""
-                       res=dbsApi.executeQuery(userInput,begin=start,end=end,type="query")
-                if self.verbose>1:
-                   print res
-                   self.writeLog(res)
-                sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-                query=sql
-#                nResults=self.qmaker.executeDBSCountQuery(dbsInst,count_sql,count_bindDict,iface="dbsapi")
+                query = '' # will be retrieved by executeQuery later
                 nResults = self.countQuery(dbsInst, userInput)
             except:
                 if getArg(kwargs,'results',0):
@@ -5437,7 +5385,7 @@ All LFNs in a block
            dbsList = []
            for dbs in self.dbsList:
                if  userMode=="user":
-                   if  dbs==DBSGLOBAL or dbs.find("ph_analys")!=-1:
+                   if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1:
                        dbsList.append(dbs)
                else:
                    dbsList.append(dbs)
@@ -5583,19 +5531,21 @@ All LFNs in a block
         except:
             if  self.verbose:
                 traceback.print_exc()
+            self.writeLog(getExcept())
             time.sleep(2)
             try:
                 return self._summaryQuery(dbsInst, userInput, fromRow, limit)
             except:
                 traceback.print_exc()
+                self.writeLog(getExcept())
                 raise "Fail in summaryQuery"
 
     def _summaryQuery(self, dbsInst, userInput, fromRow, limit):
-        method = "dbsapi"
-        dbsApi = self.getDbsApi(dbsInst)
         if  (not limit and not fromRow) or limit==-1:
             limit=""
             fromRow=""
+        method = "dbsapi"
+        dbsApi = self.getDbsApi(dbsInst)
         res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
         output    = "dataset"
@@ -5619,18 +5569,23 @@ All LFNs in a block
         except:
             if  self.verbose:
                 traceback.print_exc()
+            self.writeLog(getExcept())
             time.sleep(2)
             try:
                 return self._exeQuery(dbsInst, userInput, fromRow, limit)
             except:
-                traceback.print_exc()
+                if  self.verbose:
+                    traceback.print_exc()
+                self.writeLog(getExcept())
+                print "Fail in exeQuery",dbsInst,userInput,fromRow,limit
                 raise "Fail in exeQuery"
 
     def _exeQuery(self, dbsInst, userInput, fromRow, limit):
-        dbsApi = self.getDbsApi(dbsInst)
         if (not limit and not fromRow) or limit==-1:
            fromRow=""
            limit=""
+#        result, titeList = self.dbsmgr.exe(dbsInst, userInput, begin=fromRow, end=fromRow+limit)
+        dbsApi = self.getDbsApi(dbsInst)
         res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
         method = "dbsapi"
@@ -5646,13 +5601,20 @@ All LFNs in a block
         except:
             if  self.verbose:
                 traceback.print_exc()
+            self.writeLog(dbsInst)
+            self.writeLog(userInput)
+            self.writeLog(getExcept())
             time.sleep(2)
             try:
                 return self._countQuery(dbsInst, userInput)
             except:
-                traceback.print_exc()
+                if  self.verbose:
+                    traceback.print_exc()
+                self.writeLog(getExcept())
                 raise "Fail in countQuery"
+
     def _countQuery(self, dbsInst, userInput):
+#        nResults = self.dbsmgr.count(dbsInst, userInput)
         dbsApi = self.getDbsApi(dbsInst)
         res = dbsApi.executeQuery(userInput, type="query")
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
