@@ -5145,10 +5145,12 @@ All LFNs in a block
         page     = ""
         counter  = 0
         cDate=cBy=size=nblks=nfiles=nevts=nsites=""
+        readItems = 0
         for item in result:
             try:
                 dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
                 excludeList=list(eList)
+                readItems = 1
             except: # no view found
                 dataset=item[0]
                 excludeList = list(titleList[1:])+eList
@@ -5161,21 +5163,23 @@ All LFNs in a block
             else:
                style=""
 # uncomment back, once datasetSummary view will be fixed
-#            if grid and cDate:
-#               sList = self.helper.getSiteList(dataset)
-#               dDict = {}
-#               for site in sList:
-#                   dDict[site]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
-#               mDict = dDict
-#            else:
-#               dDict,mDict = self.helper.datasetSummary(dataset)
-#               if not mDict:
-#                  mDict["N/A"]=("","",0,0,0,0)
+            if readItems:
+               sList = self.helper.getSiteList(dataset)
+               dDict = {}
+               for site in sList:
+                   dDict[site]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
+               mDict = dDict
+               if  not sList:
+                   dDict["N/A"]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
+            else:
+               dDict,mDict = self.helper.datasetSummary(dataset)
+               if not mDict:
+                  mDict["N/A"]=("","",0,0,0,0)
 # should go away, see above
-            dDict,mDict = self.helper.datasetSummary(dataset)
-            if not mDict:
+#            dDict,mDict = self.helper.datasetSummary(dataset)
+#            if not mDict:
+#               mDict["N/A"]=("","",0,0,0,0)
 # end of temp fix
-               mDict["N/A"]=("","",0,0,0,0)
             if html:
                if mDict:
                    tempDict={'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style,'cmsNames':self.getCMSNames()}
