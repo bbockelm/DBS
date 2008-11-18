@@ -20,7 +20,7 @@ public class Wrapper {
 		return countQuery;	
 	}
 
-	public String getQuery(String query, String begin, String end, String db) throws Exception {
+	public String getQuery(String query, String begin, String end, String db, boolean upper) throws Exception {
 
 		String queryToReturn ="";
 		//System.out.println("Query " + query);
@@ -54,7 +54,7 @@ public class Wrapper {
 				}//else System.out.println("REL " + (String)obj);
 			}*/
 			QueryBuilder qb = new QueryBuilder(db);
-			queryToReturn = qb.genQuery(kws, cs, okws, orderingkw, begin, end);
+			queryToReturn = qb.genQuery(kws, cs, okws, orderingkw, begin, end, upper);
 			bindValues = qb.getBindValues();
 			bindIntValues = qb.getBindIntValues();
 			countQuery = qb.getCountQuery();

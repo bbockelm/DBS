@@ -1,6 +1,6 @@
 /**
- $Revision: 1.48 $"
- $Id: DBSApiAnaDSLogic.java,v 1.48 2008/06/17 17:07:20 afaq Exp $"
+ $Revision: 1.49 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.49 2008/06/30 20:24:49 afaq Exp $"
  *
  */
 
@@ -576,7 +576,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			userInput += " and dataset="+path;
 			//WE must get a sorted list
 
-                	ArrayList objList = executeQuery(conn, out, userInput, "", "");
+                	ArrayList objList = executeQuery(conn, out, userInput, "", "", true);
                 	String finalQuery = (String)objList.get(1);
                 	List<String> bindValues = (List<String>)objList.get(2);
                 	List<Integer> bindIntValues = (List<Integer>)objList.get(3);

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.140 $"
- $Id: DBSApi.java,v 1.140 2008/09/10 19:32:22 afaq Exp $"
+ $Revision: 1.141 $"
+ $Id: DBSApi.java,v 1.141 2008/09/19 21:45:53 afaq Exp $"
  *
 */
 
@@ -746,11 +746,17 @@ public class DBSApi {
 						);
 			} else if (apiStr.equals("executeQuery")) {
 				System.out.println("executeQuery invoked by " + get(dbsUser, "user_dn", false));
+				String upperStr = get(table, "upper", false);
+				boolean upper = true;
+				if(!isNull(upperStr)) {
+					if(upperStr.equals("False")) upper = false;
+				}
                                 (new DBSApiLogic(this.data)).executeQuery(conn, out, 
 									  get(table, "query", true),
 									  get(table, "begin", false),
 									  get(table, "end", false),
-									  get(table, "type", false)
+									  get(table, "type", false),
+									  upper
 									  );
 			} else if (apiStr.equals("getHelp")) {
 				Help.getInstance().getHelp(out, get(table, "entity", false));

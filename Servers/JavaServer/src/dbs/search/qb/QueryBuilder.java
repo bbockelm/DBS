@@ -18,6 +18,7 @@ public class QueryBuilder {
 	int MAX_ITERATION = 999;
 	KeyMap km;
 	//RelationMap rm = new RelationMap();
+	private boolean upper;
 	private ArrayList bindValues;
 	private ArrayList bindIntValues;
 	GraphUtil u = null;
@@ -30,6 +31,7 @@ public class QueryBuilder {
 		km = new KeyMap();
 		//u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
 		u = GraphUtil.getInstance("WEB-INF/DBSSchemaGraph.xml");
+		upper = true;
 	}
 	private String owner() throws Exception {
 		return DBSSql.owner();	
@@ -46,7 +48,7 @@ public class QueryBuilder {
 	}
 
 	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws) throws Exception{
-		return genQuery(kws, cs, okws, "", "", "");
+		return genQuery(kws, cs, okws, "", "", "", true);
 	}
 	private void checkMax(int iter) throws Exception {
 		if(iter > MAX_ITERATION) throw new Exception("Unexpected query. Could not process this query");
@@ -78,7 +80,8 @@ public class QueryBuilder {
 		return false;
 	}
 	//public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
-	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String orderingkw, String begin, String end) throws Exception{
+	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String orderingkw, String begin, String end, boolean upper) throws Exception{
+		this.upper = upper;
 		//Store all the keywors both from select and where in allKws
 		fixConstForLike(cs);
 
@@ -659,10 +662,10 @@ public class QueryBuilder {
 						//Vertex vFirst = u.getMappedVertex(token);
 						Vertex vCombined = u.getMappedVertex(key);
 						if(vCombined == null) {
-							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += "\t upper(" + km.getMappedValue(key, true) + ") " ;
+							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += "\t " + makeUpper(km.getMappedValue(key, true)) ;
 							else queryWhere += "\t" + km.getMappedValue(key, true) + " " ;
 						} else {
-							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += "\t upper(" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + ") ";
+							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += "\t " + makeUpper(u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined)) ;
 							else queryWhere += "\t" + u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined) + " ";
 							//FIXME default can be list
 						}
@@ -772,6 +775,12 @@ public class QueryBuilder {
 		return "";
 	}
 
+	private String makeUpper(String in) {
+		if(upper) return " upper(" + in + ") ";
+		return " " + in + " ";
+	}
+
+	
 	private String makeAs(String in) {
 		int len = in.length();
 		int endIndex = len;
@@ -920,7 +929,7 @@ public class QueryBuilder {
 	}
 	private String handleLike(String val, List<String> bindValues) {
 		bindValues.add(val.replace('*','%'));
-		return "LIKE upper(?)";
+		return "LIKE " + makeUpper("?");
 	}
 	private String handleBetween(String val, List<String> bindValues) throws Exception {
 		String token[] = val.split("and");
@@ -932,7 +941,7 @@ public class QueryBuilder {
 
 	private String handleNotLike(String val, List<String> bindValues) {
 		bindValues.add(val.replace('*','%'));
-		return "NOT LIKE upper(?)";
+		return "NOT LIKE " + makeUpper("?");
 	}
 
 	private String handleIn(String val, List<String> bindValues)  throws Exception {
@@ -1020,7 +1029,7 @@ public class QueryBuilder {
 			"\tBlock.ID FROM " + owner() + "Block" +
 			"\tWHERE \n" ;
 			//"\tBlock.Path " + op + " '" + path + "'\n" +
-			if(Util.isSame(op, "like") || Util.isSame(op, "not like")) query += "\tupper(Block.Path) ";
+			if(Util.isSame(op, "like") || Util.isSame(op, "not like")) query += "\t" + makeUpper("Block.Path");
 			else query += "\tBlock.Path ";// + op + " ?\n" +
 			//")";
 		/*if(Util.isSame(op, "in")) query += handleIn(path);
@@ -1054,7 +1063,7 @@ public class QueryBuilder {
 						dsQueryForDQ.append(((String)lastObj).toUpperCase());
 						dsQueryForDQ.append("\n");
 					}
-					if(Util.isSame(op, "like") || Util.isSame(op, "not like")) dsQueryForDQ.append("\tupper(Block.Path) ");
+					if(Util.isSame(op, "like") || Util.isSame(op, "not like")) dsQueryForDQ.append("\t" + makeUpper("Block.Path"));
 					else dsQueryForDQ.append("\tBlock.Path ");
 					dsQueryForDQ.append(handleOp(op, val, tmpBindValues));
 					found = true;
@@ -1114,7 +1123,7 @@ public class QueryBuilder {
 	private String handleSite(String val, String op) throws Exception {
 		System.out.println("VAL is " + val);
 		String extraQuery = "";
-		if(Util.isSame(op, "like")) extraQuery = "\tupper(StorageElement.SEName) ";
+		if(Util.isSame(op, "like")) extraQuery = "\t" + makeUpper("StorageElement.SEName");
 		if(Util.isSame(op, "not like")) throw new Exception("NOT LIKE is not supported with site");
 		else extraQuery = "\tStorageElement.SEName ";
 		String query = " IN ( \n";
@@ -1145,7 +1154,7 @@ public class QueryBuilder {
 			extraQuery += ")\n";
 		} else {
 			val = val.replace('*', '%');
-			if(Util.isSame(op, "like")) extraQuery += " LIKE upper(?) \n";
+			if(Util.isSame(op, "like")) extraQuery += " LIKE " + makeUpper("?") + "\n";
 			else extraQuery += " = ? \n";
 			tmpList.add(val);
 
@@ -1423,7 +1432,7 @@ public class QueryBuilder {
 
 		//tmp.add("PrimaryDataset");
 		tmp.add("file");
-		System.out.println(qb.genQuery(tmp, new ArrayList(),new ArrayList(),"", "4", "10"));		
+		System.out.println(qb.genQuery(tmp, new ArrayList(),new ArrayList(),"", "4", "10", true));		
 		//tmp.add("Runs");
 		//tmp.add("FileRunLumi");
 		

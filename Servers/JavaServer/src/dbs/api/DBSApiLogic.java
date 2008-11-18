@@ -1,6 +1,6 @@
 /**
- $Revision: 1.148 $"
- $Id: DBSApiLogic.java,v 1.148 2008/11/06 19:42:58 sekhri Exp $"
+ $Revision: 1.149 $"
+ $Id: DBSApiLogic.java,v 1.149 2008/11/07 20:39:32 sekhri Exp $"
  *
  */
 
@@ -144,11 +144,11 @@ public class DBSApiLogic {
 	}
 	
 	
-	public ArrayList executeQuery(Connection conn, Writer out, String userQuery, String begin, String end) throws Exception {
+	public ArrayList executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, boolean upper) throws Exception {
 		String db = "oracle";
 		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
 		Wrapper wr = new Wrapper();
-		String finalQuery = wr.getQuery(userQuery, begin, end, db);
+		String finalQuery = wr.getQuery(userQuery, begin, end, db, upper);
 		List<String> bindValues = wr.getBindValues();
 		List<Integer> bindIntValues = wr.getBindIntValues();
 		ArrayList toReturn = new ArrayList();
@@ -181,7 +181,7 @@ public class DBSApiLogic {
 		return toReturn;
 	}
 	
-	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type) throws Exception {
+	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper) throws Exception {
 		/*String db = "oracle";
 		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
 		Wrapper wr = new Wrapper();
@@ -194,7 +194,7 @@ public class DBSApiLogic {
 		System.out.println("____________________________________ User Query ___________________________________");
 		System.out.println(userQuery);
 		System.out.println("___________________________________________________________________________________");
-		ArrayList objList = executeQuery(conn, out, userQuery, begin, end);
+		ArrayList objList = executeQuery(conn, out, userQuery, begin, end, upper);
 		String finalQuery = (String)objList.get(1);
 		System.out.println("_________________________________ Generated Query _________________________________");
 		System.out.println(finalQuery);
