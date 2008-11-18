@@ -202,11 +202,11 @@ class DbsApi(DbsConfig):
 		raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
 
-  def executeQuery(self, query, begin="", end="", type="exe"):
+  def executeQuery(self, query, begin="", end="", type="exe", case=True):
      try:
        #Calling the Implementation function
        from dbsApiExecuteQuery import dbsApiImplExecuteQuery
-       return dbsApiImplExecuteQuery(self, query, begin, end, type)
+       return dbsApiImplExecuteQuery(self, query, begin, end, type, case)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
