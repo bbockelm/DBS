@@ -193,7 +193,6 @@ class DBManager(DDLogger):
           self.vQuery[dbsInst] = vQuery
 
       con = self.engine[dbsInst].connect()
-      if iface=="dbsapi": return con
 
       if  not self.dbTables.has_key(dbsInst):
           dbsMeta = sqlalchemy.MetaData()
