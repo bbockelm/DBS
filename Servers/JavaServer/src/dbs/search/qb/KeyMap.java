@@ -83,6 +83,12 @@ public class KeyMap {
 		map.put("algo.createdate", "AlgorithmConfig.CreationDate");
 		map.put("algo.moddate", "AlgorithmConfig.LastModificationDate");
 
+		map.put("datatype.id", "PrimaryDSType.ID");
+		map.put("datatype.type", "PrimaryDSType.Type");
+		map.put("datatype.createdate", "PrimaryDSType.CreationDate");
+		map.put("datatype.moddate", "PrimaryDSType.LastModificationDate");
+
+
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
 		map.put("pset", "QueryableParameterSet");

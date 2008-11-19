@@ -37,7 +37,7 @@
 	<node id="StorageElement" 		user="site" 		real="StorageElement" 			default="SEName"/>
 	<node id="Block" 			user="block,dataset"	real="Block" 				default="Name"/>
 	<node id="ProcDSStatus" 		user="procds.status,dataset.status" 	real="ProcDSStatus" 			default="Status"/>
-	<node id="PrimaryDSType" 		user="primds.type" 	real="PrimaryDSType" 			default="Type"/>
+	<node id="PrimaryDSType" 		user="datatype" 	real="PrimaryDSType" 			default="Type"/>
 	<node id="QualityValues" 		user="qlty" 		real="QualityValues" 			default="Value"/>
 	<node id="SubSystem" 			user="subsystem" 	real="SubSystem" 			default="Name"/>
 	<node id="RunLumiQuality" 		user="runlsqlty" 	real="RunLumiQuality" 			default="Run,Lumi,SubSystem"/>

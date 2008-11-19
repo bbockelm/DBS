@@ -140,4 +140,8 @@ find algo.id, algo.family, algo.exe,algo.hash, algo.content where dataset like *
 find dataset where  algo.exe  = *CMS* or algo.family=*C* 
 find file where  algo.exe  = *CMS* or algo.family=*C* 
 find algo, algo.createby, algo.modby, algo.moddate  where dataset like *on* 
-
+find datatype
+find dataset where datatype = cosmic
+find file where datatype = cosmic
+find datatype where dataset = *on*
+find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby where dataset = *on*

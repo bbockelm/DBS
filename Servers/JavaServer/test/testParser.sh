@@ -156,6 +156,10 @@ executeQuery () {
 	$CMD query="find dataset where  algo.exe  = *CMS* or algo.family=*C*" 
 	$CMD query="find file where  algo.exe  = *CMS* or algo.family=*C*" 
 	$CMD query="find algo, algo.createby, algo.modby, algo.moddate  where dataset like *on*" 
+	$CMD query="find dataset where datatype = cosmic"
+	$CMD query="find file where datatype = cosmic"
+	$CMD query="find datatype where dataset = *on*"
+	$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby where dataset = *on*"
 
 
 
@@ -242,5 +246,7 @@ executeQuery () {
 	
 	#$CMD query="find dataset where dataset = *RAW" upper="False"
 	#$CMD query="find dataset where file = *RAW" upper="False"
-	$CMD query="find dataset where file = *RAW"
+	#$CMD query="find dataset where file = *RAW"
 	
+	$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
+	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"

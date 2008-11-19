@@ -614,6 +614,38 @@ public class Help {
 		//-------------------------------------------------------------------------
 
 
+		kw = new Keyword();
+		kw.entity = "datatype";
+		kw.attrs.add("type");
+		kw.attrs.add("createdate");
+		kw.attrs.add("moddate");
+		kw.attrs.add("createby");
+		kw.attrs.add("modby");
+		kw.attrs.add("id");
+
+		e = new Example();
+		e.desc = "I want to find all datatypes";
+		e.query = "find datatype";
+		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find all datatypes and its attribute like type, id,  modified by, created by, create date and modified date";
+		e.query = "find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby";
+		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find all datasets that has a specified datatype";
+		e.query = "find  dataset where datatype = cosmic";
+		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find all files that has a specified datatype or whose size is > 1000";
+		e.query = "find file where datatype = cosmic or file.size > 1000";
+		kw.examples.add(e);
+		
+		map.put(kw.entity, kw);
+
+
+		//-------------------------------------------------------------------------
+
+
 
 	}
 
