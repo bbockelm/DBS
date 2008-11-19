@@ -113,6 +113,7 @@ class DDServer(DDLogger,Controller):
            @rtype : none
            @return: none 
         """
+        t0=time.time()
         self.securityApi=""
         try:
             if context:
@@ -260,7 +261,9 @@ class DDServer(DDLogger,Controller):
            self.sendSOAP(self.globalDD,"wsAddUrl",{'url':self.dbsdd,'reply':self.dbsdd})
            self.ddUrls.append(self.dbsdd)
            self.ddServices[self.dbsdd]={}
-        self.writeLog("DDServer init")
+        totTime = time.time()-t0
+        print "+++ DDServer started in %s sec" % totTime
+        self.writeLog("DDServer init %s sec" % totTime)
 
     def getDbsApi(self,dbsInst):
         if  self.dbsApi.has_key(dbsInst):
@@ -558,11 +561,11 @@ class DDServer(DDLogger,Controller):
            @return: none
         """
         self.dbs = dbsInst
-        if  iface=="dbsapi":
-            self.qmaker.initDBS(dbsInst,iface)
-        else:
-            self.helper.setDBSDLS(dbsInst)
-            self.qmaker.initDBS(dbsInst)
+#        if  iface=="dbsapi":
+#            self.qmaker.initDBS(dbsInst,iface)
+#        else:
+        self.helper.setDBSDLS(dbsInst)
+        self.qmaker.initDBS(dbsInst)
 
     def genTopHTML(self,intro=False,userMode='user',onload=''):
         """
@@ -4729,7 +4732,7 @@ All LFNs in a block
         return results
 
     def aSearchResults(self,dbsInst,userInput,fromRow=-1,limit=-1,method="dbsapi",**kwargs):
-        self.qmaker.initDBS(dbsInst)
+        self.helperInit(dbsInst)
 #        dbsApi = self.getDbsApi(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         if  method=="dbsapi":
@@ -4775,7 +4778,7 @@ All LFNs in a block
         output   = getArg(kwargs,'output','')
         parents  = getArg(kwargs,'parents','')
         cff      = int(getArg(kwargs,'cff',0))
-        self.qmaker.initDBS(dbsInst)
+        self.helperInit(dbsInst)
         backEnd  = self.helper.dbManager.dbType[dbsInst]
         method   = getArg(kwargs,'method',self.iface)
         page     = ""
@@ -5069,6 +5072,7 @@ All LFNs in a block
 #                if not uRunList.count(run): uRunList.append(run)
                 if run<minRun: minRun=run
                 if run>maxRun: maxRun=run
+                self.helperInit(dbsInst)
                 pDict = self.helper.getPathSEs(run)
                 for dsType,path in pDict.keys():
                     fSize,nFiles = self.helper.filesStat(path,run)
@@ -5163,6 +5167,7 @@ All LFNs in a block
             else:
                style=""
 # uncomment back, once datasetSummary view will be fixed
+            self.helperInit(dbsInst)
             if readItems:
                sList = self.helper.getSiteList(dataset)
                dDict = {}
@@ -5260,10 +5265,7 @@ All LFNs in a block
         t0=time.time()
         _idx=int(_idx)
         method = getArg(kwargs,'method',self.iface)
-        if getArg(kwargs,'results',0):
-            self.helperInit(dbsInst,method) # NEW, pass method as iface to speed-up DB connection
-        else:
-            self.helperInit(dbsInst)
+        self.helperInit(dbsInst)
         pagerStep = int(pagerStep)
         html      = getArg(kwargs,'html',1)
         if not int(html):
