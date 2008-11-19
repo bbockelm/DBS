@@ -33,6 +33,14 @@ TIPS= [
 "to send found data to your buddy, use 'bare URL' link at bottom of the page"
 ]
 
+def findOutput(input):
+    output = ''
+    if  input.lower().find(" where ")!=-1:
+        output=input.lower().split(" where ")[0].split("find")[1].strip()
+    else:
+        output = input.lower().split("find")[-1].strip()
+    return output
+
 def inputParser(input,keys):
     for key in keys:
         input=input.replace("%s:"%key,"_____%s:"%key)
