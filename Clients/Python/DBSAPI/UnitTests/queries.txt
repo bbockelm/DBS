@@ -168,3 +168,8 @@ find dataset where dataset.id between 1 and 2 or dataset like *on*
 find algo.family, algo.version, algo.exe, algo.hash, almo.modby,algo.createby, algo.createdate, algo.moddate
 find  dataset where algo.version = CMSSW or algo.family = CMS*
 find algo.family, algo.version, algo.exe, algo.hash where file = MyLogocalFileName
+find datatype
+find dataset where datatype = cosmic
+find file where datatype = cosmic
+find datatype where dataset = *on*
+find datatype, datatype.id, datatype.createdate, datatype.moddate,datatype.createby, datatype.modby where dataset = *on*
