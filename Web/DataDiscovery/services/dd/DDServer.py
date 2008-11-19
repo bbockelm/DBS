@@ -216,9 +216,14 @@ class DDServer(DDLogger,Controller):
            self.dbsdd = os.environ['DBSDD']
         self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':self.ddConfig.dbsVer(),'retry':2}
         # made connection to all known DBS instances
+        self.dbManager.connect(self.dbsglobal,self.iface)
+#        vlock = thread.allocate_lock()
         for dbs in self.dbsList:
-            self.dbManager.connect(dbs,self.iface)
+            thread.start_new_thread(self.dbManager.connect,(dbs,self.iface))
             self.getDbsApi(dbs)
+#        for dbs in self.dbsList:
+#            self.dbManager.connect(dbs,self.iface)
+#            self.getDbsApi(dbs)
         try:
             self.hostname = socket.gethostbyaddr(socket.gethostname())[0]
         except:

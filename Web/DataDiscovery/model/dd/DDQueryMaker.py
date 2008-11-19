@@ -71,9 +71,9 @@ class DDQueryMaker(DDLogger):
              msg+= dbs+"\n"
          raise msg
       self.dbsInstance = dbsInst
-      self.writeLog("DBS Instnace: %s"%dbsInst)
-      con = self.connectToDB(dbsInst,iface)
-      self.closeConnection(con)
+#      self.writeLog("DBS Instnace: %s"%dbsInst)
+#      con = self.connectToDB(dbsInst,iface)
+#      self.closeConnection(con)
 
   def closeConnection(self,con):
       # if SQLAlchemy uses pool for engine, then it should correctly handle all connections

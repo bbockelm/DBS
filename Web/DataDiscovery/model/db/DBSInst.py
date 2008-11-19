@@ -121,7 +121,8 @@ class DBManager(DDLogger):
          @return: none
       """
       config = DDConfig()
-      DDLogger.__init__(self,config.loggerDir(),"DBManager",verbose)
+#      DDLogger.__init__(self,config.loggerDir(),"DBManager",verbose)
+      DDLogger.__init__(self,config.loggerDir(),"DBManager",verbose=1)
       self.iface     = iface
       self.verbose   =int(verbose)
       self.clear()
@@ -168,12 +169,12 @@ class DBManager(DDLogger):
           eName=""
           vQuery=""
           if eType=='sqlite':
-             self.writeLog("Use SQLite instance '%s'"%dbsInst)
+#             self.writeLog("Use SQLite instance '%s'"%dbsInst)
              eName = "%s:///%s"%(eType,dbName)
              tQuery= "SELECT name FROM SQLITE_MASTER WHERE type='table';"
              engine= sqlalchemy.create_engine(eName)
           elif eType=='oracle':
-             self.writeLog("Use ORACLE instance '%s'"%dbsInst)
+#             self.writeLog("Use ORACLE instance '%s'"%dbsInst)
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
 #             tQuery= "select table_name from user_tables"
              tQuery= "select tname from tab"
@@ -181,7 +182,7 @@ class DBManager(DDLogger):
              vQuery="""SELECT view_name FROM all_views WHERE owner='%s'"""%dbsInst.upper()
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
-             self.writeLog("Use MySQL instance '%s'"%dbsInst)
+#             self.writeLog("Use MySQL instance '%s'"%dbsInst)
              eName = "%s://%s:%s@%s/%s"%(eType,dbUser,dbPass,host,dbName)
              tQuery= "show tables"
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal')
@@ -225,8 +226,8 @@ class DBManager(DDLogger):
                   if self.verbose>1:
                      print tables[tName].__dict__
           self.dbTables[dbsInst]=tables
-      t_end=time.time()
-      self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
+          t_end=time.time()
+          self.writeLog("%s initialization time: '%s' seconds"%(dbsInst, t_end-t_ini))
       return con
 
   def getTable(self,dbsInst,tableName,tableAlias=""):

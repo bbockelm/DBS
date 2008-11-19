@@ -327,9 +327,9 @@ class DDHelper(DDLogger):
              msg+= dbs+"\n"
          raise msg
       self.dbsInstance = dbsInst
-      self.writeLog("DBS Instance: %s"%dbsInst)
-      con = self.connectToDB()
-      self.closeConnection(con)
+#      self.writeLog("DBS Instance: %s"%dbsInst)
+#      con = self.connectToDB()
+#      self.closeConnection(con)
 
   def setDLS_LFC(self):
       """
