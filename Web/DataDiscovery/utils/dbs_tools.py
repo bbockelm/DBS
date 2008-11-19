@@ -18,6 +18,44 @@ from   DBSAPI.dbsApi import DbsApi
 #from  DBSAPI.dbsMigrateApi import DbsMigrateApi
 #from  MS.Wrapper import API as DBS_MS
 
+### Please note, thise section is temporary until DBS will implement
+### queyring the views
+import sqlalchemy
+import types
+def wrapToView(view, field, query):
+    query=query.replace('\n',' ').replace('\t',' ').strip()
+    query="""SELECT * FROM %s WHERE %s IN (%s)"""%(view,field,query)
+    return query
+
+def executeQueryInDB(dbManager, dbsInst, sql, bindDict, verbose=''):
+    bparams=[]
+    for key in bindDict.keys():
+        bparams.append(sqlalchemy.bindparam(key=key,value=bindDict[key]))
+    sql=sql.replace('\n',' ').replace('\t',' ').strip()
+    sel=sqlalchemy.text(sql, bind=dbManager.engine[dbsInst], bindparams=bparams)
+    if  verbose:
+        print str(sel)
+        print bindDict
+    con = dbManager.connect(dbsInst, 'dbsapi')
+    try:
+        result = con.execute(sel)
+    except:
+        msg="\nDBS instance %s"%dbsInst
+        msg+="\n### Query:\n"+str(sel)
+        msg+= traceback.format_exc()
+        raise "Fail in executeQueryInDB"+msg
+    oList = []
+    tList = []
+    for item in result:
+        if  type(item) is types.StringType:
+            raise item
+        oList.append(item.values())
+        if  not tList:
+            tList=list(item.keys())
+    con.close()
+    return oList, tList
+########################
+
 def gettitles(userInput):
     tList   = []
     findInString(userinput.lower(), 'find', 'where', tList)
@@ -88,6 +126,18 @@ class DBSManager(object):
         self.dbsapi  = {}
         self.dbsattr = {} # dict[alias]=(url,account,ver)
         self.dbsall  = {}
+        self.init_DB()
+#        self.init_RS()
+
+    def init_DB(self):
+        from utils.DDAuth import DBS_INST_URL, DDAuthentication
+        auth = DDAuthentication()
+        # DBS_INST_URL read by utils/DDAuth.py
+        for dbs, url in DBS_INST_URL.iteritems():
+            url = url.replace('https','http').replace('_writer','').replace(':8443','')
+            self.dbsattr[dbs]={'url':url, 'account':dbs, 'version':'DBS_2_0_4'}
+
+    def init_RS(self):
         reader = re.compile('_r$')
         try :
             api = RegService()
@@ -98,7 +148,14 @@ class DBSManager(object):
                     reader.search(i._alias):
                     dbsdict = {'url':i._url, 'account':i._accountName,
                                'version':i._serverVersion}
-                    self.dbsattr[i._alias] = dbsdict
+                    if  i._alias.find('caf') !=-1 or \
+                        i._alias.find('_ph_') != -1 or \
+                        i._alias.find('int_') != -1:
+                        alias = 'cms_dbs_%s' % str(i._alias).replace('_r','')
+                    else:
+                        alias = 'cms_dbs_prod_%s' % str(i._alias).replace('_r','')
+                    self.dbsattr[alias] = dbsdict
+#                    self.dbsattr[i._alias] = dbsdict
                 dbsdict = {'url':i._url, 'account':i._accountName,
                            'version':i._serverVersion,'critical':i._critical}
                 self.dbsall[i._alias] = dbsdict
@@ -113,6 +170,12 @@ class DBSManager(object):
         if  all:
             return self.dbsall.keys()
         return self.dbsattr.keys()
+
+    def geturl(self, dbsalias):
+        """
+        Return URL for given DBS alias
+        """
+        return self.dbsattr[dbsalias]['url']
 
     def getapi(self, dbsalias):
         """
@@ -132,19 +195,19 @@ class DBSManager(object):
         except:
             raise Exception("Fail to construct DBS API")
 
-    def queryxml(self, dbsalias, userinput):
+    def queryxml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
         Return SQL query for given user input in XML format
         """
         dbsapi = self.getapi(dbsalias)
-        dbsxml = dbsapi.executeQuery(userinput, type="query")
+        dbsxml = dbsapi.executeQuery(userinput, begin = q_start, end = q_end, type="query")
         return dbsxml
 
-    def query(self, dbsalias, userinput):
+    def query(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
         Return SQL query for given user input
         """
-        return dbsquery(self.queryxml(dbsalias, userinput))
+        return dbsquery(self.queryxml(dbsalias, userinput, q_start, q_end))
 
     def count(self, dbsalias, userinput):
         """
@@ -198,11 +261,12 @@ if __name__ == "__main__":
     dbslist = dbsmgr.aliases()
     dbslist.sort()
     print dbslist
-    dbsall = dbsmgr.aliases(True)
-    dbsall.sort()
-    for dbsalias in dbsall:
-        print dbsalias
-        print dbsmgr.dbsall[dbsalias]
+#    dbsall = dbsmgr.aliases(True)
+#    dbsall.sort()
+#    for dbsalias in dbsall:
+#        print dbsalias
+#        print dbsmgr.dbsall[dbsalias]
+
 #    for dbsalias in dbsmgr.aliases():
 #        print dbsalias
 #        dbsapi = dbsmgr.getapi(dbsalias)
