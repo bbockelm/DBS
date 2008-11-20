@@ -160,7 +160,11 @@ executeQuery () {
 	$CMD query="find file where datatype = cosmic"
 	$CMD query="find datatype where dataset = *on*"
 	$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby where dataset = *on*"
-
+	$CMD query="find dataset where site != caf.cern.ch "
+	$CMD query="find dataset where site = caf.cern.ch "
+	$CMD query="find dataset where site = T1_CH_CERN "
+	$CMD query="find dataset where site != T1_CH_CERN "
+	$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
 
 
 
@@ -248,5 +252,11 @@ executeQuery () {
 	#$CMD query="find dataset where file = *RAW" upper="False"
 	#$CMD query="find dataset where file = *RAW"
 	
-	$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
+	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
+	#$CMD query="find dataset where site != caf.cern.ch "
+	#$CMD query="find dataset where site = caf.cern.ch "
+	#$CMD query="find dataset where site = T1_CH_CERN "
+	#$CMD query="find dataset where site != T1_CH_CERN "
+	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
+	$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "

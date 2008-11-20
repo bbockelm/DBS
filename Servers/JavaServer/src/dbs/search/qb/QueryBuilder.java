@@ -1127,6 +1127,7 @@ public class QueryBuilder {
 		if(Util.isSame(op, "not like")) throw new Exception("NOT LIKE is not supported with site");
 		else extraQuery = "\tStorageElement.SEName ";
 		String query = " IN ( \n";
+		if(Util.isSame(op, "!=")) query = " NOT IN ( \n";
 		SiteClient cc = new SiteClient();
 		int iter = 0 ;
 		Vector tmpList = new Vector();
@@ -1158,12 +1159,17 @@ public class QueryBuilder {
 			else extraQuery += " = ? \n";
 			tmpList.add(val);
 
+			//System.out.println("-line 1 op is " + op );
 			List<String> sites = cc.getSE(val);
 			if(sites.size() == 1) {
+				 bindValues.add((String)sites.get(0));
 				 if(Util.isSame(op, "like")) query = " LIKE ? ";
 				 if(Util.isSame(op, "in")) query = " IN (?) ";
 				 if(Util.isSame(op, "=")) query = " = ?  ";
-				 bindValues.add((String)sites.get(0));
+				 if(Util.isSame(op, "!=")) {
+					 query = " != ?  ";
+					 return query;
+				 }
 				 query += "\n OR \n" + extraQuery;
 				 for(Object o: tmpList) bindValues.add((String)o);
 				 return query;
@@ -1184,6 +1190,7 @@ public class QueryBuilder {
 		}
 			
 		query += "\n)";
+		if(Util.isSame(op, "!=")) return query;
 		query += "\n OR \n" + extraQuery ;
 		for(Object o: tmpList) bindValues.add((String)o);
 		return query;

@@ -145,3 +145,10 @@ find dataset where datatype = cosmic
 find file where datatype = cosmic
 find datatype where dataset = *on*
 find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby where dataset = *on*
+find dataset where site != caf.cern.ch 
+find dataset where site = caf.cern.ch 
+find dataset where site = T1_CH_CERN 
+find dataset where site != T1_CH_CERN 
+find dataset where site in (T1_CH_CERN , T0_CH_CERN) 
+
+
