@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.196 $"
- $Id: DBSSql.java,v 1.196 2008/11/11 21:26:19 afaq Exp $"
+ $Revision: 1.197 $"
+ $Id: DBSSql.java,v 1.197 2008/11/12 17:22:16 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1921,6 +1921,21 @@ public class DBSSql {
 		return sql;
 	}
 
+
+	public static PreparedStatement listFileParentBlocks(Connection conn, String fileID) throws SQLException {
+                String sql = "SELECT B.ID as ID\n"+
+				"FROM "+owner()+"Block B\n"+
+                                "JOIN "+owner()+"Files FL\n"+
+                                "  ON FL.Block=B.ID\n"+
+                                "WHERE FL.ID in \n"+
+				"(SELECT FP.ItsParent\n"+
+                                	"from "+owner()+"FileParentage FP\n"+
+                                		"WHERE FP.ThisFile = ?)";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, fileID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	}
 
 	public static PreparedStatement listPathParent(Connection conn, String path) throws SQLException {
 		String sql = "SELECT DISTINCT b.Path as PATH\n" +
