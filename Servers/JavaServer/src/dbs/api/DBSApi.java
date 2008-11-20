@@ -1,6 +1,6 @@
 /**
- $Revision: 1.141 $"
- $Id: DBSApi.java,v 1.141 2008/09/19 21:45:53 afaq Exp $"
+ $Revision: 1.142 $"
+ $Id: DBSApi.java,v 1.142 2008/11/18 17:11:34 sekhri Exp $"
  *
 */
 
@@ -270,6 +270,8 @@ public class DBSApi {
 			} else if (apiStr.equals("listPrimaryDatasets")) {
 				(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				
+			} else if (apiStr.equals("register")) {
+				System.out.println("");
 			} else if (apiStr.equals("listProcessedDatasets")) {
 				(new DBSApiProcDSLogic(this.data)).listProcessedDatasets(conn, out, 
 						get(table, "primary_datatset_name_pattern", false),

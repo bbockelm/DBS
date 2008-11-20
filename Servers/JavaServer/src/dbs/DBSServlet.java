@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.43 $"
- $Id: DBSServlet.java,v 1.43 2008/05/21 21:21:54 afaq Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSServlet.java,v 1.44 2008/05/28 21:20:26 afaq Exp $"
 
  */
 package dbs;
@@ -130,8 +130,12 @@ public class DBSServlet extends HttpServlet{
 	 * {@inheritDoc}
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+		String apiStr = request.getParameter("api");
 		try {
 			RegisterLock rLock = RegisterLock.getRegisterLockInstance();
+			if(apiStr != null) {
+				if(apiStr.equals("register")) rLock.setDoneOnce(false);
+			}
 			if(!rLock.isDoneOnce()) {
 				String url = request.getRequestURL().toString();
 				DBSUtil u = new DBSUtil();
@@ -139,7 +143,8 @@ public class DBSServlet extends HttpServlet{
 				rLock.setDoneOnce(true);
 			}
 	 	} catch(Exception e) {
-			System.out.println(e);
+			System.out.println("REGISTRATION Message "+ e.getMessage());
+			e.printStackTrace();
     		}
 	                        
 

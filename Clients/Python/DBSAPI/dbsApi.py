@@ -1083,6 +1083,18 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def register(self):
+
+     try:
+        #Calling the Implementation function
+        from dbsApiRegistration import dbsApiImplRegister
+        return  dbsApiImplRegister(self)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
 #############################################################################
 # Unit testing: see $PWD/UnitTests
 ############################################################################

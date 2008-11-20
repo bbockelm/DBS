@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.18 $"
- $Id: DBSUtil.java,v 1.18 2008/05/16 20:10:44 sekhri Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSUtil.java,v 1.19 2008/09/24 19:31:15 sekhri Exp $"
  *
 */
 
@@ -299,6 +299,7 @@ public class DBSUtil {
 	}
 	
 	public void addRegistration(String url){
+		System.out.println("Trying to register ......");
 		try {
 			DBSConfig dbsConfig = DBSConfig.getInstance();
 			String alias = dbsConfig.getAlias();
@@ -325,8 +326,11 @@ public class DBSUtil {
 			RegApi rApi = new RegApi(dbsConfig.getRegServiceURL());
 			rApi.addRegistration(r);
 		} catch(Exception e) {
-			System.out.println("ERROR " + e.getMessage());
+			System.out.println("Registration Incomplete " + e.getMessage());
+			e.printStackTrace();
+			return;
 		}
+		System.out.println("Registration DONE successfully");
 	}
 
 }
