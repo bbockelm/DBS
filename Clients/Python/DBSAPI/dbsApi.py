@@ -213,6 +213,18 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def countQuery(self, query, case=True):
+     try:
+       #Calling the Implementation function
+       from dbsApiExecuteQuery import dbsApiImplCountQuery
+       return dbsApiImplCountQuery(self, query, case)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+
 
   def listPrimaryDatasets(self, pattern="*"):
      try:
