@@ -126,6 +126,7 @@ class DBSManager(object):
         self.dbsapi  = {}
         self.dbsattr = {} # dict[alias]=(url,account,ver)
         self.dbsall  = {}
+        self.qldict  = {} # dict of supported keys:attrs
         self.init_DB()
 #        self.init_RS()
 
@@ -162,6 +163,19 @@ class DBSManager(object):
         except:
             traceback.print_exc()
             raise Exception("Fail to access DBS RS service")
+
+    def keys_attrs(self, dbsalias):
+        """
+        Return a list of supported DBS-QL keys
+        """
+        if  self.qldict.has_key(dbsalias):
+            return self.qldict[dbsalias]
+        dbsapi = self.getapi(dbsalias)
+        keys = {}
+        for item in dbsapi.getHelp():
+            keys[item['name']] = item['attrs']
+        self.qldict[dbsalias] = keys
+        return keys
 
     def aliases(self, all = None):
         """
@@ -261,6 +275,8 @@ if __name__ == "__main__":
     dbslist = dbsmgr.aliases()
     dbslist.sort()
     print dbslist
+    print dbsmgr.keys_attrs(dbslist[0])
+
 #    dbsall = dbsmgr.aliases(True)
 #    dbsall.sort()
 #    for dbsalias in dbsall:
