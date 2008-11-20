@@ -1,6 +1,6 @@
 /**
- $Revision: 1.142 $"
- $Id: DBSApi.java,v 1.142 2008/11/18 17:11:34 sekhri Exp $"
+ $Revision: 1.143 $"
+ $Id: DBSApi.java,v 1.143 2008/11/20 17:35:40 sekhri Exp $"
  *
 */
 
@@ -760,6 +760,18 @@ public class DBSApi {
 									  get(table, "type", false),
 									  upper
 									  );
+			} else if (apiStr.equals("countQuery")) {
+				System.out.println("countQuery invoked by " + get(dbsUser, "user_dn", false));
+				String upperStr = get(table, "upper", false);
+				boolean upper = true;
+				if(!isNull(upperStr)) {
+					if(upperStr.equals("False")) upper = false;
+				}
+                                (new DBSApiLogic(this.data)).countQuery(conn, out, 
+									  get(table, "query", true),
+									  upper
+									  );
+
 			} else if (apiStr.equals("getHelp")) {
 				Help.getInstance().getHelp(out, get(table, "entity", false));
 			} else {

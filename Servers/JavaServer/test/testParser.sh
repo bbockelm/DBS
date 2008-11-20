@@ -9,8 +9,8 @@ CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlite
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
-#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.qb.DateUtil"
+#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=countQuery"
 #$CMD
 executeQuery () {
 	echo "Executing executeQuery API..."
@@ -250,13 +250,13 @@ executeQuery () {
 	
 	#$CMD query="find dataset where dataset = *RAW" upper="False"
 	#$CMD query="find dataset where file = *RAW" upper="False"
-	#$CMD query="find dataset where file = *RAW"
+	#$CMD query="find dataset"
 	
-	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
+	$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
 	#$CMD query="find dataset where site != caf.cern.ch "
 	#$CMD query="find dataset where site = caf.cern.ch "
 	#$CMD query="find dataset where site = T1_CH_CERN "
 	#$CMD query="find dataset where site != T1_CH_CERN "
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
-	$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
+	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "

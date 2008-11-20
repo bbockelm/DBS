@@ -1,6 +1,6 @@
 /**
- $Revision: 1.149 $"
- $Id: DBSApiLogic.java,v 1.149 2008/11/07 20:39:32 sekhri Exp $"
+ $Revision: 1.150 $"
+ $Id: DBSApiLogic.java,v 1.150 2008/11/18 17:11:34 sekhri Exp $"
  *
  */
 
@@ -181,13 +181,14 @@ public class DBSApiLogic {
 		return toReturn;
 	}
 	
+	public void countQuery(Connection conn, Writer out, String userQuery, boolean upper) throws Exception {
+		executeQuery(conn, out, userQuery, "", "", "", upper, true);
+	}
+	
 	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper) throws Exception {
-		/*String db = "oracle";
-		if(DBSConfig.getInstance().getSchemaOwner().equals("")) db = "mysql";
-		Wrapper wr = new Wrapper();
-		String finalQuery = wr.getQuery(userQuery, begin, end, db);
-		List<String> bindValues = wr.getBindValues();
-		List<Integer> bindIntValues = wr.getBindIntValues();*/
+		executeQuery(conn, out, userQuery, begin, end, type, upper, false);
+	}
+	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper, boolean isCount) throws Exception {
 		String tokens[] = userQuery.split(" ");
 		if (tokens.length == 1) userQuery = "find dataset where dataset like %" + userQuery + "%";
 		System.out.println("executeQuery DATE :" + (new Date()).toString());
@@ -203,24 +204,11 @@ public class DBSApiLogic {
 		//String valentinQuery = finalQuery;
 		List<String> bindValues = (List<String>)objList.get(2);
 		List<Integer> bindIntValues = (List<Integer>)objList.get(3);
-		String countQuery = (String)objList.get(4);
-		/*int pCount = 0;
-		int sizeOfBindValues = bindValues.size();
-		String val = "";
-		String xmlBindValues = "";
-		while(valentinQuery.indexOf("?") != -1) {
-			String pName = ":p" + String.valueOf(pCount);
-			String pTag = "p" + String.valueOf(pCount);
-			if(pCount >= sizeOfBindValues) val = String.valueOf(bindIntValues.get(pCount - sizeOfBindValues).intValue());
-			else val =  bindValues.get(pCount);
-			xmlBindValues += "<" + pTag + ">" + val + "</" + pTag + ">\n";
-			valentinQuery = valentinQuery.replaceFirst("[?]", pName);
-			++pCount;
-		}*/
+		String finalCountQuery = (String)objList.get(4);
 		ArrayList valentinQueryList = makeValentinQuery(finalQuery, bindIntValues, bindValues);
 		String valentinQuery = (String)valentinQueryList.get(0);
 		String xmlBindValues = (String)valentinQueryList.get(1);
-		countQuery = (String)makeValentinQuery(countQuery, bindIntValues, bindValues).get(0);
+		String countQuery = (String)makeValentinQuery(finalCountQuery, bindIntValues, bindValues).get(0);
 
 
 		//String countQuery = valentinQuery;
@@ -268,21 +256,13 @@ public class DBSApiLogic {
 		DBSApiExecuteQuery querier = null;
 		//ResultSet rs =  null;
 		try {
-			ps = DBSSql.getQuery(conn, finalQuery, bindValues, bindIntValues);
+			if(!isCount) ps = DBSSql.getQuery(conn, finalQuery, bindValues, bindIntValues);
+			else ps = DBSSql.getQuery(conn, finalCountQuery, bindValues, bindIntValues);
 			pushQuery(ps);
 			querier = new DBSApiExecuteQuery();
-			QueryThread queryThread = new QueryThread(out, querier, finalQuery, ps);
-			/*Thread queryThread = new Thread(){
-				public void run() {
-					String threadName = Thread.currentThread().getName();
-					try {
-						querier.runQuery(out, finalQuery, ps);
-						System.out.println("Thread " + threadName + " completed");
-					} catch (Exception e) {
-						System.out.println("\tInterruptedException in thread " + threadName);
-					}
-				}
-			};*/
+			QueryThread queryThread = null;
+			if(!isCount) queryThread = new QueryThread(out, querier, finalQuery, ps);
+			else queryThread = new QueryThread(out, querier, finalCountQuery, ps);
 
 			long startTime = (new Date()).getTime();
 			final long TIMEOUT = 120000;
@@ -294,7 +274,7 @@ public class DBSApiLogic {
 				if((endTime - startTime ) < TIMEOUT) {
 					System.out.println("Start time " + startTime + "  end time " + endTime + "  diff " + (endTime - startTime ));
 					if(!queryThread.isAlive()) {
-						System.out.println("cheked to see if alive . NOT ALIVE");
+						System.out.println("checked to see if alive . NOT ALIVE");
 						if(queryThread.getError() != null) throw queryThread.getError();
 						return;
 					}
@@ -307,35 +287,15 @@ public class DBSApiLogic {
 				} else {
 					//System.out.println("Intrupting thread");
 					queryThread.interrupt();
-					throw new Exception("Your query " + userQuery + "took too long to execute . It is killed. The generated query is " + StringEscapeUtils.escapeXml(finalQuery));
+					String tmpQuery = finalQuery;
+					if(isCount) tmpQuery = finalCountQuery;
+					throw new Exception("Your query " + userQuery + "took too long to execute . It is killed. The generated query is " + StringEscapeUtils.escapeXml(tmpQuery));
 					//System.out.println("Intrupting thread DONE");
-					//return;
 				}
 			}
 			
-			/*rs = ps.executeQuery();
-			ResultSetMetaData rsmd = rs.getMetaData();
-			int numberOfColumns = rsmd.getColumnCount();
-			String[] colNames =new String[numberOfColumns];
-			for (int i = 0; i != numberOfColumns; ++i) {
-				colNames[i] = rsmd.getColumnName(i + 1);
-			}
-			while(rs.next()) {
-				out.write(((String) "<result "));
-				for (int i = 0; i != numberOfColumns; ++i) {
-					out.write(((String) colNames[i] + "='"));
-					if(colNames[i].toLowerCase().indexOf("date") != -1) {
-						out.write(((String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)) + "' "));
-							
-					}
-					else out.write(((String) get(rs, colNames[i] ) +"' "));
-				}
-				out.write(((String) "/>\n"));
-			}*/
 			
 		} finally {
-			//if (rs != null) rs.close();
-			//if (ps != null) ps.close();
 			if (querier != null) querier.close();
 			System.out.println("_______________________________EXECUTE QUERY DONE _________________________");
 		}
