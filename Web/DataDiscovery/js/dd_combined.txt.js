@@ -7181,9 +7181,6 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerAjaxElement('blockLFNs');
 
     ajaxEngine.registerRequest('ajaxGetIntegratedLumi','getIntegratedLumi');
-    ajaxEngine.registerRequest('ajaxMultiSearch','multiSearch');
-    mUpdater = new GetDataUpdater('kw_multiSearch','update','');
-    ajaxEngine.registerAjaxObject('kw_multiSearch',mUpdater);
 }
 function registerAjaxUserMenuCalls() {
     ajaxEngine.registerRequest('ajaxGetPrimDSTypes','getPrimaryDSTypes');
