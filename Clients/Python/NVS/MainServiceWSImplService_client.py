@@ -15,7 +15,8 @@ import ZSI
 
 # Locator
 class MainServiceWSImplServiceLocator:
-    MainServiceWSImplPort_address = "http://cmssrv48.fnal.gov:8585/nvs/NVWebService"
+    #MainServiceWSImplPort_address = "http://cmssrv48.fnal.gov:8585/nvs/NVWebService"
+    MainServiceWSImplPort_address = "http://cmsdbssrv.cern.ch/nvs/NVWebService"
     def getMainServiceWSImplPortAddress(self):
         return MainServiceWSImplServiceLocator.MainServiceWSImplPort_address
     def getMainServiceWSImplPort(self, url=None, **kw):
