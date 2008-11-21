@@ -300,6 +300,33 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def listBlockParents(self, block_name="*"):
+     try:
+       #Calling the Implementation function
+       from dbsApiListBlockParents import dbsApiImplListBlockParents
+       #print self.configDict
+       return  dbsApiImplListBlockParents(self, block_name)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def listBlockChildren(self, block_name="*"):
+     try:
+       #Calling the Implementation function
+       from dbsApiListBlockChildren import dbsApiImplListBlockChildren
+       #print self.configDict
+       return  dbsApiImplListBlockChildren(self, block_name)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+
+
   def listStorageElements(self, storage_element_name="*"):
      try:
        #Calling the Implementation function
