@@ -1,6 +1,6 @@
 /**
- $Revision: 1.143 $"
- $Id: DBSApi.java,v 1.143 2008/11/20 17:35:40 sekhri Exp $"
+ $Revision: 1.144 $"
+ $Id: DBSApi.java,v 1.144 2008/11/20 20:30:00 sekhri Exp $"
  *
 */
 
@@ -325,6 +325,15 @@ public class DBSApi {
 						get(table, "storage_element_name", false),
 						get(table, "user_type", false)
 						);
+                        } else if (apiStr.equals("listBlockProvenance")) {
+                                (new DBSApiBlockLogic(this.data)).listBlockProvenance(conn, out,
+                                                get(table, "block_name", true),
+                                                get(table, "parent_or_child", true)
+                                                );
+                        } else if (apiStr.equals("listStorageElements")) {
+                                (new DBSApiBlockLogic(this.data)).listStorageElements(conn, out,
+                                                get(table, "storage_element_name", false)
+                                                );
 
 			} else if (apiStr.equals("listStorageElements")) {
 				(new DBSApiBlockLogic(this.data)).listStorageElements(conn, out, 

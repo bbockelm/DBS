@@ -1,6 +1,6 @@
 /**
- $Revision: 1.63 $"
- $Id: DBSApiBlockLogic.java,v 1.63 2008/10/22 18:54:35 afaq Exp $"
+ $Revision: 1.64 $"
+ $Id: DBSApiBlockLogic.java,v 1.64 2008/10/23 20:12:27 afaq Exp $"
  *
  */
 
@@ -112,6 +112,49 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
 		}
+	}
+
+
+	public void listBlockProvenance(Connection conn, Writer out, String patternBlockName, String parentOrchildren)
+	throws Exception
+	{
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                boolean first = true; 
+                String prevBlock = "";
+
+                try {
+                        ps =  DBSSql.listBlockProvenance(conn, getBlockPattern(patternBlockName), parentOrchildren, this.data.instanceName);
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+
+                        while(rs.next()) {
+                                String blockID = get(rs, "ID");
+                                if( !prevBlock.equals(blockID) && ! first) {
+                                        out.write(((String) "</block>\n"));
+                                }
+                                if( !prevBlock.equals(blockID) || first) {
+                                        out.write(((String) "<block id='" + get(rs, "ID") +
+                                                "' path='" + get(rs, "PATH") +
+                                                "' name='" + get(rs, "NAME") +
+                                                "' size='" + get(rs, "BLOCKSIZE") +
+                                                "' number_of_files='" + get(rs, "NUMBER_OF_FILES") + 
+                                                "' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+                                                "' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+                                                "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                                "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                                "' created_by='" + get(rs, "CREATED_BY") +
+                                                "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                                "'>\n"));
+                                }
+                                prevBlock = blockID;
+                                first = false;
+			}
+                        if (!first) out.write(((String) "</block>\n"));
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
 	}
 
 

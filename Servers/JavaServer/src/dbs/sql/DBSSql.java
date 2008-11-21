@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.197 $"
- $Id: DBSSql.java,v 1.197 2008/11/12 17:22:16 afaq Exp $"
+ $Revision: 1.198 $"
+ $Id: DBSSql.java,v 1.198 2008/11/20 23:06:33 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2288,6 +2288,62 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
+
+        public static PreparedStatement listBlockProvenance(Connection conn, String blockName, String parentOrChild, String isGlobal) throws SQLException {
+		String joinStr = null;
+		String whereStr = null;
+
+                if (parentOrChild.equals("PARENT")) {
+
+                        joinStr = "ON bp.ItsParent = b.ID \n";
+                        whereStr = "WHERE bp.ThisBlock = \n"+
+					"(SELECT blk.ID FROM \n"+
+					owner()+"Block blk\n"+
+					"where blk.Name like ?)";
+                } else {
+                        joinStr = "ON bp.ThisBlock = b.ID \n";
+                        whereStr = "WHERE bp.ItsParent = \n"+
+                                        "(SELECT blk.ID FROM \n"+
+                                        owner()+"Block blk\n"+
+                                        "where blk.Name like ?)";
+                }
+
+		String sql = "SELECT DISTINCT b.ID as ID, \n " +
+                        "b.Name as NAME, \n" +
+                        "b.Path as PATH, \n" +
+                        "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "b.BlockSize as BLOCKSIZE, \n" +
+                        "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
+                        "b.OpenForWriting as OPEN_FOR_WRITING, \n" +
+                        "b.CreationDate as CREATION_DATE, \n" +
+                        "b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "se.SEName as STORAGE_ELEMENT_NAME, \n";
+                        if (isGlobal.equals("LOCAL")) sql += " seb.Roles as ROLES, \n";
+                        sql += "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM "+owner()+"Block b \n" +
+                        "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
+                                "ON seb.BlockID = b.ID \n" +
+                        "LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
+                                "ON se.ID = seb.SEID \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+                                "ON percb.id = b.CreatedBy \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+                                "ON perlm.id = b.LastModifiedBy \n";
+		sql += "LEFT OUTER JOIN "+owner()+"BlockParent bp \n";
+		sql += joinStr;
+		sql += whereStr;
+                sql += "ORDER BY b.Name DESC";
+
+                int columnIndx = 1;
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(columnIndx++, blockName);
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
 
 
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName, String isGlobal) throws SQLException {
