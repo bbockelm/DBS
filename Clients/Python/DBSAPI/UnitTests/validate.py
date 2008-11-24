@@ -101,6 +101,7 @@ se2 = 'test_se2_' + ran
 seM = 'test_seM_' + ran
 blockName1 = path1 + '#' + str(random.choice(range(10000)))
 blockName2 = path2 + '#' + str(random.choice(range(10000)))
+blockName3 = path1 + '#' + str(random.choice(range(10000)))
 blockNameM = pathM + '#' + str(random.choice(range(10000)))
 
 fileName1 = 'test_file_name_1_' + ran
@@ -118,6 +119,14 @@ fileSize2 = 122657
 fileStatus2 = validStatus
 fileValidStatus2 = validStatus
 fileType2 = 'STREAMER'
+
+# file2 takes all parameters same as file 1, just the name is different
+fileName3 = 'test_file_name_3_' + ran
+
+# file4 takes all parameters same as file 2, just the name is different
+fileName4 = 'test_file_name_4_' + ran
+
+
 
 fileNameM = 'test_file_name_M_' + ran
 fileNumEventsM = 234567
@@ -250,6 +259,10 @@ blockObj2 = DbsFileBlock (
 		Name = blockName2
 		)
 
+blockObj3 = DbsFileBlock (
+                Name = blockName3
+                )
+
 blockObjM = DbsFileBlock (
 		Name = blockNameM
 		)
@@ -284,6 +297,38 @@ fileObj2 = DbsFile (
 		ParentList = [fileName1],
 		AutoCrossSection=2.0
 		)
+
+fileObj3 = DbsFile (
+                Checksum = fileCkecksum1,
+                LogicalFileName = fileName3,
+                NumberOfEvents = fileNumEvents1,
+                FileSize = fileSize1,
+                Status = fileStatus1,
+                ValidationStatus = fileValidStatus1,
+                FileType = fileType1,
+                Dataset = procObj1,
+                AlgoList = [algoObj1],
+                LumiList = [lumiObj1],
+                TierList = [tier1, tier2],
+                AutoCrossSection=1.0
+                )
+
+fileObj4 = DbsFile (
+                Checksum = fileCkecksum2,
+                LogicalFileName = fileName4,
+                NumberOfEvents = fileNumEvents2,
+                FileSize = fileSize2,
+                Status = fileStatus2,
+                ValidationStatus = fileValidStatus2,
+                FileType = fileType2,
+                Dataset = procObj2,
+                AlgoList = [algoObj2],
+                LumiList = [lumiObj2],
+                TierList = [tier1, tier2],
+                ParentList = [fileName3],
+                AutoCrossSection=2.0
+                )
+
 
 fileObjM = DbsFile (
 		Checksum = fileCkecksumM,
@@ -386,7 +431,8 @@ def assertLumi(test, lumiIn1, lumiIn2):
 	test.assertEqual(lumiIn1['LumiEndTime'], lumiIn2['LumiEndTime'])
 	test.assertEqual(lumiIn1['RunNumber'], lumiIn2['RunNumber'])
 	
-
+def assertBlock(test, block1, block2):
+	test.assertEqual(block1['Name'], block2['Name'])
 
 class Test1(unittest.TestCase):
 	def testPrimary(self):
@@ -482,10 +528,14 @@ class Test5(unittest.TestCase):
 			assertRun(self, runObj, runInDBS)
 
 class Test6(unittest.TestCase):
-	def testFile(self):
+	def test_01_File(self):
 		print 'testFile'
 		api.insertFiles(procObj1, [fileObj1], blockObj1)
 		api.insertFiles(procObj2, [fileObj2], blockObj2)
+
+		# Block Parentage is also TAKEN care of here, 
+		# so lets see if we get this information back right !!
+
 		fileList = api.listFiles(path = path2, retriveList = ['all'], otherDetails = True)
 		self.assertEqual(len(fileList), 1)
 		for fileInDBS in fileList:
@@ -513,6 +563,11 @@ class Test6(unittest.TestCase):
 				#print fileObj1
 				#print parentInDBS
 				assertFile(self, fileObj1, parentInDBS)
+				# 
+				# The Block of ParentFile should be blockObj1
+				#
+				pFileBlock=parentInDBS['Block']
+				assertBlock(self, pFileBlock, blockObj1)
 
 			runList = fileInDBS['RunsList']	
 			self.assertEqual(len(runList), 1)
@@ -521,7 +576,7 @@ class Test6(unittest.TestCase):
 				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
 				assertRun(self, runObj, runInDBS)
 
-	def testParentOfProcDS(self):
+	def test_02_ParentOfProcDS(self):
 		print 'testParentOfProcDS'
 		parentList = api.listDatasetParents(procObj2)
 		self.assertEqual(len(parentList), 1)
@@ -530,7 +585,7 @@ class Test6(unittest.TestCase):
 			self.assertEqual(procName1, parentProcInDBS['Name'])
 
 
-	def testInvalidFile(self):
+	def test_04_InvalidFile(self):
 		print 'testInvalidFile'
 		api.updateFileStatus(fileName1, invalidStatus, "No Description")
 		fileList = api.listFiles(path = path1, retriveList = ['all'])
@@ -544,6 +599,39 @@ class Test6(unittest.TestCase):
 		api.updateFileStatus(fileName1, validStatus, "No Description")
 		fileList = api.listFiles(path = path1)
 		self.assertEqual(len(fileList), 1)
+
+	def test_05_BlockParentage(self):
+		print "testBlockParentage"
+		#At this point we can verify the Block Parentage as well
+		#Parent of blockObj2 is blockObj1
+		pbsDBS=api.listBlockParents(block_name=blockObj2)
+		self.assertEqual(len(pbsDBS), 1)
+		for pbDBS in pbsDBS: assertBlock(self, pbDBS, blockObj1)
+		#Child of blockObj1 is blockObj2
+		chldbsDBS=api.listBlockChildren(block_name=blockObj1)
+		self.assertEqual(len(chldbsDBS), 1)
+		for chldbDBS in chldbsDBS: assertBlock(self, chldbDBS, blockObj2)	
+		# Now add another file to Block 2, so that its parent is blockObj3
+		api.insertBlock (procObj1, blockObj3, [se1, se2])
+		api.insertFiles(procObj1, [fileObj3], blockObj3)
+		# File4 has a parent File3 from blockObj3
+		# That should make blockObj3 as parent of blockObj2
+		api.insertFiles(procObj2, [fileObj4], blockObj2)
+		# fileObj2 now has fileObj3 as another parent
+		# Verify that blockObj2 has TWO parents now (blockObj1 and blockObj3)
+		pbsDBS=api.listBlockParents(block_name=blockObj2)
+                self.assertEqual(len(pbsDBS), 2)
+                for pbDBS in pbsDBS: 
+			if pbDBS['Name'] == blockObj1['Name']:
+				assertBlock(self, pbDBS, blockObj1)
+			elif pbDBS['Name'] == blockObj3['Name']:
+                                assertBlock(self, pbDBS, blockObj3)
+			else:
+				print "Multiple Block Parentage not working"
+				self.assertEqual(1,2)
+		# Need to update this API now
+		#####api.insertFileParent(fileObj2, fileObj3)	
+
 
 class Test7(unittest.TestCase):
 	def testMergedProcessed(self):
