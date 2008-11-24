@@ -20,9 +20,9 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplListBlockChildren(self, blockname):
+def dbsApiImplListBlockParents(self, blockname):
     """
-    Retrieves the list of children of the given Block.
+    Retrieves the list of parents of the given Block.
     Returns a list of DbsFileBlock objects.  
 
     params:
@@ -31,14 +31,14 @@ def dbsApiImplListBlockChildren(self, blockname):
     returns: 
           list of DbsFileBlock objects  
     examples: 
-          api.listFileBlockChildren(blockname="/a/b/c#1234") : List ALL children for given Block
+          api.listFileBlockParents(blockname="/a/b/c#1234") : List ALL parents for given Block
 
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsException	
              
     """
 
-    parent_or_child = 'CHILDREN'
+    parent_or_child = 'PARENT'
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
