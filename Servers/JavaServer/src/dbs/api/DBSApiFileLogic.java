@@ -1,6 +1,6 @@
 /**
- $Revision: 1.111 $"
- $Id: DBSApiFileLogic.java,v 1.111 2008/11/20 23:06:32 afaq Exp $"
+ $Revision: 1.112 $"
+ $Id: DBSApiFileLogic.java,v 1.112 2008/11/21 22:19:49 afaq Exp $"
  *
  */
 
@@ -1070,10 +1070,19 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (rs != null) rs.close();
 		}
 
+		
+		for (Object s: blockIDList) 
+			insertMap(conn, out, "BlockParent", "ThisBlock", "ItsParent", 
+				blockID, (String) s, cbUserID, lmbUserID, creationDate, true);
+
+		/*
 		if (blockIDList.size() > 0) {
 			insertMapBatch(conn, out, "BlockParent", "ThisBlock", "ItsParent", 
 						blockID, blockIDList, cbUserID, lmbUserID, creationDate);
-		}
+		}*/
+
+
+		
 
 	}
 
@@ -1538,6 +1547,23 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 
 
+	private String getFileBlockID(Connection conn, Writer out, String lfn) throws Exception {
+		String blockID = null;
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps = DBSSql.listFiles(conn, lfn);
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        if(rs.next()) blockID = get(rs, "BLOCK_ID");
+                        else throw new DBSException("Unavailable data", "1011", "No such Files : LogicalFileName : " + lfn );
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+		return blockID;
+	}
+
 	
 	/**
 	 * Insert a parent in a file. 
@@ -1553,12 +1579,24 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
 	public void insertParentInFile(Connection conn, Writer out, Hashtable table, String parentLFN, Hashtable dbsUser) throws Exception {
+
+		String lfn = get(table, "lfn", true);
+		String fileID = getFileID(conn, lfn, true);
+		String parentID = getFileID(conn, parentLFN, true);
+		String cbUserID = personApi.getUserID(conn, get(table, "created_by"), dbsUser );
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String creationDate = getTime(table, "creation_date", false);
+
 		insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
-				getFileID(conn, get(table, "lfn", true), true),
-				getFileID(conn, parentLFN, true),
-				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
-				personApi.getUserID(conn, dbsUser),
-				getTime(table, "creation_date", false));
+				fileID,
+				parentID,
+				cbUserID, lmbUserID, creationDate);
+
+		//Get the block ID of the input File
+		String blockID = getFileBlockID(conn, out, lfn);
+		//Insert Block Parentage
+		insertBlockParentage(conn, out, fileID, blockID, cbUserID, lmbUserID, creationDate);
+
 	}
 	public void deleteFileParent(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
 		deleteMap(conn, out, "FileParentage", "ThisFile", "itsParent",

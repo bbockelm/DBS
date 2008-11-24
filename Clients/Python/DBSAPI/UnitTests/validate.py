@@ -102,6 +102,7 @@ seM = 'test_seM_' + ran
 blockName1 = path1 + '#' + str(random.choice(range(10000)))
 blockName2 = path2 + '#' + str(random.choice(range(10000)))
 blockName3 = path1 + '#' + str(random.choice(range(10000)))
+blockName4 = path1 + '#' + str(random.choice(range(10000)))
 blockNameM = pathM + '#' + str(random.choice(range(10000)))
 
 fileName1 = 'test_file_name_1_' + ran
@@ -126,6 +127,8 @@ fileName3 = 'test_file_name_3_' + ran
 # file4 takes all parameters same as file 2, just the name is different
 fileName4 = 'test_file_name_4_' + ran
 
+# file5 takes all parameters same as file 1, just the name is different
+fileName5 = 'test_file_name_5_' + ran
 
 
 fileNameM = 'test_file_name_M_' + ran
@@ -250,7 +253,6 @@ lumiObj2 = DbsLumiSection (
 		RunNumber = runNumber,
 		)
 
-
 blockObj1 = DbsFileBlock (
 		Name = blockName1
 		)
@@ -262,6 +264,10 @@ blockObj2 = DbsFileBlock (
 blockObj3 = DbsFileBlock (
                 Name = blockName3
                 )
+
+blockObj4 = DbsFileBlock (
+                Name = blockName4
+		)
 
 blockObjM = DbsFileBlock (
 		Name = blockNameM
@@ -327,6 +333,21 @@ fileObj4 = DbsFile (
                 TierList = [tier1, tier2],
                 ParentList = [fileName3],
                 AutoCrossSection=2.0
+                )
+
+fileObj5 = DbsFile (
+                Checksum = fileCkecksum1,
+                LogicalFileName = fileName5,
+                NumberOfEvents = fileNumEvents1,
+                FileSize = fileSize1,
+                Status = fileStatus1,
+                ValidationStatus = fileValidStatus1,
+                FileType = fileType1,
+                Dataset = procObj1,
+                AlgoList = [algoObj1],
+                LumiList = [lumiObj1],
+                TierList = [tier1, tier2],
+                AutoCrossSection=1.0
                 )
 
 
@@ -434,7 +455,7 @@ def assertLumi(test, lumiIn1, lumiIn2):
 def assertBlock(test, block1, block2):
 	test.assertEqual(block1['Name'], block2['Name'])
 
-class Test1(unittest.TestCase):
+class Test_001(unittest.TestCase):
 	def testPrimary(self):
 		print 'testPrimary'
 		api.insertPrimaryDataset (primObj)
@@ -444,7 +465,7 @@ class Test1(unittest.TestCase):
 			self.assertEqual(primName, primaryInDBS['Name'])
 			self.assertEqual(primType, primaryInDBS['Type'])
 
-class Test2(unittest.TestCase):
+class Test_002(unittest.TestCase):
 	def testAlgorithm(self):
 		print 'testAlgorithm'
 		api.insertAlgorithm (algoObj1)
@@ -454,7 +475,7 @@ class Test2(unittest.TestCase):
 			assertAlgoPS(self, algoObj1, algoInDBS)
 
 
-class Test3(unittest.TestCase):
+class Test_003(unittest.TestCase):
 	def testProcessed(self):
 		print 'testProcessed'
 		api.insertPrimaryDataset (primObj)
@@ -498,7 +519,7 @@ class Test3(unittest.TestCase):
 				
 
 
-class Test4(unittest.TestCase):
+class Test_004(unittest.TestCase):
 	def testBlock(self):
 		print 'testBlock'
 		api.insertBlock (procObj1, blockObj1, [se1, se2])
@@ -519,7 +540,7 @@ class Test4(unittest.TestCase):
 				
 
 
-class Test5(unittest.TestCase):
+class Test_005(unittest.TestCase):
 	def testRun(self):
 		print 'testRun'
 		runList = api.listRuns(procObj2)
@@ -527,7 +548,7 @@ class Test5(unittest.TestCase):
 		for runInDBS in runList:
 			assertRun(self, runObj, runInDBS)
 
-class Test6(unittest.TestCase):
+class Test_006(unittest.TestCase):
 	def test_01_File(self):
 		print 'testFile'
 		api.insertFiles(procObj1, [fileObj1], blockObj1)
@@ -600,7 +621,8 @@ class Test6(unittest.TestCase):
 		fileList = api.listFiles(path = path1)
 		self.assertEqual(len(fileList), 1)
 
-	def test_05_BlockParentage(self):
+class Test_007(unittest.TestCase):
+	def test_01_BlockParentage(self):
 		print "testBlockParentage"
 		#At this point we can verify the Block Parentage as well
 		#Parent of blockObj2 is blockObj1
@@ -608,9 +630,15 @@ class Test6(unittest.TestCase):
 		self.assertEqual(len(pbsDBS), 1)
 		for pbDBS in pbsDBS: assertBlock(self, pbDBS, blockObj1)
 		#Child of blockObj1 is blockObj2
+
+	def test_02_BlockChildren(self):
+		print "testBlockChildren"
 		chldbsDBS=api.listBlockChildren(block_name=blockObj1)
 		self.assertEqual(len(chldbsDBS), 1)
 		for chldbDBS in chldbsDBS: assertBlock(self, chldbDBS, blockObj2)	
+
+	def test_03_BlockMultiParent(self):
+		print "test_03_BlockMultiParent"
 		# Now add another file to Block 2, so that its parent is blockObj3
 		api.insertBlock (procObj1, blockObj3, [se1, se2])
 		api.insertFiles(procObj1, [fileObj3], blockObj3)
@@ -629,11 +657,34 @@ class Test6(unittest.TestCase):
 			else:
 				print "Multiple Block Parentage not working"
 				self.assertEqual(1,2)
-		# Need to update this API now
-		#####api.insertFileParent(fileObj2, fileObj3)	
+
+	def test_04_BlockParentWith_insertFileParent(self):
+		print "test_04_BlockParentWith_insertFileParent"
+		#Insert a NEW Block
+		api.insertBlock (procObj1, blockObj4, [se1, se2])	
+		# insert a file into this Block
+		api.insertFiles(procObj1, [fileObj5], blockObj4)
+		# Let this file be parent of an existing file in Block 2
+		api.insertFileParent(fileObj4, fileObj5)
+		# Block 2 now has Block 4 as its parent as well !!!
+                pbsDBS=api.listBlockParents(block_name=blockObj2)
+                self.assertEqual(len(pbsDBS), 3)
+                for pbDBS in pbsDBS: 
+                        if pbDBS['Name'] == blockObj1['Name']:
+                                assertBlock(self, pbDBS, blockObj1)
+                        elif pbDBS['Name'] == blockObj3['Name']:
+                                assertBlock(self, pbDBS, blockObj3)
+                        elif pbDBS['Name'] == blockObj4['Name']:
+                                assertBlock(self, pbDBS, blockObj4)
+
+                        else:
+                                print "Multiple Block Parentage not working with insertFileParent"
+                                self.assertEqual(1,2)
+	
 
 
-class Test7(unittest.TestCase):
+
+class Test_008(unittest.TestCase):
 	def testMergedProcessed(self):
 		print 'testMergedProcessed'
 		api.insertMergedDataset (procObj2, procNameM, algoObjM)
@@ -666,7 +717,7 @@ class Test7(unittest.TestCase):
 					self.assertEqual(1, 2)
 					
 				
-class Test8(unittest.TestCase):
+class Test_009(unittest.TestCase):
 	def testMergedFile(self):
 		print 'testMergedFile'
 		api.insertBlock (procObjM, blockObjM, [seM])
@@ -735,7 +786,7 @@ class Test8(unittest.TestCase):
 				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
 				assertRun(self, runObj, runInDBS)
 
-class Test9(unittest.TestCase):
+class Test_010(unittest.TestCase):
         def test_01_QIM(self):
 		print "testQIM"
 		api.insertSubSystem(qim_name1, parent="CMS")
@@ -777,8 +828,6 @@ class Test9(unittest.TestCase):
 					else:
 						print "Unable to Add/Retrieve QIM Values, insertRunLumiDQ/listRunLumiDQ APIs failed"
 	                                	self.assertEqual(1, 2)
-
-
 
 if __name__ == '__main__':
 
