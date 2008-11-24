@@ -255,7 +255,7 @@ def dbsApiImplDeleteFileParent(self, file, parentFile):
     #logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     data = self._server._call ({ 'api' : 'deleteFileParent',
 			  'lfn' : file_name(file),
-			  'parent_lfn' : parentFile
+			  'parent_lfn' : file_name(parentFile)
 			  }, 'POST')
 
 def dbsApiImplInsertFileParent(self, file, parentFile):
@@ -269,6 +269,6 @@ def dbsApiImplInsertFileParent(self, file, parentFile):
 
     data = self._server._call ({ 'api' : 'insertParentInFile',
 			  'xmlinput' : xmlinput,
-			  'parent_lfn' : parentFile
+			  'parent_lfn' : file_name(parentFile)
 			  }, 'POST')
 
