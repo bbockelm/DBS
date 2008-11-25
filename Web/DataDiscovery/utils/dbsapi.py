@@ -22,6 +22,7 @@ class DbsApi2(object):
         params['type']  = type
         params['begin'] = begin
         params['end']   = end
+        params['content-type'] = self.ctype
         data   = urllib2.urlopen(self.url,
                          urllib.urlencode(params, doseq=True)).read()
         return data
@@ -30,7 +31,7 @@ class DbsApi2(object):
 #
 if __name__ == "__main__":
     config = {'version':'DBS_2_0_4','url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'}
-    dbsapi = DbsApi(config)
+    dbsapi = DbsApi2(config)
     query = 'find site where site like *'
     data = dbsapi.executeQuery(query,0,10)
     print data
