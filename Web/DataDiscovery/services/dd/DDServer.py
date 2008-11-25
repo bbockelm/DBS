@@ -76,6 +76,7 @@ except:
 
 # webtools framework
 from utils.webtools_modules import *
+from utils.dbsapi import DbsApi2
 
 class DDServer(DDLogger,Controller): 
     """
@@ -276,9 +277,10 @@ class DDServer(DDLogger,Controller):
         else:
             dbsUrl=DBS_INST_URL[dbsInst]
             dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
-            config = dict(self.dbsConfig)
-            config['url']=dbsUrl
-            dbsApi = DbsApi(config)
+#            config = dict(self.dbsConfig)
+#            config['url']=dbsUrl
+            config = {'mode':'POST', 'retry':2, 'version':'DBS_2_0_4', 'url': dbsUrl}
+            dbsApi = DbsApi2(config)
             self.dbsApi[dbsInst]=dbsApi
 #            dbsApi=self.dbsmgr.getapi(dbsInst)
 #            self.dbsApi[dbsInst]=dbsApi
@@ -5575,29 +5577,17 @@ All LFNs in a block
         return result, titleList
 
     def exeQuery(self, dbsInst, userInput, fromRow, limit):
-        try:
-            return self._exeQuery(dbsInst, userInput, fromRow, limit)
-        except:
-            if  self.verbose:
-                traceback.print_exc()
-            self.writeLog(getExcept())
-            time.sleep(2)
-            try:
-                return self._exeQuery(dbsInst, userInput, fromRow, limit)
-            except:
-                if  self.verbose:
-                    traceback.print_exc()
-                self.writeLog(getExcept())
-                print "Fail in exeQuery",dbsInst,userInput,fromRow,limit
-                raise "Fail in exeQuery"
-
-    def _exeQuery(self, dbsInst, userInput, fromRow, limit):
         if (not limit and not fromRow) or limit==-1:
            fromRow=""
            limit=""
 #        result, titeList = self.dbsmgr.exe(dbsInst, userInput, begin=fromRow, end=fromRow+limit)
         dbsApi = self.getDbsApi(dbsInst)
-        res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+        res = ''
+        try:
+            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
+        except:
+            traceback.print_exc()
+            raise Exception(traceback.format_exc())
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
         method = "dbsapi"
         result = []
@@ -5607,27 +5597,13 @@ All LFNs in a block
         return result, titleList
 
     def countQuery(self, dbsInst, userInput):
-        try:
-            return self._countQuery(dbsInst, userInput)
-        except:
-            if  self.verbose:
-                traceback.print_exc()
-            self.writeLog(dbsInst)
-            self.writeLog(userInput)
-            self.writeLog(getExcept())
-            time.sleep(2)
-            try:
-                return self._countQuery(dbsInst, userInput)
-            except:
-                if  self.verbose:
-                    traceback.print_exc()
-                self.writeLog(getExcept())
-                raise "Fail in countQuery"
-
-    def _countQuery(self, dbsInst, userInput):
 #        nResults = self.dbsmgr.count(dbsInst, userInput)
         dbsApi = self.getDbsApi(dbsInst)
-        res = dbsApi.executeQuery(userInput, type="query")
+        try:
+            res = dbsApi.executeQuery(userInput, type="query")
+        except:
+            traceback.print_exc()
+            raise Exception(traceback.format_exc())
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
         method = "dbsapi"
         self.helperInit(dbsInst, method)
