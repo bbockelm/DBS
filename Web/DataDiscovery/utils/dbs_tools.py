@@ -15,6 +15,7 @@ from   utils.DDUtil     import findInString
 # DBS imports
 from   RS.Wrapper import RegService
 from   DBSAPI.dbsApi import DbsApi
+from   utils.dbsapi import DbsApi2
 #from  DBSAPI.dbsMigrateApi import DbsMigrateApi
 #from  MS.Wrapper import API as DBS_MS
 
@@ -231,7 +232,7 @@ class DBSManager(object):
             if self.dbsapi.has_key(dbsalias):
                return self.dbsapi[dbsalias]
             else:
-               dbsapi = DbsApi(config)
+               dbsapi = DbsApi2(config)
                self.dbsapi[dbsalias]=dbsapi
                return dbsapi
         except:
