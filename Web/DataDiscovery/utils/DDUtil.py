@@ -33,6 +33,9 @@ TIPS= [
 "to send found data to your buddy, use 'bare URL' link at bottom of the page"
 ]
 
+def singleList(iList):
+    return [i[0] for i in iList]
+
 def findOutput(input):
     output = ''
     if  input.lower().find(" where ")!=-1:
