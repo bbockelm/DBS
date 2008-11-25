@@ -277,9 +277,8 @@ class DDServer(DDLogger,Controller):
         else:
             dbsUrl=DBS_INST_URL[dbsInst]
             dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
-#            config = dict(self.dbsConfig)
-#            config['url']=dbsUrl
-            config = {'mode':'POST', 'retry':2, 'version':'DBS_2_0_4', 'url': dbsUrl}
+            config = dict(self.dbsConfig)
+            config['url']=dbsUrl
             dbsApi = DbsApi2(config)
             self.dbsApi[dbsInst]=dbsApi
 #            dbsApi=self.dbsmgr.getapi(dbsInst)
