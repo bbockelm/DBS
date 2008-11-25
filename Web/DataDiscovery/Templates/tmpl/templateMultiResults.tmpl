@@ -27,6 +27,7 @@ found $res results
 <hr class="dbs" />
 *#
 
+#*
 <script type="text/javascript">
 function clean() {
    var id = document.getElementById('kw_multiSearch');
@@ -36,6 +37,7 @@ function clean() {
 }
 clean();
 </script>
+*#
 #for $idx in xrange(0,len($dbsInstList))
 #set $ins=$dbsInstList[$idx]
 #set $res=$resList[$idx]

@@ -1141,7 +1141,7 @@ function ajaxInit(_dbs) {
   registerAjaxSummaryCalls();
   registerAjaxHistoryCalls();
   registerAjaxProvenanceCalls();
-  registerAjaxProvenanceGraphCalls();
+//  registerAjaxProvenanceGraphCalls();
   registerAjaxAppConfigsCalls();
 //  registerAjaxGenNavigatorMenuDictCalls();
   registerAjaxGetFloatBoxCalls();
@@ -1200,11 +1200,11 @@ ParentsGraphUpdater.prototype = {
      }
    }
 }
-function registerAjaxProvenanceGraphCalls() {
-  ajaxEngine.registerRequest('ajaxGenParentsGraph','getProvenanceForAllDatasets');
-  updater = new GetDataUpdater('parents','update');
-  ajaxEngine.registerAjaxObject('parents',updater);
-}
+//function registerAjaxProvenanceGraphCalls() {
+//  ajaxEngine.registerRequest('ajaxGenParentsGraph','getProvenanceForAllDatasets');
+//  updater = new GetDataUpdater('parents','update');
+//  ajaxEngine.registerAjaxObject('parents',updater);
+//}
 function ajaxGenParentsGraphFromSelection() {
   uSelection=document.getElementsByName('userSelection');
   for(i=0;i<uSelection.length;i++) {

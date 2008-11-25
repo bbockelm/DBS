@@ -29,22 +29,34 @@ so if you need help please use this
 <br/>
 <br/>
 
-<div id="kw_multiSearch" name="kw_multiSearch"></div>
+#for dbsInst in $dbsList
+<div id="${dbsInst}" name="${dbsInst}"></div>
+#end for
 
 <script type="text/javascript">
-function request() {
-    var jd = document.getElementById('kw_multiSearch');
+function scan(dbs) {
+    var jd = document.getElementById(dbs);
     if (jd) {
-        jd.innerHTML='please wait ...';
+        //jd.innerHTML='<div><img src="images/loading.gif" />scanning '+dbs+' instance, please wait ...</div><hr class="dbs">';
+        jd.innerHTML='<div>scanning '+dbs+' instance, please wait ...</div><hr class="dbs">';
     }
+}
+function request() {
     var id = document.getElementById('userInput');
     if (id) {
         var userInput = id.value;
 #for dbsInst in $dbsList
+        scan('$dbsInst')
         ajaxMultiSearch('$dbsInst',userInput);
 #end for
     }
 }
+ajaxEngine.registerRequest('ajaxMultiSearch','multiSearch');
+#for dbsInst in $dbsList
+###mUpdater_$dbsInst = new GetDataUpdater('$dbsInst','update','');
+###ajaxEngine.registerAjaxObject('$dbsInst',mUpdater_${dbsInst});
+ajaxEngine.registerAjaxElement('$dbsInst');
+#end for
 </script>
 
 <!-- end of templateMultiSearchForm.tmpl -->

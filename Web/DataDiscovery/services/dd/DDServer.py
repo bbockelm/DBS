@@ -5619,7 +5619,7 @@ All LFNs in a block
         page = ''
         if  int(ajax) == 1:
             self.setContentType('xml')
-            page+="""<ajax-response><response type="object" id="kw_multiSearch">"""
+            page+="""<ajax-response><response type="element" id="%s">""" % dbs
         resList  = []
         userMode = getArg(kwargs,'userMore','user')
         method   = "dbsapi"
