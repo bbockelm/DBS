@@ -144,21 +144,30 @@ class DBSManager(object):
             api = RegService()
             result = api.queryRegistrationFindAll()
             for i in result:
+                # TMP: RS needs to fix account names and remove '.' from names
+                # I'm adding _reader suffix to use readable accounts
+                account = str(i._accountName).replace('.','').lower()+'_reader'
+                owner   = str(i._accountName).replace('.','')
                 if  str(i._critical).lower() == 'y' and \
                     i._url and i._accountName and i._serverVersion and \
                     reader.search(i._alias):
-                    dbsdict = {'url':i._url, 'account':i._accountName,
+                    dbsdict = {'url':i._url, 'login':account,
                                'version':i._serverVersion}
-                    if  i._alias.find('caf') !=-1 or \
-                        i._alias.find('_ph_') != -1 or \
-                        i._alias.find('int_') != -1:
-                        alias = 'cms_dbs_%s' % str(i._alias).replace('_r','')
-                    else:
-                        alias = 'cms_dbs_prod_%s' % str(i._alias).replace('_r','')
-                    self.dbsattr[alias] = dbsdict
-#                    self.dbsattr[i._alias] = dbsdict
-                dbsdict = {'url':i._url, 'account':i._accountName,
-                           'version':i._serverVersion,'critical':i._critical}
+#                    if  i._alias.find('caf') !=-1 or \
+#                        i._alias.find('_ph_') != -1 or \
+#                        i._alias.find('int_') != -1:
+#                        alias = 'cms_dbs_%s' % str(i._alias).replace('_r','')
+#                    else:
+#                        alias = 'cms_dbs_prod_%s' % str(i._alias).replace('_r','')
+#                    self.dbsattr[alias] = dbsdict
+                    self.dbsattr[i._alias] = dbsdict
+                if  i._dbName.find('oracle') != -1:
+                    dbtype = 'oracle'
+                else:
+                    dbtype = 'mysql'
+                dbsdict = {'url':i._url, 'login':account,'owner':owner,
+                           'version':i._serverVersion,'critical':i._critical,
+                           'dbtype':dbtype,'location':i._physicalLocation}
                 self.dbsall[i._alias] = dbsdict
         except:
             traceback.print_exc()
@@ -189,7 +198,26 @@ class DBSManager(object):
         """
         Return URL for given DBS alias
         """
-        return self.dbsattr[dbsalias]['url']
+        return self.dbsall[dbsalias]['url']
+
+    def getdbtype(self, dbsalias):
+        return self.dbsall[dbsalias]['dbtype']
+
+# TODO: I don't need this api once migration to DBS API will be completed
+    def getaccount(self, dbsalias):
+        return 'cms_dbs'
+
+    def getlogin(self, dbsalias):
+        return self.dbsall[dbsalias]['login']
+
+    def getowner(self, dbsalias):
+        return self.dbsall[dbsalias]['owner']
+
+    def getpass(self, dbsalias):
+        if dbsalias.find('global') != -1:
+            return 'everyknowsDBS2'
+        return 'everyoneknowsDBS2'
+################################
 
     def getapi(self, dbsalias):
         """
@@ -227,12 +255,11 @@ class DBSManager(object):
         """
         Execute DBS query for given user input and return total number of found results
         """
-        # TODO: I need to replace executeQuery with new DBS API which will just
-        # return count for provided input
         dbsapi = self.getapi(dbsalias)
-        dbsxml = dbsapi.executeQuery(userinput)
-        result, titles = dbsparser(dbsxml)
-        return len(result)
+        return dbsapi.countQuery(userinput)
+#        dbsxml = dbsapi.executeQuery(userinput)
+#        result, titles = dbsparser(dbsxml)
+#        return len(result)
 
     def exexml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
@@ -272,16 +299,17 @@ if __name__ == "__main__":
     dbsmgr = DBSManager()
     query = "find dataset, site where site like *cern.ch"
     print "DBS aliases:"
-    dbslist = dbsmgr.aliases()
-    dbslist.sort()
-    print dbslist
-    print dbsmgr.keys_attrs(dbslist[0])
+#    dbslist = dbsmgr.aliases()
+#    dbslist.sort()
+#    print dbslist
+#    print dbsmgr.keys_attrs(dbslist[0])
 
-#    dbsall = dbsmgr.aliases(True)
-#    dbsall.sort()
-#    for dbsalias in dbsall:
-#        print dbsalias
-#        print dbsmgr.dbsall[dbsalias]
+    dbsall = dbsmgr.aliases(True)
+    print dbsall
+    dbsall.sort()
+    for dbsalias in dbsall:
+        print dbsalias
+        print dbsmgr.dbsall[dbsalias]
 
 #    for dbsalias in dbsmgr.aliases():
 #        print dbsalias
