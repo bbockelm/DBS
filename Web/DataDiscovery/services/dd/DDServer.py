@@ -5366,11 +5366,7 @@ All LFNs in a block
                    return "N/A"
                 if not html:
                    return traceback.format_exc()
-                msg = ""
-                if  userMode=="dbsExpert":
-                    msg+= "<pre>%s</pre>"%sql
-                    msg+= "<pre>%s</pre>"%str(bindDict)
-                msg+="<pre>%s</pre>"%getExcMessage(userMode)
+                msg  = "<pre>%s</pre>"%getExcMessage(userMode)
                 page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                 return page
         else:
