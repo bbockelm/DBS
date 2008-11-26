@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.LockMode;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -24,6 +25,7 @@ public class RunSeqDaoImpl extends HibernateDaoSupport implements RunSeqDao {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				return session.createCriteria(RunSeq.class)
 					.add(Restrictions.eq("name", name))
+					.setLockMode(LockMode.UPGRADE)
 					.list();
 		     	}
 		});
