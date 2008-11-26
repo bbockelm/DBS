@@ -6,6 +6,23 @@ import os
 import urllib
 import urllib2
 import traceback
+import elementtree.ElementTree as ET
+
+def parseDBSerror(data):
+    """
+    parse DBS error in returned XML
+    """
+    elem  = ET.fromstring(data)
+    oList = [] # results
+    for i in elem:
+        if  i.tag == "exception":
+            code = i.attrib['code']
+            msg  = i.attrib['message']
+            det  = i.attrib['detail']
+            det  = det.replace('QUERY','\nQUERY')
+            det  = det.replace('POSITION','\nPOSITION')
+            return 'DBS returns:\ncode   = %s,\nmsg    = %s,\ndetail = %s' % \
+                (code, msg, det)
 
 class DbsApi2(object):
     """
@@ -25,6 +42,9 @@ class DbsApi2(object):
         params['content-type'] = self.ctype
         data   = urllib2.urlopen(self.url,
                          urllib.urlencode(params, doseq=True)).read()
+        error  = parseDBSerror(data)
+        if  error:
+            raise Exception(error)
         return data
 #
 # main
