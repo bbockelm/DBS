@@ -1,7 +1,6 @@
 package gov.fnal.rss.dm.service.impl;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +16,7 @@ import gov.fnal.rss.dm.service.RunSeqService;
 public class RunSeqServiceImpl implements RunSeqService {
 	private static final long DEFAULT_START_VALUE = 1;
 	private static final long DEFAULT_END_VALUE = -1;
+	private static final String SAFE_WORD = "[-\\w_\\.%]+";
 	private Log logger = LogFactory.getLog(this.getClass());
 	private RunSeqDao runSeqDao;
 	public void setRunSeqDao(RunSeqDao runSeqDao) {
@@ -74,6 +74,7 @@ public class RunSeqServiceImpl implements RunSeqService {
 	private void validateName(String name) throws RunSeqException {
 		if(name  == null) throwRunSeqExcepion("Sequence name CANNOT be null ", null);
 		if(name.length()  == 0) throwRunSeqExcepion("Sequence name CANNOT be null ", null);
+		if (!Pattern.matches(SAFE_WORD, name)) throwRunSeqExcepion("Invalid characters in the name " + name, null);
 	}
 	/*public void createRunSequence(String name) throws RunSeqException, DuplicateRunSeqException {
 		createRunSequence(name, null, null);

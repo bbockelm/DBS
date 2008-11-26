@@ -7,17 +7,17 @@
 				<h:outputText value="Sequence Name"/>
 				<h:inputText size="50" binding="#{runBean.nameCreateInputText}"/>
 				<h:commandButton id="createRunSequenceButton" value="createRunSequence" action="#{runBean.createRunSequenceAction}"/>
-				<h:outputText value="" binding="#{runBean.createRunSequenceText}"/>
+				<h:outputText value="" binding="#{runBean.createRunSequenceText}" style="color:red;"/>
 
 				<h:outputText value="Sequence Name"/>
 				<h:inputText size="50" binding="#{runBean.nameNextInputText}"/>
 				<h:commandButton id="getNextRunNumberButton" value="getNextRunNumber" action="#{runBean.getNextRunNumberAction}"/>
-				<h:outputText value="" binding="#{runBean.nextRunNumberText}"/>
+				<h:outputText value="" binding="#{runBean.nextRunNumberText}" style="color:red;"/>
 
 				<h:outputText value="Sequence Name"/>
 				<h:inputText size="50" binding="#{runBean.nameCurrInputText}"/>
 				<h:commandButton id="getCurrRunNumberButton" value="getCurrRunNumber" action="#{runBean.getCurrRunNumberAction}"/>
-				<h:outputText value="" binding="#{runBean.currRunNumberText}"/>
+				<h:outputText value="" binding="#{runBean.currRunNumberText}" style="color:red;"/>
 
 		</h:panelGrid>
 	</h:form>
