@@ -7,6 +7,7 @@ import urllib
 import urllib2
 import traceback
 import elementtree.ElementTree as ET
+from   DBSAPI.dbsApi import DbsApi
 
 def parseDBSerror(data):
     """
@@ -32,6 +33,12 @@ class DbsApi2(object):
         self.url    = config['url']
         self.ctype  = 'text/xml'
         self.params = {'apiversion': config['version'], 'api': 'executeQuery'}
+
+    def getHelp(self, arg=""):
+        config = {'url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
+                    'mode':'POST','version':'DBS_2_0_4','retry':2}
+        dbsApi = DbsApi(config)
+        return dbsApi.getHelp(arg)
 
     def executeQuery(self, query, begin = "", end = "", type = "query"):
         params = dict(self.params)
