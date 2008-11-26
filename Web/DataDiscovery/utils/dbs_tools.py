@@ -99,7 +99,7 @@ def dbsquery(data, tag = "python_query"):
         elif i.tag == "count_query":
            csql, cdict = parsedbsquery(i)
     sql  = sql.replace("\n"," ").replace("\t"," ").strip()
-    csql = sql.replace("\n"," ").replace("\t"," ").strip()
+    csql = csql.replace("\n"," ").replace("\t"," ").strip()
     res  = (sql, bdict, csql, cdict)
     return res
 
