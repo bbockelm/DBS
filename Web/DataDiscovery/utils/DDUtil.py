@@ -535,12 +535,23 @@ def getExcMessage(userMode='user'):
     counter=0
     msg=""
     for m in  traceback.format_exc().split("\n"):
-        if m.find(ex)!=-1:
-           counter=1
-           if ex!="raise ":
-              msg+="%s\n"%m
-           continue
-        if counter: msg+="%s\n"%m
+#        if m.find(ex)!=-1:
+#           counter=1
+#           if ex!="raise ":
+#              msg+="%s\n"%m
+#           continue
+#        if counter: msg+="%s\n"%m
+        idx = m.rfind(ex)
+        if  idx!=-1:
+            counter=1
+            if  ex!="raise ":
+                msg+="%s\n"%m[idx:]
+            continue
+        if  counter:
+            if  idx!=-1:
+                msg+="%s\n"%m[idx:]
+            else:
+                msg+="%s\n"%m
     if not msg: return traceback.format_exc()
     return msg
 
