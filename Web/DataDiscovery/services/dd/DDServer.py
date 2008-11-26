@@ -2317,8 +2317,8 @@ class DDServer(DDLogger,Controller):
            page=self.genTopHTML(userMode=userMode)
            if hist:
               page+=hist
-#           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex,**kwargs)
-           return self.getDataHelperViaASearch(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
+           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex,**kwargs)
+#           return self.getDataHelperViaASearch(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
            page+= result
            page+=self.genBottomHTML()
         if self.verbose==2:
@@ -5482,7 +5482,8 @@ All LFNs in a block
         try:
             t1=time.time()
             if userMode=='dbsExpert':
-               page+="<pre>%s</pre>"%query
+               sql = self.getQuery(dbsInst, userInput, fromRow, limit)
+               page+="<!--- QUERY --->\n<pre>%s</pre>" % str(sql)
             if details:
                if output.find(",")!=-1 or output.find("total")!=-1:
                   page+=self.aSearchSummary(**kDict)
@@ -5572,6 +5573,22 @@ All LFNs in a block
         return result, titleList
 
     def exeQuery(self, dbsInst, userInput, fromRow, limit):
+        try:
+            return self._exeQuery(dbsInst, userInput, fromRow, limit)
+        except:
+            if  self.verbose:
+                traceback.print_exc()
+            self.writeLog(getExcept())
+            time.sleep(2)
+            try:
+                return self._exeQuery(dbsInst, userInput, fromRow, limit)
+            except:
+                if  self.verbose:
+                    traceback.print_exc()
+                self.writeLog(getExcept())
+                raise
+
+    def _exeQuery(self, dbsInst, userInput, fromRow, limit):
         if (not limit and not fromRow) or limit==-1:
            fromRow=""
            limit=""
@@ -5582,7 +5599,7 @@ All LFNs in a block
             res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
         except:
             traceback.print_exc()
-            raise Exception(traceback.format_exc())
+            raise
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
         method = "dbsapi"
         result = []
@@ -5591,14 +5608,41 @@ All LFNs in a block
         result,titleList=self.qmaker.executeDBSQuery(dbsInst,sql,bindDict)
         return result, titleList
 
+    def getQuery(self, dbsInst, userInput, fromRow = "", limit = ""):
+        if (not limit and not fromRow) or limit==-1:
+           fromRow=""
+           limit=""
+        begin = fromRow
+        end   = fromRow+limit
+        sql, bDict, count_sql, cDict = self.dbsmgr.query(dbsInst, userInput, begin, end)
+        return sql.replace("  ","\n")
+
     def countQuery(self, dbsInst, userInput):
+        try:
+            return self._countQuery(dbsInst, userInput)
+        except:
+            if  self.verbose:
+                traceback.print_exc()
+            self.writeLog(dbsInst)
+            self.writeLog(userInput)
+            self.writeLog(getExcept())
+            time.sleep(2)
+            try:
+                return self._countQuery(dbsInst, userInput)
+            except:
+                if  self.verbose:
+                    traceback.print_exc()
+                self.writeLog(getExcept())
+                raise
+
+    def _countQuery(self, dbsInst, userInput):
 #        nResults = self.dbsmgr.count(dbsInst, userInput)
         dbsApi = self.getDbsApi(dbsInst)
         try:
             res = dbsApi.executeQuery(userInput, type="query")
         except:
             traceback.print_exc()
-            raise Exception(traceback.format_exc())
+            raise
         sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
         method = "dbsapi"
         self.helperInit(dbsInst, method)
