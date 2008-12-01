@@ -48,16 +48,16 @@ ALTER TABLE BlockParent ADD CONSTRAINT
 --
 
 ALTER TABLE FileProcQuality ADD CONSTRAINT
-    FileProcQuality_ParentFile_FK foreign key(ParentFile) references Files(ID) on delete CASCADE;
+    FPQ_ParentFile_FK foreign key(ParentFile) references Files(ID) on delete CASCADE;
 
 ALTER TABLE FileProcQuality ADD CONSTRAINT
-    FileProcQuality_ChildDataset_FK foreign key(ChildDataset) references ProcessedDataset(ID) on delete CASCADE;
+    FPQ_ChildDataset_FK foreign key(ChildDataset) references ProcessedDataset(ID) on delete CASCADE;
 
 ALTER TABLE FileProcQuality ADD CONSTRAINT
-    FileProcQuality_CreatedBy_FK foreign key(CreatedBy) references Person(ID);
+    FPQ_CreatedBy_FK foreign key(CreatedBy) references Person(ID);
 
 ALTER TABLE FileProcQuality ADD CONSTRAINT
-    FileProcQualityLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID);
+    FPQLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID);
 
 --
 
