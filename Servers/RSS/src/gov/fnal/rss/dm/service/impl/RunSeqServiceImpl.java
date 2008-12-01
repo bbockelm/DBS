@@ -26,6 +26,9 @@ public class RunSeqServiceImpl implements RunSeqService {
 		return this.runSeqDao;
 	}
 	
+	private void throwRunSeqExcepion(String msg) throws RunSeqException {
+		throwRunSeqExcepion(msg, null);
+	}
 	private void throwRunSeqExcepion(String msg, Throwable e) throws RunSeqException {
 		if(e == null) {
 			this.logger.error(msg);
@@ -40,7 +43,7 @@ public class RunSeqServiceImpl implements RunSeqService {
 		try {
 			validateName(name);
 			RunSeq runSeq = this.runSeqDao.getRunSeq(name);
-			if(runSeq  == null) throwRunSeqExcepion("Sequence name " + name + " does NOT exist", null);
+			if(runSeq  == null) throwRunSeqExcepion("Sequence name " + name + " does NOT exist");
 			return runSeq.getCurrentNumber().longValue();
 		} catch(RunSeqException re) {
 			throw re; 
@@ -58,7 +61,7 @@ public class RunSeqServiceImpl implements RunSeqService {
 			long currNumber = runSeq.getCurrentNumber().longValue();
 			long endNumber = runSeq.getEndNumber().longValue();
 			if(endNumber != DEFAULT_END_VALUE) {
-				if((currNumber + 1) > endNumber) throwRunSeqExcepion("Max limit " + endNumber+ " reached for this sequence " + name, null);
+				if((currNumber + 1) > endNumber) throwRunSeqExcepion("Max limit " + endNumber+ " reached for this sequence " + name);
 			}
 			runSeq.setCurrentNumber(++currNumber);
 			this.runSeqDao.updateRunSeq(runSeq);
@@ -72,9 +75,10 @@ public class RunSeqServiceImpl implements RunSeqService {
 	}
 
 	private void validateName(String name) throws RunSeqException {
-		if(name  == null) throwRunSeqExcepion("Sequence name CANNOT be null ", null);
-		if(name.length()  == 0) throwRunSeqExcepion("Sequence name CANNOT be null ", null);
-		if (!Pattern.matches(SAFE_WORD, name)) throwRunSeqExcepion("Invalid characters in the name " + name, null);
+		String msg = "Sequence name CANNOT be null ";
+		if(name  == null) throwRunSeqExcepion(msg, null);
+		if(name.length()  == 0) throwRunSeqExcepion(msg, null);
+		if (!Pattern.matches(SAFE_WORD, name)) throwRunSeqExcepion("Invalid characters in the name " + name);
 	}
 	/*public void createRunSequence(String name) throws RunSeqException, DuplicateRunSeqException {
 		createRunSequence(name, null, null);
@@ -88,6 +92,8 @@ public class RunSeqServiceImpl implements RunSeqService {
 			validateName(name);
 			if(startNumber == 0) startNumber = DEFAULT_START_VALUE;
 			if(endNumber == 0) endNumber = DEFAULT_END_VALUE;
+			if(startNumber < 0) throwRunSeqExcepion("Run start number cannot be negative " + String.valueOf(startNumber));
+			if(endNumber - startNumber < 0) throwRunSeqExcepion("Run end number is smaller than Run start number");
 			RunSeq runSeq = new RunSeq();
 			runSeq.setName(name);
 			runSeq.setStartNumber(startNumber);
