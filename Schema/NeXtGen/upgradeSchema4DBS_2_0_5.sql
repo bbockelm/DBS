@@ -28,6 +28,17 @@ CREATE TABLE FileProcQuality
     unique(ParentFile,ChildDataset)
   );
 
+CREATE TABLE ProcessingStatus
+   (
+    ID                    integer,
+    ProcessingStatus      varchar(50),
+    CreatedBy             integer,
+    CreationDate          integer,
+    LastModifiedBy        integer,
+    LastModificationDate  integer,
+    primary key(ID)
+   );
+
 --
 
 ALTER TABLE BlockParent ADD CONSTRAINT
@@ -57,12 +68,28 @@ ALTER TABLE FileProcQuality ADD CONSTRAINT
 ALTER TABLE FileProcQuality ADD CONSTRAINT
     FPQLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_Status_FK foreign key(ProcessingStatus) references ProcessingStatus(ID) on delete CASCADE
+/
+
+--
+
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatusLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
 
 PROMPT creating sequence seq_blockparent ;
 create sequence seq_blockparent ;
 
 PROMPT creating sequence seq_fileprocquality;
 create sequence seq_fileprocquality;
+
+PROMPT creating sequence processingstatus;
+create sequence seq_processingstatus;
+
 
 -- ====================================================
 -- AUTO INC TRIGGER FOR blockparent.ID using SEQ seq_blockparent
@@ -77,6 +104,13 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: blockparent
 PROMPT AUTO INC TRIGGER FOR Trigger for Table: fileprocquality
  CREATE OR REPLACE TRIGGER fileprocquality_TRIG before insert on fileprocquality    for each row begin     if inserting then       if :NEW.ID is null then          select seq_fileprocquality.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
+
+-- ====================================================
+-- AUTO INC TRIGGER FOR processingstatus.ID using SEQ seq_processingstatus
+PROMPT AUTO INC TRIGGER FOR Trigger for Table: processingstatus 
+CREATE OR REPLACE TRIGGER processingstatusTRIG before insert on processingstatus   for each row begin     if inserting then       if :NEW.ID is null then          select seq_processingstatus.nextval into :NEW.ID from dual;       end if;    end if; end;
+/
+
 
 -- ====================================================
 -- LastModified Time Stamp Trigger
@@ -104,5 +138,18 @@ BEGIN
 END;
 /
 --
+
+-- ====================================================
+-- LastModified Time Stamp Trigger
+
+PROMPT LastModified Time Stamp Trigger for Table: processingstatus
+CREATE OR REPLACE TRIGGER TRTSprocessingstatus BEFORE INSERT OR UPDATE ON ProcessingStatus
+FOR EACH ROW declare
+  unixtime integer
+     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
+BEGIN
+  :NEW.LASTMODIFICATIONDATE := unixtime;
+END;
+/
 
 

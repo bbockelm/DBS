@@ -33,6 +33,20 @@ CREATE TABLE FileProcQuality
 
 --
 
+CREATE TABLE ProcessingStatus
+   (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ProcessingStatus      varchar(50),
+    CreatedBy             integer,
+    CreationDate          integer,
+    LastModifiedBy        integer,
+    LastModificationDate  integer,
+    primary key(ID)
+
+   );
+
+--
+
 ALTER TABLE BlockParent ADD CONSTRAINT
     BlockParent_ThisBlock_FK foreign key(ThisBlock) references Block(ID) on delete CASCADE;
 
@@ -59,7 +73,17 @@ ALTER TABLE FileProcQuality ADD CONSTRAINT
 ALTER TABLE FileProcQuality ADD CONSTRAINT
     FPQLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID);
 
---
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_Status_FK foreign key(ProcessingStatus) references ProcessingStatus(ID) on delete CASCADE;
+
+---
+
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatusLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
 
 -- LastModified Time Stamp Trigger
 
@@ -75,4 +99,8 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_FileProcQuality BEFORE UPDATE ON FileProcQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcessStatus BEFORE UPDATE ON ProcessingStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 
