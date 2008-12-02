@@ -3,11 +3,14 @@
 # Author:  Valentin Kuznetsov, 2008
 
 import os
+import socket
 import urllib
 import urllib2
 import traceback
 import elementtree.ElementTree as ET
 from   DBSAPI.dbsApi import DbsApi
+
+socket.setdefaulttimeout(30000)
 
 def parseDBSerror(data):
     """
@@ -46,6 +49,25 @@ class DbsApi2(object):
         params['type']  = type
         params['begin'] = begin
         params['end']   = end
+        params['content-type'] = self.ctype
+        data   = urllib2.urlopen(self.url,
+                         urllib.urlencode(params, doseq=True)).read()
+        error  = parseDBSerror(data)
+        if  error:
+            raise Exception(error)
+        return data
+
+    def countQuery(self, query):
+        """
+            should be replace with real countQuery once it's presented on server
+        """
+        params = dict(self.params)
+        # TODO: uncomment once server is ready
+#        params['api']   = 'countQuery'
+        params['query'] = query
+        params['type']  = 'exe'
+        params['begin'] = ''
+        params['end']   = ''
         params['content-type'] = self.ctype
         data   = urllib2.urlopen(self.url,
                          urllib.urlencode(params, doseq=True)).read()
