@@ -1,6 +1,6 @@
 /**
- $Revision: 1.150 $"
- $Id: DBSApiLogic.java,v 1.150 2008/11/18 17:11:34 sekhri Exp $"
+ $Revision: 1.151 $"
+ $Id: DBSApiLogic.java,v 1.151 2008/11/20 20:30:00 sekhri Exp $"
  *
  */
 
@@ -699,6 +699,9 @@ public class DBSApiLogic {
                         ps.executeBatch();
                 } catch (SQLException ex) {
                         String exmsg = ex.getMessage();
+
+			System.out.println(exmsg);
+
                         if ( exmsg.startsWith("Duplicate entry") ||
                                 exmsg.startsWith("ORA-00001: unique constraint") ) {
                                 ps.close();

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.144 $"
- $Id: DBSApi.java,v 1.144 2008/11/20 20:30:00 sekhri Exp $"
+ $Revision: 1.145 $"
+ $Id: DBSApi.java,v 1.145 2008/11/21 22:19:49 afaq Exp $"
  *
 */
 
@@ -687,7 +687,10 @@ public class DBSApi {
 						get(table, "path", true),
 						get(table, "block_name", true));
 
-
+			} else if (apiStr.equals("insertFileProcQuality")) {
+                                (new DBSApiProcQuality(this.data)).insertFileProcQuality(conn, out,
+						DBSApiParser.parse(getXml(table), "file_proc_quality"),
+						dbsUser);
 	
                         } else if (apiStr.equals("insertRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunLumiDQ(conn, out,

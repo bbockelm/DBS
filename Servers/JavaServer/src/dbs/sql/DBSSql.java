@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.198 $"
- $Id: DBSSql.java,v 1.198 2008/11/20 23:06:33 afaq Exp $"
+ $Revision: 1.199 $"
+ $Id: DBSSql.java,v 1.199 2008/11/21 22:19:49 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -922,6 +922,22 @@ public class DBSSql {
 
 
 /*----------------END DQ Calls ------------------*/
+
+        public static PreparedStatement insertFileProcQuality(Connection conn, String fileID, String childDatasetID, String processingStatus, String failedEventCount, String failedEventList, String desc, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+                Hashtable table = new Hashtable();
+
+                table.put("ParentFile", fileID);
+                table.put("ChildDataset", childDatasetID);
+                table.put("ProcessingStatus", processingStatus);
+                table.put("FailedEventCount", failedEventCount);
+                table.put("FailedEventList", failedEventList);
+                table.put("Description", desc);
+                table.put("CreatedBy", cbUserID);
+                table.put("LastModifiedBy", lmbUserID);
+                table.put("CreationDate", cDate);
+
+                return getInsertSQL(conn, "SubSystem", table);
+        }
 
 	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
@@ -1948,6 +1964,29 @@ public class DBSSql {
 		return ps;
 
 	}
+
+
+	public static PreparedStatement listFileProcQuality(Connection conn, String lfn) throws SQLException {
+                String sql = "SELECT DISTINCT FPQ.ID as ID,\n"+
+				"FPQ.FailedEventCount as FAILEDEVENTCOUNT,\n"+
+				"FPQ.FailedEventList as FAILEDEVENTLIST,\n"+
+				"FPQ.Description as DESCRIPTION,\n"+
+				"F.LogicalFileName as LFN,\n"+	
+				"PS.ProcessingStatus as PROCESSINGSTATUS\n"+
+				"FROM "+ owner() +"FileProcQuality FPQ\n"+
+					"JOIN "+owner()+"Files F\n"+
+						"ON F.ID = FPQ.ParentFile\n"+
+					"JOIN "+owner()+"ProcessingStatus PS\n" +
+						"ON PS.ID = FPQ.ProcessingStatus\n" +
+				"WHERE F.LogicalFileName=?\n";
+
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, lfn);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+	}
+
 
 	//public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
 	public static PreparedStatement listDatasetProvenence(Connection conn, String procDSID, boolean parentOrChild) throws SQLException {
