@@ -4803,6 +4803,8 @@ All LFNs in a block
                msg ="<pre>%s</pre>"%getExcMessage(userMode)
                page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
                return page
+           if  output=='dataset':
+               output = 'block.dataset'
            result,titleList=self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if parents:
            what,par = output.split(".")
@@ -5149,6 +5151,7 @@ All LFNs in a block
         if  method=="dbsapi":
             result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
         else:
+            output = 'block.dataset'
             result,titleList = self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
         if len(titleList)<=2: # no view found, 2 to account for rownum while using ORACLE
            titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
