@@ -1134,6 +1134,17 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def insertFileProcQuality(self,fileprocquality):
+     try:
+       #Calling the Implementation function
+       from dbsApiInsertFileProcQuality import dbsApiImplInsertFileProcQuality
+       return  dbsApiImplInsertFileProcQuality(self, fileprocquality)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
 #############################################################################
 # Unit testing: see $PWD/UnitTests
 ############################################################################
@@ -1149,8 +1160,8 @@ if __name__ == "__main__":
     optManager  = DbsOptionParser()
     (opts,args) = optManager.getOpt()
     args={}
-    url_list=['http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet']
-    url_list_old=['https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+    #url_list=['http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet']
+    url_list=['https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
 		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
 		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet',
 		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_03_writer/servlet/DBSServlet',

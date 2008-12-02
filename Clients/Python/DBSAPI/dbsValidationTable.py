@@ -224,7 +224,18 @@ ValidationTable = {
          "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
           },
-
+"DbsFileProcessingQuality" : {
+    	"ParentFile" : { "Comment" : "File for which processing quality is being recorded, LFN of the file that failed to produce a child file", "Validator" : isStringType },
+    	"ChildDataset" : { "Comment" : "The child dataset path, whoes file was suppose to be produced by this file", "Validator" : isStringType },
+	"ProcessingStatus" : { "Comment" : "Status string representing what went wrong", "Validator" : isStringType },
+    	"FailedEventCount" : { "Comment" : "Number of events that failed, Optional", "Validator" : isLongType },
+    	"FailedEventList" : { "Comment" : "Which events were failed, optional", "Validator" : isListType },
+     	"Description" : { "Comment" : "Upto 1000 chars of what possibly went wrong", "Validator" : isStringType },
+        "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         },
 }
 
 if __name__ == "__main__":
