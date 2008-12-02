@@ -103,7 +103,33 @@ def dbsquery(data, tag = "python_query"):
     res  = (sql, bdict, csql, cdict)
     return res
 
+#
+# NOTE: I can't use ANY XML parser since DBS-QL doesn't provide mapping between
+#       user query and output results. Until that done I must use plain text parsing
+#       of DBS-QL results
 def dbsparser(data):
+    # output in a format 
+    # <result SUM_FILE_SIZE='25155849149393' FILE_CREATEBY_DN='mlmiller@vocms19.cern.ch' />
+    # I wanted this script be completely stand-alone, so I don't want to use XML parsers
+    # which may not be installed on remote site, so plain filter on <result will work here.
+    oList  = []
+    titles = []
+    for item in data.split('\n'):
+        if item.find("<result")==-1: continue
+        if  not titles:
+            for elem in item.split(" "):
+                if  elem.find('='):
+                    titles.append(elem.split('=')[0])
+        r   = item.split("'")
+        item = []
+        counter = 0
+        for idx in range(1,len(r),2):
+            elem = r[idx]
+            item.append(elem)
+        oList.append(item)
+    return oList, titles
+
+def dbsparser_touse(data):
     """
     parse DBS XML output and return (resultList, titleList)
     """
@@ -257,17 +283,17 @@ class DBSManager(object):
         Execute DBS query for given user input and return total number of found results
         """
         dbsapi = self.getapi(dbsalias)
-        return dbsapi.countQuery(userinput)
-#        dbsxml = dbsapi.executeQuery(userinput)
-#        result, titles = dbsparser(dbsxml)
-#        return len(result)
+#        return dbsapi.countQuery(userinput)
+        dbsxml = dbsapi.countQuery(userinput)
+        result, titles = dbsparser(dbsxml)
+        return len(result)
 
     def exexml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
         Execute DBS query for given user input and return results in XML format
         """
         dbsapi = self.getapi(dbsalias)
-        dbsxml = dbsapi.executeQuery(userinput, begin = q_start, end = q_end)
+        dbsxml = dbsapi.executeQuery(userinput, begin = q_start, end = q_end, type = "exe")
         return dbsxml
 
     def exe(self, dbsalias, userinput, q_start = "", q_end = ""):
@@ -300,17 +326,17 @@ if __name__ == "__main__":
     dbsmgr = DBSManager()
     query = "find dataset, site where site like *cern.ch"
     print "DBS aliases:"
-#    dbslist = dbsmgr.aliases()
-#    dbslist.sort()
-#    print dbslist
-#    print dbsmgr.keys_attrs(dbslist[0])
+    dbslist = dbsmgr.aliases()
+    dbslist.sort()
+    print dbslist
+    print dbsmgr.keys_attrs(dbslist[0])
 
-    dbsall = dbsmgr.aliases(True)
-    print dbsall
-    dbsall.sort()
-    for dbsalias in dbsall:
-        print dbsalias
-        print dbsmgr.dbsall[dbsalias]
+#    dbsall = dbsmgr.aliases(True)
+#    print dbsall
+#    dbsall.sort()
+#    for dbsalias in dbsall:
+#        print dbsalias
+#        print dbsmgr.dbsall[dbsalias]
 
 #    for dbsalias in dbsmgr.aliases():
 #        print dbsalias
