@@ -2226,15 +2226,17 @@ class DDServer(DDLogger,Controller):
         return page
         
     def crabCfg(self,dataset,totEvt,userMode='userMode',**kwargs):
-        page=self.genTopHTML(userMode=userMode)
-        page+=self.whereMsg('Navigator :: Results :: CRAB configuration file :: dataset=%s'%dataset,userMode)
+        cherrypy.response.headers['Content-Type']='text/plain'
+        page = ""
+#        page=self.genTopHTML(userMode=userMode)
+#        page+=self.whereMsg('Navigator :: Results :: CRAB configuration file :: dataset=%s'%dataset,userMode)
         nameSpace = {
                      'dataset'  : dataset,
                      'totEvt'   : totEvt
                     }
         t = templateCRAB(searchList=[nameSpace]).respond()
         page+=str(t)
-        page+=self.genBottomHTML()
+#        page+=self.genBottomHTML()
         return page
     crabCfg.exposed=True
     
