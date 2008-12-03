@@ -18,7 +18,7 @@ CREATE TABLE FileProcQuality
     ChildDataset          integer   not null,
     ProcessingStatus      integer   not null,
     FailedEventCount      integer,
-    FailedEventList       integer,
+    FailedEventList       varchar(500),
     Description           varchar(1000),
     CreatedBy             integer,
     CreationDate          integer,

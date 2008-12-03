@@ -20,7 +20,7 @@ CREATE TABLE FileProcQuality
     ChildDataset          BIGINT UNSIGNED not null,
     ProcessingStatus      BIGINT UNSIGNED not null,
     FailedEventCount      BIGINT UNSIGNED,
-    FailedEventList       BIGINT UNSIGNED,
+    FailedEventList       varchar(500),
     Description           varchar(1000),
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
