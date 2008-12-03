@@ -1,6 +1,6 @@
 /**
- $Revision: 1.147 $"
- $Id: DBSApi.java,v 1.147 2008/12/03 20:10:39 afaq Exp $"
+ $Revision: 1.148 $"
+ $Id: DBSApi.java,v 1.148 2008/12/03 20:44:31 afaq Exp $"
  *
 */
 
@@ -595,7 +595,13 @@ public class DBSApi {
 						DBSApiParser.parse(getXml(table), "processed_dataset"),
 						get(table, "run_number", true), 
 						dbsUser);
-	
+
+			} else if (apiStr.equals("markPDRunDone")) {
+				(new DBSApiProcDSLogic(this.data)).markPDRunDone(conn, out, 
+						get(table, "path", true),
+						get(table, "run_number", true),
+						dbsUser);
+
 			} else if (apiStr.equals("updateProcDSStatus")) {
 				(new DBSApiProcDSLogic(this.data)).updateProcDSStatus(conn, out,
 						get(table, "path", true),
@@ -751,11 +757,6 @@ public class DBSApi {
                                 (new DBSApiDQLogic(this.data)).listSubSystems(conn, out);
 
                         } else if (apiStr.equals("listDQVersions")) {
-
-
-
-
-
                                 (new DBSApiDQLogic(this.data)).listDQVersions(conn, out);
 			} else if (apiStr.equals("getIntegratedLuminosity")) {
 				(new DBSApiLumiLogic(this.data)).getIntegratedLuminosity(conn, out,

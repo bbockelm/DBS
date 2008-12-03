@@ -1,6 +1,6 @@
 /**
- $Revision: 1.70 $"
- $Id: DBSApiProcDSLogic.java,v 1.70 2008/10/24 17:21:31 afaq Exp $"
+ $Revision: 1.71 $"
+ $Id: DBSApiProcDSLogic.java,v 1.71 2008/10/27 21:26:24 afaq Exp $"
  *
  */
 
@@ -645,6 +645,29 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					personApi.getUserID(conn, dbsUser),
 					getTime(table, "creation_date", false));
 	}
+
+
+	/** Mark a Run DONE (1) for a processed Dataset by updating status in ProcDSRun Map, by default it is Not Done (0)**/
+	public void markPDRunDone(Connection conn, Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
+		checkTime(runNumber, "run_number");
+		String runID = getID(conn, "Runs", "RunNumber", runNumber, true);
+		String procDSID = getProcessedDSID(conn, path, true);
+	
+		//see if this map even exists !!
+		String idExists = getMapID(conn, "ProcDSRuns", "Dataset", "Run", procDSID, runID, true);
+		
+		if (!isNull(idExists)) {
+			updateValue(conn, out, "ProcDSRuns", idExists, "Complete", "1", personApi.getUserID(conn, dbsUser));
+		}
+		else {
+			throw new DBSException("Missing data", "1005",
+                                                "Run not found in the specified dataset "+path);
+		}
+
+	}
+
+
+
 
 	/**
 	 * Insert a run parent in processed dataset. 
