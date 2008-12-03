@@ -35,6 +35,9 @@ public class KeyMap {
 		map.put("block.id", "Block.ID");
 		map.put("block.size", "Block.BlockSize");
 		map.put("block.dataset", "Block.Path");
+		map.put("block.numevents", "Block.NumberOfEvents");
+		map.put("block.numfiles", "Block.NumberOfFiles");
+		map.put("block.status", "Block.OpenForWriting");
 		map.put("block.createdate", "Block.CreationDate");
 		map.put("block.moddate", "Block.LastModificationDate");
 		

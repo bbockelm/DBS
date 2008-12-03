@@ -260,3 +260,4 @@ executeQuery () {
 	#$CMD query="find dataset where site != T1_CH_CERN "
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
+	$CMD query="find block.numfiles, block.numevents, block.status where block like *"

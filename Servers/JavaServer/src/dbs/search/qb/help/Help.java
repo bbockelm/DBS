@@ -172,6 +172,9 @@ public class Help {
 		kw.attrs.add("name");
 		kw.attrs.add("size");
 		kw.attrs.add("dataset");
+		kw.attrs.add("numfiles");
+		kw.attrs.add("numevents");
+		kw.attrs.add("status");
 		kw.attrs.add("createdate");
 		kw.attrs.add("moddate");
 		kw.attrs.add("createby");
@@ -184,8 +187,8 @@ public class Help {
 		e.query = "find block where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
 		kw.examples.add(e);
 		e = new Example();
-		e.desc = "I want to find blocks and its attributes like  its size,  creation date, modification date, created by, modified by in a dataset";
-		e.query = "find block, block.size,  block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		e.desc = "I want to find blocks and its attributes like  its size, number of files, number of events, its status, creation date, modification date, created by, modified by in a dataset";
+		e.query = "find block, block.size, block.numfiles, block.numevents, block.status, block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
 		kw.examples.add(e);
 		e = new Example();
 		e.desc = "I want to find all the  attributes like dataset, size,  creation date, modification date, created by, modified by in a dataset";
