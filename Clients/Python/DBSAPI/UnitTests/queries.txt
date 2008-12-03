@@ -92,8 +92,8 @@ find file, dataset where release = test_Ver1_eaf67699-b539-487d-8713-07df617379d
 find file where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db
 find dataset where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db
 find block
-find block, block.size,  block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
-find block.size,  block.createdate, block.moddate, block.createby, block.modby where block = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO#01123fd3-5486-41fe-8b90-7dbb8fbe69b8
+find block, block.size, block.numfiles, block.numevents, block.status, block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
+find block.size, block.numfiles, block.numevents, block.status, block.createdate, block.moddate, block.createby, block.modby where block = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO#01123fd3-5486-41fe-8b90-7dbb8fbe69b8
 find block.count where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
 find count(block) where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
 find run.count where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM
