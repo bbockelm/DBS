@@ -18,7 +18,7 @@ try:
   # List all parameter sets
   print "Processed Datasets:"
   #for proc in api.listProcessedDatasets("test_primary_001", "*", "TestProcessedDS002"):
-  print  api.listPathParents("/test_primary_001/TestProcessedDS002/GEN-SIM")
+  print  api.listPathParents("/Cosmics/BeamCommissioning08-PromptReco-v1/RECO")
   #for proc in api.listPathParents("/test_primary_001/TestProcessedDS002/GEN-SIM")['PathList']:
   #   print "  %s" % proc
   

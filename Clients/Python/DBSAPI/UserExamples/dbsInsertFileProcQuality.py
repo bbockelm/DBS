@@ -17,9 +17,10 @@ try:
 
     fileQuality = DbsFileProcessingQuality(
 	ParentFile='/store/data/BeamCommissioning08/Cosmics/RAW/v1/000/062/571/B60CBD20-1C82-DD11-84E2-00161757BF42.root',
-	ChildDataset='/Cosmics/BeamCommissioning08-PromptReco-v1/RECO'
+	ChildDataset='/Cosmics/BeamCommissioning08-PromptReco-v1/RECO',
 	ProcessingStatus='FAILED_RECO',
 	FailedEventCount=5,
+	Description="This is a test",
 	FailedEventList=[1,2,3,4,5]
 	)
 

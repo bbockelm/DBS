@@ -31,7 +31,7 @@ def dbsApiImplInsertFileProcQuality(self, fileprocquality):
     xmlinput += "<dbs>"
     xmlinput += "<file_proc_quality lfn='"+ fileprocquality.get('ParentFile', '') +"'"
     xmlinput += " child_dataset='"+ fileprocquality.get('ChildDataset', '') +"'"
-    xmlinput += " failed_event_count='"+ fileprocquality.get('FailedEventCount', '') +"'"
+    xmlinput += " failed_event_count='"+ str(fileprocquality.get('FailedEventCount', '')) +"'"
     xmlinput += " description='"+ fileprocquality.get('Description', '') +"'"
     xmlinput += " processing_status='"+ fileprocquality.get('ProcessingStatus', '') +"'"
     failed_evt_list=""
@@ -43,7 +43,7 @@ def dbsApiImplInsertFileProcQuality(self, fileprocquality):
     xmlinput += "</dbs>"
 
     if self.verbose():
-       print "insertTier, xmlinput", xmlinput
+       print "insertFileProcQuality, xmlinput", xmlinput
 
     data = self._server._call ({ 'api' : 'insertFileProcQuality', 
                          'xmlinput' : xmlinput }, 'POST')
