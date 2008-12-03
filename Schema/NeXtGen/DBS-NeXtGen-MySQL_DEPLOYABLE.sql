@@ -568,6 +568,7 @@ CREATE TABLE ProcDSRuns
     ID                    BIGINT UNSIGNED not null auto_increment,
     Dataset               BIGINT UNSIGNED   not null,
     Run                   BIGINT UNSIGNED   not null,
+    Complete integer default 0,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,

@@ -674,6 +674,7 @@ CREATE TABLE ProcDSRuns
     ID                    integer,
     Dataset               integer   not null,
     Run                   integer   not null,
+    Complete integer default 0,
     CreationDate          integer,
     CreatedBy             integer,
     LastModificationDate  integer,
