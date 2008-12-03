@@ -4972,7 +4972,8 @@ All LFNs in a block
                    else:
                       elem=timeGMTshort(long(elem))
                 elif  sizeIdx!=-1 and jdx==sizeIdx:
-                   elem=colorSizeHTMLFormat(elem)
+                   bytes = elem
+                   elem=colorSizeHTMLFormat(elem)+" (%s bytes)"%bytes
                 if cByIdx!=-1 and jdx==cByIdx:
                    elem=parseCreatedBy(elem)
                 if pathIdx!=-1 and jdx==pathIdx:
