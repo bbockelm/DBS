@@ -1134,11 +1134,11 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
-  def listFileProcQuality(self,fileprocquality):
+  def listFileProcQuality(self,lfn, path):
      try:
        #Calling the Implementation function
        from dbsApiListFileProcQuality import dbsApiImplListFileProcQuality
-       return  dbsApiImplListFileProcQuality(self, fileprocquality)
+       return  dbsApiImplListFileProcQuality(self, lfn, path)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex

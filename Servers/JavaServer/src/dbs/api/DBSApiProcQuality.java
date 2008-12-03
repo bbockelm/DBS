@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiProcQuality.java,v 1.1 2008/12/02 22:59:05 afaq Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiProcQuality.java,v 1.2 2008/12/03 20:09:28 afaq Exp $"
  *
  */
 
@@ -70,13 +70,17 @@ public class DBSApiProcQuality extends DBSApiLogic {
                 }
         }
 
-        public void listFileProcQuality(Connection conn, Writer out, String lfn) throws Exception
+        public void listFileProcQuality(Connection conn, Writer out, String lfn, String path) throws Exception
         {
+
+
+		if ( DBSUtil.isNull(lfn) && DBSUtil.isNull(path) )
+			throw new DBSException("Missing data", "1006", "Null field. Expected a valid LFN or DATASETPath" );
 
                 PreparedStatement ps = null;
 		ResultSet rs = null;
                 try {
-                        ps = DBSSql.listFileProcQuality(conn, lfn);
+                        ps = DBSSql.listFileProcQuality(conn, lfn, path);
                         pushQuery(ps);
                         rs = ps.executeQuery();
 			ArrayList alreadyThere = new ArrayList();
@@ -105,40 +109,5 @@ public class DBSApiProcQuality extends DBSApiLogic {
                         if (ps != null) ps.close();
                 }
 	}
-
-	/**
-	public void listDatasetQuality(Connection conn, Writer out, String path) throws Exception
-        {
-
-                PreparedStatement ps = null;
-                ResultSet rs = null;
-                try {
-                        ps = DBSSql.listDatasetProcQuality(conn, path);
-                        pushQuery(ps);
-                        rs = ps.executeQuery();
-                        while(rs.next()) {
-
-				//Need to implement this ?????????????????????????????????????????????????????????????
-
-                                out.write(((String) "<file_proc_quality "+
-                                                " id='" + get(rs, "ID") +
-                                                " lfn='" + get(rs, "LFN") +
-                                                " child_dataset='" + get(rs, "CHILDDATASET") +
-                                                " failed_event_count='" + get(rs, "FAILEDEVTCOUNT") +
-                                                " failed_event_list='" + get(rs, "FAILEDEVTLIST") +
-                                                " description='" + get(rs, "DESCRIPTION") +
-                                                " processing_status='" + get(rs, "PROCSTATUS") +
-                                                " />"
-                                                ));
-                        }
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
-        }
-	**/
-
-
-
 
 }

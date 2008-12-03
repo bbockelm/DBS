@@ -17,7 +17,7 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplListFileProcQuality(self, lfn):
+def dbsApiImplListFileProcQuality(self, lfn, path):
     """
    list file processing quality in DBS
 
@@ -36,7 +36,7 @@ def dbsApiImplListFileProcQuality(self, lfn):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
 
     data = self._server._call ({ 'api' : 'listFileProcQuality', 
-                         'lfn' : lfn }, 'GET')
+                         'lfn' : lfn, 'path' : path }, 'GET')
     if self.verbose():
        print data
 

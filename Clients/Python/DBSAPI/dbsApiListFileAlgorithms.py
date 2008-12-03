@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+#
+# Revision: $"
+# Id: $"
 
 import os, re, string, socket, xml.sax, xml.sax.handler
 import base64

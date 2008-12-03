@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.200 $"
- $Id: DBSSql.java,v 1.200 2008/12/02 22:57:06 afaq Exp $"
+ $Revision: 1.201 $"
+ $Id: DBSSql.java,v 1.201 2008/12/03 20:09:28 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1966,7 +1966,7 @@ public class DBSSql {
 	}
 
 
-	public static PreparedStatement listFileProcQuality(Connection conn, String lfn) throws SQLException {
+	public static PreparedStatement listFileProcQuality(Connection conn, String lfn, String path) throws SQLException {
                 String sql = "SELECT DISTINCT FPQ.ID as ID,\n"+
 				"FPQ.FailedEventCount as FAILEDEVENTCOUNT,\n"+
 				"FPQ.FailedEventList as FAILEDEVENTLIST,\n"+
@@ -1989,10 +1989,18 @@ public class DBSSql {
                                 		"ON percb.id = FPQ.CreatedBy \n" +
                         		"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 		"ON perlm.id = FPQ.LastModifiedBy \n" +
-				"WHERE F.LogicalFileName=?\n";
+				"WHERE ";
+				if (!DBSUtil.isNull(lfn)) sql += " F.LogicalFileName=?\n";
+				
+				if (!DBSUtil.isNull(path)) {
+					if (!DBSUtil.isNull(lfn)) sql += " AND ";
+					sql += " B.Path=?";
+				}
 
+		int columnIndex=1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, lfn);
+		if (!DBSUtil.isNull(lfn)) ps.setString(columnIndex++, lfn);
+		if (!DBSUtil.isNull(path)) ps.setString(columnIndex++, path);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 

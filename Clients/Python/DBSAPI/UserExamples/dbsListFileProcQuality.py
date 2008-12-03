@@ -16,12 +16,34 @@ api = DbsApi(opts.__dict__)
 try:
 
     lfn='/store/data/BeamCommissioning08/Cosmics/RAW/v1/000/062/571/B60CBD20-1C82-DD11-84E2-00161757BF42.root'
-    print api.listFileProcQuality(lfn)
+    path=''
+    print api.listFileProcQuality(lfn, path)
+    print "SUCCESS"
+
+    lfn=''
+    path='/Cosmics/BeamCommissioning08-v1/RAW'
+    print api.listFileProcQuality(lfn, path)
+    print "SUCCESS"
+
+    lfn='/store/data/BeamCommissioning08/Cosmics/RAW/v1/000/062/571/B60CBD20-1C82-DD11-84E2-00161757BF42.root'
+    path='/Cosmics/BeamCommissioning08-v1/RAW'
+    print api.listFileProcQuality(lfn, path)
+    print "SUCCESS"
+
+    #This will fail#########
+    lfn=''
+    path=''
+    #print api.listFileProcQuality(lfn, path)
+
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):
     print "DBS Exception Error Code: ", ex.getErrorCode()
+
+
+
+
 
 
 print "Done"

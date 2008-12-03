@@ -1,6 +1,6 @@
 /**
- $Revision: 1.146 $"
- $Id: DBSApi.java,v 1.146 2008/12/02 22:57:05 afaq Exp $"
+ $Revision: 1.147 $"
+ $Id: DBSApi.java,v 1.147 2008/12/03 20:10:39 afaq Exp $"
  *
 */
 
@@ -694,7 +694,8 @@ public class DBSApi {
 
 			} else if (apiStr.equals("listFileProcQuality")) {
                                 (new DBSApiProcQuality(this.data)).listFileProcQuality(conn, out,
-						get(table, "lfn", true)
+						get(table, "lfn", false),
+						get(table, "path", false)
 						);
 
                        } else if (apiStr.equals("insertRunLumiDQ"))  {
