@@ -33,6 +33,10 @@ CREATE TABLE FileProcQuality
 
 --
 
+ALTER TABLE ProcDSRuns ADD Complete integer default 0;
+
+--
+
 CREATE TABLE ProcessingStatus
    (
     ID                    BIGINT UNSIGNED not null auto_increment,

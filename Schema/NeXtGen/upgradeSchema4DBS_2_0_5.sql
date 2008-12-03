@@ -41,6 +41,10 @@ CREATE TABLE ProcessingStatus
 
 --
 
+ALTER TABLE ProcDSRuns ADD Complete integer default 0;
+
+--
+
 ALTER TABLE BlockParent ADD CONSTRAINT
     BlockParent_ThisBlock_FK foreign key(ThisBlock) references Block(ID) on delete CASCADE
 /
