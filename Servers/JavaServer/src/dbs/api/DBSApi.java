@@ -1,6 +1,6 @@
 /**
- $Revision: 1.145 $"
- $Id: DBSApi.java,v 1.145 2008/11/21 22:19:49 afaq Exp $"
+ $Revision: 1.146 $"
+ $Id: DBSApi.java,v 1.146 2008/12/02 22:57:05 afaq Exp $"
  *
 */
 
@@ -687,12 +687,17 @@ public class DBSApi {
 						get(table, "path", true),
 						get(table, "block_name", true));
 
-			} else if (apiStr.equals("insertFileProcQuality")) {
+ 			} else if (apiStr.equals("insertFileProcQuality")) {
                                 (new DBSApiProcQuality(this.data)).insertFileProcQuality(conn, out,
 						DBSApiParser.parse(getXml(table), "file_proc_quality"),
 						dbsUser);
-	
-                        } else if (apiStr.equals("insertRunLumiDQ"))  {
+
+			} else if (apiStr.equals("listFileProcQuality")) {
+                                (new DBSApiProcQuality(this.data)).listFileProcQuality(conn, out,
+						get(table, "lfn", true)
+						);
+
+                       } else if (apiStr.equals("insertRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunLumiDQ(conn, out,
 						get(table, "dataset", true),
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),

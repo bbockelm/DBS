@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiProcQuality.java,v 1.23 2008/11/13 17:09:45 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiProcQuality.java,v 1.1 2008/12/02 22:59:05 afaq Exp $"
  *
  */
 
@@ -50,8 +50,8 @@ public class DBSApiProcQuality extends DBSApiLogic {
 		String processingStatusID = getID(conn, "ProcessingStatus", "ProcessingStatus", 
 							get(fileProcInfo, "processing_status", true) , true);
 		String failedEventCount = get(fileProcInfo, "failed_event_count", false);
-		String failedEventList = get(fileProcInfo, "failed_event_list", false);
-		String desc = get(fileProcInfo, "description", true);
+		String failedEventList = getStr(fileProcInfo, "failed_event_list", false);
+		String desc = getStr(fileProcInfo, "description", true);
 
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
                 String cbUserID = personApi.getUserID(conn, get(fileProcInfo, "created_by"), dbsUser );
@@ -70,7 +70,6 @@ public class DBSApiProcQuality extends DBSApiLogic {
                 }
         }
 
-
         public void listFileProcQuality(Connection conn, Writer out, String lfn) throws Exception
         {
 
@@ -80,17 +79,26 @@ public class DBSApiProcQuality extends DBSApiLogic {
                         ps = DBSSql.listFileProcQuality(conn, lfn);
                         pushQuery(ps);
                         rs = ps.executeQuery();
+			ArrayList alreadyThere = new ArrayList();
                         while(rs.next()) {
-				out.write(((String) "<file_proc_quality "+
-						" id='" + get(rs, "ID") +
-						" lfn='" + get(rs, "LFN") +
-						" child_dataset='" + get(rs, "CHILDDATASET") +
-						" failed_event_count='" + get(rs, "FAILEDEVENTCOUNT") +
-						" failed_event_list='" + get(rs, "FAILEDEVENTLIST") +
-						" description='" + get(rs, "DESCRIPTION") +
-						" processing_status='" + get(rs, "PROCESSINGSTATUS") +		
+				String id = get(rs, "ID");
+				if (!alreadyThere.contains(id)) {
+					out.write(((String) "<file_proc_quality "+
+						" id='" + id + "'" +
+						" lfn='" + get(rs, "LFN") + "'" +
+						" child_dataset='" + get(rs, "CHILDDATASET") + "'" +
+						" failed_event_count='" + get(rs, "FAILEDEVENTCOUNT") + "'" +
+						" failed_event_list='" + get(rs, "FAILEDEVENTLIST") + "'" +
+						" description='" + get(rs, "DESCRIPTION") + "'" +
+						" processing_status='" + get(rs, "PROCESSINGSTATUS") + "'" +
+                                                " creation_date='" + getTime(rs, "CREATION_DATE") + "'" +
+                                                " last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") + "'" +
+                                                " created_by='" + get(rs, "CREATED_BY") + "'" +
+                                                " last_modified_by='" + get(rs, "LAST_MODIFIED_BY") + "'" +
 						" />"
 						));	
+					alreadyThere.add(id);
+				}
 			}
                 } finally {
 			if (rs != null) rs.close();

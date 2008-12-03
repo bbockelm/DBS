@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.199 $"
- $Id: DBSSql.java,v 1.199 2008/11/21 22:19:49 afaq Exp $"
+ $Revision: 1.200 $"
+ $Id: DBSSql.java,v 1.200 2008/12/02 22:57:06 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -936,7 +936,7 @@ public class DBSSql {
                 table.put("LastModifiedBy", lmbUserID);
                 table.put("CreationDate", cDate);
 
-                return getInsertSQL(conn, "SubSystem", table);
+                return getInsertSQL(conn, "FileProcQuality", table);
         }
 
 	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String cbUserID, String lmbUserID, String cDate) throws SQLException {
@@ -1972,12 +1972,23 @@ public class DBSSql {
 				"FPQ.FailedEventList as FAILEDEVENTLIST,\n"+
 				"FPQ.Description as DESCRIPTION,\n"+
 				"F.LogicalFileName as LFN,\n"+	
-				"PS.ProcessingStatus as PROCESSINGSTATUS\n"+
+				"PS.ProcessingStatus as PROCESSINGSTATUS,\n"+
+				"B.Path as CHILDDATASET,\n"+
+				"FPQ.CreationDate as CREATION_DATE, \n" +
+				"FPQ.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+				"percb.DistinguishedName as CREATED_BY, \n" +
+				"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 				"FROM "+ owner() +"FileProcQuality FPQ\n"+
 					"JOIN "+owner()+"Files F\n"+
 						"ON F.ID = FPQ.ParentFile\n"+
 					"JOIN "+owner()+"ProcessingStatus PS\n" +
 						"ON PS.ID = FPQ.ProcessingStatus\n" +
+					"JOIN "+owner()+"Block B\n"+
+						"ON B.ID=F.Block\n"+
+                        		"LEFT OUTER JOIN "+owner()+"Person percb \n" +
+                                		"ON percb.id = FPQ.CreatedBy \n" +
+                        		"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+                                		"ON perlm.id = FPQ.LastModifiedBy \n" +
 				"WHERE F.LogicalFileName=?\n";
 
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
