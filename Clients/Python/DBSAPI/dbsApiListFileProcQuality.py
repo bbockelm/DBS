@@ -51,7 +51,7 @@ def dbsApiImplListFileProcQuality(self, lfn, path):
 				failedevts= [ long(x) for x in (str(attrs['failed_event_list']).split()) ] 
 				result.append(DbsFileProcessingQuality(
                                              ParentFile=str(attrs['lfn']),
-                                             ChildDataset=DbsProcessedDataset(Path=str(attrs['child_dataset'])),
+                                             ChildDataset=str(attrs['child_dataset']),
 					     FailedEventCount=long(attrs['failed_event_count']),
 					     FailedEventList=failedevts,
 					     Description=str(attrs['description']),

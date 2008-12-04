@@ -229,8 +229,8 @@ ValidationTable = {
         "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
         },
 "DbsFileProcessingQuality" : {
-    	"ParentFile" : { "Comment" : "File for which processing quality is being recorded, LFN of the file that failed to produce a child file", "Validator" : isStringType },
-    	"ChildDataset" : { "Comment" : "The child dataset path, whoes file was suppose to be produced by this file", "Validator" : isDictType },
+    	"ParentFile" : { "Comment" : "File for which processing quality is being recorded, LFN of the file that failed to produce a child file", "Validator" : isStringType},
+    	"ChildDataset" : { "Comment" : "The child dataset path, whoes file was suppose to be produced by this file", "Validator" : isStringType },
 	"ProcessingStatus" : { "Comment" : "Status string representing what went wrong", "Validator" : isStringType },
     	"FailedEventCount" : { "Comment" : "Number of events that failed, Optional", "Validator" : isLongType },
     	"FailedEventList" : { "Comment" : "Which events were failed, optional", "Validator" : isListType },

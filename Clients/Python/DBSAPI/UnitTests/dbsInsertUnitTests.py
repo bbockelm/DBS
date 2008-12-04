@@ -15,7 +15,9 @@ from DBSAPI.dbsFile import DbsFile
 from DBSAPI.dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
 from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
 from DBSAPI.dbsLumiSection import DbsLumiSection
+from DBSAPI.dbsFileProcessingQuality import DbsFileProcessingQuality
 from DBSAPI.dbsOptions import DbsOptionParser
+from DBSAPI.dbsUtil import *
 from dbsUnitTestApi import DbsUnitTestApi
 
 optManager  = DbsOptionParser()
@@ -915,6 +917,22 @@ apiObj.run("abcd;edf", excep = True)
 apiObj.run("/does/no/exit#1234",  excep = True)
 
 f.write("\n\n***********************closeBlock API tests***************************")
+
+apiObj = DbsUnitTestApi(api.insertFileProcQuality, f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n**********************insertFileProcQuality API tests***************************")
+fileQualityObj = DbsFileProcessingQuality(
+        ParentFile=file1['LogicalFileName'],
+        ChildDataset=get_path(proc1),
+        ProcessingStatus='FAILED',
+        FailedEventCount=5,
+        Description="This is a test",
+        FailedEventList=[1,2,3,4,5]
+        )
+apiObj.run(fileQualityObj, excep = False)
+
+f.write("\n\n**********************insertFileProcQuality API tests***************************")
+
 
 # Store ONE path that could be used by next LIST test cases
 pathfile=open('pathfile', 'w')

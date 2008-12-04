@@ -369,8 +369,8 @@ fileObjM = DbsFile (
 		)
 
 fileQualityObj = DbsFileProcessingQuality(
-        ParentFile=fileName1,
-        ChildDataset=procObj2,
+        ParentFile=file_name(fileName1),
+        ChildDataset=get_path(procObj2),
         ProcessingStatus='FAILED',
         FailedEventCount=5,
         Description="This is a test",
