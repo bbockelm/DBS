@@ -1,6 +1,6 @@
 /**
- $Revision: 1.72 $"
- $Id: DBSApiProcDSLogic.java,v 1.72 2008/12/03 22:35:52 afaq Exp $"
+ $Revision: 1.73 $"
+ $Id: DBSApiProcDSLogic.java,v 1.73 2008/12/04 16:53:03 afaq Exp $"
  *
  */
 
@@ -207,7 +207,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                         pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
-                                System.out.println("get(rs, 'ID'):::::"+get(rs, "ID"));
                                 parentsVec.add((String)get(rs, "ID"));
                         }
                 } finally {

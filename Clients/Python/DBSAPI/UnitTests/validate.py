@@ -13,8 +13,10 @@ from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsDQFlag import DbsDQFlag
 from DBSAPI.dbsRunLumiDQ import DbsRunLumiDQ
+from DBSAPI.dbsFileProcessingQuality import DbsFileProcessingQuality
 
 from DBSAPI.dbsOptions import DbsOptionParser
+from DBSAPI.dbsUtil import *
 
 
 optManager  = DbsOptionParser()
@@ -366,6 +368,17 @@ fileObjM = DbsFile (
 		AutoCrossSection=3.0
 		)
 
+fileQualityObj = DbsFileProcessingQuality(
+        ParentFile=fileName1,
+        ChildDataset=procObj2,
+        ProcessingStatus='FAILED',
+        FailedEventCount=5,
+        Description="This is a test",
+        FailedEventList=[1,2,3,4,5]
+        )
+
+
+
 qim_value_g = "GOOD"
 qim_value_b = "BAD"
 qim_value_u = "UNKNOWN"
@@ -454,6 +467,13 @@ def assertLumi(test, lumiIn1, lumiIn2):
 	
 def assertBlock(test, block1, block2):
 	test.assertEqual(block1['Name'], block2['Name'])
+
+def assertFileQ(test, fileQ1, fileQ2):
+	test.assertEqual(fileQ1['Description'], fileQ2['Description'])
+	test.assertEqual(fileQ1['FailedEventList'], fileQ2['FailedEventList'])
+	#test.assertEqual(str(get_path(fileQ1['ChildDataset'])), str(get_path(fileQ2['ChildDataset'])))
+	test.assertEqual(fileQ1['FailedEventCount'], fileQ2['FailedEventCount'])
+	test.assertEqual(fileQ1['ParentFile'], fileQ2['ParentFile'])
 
 class Test_001(unittest.TestCase):
 	def testPrimary(self):
@@ -828,6 +848,45 @@ class Test_010(unittest.TestCase):
 					else:
 						print "Unable to Add/Retrieve QIM Values, insertRunLumiDQ/listRunLumiDQ APIs failed"
 	                                	self.assertEqual(1, 2)
+
+
+class Test_011(unittest.TestCase):
+	def test_01_procQuality(self):
+		print "test_01_procQuality"
+		api.insertFileProcQuality(fileQualityObj)
+		fileQList=api.listFileProcQuality(lfn=fileName1, path="")
+		self.assertEqual(len(fileQList), 1)
+		for fileQ in fileQList:
+			if fileQ['ParentFile']==fileName1:
+				assertFileQ(self,fileQualityObj, fileQ)
+			else:
+				print "File Processing Quality test failed"
+				self.assertEqual(1, 2)
+		
+
+class Test_012(unittest.TestCase):
+
+	def test_01_pdRunStatus(self):
+		print "test_01_pdRunStatus"
+		api.markPDRunDone(path=procObj2, run=runNumber)
+		runsStatuList=api.listProcDSRunStatus(path=procObj2, run=runNumber)
+		self.assertEqual(len(runsStatuList), 1)
+		for runStatus in runsStatuList:
+			if runStatus['RunNumber'] != runNumber or runStatus['Done'] != 1:
+				print "Cannot mark Run Complete"
+				self.assertEqual(1, 2) 	
+		
+        def test_02_pdRunStatus(self):
+                print "test_02_pdRunStatus"
+                api.markPDRunNotDone(path=procObj2, run=runNumber)
+                runsStatuList=api.listProcDSRunStatus(path=procObj2, run=runNumber)
+                self.assertEqual(len(runsStatuList), 1)
+                for runStatus in runsStatuList:
+                        if runStatus['RunNumber'] != runNumber or runStatus['Done'] != 0:
+                                print "Cannot mark Run Complete"
+                                self.assertEqual(1, 2)  
+
+		
 
 if __name__ == '__main__':
 

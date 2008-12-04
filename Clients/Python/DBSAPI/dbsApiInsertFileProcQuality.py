@@ -30,7 +30,7 @@ def dbsApiImplInsertFileProcQuality(self, fileprocquality):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<file_proc_quality lfn='"+ fileprocquality.get('ParentFile', '') +"'"
-    xmlinput += " child_dataset='"+ fileprocquality.get('ChildDataset', '') +"'"
+    xmlinput += " child_dataset='"+ get_path(fileprocquality.get('ChildDataset', '')) +"'"
     xmlinput += " failed_event_count='"+ str(fileprocquality.get('FailedEventCount', '')) +"'"
     xmlinput += " description='"+ fileprocquality.get('Description', '') +"'"
     xmlinput += " processing_status='"+ fileprocquality.get('ProcessingStatus', '') +"'"
