@@ -4,9 +4,9 @@
 -- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_2_0_4;
-create database DBS_2_0_4;
-use DBS_2_0_4;
+drop database if exists DBS_2_0_5;
+create database DBS_2_0_5;
+use DBS_2_0_5;
 
 -- ======================================================================
 
@@ -568,7 +568,7 @@ CREATE TABLE ProcDSRuns
     ID                    BIGINT UNSIGNED not null auto_increment,
     Dataset               BIGINT UNSIGNED   not null,
     Run                   BIGINT UNSIGNED   not null,
-    Complete integer default 0,
+    Complete 		  BIGINT UNSIGNED   default 0,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -809,6 +809,53 @@ CREATE TABLE Block
 
     primary key(ID)
   ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE BlockParent
+  (
+    ID                    integer,
+    ThisBlock             integer   not null,
+    ItsParent             integer   not null,
+    CreatedBy             integer,
+    CreationDate          integer,
+    LastModifiedBy        integer,
+    LastModificationDate  integer,
+    primary key(ID),
+    unique(ThisBlock,ItsParent)
+  );
+
+-- ======================================================================
+
+CREATE TABLE FileProcQuality
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ParentFile            BIGINT UNSIGNED not null,
+    ChildDataset          BIGINT UNSIGNED not null,
+    ProcessingStatus      BIGINT UNSIGNED not null,
+    FailedEventCount      BIGINT UNSIGNED,
+    FailedEventList       varchar(500),
+    Description           varchar(1000),
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(ParentFile,ChildDataset)
+  );
+
+-- ======================================================================
+
+CREATE TABLE ProcessingStatus
+   (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ProcessingStatus      varchar(50),
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID)
+   );
 
 -- ======================================================================
 
@@ -1370,6 +1417,50 @@ ALTER TABLE ProcDSRuns ADD CONSTRAINT
     ProcDSRuns_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+--
+
+ALTER TABLE BlockParent ADD CONSTRAINT
+    BlockParent_ThisBlock_FK foreign key(ThisBlock) references Block(ID) on delete CASCADE
+;   
+ALTER TABLE BlockParent ADD CONSTRAINT
+    BlockParent_ItsParent_FK foreign key(ItsParent) references Block(ID) on delete CASCADE
+;   
+ALTER TABLE BlockParent ADD CONSTRAINT
+    BlockParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;   
+ALTER TABLE BlockParent ADD CONSTRAINT
+    BlockParentLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+--
+
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_ParentFile_FK foreign key(ParentFile) references Files(ID) on delete CASCADE
+;
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_ChildDataset_FK foreign key(ChildDataset) references ProcessedDataset(ID) on delete CASCADE
+;
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_Status_FK foreign key(ProcessingStatus) references ProcessingStatus(ID) on delete CASCADE
+;
+
+--
+
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatusLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+
+
 ALTER TABLE ProcDSTier ADD CONSTRAINT 
     ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 ;
@@ -1848,7 +1939,6 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_RunLumiDQInt BEFORE INSERT ON RunLumiDQInt
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-
 CREATE TRIGGER TR_QualityVersion BEFORE INSERT ON QualityVersion
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1859,6 +1949,15 @@ CREATE TRIGGER TR_BranchHash BEFORE INSERT ON BranchHash
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_BranchHashMap BEFORE INSERT ON BranchHashMap
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_BlockParent BEFORE INSERT ON BlockParent
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileProcQuality BEFORE INSERT ON FileProcQuality
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcessStatus BEFORE INSERT ON ProcessingStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 -- =========== UPDATE TRIGGERS FOR LastModificationDate ============================
@@ -2042,11 +2141,20 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_BranchHashMap BEFORE UPDATE ON BranchHashMap
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_FileProcQuality BEFORE UPDATE ON FileProcQuality
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_BlockParent BEFORE UPDATE ON BlockParent
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcessStatus BEFORE UPDATE ON ProcessingStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 -- ======================================================================
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_3', 'LOCAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_4', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
@@ -2104,5 +2212,8 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', 
 
 INSERT INTO QualityValues (Value, CreationDate) VALUES ("GOOD", UNIX_TIMESTAMP()),
                 ("BAD", UNIX_TIMESTAMP()), ("UNKNOWN", UNIX_TIMESTAMP());
+
+INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
+INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
 commit;

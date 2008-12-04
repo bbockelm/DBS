@@ -156,4 +156,10 @@ BEGIN
 END;
 /
 
+--=============
+
+insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
+insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
+
+commit;
 

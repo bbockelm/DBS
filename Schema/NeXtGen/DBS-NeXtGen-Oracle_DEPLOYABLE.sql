@@ -6,7 +6,7 @@ PROMPT Creating Tables
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 756
+REM === Build : 757
 REM ======================================================================
 
 CREATE TABLE Person
@@ -674,7 +674,7 @@ CREATE TABLE ProcDSRuns
     ID                    integer,
     Dataset               integer   not null,
     Run                   integer   not null,
-    Complete integer default 0,
+    Complete 		  integer default 0,
     CreationDate          integer,
     CreatedBy             integer,
     LastModificationDate  integer,
@@ -798,6 +798,38 @@ CREATE TABLE BlockParent
     primary key(ID),
     unique(ThisBlock,ItsParent)
   );
+
+REM ======================================================================
+
+CREATE TABLE FileProcQuality
+  (
+    ID                    integer,
+    ParentFile            integer   not null,
+    ChildDataset          integer   not null,
+    ProcessingStatus      integer   not null,
+    FailedEventCount      integer,
+    FailedEventList       varchar(500),
+    Description           varchar(1000),
+    CreatedBy             integer,
+    CreationDate          integer,
+    LastModifiedBy        integer,
+    LastModificationDate  integer,
+    primary key(ID),
+    unique(ParentFile,ChildDataset)
+  );
+
+REM ======================================================================
+
+CREATE TABLE ProcessingStatus
+   (
+    ID                    integer,
+    ProcessingStatus      varchar(50),
+    CreatedBy             integer,
+    CreationDate          integer,
+    LastModifiedBy        integer,
+    LastModificationDate  integer,
+    primary key(ID)
+   );
 
 REM ======================================================================
 
@@ -1401,6 +1433,33 @@ ALTER TABLE ProcDSRuns ADD CONSTRAINT
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
     ProcDSRuns_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
+--
+
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_ParentFile_FK foreign key(ParentFile) references Files(ID) on delete CASCADE
+/
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_ChildDataset_FK foreign key(ChildDataset) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+ALTER TABLE FileProcQuality ADD CONSTRAINT
+    FPQ_Status_FK foreign key(ProcessingStatus) references ProcessingStatus(ID) on delete CASCADE
+/
+
+--
+
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcessingStatus ADD CONSTRAINT
+    ProcStatusLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 
 ALTER TABLE ProcDSTier ADD CONSTRAINT 
     ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
@@ -1760,6 +1819,10 @@ PROMPT creating sequence seq_fileparentage ;
 create sequence seq_fileparentage ;
 PROMPT creating sequence seq_blockparent ;
 create sequence seq_blockparent ;
+PROMPT creating sequence seq_fileprocquality;
+create sequence seq_fileprocquality;
+PROMPT creating sequence processingstatus;
+create sequence seq_processingstatus;
 PROMPT creating sequence seq_filerunlumi ;
 create sequence seq_filerunlumi ;
 PROMPT creating sequence seq_filealgo ;
@@ -2162,6 +2225,18 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: blockparent
  CREATE OR REPLACE TRIGGER blockparent_TRIG before insert on blockparent    for each row begin     if inserting then       if :NEW.ID is null then          select seq_blockparent.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
+-- ====================================================
+-- AUTO INC TRIGGER FOR fileprocquality.ID using SEQ seq_fileprocquality
+
+PROMPT AUTO INC TRIGGER FOR Trigger for Table: fileprocquality
+ CREATE OR REPLACE TRIGGER fileprocquality_TRIG before insert on fileprocquality    for each row begin     if inserting then       if :NEW.ID is null then          select seq_fileprocquality.nextval into :NEW.ID from dual;       end if;    end if; end;
+/
+
+-- ====================================================
+-- AUTO INC TRIGGER FOR processingstatus.ID using SEQ seq_processingstatus
+PROMPT AUTO INC TRIGGER FOR Trigger for Table: processingstatus
+CREATE OR REPLACE TRIGGER processingstatusTRIG before insert on processingstatus   for each row begin     if inserting then       if :NEW.ID is null then          select seq_processingstatus.nextval into :NEW.ID from dual;       end if;    end if; end;
+/
 
 -- ====================================================
 -- AUTO INC TRIGGER FOR filerunlumi.ID using SEQ seq_filerunlumi
@@ -2905,7 +2980,32 @@ BEGIN
 END;
 /
 
+-- ====================================================
+-- LastModified Time Stamp Trigger
 
+PROMPT LastModified Time Stamp Trigger for Table: fileprocquality
+CREATE OR REPLACE TRIGGER TRTSfileprocquality BEFORE INSERT OR UPDATE ON FileProcQuality
+FOR EACH ROW declare
+  unixtime integer
+     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
+BEGIN
+  :NEW.LASTMODIFICATIONDATE := unixtime;
+END;
+/
+--
+
+-- ====================================================
+-- LastModified Time Stamp Trigger
+
+PROMPT LastModified Time Stamp Trigger for Table: processingstatus
+CREATE OR REPLACE TRIGGER TRTSprocessingstatus BEFORE INSERT OR UPDATE ON ProcessingStatus
+FOR EACH ROW declare
+  unixtime integer
+     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
+BEGIN
+  :NEW.LASTMODIFICATIONDATE := unixtime;
+END;
+/
 
 -- ====================================================
 -- LastModified Time Stamp Trigger
@@ -2998,8 +3098,32 @@ BEGIN
 END;
 /
 
+
+
+
+
+
+
+
+SQL> INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual))
+SQL> INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual))
+SQL> INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- Set the Schema Version -- 
-INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_1_3', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_1_4', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 -- Pre Fill some information into tables ---------
 INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
@@ -3047,10 +3171,10 @@ INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI-RECO', 'Min bias data', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'SV Support 102463 for CSA 07', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+--INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+--INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+--INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -3107,4 +3231,9 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('HeavyIon', (s
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('GOOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('BAD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO QualityValues (Value, CreationDate) VALUES ('UNKNOWN', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
+INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('FAILED');
+INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('SUCCESS');
+
+
 commit;

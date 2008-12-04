@@ -41,12 +41,11 @@ CREATE TABLE ProcessingStatus
    (
     ID                    BIGINT UNSIGNED not null auto_increment,
     ProcessingStatus      varchar(50),
-    CreatedBy             integer,
-    CreationDate          integer,
-    LastModifiedBy        integer,
-    LastModificationDate  integer,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
-
    );
 
 --
@@ -94,17 +93,29 @@ ALTER TABLE ProcessingStatus ADD CONSTRAINT
 CREATE TRIGGER TR_BlockParent BEFORE INSERT ON BlockParent
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER UTR_BlockParent BEFORE UPDATE ON BlockParent
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-
 CREATE TRIGGER TR_FileProcQuality BEFORE INSERT ON FileProcQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcessStatus BEFORE INSERT ON ProcessingStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+--
 
 CREATE TRIGGER UTR_FileProcQuality BEFORE UPDATE ON FileProcQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_BlockParent BEFORE UPDATE ON BlockParent
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER UTR_ProcessStatus BEFORE UPDATE ON ProcessingStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+--
+
+insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
+insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
+
+commit;
+
 
 
