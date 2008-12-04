@@ -13,6 +13,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 
 import gov.fnal.rss.dm.dao.RunSeqDao;
 import gov.fnal.rss.dm.entity.RunSeq;
+import gov.fnal.rss.dm.exception.DuplicateRunSeqException;
 
 public class RunSeqDaoImpl extends HibernateDaoSupport implements RunSeqDao {
 	public RunSeqDaoImpl() {

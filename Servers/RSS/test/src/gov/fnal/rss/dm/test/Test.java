@@ -22,7 +22,7 @@ public class Test {
 	  	BeanFactory factory = new XmlBeanFactory(resource);
 		RunSeqService service = (RunSeqService)factory.getBean("runSeqService");
 		{
-			//service.createRunSequence("Testseq1", 1, 5);
+			service.createRunSequence("Testseq1", 1, 5);
 			System.out.println("currnt number is " + service.getCurrRunNumber("Testseq1"));
 			System.out.println("Next number is " + service.getNextRunNumber("Testseq1"));
 			System.out.println("currnt number is " + service.getCurrRunNumber("Testseq1"));

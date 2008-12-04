@@ -15,7 +15,8 @@ import ZSI
 
 # Locator
 class RunSeqWSImplServiceLocator:
-    RunSeqWSImplPort_address = "http://cmssrv48.fnal.gov:8080/rss/RSWebService"
+    #RunSeqWSImplPort_address = "http://cmssrv48.fnal.gov:8585/rss/RSWebService"
+    RunSeqWSImplPort_address = "http://cmsdbssrv.cern.ch/rss/RSWebService"
     def getRunSeqWSImplPortAddress(self):
         return RunSeqWSImplServiceLocator.RunSeqWSImplPort_address
     def getRunSeqWSImplPort(self, url=None, **kw):

@@ -3,6 +3,9 @@ import java.io.Serializable;
 
 
 public class RunSeq implements Serializable {
+	static final long serialVersionUID = 46543431;
+
+ 
     private Long startNumber;
     private Long endNumber;
     private Long id;

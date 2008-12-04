@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.dao.DataIntegrityViolationException;
+//import org.hibernate.exception.ConstraintViolationException;
 
 import gov.fnal.rss.dm.exception.RunSeqException;
 import gov.fnal.rss.dm.exception.DuplicateRunSeqException;
@@ -93,7 +94,7 @@ public class RunSeqServiceImpl implements RunSeqService {
 			if(startNumber == 0) startNumber = DEFAULT_START_VALUE;
 			if(endNumber == 0) endNumber = DEFAULT_END_VALUE;
 			if(startNumber < 0) throwRunSeqExcepion("Run start number cannot be negative " + String.valueOf(startNumber));
-			if(endNumber - startNumber < 0) throwRunSeqExcepion("Run end number is smaller than Run start number");
+			if((endNumber != DEFAULT_END_VALUE) && (endNumber - startNumber < 0)) throwRunSeqExcepion("Run end number is smaller than Run start number");
 			RunSeq runSeq = new RunSeq();
 			runSeq.setName(name);
 			runSeq.setStartNumber(startNumber);
@@ -101,6 +102,9 @@ public class RunSeqServiceImpl implements RunSeqService {
 			runSeq.setCurrentNumber(startNumber);
 			this.runSeqDao.saveRunSeq(runSeq);
 		} catch (DataIntegrityViolationException de) {
+			//System.out.println("___________________________________________________________");
+			//System.out.println("\n\n DataIntegrityViolationException \n\n");
+			//System.out.println("___________________________________________________________");
 			String msg = "Could not create run sequence, duplicate sequence name " + name;
 			this.logger.error(msg, de);
 			throw new DuplicateRunSeqException(msg, de);

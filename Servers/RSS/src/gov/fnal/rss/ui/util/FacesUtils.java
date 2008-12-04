@@ -8,6 +8,7 @@ import javax.faces.application.Application;
 import javax.faces.application.ApplicationFactory;
 import javax.faces.FactoryFinder;
 import javax.faces.el.ValueBinding;
+import javax.el.ValueExpression;
 import javax.faces.webapp.UIComponentTag;
 //
 
@@ -59,7 +60,7 @@ public class FacesUtils {
 	 * @return the parameter value
 	 */
 	public static String getRequestParameter(String name) {
-		return (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(name);
+		return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(name);
 	}
 	
 	
