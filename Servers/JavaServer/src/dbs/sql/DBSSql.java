@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.201 $"
- $Id: DBSSql.java,v 1.201 2008/12/03 20:09:28 afaq Exp $"
+ $Revision: 1.202 $"
+ $Id: DBSSql.java,v 1.202 2008/12/03 20:44:32 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1965,6 +1965,25 @@ public class DBSSql {
 
 	}
 
+	public static PreparedStatement listProcDSRunStatus(Connection conn, String procDSID, String runID) throws SQLException {
+		String sql = "SELECT DISTINCT PDSR.Complete as DONE,\n"+
+				"R.RunNumber as RUN\n"+
+				"FROM "+owner()+"ProcDSRuns PDSR\n"+
+					"JOIN Runs R\n"+
+						"ON R.ID=PDSR.Run\n"+
+				"WHERE PDSR.Dataset=?";
+				if (!DBSUtil.isNull(runID)) sql += " AND PDSR.Run=?\n";
+
+                int columnIndex=1;
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+
+
+
+                ps.setString(columnIndex++, procDSID);
+                if (!DBSUtil.isNull(runID)) ps.setString(columnIndex++, runID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	}
 
 	public static PreparedStatement listFileProcQuality(Connection conn, String lfn, String path) throws SQLException {
                 String sql = "SELECT DISTINCT FPQ.ID as ID,\n"+

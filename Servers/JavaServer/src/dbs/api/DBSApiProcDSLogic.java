@@ -1,6 +1,6 @@
 /**
- $Revision: 1.71 $"
- $Id: DBSApiProcDSLogic.java,v 1.71 2008/10/27 21:26:24 afaq Exp $"
+ $Revision: 1.72 $"
+ $Id: DBSApiProcDSLogic.java,v 1.72 2008/12/03 22:35:52 afaq Exp $"
  *
  */
 
@@ -666,7 +666,50 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 	}
 
+        /** Mark a Run DONE (1) for a processed Dataset by updating status in ProcDSRun Map, by default it is Not Done (0)**/
+        public void markPDRunNotDone(Connection conn, Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
+                checkTime(runNumber, "run_number");
+                String runID = getID(conn, "Runs", "RunNumber", runNumber, true);
+                String procDSID = getProcessedDSID(conn, path, true);
 
+                //see if this map even exists !!
+                String idExists = getMapID(conn, "ProcDSRuns", "Dataset", "Run", procDSID, runID, true);
+
+                if (!isNull(idExists)) {
+                        updateValue(conn, out, "ProcDSRuns", idExists, "Complete", "0", personApi.getUserID(conn, dbsUser));
+                }
+                else {
+                        throw new DBSException("Missing data", "1005",
+                                                "Run not found in the specified dataset "+path);
+                }
+
+        }
+
+
+        /** Mark a Run DONE (1) for a processed Dataset by updating status in ProcDSRun Map, by default it is Not Done (0)**/
+        public void listProcDSRunStatus(Connection conn, Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
+
+		//DATASET is always required 
+                String procDSID = getProcessedDSID(conn, path, true);
+                if (!DBSUtil.isNull(runNumber)) checkTime(runNumber, "run_number");
+                String runID = getID(conn, "Runs", "RunNumber", runNumber, false);
+
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps =  DBSSql.listProcDSRunStatus(conn, procDSID, runID);
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+				out.write(((String) "<run_status run_number='"+get(rs, "RUN")+"'"+
+								" done='"+get(rs, "DONE")+"'"+ " />" ));
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+
+        }
 
 
 	/**
