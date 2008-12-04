@@ -169,6 +169,10 @@ ValidationTable = {
          "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
           },
+"DbsRunStatus" : {
+	"RunNumber" : { "Comment" : "RunNumber", "Validator" : isLongType },
+	"Done" : { "Comment" : "Done/Complete sttaus of a Run" , "Validator" : isLongType },
+},
 "DbsRun" : {
          "RunNumber" : { "Comment" : "REQUIRED and UNIQUE", "Validator" : isLongType },
          "NumberOfEvents" : { "Comment" : "Required", "Validator" : isLongType },

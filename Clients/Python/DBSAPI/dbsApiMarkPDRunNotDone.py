@@ -8,7 +8,6 @@ from dbsException import DbsException
 from dbsApiException import *
 from xml.sax import SAXParseException
 
-
 import logging
 import inspect
 
@@ -16,11 +15,11 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplMarkPDRunDone(self, path, run):
+def dbsApiImplMarkPDRunNotDone(self, path, run):
 
 
     """
-    Marks a run in the Proc DS as DONE DBS databse.
+    Marks a run in the Proc DS as NOT DONE DBS databse.
 
     param:
 
@@ -38,7 +37,7 @@ def dbsApiImplMarkPDRunDone(self, path, run):
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
 
-    data = self._server._call ({ 'api' : 'markPDRunDone',
+    data = self._server._call ({ 'api' : 'markPDRunNotDone',
                          'path' : get_path(path),
                          'run_number' : get_run(run),
                          }, 'POST')

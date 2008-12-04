@@ -1167,6 +1167,29 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def markPDRunNotDone(self,path, run):
+     try:
+       #Calling the Implementation function
+       from dbsApiMarkPDRunNotDone import dbsApiImplMarkPDRunNotDone
+       return  dbsApiImplMarkPDRunNotDone(self, path, run)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def listProcDSRunStatus(self,path, run):
+     try:
+       #Calling the Implementation function
+       from dbsApiListProcDSRunStatus import dbsApiImplListProcDSRunStatus
+       return  dbsApiImplListProcDSRunStatus(self, path, run)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+
 
 #############################################################################
 # Unit testing: see $PWD/UnitTests
