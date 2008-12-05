@@ -47,6 +47,8 @@ def dbsApiImplGetServerInfo(self):
 			result['ServerVersion'] = 'PROBABLY_CVS_HEAD'
 		result['SchemaVersion'] = str(attrs['schema_version'])
 		result['InstanceName'] = str(attrs['instance_name'])
+		if attrs.has_key('instance_type'):
+			result['InstanceType'] = str(attrs['instance_type'])
       xml.sax.parseString (data, Handler ())
       return result
 

@@ -71,6 +71,7 @@ CREATE TABLE SchemaVersion
     ID                    integer,
     SchemaVersion         varchar(100)      unique not null,
     InstanceName          varchar(100)      unique not null,
+    InstanceType	  varchar(10)       unique not null,
     CreationDate          integer,
     CreatedBy             integer,
     LastModificationDate  integer,
@@ -3100,8 +3101,6 @@ BEGIN
 END;
 /
 
--- Set the Schema Version -- 
-INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_1_4', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 -- Pre Fill some information into tables ---------
 INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
@@ -3213,5 +3212,7 @@ INSERT INTO QualityValues (Value, CreationDate) VALUES ('UNKNOWN', (select (sysd
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('SUCCESS');
 
+-- Set the Schema Version -- 
+INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, InstanceType, CREATIONDATE) values ('DBS_1_1_4', 'LOCAL', 'ORACLE', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 commit;

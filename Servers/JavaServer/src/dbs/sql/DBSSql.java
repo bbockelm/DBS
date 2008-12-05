@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.204 $"
- $Id: DBSSql.java,v 1.204 2008/12/05 19:07:47 sekhri Exp $"
+ $Revision: 1.205 $"
+ $Id: DBSSql.java,v 1.205 2008/12/05 19:51:46 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -50,7 +50,7 @@ public class DBSSql {
 
 	public static PreparedStatement getSchemaVersion(Connection conn) throws SQLException {
 
-		String sql = "SELECT SchemaVersion, InstanceName FROM "+owner()+"SchemaVersion";
+		String sql = "SELECT SchemaVersion, InstanceName, InstanceType FROM "+owner()+"SchemaVersion";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;

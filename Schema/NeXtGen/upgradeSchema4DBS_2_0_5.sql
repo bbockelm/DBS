@@ -156,12 +156,21 @@ BEGIN
 END;
 /
 
+----===========
+
+ALTER TABLE SchemaVersion ADD InstanceType varchar(10) unique not null;
+
+
 --=============
 
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
+
+
+
 UPDATE SchemaVersion SET SchemaVersion='DBS_1_1_4';
+UPDATE SchemaVersion SET InstanceType='ORACLE';
 
 grant select on BlockParent to CMS_DBS___dbabbr___READER_ROLE;
 grant insert, update on BlockParent to CMS_DBS___dbabbr___WRITER_ROLE;

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.151 $"
- $Id: DBSApi.java,v 1.151 2008/12/04 17:12:13 afaq Exp $"
+ $Revision: 1.152 $"
+ $Id: DBSApi.java,v 1.152 2008/12/04 20:14:23 afaq Exp $"
  *
 */
 
@@ -122,6 +122,7 @@ public class DBSApi {
 	private DBSApiLogic api;
 	private DBSApiData data = null;
 	private String instanceName = null;
+	private String instanceType = null;
 	private String apiStr = null;
 
 	/**
@@ -165,8 +166,10 @@ public class DBSApi {
 			if(rs.next()) {
 				dbsSchemaVersion = rs.getString("SchemaVersion");
 				instanceName = rs.getString("InstanceName");
+				instanceType = rs.getString("InstanceType");
 				//Store it in Global data as well
 				api.data.instanceName = instanceName;
+				
 			} else {
 				throw new DBSException("Schema Version Failure", "1001", "Unable to get Schema Version from Database, cannot continue");
 			} 
@@ -266,7 +269,7 @@ public class DBSApi {
 				serverVersion = serverVersion.replace("$", "");
 				serverVersion = serverVersion.trim();
 
-				out.write("<dbs_version server_version='"+serverVersion+"' schema_version='"+dbsSchemaVersion+"' instance_name='" + instanceName + "'/>");
+				out.write("<dbs_version server_version='"+serverVersion+"' schema_version='"+dbsSchemaVersion+"' instance_name='" + instanceName + "' instance_type='"+instanceType+"'/>");
 			} else if (apiStr.equals("listPrimaryDatasets")) {
 				(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				

@@ -22,8 +22,11 @@ from DBSAPI.dbsUtil import *
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
- 
-isGlobal = api.getServerInfo()['InstanceName']
+
+serverInfo = api.getServerInfo()
+isMYSQL = serverInfo['InstanceType']
+isGlobal = serverInfo['InstanceName']
+
 def genRandom():
 	return  os.popen('uuidgen').readline().strip()
 
@@ -828,6 +831,8 @@ class Test_009(unittest.TestCase):
 
 class Test_010(unittest.TestCase):
         def test_01_QIM(self):
+		if isMYSQL=='MYSQL':
+			return True
 		print "testQIM"
 		api.insertSubSystem(qim_name1, parent="CMS")
 		api.insertSubSystem(qim_name2, parent=qim_name1)
@@ -846,6 +851,9 @@ class Test_010(unittest.TestCase):
                         	self.assertEqual(1, 2)
 
 	def test_02_InsertValues(self):	
+		if isMYSQL=='MYSQL':
+                        return True
+
 		print "testInsertValues"
                 api.insertRunLumiDQ( procObj2 , [run_dq] )
                 #dqHierarchyList =  api.listRunLumiDQ(dataset=procObj2, runLumiDQList=[run_dq_search_criteria], dqVersion=dqversion  )

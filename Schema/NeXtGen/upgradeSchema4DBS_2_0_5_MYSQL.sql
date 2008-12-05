@@ -110,12 +110,18 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_ProcessStatus BEFORE UPDATE ON ProcessingStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
---
+----===========
+
+ALTER TABLE SchemaVersion ADD InstanceType varchar(10) unique not null;
+
+
+--=============
 
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
 UPDATE SchemaVersion SET SchemaVersion='DBS_1_1_4';
+UPDATE SchemaVersion SET InstanceType='MYSQL';
 
 commit;
 

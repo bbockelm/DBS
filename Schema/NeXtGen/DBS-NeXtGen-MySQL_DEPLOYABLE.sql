@@ -76,6 +76,7 @@ CREATE TABLE SchemaVersion
     ID                    BIGINT UNSIGNED not null auto_increment,
     SchemaVersion         varchar(100)      unique not null,
     InstanceName          varchar(100)      unique not null,
+    InstanceType          varchar(10)       unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -2156,7 +2157,6 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_1_4', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
@@ -2217,5 +2217,7 @@ INSERT INTO QualityValues (Value, CreationDate) VALUES ("GOOD", UNIX_TIMESTAMP()
 
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
+
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, InstanceType, CreationDate) values ('DBS_1_1_4', 'LOCAL', 'MYSQL', UNIX_TIMESTAMP());
 
 commit;
