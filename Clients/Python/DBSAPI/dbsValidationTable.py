@@ -115,8 +115,8 @@ ValidationTable = {
           },
 "DbsFile" : {
          "Checksum" : { "Comment" : "Required", "Validator" : isStringType },
-         "Adler32" : { "Comment" : "Required", "Validator" : isStringType },
-         "Md5" : { "Comment" : "Required", "Validator" : isStringType },
+         "Adler32" : { "Comment" : "Optional", "Validator" : isStringType },
+         "Md5" : { "Comment" : "Optional", "Validator" : isStringType },
          "LogicalFileName" : { "Comment" : "REQUIRED and UNIQUE", "Validator" : isStringType },
          "QueryableMetadata" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "NumberOfEvents" : { "Comment" : "Required", "Validator" : isLongType },
