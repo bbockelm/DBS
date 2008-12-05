@@ -17,7 +17,7 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplExecuteQuery(self, query="*", begin="", end="", type="exe", case=True):
+def dbsApiImplExecuteQuery(self, query="*", begin="", end="", type="exe", ignoreCase=True):
     """
     """
     try: 
@@ -26,7 +26,7 @@ def dbsApiImplExecuteQuery(self, query="*", begin="", end="", type="exe", case=T
 
       # Invoke Server.    
       upper = "True"
-      if not case: upper = "False"
+      if not ignoreCase: upper = "False"
       data = self._server._callOriginal ({ 'api' : 'executeQuery', 'query' : query , 
 		      'begin':str(begin),
 		      'end':str(end),
@@ -44,7 +44,7 @@ def dbsApiImplExecuteQuery(self, query="*", begin="", end="", type="exe", case=T
       msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
       raise DbsBadXMLData(args=msg, code="5999")
 
-def dbsApiImplCountQuery(self, query="*", case=True):
+def dbsApiImplCountQuery(self, query="*", ignoreCase=True):
     """
     """
     try: 
@@ -53,7 +53,7 @@ def dbsApiImplCountQuery(self, query="*", case=True):
 
       # Invoke Server.    
       upper = "True"
-      if not case: upper = "False"
+      if not ignoreCase: upper = "False"
       data = self._server._callOriginal ({ 'api' : 'countQuery', 'query' : query , 
 		      'upper':upper
 		      }, 'GET')
