@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.200 $"
- $Id: DBSSql.java,v 1.200 2008/12/02 22:57:06 afaq Exp $"
+ $Revision: 1.204 $"
+ $Id: DBSSql.java,v 1.204 2008/12/05 19:07:47 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -936,7 +936,7 @@ public class DBSSql {
                 table.put("LastModifiedBy", lmbUserID);
                 table.put("CreationDate", cDate);
 
-                return getInsertSQL(conn, "SubSystem", table);
+                return getInsertSQL(conn, "FileProcQuality", table);
         }
 
 	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String cbUserID, String lmbUserID, String cDate) throws SQLException {
