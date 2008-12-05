@@ -115,7 +115,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
+UPDATE SchemaVersion SET SchemaVersion='DBS_1_1_4';
+
 commit;
-
-
 

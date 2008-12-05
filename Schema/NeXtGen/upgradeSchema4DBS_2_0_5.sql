@@ -161,5 +161,19 @@ END;
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
+UPDATE SchemaVersion SET SchemaVersion='DBS_1_1_4';
+
+grant select on BlockParent to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on BlockParent to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on BlockParent  to CMS_DBS___dbabbr___ADMIN_ROLE;
+
+grant select on FileProcQuality to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on FileProcQuality to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on FileProcQuality  to CMS_DBS___dbabbr___ADMIN_ROLE;
+
+grant select on ProcessingStatus to CMS_DBS___dbabbr___READER_ROLE;
+grant insert, update on ProcessingStatus to CMS_DBS___dbabbr___WRITER_ROLE;
+grant delete on ProcessingStatus to CMS_DBS___dbabbr___ADMIN_ROLE;
+
 commit;
 

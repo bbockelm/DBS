@@ -3098,30 +3098,6 @@ BEGIN
 END;
 /
 
-
-
-
-
-
-
-
-SQL> INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual))
-SQL> INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual))
-SQL> INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- Set the Schema Version -- 
 INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('DBS_1_1_4', 'LOCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 -- Pre Fill some information into tables ---------
