@@ -113,7 +113,12 @@ class DbsHttpService:
             hostport=urllib2.splitport(spliturl[1])
             self.Host=hostport[0]
             self.Port=hostport[1]
-	    self.ipList = socket.gethostbyname_ex(self.Host)[2]
+            self.ipList = [self.Host]
+            try :
+       	        self.ipList = socket.gethostbyname_ex(self.Host)[2]
+            except:
+                raise DbsConnectionError(args="Could not locate the host " + self.Host, code=400)
+
             if self.Port in [None, ""]:
                 self.Port = "80"
             self.Servlet=spliturl[2]
