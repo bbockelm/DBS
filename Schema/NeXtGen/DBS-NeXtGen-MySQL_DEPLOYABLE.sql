@@ -816,13 +816,13 @@ CREATE TABLE Block
 
 CREATE TABLE BlockParent
   (
-    ID                    integer,
-    ThisBlock             integer   not null,
-    ItsParent             integer   not null,
-    CreatedBy             integer,
-    CreationDate          integer,
-    LastModifiedBy        integer,
-    LastModificationDate  integer,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ThisBlock             BIGINT UNSIGNED not null,
+    ItsParent             BIGINT UNSIGNED not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(ThisBlock,ItsParent)
   );
