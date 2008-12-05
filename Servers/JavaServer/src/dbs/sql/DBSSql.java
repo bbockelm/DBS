@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.202 $"
- $Id: DBSSql.java,v 1.202 2008/12/03 20:44:32 afaq Exp $"
+ $Revision: 1.200 $"
+ $Id: DBSSql.java,v 1.200 2008/12/02 22:57:06 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -936,7 +936,7 @@ public class DBSSql {
                 table.put("LastModifiedBy", lmbUserID);
                 table.put("CreationDate", cDate);
 
-                return getInsertSQL(conn, "FileProcQuality", table);
+                return getInsertSQL(conn, "SubSystem", table);
         }
 
 	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String cbUserID, String lmbUserID, String cDate) throws SQLException {
@@ -1149,13 +1149,20 @@ public class DBSSql {
 	// SQL for inserting File and its related tables.
 	// ____________________________________________________
 	
-	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID) throws SQLException {
-	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String branchHash, String autoCrossSection, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	//public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String branchHash, String autoCrossSection, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, 
+				String lfn, String checksum, String adler32, String md5, 
+				String nOfEvents, String size, String fileStatusID, 
+				String typeID, String valStatusID, String qMetaData, 
+				String branchHash, String autoCrossSection, String cbUserID, 
+				String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("LogicalFileName", lfn);
 		table.put("Dataset", procDSID);
 		table.put("Block", blockID);
 		table.put("Checksum", checksum);
+		table.put("Adler32", adler32);
+		table.put("MD5", md5);
 		table.put("NumberOfEvents", nOfEvents);
 		table.put("FileSize", size);
 		table.put("FileStatus", fileStatusID);
@@ -2026,6 +2033,7 @@ public class DBSSql {
 	}
 
 
+
 	//public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
 	public static PreparedStatement listDatasetProvenence(Connection conn, String procDSID, boolean parentOrChild) throws SQLException {
 		//parentOrChild if true means we need to get the parents of the dataset
@@ -2801,6 +2809,8 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
+			"f.Adler32 as ADLER32, \n" +
+			"f.MD5 as MD5, \n" +
 			"f.FileSize as FILESIZE, \n" +
                         "f.FileBranch as FILE_BRANCH, \n" +
 			"f.AutoCrossSection as AUTO_CROSS_SECTION, \n" +
@@ -2941,6 +2951,8 @@ public class DBSSql {
 		
 			if(detail) sql += ",f.Checksum as CHECKSUM, \n" +
 				"f.FileSize as FILESIZE, \n" +
+				"f.Adler32 as ADLER32, \n" +
+				"f.MD5 as MD5, \n" +
 				"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
 				"f.CreationDate as CREATION_DATE, \n" +
 				"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -3086,6 +3098,8 @@ public class DBSSql {
                String sql = "SELECT DISTINCT f.ID as ID, \n " +
                         "f.LogicalFileName as LFN, \n" +
                         "f.Checksum as CHECKSUM, \n" +
+                        "f.Adler32 as ADLER32, \n" +
+                        "f.MD5 as MD5, \n" +
                         "f.FileSize as FILESIZE, \n" +
                         "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
                         "f.CreationDate as CREATION_DATE, \n" +

@@ -75,6 +75,8 @@ lumi3 = DbsLumiSection (
 
 myfile1= DbsFile (
         Checksum= '999',
+        Adler32= 'Adler123',
+        Md5= 'MD5123',
         LogicalFileName= 'NEW_TEST0001',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
@@ -94,6 +96,8 @@ myfile1= DbsFile (
 
 myfile2= DbsFile (
         Checksum= '000',
+        Adler32= 'Adler12311',
+        Md5= 'MD51344',
         LogicalFileName= 'NEW_TEST0002',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
@@ -113,6 +117,8 @@ myfile2= DbsFile (
 
 myfile11= DbsFile (
         Checksum= '999',
+        Adler32= 'Adler123134',
+        Md5= 'MD513467',
         LogicalFileName= 'NEW_TEST0004',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
@@ -130,6 +136,8 @@ myfile11= DbsFile (
 
 myfile22= DbsFile (
         Checksum= '000',
+        Adler32= 'Adler12765',
+        Md5= 'MD513654',
         LogicalFileName= 'NEW_TEST0005',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
@@ -150,6 +158,8 @@ myfile22= DbsFile (
 # A file with RunsList and NOT lumi list
 myfile3= DbsFile (
         Checksum= '000',
+        Adler32= 'Adler098',
+        Md5= 'MD513440097',
         LogicalFileName= 'NEW_TEST003',
         NumberOfEvents= 10000,
         FileSize= 12340,

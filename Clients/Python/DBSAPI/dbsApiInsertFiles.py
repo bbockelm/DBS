@@ -159,6 +159,8 @@ def dbsApiImplInsertFiles(self, dataset=None, files=[], block=None):
     for file in files:
        xmlinput += " <file lfn='"+file.get('LogicalFileName', '')+"'"
        xmlinput += " checksum='"+file.get('Checksum', '')+"'"
+       xmlinput += " adler32='"+file.get('Adler32', '')+"'"
+       xmlinput += " md5='"+file.get('Md5', '')+"'"
        xmlinput += " number_of_events='"+str(file.get('NumberOfEvents', ''))+"'"
        xmlinput += " size='"+str(file.get('FileSize', ''))+"'"
        xmlinput += " file_status='"+file.get('Status', '')+"'" 
@@ -231,7 +233,7 @@ def dbsApiImplInsertFiles(self, dataset=None, files=[], block=None):
     xmlinput += "</dbs>"
 
     ###logging.log(DBSDEBUG, xmlinput)
-
+    #print xmlinput
     if self.verbose():
        print "insertFiles, xmlinput",xmlinput
 

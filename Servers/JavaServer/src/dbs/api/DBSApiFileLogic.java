@@ -1,6 +1,6 @@
 /**
- $Revision: 1.112 $"
- $Id: DBSApiFileLogic.java,v 1.112 2008/11/21 22:19:49 afaq Exp $"
+ $Revision: 1.113 $"
+ $Id: DBSApiFileLogic.java,v 1.113 2008/11/24 22:09:37 afaq Exp $"
  *
  */
 
@@ -149,6 +149,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				String toSend = "<file id='" + fileID +
 					"' lfn='" + lfn +
 					"' checksum='" + get(rs, "CHECKSUM") +
+					"' adler32='" + get(rs, "ADLER32") +
+					"' md5='" + get(rs, "MD5") +
 					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
 					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") + "'";
@@ -274,6 +276,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
 					"' lfn='" + get(rs, "LFN") +
 					"' checksum='" + getNoExcep(rs, "CHECKSUM") +
+					"' adler32='" + getNoExcep(rs, "ADLER32") +
+					"' md5='" + getNoExcep(rs, "MD5") +
 					"' size='" + getNoExcep(rs, "FILESIZE") +
 					"' queryable_meta_data='" + getNoExcep(rs, "QUERYABLE_META_DATA") +
 					"' number_of_events='" + getNoExcep(rs, "NUMBER_OF_EVENTS") +
@@ -886,6 +890,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                             blockID,
                                             lfn,
                                             get(file, "checksum", false),
+                                            get(file, "adler32", false),
+                                            get(file, "md5", false),
                                             get(file, "number_of_events", false),
                                             get(file, "size", false),
                                             statusID,
@@ -1345,6 +1351,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 							blockID, 
 							lfn, 
 							get(file, "checksum", false), 
+							get(file, "adler32", false), 
+							get(file, "md5", false), 
 							get(file, "number_of_events", false), 
 							get(file, "size", false), 
 							statusID,

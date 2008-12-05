@@ -109,6 +109,8 @@ blockNameM = pathM + '#' + str(random.choice(range(10000)))
 
 fileName1 = 'test_file_name_1_' + ran
 fileCkecksum1 = 'test_cksum_1_' + ran
+fileAdler321 = 'test_adler32_1_' + ran
+fileMd51 = 'test_md5_1_' + ran
 fileNumEvents1 = 34567
 fileSize1 = 123987
 fileStatus1 = validStatus
@@ -118,6 +120,8 @@ fileType1 = 'EDM'
 fileName2 = 'test_file_name_2_' + ran
 fileNumEvents2 = 84567
 fileCkecksum2 = 'test_cksum_2_' + ran
+fileAdler322 = 'test_adler32_2_' + ran
+fileMd52 = 'test_md5_2_' + ran
 fileSize2 = 122657
 fileStatus2 = validStatus
 fileValidStatus2 = validStatus
@@ -136,6 +140,8 @@ fileName5 = 'test_file_name_5_' + ran
 fileNameM = 'test_file_name_M_' + ran
 fileNumEventsM = 234567
 fileCkecksumM = 'test_cksum_M_' + ran
+fileAdler32M = 'test_adler32_M_' + ran
+fileMd5M = 'test_md5_M_' + ran
 fileSizeM = 56322657
 fileStatusM = validStatus
 fileValidStatusM = validStatus
@@ -277,6 +283,8 @@ blockObjM = DbsFileBlock (
 
 fileObj1 = DbsFile (
 		Checksum = fileCkecksum1,
+		Adler32 = fileAdler321,
+		Md5 = fileMd51,
 		LogicalFileName = fileName1,
 		NumberOfEvents = fileNumEvents1,
 		FileSize = fileSize1,
@@ -292,6 +300,8 @@ fileObj1 = DbsFile (
 
 fileObj2 = DbsFile (
 		Checksum = fileCkecksum2,
+		Adler32 = fileAdler322,
+		Md5 = fileMd52,
 		LogicalFileName = fileName2,
 		NumberOfEvents = fileNumEvents2,
 		FileSize = fileSize2,
@@ -308,6 +318,8 @@ fileObj2 = DbsFile (
 
 fileObj3 = DbsFile (
                 Checksum = fileCkecksum1,
+                Adler32 = fileAdler321,
+                Md5 = fileMd51,
                 LogicalFileName = fileName3,
                 NumberOfEvents = fileNumEvents1,
                 FileSize = fileSize1,
@@ -323,6 +335,8 @@ fileObj3 = DbsFile (
 
 fileObj4 = DbsFile (
                 Checksum = fileCkecksum2,
+                Adler32 = fileAdler322,
+                Md5 = fileMd52,
                 LogicalFileName = fileName4,
                 NumberOfEvents = fileNumEvents2,
                 FileSize = fileSize2,
@@ -339,6 +353,8 @@ fileObj4 = DbsFile (
 
 fileObj5 = DbsFile (
                 Checksum = fileCkecksum1,
+                Adler32 = fileAdler321,
+                Md5 = fileMd51,
                 LogicalFileName = fileName5,
                 NumberOfEvents = fileNumEvents1,
                 FileSize = fileSize1,
@@ -355,6 +371,8 @@ fileObj5 = DbsFile (
 
 fileObjM = DbsFile (
 		Checksum = fileCkecksumM,
+		Adler32 = fileAdler32M,
+		Md5 = fileMd5M,
 		LogicalFileName = fileNameM,
 		NumberOfEvents = fileNumEventsM,
 		FileSize = fileSizeM,
@@ -449,6 +467,8 @@ def assertRun(test, runIn1, runIn2):
 
 def assertFile(test, fileIn1, fileIn2):
 	test.assertEqual(fileIn1['Checksum'], fileIn2['Checksum'])
+	test.assertEqual(fileIn1['Adler32'], fileIn2['Adler32'])
+	test.assertEqual(fileIn1['Md5'], fileIn2['Md5'])
 	test.assertEqual(fileIn1['LogicalFileName'], fileIn2['LogicalFileName'])
 	test.assertEqual(fileIn1['NumberOfEvents'], fileIn2['NumberOfEvents'])
 	test.assertEqual(fileIn1['FileSize'], fileIn2['FileSize'])

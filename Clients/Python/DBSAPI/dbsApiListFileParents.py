@@ -58,6 +58,8 @@ def dbsApiImplListFileParents(self, lfn):
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
+                                       Adler32=str(attrs['adler32']),
+                                       Md5=str(attrs['md5']),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),
