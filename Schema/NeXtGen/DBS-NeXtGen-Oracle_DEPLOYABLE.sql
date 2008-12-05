@@ -840,6 +840,8 @@ CREATE TABLE Files
     Dataset               integer   not null,
     Block                 integer   not null,
     Checksum              varchar(100)      not null,
+    Adler32               varchar(100)      default 'NOTSET',
+    MD5                   varchar(100)      default 'NOTSET',
     NumberOfEvents        integer   not null,
     FileSize              integer   not null,
     FileStatus            integer   not null,

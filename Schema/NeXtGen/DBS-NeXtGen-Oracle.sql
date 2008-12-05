@@ -768,6 +768,8 @@ CREATE TABLE Files
     Dataset               BIGINT UNSIGNED   not null,
     Block                 BIGINT UNSIGNED   not null,
     Checksum              varchar(100)      not null,
+    Adler32               varchar(100)      default 'NOTSET',
+    MD5                   varchar(100)      default 'NOTSET',
     NumberOfEvents        BIGINT UNSIGNED   not null,
     FileSize              BIGINT UNSIGNED   not null,
     FileStatus            BIGINT UNSIGNED   not null,
