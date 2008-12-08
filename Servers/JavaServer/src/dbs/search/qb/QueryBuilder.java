@@ -784,7 +784,7 @@ public class QueryBuilder {
 	private String makeAs(String in) {
 		int len = in.length();
 		int endIndex = len;
-		if (len > 31) endIndex = 31;
+		if (len > 30) endIndex = 30;
 		return " AS " + in.replace('.', '_').substring(0, endIndex) + " ";
 	}
 	
