@@ -11,6 +11,10 @@ if [ -s /tmp/gridmapfile ] ; then
 	rm -f ./gridmapfile
 	mv /tmp/gridmapfile .
 	echo "\"/DC=ch/DC=cern/OU=computers/CN=tier0/lxgate39.cern.ch\" sekhri" >> ./gridmapfile
+	echo "\"/DC=ch/DC=cern/OU=computers/CN=vocms39.cern.ch\" sekhri" >> ./gridmapfile
+	echo "\"/DC=ch/DC=cern/OU=computers/CN=pccmsdqm04.cern.ch\" sekhri" >> ./gridmapfile
+	echo "\"/DC=ch/DC=cern/OU=computers/CN=cmsmon.cern.ch\" sekhri" >> ./gridmapfile
+	echo "\"/DC=ch/DC=cern/OU=computers/CN=tier0/vocms13.cern.ch\" sekhri" >> ./gridmapfile
 	chmod 600 /home/cmsdbs/certs/gridmapfile
 	cp ./gridmapfile /home/cmsdbs/certs/gridmapfile.new
 	mv /home/cmsdbs/certs/gridmapfile.new /home/cmsdbs/certs/gridmapfile
