@@ -18,10 +18,13 @@ if [ -s /tmp/gridmapfile ] ; then
 	DPOSTFIX=`date +%Y_%m_%d_%H:%M`
 	cp /home/cmsdbs/certs/gridmapfile /home/cmsdbs/src/GridMap/GridmapAuthorization/archive/gridmapfile.$DPOSTFIX
 else
-	mail -s `hostname`": Gridmafile generation failed" cms-dbs-support@cern.ch < ./${LOGFILE}
-	echo "Gridmafile generation failed"
+	#mail -s `hostname`": Gridmafile generation failed" cms-dbs-support@cern.ch < ./${LOGFILE}
+	#use sendmail to set a different "From":
+	TO=cms-dbs-support@cern.ch
+	(echo "From: cmsdbs `basename $0` <cmsdbs@mail.cern.ch>"
+	echo "To: $TO"
+	echo "Subject: `hostname`: Gridmapfile generation failed"
+	echo
+	cat ${LOGFILE})|/usr/lib/sendmail $TO
+	echo "Gridmapfile generation failed"
 fi
-
-
-
-
