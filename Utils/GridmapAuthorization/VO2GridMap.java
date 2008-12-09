@@ -9,7 +9,7 @@ import org.glite.security.voms.service.admin.VOMSAdminServiceLocator;
 public class VO2GridMap {
 	
 
-	private String defaultURL = "https://lcg-voms.cern.ch:8443/voms/cms/services/VOMSAdmin";
+	private String defaultURL = "https://voms.cern.ch:8443/voms/cms/services/VOMSAdmin";
 	private String defaultGroup = "/cms/uscms/Role=production";
 	private String map = "sekhri";
 
