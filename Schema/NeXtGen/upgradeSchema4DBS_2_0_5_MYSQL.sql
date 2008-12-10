@@ -112,16 +112,14 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 ----===========
 
+DELETE FROM SchemaVersion;
 ALTER TABLE SchemaVersion ADD InstanceType varchar(10) unique not null;
-
+INSERT INTO SchemaVersion (SchemaVersion, InstanceName, InstanceType, CreationDate) VALUES ('DBS_1_1_4', 'LOCAL', 'MYSQL', UNIX_TIMESTAMP() );
 
 --=============
 
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
-
-UPDATE SchemaVersion SET SchemaVersion='DBS_1_1_4';
-UPDATE SchemaVersion SET InstanceType='MYSQL';
 
 commit;
 
