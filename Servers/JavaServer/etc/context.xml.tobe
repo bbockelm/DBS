@@ -8,7 +8,7 @@
 		username="__insert_username__" 
 		password="__insert_password__" 
 		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3316/DBS_2_0_4?autoReconnect=true"/>
+		url="jdbc:mysql://localhost:3316/DBS_2_0_5?autoReconnect=true"/>
 
 	<Register service="jnp://cmsdbssrv.cern.ch:1099"
 		alias=""	
