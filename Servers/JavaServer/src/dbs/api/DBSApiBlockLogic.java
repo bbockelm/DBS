@@ -1,6 +1,6 @@
 /**
- $Revision: 1.64 $"
- $Id: DBSApiBlockLogic.java,v 1.64 2008/10/23 20:12:27 afaq Exp $"
+ $Revision: 1.65 $"
+ $Id: DBSApiBlockLogic.java,v 1.65 2008/11/21 22:19:49 afaq Exp $"
  *
  */
 
@@ -293,24 +293,20 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
 		}
 
-		//Anzar Afaq - 09/16/2008
-		//SEs will only be added if its not a GLOBAL instance
-		//SE info in DBS Global is not maintained anymore (done in Phedex)
-		if (!this.data.instanceName.equals("GLOBAL")) {
-
-			//Storage Element will be added to an existing block
-			String blockID = "";
-			//System.out.println("seVector.size() " + seVector.size() );
-       			if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
-			//System.out.println("BLOCK ID is " + blockID);
-			for (int j = 0; j < seVector.size(); ++j) {
-				String seName = get((Hashtable)seVector.get(j), "storage_element_name");
-				//System.out.println("storage_element_name " + seName);
+		//Storage Element will be added to an existing block
+		String blockID = "";
+		//System.out.println("seVector.size() " + seVector.size() );
+       		if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
+		//System.out.println("BLOCK ID is " + blockID);
+		for (int j = 0; j < seVector.size(); ++j) {
+			String seName = get((Hashtable)seVector.get(j), "storage_element_name");
+			//System.out.println("storage_element_name " + seName);
+			if (!this.data.instanceName.equals("GLOBAL")) {
 				insertStorageElement(conn, out, blockID, seName , cbUserID, lmbUserID, creationDate);
+			} else {
+				writeWarning(out, "No SE in GLOBAL instance", "11000", 
+						"SE info in DBS Global is not maintained anymore (done in Phedex)");
 			}
-		} else {
-		 	writeWarning(out, "No SE in GLOBAL instance", "11000", 
-		 				"SE info in DBS Global is not maintained anymore (done in Phedex)");
 		}
                         
 		out.write("<block block_name='" + name + "'/>");
