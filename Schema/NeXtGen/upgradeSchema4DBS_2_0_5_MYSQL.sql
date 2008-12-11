@@ -118,6 +118,11 @@ INSERT INTO SchemaVersion (SchemaVersion, InstanceName, InstanceType, CreationDa
 
 --=============
 
+ALTER TABLE Files ADD    Adler32  varchar(100)  default 'NOTSET';
+ALTER TABLE Files ADD    MD5      varchar(100)  default 'NOTSET';
+
+--============
+
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
