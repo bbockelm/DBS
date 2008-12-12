@@ -3676,10 +3676,9 @@ All LFNs in a block
         """
         p = os.popen("%s -t" % SENDMAIL, "w")
         p.write("To: cms-dbs-support@cern.ch\n")
-#        p.write("To: vk@mail.lns.cornell.edu\n")
         p.write("Subject: response from DBS data discovery\n")
+        p.write("From: DBS Data Discovery <cmsdbs@mail.cern.ch>\n")
         p.write("\n") # blank line separating headers from body
-#        p.write("From: %s\n"%userEmail)
         p.write("Message send from DBS discovery page by %s\n"%userEmail)
         p.write("\n") # blank line separating headers from body
         p.write(feedbackText)
