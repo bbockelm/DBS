@@ -770,6 +770,7 @@ def sendEmail(msg):
     """
     p = os.popen("%s -t" % SENDMAIL, "w")
     p.write("To: vk@mail.lns.cornell.edu\n")
+    p.write("From: DBS Data Discovery <cmsdbs@mail.cern.ch>\n")
     p.write("Subject: DBS DD error\n")
     p.write("\n") # blank line separating headers from body
     p.write("\n"+msg+"\n\n\n")
