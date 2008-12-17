@@ -189,13 +189,12 @@ def findCfgFiles(node):
 # Generating flat files
 #hashval="12345678901234567890123456789012"
 ffn=cfgfile
-ffn_hash=ffn_hash=ffn+".hash"
-if(not os.access(ffn_hash,os.F_OK)):
-   print "Skipping unprepared file",ffn
-   exit
-fhash=open(ffn_hash,"r")
-hashval=fhash.read()
-fhash.close()
+#ffn_hash=ffn_hash=ffn+".hash"
+#if(not os.access(ffn_hash,os.F_OK)):
+#   print "Skipping unprepared file",ffn
+#   exit
+#fhash=open(ffn_hash,"r")
+hashval=ffn.replace("_cfg.py","")
 hashval=hashval.strip()
 cfg = process
 actOnCfg("",cfg,hashval,ffn)
