@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.1.1 /Users/vk/Sql.g 2008-12-02 13:22:01
+// $ANTLR 3.1.1 /Users/vk/Sql.g 2008-12-17 13:45:29
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -60,9 +60,13 @@ public class SqlLexer extends Lexer {
     public static final int T__50=50;
     public static final int T__19=19;
     public static final int T__65=65;
+    public static final int T__101=101;
+    public static final int T__104=104;
     public static final int VALUE=7;
+    public static final int T__107=107;
     public static final int T__67=67;
     public static final int T__87=87;
+    public static final int T__106=106;
     public static final int T__74=74;
     public static final int NL=13;
     public static final int T__52=52;
@@ -88,14 +92,16 @@ public class SqlLexer extends Lexer {
     public static final int T__45=45;
     public static final int T__29=29;
     public static final int T__55=55;
+    public static final int T__103=103;
     public static final int T__84=84;
     public static final int T__97=97;
     public static final int T__75=75;
+    public static final int T__105=105;
     public static final int T__31=31;
     public static final int EOF=-1;
     public static final int T__53=53;
-    public static final int T__32=32;
     public static final int T__16=16;
+    public static final int T__32=32;
     public static final int T__38=38;
     public static final int T__76=76;
     public static final int T__37=37;
@@ -105,6 +111,7 @@ public class SqlLexer extends Lexer {
     public static final int NOT=11;
     public static final int T__71=71;
     public static final int T__18=18;
+    public static final int T__102=102;
 
     // delegates
     // delegators
@@ -248,10 +255,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__21;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:9:7: ( 'dataset' )
-            // /Users/vk/Sql.g:9:9: 'dataset'
+            // /Users/vk/Sql.g:9:7: ( 'config' )
+            // /Users/vk/Sql.g:9:9: 'config'
             {
-            match("dataset"); 
+            match("config"); 
 
 
             }
@@ -269,10 +276,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__22;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:10:7: ( 'release' )
-            // /Users/vk/Sql.g:10:9: 'release'
+            // /Users/vk/Sql.g:10:7: ( 'dataset' )
+            // /Users/vk/Sql.g:10:9: 'dataset'
             {
-            match("release"); 
+            match("dataset"); 
 
 
             }
@@ -290,10 +297,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:11:7: ( 'tier' )
-            // /Users/vk/Sql.g:11:9: 'tier'
+            // /Users/vk/Sql.g:11:7: ( 'release' )
+            // /Users/vk/Sql.g:11:9: 'release'
             {
-            match("tier"); 
+            match("release"); 
 
 
             }
@@ -311,10 +318,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__24;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:12:7: ( 'site' )
-            // /Users/vk/Sql.g:12:9: 'site'
+            // /Users/vk/Sql.g:12:7: ( 'tier' )
+            // /Users/vk/Sql.g:12:9: 'tier'
             {
-            match("site"); 
+            match("tier"); 
 
 
             }
@@ -332,10 +339,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__25;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:13:7: ( 'block' )
-            // /Users/vk/Sql.g:13:9: 'block'
+            // /Users/vk/Sql.g:13:7: ( 'site' )
+            // /Users/vk/Sql.g:13:9: 'site'
             {
-            match("block"); 
+            match("site"); 
 
 
             }
@@ -353,10 +360,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__26;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:14:7: ( 'file' )
-            // /Users/vk/Sql.g:14:9: 'file'
+            // /Users/vk/Sql.g:14:7: ( 'block' )
+            // /Users/vk/Sql.g:14:9: 'block'
             {
-            match("file"); 
+            match("block"); 
 
 
             }
@@ -374,10 +381,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__27;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:15:7: ( 'primds' )
-            // /Users/vk/Sql.g:15:9: 'primds'
+            // /Users/vk/Sql.g:15:7: ( 'file' )
+            // /Users/vk/Sql.g:15:9: 'file'
             {
-            match("primds"); 
+            match("file"); 
 
 
             }
@@ -395,10 +402,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__28;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:16:7: ( 'procds' )
-            // /Users/vk/Sql.g:16:9: 'procds'
+            // /Users/vk/Sql.g:16:7: ( 'primds' )
+            // /Users/vk/Sql.g:16:9: 'primds'
             {
-            match("procds"); 
+            match("primds"); 
 
 
             }
@@ -416,10 +423,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__29;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:17:7: ( 'run' )
-            // /Users/vk/Sql.g:17:9: 'run'
+            // /Users/vk/Sql.g:17:7: ( 'procds' )
+            // /Users/vk/Sql.g:17:9: 'procds'
             {
-            match("run"); 
+            match("procds"); 
 
 
             }
@@ -437,10 +444,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__30;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:18:7: ( 'lumi' )
-            // /Users/vk/Sql.g:18:9: 'lumi'
+            // /Users/vk/Sql.g:18:7: ( 'run' )
+            // /Users/vk/Sql.g:18:9: 'run'
             {
-            match("lumi"); 
+            match("run"); 
 
 
             }
@@ -458,10 +465,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__31;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:19:7: ( 'dq' )
-            // /Users/vk/Sql.g:19:9: 'dq'
+            // /Users/vk/Sql.g:19:7: ( 'lumi' )
+            // /Users/vk/Sql.g:19:9: 'lumi'
             {
-            match("dq"); 
+            match("lumi"); 
 
 
             }
@@ -479,10 +486,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__32;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:20:7: ( 'ilumi' )
-            // /Users/vk/Sql.g:20:9: 'ilumi'
+            // /Users/vk/Sql.g:20:7: ( 'dq' )
+            // /Users/vk/Sql.g:20:9: 'dq'
             {
-            match("ilumi"); 
+            match("dq"); 
 
 
             }
@@ -500,10 +507,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__33;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:21:7: ( 'phygrp' )
-            // /Users/vk/Sql.g:21:9: 'phygrp'
+            // /Users/vk/Sql.g:21:7: ( 'ilumi' )
+            // /Users/vk/Sql.g:21:9: 'ilumi'
             {
-            match("phygrp"); 
+            match("ilumi"); 
 
 
             }
@@ -521,10 +528,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__34;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:22:7: ( 'group' )
-            // /Users/vk/Sql.g:22:9: 'group'
+            // /Users/vk/Sql.g:22:7: ( 'phygrp' )
+            // /Users/vk/Sql.g:22:9: 'phygrp'
             {
-            match("group"); 
+            match("phygrp"); 
 
 
             }
@@ -542,10 +549,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__35;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:23:7: ( 'pset' )
-            // /Users/vk/Sql.g:23:9: 'pset'
+            // /Users/vk/Sql.g:23:7: ( 'group' )
+            // /Users/vk/Sql.g:23:9: 'group'
             {
-            match("pset"); 
+            match("group"); 
 
 
             }
@@ -563,10 +570,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__36;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:24:7: ( 'algo' )
-            // /Users/vk/Sql.g:24:9: 'algo'
+            // /Users/vk/Sql.g:24:7: ( 'pset' )
+            // /Users/vk/Sql.g:24:9: 'pset'
             {
-            match("algo"); 
+            match("pset"); 
 
 
             }
@@ -584,10 +591,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__37;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:25:7: ( 'datatype' )
-            // /Users/vk/Sql.g:25:9: 'datatype'
+            // /Users/vk/Sql.g:25:7: ( 'algo' )
+            // /Users/vk/Sql.g:25:9: 'algo'
             {
-            match("datatype"); 
+            match("algo"); 
 
 
             }
@@ -605,10 +612,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__38;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:26:7: ( 'createdate' )
-            // /Users/vk/Sql.g:26:9: 'createdate'
+            // /Users/vk/Sql.g:26:7: ( 'datatype' )
+            // /Users/vk/Sql.g:26:9: 'datatype'
             {
-            match("createdate"); 
+            match("datatype"); 
 
 
             }
@@ -626,10 +633,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__39;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:27:7: ( 'moddate' )
-            // /Users/vk/Sql.g:27:9: 'moddate'
+            // /Users/vk/Sql.g:27:7: ( 'mcdesc' )
+            // /Users/vk/Sql.g:27:9: 'mcdesc'
             {
-            match("moddate"); 
+            match("mcdesc"); 
 
 
             }
@@ -647,10 +654,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__40;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:28:7: ( 'starttime' )
-            // /Users/vk/Sql.g:28:9: 'starttime'
+            // /Users/vk/Sql.g:28:7: ( 'trigdesc' )
+            // /Users/vk/Sql.g:28:9: 'trigdesc'
             {
-            match("starttime"); 
+            match("trigdesc"); 
 
 
             }
@@ -668,10 +675,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__41;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:29:7: ( 'endtime' )
-            // /Users/vk/Sql.g:29:9: 'endtime'
+            // /Users/vk/Sql.g:29:7: ( 'createdate' )
+            // /Users/vk/Sql.g:29:9: 'createdate'
             {
-            match("endtime"); 
+            match("createdate"); 
 
 
             }
@@ -689,10 +696,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__42;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:30:7: ( 'createby' )
-            // /Users/vk/Sql.g:30:9: 'createby'
+            // /Users/vk/Sql.g:30:7: ( 'moddate' )
+            // /Users/vk/Sql.g:30:9: 'moddate'
             {
-            match("createby"); 
+            match("moddate"); 
 
 
             }
@@ -710,10 +717,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__43;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:31:7: ( 'modby' )
-            // /Users/vk/Sql.g:31:9: 'modby'
+            // /Users/vk/Sql.g:31:7: ( 'starttime' )
+            // /Users/vk/Sql.g:31:9: 'starttime'
             {
-            match("modby"); 
+            match("starttime"); 
 
 
             }
@@ -731,10 +738,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__44;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:32:7: ( 'name' )
-            // /Users/vk/Sql.g:32:9: 'name'
+            // /Users/vk/Sql.g:32:7: ( 'endtime' )
+            // /Users/vk/Sql.g:32:9: 'endtime'
             {
-            match("name"); 
+            match("endtime"); 
 
 
             }
@@ -752,10 +759,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__45;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:33:7: ( 'version' )
-            // /Users/vk/Sql.g:33:9: 'version'
+            // /Users/vk/Sql.g:33:7: ( 'createby' )
+            // /Users/vk/Sql.g:33:9: 'createby'
             {
-            match("version"); 
+            match("createby"); 
 
 
             }
@@ -773,10 +780,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__46;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:34:7: ( 'number' )
-            // /Users/vk/Sql.g:34:9: 'number'
+            // /Users/vk/Sql.g:34:7: ( 'modby' )
+            // /Users/vk/Sql.g:34:9: 'modby'
             {
-            match("number"); 
+            match("modby"); 
 
 
             }
@@ -794,10 +801,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__47;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:35:7: ( 'startevnum' )
-            // /Users/vk/Sql.g:35:9: 'startevnum'
+            // /Users/vk/Sql.g:35:7: ( 'name' )
+            // /Users/vk/Sql.g:35:9: 'name'
             {
-            match("startevnum"); 
+            match("name"); 
 
 
             }
@@ -815,10 +822,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__48;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:36:7: ( 'endevnum' )
-            // /Users/vk/Sql.g:36:9: 'endevnum'
+            // /Users/vk/Sql.g:36:7: ( 'version' )
+            // /Users/vk/Sql.g:36:9: 'version'
             {
-            match("endevnum"); 
+            match("version"); 
 
 
             }
@@ -836,10 +843,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__49;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:37:7: ( 'numevents' )
-            // /Users/vk/Sql.g:37:9: 'numevents'
+            // /Users/vk/Sql.g:37:7: ( 'number' )
+            // /Users/vk/Sql.g:37:9: 'number'
             {
-            match("numevents"); 
+            match("number"); 
 
 
             }
@@ -857,10 +864,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__50;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:38:7: ( 'numfiles' )
-            // /Users/vk/Sql.g:38:9: 'numfiles'
+            // /Users/vk/Sql.g:38:7: ( 'startevnum' )
+            // /Users/vk/Sql.g:38:9: 'startevnum'
             {
-            match("numfiles"); 
+            match("startevnum"); 
 
 
             }
@@ -878,10 +885,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__51;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:39:7: ( 'numlss' )
-            // /Users/vk/Sql.g:39:9: 'numlss'
+            // /Users/vk/Sql.g:39:7: ( 'endevnum' )
+            // /Users/vk/Sql.g:39:9: 'endevnum'
             {
-            match("numlss"); 
+            match("endevnum"); 
 
 
             }
@@ -899,10 +906,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__52;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:40:7: ( 'size' )
-            // /Users/vk/Sql.g:40:9: 'size'
+            // /Users/vk/Sql.g:40:7: ( 'numevents' )
+            // /Users/vk/Sql.g:40:9: 'numevents'
             {
-            match("size"); 
+            match("numevents"); 
 
 
             }
@@ -920,10 +927,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__53;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:41:7: ( 'count' )
-            // /Users/vk/Sql.g:41:9: 'count'
+            // /Users/vk/Sql.g:41:7: ( 'numfiles' )
+            // /Users/vk/Sql.g:41:9: 'numfiles'
             {
-            match("count"); 
+            match("numfiles"); 
 
 
             }
@@ -941,10 +948,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__54;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:42:7: ( 'status' )
-            // /Users/vk/Sql.g:42:9: 'status'
+            // /Users/vk/Sql.g:42:7: ( 'numlss' )
+            // /Users/vk/Sql.g:42:9: 'numlss'
             {
-            match("status"); 
+            match("numlss"); 
 
 
             }
@@ -962,10 +969,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__55;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:43:7: ( 'type' )
-            // /Users/vk/Sql.g:43:9: 'type'
+            // /Users/vk/Sql.g:43:7: ( 'totlumi' )
+            // /Users/vk/Sql.g:43:9: 'totlumi'
             {
-            match("type"); 
+            match("totlumi"); 
 
 
             }
@@ -983,10 +990,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__56;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:44:7: ( 'id' )
-            // /Users/vk/Sql.g:44:9: 'id'
+            // /Users/vk/Sql.g:44:7: ( 'store' )
+            // /Users/vk/Sql.g:44:9: 'store'
             {
-            match("id"); 
+            match("store"); 
 
 
             }
@@ -1004,10 +1011,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__57;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:45:7: ( 'parent' )
-            // /Users/vk/Sql.g:45:9: 'parent'
+            // /Users/vk/Sql.g:45:7: ( 'size' )
+            // /Users/vk/Sql.g:45:9: 'size'
             {
-            match("parent"); 
+            match("size"); 
 
 
             }
@@ -1025,10 +1032,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__58;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:46:7: ( 'child' )
-            // /Users/vk/Sql.g:46:9: 'child'
+            // /Users/vk/Sql.g:46:7: ( 'count' )
+            // /Users/vk/Sql.g:46:9: 'count'
             {
-            match("child"); 
+            match("count"); 
 
 
             }
@@ -1046,10 +1053,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__59;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:47:7: ( 'def' )
-            // /Users/vk/Sql.g:47:9: 'def'
+            // /Users/vk/Sql.g:47:7: ( 'status' )
+            // /Users/vk/Sql.g:47:9: 'status'
             {
-            match("def"); 
+            match("status"); 
 
 
             }
@@ -1067,10 +1074,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__60;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:48:7: ( 'evnum' )
-            // /Users/vk/Sql.g:48:9: 'evnum'
+            // /Users/vk/Sql.g:48:7: ( 'type' )
+            // /Users/vk/Sql.g:48:9: 'type'
             {
-            match("evnum"); 
+            match("type"); 
 
 
             }
@@ -1088,10 +1095,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__61;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:49:7: ( 'era' )
-            // /Users/vk/Sql.g:49:9: 'era'
+            // /Users/vk/Sql.g:49:7: ( 'id' )
+            // /Users/vk/Sql.g:49:9: 'id'
             {
-            match("era"); 
+            match("id"); 
 
 
             }
@@ -1109,10 +1116,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__62;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:50:7: ( 'tag' )
-            // /Users/vk/Sql.g:50:9: 'tag'
+            // /Users/vk/Sql.g:50:7: ( 'parent' )
+            // /Users/vk/Sql.g:50:9: 'parent'
             {
-            match("tag"); 
+            match("parent"); 
 
 
             }
@@ -1130,10 +1137,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__63;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:51:7: ( 'hash' )
-            // /Users/vk/Sql.g:51:9: 'hash'
+            // /Users/vk/Sql.g:51:7: ( 'child' )
+            // /Users/vk/Sql.g:51:9: 'child'
             {
-            match("hash"); 
+            match("child"); 
 
 
             }
@@ -1151,10 +1158,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__64;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:52:7: ( 'content' )
-            // /Users/vk/Sql.g:52:9: 'content'
+            // /Users/vk/Sql.g:52:7: ( 'def' )
+            // /Users/vk/Sql.g:52:9: 'def'
             {
-            match("content"); 
+            match("def"); 
 
 
             }
@@ -1172,10 +1179,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__65;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:53:7: ( 'family' )
-            // /Users/vk/Sql.g:53:9: 'family'
+            // /Users/vk/Sql.g:53:7: ( 'evnum' )
+            // /Users/vk/Sql.g:53:9: 'evnum'
             {
-            match("family"); 
+            match("evnum"); 
 
 
             }
@@ -1193,10 +1200,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__66;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:54:7: ( 'exe' )
-            // /Users/vk/Sql.g:54:9: 'exe'
+            // /Users/vk/Sql.g:54:7: ( 'era' )
+            // /Users/vk/Sql.g:54:9: 'era'
             {
-            match("exe"); 
+            match("era"); 
 
 
             }
@@ -1214,10 +1221,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__67;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:55:7: ( 'numruns()' )
-            // /Users/vk/Sql.g:55:9: 'numruns()'
+            // /Users/vk/Sql.g:55:7: ( 'tag' )
+            // /Users/vk/Sql.g:55:9: 'tag'
             {
-            match("numruns()"); 
+            match("tag"); 
 
 
             }
@@ -1235,10 +1242,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__68;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:56:7: ( 'numfiles()' )
-            // /Users/vk/Sql.g:56:9: 'numfiles()'
+            // /Users/vk/Sql.g:56:7: ( 'xsection' )
+            // /Users/vk/Sql.g:56:9: 'xsection'
             {
-            match("numfiles()"); 
+            match("xsection"); 
 
 
             }
@@ -1256,10 +1263,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__69;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:57:7: ( 'dataquality()' )
-            // /Users/vk/Sql.g:57:9: 'dataquality()'
+            // /Users/vk/Sql.g:57:7: ( 'hash' )
+            // /Users/vk/Sql.g:57:9: 'hash'
             {
-            match("dataquality()"); 
+            match("hash"); 
 
 
             }
@@ -1277,10 +1284,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__70;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:58:7: ( 'latest()' )
-            // /Users/vk/Sql.g:58:9: 'latest()'
+            // /Users/vk/Sql.g:58:7: ( 'content' )
+            // /Users/vk/Sql.g:58:9: 'content'
             {
-            match("latest()"); 
+            match("content"); 
 
 
             }
@@ -1298,10 +1305,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__71;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:59:7: ( 'parentrelease()' )
-            // /Users/vk/Sql.g:59:9: 'parentrelease()'
+            // /Users/vk/Sql.g:59:7: ( 'family' )
+            // /Users/vk/Sql.g:59:9: 'family'
             {
-            match("parentrelease()"); 
+            match("family"); 
 
 
             }
@@ -1319,10 +1326,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__72;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:60:7: ( 'childrelease()' )
-            // /Users/vk/Sql.g:60:9: 'childrelease()'
+            // /Users/vk/Sql.g:60:7: ( 'exe' )
+            // /Users/vk/Sql.g:60:9: 'exe'
             {
-            match("childrelease()"); 
+            match("exe"); 
 
 
             }
@@ -1340,10 +1347,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__73;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:61:7: ( 'intluminosity()' )
-            // /Users/vk/Sql.g:61:9: 'intluminosity()'
+            // /Users/vk/Sql.g:61:7: ( 'annotation' )
+            // /Users/vk/Sql.g:61:9: 'annotation'
             {
-            match("intluminosity()"); 
+            match("annotation"); 
 
 
             }
@@ -1361,10 +1368,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__74;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:62:7: ( 'findevents()' )
-            // /Users/vk/Sql.g:62:9: 'findevents()'
+            // /Users/vk/Sql.g:62:7: ( 'numruns()' )
+            // /Users/vk/Sql.g:62:9: 'numruns()'
             {
-            match("findevents()"); 
+            match("numruns()"); 
 
 
             }
@@ -1382,10 +1389,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__75;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:63:7: ( 'select' )
-            // /Users/vk/Sql.g:63:9: 'select'
+            // /Users/vk/Sql.g:63:7: ( 'numfiles()' )
+            // /Users/vk/Sql.g:63:9: 'numfiles()'
             {
-            match("select"); 
+            match("numfiles()"); 
 
 
             }
@@ -1403,10 +1410,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__76;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:64:7: ( 'SELECT' )
-            // /Users/vk/Sql.g:64:9: 'SELECT'
+            // /Users/vk/Sql.g:64:7: ( 'dataquality()' )
+            // /Users/vk/Sql.g:64:9: 'dataquality()'
             {
-            match("SELECT"); 
+            match("dataquality()"); 
 
 
             }
@@ -1424,10 +1431,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__77;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:65:7: ( 'find' )
-            // /Users/vk/Sql.g:65:9: 'find'
+            // /Users/vk/Sql.g:65:7: ( 'latest()' )
+            // /Users/vk/Sql.g:65:9: 'latest()'
             {
-            match("find"); 
+            match("latest()"); 
 
 
             }
@@ -1445,10 +1452,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__78;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:66:7: ( 'FIND' )
-            // /Users/vk/Sql.g:66:9: 'FIND'
+            // /Users/vk/Sql.g:66:7: ( 'parentrelease()' )
+            // /Users/vk/Sql.g:66:9: 'parentrelease()'
             {
-            match("FIND"); 
+            match("parentrelease()"); 
 
 
             }
@@ -1466,10 +1473,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__79;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:67:7: ( 'and' )
-            // /Users/vk/Sql.g:67:9: 'and'
+            // /Users/vk/Sql.g:67:7: ( 'childrelease()' )
+            // /Users/vk/Sql.g:67:9: 'childrelease()'
             {
-            match("and"); 
+            match("childrelease()"); 
 
 
             }
@@ -1487,10 +1494,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__80;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:68:7: ( 'AND' )
-            // /Users/vk/Sql.g:68:9: 'AND'
+            // /Users/vk/Sql.g:68:7: ( 'intluminosity()' )
+            // /Users/vk/Sql.g:68:9: 'intluminosity()'
             {
-            match("AND"); 
+            match("intluminosity()"); 
 
 
             }
@@ -1508,10 +1515,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__81;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:69:7: ( 'order' )
-            // /Users/vk/Sql.g:69:9: 'order'
+            // /Users/vk/Sql.g:69:7: ( 'findevents()' )
+            // /Users/vk/Sql.g:69:9: 'findevents()'
             {
-            match("order"); 
+            match("findevents()"); 
 
 
             }
@@ -1529,10 +1536,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__82;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:70:7: ( 'ORDER' )
-            // /Users/vk/Sql.g:70:9: 'ORDER'
+            // /Users/vk/Sql.g:70:7: ( 'select' )
+            // /Users/vk/Sql.g:70:9: 'select'
             {
-            match("ORDER"); 
+            match("select"); 
 
 
             }
@@ -1550,10 +1557,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__83;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:71:7: ( 'by' )
-            // /Users/vk/Sql.g:71:9: 'by'
+            // /Users/vk/Sql.g:71:7: ( 'SELECT' )
+            // /Users/vk/Sql.g:71:9: 'SELECT'
             {
-            match("by"); 
+            match("SELECT"); 
 
 
             }
@@ -1571,10 +1578,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__84;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:72:7: ( 'BY' )
-            // /Users/vk/Sql.g:72:9: 'BY'
+            // /Users/vk/Sql.g:72:7: ( 'find' )
+            // /Users/vk/Sql.g:72:9: 'find'
             {
-            match("BY"); 
+            match("find"); 
 
 
             }
@@ -1592,10 +1599,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__85;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:73:7: ( 'or' )
-            // /Users/vk/Sql.g:73:9: 'or'
+            // /Users/vk/Sql.g:73:7: ( 'FIND' )
+            // /Users/vk/Sql.g:73:9: 'FIND'
             {
-            match("or"); 
+            match("FIND"); 
 
 
             }
@@ -1613,10 +1620,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__86;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:74:7: ( 'OR' )
-            // /Users/vk/Sql.g:74:9: 'OR'
+            // /Users/vk/Sql.g:74:7: ( 'and' )
+            // /Users/vk/Sql.g:74:9: 'and'
             {
-            match("OR"); 
+            match("and"); 
 
 
             }
@@ -1634,10 +1641,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__87;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:75:7: ( 'IN' )
-            // /Users/vk/Sql.g:75:9: 'IN'
+            // /Users/vk/Sql.g:75:7: ( 'AND' )
+            // /Users/vk/Sql.g:75:9: 'AND'
             {
-            match("IN"); 
+            match("AND"); 
 
 
             }
@@ -1655,10 +1662,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__88;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:76:7: ( 'not' )
-            // /Users/vk/Sql.g:76:9: 'not'
+            // /Users/vk/Sql.g:76:7: ( 'order' )
+            // /Users/vk/Sql.g:76:9: 'order'
             {
-            match("not"); 
+            match("order"); 
 
 
             }
@@ -1676,10 +1683,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__89;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:77:7: ( 'NOT' )
-            // /Users/vk/Sql.g:77:9: 'NOT'
+            // /Users/vk/Sql.g:77:7: ( 'ORDER' )
+            // /Users/vk/Sql.g:77:9: 'ORDER'
             {
-            match("NOT"); 
+            match("ORDER"); 
 
 
             }
@@ -1697,10 +1704,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__90;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:78:7: ( 'like' )
-            // /Users/vk/Sql.g:78:9: 'like'
+            // /Users/vk/Sql.g:78:7: ( 'by' )
+            // /Users/vk/Sql.g:78:9: 'by'
             {
-            match("like"); 
+            match("by"); 
 
 
             }
@@ -1718,10 +1725,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__91;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:79:7: ( 'LIKE' )
-            // /Users/vk/Sql.g:79:9: 'LIKE'
+            // /Users/vk/Sql.g:79:7: ( 'BY' )
+            // /Users/vk/Sql.g:79:9: 'BY'
             {
-            match("LIKE"); 
+            match("BY"); 
 
 
             }
@@ -1739,10 +1746,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__92;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:80:7: ( 'COUNT' )
-            // /Users/vk/Sql.g:80:9: 'COUNT'
+            // /Users/vk/Sql.g:80:7: ( 'or' )
+            // /Users/vk/Sql.g:80:9: 'or'
             {
-            match("COUNT"); 
+            match("or"); 
 
 
             }
@@ -1760,10 +1767,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__93;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:81:7: ( 'sum' )
-            // /Users/vk/Sql.g:81:9: 'sum'
+            // /Users/vk/Sql.g:81:7: ( 'OR' )
+            // /Users/vk/Sql.g:81:9: 'OR'
             {
-            match("sum"); 
+            match("OR"); 
 
 
             }
@@ -1781,10 +1788,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__94;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:82:7: ( 'SUM' )
-            // /Users/vk/Sql.g:82:9: 'SUM'
+            // /Users/vk/Sql.g:82:7: ( 'IN' )
+            // /Users/vk/Sql.g:82:9: 'IN'
             {
-            match("SUM"); 
+            match("IN"); 
 
 
             }
@@ -1802,10 +1809,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__95;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:83:7: ( 'asc' )
-            // /Users/vk/Sql.g:83:9: 'asc'
+            // /Users/vk/Sql.g:83:7: ( 'not' )
+            // /Users/vk/Sql.g:83:9: 'not'
             {
-            match("asc"); 
+            match("not"); 
 
 
             }
@@ -1823,10 +1830,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__96;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:84:7: ( 'ASC' )
-            // /Users/vk/Sql.g:84:9: 'ASC'
+            // /Users/vk/Sql.g:84:7: ( 'NOT' )
+            // /Users/vk/Sql.g:84:9: 'NOT'
             {
-            match("ASC"); 
+            match("NOT"); 
 
 
             }
@@ -1844,10 +1851,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__97;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:85:7: ( 'desc' )
-            // /Users/vk/Sql.g:85:9: 'desc'
+            // /Users/vk/Sql.g:85:7: ( 'like' )
+            // /Users/vk/Sql.g:85:9: 'like'
             {
-            match("desc"); 
+            match("like"); 
 
 
             }
@@ -1865,10 +1872,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__98;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:86:7: ( 'DESC' )
-            // /Users/vk/Sql.g:86:9: 'DESC'
+            // /Users/vk/Sql.g:86:7: ( 'LIKE' )
+            // /Users/vk/Sql.g:86:9: 'LIKE'
             {
-            match("DESC"); 
+            match("LIKE"); 
 
 
             }
@@ -1886,10 +1893,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__99;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:87:7: ( 'between' )
-            // /Users/vk/Sql.g:87:9: 'between'
+            // /Users/vk/Sql.g:87:7: ( 'COUNT' )
+            // /Users/vk/Sql.g:87:9: 'COUNT'
             {
-            match("between"); 
+            match("COUNT"); 
 
 
             }
@@ -1907,8 +1914,155 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__100;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:88:8: ( 'BETWEEN' )
-            // /Users/vk/Sql.g:88:10: 'BETWEEN'
+            // /Users/vk/Sql.g:88:8: ( 'sum' )
+            // /Users/vk/Sql.g:88:10: 'sum'
+            {
+            match("sum"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__100"
+
+    // $ANTLR start "T__101"
+    public final void mT__101() throws RecognitionException {
+        try {
+            int _type = T__101;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /Users/vk/Sql.g:89:8: ( 'SUM' )
+            // /Users/vk/Sql.g:89:10: 'SUM'
+            {
+            match("SUM"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__101"
+
+    // $ANTLR start "T__102"
+    public final void mT__102() throws RecognitionException {
+        try {
+            int _type = T__102;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /Users/vk/Sql.g:90:8: ( 'asc' )
+            // /Users/vk/Sql.g:90:10: 'asc'
+            {
+            match("asc"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__102"
+
+    // $ANTLR start "T__103"
+    public final void mT__103() throws RecognitionException {
+        try {
+            int _type = T__103;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /Users/vk/Sql.g:91:8: ( 'ASC' )
+            // /Users/vk/Sql.g:91:10: 'ASC'
+            {
+            match("ASC"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__103"
+
+    // $ANTLR start "T__104"
+    public final void mT__104() throws RecognitionException {
+        try {
+            int _type = T__104;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /Users/vk/Sql.g:92:8: ( 'desc' )
+            // /Users/vk/Sql.g:92:10: 'desc'
+            {
+            match("desc"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__104"
+
+    // $ANTLR start "T__105"
+    public final void mT__105() throws RecognitionException {
+        try {
+            int _type = T__105;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /Users/vk/Sql.g:93:8: ( 'DESC' )
+            // /Users/vk/Sql.g:93:10: 'DESC'
+            {
+            match("DESC"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__105"
+
+    // $ANTLR start "T__106"
+    public final void mT__106() throws RecognitionException {
+        try {
+            int _type = T__106;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /Users/vk/Sql.g:94:8: ( 'between' )
+            // /Users/vk/Sql.g:94:10: 'between'
+            {
+            match("between"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__106"
+
+    // $ANTLR start "T__107"
+    public final void mT__107() throws RecognitionException {
+        try {
+            int _type = T__107;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /Users/vk/Sql.g:95:8: ( 'BETWEEN' )
+            // /Users/vk/Sql.g:95:10: 'BETWEEN'
             {
             match("BETWEEN"); 
 
@@ -1921,7 +2075,7 @@ public class SqlLexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "T__100"
+    // $ANTLR end "T__107"
 
     // $ANTLR start "VALUE"
     public final void mVALUE() throws RecognitionException {
@@ -2273,8 +2427,8 @@ public class SqlLexer extends Lexer {
     // $ANTLR end "WS"
 
     public void mTokens() throws RecognitionException {
-        // /Users/vk/Sql.g:1:8: ( T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | VALUE | COMMA | SPACE | DOT | GT | LT | EQ | NOT | AMP | NL | WS )
-        int alt3=97;
+        // /Users/vk/Sql.g:1:8: ( T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | VALUE | COMMA | SPACE | DOT | GT | LT | EQ | NOT | AMP | NL | WS )
+        int alt3=104;
         alt3 = dfa3.predict(input);
         switch (alt3) {
             case 1 :
@@ -2880,77 +3034,126 @@ public class SqlLexer extends Lexer {
                 }
                 break;
             case 87 :
-                // /Users/vk/Sql.g:1:527: VALUE
+                // /Users/vk/Sql.g:1:527: T__101
+                {
+                mT__101(); 
+
+                }
+                break;
+            case 88 :
+                // /Users/vk/Sql.g:1:534: T__102
+                {
+                mT__102(); 
+
+                }
+                break;
+            case 89 :
+                // /Users/vk/Sql.g:1:541: T__103
+                {
+                mT__103(); 
+
+                }
+                break;
+            case 90 :
+                // /Users/vk/Sql.g:1:548: T__104
+                {
+                mT__104(); 
+
+                }
+                break;
+            case 91 :
+                // /Users/vk/Sql.g:1:555: T__105
+                {
+                mT__105(); 
+
+                }
+                break;
+            case 92 :
+                // /Users/vk/Sql.g:1:562: T__106
+                {
+                mT__106(); 
+
+                }
+                break;
+            case 93 :
+                // /Users/vk/Sql.g:1:569: T__107
+                {
+                mT__107(); 
+
+                }
+                break;
+            case 94 :
+                // /Users/vk/Sql.g:1:576: VALUE
                 {
                 mVALUE(); 
 
                 }
                 break;
-            case 88 :
-                // /Users/vk/Sql.g:1:533: COMMA
+            case 95 :
+                // /Users/vk/Sql.g:1:582: COMMA
                 {
                 mCOMMA(); 
 
                 }
                 break;
-            case 89 :
-                // /Users/vk/Sql.g:1:539: SPACE
+            case 96 :
+                // /Users/vk/Sql.g:1:588: SPACE
                 {
                 mSPACE(); 
 
                 }
                 break;
-            case 90 :
-                // /Users/vk/Sql.g:1:545: DOT
+            case 97 :
+                // /Users/vk/Sql.g:1:594: DOT
                 {
                 mDOT(); 
 
                 }
                 break;
-            case 91 :
-                // /Users/vk/Sql.g:1:549: GT
+            case 98 :
+                // /Users/vk/Sql.g:1:598: GT
                 {
                 mGT(); 
 
                 }
                 break;
-            case 92 :
-                // /Users/vk/Sql.g:1:552: LT
+            case 99 :
+                // /Users/vk/Sql.g:1:601: LT
                 {
                 mLT(); 
 
                 }
                 break;
-            case 93 :
-                // /Users/vk/Sql.g:1:555: EQ
+            case 100 :
+                // /Users/vk/Sql.g:1:604: EQ
                 {
                 mEQ(); 
 
                 }
                 break;
-            case 94 :
-                // /Users/vk/Sql.g:1:558: NOT
+            case 101 :
+                // /Users/vk/Sql.g:1:607: NOT
                 {
                 mNOT(); 
 
                 }
                 break;
-            case 95 :
-                // /Users/vk/Sql.g:1:562: AMP
+            case 102 :
+                // /Users/vk/Sql.g:1:611: AMP
                 {
                 mAMP(); 
 
                 }
                 break;
-            case 96 :
-                // /Users/vk/Sql.g:1:566: NL
+            case 103 :
+                // /Users/vk/Sql.g:1:615: NL
                 {
                 mNL(); 
 
                 }
                 break;
-            case 97 :
-                // /Users/vk/Sql.g:1:569: WS
+            case 104 :
+                // /Users/vk/Sql.g:1:618: WS
                 {
                 mWS(); 
 
@@ -2964,223 +3167,230 @@ public class SqlLexer extends Lexer {
 
     protected DFA3 dfa3 = new DFA3(this);
     static final String DFA3_eotS =
-        "\3\uffff\36\41\2\uffff\1\151\6\uffff\1\152\1\uffff\2\41\1\156\1"+
-        "\41\1\160\5\41\1\166\13\41\1\u0084\35\41\1\u00a6\1\u00a8\1\u00a9"+
-        "\1\41\1\u00ab\4\41\2\uffff\3\41\1\uffff\1\41\1\uffff\1\u00b4\1\41"+
-        "\1\u00b6\1\u00b7\1\41\1\uffff\1\u00b9\2\41\1\u00bc\2\41\1\u00bf"+
-        "\4\41\1\u00c5\1\41\1\uffff\24\41\1\u00dd\1\u00de\2\41\1\u00e5\3"+
-        "\41\1\u00e9\1\41\1\u00eb\1\u00ec\1\41\1\uffff\1\41\2\uffff\1\41"+
-        "\1\uffff\1\u00f0\7\41\1\uffff\1\u00f8\2\uffff\1\41\1\uffff\1\u00fc"+
-        "\1\41\1\uffff\1\u00fe\1\u00ff\1\uffff\1\u0100\1\u0101\3\41\1\uffff"+
-        "\2\41\1\u0107\1\u0109\4\41\1\u010e\1\41\1\u0110\1\41\1\u0112\12"+
-        "\41\2\uffff\1\u011d\5\41\1\uffff\1\41\1\u0124\1\41\1\uffff\1\u0126"+
-        "\2\uffff\3\41\1\uffff\1\u012a\1\41\1\u012c\1\u012d\1\u012e\1\41"+
-        "\1\u0130\1\uffff\3\41\1\uffff\1\41\4\uffff\3\41\1\u0139\1\41\1\uffff"+
-        "\1\41\1\uffff\4\41\1\uffff\1\41\1\uffff\1\41\1\uffff\1\u0142\1\41"+
-        "\1\u0144\1\41\1\u0147\1\41\1\u0149\2\41\1\u014c\1\uffff\6\41\1\uffff"+
-        "\1\41\1\uffff\1\u0154\1\u0155\1\41\1\uffff\1\u0157\3\uffff\1\41"+
-        "\1\uffff\6\41\1\u015f\1\u0160\1\uffff\2\41\1\u0163\1\u0164\1\u0165"+
-        "\1\u0166\1\u0168\1\41\1\uffff\1\41\1\uffff\2\41\1\uffff\1\41\1\uffff"+
-        "\2\41\1\uffff\1\u0171\2\41\1\u0174\2\41\1\u0177\2\uffff\1\41\1\uffff"+
-        "\1\41\1\u017a\2\41\1\u017d\2\41\2\uffff\1\u0180\1\41\4\uffff\1\41"+
-        "\2\uffff\2\41\1\u0185\1\41\1\u0187\1\u0188\1\41\1\uffff\2\41\1\uffff"+
-        "\1\41\1\u018d\1\uffff\1\u018e\1\41\1\uffff\1\u0190\1\41\1\uffff"+
-        "\2\41\1\uffff\3\41\1\u0197\1\uffff\1\41\2\uffff\1\u0199\1\41\1\u019c"+
-        "\3\uffff\1\41\1\uffff\1\41\1\u019f\4\41\1\uffff\1\41\1\uffff\1\u01a5"+
-        "\2\uffff\2\41\1\uffff\1\u01a8\2\41\1\u01ab\1\41\1\uffff\2\41\2\uffff"+
-        "\1\41\1\uffff\2\41\1\uffff\4\41\3\uffff";
+        "\3\uffff\37\42\2\uffff\1\156\6\uffff\1\157\1\uffff\2\42\1\163\1"+
+        "\42\1\165\10\42\1\u0080\15\42\1\u0091\34\42\1\u00b1\1\u00b3\1\u00b4"+
+        "\1\42\1\u00b6\4\42\2\uffff\3\42\1\uffff\1\42\1\uffff\1\u00bf\2\42"+
+        "\1\u00c2\1\u00c3\5\42\1\uffff\1\u00ca\2\42\1\u00cd\4\42\1\u00d2"+
+        "\5\42\1\u00d9\1\42\1\uffff\21\42\1\u00ee\1\u00ef\2\42\1\u00f6\4"+
+        "\42\1\u00fb\1\42\1\u00fd\1\u00fe\1\42\1\uffff\1\42\2\uffff\1\42"+
+        "\1\uffff\1\u0102\7\42\1\uffff\1\u010a\1\42\2\uffff\6\42\1\uffff"+
+        "\1\u0114\1\42\1\uffff\1\u0116\2\42\1\u0119\1\uffff\1\u011a\1\u011b"+
+        "\4\42\1\uffff\2\42\1\u0122\1\u0124\4\42\1\u0129\1\42\1\u012b\1\42"+
+        "\1\u012d\7\42\2\uffff\1\u0135\5\42\1\uffff\2\42\1\u013d\1\42\1\uffff"+
+        "\1\u013f\2\uffff\3\42\1\uffff\1\u0143\1\42\1\u0145\1\u0146\1\u0147"+
+        "\1\42\1\u0149\1\uffff\3\42\1\u014d\1\42\1\u0150\3\42\1\uffff\1\42"+
+        "\1\uffff\2\42\3\uffff\2\42\1\u015a\1\42\1\u015c\1\42\1\uffff\1\42"+
+        "\1\uffff\4\42\1\uffff\1\42\1\uffff\1\42\1\uffff\1\u0165\2\42\1\u0168"+
+        "\2\42\1\u016b\1\uffff\7\42\1\uffff\1\42\1\uffff\1\u0174\1\u0175"+
+        "\1\42\1\uffff\1\u0177\3\uffff\1\42\1\uffff\1\42\1\u017a\1\42\1\uffff"+
+        "\2\42\1\uffff\10\42\1\u0187\1\uffff\1\u0188\1\uffff\2\42\1\u018b"+
+        "\1\u018c\1\u018d\1\u018e\1\u0190\1\42\1\uffff\1\u0192\1\42\1\uffff"+
+        "\2\42\1\uffff\1\u0196\2\42\1\u0199\3\42\1\u019d\2\uffff\1\42\1\uffff"+
+        "\2\42\1\uffff\1\u01a1\3\42\1\u01a5\2\42\1\u01a8\1\42\1\u01aa\2\42"+
+        "\2\uffff\1\u01ad\1\42\4\uffff\1\42\3\uffff\1\u01b0\1\u01b1\1\42"+
+        "\1\uffff\2\42\1\uffff\1\42\1\u01b6\1\42\1\uffff\1\u01b8\2\42\1\uffff"+
+        "\1\42\1\u01bc\1\42\1\uffff\1\u01be\1\42\1\uffff\1\u01c0\1\uffff"+
+        "\2\42\1\uffff\2\42\2\uffff\1\u01c5\1\42\1\u01c8\2\uffff\1\u01c9"+
+        "\1\uffff\3\42\1\uffff\1\42\1\uffff\1\42\1\uffff\1\u01cf\3\42\1\uffff"+
+        "\1\u01d3\3\uffff\1\42\1\u01d5\1\u01d6\2\42\1\uffff\1\u01d9\2\42"+
+        "\1\uffff\1\42\2\uffff\2\42\2\uffff\3\42\1\uffff\2\42\1\uffff\1\42"+
+        "\2\uffff";
     static final String DFA3_eofS =
-        "\u01b6\uffff";
+        "\u01e5\uffff";
     static final String DFA3_minS =
-        "\1\11\2\uffff\1\110\1\150\2\144\1\141\1\145\1\141\2\145\3\141\1"+
-        "\162\1\150\1\157\1\156\1\141\1\145\1\141\1\105\1\111\1\116\1\162"+
-        "\1\122\1\105\1\116\1\117\1\111\1\117\1\105\2\uffff\1\11\6\uffff"+
-        "\1\11\1\uffff\1\105\1\145\1\43\1\165\1\43\1\163\1\147\1\144\1\143"+
-        "\1\164\1\43\1\146\1\154\1\156\1\145\1\160\1\147\1\164\1\141\1\154"+
-        "\1\155\1\157\1\43\1\164\1\154\1\155\1\151\1\171\1\145\1\162\1\155"+
-        "\1\164\1\153\1\157\1\145\1\156\1\151\2\144\1\156\1\141\1\145\2\155"+
-        "\1\164\1\162\1\163\1\114\1\115\1\116\1\104\1\103\3\43\1\124\1\43"+
-        "\1\124\1\113\1\125\1\123\2\uffff\1\122\1\162\1\154\1\uffff\1\155"+
-        "\1\uffff\1\43\1\157\2\43\1\141\1\uffff\1\43\1\143\1\145\1\43\1\162"+
-        "\1\145\1\43\2\145\1\162\1\145\1\43\1\143\1\uffff\1\167\1\145\1\144"+
-        "\1\151\1\155\1\143\1\147\1\164\1\145\1\151\2\145\1\165\1\141\1\156"+
-        "\1\164\1\154\1\142\1\145\1\165\2\43\1\145\1\142\1\43\1\163\1\150"+
-        "\1\105\1\43\1\104\2\43\1\145\1\uffff\1\105\2\uffff\1\127\1\uffff"+
-        "\1\43\1\105\1\116\1\103\1\105\1\145\1\165\1\151\1\uffff\1\43\2\uffff"+
-        "\1\161\1\uffff\1\43\1\141\1\uffff\2\43\1\uffff\2\43\1\164\1\165"+
-        "\1\143\1\uffff\1\153\1\145\2\43\1\154\2\144\1\162\1\43\1\156\1\43"+
-        "\1\163\1\43\1\160\2\164\1\145\1\144\1\141\1\171\1\151\1\166\1\155"+
-        "\2\uffff\1\43\1\145\1\166\1\151\1\163\1\165\1\uffff\1\151\1\43\1"+
-        "\103\1\uffff\1\43\2\uffff\1\162\1\122\1\105\1\uffff\1\43\1\124\3"+
-        "\43\1\155\1\43\1\uffff\1\145\1\171\1\165\1\uffff\1\163\4\uffff\1"+
-        "\145\1\163\1\164\1\43\1\145\1\uffff\1\166\1\uffff\1\171\2\163\1"+
-        "\160\1\uffff\1\164\1\uffff\1\164\1\uffff\1\43\1\145\1\43\1\156\1"+
-        "\43\1\164\1\43\1\155\1\156\1\43\1\uffff\1\162\1\145\1\154\1\163"+
-        "\1\156\1\157\1\uffff\1\124\1\uffff\2\43\1\105\1\uffff\1\43\3\uffff"+
-        "\1\151\1\uffff\1\164\1\160\1\141\1\145\1\151\1\166\2\43\1\uffff"+
-        "\1\156\1\145\5\43\1\50\1\uffff\1\142\1\uffff\1\164\1\145\1\uffff"+
-        "\1\145\1\uffff\1\145\1\165\1\uffff\1\43\1\156\1\145\1\43\1\163\1"+
-        "\156\1\43\2\uffff\1\116\1\uffff\1\156\1\43\1\145\1\154\1\43\1\155"+
-        "\1\156\2\uffff\1\43\1\156\4\uffff\1\145\2\uffff\1\141\1\171\1\43"+
-        "\1\154\2\43\1\155\1\uffff\1\164\1\163\1\uffff\1\50\1\43\1\uffff"+
-        "\1\43\1\157\1\uffff\1\43\1\151\1\uffff\1\145\1\165\1\uffff\1\164"+
-        "\1\154\1\164\1\43\1\uffff\1\145\2\uffff\1\43\1\163\1\43\3\uffff"+
-        "\1\163\1\uffff\1\164\1\43\1\155\1\163\2\145\1\uffff\1\141\1\uffff"+
-        "\1\43\2\uffff\1\151\1\171\1\uffff\1\43\1\50\1\141\1\43\1\163\1\uffff"+
-        "\1\164\1\50\2\uffff\1\163\1\uffff\1\145\1\171\1\uffff\1\145\3\50"+
-        "\3\uffff";
+        "\1\11\2\uffff\1\110\1\150\2\144\1\150\1\141\1\145\1\141\2\145\3"+
+        "\141\1\162\1\143\1\156\1\141\1\145\1\163\1\141\1\105\1\111\1\116"+
+        "\1\162\1\122\1\105\1\116\1\117\1\111\1\117\1\105\2\uffff\1\11\6"+
+        "\uffff\1\11\1\uffff\1\105\1\145\1\43\1\165\1\43\1\163\1\147\1\144"+
+        "\1\143\1\156\1\145\1\151\1\164\1\43\1\146\1\154\1\156\1\145\1\151"+
+        "\1\164\1\160\1\147\1\164\1\141\1\154\1\155\1\157\1\43\1\164\1\154"+
+        "\1\155\1\151\1\171\1\145\1\162\1\155\1\164\1\153\1\157\3\144\1\156"+
+        "\1\141\1\145\2\155\1\164\1\162\1\145\1\163\1\114\1\115\1\116\1\104"+
+        "\1\103\3\43\1\124\1\43\1\124\1\113\1\125\1\123\2\uffff\1\122\1\162"+
+        "\1\154\1\uffff\1\155\1\uffff\1\43\2\157\2\43\1\146\1\156\1\141\1"+
+        "\154\1\141\1\uffff\1\43\1\143\1\145\1\43\1\162\1\147\1\154\1\145"+
+        "\1\43\2\145\2\162\1\145\1\43\1\143\1\uffff\1\167\1\145\1\144\1\151"+
+        "\1\155\1\143\1\147\1\164\1\145\1\151\2\145\1\165\1\145\1\142\1\145"+
+        "\1\165\2\43\1\145\1\142\1\43\1\163\1\143\1\150\1\105\1\43\1\104"+
+        "\2\43\1\145\1\uffff\1\105\2\uffff\1\127\1\uffff\1\43\1\105\1\116"+
+        "\1\103\1\105\1\145\1\165\1\151\1\uffff\1\43\1\164\2\uffff\1\151"+
+        "\1\145\2\164\1\144\1\161\1\uffff\1\43\1\141\1\uffff\1\43\1\144\1"+
+        "\165\1\43\1\uffff\2\43\1\164\1\165\1\145\1\143\1\uffff\1\153\1\145"+
+        "\2\43\1\154\2\144\1\162\1\43\1\156\1\43\1\163\1\43\1\160\1\163\1"+
+        "\141\1\171\1\151\1\166\1\155\2\uffff\1\43\1\145\1\166\1\151\1\163"+
+        "\1\165\1\uffff\1\151\1\164\1\43\1\103\1\uffff\1\43\2\uffff\1\162"+
+        "\1\122\1\105\1\uffff\1\43\1\124\3\43\1\155\1\43\1\uffff\1\141\1"+
+        "\147\1\156\1\43\1\145\1\43\1\145\1\171\1\165\1\uffff\1\163\1\uffff"+
+        "\1\145\1\155\3\uffff\1\145\1\163\1\43\1\164\1\43\1\145\1\uffff\1"+
+        "\166\1\uffff\1\171\2\163\1\160\1\uffff\1\164\1\uffff\1\164\1\uffff"+
+        "\1\43\1\143\1\164\1\43\1\155\1\156\1\43\1\uffff\1\162\1\145\1\154"+
+        "\1\163\1\156\1\157\1\151\1\uffff\1\124\1\uffff\2\43\1\105\1\uffff"+
+        "\1\43\3\uffff\1\151\1\uffff\1\164\1\43\1\164\1\uffff\1\142\1\145"+
+        "\1\uffff\1\164\1\160\1\141\1\145\1\163\2\151\1\166\1\43\1\uffff"+
+        "\1\43\1\uffff\1\156\1\145\5\43\1\50\1\uffff\1\43\1\145\1\uffff\1"+
+        "\145\1\165\1\uffff\1\43\1\156\1\145\1\43\1\163\1\156\1\157\1\43"+
+        "\2\uffff\1\116\1\uffff\1\156\1\151\1\uffff\1\43\1\141\1\171\1\154"+
+        "\1\43\1\145\1\154\1\43\1\143\1\43\1\155\1\156\2\uffff\1\43\1\156"+
+        "\4\uffff\1\145\3\uffff\2\43\1\155\1\uffff\1\164\1\163\1\uffff\1"+
+        "\50\1\43\1\156\1\uffff\1\43\2\157\1\uffff\1\164\1\43\1\145\1\uffff"+
+        "\1\43\1\151\1\uffff\1\43\1\uffff\1\145\1\165\1\uffff\1\164\1\154"+
+        "\2\uffff\1\43\1\163\1\43\2\uffff\1\43\1\uffff\1\163\1\156\1\145"+
+        "\1\uffff\1\141\1\uffff\1\164\1\uffff\1\43\1\155\1\163\1\145\1\uffff"+
+        "\1\43\3\uffff\1\151\2\43\1\163\1\171\1\uffff\1\43\1\50\1\141\1\uffff"+
+        "\1\164\2\uffff\1\145\1\50\2\uffff\1\163\1\171\1\50\1\uffff\1\145"+
+        "\1\50\1\uffff\1\50\2\uffff";
     static final String DFA3_maxS =
-        "\1\172\2\uffff\1\110\1\150\1\156\1\163\1\161\1\165\1\171\1\165\1"+
-        "\171\1\151\1\163\1\165\2\162\1\157\1\170\1\165\1\145\1\141\1\125"+
-        "\1\111\1\123\1\162\1\122\1\131\1\116\1\117\1\111\1\117\1\105\2\uffff"+
-        "\1\40\6\uffff\1\40\1\uffff\1\105\1\145\1\172\1\165\1\172\1\163\1"+
-        "\147\1\144\1\143\1\164\1\172\1\163\1\154\1\156\1\145\1\160\1\147"+
-        "\1\172\1\141\1\154\1\155\1\157\1\172\1\164\1\156\1\155\1\157\1\171"+
-        "\1\145\1\162\1\155\1\164\1\153\1\157\1\145\1\165\1\151\2\144\1\156"+
-        "\1\141\1\145\2\155\1\164\1\162\1\163\1\114\1\115\1\116\1\104\1\103"+
-        "\3\172\1\124\1\172\1\124\1\113\1\125\1\123\2\uffff\1\122\1\162\1"+
-        "\154\1\uffff\1\155\1\uffff\1\172\1\157\2\172\1\141\1\uffff\1\172"+
-        "\1\143\1\145\1\172\1\162\1\145\1\172\2\145\1\164\1\145\1\172\1\143"+
-        "\1\uffff\1\167\1\145\1\144\1\151\1\155\1\143\1\147\1\164\1\145\1"+
-        "\151\2\145\1\165\1\141\1\156\1\164\1\154\1\144\1\164\1\165\2\172"+
-        "\1\145\1\162\1\172\1\163\1\150\1\105\1\172\1\104\2\172\1\145\1\uffff"+
-        "\1\105\2\uffff\1\127\1\uffff\1\172\1\105\1\116\1\103\1\105\1\145"+
-        "\1\165\1\151\1\uffff\1\172\2\uffff\1\164\1\uffff\1\172\1\141\1\uffff"+
-        "\2\172\1\uffff\2\172\1\164\1\165\1\143\1\uffff\1\153\1\145\2\172"+
-        "\1\154\2\144\1\162\1\172\1\156\1\172\1\163\1\172\1\160\2\164\1\145"+
-        "\1\144\1\141\1\171\1\151\1\166\1\155\2\uffff\1\172\1\145\1\166\1"+
-        "\151\1\163\1\165\1\uffff\1\151\1\172\1\103\1\uffff\1\172\2\uffff"+
-        "\1\162\1\122\1\105\1\uffff\1\172\1\124\3\172\1\155\1\172\1\uffff"+
-        "\1\145\1\171\1\165\1\uffff\1\163\4\uffff\1\164\1\163\1\164\1\172"+
-        "\1\145\1\uffff\1\166\1\uffff\1\171\2\163\1\160\1\uffff\1\164\1\uffff"+
-        "\1\164\1\uffff\1\172\1\145\1\172\1\156\1\172\1\164\1\172\1\155\1"+
-        "\156\1\172\1\uffff\1\162\1\145\1\154\1\163\1\156\1\157\1\uffff\1"+
-        "\124\1\uffff\2\172\1\105\1\uffff\1\172\3\uffff\1\151\1\uffff\1\164"+
-        "\1\160\1\141\1\145\1\151\1\166\2\172\1\uffff\1\156\1\145\5\172\1"+
-        "\50\1\uffff\1\144\1\uffff\1\164\1\145\1\uffff\1\145\1\uffff\1\145"+
-        "\1\165\1\uffff\1\172\1\156\1\145\1\172\1\163\1\156\1\172\2\uffff"+
-        "\1\116\1\uffff\1\156\1\172\1\145\1\154\1\172\1\155\1\156\2\uffff"+
-        "\1\172\1\156\4\uffff\1\145\2\uffff\1\141\1\171\1\172\1\154\2\172"+
-        "\1\155\1\uffff\1\164\1\163\1\uffff\1\50\1\172\1\uffff\1\172\1\157"+
-        "\1\uffff\1\172\1\151\1\uffff\1\145\1\165\1\uffff\1\164\1\154\1\164"+
-        "\1\172\1\uffff\1\145\2\uffff\1\172\1\163\1\172\3\uffff\1\163\1\uffff"+
-        "\1\164\1\172\1\155\1\163\2\145\1\uffff\1\141\1\uffff\1\172\2\uffff"+
-        "\1\151\1\171\1\uffff\1\172\1\50\1\141\1\172\1\163\1\uffff\1\164"+
-        "\1\50\2\uffff\1\163\1\uffff\1\145\1\171\1\uffff\1\145\3\50\3\uffff";
+        "\1\172\2\uffff\1\110\1\150\1\156\1\163\1\162\1\161\1\165\1\171\1"+
+        "\165\1\171\1\151\1\163\1\165\1\162\1\157\1\170\1\165\1\145\1\163"+
+        "\1\141\1\125\1\111\1\123\1\162\1\122\1\131\1\116\1\117\1\111\1\117"+
+        "\1\105\2\uffff\1\40\6\uffff\1\40\1\uffff\1\105\1\145\1\172\1\165"+
+        "\1\172\1\163\1\147\1\156\1\143\1\165\1\145\1\151\1\164\1\172\1\163"+
+        "\1\154\1\156\1\145\1\151\1\164\1\160\1\147\1\172\1\157\1\154\1\155"+
+        "\1\157\1\172\1\164\1\156\1\155\1\157\1\171\1\145\1\162\1\155\1\164"+
+        "\1\153\1\157\3\144\1\156\1\141\1\145\2\155\1\164\1\162\1\145\1\163"+
+        "\1\114\1\115\1\116\1\104\1\103\3\172\1\124\1\172\1\124\1\113\1\125"+
+        "\1\123\2\uffff\1\122\1\162\1\154\1\uffff\1\155\1\uffff\1\172\2\157"+
+        "\2\172\1\164\1\156\1\141\1\154\1\141\1\uffff\1\172\1\143\1\145\1"+
+        "\172\1\162\1\147\1\154\1\145\1\172\2\145\1\164\1\162\1\145\1\172"+
+        "\1\143\1\uffff\1\167\1\145\1\144\1\151\1\155\1\143\1\147\1\164\1"+
+        "\145\1\151\2\145\1\165\1\145\1\144\1\164\1\165\2\172\1\145\1\162"+
+        "\1\172\1\163\1\143\1\150\1\105\1\172\1\104\2\172\1\145\1\uffff\1"+
+        "\105\2\uffff\1\127\1\uffff\1\172\1\105\1\116\1\103\1\105\1\145\1"+
+        "\165\1\151\1\uffff\1\172\1\164\2\uffff\1\151\1\145\2\164\1\144\1"+
+        "\164\1\uffff\1\172\1\141\1\uffff\1\172\1\144\1\165\1\172\1\uffff"+
+        "\2\172\1\164\1\165\1\145\1\143\1\uffff\1\153\1\145\2\172\1\154\2"+
+        "\144\1\162\1\172\1\156\1\172\1\163\1\172\1\160\1\163\1\141\1\171"+
+        "\1\151\1\166\1\155\2\uffff\1\172\1\145\1\166\1\151\1\163\1\165\1"+
+        "\uffff\1\151\1\164\1\172\1\103\1\uffff\1\172\2\uffff\1\162\1\122"+
+        "\1\105\1\uffff\1\172\1\124\3\172\1\155\1\172\1\uffff\1\141\1\147"+
+        "\1\156\1\172\1\145\1\172\1\145\1\171\1\165\1\uffff\1\163\1\uffff"+
+        "\1\145\1\155\3\uffff\1\164\1\163\1\172\1\164\1\172\1\145\1\uffff"+
+        "\1\166\1\uffff\1\171\2\163\1\160\1\uffff\1\164\1\uffff\1\164\1\uffff"+
+        "\1\172\1\143\1\164\1\172\1\155\1\156\1\172\1\uffff\1\162\1\145\1"+
+        "\154\1\163\1\156\1\157\1\151\1\uffff\1\124\1\uffff\2\172\1\105\1"+
+        "\uffff\1\172\3\uffff\1\151\1\uffff\1\164\1\172\1\164\1\uffff\1\144"+
+        "\1\145\1\uffff\1\164\1\160\1\141\1\145\1\163\2\151\1\166\1\172\1"+
+        "\uffff\1\172\1\uffff\1\156\1\145\5\172\1\50\1\uffff\1\172\1\145"+
+        "\1\uffff\1\145\1\165\1\uffff\1\172\1\156\1\145\1\172\1\163\1\156"+
+        "\1\157\1\172\2\uffff\1\116\1\uffff\1\156\1\151\1\uffff\1\172\1\141"+
+        "\1\171\1\154\1\172\1\145\1\154\1\172\1\143\1\172\1\155\1\156\2\uffff"+
+        "\1\172\1\156\4\uffff\1\145\3\uffff\2\172\1\155\1\uffff\1\164\1\163"+
+        "\1\uffff\1\50\1\172\1\156\1\uffff\1\172\2\157\1\uffff\1\164\1\172"+
+        "\1\145\1\uffff\1\172\1\151\1\uffff\1\172\1\uffff\1\145\1\165\1\uffff"+
+        "\1\164\1\154\2\uffff\1\172\1\163\1\172\2\uffff\1\172\1\uffff\1\163"+
+        "\1\156\1\145\1\uffff\1\141\1\uffff\1\164\1\uffff\1\172\1\155\1\163"+
+        "\1\145\1\uffff\1\172\3\uffff\1\151\2\172\1\163\1\171\1\uffff\1\172"+
+        "\1\50\1\141\1\uffff\1\164\2\uffff\1\145\1\50\2\uffff\1\163\1\171"+
+        "\1\50\1\uffff\1\145\1\50\1\uffff\1\50\2\uffff";
     static final String DFA3_acceptS =
-        "\1\uffff\1\1\1\2\36\uffff\1\127\1\130\1\uffff\1\132\1\133\1\134"+
-        "\1\135\1\136\1\137\1\uffff\1\141\75\uffff\1\131\1\140\3\uffff\1"+
-        "\5\1\uffff\1\52\5\uffff\1\21\15\uffff\1\105\41\uffff\1\107\1\uffff"+
-        "\1\110\1\106\1\uffff\1\111\10\uffff\1\6\1\uffff\1\101\1\121\1\uffff"+
-        "\1\55\2\uffff\1\17\2\uffff\1\60\5\uffff\1\117\27\uffff\1\57\1\64"+
-        "\6\uffff\1\112\3\uffff\1\120\1\uffff\1\102\1\122\3\uffff\1\113\7"+
-        "\uffff\1\26\3\uffff\1\123\1\uffff\1\11\1\51\1\12\1\46\5\uffff\1"+
-        "\14\1\uffff\1\77\4\uffff\1\25\1\uffff\1\20\1\uffff\1\114\12\uffff"+
-        "\1\36\6\uffff\1\61\1\uffff\1\100\3\uffff\1\115\1\uffff\1\124\1\3"+
-        "\1\4\1\uffff\1\22\10\uffff\1\13\10\uffff\1\24\1\uffff\1\47\2\uffff"+
-        "\1\54\1\uffff\1\35\2\uffff\1\56\7\uffff\1\103\1\104\1\uffff\1\116"+
-        "\7\uffff\1\50\1\75\2\uffff\1\63\1\15\1\16\1\23\1\uffff\1\53\1\70"+
-        "\7\uffff\1\40\2\uffff\1\45\2\uffff\1\76\2\uffff\1\7\2\uffff\1\10"+
-        "\2\uffff\1\125\4\uffff\1\62\1\uffff\1\31\1\33\3\uffff\1\65\1\37"+
-        "\1\126\1\uffff\1\27\6\uffff\1\34\1\uffff\1\42\1\uffff\1\66\1\44"+
-        "\2\uffff\1\32\5\uffff\1\43\2\uffff\1\41\1\74\1\uffff\1\30\2\uffff"+
-        "\1\67\4\uffff\1\72\1\73\1\71";
+        "\1\uffff\1\1\1\2\37\uffff\1\136\1\137\1\uffff\1\141\1\142\1\143"+
+        "\1\144\1\145\1\146\1\uffff\1\150\101\uffff\1\140\1\147\3\uffff\1"+
+        "\5\1\uffff\1\57\12\uffff\1\22\20\uffff\1\114\37\uffff\1\116\1\uffff"+
+        "\1\117\1\115\1\uffff\1\120\10\uffff\1\6\2\uffff\1\110\1\130\6\uffff"+
+        "\1\62\2\uffff\1\20\4\uffff\1\65\6\uffff\1\126\24\uffff\1\64\1\72"+
+        "\6\uffff\1\121\4\uffff\1\127\1\uffff\1\111\1\131\3\uffff\1\122\7"+
+        "\uffff\1\27\11\uffff\1\132\1\uffff\1\12\2\uffff\1\56\1\13\1\53\6"+
+        "\uffff\1\15\1\uffff\1\106\4\uffff\1\26\1\uffff\1\21\1\uffff\1\123"+
+        "\7\uffff\1\41\7\uffff\1\67\1\uffff\1\107\3\uffff\1\124\1\uffff\1"+
+        "\133\1\3\1\4\1\uffff\1\23\3\uffff\1\54\2\uffff\1\61\11\uffff\1\52"+
+        "\1\uffff\1\14\10\uffff\1\25\2\uffff\1\40\2\uffff\1\63\10\uffff\1"+
+        "\112\1\113\1\uffff\1\125\2\uffff\1\7\14\uffff\1\55\1\104\2\uffff"+
+        "\1\71\1\16\1\17\1\24\1\uffff\1\60\1\77\1\31\3\uffff\1\43\2\uffff"+
+        "\1\50\3\uffff\1\105\3\uffff\1\70\3\uffff\1\10\2\uffff\1\11\1\uffff"+
+        "\1\51\2\uffff\1\134\2\uffff\1\34\1\36\3\uffff\1\74\1\42\1\uffff"+
+        "\1\135\3\uffff\1\37\1\uffff\1\30\1\uffff\1\32\4\uffff\1\45\1\uffff"+
+        "\1\75\1\47\1\66\5\uffff\1\35\3\uffff\1\46\1\uffff\1\73\1\33\2\uffff"+
+        "\1\44\1\103\3\uffff\1\76\2\uffff\1\101\1\uffff\1\102\1\100";
     static final String DFA3_specialS =
-        "\u01b6\uffff}>";
+        "\u01e5\uffff}>";
     static final String[] DFA3_transitionS = {
-            "\1\53\1\52\1\uffff\2\53\22\uffff\1\43\1\50\1\uffff\1\41\1\uffff"+
-            "\1\41\1\51\1\uffff\1\1\1\2\1\41\1\uffff\1\42\1\41\1\44\14\41"+
-            "\1\uffff\1\46\1\47\1\45\2\uffff\1\30\1\33\1\37\1\40\1\41\1\27"+
-            "\2\41\1\34\2\41\1\36\1\41\1\35\1\32\3\41\1\26\3\41\1\3\3\41"+
-            "\4\uffff\1\41\1\uffff\1\6\1\13\1\20\1\7\1\22\1\14\1\17\1\25"+
-            "\1\5\2\41\1\16\1\21\1\23\1\31\1\15\1\41\1\10\1\12\1\11\1\41"+
-            "\1\24\1\4\3\41",
+            "\1\54\1\53\1\uffff\2\54\22\uffff\1\44\1\51\1\uffff\1\42\1\uffff"+
+            "\1\42\1\52\1\uffff\1\1\1\2\1\42\1\uffff\1\43\1\42\1\45\14\42"+
+            "\1\uffff\1\47\1\50\1\46\2\uffff\1\31\1\34\1\40\1\41\1\42\1\30"+
+            "\2\42\1\35\2\42\1\37\1\42\1\36\1\33\3\42\1\27\3\42\1\3\3\42"+
+            "\4\uffff\1\42\1\uffff\1\6\1\14\1\7\1\10\1\22\1\15\1\20\1\26"+
+            "\1\5\2\42\1\17\1\21\1\23\1\32\1\16\1\42\1\11\1\13\1\12\1\42"+
+            "\1\24\1\4\1\25\2\42",
             "",
             "",
-            "\1\54",
             "\1\55",
-            "\1\60\7\uffff\1\57\1\uffff\1\56",
-            "\1\61\7\uffff\1\62\1\uffff\1\63\4\uffff\1\64",
-            "\1\65\3\uffff\1\67\13\uffff\1\66",
-            "\1\70\17\uffff\1\71",
-            "\1\74\7\uffff\1\72\17\uffff\1\73",
-            "\1\77\3\uffff\1\75\12\uffff\1\76\1\100",
-            "\1\103\6\uffff\1\101\14\uffff\1\102",
-            "\1\105\7\uffff\1\104",
-            "\1\111\6\uffff\1\107\11\uffff\1\106\1\110",
-            "\1\113\7\uffff\1\114\13\uffff\1\112",
-            "\1\115",
-            "\1\120\6\uffff\1\117\2\uffff\1\116",
-            "\1\121",
-            "\1\122\3\uffff\1\124\3\uffff\1\123\1\uffff\1\125",
-            "\1\126\15\uffff\1\130\5\uffff\1\127",
-            "\1\131",
-            "\1\132",
-            "\1\133\17\uffff\1\134",
+            "\1\56",
+            "\1\61\7\uffff\1\60\1\uffff\1\57",
+            "\1\62\7\uffff\1\63\1\uffff\1\64\4\uffff\1\65",
+            "\1\70\6\uffff\1\66\2\uffff\1\67",
+            "\1\71\3\uffff\1\73\13\uffff\1\72",
+            "\1\74\17\uffff\1\75",
+            "\1\102\7\uffff\1\76\5\uffff\1\100\2\uffff\1\77\6\uffff\1\101",
+            "\1\105\3\uffff\1\103\12\uffff\1\104\1\106",
+            "\1\111\6\uffff\1\107\14\uffff\1\110",
+            "\1\113\7\uffff\1\112",
+            "\1\117\6\uffff\1\115\11\uffff\1\114\1\116",
+            "\1\121\7\uffff\1\122\13\uffff\1\120",
+            "\1\123",
+            "\1\124\13\uffff\1\125",
+            "\1\126\3\uffff\1\130\3\uffff\1\127\1\uffff\1\131",
+            "\1\132\15\uffff\1\134\5\uffff\1\133",
             "\1\135",
-            "\1\136\4\uffff\1\137",
-            "\1\140",
-            "\1\141",
-            "\1\143\23\uffff\1\142",
-            "\1\144",
+            "\1\136",
+            "\1\137",
+            "\1\140\17\uffff\1\141",
+            "\1\142",
+            "\1\143\4\uffff\1\144",
             "\1\145",
             "\1\146",
-            "\1\147",
-            "\1\150",
-            "",
-            "",
-            "\2\53\1\uffff\2\53\22\uffff\1\53",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\2\53\1\uffff\2\53\22\uffff\1\53",
-            "",
+            "\1\150\23\uffff\1\147",
+            "\1\151",
+            "\1\152",
             "\1\153",
             "\1\154",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\23\41\1\155\6\41",
-            "\1\157",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\155",
+            "",
+            "",
+            "\2\54\1\uffff\2\54\22\uffff\1\54",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\2\54\1\uffff\2\54\22\uffff\1\54",
+            "",
+            "\1\160",
             "\1\161",
-            "\1\162",
-            "\1\163",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\23\42\1\162\6\42",
             "\1\164",
-            "\1\165",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\167\14\uffff\1\170",
-            "\1\171",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\166",
+            "\1\167",
+            "\1\171\11\uffff\1\170",
             "\1\172",
-            "\1\173",
-            "\1\174",
+            "\1\173\6\uffff\1\174",
             "\1\175",
-            "\1\176\5\uffff\1\177",
-            "\1\u0080",
-            "\1\u0081",
-            "\1\u0082",
+            "\1\176",
+            "\1\177",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u0081\14\uffff\1\u0082",
             "\1\u0083",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u0084",
             "\1\u0085",
-            "\1\u0086\1\uffff\1\u0087",
+            "\1\u0086",
+            "\1\u0087",
             "\1\u0088",
-            "\1\u0089\5\uffff\1\u008a",
-            "\1\u008b",
-            "\1\u008c",
-            "\1\u008d",
+            "\1\u0089",
+            "\1\u008a\5\uffff\1\u008b",
+            "\1\u008c\15\uffff\1\u008d",
             "\1\u008e",
             "\1\u008f",
             "\1\u0090",
-            "\1\u0091",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u0092",
-            "\1\u0094\6\uffff\1\u0093",
+            "\1\u0093\1\uffff\1\u0094",
             "\1\u0095",
-            "\1\u0096",
-            "\1\u0097",
+            "\1\u0096\5\uffff\1\u0097",
             "\1\u0098",
             "\1\u0099",
             "\1\u009a",
@@ -3194,419 +3404,479 @@ public class SqlLexer extends Lexer {
             "\1\u00a2",
             "\1\u00a3",
             "\1\u00a4",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\3\41\1\u00a5\26\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\3\41\1\u00a7\26\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u00a5",
+            "\1\u00a6",
+            "\1\u00a7",
+            "\1\u00a8",
+            "\1\u00a9",
             "\1\u00aa",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u00ab",
             "\1\u00ac",
             "\1\u00ad",
             "\1\u00ae",
             "\1\u00af",
-            "",
-            "",
-            "\1\u00b0",
-            "\1\u00b1",
-            "\1\u00b2",
-            "",
-            "\1\u00b3",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\3\42\1\u00b0\26\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\3\42\1\u00b2\26\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u00b5",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u00b7",
             "\1\u00b8",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u00b9",
             "\1\u00ba",
+            "",
+            "",
             "\1\u00bb",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u00bc",
             "\1\u00bd",
+            "",
             "\1\u00be",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u00c0",
             "\1\u00c1",
-            "\1\u00c2\1\uffff\1\u00c3",
-            "\1\u00c4",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u00c4\15\uffff\1\u00c5",
             "\1\u00c6",
-            "",
             "\1\u00c7",
             "\1\u00c8",
             "\1\u00c9",
-            "\1\u00ca",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u00cb",
             "\1\u00cc",
-            "\1\u00cd",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u00ce",
             "\1\u00cf",
             "\1\u00d0",
             "\1\u00d1",
-            "\1\u00d2",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u00d3",
             "\1\u00d4",
-            "\1\u00d5",
-            "\1\u00d6",
+            "\1\u00d5\1\uffff\1\u00d6",
             "\1\u00d7",
-            "\1\u00d9\1\uffff\1\u00d8",
-            "\1\u00db\16\uffff\1\u00da",
+            "\1\u00d8",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u00da",
+            "",
+            "\1\u00db",
             "\1\u00dc",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u00dd",
+            "\1\u00de",
             "\1\u00df",
-            "\1\u00e0\2\uffff\1\u00e1\1\u00e2\5\uffff\1\u00e3\5\uffff\1"+
-            "\u00e4",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u00e0",
+            "\1\u00e1",
+            "\1\u00e2",
+            "\1\u00e3",
+            "\1\u00e4",
+            "\1\u00e5",
             "\1\u00e6",
             "\1\u00e7",
             "\1\u00e8",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u00ea",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u00ea\1\uffff\1\u00e9",
+            "\1\u00ec\16\uffff\1\u00eb",
             "\1\u00ed",
-            "",
-            "\1\u00ee",
-            "",
-            "",
-            "\1\u00ef",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u00f1",
-            "\1\u00f2",
-            "\1\u00f3",
-            "\1\u00f4",
-            "\1\u00f5",
-            "\1\u00f6",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u00f0",
+            "\1\u00f1\2\uffff\1\u00f2\1\u00f3\5\uffff\1\u00f4\5\uffff\1"+
+            "\u00f5",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u00f7",
+            "\1\u00f8",
+            "\1\u00f9",
+            "\1\u00fa",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u00fc",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u00ff",
             "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u0100",
             "",
             "",
-            "\1\u00fb\1\uffff\1\u00f9\1\u00fa",
+            "\1\u0101",
             "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u00fd",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u0102",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u0103",
             "\1\u0104",
-            "",
             "\1\u0105",
             "\1\u0106",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\4\41\1\u0108\25\41",
-            "\1\u010a",
+            "\1\u0107",
+            "\1\u0108",
+            "\1\u0109",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u010b",
+            "",
+            "",
             "\1\u010c",
             "\1\u010d",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u010e",
             "\1\u010f",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u0111",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u0113",
-            "\1\u0114",
+            "\1\u0110",
+            "\1\u0113\1\uffff\1\u0111\1\u0112",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u0115",
-            "\1\u0116",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u0117",
             "\1\u0118",
-            "\1\u0119",
-            "\1\u011a",
-            "\1\u011b",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u011c",
-            "",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u011d",
             "\1\u011e",
             "\1\u011f",
+            "",
             "\1\u0120",
             "\1\u0121",
-            "\1\u0122",
-            "",
-            "\1\u0123",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\4\42\1\u0123\25\42",
             "\1\u0125",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "",
-            "",
+            "\1\u0126",
             "\1\u0127",
             "\1\u0128",
-            "\1\u0129",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u012b",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u012a",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u012c",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u012e",
             "\1\u012f",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "",
+            "\1\u0130",
             "\1\u0131",
             "\1\u0132",
             "\1\u0133",
-            "",
             "\1\u0134",
             "",
             "",
-            "",
-            "",
-            "\1\u0136\16\uffff\1\u0135",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u0136",
             "\1\u0137",
             "\1\u0138",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u0139",
             "\1\u013a",
             "",
             "\1\u013b",
-            "",
             "\1\u013c",
-            "\1\u013d",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u013e",
-            "\1\u013f",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
             "",
             "\1\u0140",
-            "",
             "\1\u0141",
+            "\1\u0142",
             "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u0143",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u0145",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\21\41\1\u0146\10\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u0144",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u0148",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
             "\1\u014a",
             "\1\u014b",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "",
-            "\1\u014d",
+            "\1\u014c",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u014e",
-            "\1\u014f",
-            "\1\u0150",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\21\42\1\u014f\10\42",
             "\1\u0151",
             "\1\u0152",
-            "",
             "\1\u0153",
             "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u0154",
+            "",
+            "\1\u0155",
             "\1\u0156",
             "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
             "",
             "",
-            "",
-            "\1\u0158",
-            "",
+            "\1\u0158\16\uffff\1\u0157",
             "\1\u0159",
-            "\1\u015a",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u015b",
-            "\1\u015c",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u015d",
-            "\1\u015e",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
             "",
+            "\1\u015e",
+            "",
+            "\1\u015f",
+            "\1\u0160",
             "\1\u0161",
             "\1\u0162",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\21\41\1\u0167\10\41",
-            "\1\u0169",
             "",
-            "\1\u016b\1\uffff\1\u016a",
+            "\1\u0163",
+            "",
+            "\1\u0164",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u0166",
+            "\1\u0167",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u0169",
+            "\1\u016a",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "",
             "\1\u016c",
             "\1\u016d",
-            "",
             "\1\u016e",
-            "",
             "\1\u016f",
             "\1\u0170",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u0171",
             "\1\u0172",
+            "",
             "\1\u0173",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u0175",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u0176",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
             "",
             "",
             "\1\u0178",
             "",
             "\1\u0179",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u017b",
-            "\1\u017c",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "",
+            "\1\u017d\1\uffff\1\u017c",
             "\1\u017e",
+            "",
             "\1\u017f",
-            "",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u0180",
             "\1\u0181",
-            "",
-            "",
-            "",
-            "",
             "\1\u0182",
-            "",
-            "",
             "\1\u0183",
             "\1\u0184",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u0185",
             "\1\u0186",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
             "\1\u0189",
-            "",
             "\1\u018a",
-            "\1\u018b",
-            "",
-            "\1\u018c",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "\1\u018f",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\21\42\1\u018f\10\42",
             "\1\u0191",
             "",
-            "\1\u0192",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u0193",
             "",
             "\1\u0194",
             "\1\u0195",
-            "\1\u0196",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
             "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u0197",
             "\1\u0198",
-            "",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u019a",
-            "\1\41\1\uffff\1\41\2\uffff\1\u019b\1\uffff\1\41\2\uffff\1\41"+
-            "\1\uffff\14\41\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\u019b",
+            "\1\u019c",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "",
-            "",
-            "",
-            "\1\u019d",
             "",
             "\1\u019e",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "",
+            "\1\u019f",
             "\1\u01a0",
-            "\1\u01a1",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u01a2",
             "\1\u01a3",
-            "",
             "\1\u01a4",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
-            "",
-            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u01a6",
             "\1\u01a7",
-            "",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u01a9",
-            "\1\u01aa",
-            "\1\41\1\uffff\1\41\4\uffff\1\41\2\uffff\1\41\1\uffff\14\41"+
-            "\6\uffff\32\41\4\uffff\1\41\1\uffff\32\41",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01ab",
             "\1\u01ac",
             "",
-            "\1\u01ad",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u01ae",
+            "",
+            "",
             "",
             "",
             "\1\u01af",
             "",
-            "\1\u01b0",
-            "\1\u01b1",
             "",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\1\u01b2",
+            "",
             "\1\u01b3",
             "\1\u01b4",
-            "\1\u01b5",
             "",
+            "\1\u01b5",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01b7",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01b9",
+            "\1\u01ba",
+            "",
+            "\1\u01bb",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01bd",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01bf",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
+            "\1\u01c1",
+            "\1\u01c2",
+            "",
+            "\1\u01c3",
+            "\1\u01c4",
+            "",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01c6",
+            "\1\42\1\uffff\1\42\2\uffff\1\u01c7\1\uffff\1\42\2\uffff\1\42"+
+            "\1\uffff\14\42\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
+            "\1\u01ca",
+            "\1\u01cb",
+            "\1\u01cc",
+            "",
+            "\1\u01cd",
+            "",
+            "\1\u01ce",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01d0",
+            "\1\u01d1",
+            "\1\u01d2",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "",
+            "",
+            "",
+            "\1\u01d4",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01d7",
+            "\1\u01d8",
+            "",
+            "\1\42\1\uffff\1\42\4\uffff\1\42\2\uffff\1\42\1\uffff\14\42"+
+            "\6\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\u01da",
+            "\1\u01db",
+            "",
+            "\1\u01dc",
+            "",
+            "",
+            "\1\u01dd",
+            "\1\u01de",
+            "",
+            "",
+            "\1\u01df",
+            "\1\u01e0",
+            "\1\u01e1",
+            "",
+            "\1\u01e2",
+            "\1\u01e3",
+            "",
+            "\1\u01e4",
             "",
             ""
     };
@@ -3641,7 +3911,7 @@ public class SqlLexer extends Lexer {
             this.transition = DFA3_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | VALUE | COMMA | SPACE | DOT | GT | LT | EQ | NOT | AMP | NL | WS );";
+            return "1:1: Tokens : ( T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | VALUE | COMMA | SPACE | DOT | GT | LT | EQ | NOT | AMP | NL | WS );";
         }
     }
  

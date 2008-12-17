@@ -13,6 +13,7 @@ public class KeyMap {
 
 		map.put("procds.name", "ProcessedDataset.Name");
 		map.put("procds.id", "ProcessedDataset.ID");
+		map.put("procds.xsection", "ProcessedDataset.XtCrossSection");
 		map.put("procds.createdate", "ProcessedDataset.CreationDate");
 		map.put("procds.moddate", "ProcessedDataset.LastModificationDate");
 		map.put("procds.era", "ProcessedDataset.AquisitionEra");
@@ -20,6 +21,7 @@ public class KeyMap {
 		
 		map.put("dataset.name", "ProcessedDataset.Name");
 		map.put("dataset.id", "ProcessedDataset.ID");
+		map.put("dataset.xsection", "ProcessedDataset.XtCrossSection");
 		map.put("dataset.createdate", "ProcessedDataset.CreationDate");
 		map.put("dataset.moddate", "ProcessedDataset.LastModificationDate");
 		map.put("dataset.era", "ProcessedDataset.AquisitionEra");
@@ -45,6 +47,8 @@ public class KeyMap {
 		map.put("run.id", "Runs.ID");
 		map.put("run.numevents", "Runs.NumberOfEvents");
 		map.put("run.numlss", "Runs.NumberOfLumiSections");
+		map.put("run.totlumi", "Runs.TotalLuminosity");
+		map.put("run.store", "Runs.StoreNumber");
 		map.put("run.starttime", "Runs.StartOfRun");
 		map.put("run.endtime", "Runs.EndOfRun");
 		map.put("run.createdate", "Runs.CreationDate");
@@ -78,11 +82,9 @@ public class KeyMap {
 		map.put("group.moddate", "PhysicsGroup.LastModificationDate");
 
 		map.put("algo.id", "AlgorithmConfig.ID");
-		//map.put("algo.version", "AppVersion.Version");
-		//map.put("algo.family", "AppFamily.FamilyName");
-		//map.put("algo.exe", "AppExecutable.ExecutableName");
-		//map.put("algo.hash", "QueryableParameterSet.Hash");
-		map.put("algo.content", "QueryableParameterSet.Content");
+		map.put("algo.version", "AppVersion.Version");
+		map.put("algo.family", "AppFamily.FamilyName");
+		map.put("algo.exe", "AppExecutable.ExecutableName");
 		map.put("algo.createdate", "AlgorithmConfig.CreationDate");
 		map.put("algo.moddate", "AlgorithmConfig.LastModificationDate");
 
@@ -91,6 +93,27 @@ public class KeyMap {
 		map.put("datatype.createdate", "PrimaryDSType.CreationDate");
 		map.put("datatype.moddate", "PrimaryDSType.LastModificationDate");
 
+		map.put("mcdesc.id", "MCDescription.ID");
+		map.put("mcdesc.name", "MCDescription.MCChannelDescription");
+		map.put("mcdesc.def", "MCDescription.MCProduction");
+		map.put("mcdesc.parent", "MCDescription.MCDecayChain");
+		map.put("mcdesc.createdate", "MCDescription.CreationDate");
+		map.put("mcdesc.moddate", "MCDescription.LastModificationDate");
+
+		map.put("trigdesc.id", "TriggerPathDescription.ID");
+		map.put("trigdesc.name", "TriggerPathDescription.TriggerPathDescription");
+		map.put("trigdesc.createdate", "TriggerPathDescription.CreationDate");
+		map.put("trigdesc.moddate", "TriggerPathDescription.LastModificationDate");
+
+		map.put("config.id", "QueryableParameterSet.ID");
+		map.put("config.name", "QueryableParameterSet.Name");
+		map.put("config.hash", "QueryableParameterSet.Hash");
+		map.put("config.version", "QueryableParameterSet.Version");
+		map.put("config.type", "QueryableParameterSet.Type");
+		map.put("config.annotation", "QueryableParameterSet.Annotation");
+		map.put("config.content", "QueryableParameterSet.Content");
+		map.put("config.createdate", "QueryableParameterSet.CreationDate");
+		map.put("config.moddate", "QueryableParameterSet.LastModificationDate");
 
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");

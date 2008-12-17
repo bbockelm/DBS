@@ -34,7 +34,7 @@ find file,file.parent,run,dataset where file.parent like %NEW% or file.parent li
 find file.id,lumi.id,dataset   where procds.release=CMSSW_1_7_1
 find file.createby,file.modby,file.modby where file.createby like %sekhri% or file.modby like %sekhri% and file.createby like %sek%
 find procds, procds.createdate,run,lumi.moddate where run.number in (1,2,3)
-find run, run.numevents, run.numlss, run.starttime, run.endtime
+find run, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime
 find dataset  where site = T1_FR_CCIN2P3
 find file where run > 1 and run < 1000000
 find procds.status  where dataset = /CalPrivateGlobal-default/Online/RAW
@@ -150,4 +150,9 @@ find dataset where site = caf.cern.ch
 find dataset where site = T1_CH_CERN 
 find dataset where site != T1_CH_CERN 
 find dataset where site in (T1_CH_CERN , T0_CH_CERN) 
-
+find procds.xsection where procds like *
+find dataset.xsection where dataset like *
+find algo.version, algo.family, algo.exe where algo.family like *
+find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby
+find mcdesc, mcdesc.name, mcdesc.def, mcdesc.parent, mcdesc.createdate, mcdesc.createby where primds like *
+find trigdesc, trigdesc.name, trigdesc.createdate, trigdesc.createby where primds like *

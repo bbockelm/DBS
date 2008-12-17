@@ -103,6 +103,7 @@ public class Help {
 		kw.attrs.add("release");
 		kw.attrs.add("tier");
 		kw.attrs.add("status");
+		kw.attrs.add("xsection");
 		kw.attrs.add("era");
 		kw.attrs.add("tag");
 		kw.attrs.add("createdate");
@@ -117,8 +118,8 @@ public class Help {
 		e.query = "find procds";
 		kw.examples.add(e);
 		e = new Example();
-		e.desc = "I want to find attributes like release, era, tag, status, creation date, modification date, created by, modified by of a processed datasets";
-		e.query = "find procds.release, procds.era, procds.tag, procds.status, procds.createdate, procds.moddate, procds.createby, procds.modby where procds = Skim-zToTauTau_MuTau-Tier0-A1-Chowder";
+		e.desc = "I want to find attributes like release, era, cross-section, tag, status, creation date, modification date, created by, modified by of a processed datasets";
+		e.query = "find procds.release, procds.era, procds.xsection, procds.tag, procds.status, procds.createdate, procds.moddate, procds.createby, procds.modby where procds = Skim-zToTauTau_MuTau-Tier0-A1-Chowder";
 		kw.examples.add(e);
 		map.put(kw.entity, kw);
 
@@ -132,6 +133,7 @@ public class Help {
 		kw.attrs.add("release");
 		kw.attrs.add("tier");
 		kw.attrs.add("status");
+		kw.attrs.add("xsection");
 		kw.attrs.add("era");
 		kw.attrs.add("tag");
 		kw.attrs.add("createdate");
@@ -158,14 +160,37 @@ public class Help {
 		e.query = "find dataset.parent where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER";
 		kw.examples.add(e);
 		e = new Example();
-		e.desc = "I want to find attributes like release, era, tag, status, creation date, modification date, created by, modified by of a particular dataset";
-		e.query = "find dataset.release, dataset.era, dataset.tag, dataset.status, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER";
+		e.desc = "I want to find attributes like release, era, cross-section, tag, status, creation date, modification date, created by, modified by of a particular dataset";
+		e.query = "find dataset.release, dataset.era, dataset.xsection, dataset.tag, dataset.status, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER";
 		kw.examples.add(e);
 		map.put(kw.entity, kw);
 
 
 		//-------------------------------------------------------------------------
 
+
+		kw = new Keyword();
+		kw.entity = "config";
+		kw.attrs.add("name");
+		kw.attrs.add("hash");
+		kw.attrs.add("content");
+		kw.attrs.add("version");
+		kw.attrs.add("type");
+		kw.attrs.add("annotation");
+		kw.attrs.add("createdate");
+		kw.attrs.add("moddate");
+		kw.attrs.add("createby");
+		kw.attrs.add("modby");
+		kw.attrs.add("id");
+
+		e = new Example();
+		e.desc = "I want to find configuration files for given  dataset";
+		e.query = "find config where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		e = new Example();
+		e.desc = "I want to find configuration and its attributes like name, hash, content, version, type, annotation, creation date, modification date, created by, modified by in a dataset";
+		e.query = "find config.name, config.hash, config.content, config.version, config.type, config. annotation, config.createdate, config.moddate, config.createby, config.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		kw.examples.add(e);
+		//-------------------------------------------------------------------------
 
 		kw = new Keyword();
 		kw.entity = "block";
@@ -336,6 +361,8 @@ public class Help {
 		kw.attrs.add("number");
 		kw.attrs.add("numevents");
 		kw.attrs.add("numlss");
+		kw.attrs.add("totlumi");
+		kw.attrs.add("store");
 		kw.attrs.add("starttime");
 		kw.attrs.add("endtime");
 		kw.attrs.add("createdate");
@@ -350,8 +377,8 @@ public class Help {
 		e.query = "find run where primds = test_primary_001";
 		kw.examples.add(e);
 		e = new Example();
-		e.desc = "I want to find attributes of like number of events, number of lumi sections, start time and end time of a particular run";
-		e.query = "find run.numevents, run.numlss, run.starttime, run.endtime where run = 23";
+		e.desc = "I want to find attributes of like number of events, number of lumi sections, total luminosity, store number, start time and end time of a particular run";
+		e.query = "find run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime where run = 23";
 		kw.examples.add(e);
 		e = new Example();
 		e.desc = "I want to count all the runs in a particular dataset";
@@ -558,11 +585,9 @@ public class Help {
 
 		kw = new Keyword();
 		kw.entity = "algo";
-		kw.attrs.add("hash");
 		kw.attrs.add("version");
 		kw.attrs.add("exe");
 		kw.attrs.add("family");
-		kw.attrs.add("content");
 		kw.attrs.add("createdate");
 		kw.attrs.add("moddate");
 		kw.attrs.add("createby");
@@ -570,8 +595,8 @@ public class Help {
 		kw.attrs.add("id");
 
 		e = new Example();
-		e.desc = "I want to find all algorithms and its attribute like family, version, executable, hash, modified by, created by, create date and modified date";
-		e.query = "find algo.family, algo.version, algo.exe, algo.hash, almo.modby, algo.createby, algo.createdate, algo.moddate";
+		e.desc = "I want to find all algorithms and its attribute like family, version, executable, modified by, created by, create date and modified date";
+		e.query = "find algo.family, algo.version, algo.exe, almo.modby, algo.createby, algo.createdate, algo.moddate";
 		kw.examples.add(e);
 		e = new Example();
 		e.desc = "I want to find all  datasets that has a specified algo version or a specified algo family";
@@ -648,6 +673,45 @@ public class Help {
 
 		//-------------------------------------------------------------------------
 
+		kw = new Keyword();
+		kw.entity = "mcdesc";
+		kw.attrs.add("def");
+		kw.attrs.add("content");
+		kw.attrs.add("parent");
+		kw.attrs.add("createdate");
+		kw.attrs.add("moddate");
+		kw.attrs.add("createby");
+		kw.attrs.add("modby");
+		kw.attrs.add("id");
+
+		e = new Example();
+		e.desc = "I want to find MC description used for given  dataset";
+		e.query = "find mcdesc where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+
+		e = new Example();
+		e.desc = "I want to find MC description attributes like its definition, content, and decay chain (parents), creation date, modification date, created by, modified by in a dataset";
+		e.query = "find mcdesc.def, mcdesc.content, mcdesc.parent, mcdesc.createdate, mcdesc.moddate, mcdesc.createby, mcdesc.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		kw.examples.add(e);
+		//-------------------------------------------------------------------------
+
+		kw = new Keyword();
+		kw.entity = "trigdesc";
+		kw.attrs.add("def");
+		kw.attrs.add("createdate");
+		kw.attrs.add("moddate");
+		kw.attrs.add("createby");
+		kw.attrs.add("modby");
+		kw.attrs.add("id");
+
+		e = new Example();
+		e.desc = "I want to find trigger description used for given  dataset";
+		e.query = "find trigdesc where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+
+		e = new Example();
+		e.desc = "I want to find trigger description attributes like its definition, creation date, modification date, created by, modified by in a dataset";
+		e.query = "find trigdesc.def, trigdesc.createdate, trigdesc.moddate, trigdesc.createby, trigdesc.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		kw.examples.add(e);
+		//-------------------------------------------------------------------------
 
 
 	}
