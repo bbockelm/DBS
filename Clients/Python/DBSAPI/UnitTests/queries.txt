@@ -178,3 +178,10 @@ find dataset where site = caf.cern.ch
 find dataset where site = T1_CH_CERN 
 find dataset where site != T1_CH_CERN 
 find dataset where site in (T1_CH_CERN , T0_CH_CERN) 
+find procds.xsection where procds like *
+find dataset.xsection where dataset like *
+find algo.version, algo.family, algo.exe where algo.family like *
+find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby
+find mcdesc, mcdesc.name, mcdesc.def, mcdesc.parent, mcdesc.createdate, mcdesc.createby where primds like *
+find trigdesc, trigdesc.name, trigdesc.createdate, trigdesc.createby where primds like *
+
