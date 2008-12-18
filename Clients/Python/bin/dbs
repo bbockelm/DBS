@@ -1,2 +1,4 @@
-python $DBSCMD_HOME/dbsCommandLine.py -c $@
+#!/bin/bash
+q="$@"
+python $DBSCMD_HOME/dbsCommandLine.py -c "${q}"
 
