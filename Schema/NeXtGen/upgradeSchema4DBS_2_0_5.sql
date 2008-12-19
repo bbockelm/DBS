@@ -173,6 +173,12 @@ ALTER TABLE Files ADD    MD5      varchar(100)  default 'NOTSET';
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
+--==============================
+
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('HLTDEBUG', 'Adding HLTDEBUG as it can be a standalone tier now');
+
+--=============================
+
 grant select on BlockParent to CMS_DBS___dbabbr___READER_ROLE;
 grant insert, update on BlockParent to CMS_DBS___dbabbr___WRITER_ROLE;
 grant delete on BlockParent  to CMS_DBS___dbabbr___ADMIN_ROLE;

@@ -126,5 +126,12 @@ ALTER TABLE Files ADD    MD5      varchar(100)  default 'NOTSET';
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
+--=======================================
+
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('HLTDEBUG', 'Adding HLTDEBUG as it can be a standalone tier now');
+
+--=====================================
 commit;
+
+
 
