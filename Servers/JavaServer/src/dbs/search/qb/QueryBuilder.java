@@ -119,6 +119,11 @@ public class QueryBuilder {
 		
 		if(sumPresent || countPresent) sumQuery += selectStr;
 		String query = "SELECT DISTINCT \n\t";
+                // If requested CLOB data, such as QueryableParameterSet.Content
+                // we should not either converted it to string data type
+                if (isInList(kws, "config.content") ) {
+		    query = "SELECT \n\t";
+                }
 		for (int i =0 ; i!= kws.size(); ++i) {
 			++iter;	checkMax(iter);
 			String aKw = (String)kws.get(i);
