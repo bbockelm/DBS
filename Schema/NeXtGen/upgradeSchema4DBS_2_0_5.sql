@@ -176,6 +176,7 @@ insert into ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 --==============================
 
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('HLTDEBUG', 'Adding HLTDEBUG as it can be a standalone tier now');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RAW-RECO', 'Added on request of Kristian Hahn');
 
 --=============================
 
