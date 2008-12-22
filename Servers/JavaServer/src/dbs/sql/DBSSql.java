@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.205 $"
- $Id: DBSSql.java,v 1.205 2008/12/05 19:51:46 afaq Exp $"
+ $Revision: 1.206 $"
+ $Id: DBSSql.java,v 1.206 2008/12/05 20:59:07 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3006,7 +3006,7 @@ public class DBSSql {
 			"JOIN "+owner()+"FileParentage fp \n" +
 				"ON fp.ThisFile = f.ID \n" +
 			" WHERE\n" +
-			"fp.ItsParent IN (SELECT ID from Files where Block = ?)\n";
+			"fp.ItsParent IN (SELECT ID from "+owner()+"Files where Block = ?)\n";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, blockID);
