@@ -1,6 +1,6 @@
 /**
- $Revision: 1.25 $"
- $Id: DBSApiPrimDSLogic.java,v 1.25 2008/07/10 16:09:36 sekhri Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.26 2009/01/05 20:08:17 yuyi Exp $"
  *
  */
 
@@ -146,7 +146,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
                                                 writeWarning(out, "Already Exists", "1020", "PrimaryDS " + name + " Already Exists");
                                                 if (ps != null)ps.close();
                                         } else {
-                                                throw new SQLException("'"+ex.getMessage()+"' insertPrimaryDataset for : "+name+
+                                                throw new DBSException("Database Error ", "2001", "  '"+ ex.getMessage()+"' insertPrimaryDataset for : "+name+
                                                         " SQL failed is"+ps);
                                         }
 
