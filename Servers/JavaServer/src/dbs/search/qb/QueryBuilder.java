@@ -1050,9 +1050,9 @@ public class QueryBuilder {
 		boolean found = false;
 		int iter = 0;
 		ArrayList<String> tmpBindValues = new ArrayList<String>();
-		StringBuffer dsQueryForDQ = new StringBuffer("SELECT BLOCK.PATH FROM \n");
+		StringBuffer dsQueryForDQ = new StringBuffer("SELECT Block.PATH FROM \n");
 		dsQueryForDQ.append(owner());
-		dsQueryForDQ.append("BLOCK WHERE \n");
+		dsQueryForDQ.append("Block WHERE \n");
 		Object lastObj = new String("");
 		for (int i =0 ; i!= cs.size(); ++i) {
 			++iter;	checkMax(iter);
