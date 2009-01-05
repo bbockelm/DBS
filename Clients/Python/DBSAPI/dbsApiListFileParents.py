@@ -48,6 +48,11 @@ def dbsApiImplListFileParents(self, lfn):
       result = []
       class Handler (xml.sax.handler.ContentHandler):
 
+        def get(self, attrs, key):
+                if key in attrs.keys():
+                        return attrs[key]
+                return ""
+
         def startElement(self, name, attrs):
           if name == 'file_parent':
              result.append( DbsFile (
@@ -58,8 +63,8 @@ def dbsApiImplListFileParents(self, lfn):
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
-                                       Adler32=str(attrs['adler32']),
-                                       Md5=str(attrs['md5']),
+                                       Adler32=str(self.get(attrs, 'adler32')),
+                                       Md5=str(self.get(attrs, 'md5')),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),

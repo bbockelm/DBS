@@ -162,6 +162,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 	     		auto_x_sec=float(attrs['auto_cross_section'])
              except:
                         auto_x_sec=0.0
+
              self.currFile = DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=getLong(attrs['size']),
@@ -241,8 +242,8 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
-                                       Adler32=str(attrs['adler32']),
-                                       Md5=str(attrs['md5']),
+                                       Adler32=str(self.get(attrs, 'adler32')),
+                                       Md5=str(self.get(attrs, 'md5')),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
 				       AutoCrossSection=auto_x_sec,
                                        CreationDate=str(attrs['creation_date']),
@@ -260,8 +261,8 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
-                                       Adler32=str(attrs['adler32']),
-                                       Md5=str(attrs['md5']),
+                                       Adler32=str(self.get(attrs, 'adler32')),
+                                       Md5=str(self.get(attrs, 'md5')),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),
@@ -302,8 +303,8 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
-                                       Adler32=str(attrs['adler32']),
-                                       Md5=str(attrs['md5']),
+                                       Adler32=str(self.get(attrs, 'adler32')),,
+                                       Md5=str(self.get(attrs, 'md5')),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),
