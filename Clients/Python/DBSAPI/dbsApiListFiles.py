@@ -185,7 +185,8 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
             self.currFile['TierList'].append(str(attrs['name']))
 
           if name == 'file_branch':
-            self.currFile['BranchList'].append(str(attrs['name']))
+            #self.currFile['BranchList'].append(str(attrs['name']))
+		self.currFile['BranchHash']=str(self.get(attrs,'hash'))
 
           if name == 'file_lumi_section':
              self.currFile['LumiList'].append(DbsLumiSection(
