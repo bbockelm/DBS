@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApiPrimDSLogic.java,v 1.24 2008/07/08 21:45:32 sekhri Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.25 2008/07/10 16:09:36 sekhri Exp $"
  *
  */
 
@@ -140,6 +140,16 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 				ps.execute();
 			} catch (SQLException ex) {
 				//System.out.println("Exception: "+ex.getMessage());
+                                String exmsg = ex.getMessage();
+                                        if ( exmsg.startsWith("Duplicate entry") ||
+                                                exmsg.startsWith("ORA-00001: unique constraint") ) {
+                                                writeWarning(out, "Already Exists", "1020", "PrimaryDS " + name + " Already Exists");
+                                                if (ps != null)ps.close();
+                                        } else {
+                                                throw new SQLException("'"+ex.getMessage()+"' insertPrimaryDataset for : "+name+
+                                                        " SQL failed is"+ps);
+                                        }
+
 			} finally { 
 				if (ps != null) ps.close();
 			}
