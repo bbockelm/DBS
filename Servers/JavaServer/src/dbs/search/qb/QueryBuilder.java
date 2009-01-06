@@ -58,11 +58,12 @@ public class QueryBuilder {
 		for (int i =0 ; i!= cs.size(); ++i) {
 			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
-			if(i%2 == 0) {
+                        try {
 				Constraint co = (Constraint)obj;
 				String key = (String)co.getKey();
 				String op = (String)co.getOp();
 				String val = (String)co.getValue();
+                            if  (key!=null) {
 				if(isNotLike(op)) co.setOp("not like");
 				if((val.indexOf('%') != -1 ) || (val.indexOf('*') != -1) ) {
 					if(Util.isSame(op, "in")) throw new Exception("Operator in CANNOT be used with values that have * or % in them");
@@ -70,7 +71,9 @@ public class QueryBuilder {
 					if(Util.isSame(op, "!=") || isNotLike(op)) co.setOp("not like");
 					else co.setOp("like");
 				}
-			}
+			    }
+			} catch (ClassCastException e) {
+                        }
 		}
 	}
 	private boolean isNotLike(String token) {
@@ -472,9 +475,10 @@ public class QueryBuilder {
 		for (int i =0 ; i!= cs.size(); ++i) {
 			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
-			if(i%2 == 0) {
+                        try {
 				Constraint o = (Constraint)obj;
 				String key = (String)o.getKey();
+                            if  (key!=null) {
 				if(Util.isSame(key, "dataset")) {
 				} else if(Util.isSame(key, "release")) {
 					if(isInList(kws, "procds") || isInList(kws, "dataset")) allKws = addUniqueInList(allKws, "ProcAlgo");
@@ -501,7 +505,9 @@ public class QueryBuilder {
 					allKws = addUniqueInList(allKws, "Block");
 					
 				}*/
-			}
+                            }
+			} catch (ClassCastException e) {
+                        }
 		}
 		
 		//Get the route which determines the join table
@@ -512,13 +518,16 @@ public class QueryBuilder {
 		for (int i =0 ; i!= cs.size(); ++i) {
 			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
-			if(i%2 == 0) {
+                        try {
 				Constraint o = (Constraint)obj;
 				String key = (String)o.getKey();
+                            if  (key!=null) {
 				if(Util.isSame(key, "dataset")) {
 					if(!isIn(allKws, "Files")) allKws = addUniqueInList(allKws, "Block");
 				}else if(key.startsWith("dataset")) allKws = addUniqueInList(allKws, "ProcessedDataset");
-			}
+                            }
+			} catch (ClassCastException e) {
+                        }
 		}
 		if(allKws.size() > 0) {
 			 allKws = makeCompleteListOfVertexs(allKws);
@@ -548,12 +557,17 @@ public class QueryBuilder {
 		for (int i =0 ; i!= cs.size(); ++i) {
 			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
-			if(i%2 == 0) {
+                        try {
 				Constraint co = (Constraint)obj;
+				String bracket = (String)co.getBracket();
 				String key = (String)co.getKey();
 				String op = (String)co.getOp();
 				String val = (String)co.getValue();
 				
+                            if (bracket!=null) {
+                                queryWhere += bracket;
+                            }
+                            if (key!=null) {
 				if(Util.isSame(key, "dataset")) {
 					if(pathParentWhereQuery.length() > 0) {
 						queryWhere += pathParentWhereQuery + "";
@@ -678,8 +692,8 @@ public class QueryBuilder {
 					queryWhere += handleOp(op, val, bindValues);
 				}
 
-			} else {
-				//System.out.println("REL " + (String)obj);
+                            } // end of if(key!=null)
+                        } catch (ClassCastException e) {
 				queryWhere += "\n" + ((String)obj).toUpperCase() + "\n";
 			}
 		}
@@ -1057,11 +1071,13 @@ public class QueryBuilder {
 		for (int i =0 ; i!= cs.size(); ++i) {
 			++iter;	checkMax(iter);
 			Object obj = cs.get(i);
-			if(i%2 == 0) {
+//                        if(i%2 == 0) {
+                        try {
 				Constraint co = (Constraint)obj;
 				String key = (String)co.getKey();
 				String op = (String)co.getOp();
 				String val = (String)co.getValue();
+                            if (key!=null) {
 				if(Util.isSame(key, "dataset")) {
 					if(found)  {
 						dsQueryForDQ.append("\n");
@@ -1073,7 +1089,9 @@ public class QueryBuilder {
 					dsQueryForDQ.append(handleOp(op, val, tmpBindValues));
 					found = true;
 				}
-			}
+                            }
+			} catch (ClassCastException e) {
+                        }
 			lastObj = obj;
 		}
 		System.out.println("QUERY is " + dsQueryForDQ.toString());

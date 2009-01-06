@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.1.1 /Users/vk/Sql.g 2008-12-17 13:45:29
+// $ANTLR 3.1.1 /Users/vk/Sql.g 2008-12-23 14:14:39
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -2082,10 +2082,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = VALUE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:156:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+ )
-            // /Users/vk/Sql.g:156:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
+            // /Users/vk/Sql.g:165:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+ )
+            // /Users/vk/Sql.g:165:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
             {
-            // /Users/vk/Sql.g:156:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
+            // /Users/vk/Sql.g:165:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
             int cnt1=0;
             loop1:
             do {
@@ -2139,11 +2139,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:162:8: ( ( ',' ) )
-            // /Users/vk/Sql.g:162:9: ( ',' )
+            // /Users/vk/Sql.g:171:8: ( ( ',' ) )
+            // /Users/vk/Sql.g:171:9: ( ',' )
             {
-            // /Users/vk/Sql.g:162:9: ( ',' )
-            // /Users/vk/Sql.g:162:10: ','
+            // /Users/vk/Sql.g:171:9: ( ',' )
+            // /Users/vk/Sql.g:171:10: ','
             {
             match(','); 
 
@@ -2165,11 +2165,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = SPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:163:8: ( ( ' ' ) )
-            // /Users/vk/Sql.g:163:9: ( ' ' )
+            // /Users/vk/Sql.g:172:8: ( ( ' ' ) )
+            // /Users/vk/Sql.g:172:9: ( ' ' )
             {
-            // /Users/vk/Sql.g:163:9: ( ' ' )
-            // /Users/vk/Sql.g:163:10: ' '
+            // /Users/vk/Sql.g:172:9: ( ' ' )
+            // /Users/vk/Sql.g:172:10: ' '
             {
             match(' '); 
 
@@ -2191,11 +2191,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = DOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:164:6: ( ( '.' ) )
-            // /Users/vk/Sql.g:164:7: ( '.' )
+            // /Users/vk/Sql.g:173:6: ( ( '.' ) )
+            // /Users/vk/Sql.g:173:7: ( '.' )
             {
-            // /Users/vk/Sql.g:164:7: ( '.' )
-            // /Users/vk/Sql.g:164:8: '.'
+            // /Users/vk/Sql.g:173:7: ( '.' )
+            // /Users/vk/Sql.g:173:8: '.'
             {
             match('.'); 
 
@@ -2217,11 +2217,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = GT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:166:5: ( ( '>' ) )
-            // /Users/vk/Sql.g:166:6: ( '>' )
+            // /Users/vk/Sql.g:175:5: ( ( '>' ) )
+            // /Users/vk/Sql.g:175:6: ( '>' )
             {
-            // /Users/vk/Sql.g:166:6: ( '>' )
-            // /Users/vk/Sql.g:166:7: '>'
+            // /Users/vk/Sql.g:175:6: ( '>' )
+            // /Users/vk/Sql.g:175:7: '>'
             {
             match('>'); 
 
@@ -2243,11 +2243,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = LT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:167:5: ( ( '<' ) )
-            // /Users/vk/Sql.g:167:6: ( '<' )
+            // /Users/vk/Sql.g:176:5: ( ( '<' ) )
+            // /Users/vk/Sql.g:176:6: ( '<' )
             {
-            // /Users/vk/Sql.g:167:6: ( '<' )
-            // /Users/vk/Sql.g:167:7: '<'
+            // /Users/vk/Sql.g:176:6: ( '<' )
+            // /Users/vk/Sql.g:176:7: '<'
             {
             match('<'); 
 
@@ -2269,11 +2269,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = EQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:168:5: ( ( '=' ) )
-            // /Users/vk/Sql.g:168:6: ( '=' )
+            // /Users/vk/Sql.g:177:5: ( ( '=' ) )
+            // /Users/vk/Sql.g:177:6: ( '=' )
             {
-            // /Users/vk/Sql.g:168:6: ( '=' )
-            // /Users/vk/Sql.g:168:7: '='
+            // /Users/vk/Sql.g:177:6: ( '=' )
+            // /Users/vk/Sql.g:177:7: '='
             {
             match('='); 
 
@@ -2295,11 +2295,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:169:6: ( ( '!' ) )
-            // /Users/vk/Sql.g:169:7: ( '!' )
+            // /Users/vk/Sql.g:178:6: ( ( '!' ) )
+            // /Users/vk/Sql.g:178:7: ( '!' )
             {
-            // /Users/vk/Sql.g:169:7: ( '!' )
-            // /Users/vk/Sql.g:169:8: '!'
+            // /Users/vk/Sql.g:178:7: ( '!' )
+            // /Users/vk/Sql.g:178:8: '!'
             {
             match('!'); 
 
@@ -2321,11 +2321,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = AMP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:170:6: ( ( '&' ) )
-            // /Users/vk/Sql.g:170:7: ( '&' )
+            // /Users/vk/Sql.g:179:6: ( ( '&' ) )
+            // /Users/vk/Sql.g:179:7: ( '&' )
             {
-            // /Users/vk/Sql.g:170:7: ( '&' )
-            // /Users/vk/Sql.g:170:8: '&'
+            // /Users/vk/Sql.g:179:7: ( '&' )
+            // /Users/vk/Sql.g:179:8: '&'
             {
             match('&'); 
 
@@ -2347,11 +2347,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = NL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:172:5: ( ( '\\n' ) )
-            // /Users/vk/Sql.g:172:6: ( '\\n' )
+            // /Users/vk/Sql.g:181:5: ( ( '\\n' ) )
+            // /Users/vk/Sql.g:181:6: ( '\\n' )
             {
-            // /Users/vk/Sql.g:172:6: ( '\\n' )
-            // /Users/vk/Sql.g:172:7: '\\n'
+            // /Users/vk/Sql.g:181:6: ( '\\n' )
+            // /Users/vk/Sql.g:181:7: '\\n'
             {
             match('\n'); 
 
@@ -2373,10 +2373,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:173:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
-            // /Users/vk/Sql.g:173:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // /Users/vk/Sql.g:182:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
+            // /Users/vk/Sql.g:182:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             {
-            // /Users/vk/Sql.g:173:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // /Users/vk/Sql.g:182:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             int cnt2=0;
             loop2:
             do {

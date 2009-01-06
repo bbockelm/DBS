@@ -52,16 +52,23 @@ keyword	: entity
 	| count spaces '(' spaces entity spaces ')'
 	| sum spaces '(' spaces entity DOT attr spaces ')';
 	
-constraintList	: constraint ( spaces 
+constraintList	: constraint1 ( spaces 
 	rel=	logicalOp 		{ constraints.add($rel.text);}
-		spaces constraint)*;
+		spaces constraint1)*;
+lopen		: (lb)*;
+ropen		: (rb)*;
+constraint1     : kl=   lopen   {Constraint c1=new Constraint();c1.setBracket($kl.text);constraints.add(c1);}
+                spaces 
+                constraint 
+                spaces 
+                kr=     ropen   {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);};
 
 constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces
 	 op=	compOpt 	{c.setOp($op.text);}   
 		spaces
 	 val=	genValue 	{c.setValue($val.text); constraints.add(c); 	}               
-		| 
+		|
 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces 
 	op1=	in 	 	{c.setOp($op1.text);}  
@@ -149,6 +156,8 @@ sum		:('sum' | 'SUM');
 asc		:('asc' | 'ASC');
 desc		:('desc' | 'DESC');
 between		:('between' | 'BETWEEN');
+lb		: ('(');
+rb		: (')');
 //likeLeft	:('LikeLeft');
 //likeRight	:('LikeRight');
 //likeCfg		:('<like>');
