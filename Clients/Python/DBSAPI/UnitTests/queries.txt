@@ -46,7 +46,7 @@ find procds.parent,procds.name  where procds.name like %Test% or procds.parent l
 find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW  or dataset=/abc/Online/RAW
 find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD and dataset = /Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO
 find dataset, procds.createdate where dq = Tracker_Global=GOOD&TIB_Local=GOOD and dataset = /Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO
-find file,lumi,dataset where dq = Tracker_Global=GOOD&TIB_Local=GOOD&TIB_DCS=UNKNOWN or file.size > 1000 /Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO
+#find file,lumi,dataset where dq = Tracker_Global=GOOD&TIB_Local=GOOD&TIB_DCS=UNKNOWN or file.size > 1000 and dataset=/Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO
 find file, file.tier
 find file where file.tier = GEN
 find run where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db
