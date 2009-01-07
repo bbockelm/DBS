@@ -82,11 +82,12 @@ ALTER TABLE FileProcQuality ADD CONSTRAINT
 ---
 
 ALTER TABLE ProcessingStatus ADD CONSTRAINT
-    ProcStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
+    ProcStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID);
+
+
 ALTER TABLE ProcessingStatus ADD CONSTRAINT
-    ProcStatusLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
+    ProcStatusLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID);
+
 
 -- LastModified Time Stamp Trigger
 
