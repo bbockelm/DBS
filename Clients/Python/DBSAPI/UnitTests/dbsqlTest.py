@@ -10,16 +10,17 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
  
 def testAllQueriesInFile(qFile = 'queries.txt'):
-	try:
+	
 		qList = open(qFile).readlines()
 		for aQuery in qList:
 			aQuery = aQuery.strip()
 			if not aQuery.startswith('#'):
-				print aQuery,
-				api.executeQuery(aQuery)
-				print '   <<<<<<<< PASSED >>>>>>>>'
-	except:
-		print '   <<<<<<<< FAILED >>>>>>>>'
+				try:
+					print aQuery,
+					api.executeQuery(aQuery)
+					print '   <<<<<<<< PASSED >>>>>>>>'
+				except:
+					print '   <<<<<<<< FAILED >>>>>>>>'
 		#import sys
 		#print "Unexpected error:", sys.exc_info()[0]
 		#print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
