@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary']
+    iList=['engine','user','password','verbose','dbname','url','iface','rs','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -96,6 +96,10 @@ class DDConfig:
     if not self.configDict.has_key('iface'):
        raise DDException(args="Data Discovery configuration, DBSDD.conf, missing IFACE parameter")
     return self.configDict['iface']
+  def rs(self):
+    if not self.configDict.has_key('rs'):
+       raise DDException(args="Data Discovery configuration, DBSDD.conf, missing RS parameter")
+    return self.configDict['rs']
   def url(self):
     if not self.configDict.has_key('url'):
        raise DDException(args="Data Discovery configuration, DBSDD.conf, missing URL parameter")
