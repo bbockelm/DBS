@@ -139,7 +139,7 @@ class DDServer(DDLogger,Controller):
         self.sitecfg  = SiteConfigManager(self.sdb, verbose)
 
         self.phedexServer= DDParamServer(server="cmsweb.cern.ch",verbose=verbose)
-        self.PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
+        self.PhedexURL="https://cmsweb.cern.ch/phedex/prod/Request::Create"
         self.dbsglobal = DBSGLOBAL
 #        self.dbsglobal = 'global_r'
         self.dbs  = self.dbsglobal
