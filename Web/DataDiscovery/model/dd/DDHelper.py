@@ -2652,6 +2652,10 @@ MCDescription:      %s
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
+              if  sRun:
+                  sRun=timeGMT(sRun)
+              if  eRun:
+                  eRun=timeGMT(eRun)
               if not fSize: fSize=0
               if not run: continue
 #              print "\n\n#####"
