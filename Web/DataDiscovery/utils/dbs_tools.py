@@ -147,23 +147,32 @@ class DBSManager(object):
     """
     DBS manager which construct DBS API based on DBS RS service
     """
-    def __init__(self, verbose = None):
+    def __init__(self, use_rs=0, verbose = None):
         self.dbsconfig={'mode':'POST', 'retry':2}
         self.verbose = verbose
         self.dbsapi  = {}
         self.dbsattr = {} # dict[alias]=(url,account,ver)
         self.dbsall  = {}
         self.qldict  = {} # dict of supported keys:attrs
-        self.init_DB()
-#        self.init_RS()
+        if  use_rs == "0" or not use_rs:
+            self.init_DB()
+        else:
+            self.init_RS()
 
     def init_DB(self):
-        from utils.DDAuth import DBS_INST_URL, DDAuthentication
+        from utils.DDAuth import DDAuthentication
         auth = DDAuthentication()
-        # DBS_INST_URL read by utils/DDAuth.py
-        for dbs, url in DBS_INST_URL.iteritems():
+        for dbs in auth.dbsInstances():
+            dbAuth  = DDAuthentication(dbs, self.verbose) 
+            dbType, dbName, dbUser, dbPass, host, url = dbAuth.dbInfo()
+            dbOwner = dbs.upper()
             url = url.replace('https','http').replace('_writer','').replace(':8443','')
-            self.dbsattr[dbs]={'url':url, 'account':dbs, 'version':'DBS_2_0_4'}
+            version = 'DBS_2_0_4'
+            self.dbsattr[dbs]={'url':url, 'account':dbUser, 'version':version}
+            dbsdict = {'url':url, 'login':dbUser, 'owner':dbOwner,
+                       'version':version, 'critical':'Y',
+                       'dbtype':dbType, 'location':'CERN'}
+            self.dbsall[dbs] = dbsdict
 
     def init_RS(self):
         reader = re.compile('_r$')
