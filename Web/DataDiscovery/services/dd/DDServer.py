@@ -133,7 +133,7 @@ class DDServer(DDLogger,Controller):
         setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
 
         # data service managers
-        self.dbsmgr   = DBSManager(verbose)
+        self.dbsmgr   = DBSManager(self.ddConfig.rs(), verbose)
         self.sdb      = SiteDBManager(verbose)
         self.phedex   = PhedexManager(self.sdb, verbose)
         self.sitecfg  = SiteConfigManager(self.sdb, verbose)
@@ -218,7 +218,6 @@ class DDServer(DDLogger,Controller):
         self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':self.ddConfig.dbsVer(),'retry':2}
         # made connection to all known DBS instances
         self.dbManager.connect(self.dbsglobal,self.iface)
-#        vlock = thread.allocate_lock()
         for dbs in self.dbsList:
             thread.start_new_thread(self.dbManager.connect,(dbs,self.iface))
             self.getDbsApi(dbs)
