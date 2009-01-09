@@ -62,8 +62,7 @@ class DbsApi2(object):
             should be replace with real countQuery once it's presented on server
         """
         params = dict(self.params)
-        # TODO: uncomment once server is ready
-#        params['api']   = 'countQuery'
+        params['api']   = 'countQuery'
         params['query'] = query
         params['type']  = 'exe'
         params['begin'] = ''
@@ -83,4 +82,5 @@ if __name__ == "__main__":
     dbsapi = DbsApi2(config)
     query = 'find site where site like *'
     data = dbsapi.executeQuery(query,0,10)
+    data = dbsapi.countQuery(query)
     print data

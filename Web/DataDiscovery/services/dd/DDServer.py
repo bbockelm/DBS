@@ -5640,17 +5640,17 @@ All LFNs in a block
                 raise
 
     def _countQuery(self, dbsInst, userInput):
-#        nResults = self.dbsmgr.count(dbsInst, userInput)
-        dbsApi = self.getDbsApi(dbsInst)
-        try:
-            res = dbsApi.executeQuery(userInput, type="query")
-        except:
-            traceback.print_exc()
-            raise
-        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-        method = "dbsapi"
-        self.helperInit(dbsInst, method)
-        nResults=self.qmaker.executeDBSCountQuery(dbsInst,count_sql,count_bindDict,iface=method)
+        nResults = self.dbsmgr.count(dbsInst, userInput)
+#        dbsApi = self.getDbsApi(dbsInst)
+#        try:
+#            res = dbsApi.executeQuery(userInput, type="query")
+#        except:
+#            traceback.print_exc()
+#            raise
+#        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
+#        method = "dbsapi"
+#        self.helperInit(dbsInst, method)
+#        nResults=self.qmaker.executeDBSCountQuery(dbsInst,count_sql,count_bindDict,iface=method)
         return nResults
 
     def multiSearch(self,userInput,**kwargs):

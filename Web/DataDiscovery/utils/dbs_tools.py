@@ -295,7 +295,8 @@ class DBSManager(object):
 #        return dbsapi.countQuery(userinput)
         dbsxml = dbsapi.countQuery(userinput)
         result, titles = dbsparser(dbsxml)
-        return len(result)
+        return result[0][0]
+#        return len(result)
 
     def exexml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
