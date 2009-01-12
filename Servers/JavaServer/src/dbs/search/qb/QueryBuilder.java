@@ -748,6 +748,11 @@ public class QueryBuilder {
 				Vertex vCombined = u.getMappedVertex(orderBy);
 				if(vCombined == null) orderToken = km.getMappedValue(orderBy, true);
 				else orderToken = u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined);
+                                // added by Valentin, the etc/DBSSchemaGraph.xml needs additional attribute which will provide mapping to real table.column in case of ambiguity
+                                String mappedName = u.getMappedFromVertex(vCombined);
+                                if (mappedName != null) {
+                                    orderToken = mappedName;
+                                }
 			}
 
 			query += orderToken;

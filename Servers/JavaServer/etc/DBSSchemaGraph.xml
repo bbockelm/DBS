@@ -16,18 +16,18 @@
 	<node id="AppVersion"			user="release, algo.version"		real="AppVersion" 			default="Version"/>
 	<node id="AppExecutable" 		user="exe, algo.exe" 		real="AppExecutable" 			default="ExecutableName"/>
 	<node id="FileTier" 			user="file.tier"	real="FileTier" 			default="Fileid,DataTier"/>
-	<node id="FileParentage" 		user="file.parent"	real="FileParentage" 			default="ThisFile,ItsParent"/>
+	<node id="FileParentage" 		user="file.parent"	real="FileParentage" 			default="ThisFile,ItsParent"    mapped="Files.LogicalFileName"/>
 	<node id="FileChildage" 		user="file.child"	real="FileChildage" 			default="ThisFile,ItsParent"/>
 	<node id="FileRunLumi" 			user="frl" 		real="FileRunLumi" 			default="Fileid,Lumi,Run"/>
-	<node id="FileAlgo" 			user="file.release" 	real="FileAlgo" 			default="Fileid,Algorithm"/>
+        <node id="FileAlgo" 			user="file.release" 	real="FileAlgo" 			default="Fileid,Algorithm"      mapped="AppVersion.Version"/>
 	<node id="FileStatus" 			user="file.status" 	real="FileStatus" 			default="Status"/>
 	<node id="FileType" 			user="file.type" 	real="FileType" 			default="Type"/>
 	<node id="FileValidStatus" 		user="file.vstatus" 	real="FileValidStatus" 			default="Status"/>
 	<node id="FileTriggerTag" 		user="ftrigger" 	real="FileTriggerTag" 			default="Fileid,TriggerTag"/>
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
 	<node id="ProcDSTier" 			user="procds.tier,dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
-	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent"/>
-	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"/>
+	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
+	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"     mapped="AppVersion.Version"/>
 	<node id="AnalysisDataset" 		user="ads" 		real="AnalysisDataset" 			default="Name,Version"/>
 	<node id="AnalysisDSType" 		user="ads.type" 	real="AnalysisDSType" 			default="Type"/>
 	<node id="AnalysisDSStatus" 		user="ads.status" 	real="AnalysisDSStatus" 		default="Status"/>

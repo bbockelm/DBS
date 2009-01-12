@@ -56,6 +56,9 @@ public class GraphUtil{
 	public String getDefaultFromVertex(Vertex v){
 		return (String) v.getUserDatum("default");
 	}
+	public String getMappedFromVertex(Vertex v){
+		return (String) v.getUserDatum("mapped");
+	}
 
 	public String getMappedRealName(String userName){
 		return getRealFromVertex(getMappedVertex(userName));
