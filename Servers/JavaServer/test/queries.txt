@@ -156,3 +156,6 @@ find algo.version, algo.family, algo.exe where algo.family like *
 find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby
 find mcdesc, mcdesc.name, mcdesc.def, mcdesc.parent, mcdesc.createdate, mcdesc.createby where primds like *
 find trigdesc, trigdesc.name, trigdesc.createdate, trigdesc.createby where primds like *
+find primds order by datatype
+find primds where primds like * order by datatype
+find primds where primds like * order by datatype desc

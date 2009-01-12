@@ -40,8 +40,38 @@ public class Wrapper {
 			ArrayList okws = parser.okws;
 			ArrayList cs = parser.constraints;
 			String orderingkw = parser.orderingkw;
-			if (orderingkw == null) System.out.println("orderingkw is NULLLLLLLLLLLLLLL");
-			else System.out.println("ordering is "+ orderingkw);
+			if (orderingkw == null) {
+                            System.out.println("orderingkw is NULL");
+                        } else {
+			    System.out.println("ordering is "+ orderingkw);
+                        }
+                        // merge ordering and selection keywords to allow users to specify
+                        // ordering while not doing this selection, e. g.
+                        // find dataset where ... ordering by run
+			for(int i=0; i != okws.size(); ++i)  {
+                            String orderby = (String)okws.get(i);
+//                                    System.out.println("okws = '" + orderby + "'");
+                            int found=0;
+                            for(int j=0; j != kws.size(); ++j) {
+                                String name = (String)kws.get(j);
+//                                    System.out.println("kws = '" + name+"'");
+                                if (name.equals(orderby)) {
+//                                    System.out.println("Found kws=okws, " + name);
+                                    found = 1;
+                                }
+                            }
+                            if (found == 0) {
+//                                System.out.println("Adding okws to kws, " + orderby);
+                                kws.add(orderby);
+                            }
+                        }
+                        // check if there is no ordering, if so use first selected
+                        // keyword
+                        if (okws.size()==0) {
+                            okws.add((String)kws.get(0));
+                            orderingkw="desc";
+                        }
+
 			for (int i =0 ; i!= kws.size(); ++i) 
 				System.out.println("KEWORD\t" + kws.get(i));
 		
