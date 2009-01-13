@@ -1,5 +1,5 @@
 find file where file.release=CMSSW_1_7_1
-find file,file.status,file.type where procds.release=CMSSW_1_7_1
+find file,file.status,file.type, file.checksum where procds.release=CMSSW_1_7_1
 find file.id,lumi.id   where procds.release=CMSSW_1_7_1
 find file.name, file.createdate where run.number=35672 and run.moddate>2
 find file,file.size,dataset where procds.name=Online and file.size>546294916

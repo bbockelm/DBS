@@ -7,6 +7,7 @@ public class KeyMap {
 		map.put("file.name", "Files.LogicalFileName");
 		map.put("file.size", "Files.FileSize");
 		map.put("file.id", "Files.ID");
+		map.put("file.checksum", "Files.Checksum");
 		map.put("file.numevents", "Files.NumberOfEvents");
 		map.put("file.createdate", "Files.CreationDate");
 		map.put("file.moddate", "Files.LastModificationDate");
