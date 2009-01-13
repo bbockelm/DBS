@@ -50,11 +50,11 @@ public class Wrapper {
                         // find dataset where ... ordering by run
 			for(int i=0; i != okws.size(); ++i)  {
                             String orderby = (String)okws.get(i);
-//                                    System.out.println("okws = '" + orderby + "'");
+//                            System.out.println("okws = '" + orderby + "'");
                             int found=0;
                             for(int j=0; j != kws.size(); ++j) {
                                 String name = (String)kws.get(j);
-//                                    System.out.println("kws = '" + name+"'");
+//                                System.out.println("kws = '" + name+"'");
                                 if (name.equals(orderby)) {
 //                                    System.out.println("Found kws=okws, " + name);
                                     found = 1;
@@ -67,9 +67,13 @@ public class Wrapper {
                         }
                         // check if there is no ordering, if so use first selected
                         // keyword
-                        if (okws.size()==0) {
-                            okws.add((String)kws.get(0));
-                            orderingkw="desc";
+                        String firstSelName = (String)kws.get(0);
+                        if (okws.size()==0 ) {
+                            if (firstSelName.indexOf("(")==-1 && firstSelName.indexOf(".count")==-1) {
+//                                System.out.println("Adding default ordering " +firstSelName);
+                                okws.add(firstSelName);
+                                orderingkw="desc";
+                            }
                         }
 
 			for (int i =0 ; i!= kws.size(); ++i) 

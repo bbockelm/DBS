@@ -744,14 +744,27 @@ public class QueryBuilder {
 			if(orderOnce) query += ",";
 			String orderToken = "";
 			if(Util.isSame(orderBy, "dataset")) orderToken = "Block.Path";
+                        else if ((String)okws.get(0)==(String)kws.get(0) && (String)okws.get(0)==orderBy) {
+                             // if we pass order by keyword equal to first selected keyword
+                             // e.g. case of default ordering, we just need to lookup
+                             // first selected keyword from query and use it in order token
+                             int begIdx = query.indexOf("AS")+2;
+                             String[] temp = query.replace("\t"," ").replace("\n"," ").substring(begIdx, query.length()).split(" ");
+                             orderToken = temp[1];
+//                             int endIdx = query.substring(begIdx,query.length()).indexOf(" ");
+//                             orderToken = query.substring(begIdx, endIdx);
+                        }
 			else {
 				Vertex vCombined = u.getMappedVertex(orderBy);
 				if(vCombined == null) orderToken = km.getMappedValue(orderBy, true);
 				else orderToken = u.getRealFromVertex(vCombined) + "." + u.getDefaultFromVertex(vCombined);
                                 // added by Valentin, the etc/DBSSchemaGraph.xml needs additional attribute which will provide mapping to real table.column in case of ambiguity
-                                String mappedName = u.getMappedFromVertex(vCombined);
-                                if (mappedName != null) {
-                                    orderToken = mappedName;
+                                try {
+                                    String mappedName = u.getMappedFromVertex(vCombined);
+                                    if (mappedName != null) {
+                                        orderToken = mappedName;
+                                    }
+                                } catch (Exception e) {
                                 }
 			}
 

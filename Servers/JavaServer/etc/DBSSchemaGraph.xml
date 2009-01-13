@@ -17,7 +17,7 @@
 	<node id="AppExecutable" 		user="exe, algo.exe" 		real="AppExecutable" 			default="ExecutableName"/>
 	<node id="FileTier" 			user="file.tier"	real="FileTier" 			default="Fileid,DataTier"/>
 	<node id="FileParentage" 		user="file.parent"	real="FileParentage" 			default="ThisFile,ItsParent"    mapped="Files.LogicalFileName"/>
-	<node id="FileChildage" 		user="file.child"	real="FileChildage" 			default="ThisFile,ItsParent"/>
+	<node id="FileChildage" 		user="file.child"	real="FileChildage" 			default="ThisFile,ItsParent"    mapped="Files.LogicalFileName"/>
 	<node id="FileRunLumi" 			user="frl" 		real="FileRunLumi" 			default="Fileid,Lumi,Run"/>
         <node id="FileAlgo" 			user="file.release" 	real="FileAlgo" 			default="Fileid,Algorithm"      mapped="AppVersion.Version"/>
 	<node id="FileStatus" 			user="file.status" 	real="FileStatus" 			default="Status"/>
