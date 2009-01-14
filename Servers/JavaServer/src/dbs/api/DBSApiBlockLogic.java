@@ -1,6 +1,6 @@
 /**
- $Revision: 1.65 $"
- $Id: DBSApiBlockLogic.java,v 1.65 2008/11/21 22:19:49 afaq Exp $"
+ $Revision: 1.66 $"
+ $Id: DBSApiBlockLogic.java,v 1.66 2008/12/11 15:56:44 afaq Exp $"
  *
  */
 
@@ -450,13 +450,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 */
 	public void updateSEName(Connection conn, Writer out, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
 
-                //Anzar Afaq - 09/16/2008
-                //SEs will only be added if its not a GLOBAL instance
-                //SE info in DBS Global is not maintained anymore (done in Phedex)
-                if (this.data.instanceName.equals("GLOBAL")) {
-		 	throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
-                 } else {
-
 			String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , false);
 			String seIDOld = getID(conn, "StorageElement", "SEName", seNameFrom , true);
 			String deleteSeMaps = "";
@@ -468,6 +461,10 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 						"The new SE "+seNameTo+" provided was not in DBS, so older SE "+seNameFrom+" is changed to newer",
 						dbsUser);
 			} else {
+				//Cannot do such a change any more, if this is GLOBAl intance, give up !!!	
+				if (this.data.instanceName.equals("GLOBAL")) 
+					throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+
 				Vector oldBlockIDs = getBlockIDListFromMap(conn, seIDOld);
 				Vector newBlockIDs = getBlockIDListFromMap(conn, seIDNew);
 				for (int i = 0; i != oldBlockIDs.size() ; ++i) {
@@ -497,9 +494,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					"Some older SE-Block maps may have been deleted, or renamed",
 					deleteSeMaps + updatedSE + ".Further Old Storage Element " + seNameFrom + "is deleted ",
 					dbsUser);
-	
 			}
-		}
 	
 	}
 
