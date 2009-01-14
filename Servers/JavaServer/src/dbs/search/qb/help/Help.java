@@ -245,6 +245,7 @@ public class Help {
 		kw.attrs.add("child");
 		kw.attrs.add("tier");
 		kw.attrs.add("numevents");
+		kw.attrs.add("checksum");
 		kw.attrs.add("createdate");
 		kw.attrs.add("moddate");
 		kw.attrs.add("createby");
@@ -266,8 +267,8 @@ public class Help {
 		e.query = "find file where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO and file.status= INVALID";
 		kw.examples.add(e);
 		e = new Example();
-		e.desc = "I want to find file and its release, size, type, tier and status in a dataset";
-		e.query = "find file, file.release, file.size, file.type, file.tier, file.status where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		e.desc = "I want to find file and its release, size, type, tier, status and checksum in a dataset";
+		e.query = "find file, file.release, file.size, file.type, file.tier, file.status, file.checksum where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
 		kw.examples.add(e);
 		e = new Example();
 		e.desc = "I want to find a parent of a file";
@@ -300,6 +301,22 @@ public class Help {
 		map.put(kw.entity, kw);
 
 
+		//-------------------------------------------------------------------------
+
+
+		kw = new Keyword();
+		kw.entity = "branch";
+		kw.attrs.add("name");
+		kw.attrs.add("createdate");
+		kw.attrs.add("moddate");
+		kw.attrs.add("createby");
+		kw.attrs.add("modby");
+		kw.attrs.add("id");
+
+		e = new Example();
+		e.desc = "I want to find branch information of a file";
+		e.query = "find branch, branch.name, branch.createby, branch.createdate  where file = NEW_TEST0005";
+		kw.examples.add(e);
 		//-------------------------------------------------------------------------
 
 

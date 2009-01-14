@@ -64,6 +64,11 @@ public class KeyMap {
 		map.put("lumi.createdate", "LumiSection.CreationDate");
 		map.put("lumi.moddate", "LumiSection.LastModificationDate");
 		
+		map.put("branch.name", "Branch.Name");
+		map.put("branch.id", "Branch.ID");
+		map.put("branch.createdate", "Branch.CreationDate");
+		map.put("branch.moddate", "Branch.LastModificationDate");
+		
 		map.put("ads.name", "AnalysisDataset.Name");
 		map.put("ads.id", "AnalysisDataset.ID");
 		map.put("ads.version", "AnalysisDataset.Version");
