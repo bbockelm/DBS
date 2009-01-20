@@ -92,6 +92,7 @@ def parseDBSoutput(data,titles):
             if r[idx-1].lower().find("size=")!=-1: elem = sizeFormat(r[idx])
             if r[idx-1].lower().find("dn=")!=-1: elem = parseCreatedBy(r[idx])
             if r[idx-1].lower().find("date=")!=-1: elem = parseDate(r[idx])
+            item.append(elem)
             if  not lList or len(lList)==counter:
                 lList.append(len(elem))
             else:
