@@ -183,13 +183,13 @@ SYMBOLS_LIST=[('+','__pl__'),('-','__mi__'),('/','__sl__'),('#','__po__')]
 
 def timeGMT(iTime):
     try:
-       return time.strftime("%d %b %Y %H:%M:%S GMT",time.gmtime(iTime))
+       return time.strftime("%d %b %Y %H:%M:%S GMT",time.gmtime(long(iTime)))
     except:
        return "Unknown time format, iTime=%s"%iTime
 
 def timeGMTshort(iTime):
     try:
-       return time.strftime("%d/%m/%y",time.gmtime(iTime))
+       return time.strftime("%d/%m/%y",time.gmtime(long(iTime)))
     except:
        return "Unknown time format, iTime=%s"%iTime
 
