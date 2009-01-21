@@ -30,6 +30,7 @@ public class KeyMap {
 		map.put("dataset.parent", "Block.Path");
 
 		map.put("primds.name", "PrimaryDataset.Name");
+		map.put("primds.annotation", "PrimaryDataset.Annotation");
 		map.put("primds.id", "PrimaryDataset.ID");
 		map.put("primds.createdate", "PrimaryDataset.CreationDate");
 		map.put("primds.moddate", "PrimaryDataset.LastModificationDate");
