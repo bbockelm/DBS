@@ -1,0 +1,16 @@
+find primds
+find dataset
+find site
+find release
+find procds
+find procds.release, procds.tag, procds.status, procds.parent, procds.tier where dataset=/DBS_UNIT_TEST/Test_ProcessedDataset_Name/RECO
+find block where dataset=/DBS_UNIT_TEST/Test_ProcessedDataset_Name__Parent/GEN-SIM
+find block.size, block.dataset where dataset like *Child*
+find count(block) where dataset=/DBS_UNIT_TEST/Test_ProcessedDataset_Name/RECO
+find sum(block.size) where dataset=/DBS_UNIT_TEST/Test_ProcessedDataset_Name__Parent/GEN-SIM
+find run where primds=DBS_UNIT_TEST
+find count(run) where dataset like *DBS_UNIT_TEST*
+find sum(run.numevents) where dataset=/DBS_UNIT_TEST/Test_ProcessedDataset_Name/RECO and file.size > 100
+find file, file.release, file.size, file.type, file.tier, file.status where dataset=/DBS_UNIT_TEST/Test_ProcessedDataset_Name__Parent/GEN-SIM
+find file.count where dataset=/DBS_UNIT_TEST/Test_ProcessedDataset_Name/RECO
+find sum(file.size) where dataset like *Child*
