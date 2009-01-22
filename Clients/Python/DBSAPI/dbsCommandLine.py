@@ -50,7 +50,7 @@ except Exception, ex:
 import urllib
 
 import xml.sax, xml.sax.handler
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape, unescape
 from xml.sax import SAXParseException
 
 # Importing a dynamically generated module
@@ -1524,16 +1524,16 @@ class ApiDispatcher:
 												% (usequery, martQ['CREATEDAT']),
                          )
 
-		stdmgr=manageStdOut()
-		stdmgr.capture()
+		#stdmgr=manageStdOut()
+		#stdmgr.capture()
 		self.api.createAnalysisDatasetDefinition (adsdef)
-		stdmgr.restore()
+		#stdmgr.restore()
 	except DbsApiException, ex:
 		if ex.getErrorMessage().find("Already Exists") < 0:
 			self.printBLUE ("Caught DBS Exception %s: %s "  % (ex.getClassName(), \
 									ex.getErrorMessage() ) )
 			return
-		stdmgr.restore()
+		#stdmgr.restore()
 		self.printBLUE ("WARNING : Unable to create ADS Definition")
 		self.printBLUE ("ADS Definition ALREADY EXISTS")
 		self.printBLUE ("Existing Definition will be reused by the DBS instance")
@@ -1552,14 +1552,14 @@ class ApiDispatcher:
 				% (usequery, martQ['CREATEDAT']),
                 )	
 		print "Processing, please wait..."
-                stdmgr=manageStdOut()
-                stdmgr.capture()
+                #stdmgr=manageStdOut()
+                #stdmgr.capture()
 		self.api.createAnalysisDataset(ads, usequery)		
-		stdmgr.restore()
+		#stdmgr.restore()
 		self.progress.stop()
 		self.printGREEN("Analysis Dataset Created")
         except DbsApiException, ex:
-		stdmgr.restore()
+		#stdmgr.restore()
 		self.progress.stop()
                 self.printRED ("Unable to create ADS")
 		if ex.getErrorMessage().find("Already Exists") < 0:
@@ -2120,7 +2120,7 @@ class ApiDispatcher:
 	# The fun begins
 	adsdef = {}
 	adsdef['PATH']=path
-	adsdef['USERINPUT']=userquery
+	adsdef['USERINPUT']=unescape(userquery)
 	adsdef['QUERY']=sqlquery
 	adsdef['EXISTS_IN_DBS']='false'
 	adsdef['HOSTURL']=self.api.url()
