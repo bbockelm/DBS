@@ -58,26 +58,51 @@ public class DBSApiExecuteQuery {
         }
 
 	public synchronized void runQuery(Writer out, String userQuery, String query, PreparedStatement statement) throws Exception {
-                String[] selFields = extractSel(userQuery);
-//                for(int i=0; i<selFields.length; ++i) {
-//                        System.out.println("sel field = "+selFields[i]);
-//                }
+                String countQuery = "SELECT COUNT(*) AS CNT";
+                boolean ifCount = query.substring(0,countQuery.length()).equals(countQuery);
+                String[] selFields = null;
+                if ( ifCount ) {
+                    selFields = null;
+                } else {
+//                    String[] selFields = extractSel(userQuery);
+                    selFields = extractSel(userQuery);
+                }
+
 		ResultSet rs = null;
 		try {
 			rs = queryExecutor.executeQuery(statement, query);
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int numberOfColumns = rsmd.getColumnCount();
-/*
-                        if (numberOfColumns != selFields.length) {
-                            // error condition
-                            throw new Exception("Number of found selected fields not equal to found table.columns");
-                        }
-*/
 			String[] colNames =new String[numberOfColumns];
 			for (int i = 0; i != numberOfColumns; ++i) {
 				colNames[i] = rsmd.getColumnLabel(i + 1);
 			}
 			while(rs.next()) {
+                                String result = "";
+
+                                if (ifCount) {
+                                    result = "<count>"+((String) get(rs, colNames[0] ))+"</count>";
+                                } else {
+
+                                    for (int i = 0; i != selFields.length; ++i) {
+                                            String field = selFields[i].trim();
+                                            String name  = field.replace("(","_").replace(")","");
+                                            String btag = "\n  <"  + name + ">";
+                                            String etag = "</" + name + ">";
+                                            String res  = "";
+                                            if (colNames[i].toLowerCase().indexOf("date") != -1) {
+                                                res = (String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)); 
+                                            } else {
+                                                res = ((String) get(rs, colNames[i] ));
+                                            }
+                                            result += btag + res + etag;
+                                    }
+                                }
+                                out.write("\n<result>");
+                                out.write(result);
+                                out.write("\n</result>\n");
+
+/*
 				out.write(((String) "<result "));
 //                                for (int i = 0; i != numberOfColumns; ++i) {
 //                                        out.write(((String) colNames[i] + "='"));
@@ -91,6 +116,7 @@ public class DBSApiExecuteQuery {
 					else out.write(((String) get(rs, colNames[i] ) +"' "));
 				}
 				out.write(((String) "/>\n"));
+*/
 			}
 
 		} finally {
