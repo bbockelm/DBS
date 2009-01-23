@@ -1524,16 +1524,16 @@ class ApiDispatcher:
 												% (usequery, martQ['CREATEDAT']),
                          )
 
-		#stdmgr=manageStdOut()
-		#stdmgr.capture()
+		stdmgr=manageStdOut()
+		stdmgr.capture()
 		self.api.createAnalysisDatasetDefinition (adsdef)
-		#stdmgr.restore()
+		stdmgr.restore()
 	except DbsApiException, ex:
 		if ex.getErrorMessage().find("Already Exists") < 0:
 			self.printBLUE ("Caught DBS Exception %s: %s "  % (ex.getClassName(), \
 									ex.getErrorMessage() ) )
 			return
-		#stdmgr.restore()
+		stdmgr.restore()
 		self.printBLUE ("WARNING : Unable to create ADS Definition")
 		self.printBLUE ("ADS Definition ALREADY EXISTS")
 		self.printBLUE ("Existing Definition will be reused by the DBS instance")
@@ -1552,14 +1552,14 @@ class ApiDispatcher:
 				% (usequery, martQ['CREATEDAT']),
                 )	
 		print "Processing, please wait..."
-                #stdmgr=manageStdOut()
-                #stdmgr.capture()
+                stdmgr=manageStdOut()
+                stdmgr.capture()
 		self.api.createAnalysisDataset(ads, usequery)		
-		#stdmgr.restore()
+		stdmgr.restore()
 		self.progress.stop()
 		self.printGREEN("Analysis Dataset Created")
         except DbsApiException, ex:
-		#stdmgr.restore()
+		stdmgr.restore()
 		self.progress.stop()
                 self.printRED ("Unable to create ADS")
 		if ex.getErrorMessage().find("Already Exists") < 0:
@@ -1835,97 +1835,9 @@ class ApiDispatcher:
 
   def getDataFromDBSServer(self, userInput, qu="exe"):
 
-	results={}
-	results['QUERY']=''
-	results['USERINPUT']=''
-	results['DATASETPATH']=''
-	results['ADSFileList']=[]
-	
 	data=self.api.executeQuery(userInput, type=qu)
-	#print data
-        if self.optdict.has_key('quiet'):
-		quiet=self.optdict.get('quiet')
-        try:
-        # DbsExecutionError message would arrive in XML, if any
-         class Handler (xml.sax.handler.ContentHandler):
 
-           def __init__(self):
-                xml.sax.handler.ContentHandler.__init__(self)
-                self.next_is_query=0
-                self.next_is_userinput=0
-                self.next_is_dataset=0
-                self.new_file=0
-                self.dataset_once=1
-		self.sql_once=1
-		self.columns = True
-
-           def startElement(self, name, attrs):
-                if name == 'sql':
-                        self.next_is_query=1
-
-                if name == 'userinput':
-                        self.next_is_userinput=1
-
-                # That sucks 
-                if name == 'timeStamp':
-                        self.next_is_userinput=0
-
-
-		if name == 'result':
-			#result FILES_LOGICALFILENAME 	PATH
-			out=""
-			if self.columns:
-				self.columns = False
-				cout = ""
-				for akey in attrs.keys():
-					cout += akey + '\t'
-				print cout
-				print '_________________________________________________________________________________'
-
-			for akey in attrs.keys():
-				out += str(attrs[akey]) + '\t'
-
-			#for aval in attrs.values():
-			#	out += "    " +str(aval)
-			if not quiet: print out
-			if  attrs.has_key('FILES_LOGICALFILENAME'):
-				aFile={}
-				aFile['LogicalFileName']=str(attrs['FILES_LOGICALFILENAME'])
-                        	results['ADSFileList'].append(aFile)
-			if self.dataset_once==1:
-				if  attrs.has_key('PATH'):
-					results['DATASETPATH']+=str(escape(attrs['PATH']))
-					self.dataset_once=0
-
-           def characters(self, s):
-
-                if str(escape(s)).strip() in ("\n", ""): return
-                elif self.next_is_query==1 and self.sql_once==1:
-                        results['QUERY'] += str(escape(s))
-                        return
-
-                elif self.next_is_userinput==1:
-                        results['USERINPUT']+=str(escape(s))
-                        return
-                else: pass
-
-           def endElement(self, name):
-                if name=='sql':
-                        self.next_is_query=0
-			self.sql_once=0
-                if name == 'userinput':
-                        self.next_is_userinput=0
-
-         xml.sax.parseString (data, Handler ())
-
-        except SAXParseException, ex:
-         msg = "Unable to parse XML response from DBS Server"
-         msg += "\n  Server not responding as desired %s" % self.Url
-         raise DbsConnectionError (args=msg, code="505")
-
-        #print results
-
-        return results
+        return self.parseResults(data)
 
   def getDataFromDDSearch(self, userInput):
  
@@ -1937,6 +1849,9 @@ class ApiDispatcher:
   
     data=self.sendMessage2DD(host,port,dbsInst,userInput)
     #,page='0',limit=10,xml=0,case='on',details=0,debug=0)
+    return self.parseResults(data)
+
+  def parseResults(self, data):
 
     results={}
     results['QUERY']=''
@@ -1975,6 +1890,7 @@ class ApiDispatcher:
 		# That sucks 
 		if name == 'timeStamp':
 			self.next_is_userinput=0
+		print name
 
 	   def characters(self, s):
 
@@ -2017,13 +1933,12 @@ class ApiDispatcher:
       raise DbsConnectionError (args=msg, code="505")
 
     #print results
-
     return results
 
   def handleSearchCall(self):
 
     """
-    	Interface to DBS Discovery Page
+    	Interface to DBS Discovery 
 
     """
 
