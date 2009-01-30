@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.206 $"
- $Id: DBSSql.java,v 1.206 2008/12/05 20:59:07 afaq Exp $"
+ $Revision: 1.207 $"
+ $Id: DBSSql.java,v 1.207 2008/12/22 17:45:04 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1119,11 +1119,11 @@ public class DBSSql {
 	// SQL for inserting ProcessedDatatset and its related tables.
 	// ____________________________________________________
 
-	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String aquisitionEra, String globalTag, String xtCrossSection, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String tierID, String phyGroupID, String statusID, String aquisitionEra, String globalTag, String xtCrossSection, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Name", name);
 		table.put("PrimaryDataset", primDSID);
-		//table.put("OpenForWriting", );OpenForWriting flag can be managed through Status why we duplicate
+		table.put("DataTier", tierID);
 		table.put("PhysicsGroup", phyGroupID);
 		table.put("Status", statusID);
 		if (!DBSUtil.isNull(aquisitionEra)) table.put("AquisitionEra", aquisitionEra);
@@ -1688,12 +1688,15 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listProcessedDatasets(Connection conn) throws SQLException {
-		String sql = "SELECT procds.id as ID, \n" +
-			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
-			"procds.name as PROCESSED_DATATSET_NAME \n" +
+		String sql = "SELECT DISTINCT procds.id as ID, \n" +
+			"primds.Name as PRIMARY_DATASET_NAME, \n" +
+			"procds.name as PROCESSED_DATASET_NAME, \n" +
+			"dt.Name as DATA_TIER \n"+
 			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN "+owner()+"PrimaryDataset primds \n" +
-				"ON primds.id = procds.PrimaryDataset \n";
+				"ON primds.id = procds.PrimaryDataset \n" +
+			"JOIN "+owner()+"DataTier dt \n" +
+				"ON dt.id = procds.datatier \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -1748,21 +1751,9 @@ public class DBSSql {
 
 	public static PreparedStatement listProcessedDatasets(Connection conn, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, boolean all) throws SQLException {
 		String sql = "SELECT procds.id as id, \n" +
-			/*"concat( \n" +
-				"concat( \n" +
-					"concat( \n" +
-						"concat( \n" +
-							"concat('/', primds.Name \n" +
-							"),'/' \n" +
-						"),dt.Name \n" +
-					"),'/' \n" +
-				"), procds.name \n" +
-			") as path, \n" +*/
-			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
+			"primds.Name as PRIMARY_DATASET_NAME, \n" +
 			"dt.Name as DATA_TIER, \n" +
-			"procds.name as PROCESSED_DATATSET_NAME, \n" +
-                        //Could be managed by Status field
-			//"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
+			"procds.name as PROCESSED_DATASET_NAME, \n" +
 			"pds.Status as STATUS, \n" +
 			"procds.AquisitionEra as ACQUISITION_ERA, \n" +
 			"procds.GlobalTag as GLOBAL_TAG, \n" +
@@ -1786,10 +1777,8 @@ public class DBSSql {
 			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
-			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
-				"ON pdst.Dataset = procds.id \n" +
 			"LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
-				"ON dt.id = pdst.DataTier \n" +
+				"ON dt.id = procds.DataTier \n" +
 			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"LEFT OUTER JOIN "+owner()+"Person perpg \n" +
@@ -1816,23 +1805,15 @@ public class DBSSql {
 				"ON blk.Dataset = procds.id \n";
 
 
-		/*if(patternPrim == null) patternPrim = "%";
-		if(patternDT == null) patternDT = "%";
-		if(patternProc == null) patternProc = "%";
-		if(patternVer == null) patternVer = "%";
-		if(patternFam == null) patternFam = "%";
-		if(patternExe == null) patternExe = "%";
-		if(patternPS == null) patternPS = "%";*/
 		boolean useAnd = false;
-		//if(!patternPrim.equals("%") || !patternDT.equals("%") || !patternProc.equals("%") || !patternVer.equals("%") || !patternFam.equals("%") || !patternExe.equals("%") || !patternPS.equals("%")) {
-			sql += "WHERE \n";
+		sql += "WHERE \n";
 		if(!patternPrim.equals("%")) {
 			sql += " primds.Name like ? \n";
 			useAnd = true;
 		}
 		if(!patternDT.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "dt.Name like ?  \n";
+			sql += "dt.Name=?  \n";
 			useAnd = true;
 		}
 		if(!patternProc.equals("%")) {
@@ -1906,45 +1887,6 @@ public class DBSSql {
                 return ps;
 	}
 
-	/*public static String listPathParent() throws SQLException {
-		String sql = "SELECT b.Path as PATH\n" +
-			"FROM " + owner() + "Block b \n" +
-			"WHERE b.ID in  \n" +
-				"\t(SELECT fl.Block \n" +
-				"\tFROM " + owner() + "Files fl \n" +
-				"\tWHERE fl.ID in ( \n" +
-					"\t\tSELECT fp.ItsParent    \n" +
-					"\t\tFROM  " + owner() + "FileParentage fp \n" +
-					"\t\tWHERE fp.ThisFile in ( \n" +
-						"\t\t\tSELECT f.ID from " + owner() + "Files f  \n" +
-						"\t\t\tWHERE f.Block in ( \n" +
-							"\t\t\t\tSELECT bl.ID FROM " + owner() + "Block   bl WHERE bl.Path = ? \n" +
-						") \n" +
-					") \n" +
-				") \n" +
-			")\n";
-		
-		return sql;
-	}*/
-
-	public static String listPathParent() throws SQLException {
-		String sql = "\tSELECT fl.Block \n" +
-				"\tFROM " + owner() + "Files fl \n" +
-				"\tWHERE fl.ID in ( \n" +
-					"\t\tSELECT fp.ItsParent    \n" +
-					"\t\tFROM  " + owner() + "FileParentage fp \n" +
-					"\t\tWHERE fp.ThisFile in ( \n" +
-						"\t\t\tSELECT f.ID from " + owner() + "Files f  \n" +
-						"\t\t\tWHERE f.Block in ( \n" +
-							"\t\t\t\tSELECT bl.ID FROM " + owner() + "Block   bl WHERE bl.Path = ? \n" +
-						") \n" +
-					") \n" +
-				") \n";
-		
-		return sql;
-	}
-
-
 	public static PreparedStatement listFileParentBlocks(Connection conn, String fileID) throws SQLException {
                 String sql = "SELECT B.ID as ID\n"+
 				"FROM "+owner()+"Block B\n"+
@@ -1960,17 +1902,54 @@ public class DBSSql {
                 return ps;
 	}
 
-	public static PreparedStatement listPathParent(Connection conn, String path) throws SQLException {
-		String sql = "SELECT DISTINCT b.Path as PATH\n" +
-			"FROM " + owner() + "Block b \n" +
-			"WHERE b.ID in  \n" +
-				"\t(" + listPathParent() + ")\n";
+        /*public static PreparedStatement listPathParent(Connection conn, String path) throws SQLException {
+                String sql = "SELECT DISTINCT \n"+
+                "concat( \n" +
+                                "concat( \n" +
+                                        "concat( \n" +
+                                                "concat( \n" +
+                                                        "concat('/', primds.Name \n" +
+                                                        "),'/' \n" +
+                                                "),procds.Name \n" +
+                                        "),'/' \n" +
+                                "), dt.Name \n" +
+                ") as PATH \n" +
+		"FROM "+owner()+"ProcessedDataset procds \n" +
+		"JOIN "+owner()+"ProcDSParent procdsparent \n" +
+                       "ON procdsparent.ItsParent = procds.ID \n" +
+                "JOIN "+owner()+"PrimaryDataset primds \n" +
+                       "ON primds.id = procds.PrimaryDataset \n" +
+                "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
+                       "ON dt.id = procds.datatier \n" +
+		"WHERE procdsparent.ThisDataset = ?";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, path);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+	        ps.setString(1, path);
+        	DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
 
-	}
+        }*/
+
+
+
+        public static String listPathParentOld() throws SQLException {
+                String sql = "\tSELECT fl.Block \n" +
+                                "\tFROM " + owner() + "Files fl \n" +
+                                "\tWHERE fl.ID in ( \n" +
+                                        "\t\tSELECT fp.ItsParent    \n" +
+                                        "\t\tFROM  " + owner() + "FileParentage fp \n" +
+                                        "\t\tWHERE fp.ThisFile in ( \n" +
+                                                "\t\t\tSELECT f.ID from " + owner() + "Files f  \n" +
+                                                "\t\t\tWHERE f.Block in ( \n" +
+                                                        "\t\t\t\tSELECT bl.ID FROM " + owner() + "Block   bl WHERE bl.Path = ? \n" +
+                                                ") \n" +
+                                        ") \n" +
+                                ") \n";
+
+                return sql;
+        }
+
+
+
 
 	public static PreparedStatement listProcDSRunStatus(Connection conn, String procDSID, String runID) throws SQLException {
 		String sql = "SELECT DISTINCT PDSR.Complete as DONE,\n"+
@@ -2052,6 +2031,7 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT procds.id as id, \n" +
 			"primds.Name as PRIMARY_DATASET_NAME, \n" +
 			"procds.name as PROCESSED_DATASET_NAME, \n" +
+			"pdst.name as DATA_TIER, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
@@ -2061,8 +2041,8 @@ public class DBSSql {
 			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
-			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
-				"ON pdst.Dataset = procds.id \n" +
+			"LEFT OUTER JOIN "+owner()+"DataTier pdst \n" +
+				"ON pdst.id = procds.datatier \n" +
 			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"JOIN "+owner()+"ProcDSParent dp \n" +
@@ -2083,58 +2063,6 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-
-
-/*	public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
-		String sql = "SELECT DISTINCT procds.id as id, \n" +
-			"concat( \n" +
-				"concat( \n" +
-					"concat( \n" +
-						"concat( \n" +
-							"concat('/', primds.Name \n" +
-							"),'/' \n" +
-						//"),dt.Name \n" +
-						"),procds.name \n" +
-					"),'/' \n" +
-				"), 'TIER_DOES_NOT_MATTER' \n" +
-			") as PATH, \n" +
-			"procds.CreationDate as CREATION_DATE, \n" +
-			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
-			"perpg.DistinguishedName as PHYSICS_GROUP_CONVENER, \n" +
-			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM ProcessedDataset procds \n" +
-			"JOIN "+owner()+"PrimaryDataset primds \n" +
-				"ON primds.id = procds.PrimaryDataset \n" +
-			"LEFT OUTER JOIN "+owner()+"ProcDSTier pdst \n" +
-				"ON pdst.Dataset = procds.id \n" +
-			//"LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
-			//	"ON dt.id = pdst.DataTier \n" +
-			"LEFT OUTER JOIN "+owner()+"PhysicsGroup pg \n" +
-				"ON pg.id = procds.PhysicsGroup \n" +
-			"JOIN ProcDSParent dp \n" +
-				"ON dp.ItsParent = procds.id \n" +
-			"LEFT OUTER JOIN "+owner()+"Person perpg \n" +
-				"ON perpg.id = pg.PhysicsGroupConvener \n" +
-			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
-				"ON percb.id = procds.CreatedBy \n" +
-			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-				"ON perlm.id = procds.LastModifiedBy \n";
-		
-		if(procDSID != null) {
-			sql += "WHERE dp.ThisDataset = ? \n";
-		}
-		sql +=	"ORDER BY PATH DESC";
-		
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		if(procDSID != null) {
-			ps.setString(1, procDSID);
-		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
-	}
-*/
 
 
 	public static PreparedStatement listAlgorithms(Connection conn) throws SQLException {
@@ -2322,7 +2250,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"DataTier dt \n" +
-			"JOIN "+owner()+"ProcDSTier pdst \n" +
+			"JOIN "+owner()+"ProcessedDataset pdst \n" +
 				"ON pdst.DataTier = dt.id \n" +
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = dt.CreatedBy \n" +
@@ -2330,7 +2258,7 @@ public class DBSSql {
 				"ON perlm.id = dt.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "WHERE pdst.Dataset = ? \n";
+			sql += "WHERE pdst.ID = ? \n";
 		}
 		sql +=	"ORDER BY dt.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -2395,7 +2323,17 @@ public class DBSSql {
 
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
                         "b.Name as NAME, \n" +
-                        "b.Path as PATH, \n" +
+                        "concat( \n" +
+                                "concat( \n" +
+                                        "concat( \n" +
+                                                "concat( \n" +
+                                                        "concat('/', primds.Name \n" +
+                                                        "),'/' \n" +
+                                                "),procds.Name \n" +
+                                        "),'/' \n" +
+                                "), dt.Name \n" +
+                        ") as PATH, \n" +
+
                         "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
                         "b.BlockSize as BLOCKSIZE, \n" +
                         "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
@@ -2407,6 +2345,15 @@ public class DBSSql {
                         sql += "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
                         "FROM "+owner()+"Block b \n" +
+
+                        "JOIN "+owner()+"ProcessedDataset procds \n" +
+                                "ON b.Dataset = procds.ID \n" +
+                        "JOIN "+owner()+"PrimaryDataset primds \n" +
+                                "ON primds.id = procds.PrimaryDataset \n" +
+                        "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
+                                "ON dt.id = procds.datatier \n" +
+
+
                         "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
                                 "ON seb.BlockID = b.ID \n" +
                         "LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
@@ -2431,10 +2378,21 @@ public class DBSSql {
 
 
 
-	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName, String isGlobal) throws SQLException {
+	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName, String seName, String isGlobal) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
-			"b.Path as PATH, \n" +
+
+                        "concat( \n" +
+                                "concat( \n" +
+                                        "concat( \n" +
+                                                "concat( \n" +
+                                                        "concat('/', primds.Name \n" +
+                                                        "),'/' \n" +
+                                                "),procds.Name \n" +
+                                        "),'/' \n" +
+                                "), dt.Name \n" +
+                        ") as PATH, \n" +
+
 			"b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
@@ -2446,6 +2404,14 @@ public class DBSSql {
 			sql += "percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"Block b \n" +
+
+                        "JOIN "+owner()+"ProcessedDataset procds \n" +
+				"ON b.Dataset = procds.ID \n" +
+                        "JOIN "+owner()+"PrimaryDataset primds \n" +
+                                "ON primds.id = procds.PrimaryDataset \n" +
+                        "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
+                                "ON dt.id = procds.datatier \n" +
+
 			"LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
 				"ON seb.BlockID = b.ID \n" +
 			"LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
@@ -2465,12 +2431,6 @@ public class DBSSql {
 			sql += "b.Dataset = ? \n";
 			useAnd = true;
 		}
-		if(!DBSUtil.isNull(patternPath)) {
-			if(useAnd) sql += " AND ";
-			sql += "b.Path = ? \n";
-			//sql += "b.Name like ? \n";
-			useAnd = true;
-		}
 
 		if(!blockName.equals("%")) {
 			if(useAnd) sql += " AND ";
@@ -2486,7 +2446,7 @@ public class DBSSql {
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
-		if(!DBSUtil.isNull(patternPath)) ps.setString(columnIndx++, patternPath);
+		//if(!DBSUtil.isNull(patternPath)) ps.setString(columnIndx++, patternPath);
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
@@ -3598,48 +3558,27 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String proc) throws SQLException {
-		String sql = "SELECT DISTINCT procds.ID as ID \n" +
-				"FROM "+owner()+"ProcessedDataset procds \n" +
-				"JOIN "+owner()+"PrimaryDataset primds \n" +
-					"ON primds.id = procds.PrimaryDataset \n" ;
-		if(DBSUtil.isNull(prim) || DBSUtil.isNull(proc)) {
-			return DBManagement.getStatement(conn, sql);
-		}
-		sql += "WHERE primds.Name = ? \n" +
-			"and procds.Name = ? \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1; 
-		ps.setString(columnIndx++, prim);
-		ps.setString(columnIndx++, proc);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	/*public static PreparedStatement getProcessedDSID(Connection conn, String prim, String dt ,String proc) throws SQLException {
+	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String proc, String tier) throws SQLException {
 		String sql = "SELECT DISTINCT procds.ID as ID \n" +
 				"FROM "+owner()+"ProcessedDataset procds \n" +
 				"JOIN "+owner()+"PrimaryDataset primds \n" +
 					"ON primds.id = procds.PrimaryDataset \n" +
-				"JOIN "+owner()+"ProcDSTier pdst \n" +
-					"ON pdst.Dataset = procds.id \n" +
-				"JOIN "+owner()+"DataTier dt \n" +
-					"ON dt.id = pdst.DataTier \n";
-		if(prim == null || dt == null || proc == null) {
+				"JOIN "+owner()+"DataTier dt\n" +
+					"ON dt.ID = procds.DataTier \n";
+		if(DBSUtil.isNull(prim) || DBSUtil.isNull(proc)) {
 			return DBManagement.getStatement(conn, sql);
 		}
 		sql += "WHERE primds.Name = ? \n" +
-			"and dt.Name = ? \n" +
-			"and procds.Name = ? \n";
+			"and procds.Name = ? \n" +
+			"and dt.Name = ?";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		ps.setString(columnIndx++, prim);
-		ps.setString(columnIndx++, dt);
 		ps.setString(columnIndx++, proc);
+		ps.setString(columnIndx++, tier);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
-	}*/
-
+	}
 
 	//public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws SQLException {
 	public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash) throws SQLException {

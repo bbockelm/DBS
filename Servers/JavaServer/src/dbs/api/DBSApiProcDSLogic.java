@@ -1,6 +1,6 @@
 /**
- $Revision: 1.73 $"
- $Id: DBSApiProcDSLogic.java,v 1.73 2008/12/04 16:53:03 afaq Exp $"
+ $Revision: 1.74 $"
+ $Id: DBSApiProcDSLogic.java,v 1.74 2008/12/04 20:14:23 afaq Exp $"
  *
  */
 
@@ -75,6 +75,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
 		boolean first = true; 
 
+		System.out.println("DT:::::::::::::::"+patternDT);
+		System.out.println("patternDT::::::::::::::::"+getPattern(patternDT, "data_tier_name_pattern") );
+
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
@@ -90,7 +93,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
 				String procDSID = get(rs, "ID");
 				String tier = get(rs, "DATA_TIER");
 				String fam = get(rs, "APP_FAMILY_NAME");
@@ -100,19 +102,14 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 				String path =  get(rs, "PATH");
 
-				//primDSName = get(rs, "PRIMARY_DATATSET_NAME");
-				//procDSName = get(rs, "PROCESSED_DATATSET_NAME");
-	
 				if( !prevDS.equals(procDSID) && ! first) {
 
-					//out.write((String)"<path dataset_path='/"+primDSName+ "/"+ procDSName+"/"+makeOrderedTierList(conn, dtVec)+ "'/>");
 					out.write(((String) "</processed_dataset>\n"));
 				}
 				if( !prevDS.equals(procDSID) || first) {
 					out.write(((String) "<processed_dataset id='" + get(rs, "ID") + 
-							//"' path='" +  get(rs, "PATH") +
-							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
-							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
+							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATASET_NAME") +
+							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATASET_NAME") +
 							"' status='" +  get(rs, "STATUS") +
 							"' acquisition_era='" +  get(rs, "ACQUISITION_ERA") +
 							"' global_tag='" +  get(rs, "GLOBAL_TAG") +
@@ -161,10 +158,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 								//"' ps_content='" + get(rs, "PS_CONTENT") +
 								"'/>\n"));
 					algoVec.add(uniqueAlgo);
-					/*prevExe = exe;
-					prevFam = fam;
-					prevVer = ver;
-					prevPS = pset;*/
 				}
 			}
 		} finally { 
@@ -178,6 +171,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 	}
 
+        /**
 	public void listDatasetPaths(Connection conn, Writer out) throws Exception {
 
 		PreparedStatement ps = null;
@@ -193,8 +187,27 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
 		}
-	}
+	}**/
 
+        public void listDatasetPaths(Connection conn, Writer out) throws Exception {
+
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps = DBSSql.listProcessedDatasets(conn);
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+				String path = "/"+get(rs, "PRIMARY_DATASET_NAME")
+							+"/"+get(rs, "PROCESSED_DATASET_NAME")
+								+"/"+get(rs, "DATA_TIER");
+                                out.write(((String) "<processed_dataset path='" + path + "'/>\n"));
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+        }
 
 
          public ArrayList listDatasetParentIDs(Connection conn, String path) throws Exception {
@@ -247,7 +260,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset_parent id='" + get(rs, "ID") + 
-						"' path='" +  "/" + get(rs, "PRIMARY_DATASET_NAME") + "/" + get(rs, "PROCESSED_DATASET_NAME") + "/TIER_DOES_NOT_MATTER" +
+						"' path='" +  "/" + get(rs, "PRIMARY_DATASET_NAME") + "/" 
+									+ get(rs, "PROCESSED_DATASET_NAME") + "/TIER_DOES_NOT_MATTER" +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
@@ -284,7 +298,11 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) 
-				throw new DBSException("Dataset cannot be Orphaned", "1090", "This dataset " + path + " has childeren dataset " + "/" + get(rs, "PRIMARY_DATASET_NAME") + "/" + get(rs, "PROCESSED_DATASET_NAME") + "/TIER_DOES_NOT_MATTER . Delete this child dataset first " );
+				throw new DBSException("Dataset cannot be Orphaned", "1090", "This dataset " 
+						+ path + " has childeren dataset " 
+							+ "/" + get(rs, "PRIMARY_DATASET_NAME") 
+							+ "/" + get(rs, "PROCESSED_DATASET_NAME") 
+							+ "/" + get(rs, "DATA_TIER")+ " Delete this child dataset first " );
 		} finally { 
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
@@ -292,7 +310,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 }
 
 	 
-
 	/**
 	 * Lists all the runs within a processed dataset from the database in a xml format. This method makes one sql query, execute it, fetch the results and packs and write it in xml format to the output stream. The query that it executes get generated by <code>dbs.DBSSql.listRuns</code> method. First it fetches the processed dataset ID from the database by calling a private <code>getProcessedDSID<code> method using the path provided in the parameter. If the processed dataset id does not esists then it throws an exception. A sample XML that is written to the output stream is like <br>
 	 * <code> <"run id='1' run_number='9999' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec' creation_date='2006-12-06 16:12:12.0' last_modification_date='2006-12-06 16:12:12.0' created_by='ANZARDN' last_modified_by='ANZARDN'"/></code>
@@ -436,9 +453,24 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String phyGroupName = getStr(dataset, "physics_group_name", false);
 		String phyGroupCon = getStr(dataset, "physics_group_convener", false);
 		String status = get(dataset, "status", false).toUpperCase();
-		Vector tierVector = DBSUtil.getVector(dataset,"data_tier");
+
+		//Vector tierVector = DBSUtil.getVector(dataset,"data_tier");
 		Vector parentVector = DBSUtil.getVector(dataset,"parent");
 		Vector algoVector = DBSUtil.getVector(dataset,"algorithm");
+		//In future use can just send us the data_tier (or even justa dataset Path) to save all the trouble
+                Vector tierVector = DBSUtil.getVector(dataset,"data_tier");
+		Vector tierName = new Vector();
+		for(Object s: tierVector) tierName.add((String) get((Hashtable)s, "name"));
+		//for (tierVector.size() ) get(hashTable, "name");
+		System.out.println("tierName: "+tierName);
+		System.out.println("tierVector size:"+ tierVector.size());
+		System.out.println("Line 4");
+		
+		String dataTier = makeOrderedTierList(conn, tierName);
+		System.out.println("Line 5");
+
+		
+
 		Vector runVector = DBSUtil.getVector(dataset,"run");
 	
 
@@ -460,7 +492,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		if (isNull(global_tag)) global_tag="";
 		//Insert a Processed Datatset before by fetching the primDSID, status
 		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
-		String path =  "/" + primaryName + "/" + procDSName +  "/nothing";
+		String path =  "/" + primaryName + "/" + procDSName + "/" + dataTier;
+		//String path =  "/" + primaryName + "/" + procDSName +  "/nothing";
 		if( isNull(procDSID = getProcessedDSID(conn, path, false) ) ){
 			PreparedStatement ps = null;
 			try {
@@ -469,12 +502,11 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getID(conn, "PrimaryDataset", "Name", 
 						primaryName, 
 						true),
-					get(dataset, "open_for_writing", false),
+					getTierID(conn, dataTier , true),
 					getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 					getID(conn, "ProcDSStatus", "Status", status, true), 
 					get(dataset, "acquisition_era", false),
 					global_tag,
-					//getStr(dataset, "global_tag", false),
 					get(dataset, "external_cross_section", false),
 					cbUserID,
 					lmbUserID,
@@ -493,7 +525,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//Fetch the Processed Datatset ID that was just inseted or fetched , to be used for subsequent insert of other tables.
 		//FIXME this might use processed datatset with primary datatset combination instead of just proDSName
 		//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
-		if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0) 
+		if(algoVector.size() > 0 || parentVector.size() > 0) 
 			//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
 			if(isNull(procDSID)) procDSID = getProcessedDSID(conn, path, true);
 		
@@ -513,21 +545,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							get(hashTable, "app_executable_name"),
 							psHash, 
 							true), 
-					cbUserID, lmbUserID, creationDate);
-		}
-
-		//Insert ProcDSTier table by fetching data tier ID
-		for (int j = 0; j < tierVector.size(); ++j) {
-			Hashtable hashTable = (Hashtable)tierVector.get(j);
-			//String tierName = get(hashTable, "name", true);
-			//Insert DataTier if it does not exists. But there is a default list of tier and we never add a new tier. 
-			//It is an admin operation
-			//insertTier(conn, out, tierName, cbUserID, lmbUserID, creationDate);
-			//insertName(conn, out, "DataTier", "Name", tierName , lmbUserID);
-			insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
-					procDSID, 
-					//getID(conn, "DataTier", "Name", get(hashTable, "name", true).toUpperCase() , true), 
-					getTierID(conn, get(hashTable, "name", true).toUpperCase() , true), 
 					cbUserID, lmbUserID, creationDate);
 		}
 
@@ -558,35 +575,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 
 	}
-
- 
- 	/**
-	 * Insert a data tier in processed dataset. 
-	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
-	 * Then it inserts entry into just one table ProcDSTier by calling a generic private <code>insertMap</code> method. It first fetches the processed dataset id by calling getProcessedDSID.
-	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
-	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param table a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single processed dataset. The keys along with its values that it may or may not contain are <br>
-	 * <code>path, created_by, creation_date </code> <br>
-	 * If this path is not provided or the processed dataset id could not be found then an exception is thrown.
-	 * @param tierName a data tier name which is assumed to be already present in the database.
-	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
-	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
-	 */
-	public void insertTierInPD(Connection conn, Writer out, Hashtable table, String tierName, Hashtable dbsUser) throws Exception {
-		String path =  get(table, "path");
-		String procDSID = getProcessedDSID(conn, path, true);
-		checkProcDSStatus(conn, out, path, procDSID);
-		insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
-				procDSID, 
-				//getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
-				getTierID(conn, tierName.toUpperCase() , true), 
-				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
-				personApi.getUserID(conn, dbsUser),
-				getTime(table, "creation_date", false));
-	}
-
-
 
 	/**
 	 * Insert a dataset parent in processed dataset. 
@@ -865,14 +853,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		if(isNull(path) && !excep) return "";
 		String[] data = parseDSPath(path);
 		
-		//Looking in Global Cache 
-		/*if(!isNull( id = this.data.getGlobalCache().getProcessedDSID(conn, path)))  {
-			this.data.localPDPath.put(path, id);
-			return id;
-		}*/
-
-
-		id = getProcessedDSID(conn, data[1], data[2], excep);
+		id = getProcessedDSID(conn, data[1], data[2], data[3], excep);
 		this.data.localPDPath.put(path, id);
 		return  id;
 	}
@@ -886,22 +867,19 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	 //* @param dt the name of the data tier whose processed dataset id needs to be fetched..
 	//private String getProcessedDSID(Connection conn, String prim, String dt, String proc) throws Exception {
-	public String getProcessedDSID(Connection conn, String prim, String proc, boolean excep) throws Exception {
+	public String getProcessedDSID(Connection conn, String prim, String proc, String tier, boolean excep) throws Exception {
 		checkWord(prim, "primary_dataset_name");
-		//checkWord(dt, "data_tier");
+		checkWord(tier, "data_tier");
 		checkWord(proc, "processed_dataset_name");
-		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getProcessedDSID(prim, dt, proc));
 		String id = "";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			//ps = DBSSql.getProcessedDSID(conn, prim, dt, proc);
-			ps = DBSSql.getProcessedDSID(conn, prim, proc);
+			ps = DBSSql.getProcessedDSID(conn, prim, proc, tier);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				//throw new DBSException("Unavailable data", "1008", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
-				if (excep) throw new DBSException("Unavailable data", "1008", "No such dataset primary : " + prim + " processed :" + proc );
+				if (excep) throw new DBSException("Unavailable data", "1008", "No such processed dataset /" + prim + "/" +proc + "/" +tier);
 				return "";
 			} 
 			id = get(rs, "ID");
@@ -912,27 +890,4 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 		return  id;
 	}
-
-
-        public Vector getProcDSTierVec(Connection conn, String procDSID) throws Exception {
-                Vector procTierVec  = new Vector();
-                //List Tiers from ProcDS
-                PreparedStatement pss = null;
-                ResultSet rss = null;
-                try {
-                        pss =  DBSSql.listTiers(conn, procDSID);
-                        rss =  pss.executeQuery();
-                        while(rss.next()) {
-                                procTierVec.add(get(rss, "NAME"));
-                                //System.out.println("insertFiles: pathTierVec[i]: "+get(rss, "NAME"));
-                        }
-                } finally {
-                        if (rss != null) rss.close();
-                        if (pss != null) pss.close();
-                }
-                return procTierVec;
-        }
-
-
-
 }

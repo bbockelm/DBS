@@ -4,9 +4,9 @@
 -- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_2_0_5;
-create database DBS_2_0_5;
-use DBS_2_0_5;
+drop database if exists DBS_2_0_6;
+create database DBS_2_0_6;
+use DBS_2_0_6;
 
 -- ======================================================================
 
@@ -111,6 +111,7 @@ CREATE TABLE ProcessedDataset
     ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(500)      not null,
     PrimaryDataset        BIGINT UNSIGNED   not null,
+    DataTier              BIGINT UNSIGNED   not null,
     PhysicsGroup          BIGINT UNSIGNED   not null,
     Status                BIGINT UNSIGNED   not null,
     AquisitionEra	  varchar(255),
@@ -122,7 +123,7 @@ CREATE TABLE ProcessedDataset
     LastModificationDate  BIGINT,
 
     primary key(ID),
-    unique(Name,PrimaryDataset)
+    unique(Name,PrimaryDataset, DataTier)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -426,22 +427,6 @@ CREATE TABLE OtherDescription
 
 -- ======================================================================
 
-CREATE TABLE FileTier
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED   not null,
-    DataTier              BIGINT UNSIGNED   not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID),
-    unique(Fileid,DataTier)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE FileParentage
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -579,22 +564,6 @@ CREATE TABLE ProcDSRuns
 
     primary key(ID),
     unique(Dataset,Run)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE ProcDSTier
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Dataset               BIGINT UNSIGNED   not null,
-    DataTier              BIGINT UNSIGNED   not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID),
-    unique(Dataset,DataTier)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -1134,6 +1103,10 @@ ALTER TABLE ProcessedDataset ADD CONSTRAINT
     ProcessedDatasetLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE ProcessedDataset ADD CONSTRAINT
+    ProcessedDataset_DataTier_FK foreign key(DataTier) references DataTier(ID)
+;
+
 ALTER TABLE Runs ADD CONSTRAINT 
     Runs_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -1308,19 +1281,6 @@ ALTER TABLE OtherDescription ADD CONSTRAINT
     OtherDescriptionLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
-;
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
-;
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE FileParentage ADD CONSTRAINT 
     FileParentage_ThisFile_FK foreign key(ThisFile) references Files(ID) on delete CASCADE
 ;
@@ -1460,21 +1420,6 @@ ALTER TABLE ProcessingStatus ADD CONSTRAINT
 ;
 ALTER TABLE ProcessingStatus ADD CONSTRAINT
     ProcStatusLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-
-
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
-;
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
-;
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE ProcDSParent ADD CONSTRAINT 
@@ -1852,9 +1797,6 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_OtherDescription BEFORE INSERT ON OtherDescription
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER TR_FileTier BEFORE INSERT ON FileTier
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
 CREATE TRIGGER TR_FileParentage BEFORE INSERT ON FileParentage
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1880,9 +1822,6 @@ CREATE TRIGGER TR_FileAssoc BEFORE INSERT ON FileAssoc
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_ProcDSRuns BEFORE INSERT ON ProcDSRuns
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_ProcDSTier BEFORE INSERT ON ProcDSTier
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_ProcDSParent BEFORE INSERT ON ProcDSParent
@@ -2040,9 +1979,6 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_OtherDescription BEFORE UPDATE ON OtherDescription
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER UTR_FileTier BEFORE UPDATE ON FileTier
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
 CREATE TRIGGER UTR_FileParentage BEFORE UPDATE ON FileParentage
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -2068,9 +2004,6 @@ CREATE TRIGGER UTR_FileAssoc BEFORE UPDATE ON FileAssoc
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_ProcDSRuns BEFORE UPDATE ON ProcDSRuns
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_ProcDSTier BEFORE UPDATE ON ProcDSTier
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_ProcDSParent BEFORE UPDATE ON ProcDSParent

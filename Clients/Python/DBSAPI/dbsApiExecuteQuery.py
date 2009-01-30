@@ -63,9 +63,9 @@ def dbsApiImplCountQuery(self, query="*", ignoreCase=True):
       class Handler (xml.sax.handler.ContentHandler):
 		      def startElement(self, name, attrs):
 			      if name == 'result':
-					     result.append(attrs['CNT'])
-					     #print 'result is '
-					     #print result
+					result.append(attrs['CNT'])
+					#print 'result is '
+					#print result
       xml.sax.parseString (data, Handler ())
       if len(result) == 0:
 	      return 0

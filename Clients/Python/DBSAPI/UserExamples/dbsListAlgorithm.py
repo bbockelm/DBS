@@ -17,8 +17,8 @@ try:
   
   print ""
   print "Algorithms...."
-  for app in api.listAlgorithms("*"):
-     print " %s" % app
+  for algo in api.listAlgorithms("*"):
+     print " %s" % algo['ExecutableName']
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

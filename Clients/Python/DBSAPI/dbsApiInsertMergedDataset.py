@@ -26,10 +26,10 @@ def dbsApiImplInsertMergedDataset(self, dataset, merege_ds_name, merge_algo):
 
     path = get_path(dataset) 
     token = path.split("/")
-
     #print token
 
     orig_ds = self.listProcessedDatasets(token[1], token[3], token[2])
+
     if len(orig_ds) < 1:
 	raise DbsApiException(args="Dataset %s Not found in DBS" %path, code="1008")
     

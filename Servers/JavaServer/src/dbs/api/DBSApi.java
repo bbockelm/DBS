@@ -1,6 +1,6 @@
 /**
- $Revision: 1.152 $"
- $Id: DBSApi.java,v 1.152 2008/12/04 20:14:23 afaq Exp $"
+ $Revision: 1.153 $"
+ $Id: DBSApi.java,v 1.153 2008/12/05 20:59:07 afaq Exp $"
  *
 */
 
@@ -276,6 +276,9 @@ public class DBSApi {
 			} else if (apiStr.equals("register")) {
 				System.out.println("");
 			} else if (apiStr.equals("listProcessedDatasets")) {
+
+				System.out.println("\nDARN THIS:::"+get(table, "data_tier_name_pattern", false));
+
 				(new DBSApiProcDSLogic(this.data)).listProcessedDatasets(conn, out, 
 						get(table, "primary_datatset_name_pattern", false),
 						get(table, "data_tier_name_pattern", false),
@@ -387,10 +390,6 @@ public class DBSApi {
 
 			} else if (apiStr.equals("listFileAlgorithms")) {
 				(new DBSApiFileLogic(this.data)).listFileAlgorithms(conn, out, 
-						get(table, "lfn", true)
-						);
-			} else if (apiStr.equals("listFileTiers")) {
-				(new DBSApiFileLogic(this.data)).listFileTiers(conn, out, 
 						get(table, "lfn", true)
 						);
 			} else if (apiStr.equals("listFileLumis")) {
@@ -575,12 +574,6 @@ public class DBSApi {
 			} else if (apiStr.equals("remapFiles")) {
 				DBSApiParser.remapFiles(conn, out, getXml(table), dbsUser);
 			
-			} else if (apiStr.equals("insertTierInPD")) {
-				(new DBSApiProcDSLogic(this.data)).insertTierInPD(conn, out,
-						DBSApiParser.parse(getXml(table), "processed_dataset"),
-						get(table, "tier_name", true), 
-						dbsUser);
-				
 			} else if (apiStr.equals("insertParentInPD")) {
 				(new DBSApiProcDSLogic(this.data)).insertParentInPD(conn, out,
 						DBSApiParser.parse(getXml(table), "processed_dataset"),
@@ -621,12 +614,6 @@ public class DBSApi {
 				(new DBSApiProcDSLogic(this.data)).updateProcDSStatus(conn, out,
 						get(table, "path", true),
 						get(table, "status", true),
-						dbsUser);
-				
-			} else if (apiStr.equals("insertTierInFile")) {
-				(new DBSApiFileLogic(this.data)).insertTierInFile(conn, out,
-						DBSApiParser.parse(getXml(table), "file"),
-						get(table, "tier_name", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertParentInFile")) {

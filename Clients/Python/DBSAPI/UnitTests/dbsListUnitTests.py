@@ -171,27 +171,6 @@ apiObj.run(lfn ,"", excep = True)
 f.write("\n\n***********************listFileParents API tests***************************")
 
 
-apiObj = DbsUnitTestApi(api.listFileTiers,f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************listFileTiers API tests***************************")
-apiObj.run(lfn,excep = False)
-apiObj.run(lfn + ".nowaythiswillexist",excep = True)
-apiObj.run(lfn + "noway thiswillexist",excep = True)
-apiObj.run(lfn + "noway;thiswillexist",excep = True)
-apiObj.run(lfn ,"", excep = True)
-f.write("\n\n***********************listFileTiers API tests***************************")
-
-
-#apiObj = DbsUnitTestApi(api.listFileBranches,f)
-#apiObj.setVerboseLevel(opts.verbose)
-#f.write("\n\n***********************listFileBranches API tests***************************")
-#apiObj.run(lfn,excep = False)
-#apiObj.run(lfn + ".nowaythiswillexist",excep = True)
-#apiObj.run(lfn + "noway thiswillexist",excep = True)
-#apiObj.run(lfn + "noway;thiswillexist",excep = True)
-#apiObj.run(lfn ,"", excep = True)
-#f.write("\n\n***********************listFileBranches API tests***************************")
-
 apiObj = DbsUnitTestApi(api.listFileAlgorithms,f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listFileAlgorithms API tests***************************")

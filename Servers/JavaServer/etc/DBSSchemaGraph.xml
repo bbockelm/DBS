@@ -26,7 +26,7 @@
 	<node id="FileTriggerTag" 		user="ftrigger" 	real="FileTriggerTag" 			default="Fileid,TriggerTag"/>
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
 	<node id="ProcDSTier" 			user="procds.tier,dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
-	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
+	<node id="ProcDSParent" 		user="procds.parent, dataset.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
 	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"     mapped="AppVersion.Version"/>
 	<node id="AnalysisDataset" 		user="ads" 		real="AnalysisDataset" 			default="Name,Version"/>
 	<node id="AnalysisDSType" 		user="ads.type" 	real="AnalysisDSType" 			default="Type"/>

@@ -1209,6 +1209,9 @@ class ApiDispatcher:
 
         # See if any path is provided
         pathl = self.getPath(self.optdict.get('path'))
+
+	print pathl
+
         if len(pathl):
 		paramDict.update(pathl)
         if len(algoparam):
@@ -1873,9 +1876,14 @@ class ApiDispatcher:
 		self.next_is_dataset=0
 		self.new_file=0
 		self.dataset_once=1
-		
+		self.start_print=0
+		self.titleList=[]
+		self.title=""
+		self.printme=""
+		self.first_time_result=1	
 
            def startElement(self, name, attrs):
+		#print name
 		if name == 'sql':
 			self.next_is_query=1
 		
@@ -1890,7 +1898,14 @@ class ApiDispatcher:
 		# That sucks 
 		if name == 'timeStamp':
 			self.next_is_userinput=0
-		print name
+		if self.start_print:
+			if name not in self.titleList: self.titleList.append(name)
+			self.title+=str(name)+'\t'
+			#print "NAME where start_print==1 %s " % str(name)
+			#print self.title
+		if name == 'result':
+			self.start_print=1
+			#cout=""
 
 	   def characters(self, s):
 
@@ -1912,7 +1927,11 @@ class ApiDispatcher:
 			#return
 		else: pass
 		# It is worth printing
-		if not quiet: print (escape(s)).strip()
+		if not quiet: 
+			if self.start_print:
+				#cout += str((escape(s)).strip())
+				#print (escape(s)).strip()
+				self.printme+=str((escape(s)).strip())+'\t'
 
 	   def endElement(self, name):
 		if name=='sql':
@@ -1923,6 +1942,14 @@ class ApiDispatcher:
                         self.next_is_dataset=0
                 if name == 'file':
                         self.new_file=0
+		if name == 'result':
+			if self.first_time_result:
+				print "-------------------------------------------------------"
+				print self.title+"\n"
+				self.first_time_result=0
+			print self.printme
+                        self.printme=""
+			self.start_print=0
 
 
         xml.sax.parseString (data, Handler ())

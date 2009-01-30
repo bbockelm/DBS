@@ -614,13 +614,6 @@ class Test_006(unittest.TestCase):
 			for lumiInDBS in lumiList:
 				assertLumi(self, lumiObj2, lumiInDBS)
 		
-			tierList = fileInDBS['TierList']
-			self.assertEqual(len(tierList), 2)
-			for tierInDBS in tierList:
-				if(tierInDBS != tier1 and tierInDBS != tier2):
-					print 'tier %s is not expected', tierInDBS
-					self.assertEqual(1, 2)
-
 			parentList = fileInDBS['ParentList']
 			self.assertEqual(len(parentList), 1)
 			for parentInDBS in parentList:
@@ -730,7 +723,10 @@ class Test_007(unittest.TestCase):
 class Test_008(unittest.TestCase):
 	def testMergedProcessed(self):
 		print 'testMergedProcessed'
-		api.insertMergedDataset (procObj2, procNameM, algoObjM)
+		try:
+			api.insertMergedDataset (procObj2, procNameM, algoObjM)
+		except ex:
+			print ex
 		procList = api.listProcessedDatasets(patternPrim = primName, patternProc = procNameM)
 		self.assertEqual(len(procList), 1)
 		for processedInDBS in procList:
@@ -799,15 +795,6 @@ class Test_009(unittest.TestCase):
 					else:
 						print 'lumi %s is not expected', lumiInDBS
 						self.assertEqual(1, 2)
-
-					
-		
-			tierList = fileInDBS['TierList']
-			self.assertEqual(len(tierList), 2)
-			for tierInDBS in tierList:
-				if(tierInDBS != tier1 and tierInDBS != tier2):
-					print 'tier %s is not expected', tierInDBS
-					self.assertEqual(1, 2)
 
 			parentList = fileInDBS['ParentList']
 			#print parentList

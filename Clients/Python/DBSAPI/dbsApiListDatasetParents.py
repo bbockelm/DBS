@@ -78,6 +78,7 @@ def dbsApiImplListDatasetParents(self, dataset):
                                                 LastModificationDate=str(attrs['last_modification_date']),
                                                 LastModifiedBy=str(attrs['last_modified_by']),
                                                 PathList=[parentPath],     
+						TierList=str(myPath[3]).split('-')
                                                 #Path=[str(attrs['path'])],     
                                                 ))
 

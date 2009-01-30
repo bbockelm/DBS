@@ -115,7 +115,7 @@ def get_path (dataset):
             tier= dataset.get('TierList', [])
 
             if tier in (None, []):
-               tier = ['NOTIER']
+               raise InvalidDatasetPathName(Message="The dataset/path provided is incorrect")
             #return "/" + primary.get('Name') \
                         #+ "/" + dataset.get('Name') + "/" + tier[0]    
             return "/" + primary.get('Name') \

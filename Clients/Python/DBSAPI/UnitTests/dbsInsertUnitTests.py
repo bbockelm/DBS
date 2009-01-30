@@ -455,20 +455,9 @@ proc3 = DbsProcessedDataset(PrimaryDataset=pri2,
                 )
 apiObj.run(proc3, excep = False)
 
-proc3 = DbsProcessedDataset(PrimaryDataset=pri2,
-		Name="TestProcessed" + mytime,
-		PhysicsGroup="BPositive",
-		Status="VALID",
-		TierList=tierList,
-		AlgoList=[algo1, algo2],
-                RunsList=[runNumber1],
-                )
-apiObj.run(proc3, excep = False)
-
-
 proc2 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessed1" + mytime)
-apiObj.run(proc2, excep = False)
+apiObj.run(proc2, excep =  True)
 
 proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta estHet", Type="test"),
 		Name="TestProcessed2" + mytime)
@@ -560,24 +549,7 @@ f.write("\n***********************insertProcessedDataset API tests**************
 
 path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['Name']) + "/" + str(proc1['TierList'][0])+ "-"+str(proc1['TierList'][1])
 
-apiObj = DbsUnitTestApi(api.insertTierInPD, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************insertTierInPD API tests***************************")
-tierName1Test = "GENTEST"
-tierName2Test = "SIMTEST"
-apiObj.run(proc1, "GEN", excep = False)
-apiObj.run(proc1, "SIM", excep = False)
-apiObj.run(path, "GEN", excep = False)
-apiObj.run("/Does/Not/Exist", tierName2Test, excep = True)
-apiObj.run("", excep = True)
-apiObj.run(proc1, tierName1Test + "sjhd*lk", excep = True)
-apiObj.run(proc1, tierName1Test + "sjhd;lk", excep = True)
-apiObj.run(proc1, tierName1Test + "sjhd lk", excep = True)
-apiObj.run(proc1, tierName1Test,   excep = True)
-
-f.write("\n***********************insertTierInPD API tests***************************")
-
-
+f.write("\n***********************insertProcessedDataset API tests***************************")
 apiObj = DbsUnitTestApi(api.insertParentInPD, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertParentInPD API tests***************************")

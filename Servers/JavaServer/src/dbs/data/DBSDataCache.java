@@ -251,8 +251,8 @@ public class DBSDataCache {
 			try {
 				ps = DBSSql.listProcessedDatasets(conn);
 				rs =  ps.executeQuery();
-				while(rs.next()) procDSs.put("/" + get(rs, "PRIMARY_DATATSET_NAME") + "/" +  get(rs, "PROCESSED_DATATSET_NAME") ,  get(rs, "ID"));
-				//writeCacheLog("Path /" + get(rs, "PRIMARY_DATATSET_NAME") + "/" +  get(rs, "PROCESSED_DATATSET_NAME") + "  ID " + get(rs, "ID"));
+				while(rs.next()) procDSs.put("/" + get(rs, "PRIMARY_DATASET_NAME") + "/" +  get(rs, "PROCESSED_DATASET_NAME") ,  get(rs, "ID"));
+				//writeCacheLog("Path /" + get(rs, "PRIMARY_DATASET_NAME") + "/" +  get(rs, "PROCESSED_DATASET_NAME") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();

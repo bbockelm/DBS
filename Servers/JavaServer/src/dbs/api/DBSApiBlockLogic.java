@@ -1,6 +1,6 @@
 /**
- $Revision: 1.66 $"
- $Id: DBSApiBlockLogic.java,v 1.66 2008/12/11 15:56:44 afaq Exp $"
+ $Revision: 1.67 $"
+ $Id: DBSApiBlockLogic.java,v 1.67 2009/01/14 19:48:28 afaq Exp $"
  *
  */
 
@@ -64,7 +64,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 				patternPath = path;
 			}
-			ps =  DBSSql.listBlocks(conn, procDSID, patternPath, getBlockPattern(patternBlockName), 
+			ps =  DBSSql.listBlocks(conn, procDSID, getBlockPattern(patternBlockName), 
 									getPattern(patternSEName, "storage_element_name"), this.data.instanceName);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
@@ -217,41 +217,22 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
 		procDSApiObj.checkProcDSStatus(conn, out, path, procDSID);
 
-                Vector procDSTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
-
-		String[] datapath = path.split("/");
-                Vector pathTierVec = parseTierVec(datapath[3]);
-		if ( ! procDSTierVec.containsAll(pathTierVec) )
-				throw new DBSException("Tier Mismatch", "1044",
-                                                        "Provided Tier(s) combinition " + pathTierVec.toString() + 
-							" is not present in dataset "+ path + " Path contains " + 
-							procDSTierVec.toString());
-
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 
-		String correctedPath = "/" + datapath[1] + "/" + datapath[2]
+		String[] pathToks = path.split("/");
+		Vector pathTierVec = parseTierVec(pathToks[3]);
+		String correctedPath = "/" + pathToks[1] + "/" + pathToks[2]
                                                                 + "/"+ makeOrderedTierList(conn, pathTierVec);
 
-		//System.out.println("correctedPath " + correctedPath);
 		if (!isNull(name)) {
 			checkBlock(name);
 			String[] data = name.split("#");
 			String[] blockPath = data[0].split("/");
-			
-			String[] pathToks = path.split("/");
-			//Anzar Afaq: 04/17/2007
-                        // This check is NOT required for the period when WE WANT
-			// DATA Inconsistencies in DBS
-			//if ( ! pathToks[1].equals(blockPath[1])  ||
-			//		! pathToks[2].equals(blockPath[2]) ) {
-				//throw new DBSException("Path mismatch", "1045", 
-				//		"Block path portion "  + data[0] + " does not match with Path " + path);
-			//}
-
 			//Check the Order of Tier list	
 			if(blockPath.length == 4) {
 				Vector blockTierVec = parseTierVec(blockPath[3]);
+
 				if ((blockTierVec.size() != pathTierVec.size()) || (!pathTierVec.containsAll(blockTierVec)) )
 					throw new DBSException("Tier Mismatch", "1043",
 							"Tiers of path portion of the block " + name + " does not match with " +
@@ -263,10 +244,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				"#" + data[1];
 				
 			}
-
 		} else 	name = correctedPath  + "#" + UUID.randomUUID(); 
 
-		//if (isNull(name)) name = path +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
 
 		if(getBlockID(conn, name, false, false) == null ) {
@@ -857,28 +836,40 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				dbsUser);
 	}
 
-	 public void listPathParents(Connection conn, Writer out, String path) throws Exception {
-		PreparedStatement ps = null;
-		ResultSet rs =  null;
-		try {
-			ps = DBSSql.listPathParent(conn, path);
+         public void listPathParents(Connection conn, Writer out, String path) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+
+                try {
+			ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
 			pushQuery(ps);
-			rs =  ps.executeQuery();
-			while(rs.next()) {
-				out.write(((String) "<processed_dataset_parent path='" +  get(rs, "PATH") + 
-						"' physics_group_name='" +
-						"' physics_group_convener='" +
-						"' creation_date='" +
-						"' created_by='" +
-						"' last_modification_date='" +
-						"' last_modified_by='" +
-						"'/>\n"));
-				}
-		} finally { 
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
-	
-	 }
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+				 String outpath = "/"+get(rs, "PRIMARY_DATASET_NAME")
+                                                        +"/"+get(rs, "PROCESSED_DATASET_NAME")
+                                                                +"/"+get(rs, "DATA_TIER");
+
+                                out.write(((String) "<processed_dataset_parent path='" +  outpath +
+                                                "' physics_group_name='" +
+                                                "' physics_group_convener='" +
+                                                "' creation_date='" +
+                                                "' created_by='" +
+                                                "' last_modification_date='" +
+                                                "' last_modified_by='" +
+                                                "'/>\n"));
+                         }
+
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+	}
+
+
+
+
+
+
 
 }

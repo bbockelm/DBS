@@ -1,6 +1,6 @@
 /**
- $Revision: 1.37 $"
- $Id: DBSApiTransferLogic.java,v 1.37 2008/07/10 16:08:51 sekhri Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSApiTransferLogic.java,v 1.38 2008/07/14 15:55:35 sekhri Exp $"
  *
  */
 
@@ -130,14 +130,18 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		Vector algoVector = DBSUtil.getVector(pdTable, "algorithm");
 		for (int j = 0; j < algoVector.size(); ++j) 
 			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser, clientVersion);
-		
+
+
+System.out.println("Line 1");		
 		Vector runVector = DBSUtil.getVector(pdTable, "run");
 		for (int j = 0; j < runVector.size(); ++j) 
 			insertRun(conn, out, (Hashtable)runVector.get(j), dbsUser);
+System.out.println("Line 2");		
 		
 		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser, ignoreParent);
 		Vector blockVector = DBSUtil.getVector(pdTable, "block");
 		Vector closeBlockVector = new Vector();
+System.out.println("Line 3");		
 		DBSApiBlockLogic blockApi = new DBSApiBlockLogic(this.data);
 		for (int j = 0; j < blockVector.size(); ++j) {
 			Hashtable block = (Hashtable)blockVector.get(j);

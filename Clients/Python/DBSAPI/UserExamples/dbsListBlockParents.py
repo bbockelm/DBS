@@ -14,8 +14,13 @@ try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
-  for block in api.listBlockParents(block_name="/Cosmics/BeamCommissioning08-PromptReco-v1/RECO#00465703-2e16-4f46-95d9-62571317af59"):
-     print "  %s" % block
+  for dataset in api.listDatasetPaths():
+	print "\n %s" %str(dataset)
+	print "Dataset parent: %s" %str(api.listPathParents)
+  	for block in api.listBlocks(dataset):
+		print "block: %s" %str(block['Name'])
+  		for parent in api.listBlockParents(block_name=block['Name']):
+     			print "Parent:  %s" % str(parent['Name'])
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

@@ -394,9 +394,8 @@ public class QueryBuilder {
 				
 						addQuery = false;
 					}
-
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "dataset")) {
-			//System.out.println("line 8");
+						//Lets have the same treatment as procds.parent
 						checkMax(iter);
 						allKws = addUniqueInList(allKws, "Block");
 						boolean dontJoin = false;
@@ -959,8 +958,10 @@ public class QueryBuilder {
 	}
 
 	private String handlePathParent() throws Exception {
+
+		System.out.println("This is..temporary continuation ..lets get to this laters....");
 		String sql = "Block.ID in  \n" +
-			"\t(" + DBSSql.listPathParent() + ")\n";
+			"\t(" + DBSSql.listPathParentOld() + ")\n";
 		
 		return sql;
 	}

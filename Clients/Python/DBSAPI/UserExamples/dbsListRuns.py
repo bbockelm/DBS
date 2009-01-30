@@ -18,9 +18,14 @@ try:
   # List all parameter sets
   print ""
   print "RUNS...."
-  for app in api.listRuns("/test_primary_002/TestProcessedDS0001/GEN-SIM"):
-     print "  %s" % app
-  
+  rlist=[]
+  for run in api.listRuns("/Cosmics/Commissioning08-MW32_v1/RAW"):
+     #print "  %s" % run['RunNumber']
+     rlist.append(run['RunNumber'])
+     
+  rlist.sort()
+  for r in rlist:
+	print r
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):
