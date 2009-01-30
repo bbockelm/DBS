@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.207 $"
- $Id: DBSSql.java,v 1.207 2008/12/22 17:45:04 afaq Exp $"
+ $Revision: 1.208 $"
+ $Id: DBSSql.java,v 1.208 2009/01/30 21:29:57 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1955,15 +1955,13 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT PDSR.Complete as DONE,\n"+
 				"R.RunNumber as RUN\n"+
 				"FROM "+owner()+"ProcDSRuns PDSR\n"+
-					"JOIN Runs R\n"+
+					"JOIN "+owner()+"Runs R\n"+
 						"ON R.ID=PDSR.Run\n"+
 				"WHERE PDSR.Dataset=?";
 				if (!DBSUtil.isNull(runID)) sql += " AND PDSR.Run=?\n";
 
                 int columnIndex=1;
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
-
-
 
                 ps.setString(columnIndex++, procDSID);
                 if (!DBSUtil.isNull(runID)) ps.setString(columnIndex++, runID);
