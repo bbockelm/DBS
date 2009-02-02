@@ -27,7 +27,7 @@ api = DbsApi(opts.__dict__)
 print "Inserting SE in a block /test_primary_001/TestProcessedDS001/SIM#12345"
 
 try:
-	api.addReplicaToBlock( '/test_primary_001/TestProcessedDS001/GEN-SIM#12345' , 'seaa1')
+	api.addReplicaToBlock( '/Zjets-madgraph/CMSSW_1_8_4-FastSim-1209151908/AODSIM#a1d40b58-7cff-4257-83bc-dfb2e1abff20' , 'grid02.phy.ncu.edu.tw')
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):

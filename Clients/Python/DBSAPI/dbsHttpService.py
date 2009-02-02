@@ -364,7 +364,7 @@ class DbsHttpService:
 		info += "\n Detail: %s " %attrs['detail']+"\n"
                 #####logging.log(DBSINFO, info)
 		
-      #print data
+      print data
       tokenToSearch = 'took too long to execute'
       startIndex = data.find(tokenToSearch)
       
