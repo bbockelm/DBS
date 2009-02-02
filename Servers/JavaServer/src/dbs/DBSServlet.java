@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.44 $"
- $Id: DBSServlet.java,v 1.44 2008/05/28 21:20:26 afaq Exp $"
+ $Revision: 1.45 $"
+ $Id: DBSServlet.java,v 1.45 2008/11/20 17:35:39 sekhri Exp $"
 
  */
 package dbs;
@@ -23,6 +23,7 @@ import dbs.api.DBSApi;
 import dbs.util.DBSUtil;
 import dbs.util.DBSConfig;
 import dbs.util.RegisterLock;
+import dbs.util.ModeLock;
 import dbs.data.DBSDataCache;
 import db.DBManagement;
 import dbs.search.graph.GraphUtil;
@@ -146,7 +147,39 @@ public class DBSServlet extends HttpServlet{
 			System.out.println("REGISTRATION Message "+ e.getMessage());
 			e.printStackTrace();
     		}
-	                        
+
+		response.setContentType("text/xml");
+		try {
+			ModeLock mLock = ModeLock.getModeLockInstance();
+			if(apiStr.equals("setMode")) { 
+				mLock.setMode(true);
+				try {
+					writeToStream(response, "<dbs message='DBS is set for  maintanence mode'/>" );
+				} finally {
+					return;
+				}
+			}else if (apiStr.equals("unsetMode")) {
+				mLock.setMode(false);
+				try {
+					writeToStream(response, "<dbs message='DBS maintanence mode is cleared'/>" );
+				} finally {
+					return;
+				}
+			}
+			if(mLock.isMode()) {
+				try {
+					writeToStream(response, "<dbs message='DBS is under maintanence'/>" );
+				} finally {
+					return;
+				}
+			}
+	 	} catch(Exception e) {
+			System.out.println("Maintanence Message "+ e.getMessage());
+			e.printStackTrace();
+    		}
+
+	                 
+		       
 
 		
 		PrintWriter out = null;
@@ -214,6 +247,20 @@ public class DBSServlet extends HttpServlet{
 			table.put(key, request.getParameter(key));
 		}
 		return table;
+	}
+
+	private void writeToStream(HttpServletResponse response, String msg) throws Exception{
+		PrintWriter out = null;
+		try {
+			out = response.getWriter();
+			out.write(DBSConstants.XML_HEADER);
+			out.write(msg);
+			out.write(DBSConstants.XML_SUCCESS);
+			out.write(DBSConstants.XML_FOOTER);
+			out.flush();
+		} finally {
+			if (out != null) out.close();
+		}
 	}
 																	
 	
