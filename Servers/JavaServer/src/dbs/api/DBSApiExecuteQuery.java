@@ -77,6 +77,7 @@ public class DBSApiExecuteQuery {
 			for (int i = 0; i != numberOfColumns; ++i) {
 				colNames[i] = rsmd.getColumnLabel(i + 1);
 			}
+                        out.write("\n<results>");
 			while(rs.next()) {
                                 String result = "";
 
@@ -98,9 +99,9 @@ public class DBSApiExecuteQuery {
                                             result += btag + res + etag;
                                     }
                                 }
-                                out.write("\n<result>");
+                                out.write("\n<row>");
                                 out.write(result);
-                                out.write("\n</result>\n");
+                                out.write("\n</row>");
 
 /*
 				out.write(((String) "<result "));
@@ -118,6 +119,7 @@ public class DBSApiExecuteQuery {
 				out.write(((String) "/>\n"));
 */
 			}
+                        out.write("\n</results>\n");
 
 		} finally {
 			statement.cancel();
