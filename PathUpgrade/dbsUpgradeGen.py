@@ -15,7 +15,7 @@ from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 
-instance_name='cms_dbs_prod_global'
+instance_name='cms_dbs_prod_global_intr2'
 #
 #
 logfile=open(instance_name+'.log', 'w')
@@ -30,6 +30,7 @@ try:
   (opts,args) = optManager.getOpt()
 
   args={}
+  #args['url']='http://cmssrv17.fnal.gov:8989/DBSINT2R/servlet/DBSServlet' 
   args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
   args['version']='DBS_2_0_5'
   args['mode']='POST'
@@ -300,12 +301,35 @@ END;
 /
 
 insert into datatier (name) values ('GEN-SIM-DIGI-RECO');
+insert into datatier (name) values ('GEN-SIM-DIGI-RAW');
+insert into DataTier (Name) values ('GEN-SIM');
+insert into datatier (name) values ('GEN-SIM');
+insert into datatier (name) values ('GEN-SIM-DIGI');
+insert into datatier (name) values ('GEN-SIM-DIGI-HLTDEBUG');
+insert into datatier (name) values ('GEN-SIM-DIGI-HLTDEBUG-RECO');
+insert into datatier (name) values ('GEN-SIM-DIGI-RAW');
+insert into datatier (name) values ('GEN-SIM-DIGI-RAW-HLTDEBUG');
+insert into datatier (name) values ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO');
+insert into datatier (name) values ('GEN-SIM-DIGI-RAW-RECO');
+insert into datatier (name) values ('GEN-SIM-DIGI-RECO');
+insert into datatier (name) values ('GEN-SIM-RAW');
+insert into datatier (name) values ('GEN-SIM-RAW-HLTDEBUG');
+insert into datatier (name) values ('GEN-SIM-RAW-HLTDEBUG-RECO');
+insert into datatier (name) values ('GEN-SIM-RAW-RECO');
+insert into datatier (name) values ('GEN-SIM-RECO');
+insert into datatier (name) values ('RAW-RECO');
+
+
+update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
+
 """
 
   log_this(create_pd_stmt)
   sqlfile.write("\n"+create_pd_stmt)
 
-  #allPathsOld = api.listDatasetPaths()
+  allPaths = api.listDatasetPaths()
+
+  """
   allPaths = ['/zz3j-alpgen/CMSSW_1_6_7-HLT-1205907476/GEN-SIM-DIGI-RECO',
         '/zz3j-alpgen/CMSSW_1_6_7-CSA07-1205907722/RECO',
         '/zz3j-alpgen/CMSSW_1_6_7-CSA07-1205736930/GEN-SIM-DIGI-RAW',
@@ -327,6 +351,7 @@ insert into datatier (name) values ('GEN-SIM-DIGI-RECO');
         '/Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO',
         '/Bd2PiKp/CMSSW_1_4_6-CSA07-2921/GEN-SIM',
 	'/Cosmics/Commissioning08-MW32_v1/RAW']
+  """
 
   #count = 0 #just do 10 datasets
   for aPath in allPaths:
@@ -353,7 +378,7 @@ insert into datatier (name) values ('GEN-SIM-DIGI-RECO');
         query += "\n (select ID from ProcessedDataset where Name='"+processed+"' AND PRIMARYDATASET="
         query += "\n (select ID from  PrimaryDataset where Name='"+primary+"')"
         query += "\n )"
-        query += "\n AND not exists"
+        query += "\n AND NOT EXISTS"
         query += "\n (select * from TMP_ProcessedDataset where Name='"+processed+"' AND PRIMARYDATASET="
         query += "\n   (select ID from  PrimaryDataset where Name='"+primary+"') AND DataTier="
         query += "\n   (select ID from DataTier where Name='"+tiers+"')"
@@ -441,35 +466,38 @@ insert into datatier (name) values ('GEN-SIM-DIGI-RECO');
 	sqlfile.write("\nPROMPT running query To Update ProcessedDS column in AnalysisDataset with Proper value")
         sqlfile.write(query)
 
-	log_this("Generated query to fill in Block and Dataset parentage : %s" %aPath)
-	sqlfile.write("\n--Generated query To fill in Block and Dataset parentage : %s" %aPath)
-	query="\n--SET SERVEROUTPUT ON;"
-        query+="\nBEGIN"
-        query+="\n  FOR item IN"
-        query+="\n  ("
-        query+="\n        SELECT DISTINCT B.ID AS BID, B.DATASET AS BDS FROM Block B"
-        query+="\n        JOIN Files FL"
-        query+="\n                ON FL.Block=B.ID"
-        query+="\n        WHERE FL.ID in"
-        query+="\n                (SELECT FP.ItsParent"
-        query+="\n                        from FileParentage FP"
-        query+="\n                                WHERE FP.ThisFile in (SELECT FLS.ID FROM FILES FLS"
-        query+="\n                                                        JOIN BLOCK BL"
-        query+="\n                                                                ON BL.ID=FLS.BLOCK"
-        query+="\n                                WHERE BL.PATH='"+aPath+"'))"
-        query+="\n  )"
-        query+="\n  LOOP"
-        query+="\n    INSERT INTO TMP_BlockParent(ThisBlock, ItsParent) VALUES ("
-        query+="\n    (SELECT BLOCK.ID FROM BLOCK WHERE PATH='"+aPath+"'),"
-        query+="\n    item.BID"
-        query+="\n    );"
-        query+="\n    INSERT INTO TMP_ProcDSParent(ThisDataset, ItsParent) VALUES ("
-        query+="\n    (SELECT BLOCK.Dataset FROM BLOCK WHERE PATH='"+aPath+"'),"
-        query+="\n    item.BDS"
-        query+="\n    );"  
-        query+="\n  END LOOP;"
-        query+="\nEND;"
-        query+="\n/"
+
+        log_this("Generated query to fill in Block and Dataset parentage : %s" %aPath)
+        sqlfile.write("\n--Generated query To fill in Block and Dataset parentage : %s" %aPath)
+        query  = "\n--SET SERVEROUTPUT ON;"
+        query += "\nDECLARE"
+        query += "\n  CURSOR c1 IS"
+        query += "\n   SELECT DISTINCT ID, DATASET FROM Block WHERE PATH='"+aPath+"';"
+        query += "\nBEGIN"
+        query += "\n  FOR item IN c1 LOOP"
+        query += "\n   DECLARE"
+        query += "\n   CURSOR c2 IS"
+        query += "\n        SELECT DISTINCT B.ID AS BID, B.Dataset as BDS FROM Block B"
+        query += "\n                JOIN Files FL"
+        query += "\n                        ON FL.Block=B.ID"
+        query += "\n                WHERE FL.ID in"
+        query += "\n                        (SELECT FP.ItsParent"
+        query += "\n                                from FileParentage FP"
+        query += "\n                                        WHERE FP.ThisFile in (SELECT FLS.ID FROM FILES FLS"
+        query += "\n                                                        JOIN BLOCK BL"
+        query += "\n                                                                ON BL.ID=FLS.BLOCK"
+        query += "\n                                        WHERE BL.ID=item.ID));"
+        query += "\n   BEGIN FOR pitem IN c2  LOOP"
+        query += "\n        INSERT INTO TMP_BlockParent(ThisBlock, ItsParent)"
+	query += "\n             SELECT item.ID, pitem.BID FROM DUAL WHERE NOT EXISTS (SELECT * from TMP_BlockParent WHERE ThisBlock=item.ID AND ItsParent=pitem.BID);"
+        query += "\n        INSERT INTO TMP_ProcDSParent(ThisDataset, ItsParent) "
+        query += "\n             SELECT item.DATASET, pitem.BDS FROM DUAL"
+        query += "\n                                    WHERE NOT EXISTS (SELECT * from TMP_ProcDSParent WHERE ThisDataset=item.DATASET AND ItsParent=pitem.BDS);"		
+        query += "\n      END LOOP;"
+        query += "\n   END;"
+        query += "\n  END LOOP;"
+        query += "\nEND;"
+        query += "\n/"
 	log_this(query)
 	sqlfile.write("\nPROMPT running query To fill in Block and Dataset parentage for path : %s" %aPath)
 	sqlfile.write(query)
@@ -478,6 +506,7 @@ insert into datatier (name) values ('GEN-SIM-DIGI-RECO');
 	sqlfile.flush()
         #count += 1 
 	#if count > 10: break
+	#break
 
   log_this("RENAMING the tables")
   sqlfile.write("\n--RENAMING the tables")
