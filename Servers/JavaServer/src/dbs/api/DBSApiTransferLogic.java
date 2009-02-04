@@ -1,6 +1,6 @@
 /**
- $Revision: 1.39 $"
- $Id: DBSApiTransferLogic.java,v 1.39 2009/01/30 21:29:56 afaq Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSApiTransferLogic.java,v 1.40 2009/02/04 16:32:57 sekhri Exp $"
  *
  */
 
@@ -136,13 +136,26 @@ System.out.println("Line 1");
 		Vector runVector = DBSUtil.getVector(pdTable, "run");
 		for (int j = 0; j < runVector.size(); ++j) 
 			insertRun(conn, out, (Hashtable)runVector.get(j), dbsUser);
-System.out.println("Line 2");		
-		
+System.out.println("Line 2");
+
+		//Fix for backward comaptibility of migration from old server to new
+		String data[] = parseDSPath(path);
+		String tiers[] = (parseDSPath(path)[3]).split("-");
+		Vector tierVector = new Vector();
+		for (String s: tiers) {
+			Hashtable tierTable = new Hashtable();
+			tierTable.put("name", s);
+			tierVector.add(tierTable);
+		}
+		pdTable.remove("data_tier");
+		pdTable.put("data_tier", tierVector);
+		//Fix complete
+
 		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser, ignoreParent);
-		Vector blockVector = DBSUtil.getVector(pdTable, "block");
 		Vector closeBlockVector = new Vector();
 System.out.println("Line 3");		
 		DBSApiBlockLogic blockApi = new DBSApiBlockLogic(this.data);
+		Vector blockVector = DBSUtil.getVector(pdTable, "block");
 		for (int j = 0; j < blockVector.size(); ++j) {
 			Hashtable block = (Hashtable)blockVector.get(j);
 			String name = getBlock(block, "name", true);
