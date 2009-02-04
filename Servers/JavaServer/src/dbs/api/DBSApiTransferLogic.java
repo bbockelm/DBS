@@ -1,6 +1,6 @@
 /**
- $Revision: 1.38 $"
- $Id: DBSApiTransferLogic.java,v 1.38 2008/07/14 15:55:35 sekhri Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSApiTransferLogic.java,v 1.39 2009/01/30 21:29:56 afaq Exp $"
  *
  */
 
@@ -151,9 +151,9 @@ System.out.println("Line 3");
 				closeBlockVector.add(name);
 				block.remove("open_for_writing");
 			}
-			//System.out.println("---------> Inserting block "+name);
+			System.out.println("---------> Inserting block "+name);
 			blockApi.insertBlock(conn, out, block, dbsUser);
-			//System.out.println("---------> DONE Inserting block "+name);
+			System.out.println("---------> DONE Inserting block "+name);
 		}
 		
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);

@@ -113,6 +113,8 @@
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileParentage" 		relation="Files.ID = FileParentage.ThisFile"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileChildage"		relation="Files.ID = FileParentage.ItsParent"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="BranchHash" 		relation="Files.FileBranch = BranchHash.ID"/>
+	<edge directed="false"	wt="1"	source="BranchHash"		target="BranchHashMap" 		relation="BranchHash.ID = BranchHashMap.BranchHashID"/>
+	<edge directed="false"	wt="1"	source="BranchHashMap" 		target="Branch" 		relation="BranchHashMap.BranchID = Branch.ID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileStatus" 		relation="Files.FileStatus = FileStatus.ID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileType" 		relation="Files.FileType = FileType.ID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileValidStatus"	relation="Files.ValidationStatus = FileValidStatus.ID"/>

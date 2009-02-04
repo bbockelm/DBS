@@ -5,7 +5,7 @@ if [ "${JAVA_HOME}" = "" ]; then
 fi
 savePWD=$PWD
 cd $BASE/../../LibValut
-CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.1.7.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar:$PWD/msclient.jar
+CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.2.2.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar:$PWD/msclient.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
@@ -252,7 +252,7 @@ executeQuery () {
 	#$CMD query="find dataset where file = *RAW" upper="False"
 	#$CMD query="find dataset"
 	
-	$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
+	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
 	#$CMD query="find dataset where site != caf.cern.ch "
 	#$CMD query="find dataset where site = caf.cern.ch "
@@ -260,4 +260,4 @@ executeQuery () {
 	#$CMD query="find dataset where site != T1_CH_CERN "
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
-	$CMD query="find block.numfiles, block.numevents, block.status where block like *"
+	$CMD query="find branch.name, branch.createby, branch.createdate, branch.modby, branch.moddate where file=/store/temp/backfill/data/AllRunsTest/Cosmics/RECO/OneOfEachLumi_v1/000/064/818/F0071E05-D6D9-DD11-9CD6-000423D174FE.root"
