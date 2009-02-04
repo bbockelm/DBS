@@ -1843,7 +1843,9 @@ class ApiDispatcher:
         return self.parseResults(data)
 
   def getDataFromDDSearch(self, userInput):
- 
+
+    print "Usage of ASearch is deprecated from DBS_2_0_6"
+    sys.exit(0) 
     #host="https://cmsweb.cern.ch/dbs_discovery_test/"
     host= "https://cmsweb.cern.ch/dbs_discovery/"
     #host= "https://cmsweb.cern.ch/dbs_discovery_test/DDServer/"
