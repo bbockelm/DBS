@@ -113,6 +113,10 @@ public class QueryBuilder {
 			allKws = addUniqueInList(allKws, "FileStatus");
 
 		}
+		if(isInListRelaxed(kws, "file") && isInListRelaxed(kws, "run")) {
+			//System.out.println("They are same ----------------------------------->");
+			allKws = addUniqueInList(allKws, "FileRunLumi");
+		}
 		for (int i =0 ; i!= kws.size(); ++i) {
 			++iter;	checkMax(iter);
 			String aKw = (String)kws.get(i);
@@ -1277,6 +1281,12 @@ public class QueryBuilder {
 			//System.out.println("line 3.1");
 		for(Object kw: keyWords) {
 			if(((String)kw).equals(aKw))return true;
+		}
+		return false;
+	}
+	private boolean isInListRelaxed(ArrayList keyWords, String aKw) {
+		for(Object kw: keyWords) {
+			if( ((String)kw).indexOf(aKw) != -1 ) return true;
 		}
 		return false;
 	}

@@ -206,7 +206,7 @@ executeQuery () {
 	#$CMD query="find   dataset, file.count where site  like abc.in"
 	#$CMD query="find sum(file.numevents), file.count, run.count, dataset  where file.size > 0"
 	
-	#$CMD query="find  sum(file.numevents),  dataset where dataset like *"
+	$CMD query="find  sum(file.numevents),  dataset where dataset like *"
 	#$CMD query="find  sum(file.numevents), file.count where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
 	#$CMD query="find release where release like *"
 	#$CMD query="find sum(file.size), count(file), run where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM and site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
@@ -257,7 +257,8 @@ executeQuery () {
 	#$CMD query="find dataset where site != caf.cern.ch "
 	#$CMD query="find dataset where site = caf.cern.ch "
 	#$CMD query="find dataset where site = T1_CH_CERN "
-	#$CMD query="find dataset where site != T1_CH_CERN "
+	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby,run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO"
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
-	$CMD query="find branch.name, branch.createby, branch.createdate, branch.modby, branch.moddate where file=/store/temp/backfill/data/AllRunsTest/Cosmics/RECO/OneOfEachLumi_v1/000/064/818/F0071E05-D6D9-DD11-9CD6-000423D174FE.root"
+	#$CMD query="find branch.name, branch.createby, branch.createdate, branch.modby, branch.moddate where file=/store/temp/backfill/data/AllRunsTest/Cosmics/RECO/OneOfEachLumi_v1/000/064/818/F0071E05-D6D9-DD11-9CD6-000423D174FE.root"
+
