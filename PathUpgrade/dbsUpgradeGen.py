@@ -15,7 +15,8 @@ from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 
-instance_name='cms_dbs_prod_global_intr2'
+instance_name='cms_dbs_test'
+#instance_name='cms_dbs_prod_global_intr2'
 #
 #
 logfile=open(instance_name+'.log', 'w')
@@ -31,7 +32,9 @@ try:
 
   args={}
   #args['url']='http://cmssrv17.fnal.gov:8989/DBSINT2R/servlet/DBSServlet' 
-  args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
+  #args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
+  args['url']='http://cmssrv17.fnal.gov:8989/DBSTEST/servlet/DBSServlet'
+
   args['version']='DBS_2_0_5'
   args['mode']='POST'
   api = DbsApi(args)
@@ -100,14 +103,17 @@ ALTER TABLE Files ADD TMP_Dataset INTEGER check (TMP_Dataset is not null);
 ALTER TABLE Files ADD CONSTRAINT
     Files_TDataset_FK foreign key(TMP_Dataset) references TMP_ProcessedDataset(ID) on delete CASCADE
 /
-ALTER TABLE ProcAlgo ADD TMP_Dataset INTEGER check (TMP_Dataset is not null);
-ALTER TABLE ProcAlgo ADD CONSTRAINT
-    ProcAlgo_TDataset_FK foreign key(TMP_Dataset) references TMP_ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE ProcDSRuns ADD TMP_Dataset INTEGER check (TMP_Dataset is not null);
-ALTER TABLE ProcDSRuns ADD CONSTRAINT
-    ProcDSRuns_TDataset_FK foreign key(TMP_Dataset) references TMP_ProcessedDataset(ID) on delete CASCADE
-/
+
+
+--ALTER TABLE ProcAlgo ADD TMP_Dataset INTEGER check (TMP_Dataset is not null);
+--ALTER TABLE ProcAlgo ADD CONSTRAINT
+--    ProcAlgo_TDataset_FK foreign key(TMP_Dataset) references TMP_ProcessedDataset(ID) on delete CASCADE
+--/
+--ALTER TABLE ProcDSRuns ADD TMP_Dataset INTEGER check (TMP_Dataset is not null);
+--ALTER TABLE ProcDSRuns ADD CONSTRAINT
+--    ProcDSRuns_TDataset_FK foreign key(TMP_Dataset) references TMP_ProcessedDataset(ID) on delete CASCADE
+--/
+
 ALTER TABLE RunLumiQuality ADD TMP_Dataset INTEGER check (TMP_Dataset is not null);
 ALTER TABLE RunLumiQuality ADD CONSTRAINT
     RunLumiQuality_TDataset_FK foreign key(TMP_Dataset) references TMP_ProcessedDataset(ID) on delete CASCADE
@@ -318,7 +324,7 @@ insert into datatier (name) values ('GEN-SIM-RAW-HLTDEBUG-RECO');
 insert into datatier (name) values ('GEN-SIM-RAW-RECO');
 insert into datatier (name) values ('GEN-SIM-RECO');
 insert into datatier (name) values ('RAW-RECO');
-
+insert into datatier (name) values ('DIGI-RECO');
 
 update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 
@@ -353,20 +359,16 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	'/Cosmics/Commissioning08-MW32_v1/RAW']
   """
 
-  #count = 0 #just do 10 datasets
   for aPath in allPaths:
 	log_this("Now processing %s " %aPath)
 	sqlfile.write("\n\n"+"--===========================================================================")
-	sqlfile.write("\n\n"+"--===========================================================================")
 	sqlfile.write("\n\n"+"--Now processing %s " %aPath)
-	sqlfile.write("\n\n"+"--===========================================================================")
 	sqlfile.write("\n\n"+"--===========================================================================")
 	comps=aPath.split('/')
 	primary=comps[1]
 	processed=comps[2]
 	tiers=comps[3]
 	log_this("Primary: %s, Processed: %s, DataTier: %s" % (primary, processed, tiers))
-
 	query  = "\nINSERT INTO TMP_ProcessedDataset "
   	query += "\n (Name, PrimaryDataset, DataTier, PhysicsGroup, Status, AquisitionEra, "
    	query += "\n GlobalTag, XtCrossSection, CreatedBy, CreationDate, LastModifiedBy) "
@@ -377,17 +379,32 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
         query += "\n LastModifiedBy FROM ProcessedDataset WHERE ID="
         query += "\n (select ID from ProcessedDataset where Name='"+processed+"' AND PRIMARYDATASET="
         query += "\n (select ID from  PrimaryDataset where Name='"+primary+"')"
-        query += "\n )"
-        query += "\n AND NOT EXISTS"
-        query += "\n (select * from TMP_ProcessedDataset where Name='"+processed+"' AND PRIMARYDATASET="
-        query += "\n   (select ID from  PrimaryDataset where Name='"+primary+"') AND DataTier="
-        query += "\n   (select ID from DataTier where Name='"+tiers+"')"
         query += "\n );"
+        #query += "\n AND NOT EXISTS"
+        #query += "\n (select * from TMP_ProcessedDataset where Name='"+processed+"' AND PRIMARYDATASET="
+        #query += "\n   (select ID from  PrimaryDataset where Name='"+primary+"') AND DataTier="
+        #query += "\n   (select ID from DataTier where Name='"+tiers+"')"
+        #query += "\n );"
 	log_this("Generated Query To Insert In TMP_ProcessedDataset:")
 	log_this(query)
 	sqlfile.write("\n--Generated Query To Insert In TMP_ProcessedDataset:")
+	sqlfile.write("\n--INSERT ALL THE TMP_ProcessedDataset first, required for resolving Parentage etc.")
 	sqlfile.write("\nPROMPT Running query to make an entry into TMP_ProcessedDataset")
 	sqlfile.write(query)
+
+  #count = 0 #just do 10 datasets
+  for aPath in allPaths:
+        comps=aPath.split('/')
+        primary=comps[1]
+        processed=comps[2]
+        tiers=comps[3]
+        log_this("Primary: %s, Processed: %s, DataTier: %s" % (primary, processed, tiers))
+        sqlfile.write("\n\n"+"--===========================================================================")
+        sqlfile.write("\n\n"+"--===========================================================================")
+        sqlfile.write("\n\n"+"--Now processing %s " %aPath)
+        sqlfile.write("\n\n"+"--===========================================================================")
+        sqlfile.write("\n\n"+"--===========================================================================")
+
 
 	#ProcAlgo, ASSUMING THAT EVERY FILE HAS A ALGO (TESTES THE CONDITION IN GLOBAL)
         log_this("Fixing ProcAlgo table")
@@ -466,7 +483,6 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	sqlfile.write("\nPROMPT running query To Update ProcessedDS column in AnalysisDataset with Proper value")
         sqlfile.write(query)
 
-
         log_this("Generated query to fill in Block and Dataset parentage : %s" %aPath)
         sqlfile.write("\n--Generated query To fill in Block and Dataset parentage : %s" %aPath)
         query  = "\n--SET SERVEROUTPUT ON;"
@@ -509,6 +525,13 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	#break
 
   log_this("RENAMING the tables")
+
+  sqlfile.write("\ncommit;")
+  sqlfile.write("\nSPOOL OFF")
+  logfile.close()
+  sqlfile.close()
+  sys.exit(0)
+
   sqlfile.write("\n--RENAMING the tables")
   query  = "\nalter table ProcessedDataset rename to ORIGProcessedDataset;"
   query += "\nalter table TMP_ProcessedDataset rename to ProcessedDataset;"
