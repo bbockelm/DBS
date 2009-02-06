@@ -1,6 +1,6 @@
 /**
- $Revision: 1.40 $"
- $Id: DBSApiTransferLogic.java,v 1.40 2009/02/04 16:32:57 sekhri Exp $"
+ $Revision: 1.41 $"
+ $Id: DBSApiTransferLogic.java,v 1.41 2009/02/04 21:00:10 sekhri Exp $"
  *
  */
 
@@ -45,33 +45,42 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		listDatasetContents(conn, out, path, blockName, instanceName, clientVersion, false);
 	}
 	public void listDatasetContents(Connection conn, Writer out, String path, String blockName, String instanceName, String clientVersion, boolean all) throws Exception {
+		
+System.out.println("listDatasetContents line 1");
 		String data[] = parseDSPath(path);
 		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
                 
+System.out.println("listDatasetContents line 2");
 		out.write(((String) "<dataset path='" + path + 
 					"' block_name='" + blockName +
 					"' />\n"));
                 
+System.out.println("listDatasetContents line 3");
                 //Format of insertFile xml has modified slightly, hance changed required here, AA 01/18/2007
                /* out.write(((String) "<dataset path='" + path + "'/>\n" +
                                     "<block block_name='" + blockName +"'>\n"+
                                     "</block>\n")); */
 
                 //FIXME: We need to add storage_elemnts in above xml as well,  AA 01/18/2007 
-
+System.out.println("listDatasetContents line 4");
 		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
+System.out.println("listDatasetContents line 5");
 		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
 		//pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null);
-		pdApi.listProcessedDatasets(conn, out, data[1], "", data[2], null, null, null, null, all);
+		pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null, all);
+System.out.println("listDatasetContents line 6");
 		(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out, path, clientVersion);
 		pdApi.listDatasetParents(conn, out, path);
+System.out.println("listDatasetContents line 7");
 		//bApi.listPathParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
+System.out.println("listDatasetContents line 8");
 		bApi.listBlocks(conn, out, path, blockName, null, "SUPER");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, "", blockName, null, "true");
 
 
+System.out.println("listDatasetContents line 9");
 
 		//CHECK TO SEE IF THIS IS GLOBAL INSTANCE, THEN NO NEED TO TRANSFER BRANCH AND TRIGGER INFORMATION (branchNTrig=false)
 		//String branchNTrig = "true";
@@ -97,8 +106,10 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		attributes.add("retrive_branch");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "True");
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
+		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
 
+System.out.println("listDatasetContents line 10");
 	}
 	
 	

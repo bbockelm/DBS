@@ -1,6 +1,6 @@
 /**
- $Revision: 1.115 $"
- $Id: DBSApiFileLogic.java,v 1.115 2008/12/05 19:51:46 afaq Exp $"
+ $Revision: 1.116 $"
+ $Id: DBSApiFileLogic.java,v 1.116 2009/01/30 21:29:56 afaq Exp $"
  *
  */
 
@@ -717,7 +717,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		if (blockPathTokens.length < 4)
 			throw new DBSException("Wrong Parameters", "1038",
                                                         "User must provide a valid blockName");
-                matchWithFileTiers(files, parseTierVec(blockPathTokens[3]), blockName);
+                //matchWithFileTiers(files, parseTierVec(blockPathTokens[3]), blockName);
 
                 String blockID = null;
                 String procDSID = null;
