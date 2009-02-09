@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.45 $"
- $Id: DBSServlet.java,v 1.45 2008/11/20 17:35:39 sekhri Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSServlet.java,v 1.46 2009/02/02 21:24:31 sekhri Exp $"
 
  */
 package dbs;
@@ -149,9 +149,19 @@ public class DBSServlet extends HttpServlet{
     		}
 
 		response.setContentType("text/xml");
+		String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
+
+		PrintWriter out = response.getWriter();
+                DBSApi api = new DBSApi(); 
+
+
 		try {
 			ModeLock mLock = ModeLock.getModeLockInstance();
 			if(apiStr.equals("setMode")) { 
+				if(!isAuthorized(dn)) {
+					api.writeException(out, "Authorization Error", "404", "User " + dn +" is authorized to execute this api setMode");
+					return;
+				}
 				mLock.setMode(true);
 				try {
 					writeToStream(response, "<dbs message='DBS is set for  maintanence mode'/>" );
@@ -159,6 +169,11 @@ public class DBSServlet extends HttpServlet{
 					return;
 				}
 			}else if (apiStr.equals("unsetMode")) {
+				if(!isAuthorized(dn)) {
+					api.writeException(out, "Authorization Error", "404", "User " + dn +" is authorized to execute this api setMode");
+					return;
+				}
+
 				mLock.setMode(false);
 				try {
 					writeToStream(response, "<dbs message='DBS maintanence mode is cleared'/>" );
@@ -180,36 +195,32 @@ public class DBSServlet extends HttpServlet{
 
 	                 
 		       
+		/*
+		* If the DN is not set properly then look for DN in the http header sent by the client. If still DN is not found then set the dn to web-client
+		*/
+		if (dn == null) {
+			dn = request.getHeader("UserID");
+			if (dn == null) dn = "web-client";
+			DBSUtil.writeLog("NO DN, using UserID: " + dn + " from HTTP header");
+		}
 
 		
-		PrintWriter out = null;
-                DBSApi api = null; 
+		//PrintWriter out = null;
+                //DBSApi api = null; 
 
 		try {
 			//StringBuffer url = request.getRequestURL();
 			//System.out.println("URL is ------------- > "  + url);
 
 			Hashtable userDN = new Hashtable();
-			String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
-			
-			/*
-			 * If the DN is not set properly then look for DN in the http header sent by the client. If still DN is not found then set the dn to web-client
-			 */
-			if (dn == null) {
-	                        dn = request.getHeader("UserID");
-				if (dn == null) {
-					dn = "web-client";
-				}
-				DBSUtil.writeLog("NO DN, using UserID: " + dn + " from HTTP header");
-			}
 			DBSUtil.writeLog("DN of the user is " + dn);
 			userDN.put("user_dn", dn);
 			
 			//System.out.println("DN of the user is " + dn);
-			response.setContentType("text/xml");
-			out = response.getWriter();
+			//response.setContentType("text/xml");
+			//out = response.getWriter();
 		
-			api = new DBSApi();
+			//api = new DBSApi();
 			api.call(out, getTable(request), userDN);
 
 		} catch(Exception e) {
@@ -261,6 +272,19 @@ public class DBSServlet extends HttpServlet{
 		} finally {
 			if (out != null) out.close();
 		}
+	}
+	private boolean isAuthorized(String dn) throws Exception{
+		if(dn == null) return false;
+		DBSConfig dbsConfig = DBSConfig.getInstance();
+		String adminDns = dbsConfig.getAdminDN();
+		String finalDns[] = adminDns.split(",");
+		for(String aDn: finalDns) {
+			System.out.println("checking with " + aDn);
+			if(aDn.trim().equals(dn)) return true;
+		}
+		//if(dn.equals("sekhri@cmssrv17.fnal.gov")) return true;
+		//if(dn.equals("/DC=org/DC=doegrids/OU=People/CN=Vijay Sekhri 579120")) return true;
+		return false; 
 	}
 																	
 	
