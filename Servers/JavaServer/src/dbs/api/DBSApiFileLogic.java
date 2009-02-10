@@ -1,6 +1,6 @@
 /**
- $Revision: 1.116 $"
- $Id: DBSApiFileLogic.java,v 1.116 2009/01/30 21:29:56 afaq Exp $"
+ $Revision: 1.117 $"
+ $Id: DBSApiFileLogic.java,v 1.117 2009/02/06 17:35:55 sekhri Exp $"
  *
  */
 
@@ -39,7 +39,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	private boolean contains(ArrayList attributes, String param) {
 		return DBSUtil.contains(attributes, param);
 	}
-	public void listFiles(Connection conn, 
+	/*public void listFiles(Connection conn, 
 			Writer out, 
 			String path, 
 			String primary, 
@@ -69,6 +69,19 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String clientVersion,
 			String detail,
 			String otherDetail
+			) throws Exception {*/
+
+	public void listFiles(Connection conn, 
+			Writer out, 
+			String path, 
+			String aDSName, 
+			String blockName, 
+			String patternLFN, 
+			String runNumber,
+			ArrayList attributes,
+			String clientVersion,
+			String detail,
+			String otherDetail
 			) throws Exception {
 
 		boolean allOtherDetails = false;
@@ -87,46 +100,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Search can be based on LFN pattern
 		if(!isNull(patternLFN)) patternlfn = getPattern(patternLFN, "pattern_lfn");
 
-		//if path is given we will only regard it to be sufficient criteria for listing files.
-		if (!isNull(path)) { 
-			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
-			if (!isNull(runNumber)) runID = getID(conn, "Runs", "RunNumber", runNumber , true);
-			useJustPath = true;
-			//listFiles(conn, out, path, runNumber, detail, listInvalidFiles);
-			//return;
-		}
-		if (!useJustPath) {
-			//User asks to search on Other parameters then.
-		
-			//Get the procDSID and TierIDs if Tiers are given
-			if(!isNull(primary) && !isNull(proc) ) procDSID 
-					= (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, primary, proc, "", true);
+		if (!isNull(path)) procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+		if (!isNull(runNumber)) runID = getID(conn, "Runs", "RunNumber", runNumber , true);
+		//Search can be based on Analysis Dataset
+		if (!isNull(aDSName)) aDSID = (new DBSApiAnaDSLogic(this.data)).getADSID(conn, aDSName, true);
 	
-			//dataTierList is a "-" separated list of ALLL tiers that user wants to look for
-			String[] tierList = parseTier(dataTierList);
-			for (int j = 0; j < tierList.length; ++j) {
-				if (!isNull(tierList[j])) tierIDList.add(getTierID(conn, tierList[j] , true));
-			}
-	
-			//Search can be based on Analysis Dataset
-			if (!isNull(aDSName)) aDSID = (new DBSApiAnaDSLogic(this.data)).getADSID(conn, aDSName, true);
-	
-			//Search can be based on Block Name
-			if(!isNull(blockName)) 	blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
-	
-	
-			if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && (patternlfn.equals("%") || isNull(patternlfn))) 
-				throw new DBSException("Missing data", "1005", 
-						"Null Fields. Expected either a (Primary, Processed) Dataset, Analysis Dataset, Block or LFN pattern");
-	
-			if(!isNull(procDSID) && !isNull(aDSName)) {
-				writeWarning(out, "Both Processed dataset and Analysis dataset given", "1090", 
-							"If Analysis dataset is given then there is no need for a processed dataset. " + 
-							"While fetcing the files processed dataset will be ignored." +
-							" Given Processed Dataset is  " +proc+ " and given Analysis Dataset is " + aDSName);
-				procDSID = "";
-			}
-		} //if userJustPath
+		//Search can be based on Block Name
+		if(!isNull(blockName)) 	blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
 
 		//Block is always required
 		//At least until everyone switches to DBS_1_0_9 and CRAB stop using BLOCK infor from listFiles()
@@ -705,8 +685,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	//ANZAR: 12/03/2007
         public void insertFilesInBlock(Connection conn, Writer out, Hashtable block, ArrayList files, Hashtable dbsUser, boolean ignoreParent) throws Exception {
 
+
 		//Verify Block Name
                 String blockName = getBlockPattern(DBSUtil.get(block, "block_name"));
+		System.out.println("BLOCK NAME ----------------->>>>>>>>>>>>>>>>>>>>>>>>" + blockName);
                 if (isNull(blockName) )
                         throw new DBSException("Wrong Parameters", "1038",
                                                         "User must provide a valid blockName");
@@ -806,6 +788,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                         String fileID = "";
                         String lfn = get(file, "lfn", true);
+			System.out.println("FILE NAME ----------------->>>>>>>>>>>>>>>>>>>>>>>>" + lfn);
                         String fileStatus = get(file, "file_status", false).toUpperCase();
 
                         String type = get(file, "type", true).toUpperCase();

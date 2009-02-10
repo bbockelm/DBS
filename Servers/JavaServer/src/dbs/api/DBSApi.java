@@ -1,6 +1,6 @@
 /**
- $Revision: 1.153 $"
- $Id: DBSApi.java,v 1.153 2008/12/05 20:59:07 afaq Exp $"
+ $Revision: 1.154 $"
+ $Id: DBSApi.java,v 1.154 2009/01/30 21:29:56 afaq Exp $"
  *
 */
 
@@ -363,9 +363,9 @@ public class DBSApi {
 				//System.out.println("other_detail in DBSAPI is " + get(table, "other_detail", false));
 				(new DBSApiFileLogic(this.data)).listFiles(conn, out, 
 						get(table, "path", false),
-						get(table, "primary_dataset", false),
-						get(table, "processed_dataset", false),
-						get(table, "data_tier_list", false),
+						//get(table, "primary_dataset", false),
+						//get(table, "processed_dataset", false),
+						//get(table, "data_tier_list", false),
 						get(table, "analysis_dataset_name", false),
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),

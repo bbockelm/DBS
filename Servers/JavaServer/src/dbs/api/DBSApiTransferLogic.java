@@ -1,6 +1,6 @@
 /**
- $Revision: 1.41 $"
- $Id: DBSApiTransferLogic.java,v 1.41 2009/02/04 21:00:10 sekhri Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSApiTransferLogic.java,v 1.42 2009/02/06 17:35:55 sekhri Exp $"
  *
  */
 
@@ -107,7 +107,10 @@ System.out.println("listDatasetContents line 9");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "True");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
+		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", "", "", "", "", blockName, null, null, attributes, clientVersion, "True", "False");
+
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", "", blockName, null, null, attributes, clientVersion, "True", "False");
+		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
 
 System.out.println("listDatasetContents line 10");
 	}
