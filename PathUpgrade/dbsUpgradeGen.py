@@ -15,8 +15,8 @@ from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 
-#instance_name='cms_dbs_test'
-instance_name='cms_dbs_prod_global_intr2'
+instance_name='cms_dbs_test'
+#instance_name='cms_dbs_prod_global_intr2'
 #
 #
 logfile=open(instance_name+'.log', 'w')
@@ -276,8 +276,11 @@ ALTER TABLE TMP_ProcDSRuns ADD CONSTRAINT
 ALTER TABLE TMP_ProcDSRuns ADD CONSTRAINT
     TMP_PDSR_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
+
 PROMPT creating sequence seq_tprocdsruns ;
-create sequence seq_tprocdsruns ;
+create sequence seq_tprocdsruns;
+
+
 PROMPT AUTO INC TRIGGER FOR Trigger for Table: tmp_procdsruns
  CREATE OR REPLACE TRIGGER tprocdsruns_TRIG before insert on tmp_procdsruns    for each row begin     if inserting then       if :NEW.ID is null then          select seq_tprocdsruns.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
@@ -350,8 +353,19 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
   sqlfile.write("\n--=== SCRIPT to create entries in DataTier Table")
   sqlfile.write(query)
   sqlfile.write("\n--===========================================================================")
+  
+  count=0
+  #allPaths = api.listDatasetPaths()
+  allPaths = ['/zz2j-alpgen/CMSSW_1_6_7-CSA07-1205616825/GEN-SIM-DIGI-RAW',
+		'/zz2j-alpgen/CMSSW_1_4_9-CSA07-4130/GEN-SIM',
+		'/zz1j-alpgen/CMSSW_1_6_7-HLT-1205617620/GEN-SIM-DIGI-RECO',
+		'/zz1j-alpgen/CMSSW_1_6_7-CSA07-1205616888/GEN-SIM-DIGI-RAW',
+		'/zz1j-alpgen/CMSSW_1_4_9-CSA07-4129/GEN-SIM',
+		'/zcc2j-alpgen/CMSSW_1_6_7-HLT-1204121116/GEN-SIM-DIGI-RECO',
+		'/zcc2j-alpgen/CMSSW_1_6_7-CSA07-4086/GEN-SIM-DIGI-RAW',
+		'/zcc2j-alpgen/CMSSW_1_4_12-CSA07-3998/GEN-SIM']
 
-  allPaths = api.listDatasetPaths()
+
   for aPath in allPaths:
 	log_this("Now processing %s " %aPath)
 	sqlfile.write("\n\n"+"--===========================================================================")
@@ -379,9 +393,12 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	sqlfile.write("\n--INSERT ALL THE TMP_ProcessedDataset first, required for resolving Parentage etc.")
 	sqlfile.write("\nPROMPT Running query to make an entry into TMP_ProcessedDataset")
 	sqlfile.write(query)
+        count += 1 
+        if count > 10: break
         #break
 
-  #count = 0 #just do 10 datasets
+  count = 0 #just do 10 datasets
+  cur=0
   for aPath in allPaths:
         comps=aPath.split('/')
         primary=comps[1]
@@ -463,7 +480,7 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
         query  += "\n     (select ID from DataTier where Name='"+tiers+"');"
 	sqlfile.write(query)
 	for tableName in ['Block', 'Files', 'RunLumiQuality','RunLumiDQInt','QualityHistory','IntQualityHistory', 'FileProcQuality']:
-		query  = "\n\n   	BEGIN"
+		query  = "\n\n          BEGIN"
 		query  += "\n     	UPDATE "+tableName+" SET TMP_Dataset=path_id"
 		if tableName=='FileProcQuality':
 			query += "\n    	   WHERE ChildDataset=(SELECT DISTINCT Dataset FROM Block WHERE Path='"+aPath+"');"
@@ -495,15 +512,17 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	sqlfile.write("\nPROMPT running query To Update ProcessedDS column in AnalysisDataset with Proper value")
         sqlfile.write(query)
 
+        cur += 1
         log_this("Generated query to fill in Block and Dataset parentage : %s" %aPath)
         sqlfile.write("\n--Generated query To fill in Block and Dataset parentage %s" %aPath)
-        query  = "\nDECLARE"
-        query += "\n  CURSOR c1 IS"
+        query  = "\nBEGIN"
+        query += "\nDECLARE"
+        query += "\n  CURSOR c_1_"+str(cur)+" IS"
         query += "\n   SELECT DISTINCT ID, TMP_DATASET FROM Block WHERE PATH='"+aPath+"';"
         query += "\nBEGIN"
-        query += "\n  FOR item IN c1 LOOP"
+        query += "\n  FOR item IN c_1_"+str(cur)+" LOOP"
         query += "\n   DECLARE"
-        query += "\n   CURSOR c2 IS"
+        query += "\n   CURSOR c_2_"+str(cur)+" IS"
         query += "\n        SELECT DISTINCT B.ID AS BID, B.TMP_Dataset as BDS FROM Block B"
         query += "\n                JOIN Files FL"
         query += "\n                        ON FL.Block=B.ID"
@@ -512,7 +531,8 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
         query += "\n                                from FileParentage FP"
         query += "\n                                        WHERE FP.ThisFile in"
 	query += "\n                                        	(SELECT FLS.ID FROM FILES FLS WHERE FLS.Block=item.ID));"
-        query += "\n   BEGIN FOR pitem IN c2  LOOP"
+        query += "\n   BEGIN FOR pitem IN c_2_"+str(cur)+"  LOOP"
+	query += "\n   dbms_output.put_line('dataset: ' || item.TMP_DATASET || ' BLOCK : ' || pitem.BID);"
 	query += "\n          BEGIN"
         query += "\n        	INSERT INTO TMP_BlockParent(ThisBlock, ItsParent)"
 	query += "\n             	SELECT item.ID, pitem.BID FROM DUAL;"
@@ -520,26 +540,59 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
         query += "\n             	WHEN DUP_VAL_ON_INDEX THEN"
         query += "\n                   		DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');"
 	query += "\n          END;"
-        query += "\n          BEGIN"
-        query += "\n        	   INSERT INTO TMP_ProcDSParent(ThisDataset, ItsParent) "
-        query += "\n             	SELECT item.TMP_DATASET, pitem.BDS FROM DUAL;"
-        query += "\n               EXCEPTION"
-        query += "\n             	WHEN DUP_VAL_ON_INDEX THEN"
-        query += "\n                   		DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');"
-	query += "\n          END;"
+	query += "\n   dbms_output.put_line('dataset: ' || item.TMP_DATASET || ' Parent : ' || pitem.BDS);"
+        #query += "\n          BEGIN"
+	#query += "\n   dbms_output.put_line('dataset: ' || item.TMP_DATASET || ' Parent : ' || pitem.BDS);"
+        #query += "\n        	   INSERT INTO TMP_ProcDSParent(ThisDataset, ItsParent) "
+        #query += "\n             	SELECT item.TMP_DATASET, pitem.BDS FROM DUAL;"
+        #query += "\n               EXCEPTION"
+        #query += "\n             	WHEN DUP_VAL_ON_INDEX THEN"
+        #query += "\n                   		DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');"
+	#query += "\n          END;"
         query += "\n      END LOOP;"
         query += "\n   END;"
         query += "\n  END LOOP;"
+        query += "\nEND;"
         query += "\nEND;"
         query += "\n/"
 	log_this(query)
 	sqlfile.write("\nPROMPT running query To fill in Block and Dataset parentage for path %s" %aPath)
 	sqlfile.write(query)
 
+  for aPath in allPaths:
+        query = "\n\nBEGIN"
+        query += "\nDECLARE"
+        query += "\n CURSOR c3_"+str(cur)+" IS"
+        query += "\n  SELECT DISTINCT ID, TMP_DATASET FROM Block WHERE PATH='"+aPath+"';"
+        query += "\n  BEGIN"
+        query += "\n    FOR item IN c3_"+str(cur)+" LOOP"
+        query += "\n     DECLARE"
+        query += "\n     CURSOR c4_"+str(cur)+" IS"
+        query += "\n        SELECT DISTINCT TMP_BlockParent.ItsParent as PARENTBLK, Block.TMP_DATASET AS PARENTDS "
+        query += "\n                       FROM TMP_BlockParent JOIN Block ON Block.ID=TMP_BlockParent.ItsParent WHERE ThisBlock=item.ID;"
+        query += "\n        BEGIN FOR pitem IN c4_"+str(cur)+"  LOOP"
+        query += "\n              dbms_output.put_line('dataset: ' || item.TMP_DATASET || ' Parent : ' || pitem.PARENTDS);"
+        query += "\n            BEGIN"
+        query += "\n              INSERT INTO TMP_ProcDSParent(ThisDataset, ItsParent)"
+        query += "\n                  SELECT item.TMP_DATASET, pitem.PARENTDS FROM DUAL;"
+        query += "\n                 EXCEPTION"
+        query += "\n                  WHEN DUP_VAL_ON_INDEX THEN"
+        query += "\n                                  DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');"
+        query += "\n            END;"
+        query += "\n        END LOOP;"
+        query += "\n     END;"
+        query += "\n    END LOOP;"
+        query += "\n  END;"
+        query += "\nEND;"
+        query += "\n/"
+        sqlfile.write("\nPROMPT running query To fill in Block and Dataset parentage for path %s;" %aPath)
+        sqlfile.write(query)
+
+
 	logfile.flush()
 	sqlfile.flush()
-        #count += 1 
-	#if count > 10: break
+        count += 1 
+	if count > 10: break
 	#break
 
   log_this("RENAMING the tables")
