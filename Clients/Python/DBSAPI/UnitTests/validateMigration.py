@@ -70,6 +70,8 @@ class Test_002(unittest.TestCase):
 			
 		parentSrcList = srcApi.listDatasetParents(path)
 		parentDstList = dstApi.listDatasetParents(path)
+		parentSrcList.sort(key=lambda obj: obj['Name'])
+		parentDstList.sort(key=lambda obj: obj['Name'])
 		for i in range(len(parentSrcList)):
 			self.assertEqual(parentSrcList[i]['PrimaryDataset']['Name'], parentDstList[i]['PrimaryDataset']['Name'])
 			self.assertEqual(parentSrcList[i]['Name'], parentDstList[i]['Name'])
@@ -81,11 +83,74 @@ class Test_003(unittest.TestCase):
 		blockDstList = dstApi.listBlocks(path)
 		blockSrcList.sort(key=lambda obj: obj['Name'])
 		blockDstList.sort(key=lambda obj: obj['Name'])
-		print blockSrcList
-		print "------------------"
-		print blockDstList
 		for i in range(len(blockSrcList)):
 			valid.assertBlock(self, blockSrcList[i], blockDstList[i])
+
+
+			#Block Parentage test can only be applied to new servers
+			parentSrcBlock = srcApi.listBlockParents(blockSrcList[i])
+			parentDstBlock = srcApi.listBlockParents(blockDstList[i])
+			parentSrcBlock.sort(key=lambda obj: obj['Name'])
+			parentDstBlock.sort(key=lambda obj: obj['Name'])
+			for j in range(len(parentDstBlock)):
+				valid.assertBlock(self, parentSrcBlock[j], parentDstBlock[j])
+
+		
+
+
+class Test_004(unittest.TestCase):
+	def testRun(self):
+		print 'testRun'
+		runSrcList = srcApi.listRuns(path)
+		runDstList = dstApi.listRuns(path)
+		runSrcList.sort(key=lambda obj: obj['RunNumber'])
+		runDstList.sort(key=lambda obj: obj['RunNumber'])
+		#print runSrcList
+		for i in range(len(runSrcList)):
+		#for runInDBS in runList:
+			valid.assertRun(self, runSrcList[i], runDstList[i])
+
+class Test_005(unittest.TestCase):
+	def test_01_File(self):
+		print 'testFile'
+
+		fileSrcList = srcApi.listFiles(path = path, retriveList = ['all'], otherDetails = True)
+		fileDstList = dstApi.listFiles(path = path, retriveList = ['all'], otherDetails = True)
+		fileSrcList.sort(key=lambda obj: obj['LogicalFileName'])
+		fileDstList.sort(key=lambda obj: obj['LogicalFileName'])
+
+		
+		for i in range(len(fileSrcList)):
+			valid.assertFile(self, fileSrcList[i], fileDstList[i])
+
+			algoSrcList = fileSrcList[i]['AlgoList']
+			algoDstList = fileDstList[i]['AlgoList']
+			for j in range(len(algoSrcList)):
+				valid.assertAlgo(self, algoSrcList[j], algoDstList[j])
+
+			lumiSrcList = fileSrcList[i]['LumiList']
+			lumiDstList = fileDstList[i]['LumiList']
+			lumiSrcList.sort(key=lambda obj: obj['LumiSectionNumber'])
+			lumiDstList.sort(key=lambda obj: obj['LumiSectionNumber'])
+			for j in range(len(lumiSrcList)):
+				valid.assertLumi(self, lumiSrcList[j], lumiSrcList[j])
+
+
+			parentSrcList = fileSrcList[i]['ParentList']
+			parentDstList = fileDstList[i]['ParentList']
+			parentSrcList.sort(key=lambda obj: obj['LogicalFileName'])
+			parentDstList.sort(key=lambda obj: obj['LogicalFileName'])
+			for j in range(len(parentSrcList)):
+				valid.assertFile(self, parentSrcList[j], parentDstList[j])
+
+
+
+			runSrcList = fileSrcList[i]['RunsList']	
+			runDstList = fileDstList[i]['RunsList']	
+			runSrcList.sort(key=lambda obj: obj['RunNumber'])
+			runDstList.sort(key=lambda obj: obj['RunNumber'])
+			for j in range(len(runSrcList)):
+				valid.assertRun(self, runSrcList[j], runDstList[j])
 
 
 
