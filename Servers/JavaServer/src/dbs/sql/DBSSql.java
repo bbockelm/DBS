@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.208 $"
- $Id: DBSSql.java,v 1.208 2009/01/30 21:29:57 afaq Exp $"
+ $Revision: 1.209 $"
+ $Id: DBSSql.java,v 1.209 2009/01/30 22:01:17 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1932,7 +1932,18 @@ public class DBSSql {
 
 
         public static String listPathParentOld() throws SQLException {
-                String sql = "\tSELECT fl.Block \n" +
+
+		String sql = "\tSELECT DISTINCT b.id \n" +
+			"\tFROM "+owner()+"Block b \n" +
+			"\tJOIN "+owner()+"ProcessedDataset procds \n" +
+				"\t\ton b.Dataset = procds.ID \n" +
+			"\tJOIN "+owner()+"ProcDSParent dp \n" +
+				"\t\tON dp.ItsParent = procds.ID \n" +
+			 "\tWHERE dp.ThisDataset IN ( \n" + 
+				"\t\tSELECT bl.Dataset FROM " + owner() +"Block bl WHERE bl.Path = ?\n" +
+				"\t) \n";
+
+                /*String sql = "\tSELECT fl.Block \n" +
                                 "\tFROM " + owner() + "Files fl \n" +
                                 "\tWHERE fl.ID in ( \n" +
                                         "\t\tSELECT fp.ItsParent    \n" +
@@ -1943,7 +1954,7 @@ public class DBSSql {
                                                         "\t\t\t\tSELECT bl.ID FROM " + owner() + "Block   bl WHERE bl.Path = ? \n" +
                                                 ") \n" +
                                         ") \n" +
-                                ") \n";
+                                ") \n";*/
 
                 return sql;
         }

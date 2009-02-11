@@ -9,8 +9,8 @@ CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlite
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
-#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=countQuery"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
+#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=countQuery"
 #$CMD
 executeQuery () {
 	echo "Executing executeQuery API..."
@@ -206,7 +206,7 @@ executeQuery () {
 	#$CMD query="find   dataset, file.count where site  like abc.in"
 	#$CMD query="find sum(file.numevents), file.count, run.count, dataset  where file.size > 0"
 	
-	$CMD query="find  sum(file.numevents),  dataset where dataset like *"
+	#$CMD query="find  sum(file.numevents),  dataset where dataset like *"
 	#$CMD query="find  sum(file.numevents), file.count where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO"
 	#$CMD query="find release where release like *"
 	#$CMD query="find sum(file.size), count(file), run where dataset = /test_Primary_ee563854-0ed2-4010-82ba-e94e7868cbff/test_processed_M_ee563854-0ed2-4010-82ba-e94e7868cbff/GEN-SIM and site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff"
@@ -251,6 +251,7 @@ executeQuery () {
 	#$CMD query="find dataset where dataset = *RAW" upper="False"
 	#$CMD query="find dataset where file = *RAW" upper="False"
 	#$CMD query="find dataset"
+	$CMD query="find dataset.parent where dataset = /DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
 	
 	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
