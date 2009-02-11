@@ -457,7 +457,7 @@ apiObj.run(proc3, excep = False)
 
 proc2 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessed1" + mytime)
-apiObj.run(proc2, excep =  True)
+#apiObj.run(proc2, excep =  True)
 
 proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta estHet", Type="test"),
 		Name="TestProcessed2" + mytime)
