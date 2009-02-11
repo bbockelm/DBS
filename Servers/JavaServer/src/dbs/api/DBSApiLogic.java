@@ -1,6 +1,6 @@
 /**
- $Revision: 1.153 $"
- $Id: DBSApiLogic.java,v 1.153 2009/01/12 19:21:52 valya Exp $"
+ $Revision: 1.154 $"
+ $Id: DBSApiLogic.java,v 1.154 2009/01/23 16:48:49 valya Exp $"
  *
  */
 
@@ -182,14 +182,14 @@ public class DBSApiLogic {
 		return toReturn;
 	}
 	
-	public void countQuery(Connection conn, Writer out, String userQuery, boolean upper) throws Exception {
-		executeQuery(conn, out, userQuery, "", "", "", upper, true);
+	public void countQuery(Connection conn, Writer out, String userQuery, boolean upper, String clientVersion) throws Exception {
+		executeQuery(conn, out, userQuery, "", "", "", upper, true, clientVersion);
 	}
 	
-	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper) throws Exception {
-		executeQuery(conn, out, userQuery, begin, end, type, upper, false);
+	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper, String clientVersion) throws Exception {
+		executeQuery(conn, out, userQuery, begin, end, type, upper, false, clientVersion);
 	}
-	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper, boolean isCount) throws Exception {
+	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper, boolean isCount, String clientVersion) throws Exception {
 		String tokens[] = userQuery.split(" ");
 		if (tokens.length == 1) userQuery = "find dataset where dataset like %" + userQuery + "%";
 		System.out.println("executeQuery DATE :" + (new Date()).toString());
@@ -262,8 +262,8 @@ public class DBSApiLogic {
 			pushQuery(ps);
 			querier = new DBSApiExecuteQuery();
 			QueryThread queryThread = null;
-			if(!isCount) queryThread = new QueryThread(out, querier, userQuery, finalQuery, ps);
-			else queryThread = new QueryThread(out, querier, userQuery, finalCountQuery, ps);
+			if(!isCount) queryThread = new QueryThread(out, querier, userQuery, finalQuery, ps, clientVersion);
+			else queryThread = new QueryThread(out, querier, userQuery, finalCountQuery, ps, clientVersion);
 
 			long startTime = (new Date()).getTime();
 			final long TIMEOUT = 120000;

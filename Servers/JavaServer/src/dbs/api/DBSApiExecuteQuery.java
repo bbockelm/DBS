@@ -131,6 +131,39 @@ public class DBSApiExecuteQuery {
 		}
 	}
 
+	public synchronized void runQueryForOldClients(Writer out, String query, PreparedStatement statement) throws Exception {
+		ResultSet rs = null;
+		try {
+			rs = queryExecutor.executeQuery(statement, query);
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int numberOfColumns = rsmd.getColumnCount();
+			String[] colNames =new String[numberOfColumns];
+			for (int i = 0; i != numberOfColumns; ++i) {
+				colNames[i] = rsmd.getColumnLabel(i + 1);
+			}
+			while(rs.next()) {
+				out.write(((String) "<result "));
+				for (int i = 0; i != numberOfColumns; ++i) {
+					out.write(((String) colNames[i] + "='"));
+					if(colNames[i].toLowerCase().indexOf("date") != -1) {
+						out.write(((String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)) + "' "));
+										}
+					else out.write(((String) get(rs, colNames[i] ) +"' "));
+				}
+				out.write(((String) "/>\n"));
+			}
+
+		} finally {
+			statement.cancel();
+			if (rs != null)
+				rs.close();
+			if (statement != null) {
+				statement.close();
+			}
+		}
+	}
+
+
 	public void close() {
 		queryExecutor.close();
 	}
