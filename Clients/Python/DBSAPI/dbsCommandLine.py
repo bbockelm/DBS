@@ -1210,8 +1210,6 @@ class ApiDispatcher:
         # See if any path is provided
         pathl = self.getPath(self.optdict.get('path'))
 
-	print pathl
-
         if len(pathl):
 		paramDict.update(pathl)
         if len(algoparam):

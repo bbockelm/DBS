@@ -56,6 +56,13 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
+    api_version=self.getApiVersion()
+    if api_version < "DBS_2_0_6":
+    	# Lets get all tiers no matter what, otherwise Server puts unnecessary checks on the DataTier
+	#This is how it wasdone in older versions and we are better off having this in place for older versions	
+    	patternDT='*'
+
+
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listProcessedDatasets', 
 		    'primary_datatset_name_pattern' : patternPrim, 
@@ -105,7 +112,11 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
                                                 LastModifiedBy=str(attrs['last_modified_by']),
                                                 )
           if name == 'data_tier':
-            self.currDataset['TierList']=str(attrs['name']).split('-')
+		if api_version < "DBS_2_0_6":
+			# This is how it was done in older versions!
+			self.currDataset['TierList'].append(str(attrs['name']))
+		else: 
+            		self.currDataset['TierList']=str(attrs['name']).split('-')
             #self.currDataset['PathList'].append("/" + self.primName + "/" + str(attrs['name']) + "/" + self.procName)
 
           if name == 'path':
