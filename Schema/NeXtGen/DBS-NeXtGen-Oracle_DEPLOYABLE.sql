@@ -655,6 +655,7 @@ CREATE TABLE ProcessedDataset
     ID                    integer,
     Name                  varchar(500)      not null,
     PrimaryDataset        integer   not null,
+    DataTier              integer   not null,
     PhysicsGroup          integer   not null,
     Status                integer   not null,
     AquisitionEra         varchar(255),
@@ -665,7 +666,7 @@ CREATE TABLE ProcessedDataset
     LastModifiedBy        integer,
     LastModificationDate  integer,
     primary key(ID),
-    unique(Name,PrimaryDataset)
+    unique(Name,PrimaryDataset, DataTier)
   );
 
 REM ======================================================================
@@ -856,21 +857,6 @@ CREATE TABLE Files
     LastModifiedBy        integer,
     LastModificationDate  integer,
     primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE FileTier
-  (
-    ID                    integer,
-    Fileid                integer   not null,
-    DataTier              integer   not null,
-    CreationDate          integer,
-    CreatedBy             integer,
-    LastModificationDate  integer,
-    LastModifiedBy        integer,
-    primary key(ID),
-    unique(Fileid,DataTier)
   );
 
 REM ======================================================================
@@ -1423,6 +1409,9 @@ ALTER TABLE ProcessedDataset ADD CONSTRAINT
 ALTER TABLE ProcessedDataset ADD CONSTRAINT 
     ProcessedDatasetLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 /
+ALTER TABLE ProcessedDataset ADD CONSTRAINT
+   ProcessedDataset_DataTier_FK foreign key(DataTier) references DataTier(ID)
+/
 
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
     ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
@@ -1584,19 +1573,6 @@ ALTER TABLE Files ADD CONSTRAINT
 /
 ALTER TABLE Files ADD CONSTRAINT 
     Files_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
-/
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
-/
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE FileParentage ADD CONSTRAINT 
@@ -1816,8 +1792,6 @@ PROMPT creating sequence seq_block ;
 create sequence seq_block ;
 PROMPT creating sequence seq_files ;
 create sequence seq_files ;
-PROMPT creating sequence seq_filetier ;
-create sequence seq_filetier ;
 PROMPT creating sequence seq_fileparentage ;
 create sequence seq_fileparentage ;
 PROMPT creating sequence seq_blockparent ;
@@ -2205,13 +2179,6 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: block
 
 PROMPT AUTO INC TRIGGER FOR Trigger for Table: files
  CREATE OR REPLACE TRIGGER files_TRIG before insert on files    for each row begin     if inserting then       if :NEW.ID is null then          select seq_files.nextval into :NEW.ID from dual;       end if;    end if; end;
-/
-
--- ====================================================
--- AUTO INC TRIGGER FOR filetier.ID using SEQ seq_filetier
-
-PROMPT AUTO INC TRIGGER FOR Trigger for Table: filetier
- CREATE OR REPLACE TRIGGER filetier_TRIG before insert on filetier    for each row begin     if inserting then       if :NEW.ID is null then          select seq_filetier.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
 -- ====================================================
@@ -2947,19 +2914,6 @@ END;
 -- ====================================================
 -- LastModified Time Stamp Trigger
 
-PROMPT LastModified Time Stamp Trigger for Table: filetier
-CREATE OR REPLACE TRIGGER TRTSfiletier BEFORE INSERT OR UPDATE ON filetier
-FOR EACH ROW declare
-  unixtime integer
-     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
-BEGIN
-  :NEW.LASTMODIFICATIONDATE := unixtime;
-END;
-/
-
--- ====================================================
--- LastModified Time Stamp Trigger
-
 PROMPT LastModified Time Stamp Trigger for Table: fileparentage
 CREATE OR REPLACE TRIGGER TRTSfileparentage BEFORE INSERT OR UPDATE ON fileparentage
 FOR EACH ROW declare
@@ -3118,6 +3072,7 @@ INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('RO', (select (sysdate -
 
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('PIXDMP', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 
 INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
@@ -3163,6 +3118,7 @@ INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('HLTDEBUG', 'Adding HLTDEBUG as it can be a standalone tier now');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RAW-RECO', 'Added on request of Kristian Hahn');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('FEVT', 'Added on request of Kristian Hahn');
 
 INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -3187,6 +3143,7 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW-RECO', (sele
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-HLTDEBUG-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -3215,6 +3172,6 @@ INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('SUCCESS');
 
 -- Set the Schema Version -- 
-INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, InstanceType, CREATIONDATE) values ('DBS_1_1_4', 'LOCAL', 'ORACLE', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, InstanceType, CREATIONDATE) values ('DBS_1_1_5', 'LOCAL', 'ORACLE', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 commit;
