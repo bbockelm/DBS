@@ -1,6 +1,6 @@
 /**
- $Revision: 1.49 $"
- $Id: DBSApiAnaDSLogic.java,v 1.49 2008/06/30 20:24:49 afaq Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.50 2008/11/18 17:11:34 sekhri Exp $"
  *
  */
 
@@ -20,6 +20,7 @@ import dbs.DBSException;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
 * A class that has the core business logic of all the Analysis datasets APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -352,10 +353,16 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String path = getPath(table, "path", false);
 
 		//Check if ProcDS exists or not
-		if(!isNull(path))
+		if(!isNull(path)) {
 			(new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
+		} else {
+			//check that query does not contain "dataset" keyword, its a template definition
+			if (userInput.find() != -1 )
+				throw new DBSException("Already Exists", "9001", "You cannot specify dataset clause for a template dataset definition");
+		}
 		 
 		if( getID(conn, "AnalysisDSDef", "Name", adsDefName, false) == null ) {
+
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertAnalysisDatasetDefinition(conn, 
