@@ -250,6 +250,16 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def executeSummary(self, query, begin="", end="", sortKey="", sortOrder=""):
+     try:
+       #Calling the Implementation function
+       from dbsApiExecuteQuery import dbsApiImplExecuteSummary
+       return dbsApiImplExecuteSummary(self, query, begin, end, sortKey, sortOrder)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
 
   def listPrimaryDatasets(self, pattern="*"):

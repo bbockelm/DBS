@@ -77,3 +77,28 @@ def dbsApiImplCountQuery(self, query="*", ignoreCase=True):
 	msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
         raise DbsBadXMLData(args=msg, code="5999")
 
+def dbsApiImplExecuteSummary(self, query, begin="", end="", sortKey="", sortOrder=""):
+    """
+    """
+    try: 
+      funcInfo = inspect.getframeinfo(inspect.currentframe())
+      ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+      # Invoke Server.    
+      data = self._server._callOriginal ({ 'api' : 'executeSummary', 'query' : query , 
+		      'begin':str(begin),
+		      'end':str(end),
+		      'sortKey':sortKey,
+		      'sortOrder':sortOrder
+		      }, 'GET')
+
+      ###logging.log(DBSDEBUG, data)
+
+      # No parsing nothing at this point, lets just return the data.
+      return data
+
+    except SAXParseException, ex:
+      msg = "Unable to parse XML response from DBS Server"
+      msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
+      raise DbsBadXMLData(args=msg, code="5999")
+
