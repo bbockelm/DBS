@@ -665,6 +665,10 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--query", action="store", type="string", dest="query",
            help="Search query used to perform data serach, create ADS Definitions etc ")
 
+      self.add_option("--donotrunquery", action="store_true", default=False, dest="donotrunquery",
+           help="If you add this option the query specified will not be run, use with caution with --storequery and --storetemplatequery, \
+              ONLY IF you already know that your query yields what you want")
+
       self.add_option("--createPADS", action="store", type="string", dest="createPADS",
            help="Create Personal Analysis Dataset for the search query (must be used with --search, or --usequery=)")
 
@@ -1835,6 +1839,9 @@ class ApiDispatcher:
 
 
   def getDataFromDBSServer(self, userInput, qu="exe"):
+        if self.optdict['donotrunquery']:
+               self.printRED("\n--donotrunquery specified, will not execute the query")
+               qu="query"
 
 	data=self.api.executeQuery(userInput, type=qu)
 
@@ -1987,6 +1994,11 @@ class ApiDispatcher:
     if storequeryname not in ('', None) and storetemplt not in ('', None):
 	self.printRED("You cannot specify both --storequery and --storetemplatequery")
 	return
+
+    if storetemplt not in ('', None):
+        if userInput.find('dataset') != -1:
+                self.printRED("You cannot specify dataset clause when storing a template query")
+                return
 
     qu="exe"
     if storequeryname not in ('', None) and storetemplt not in ('', None) \
