@@ -1,6 +1,6 @@
 /**
- $Revision$
- $Id$
+ $Revision: 1.1 $
+ $Id: DBSApiViewsLogic.java,v 1.1 2009/02/12 19:49:42 valya Exp $
  Author: Valentin Kuznetsov
  **/
 
@@ -192,7 +192,7 @@ public class DBSApiViewsLogic extends DBSApiLogic {
             out.write( "</summary_view>\n" );
         }
         out.write( "<results>\n" );
-        for(int i=lbound;i<=rbound;i++) {
+        for(int i=lbound;i<rbound;i++) {
             out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
         }
         out.write( "</results>\n" );
