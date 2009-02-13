@@ -516,7 +516,7 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
         query += "\n      )"
         query += "\n      WHERE Path='"+aPath+"';"
         query += "\n      EXCEPTION"
-        query += "\n      WHEN NO_DATA_FOUND THEN"
+        query += "\n      WHEN OTHERS THEN"
         query += "\n        DBMS_OUTPUT.PUT_LINE('No data found, ignoring');"
         query += "\n   END;" 
         query += "\nEND;" 
