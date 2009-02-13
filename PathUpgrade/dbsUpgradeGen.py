@@ -15,8 +15,9 @@ from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 
-instance_name='cms_dbs_test'
+#instance_name='cms_dbs_test'
 #instance_name='cms_dbs_prod_global_intr2'
+instance_name='just_a_test'
 #
 #
 logfile=open(instance_name+'.log', 'w')
@@ -305,6 +306,8 @@ Path                  varchar(500)
 create index tmp_path_id_indx on TMPPathID (ID);
 create index tmp_path_path_indx on TMPPathID (Path);
 
+insert into filetype(type) values ('PIXDMP');
+insert into DataTier (Name) values ('FEVT');
 update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 
 """
@@ -356,8 +359,9 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
   
   count=0
   #allPaths = api.listDatasetPaths()
+
   allPaths = ['/zz2j-alpgen/CMSSW_1_6_7-CSA07-1205616825/GEN-SIM-DIGI-RAW',
-		'/zz2j-alpgen/CMSSW_1_4_9-CSA07-4130/GEN-SIM',
+      		'/zz2j-alpgen/CMSSW_1_4_9-CSA07-4130/GEN-SIM',
 		'/zz1j-alpgen/CMSSW_1_6_7-HLT-1205617620/GEN-SIM-DIGI-RECO',
 		'/zz1j-alpgen/CMSSW_1_6_7-CSA07-1205616888/GEN-SIM-DIGI-RAW',
 		'/zz1j-alpgen/CMSSW_1_4_9-CSA07-4129/GEN-SIM',
@@ -394,7 +398,7 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	sqlfile.write("\nPROMPT Running query to make an entry into TMP_ProcessedDataset")
 	sqlfile.write(query)
         count += 1 
-        if count > 10: break
+        #if count > 10: break
         #break
 
   count = 0 #just do 10 datasets
@@ -501,12 +505,23 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	sqlfile.write(query)
 
 	########AnalysisDataset
-        query  = "\nUPDATE AnalysisDataset SET ProcessedDS=(SELECT ID FROM TMP_ProcessedDataset WHERE Name='"+processed+"' AND PRIMARYDATASET="
-        query += "\n (select ID from  PrimaryDataset where Name='"+primary+"') AND DataTier="
-        query += "\n (select ID from DataTier where Name='"+tiers+"')"
-        query += "\n )"
-        query += "\n WHERE Path='"+aPath+"';"
-        log_this("Generated Query To Update ProcessedDS column in AnalysisDataset with Proper value")
+	query  = "\n\nBEGIN"
+	query += "\n   DECLARE"
+	query += "\n     dspath NUMBER;"
+	query += "\n   BEGIN"
+	query += "\n      SELECT ID INTO dspath from AnalysisDataset where Path='"+aPath+"';"
+        query += "\n      UPDATE AnalysisDataset SET ProcessedDS=(SELECT ID FROM TMP_ProcessedDataset WHERE Name='"+processed+"' AND PRIMARYDATASET="
+        query += "\n      (select ID from  PrimaryDataset where Name='"+primary+"') AND DataTier="
+        query += "\n      (select ID from DataTier where Name='"+tiers+"')"
+        query += "\n      )"
+        query += "\n      WHERE Path='"+aPath+"';"
+        query += "\n      EXCEPTION"
+        query += "\n      WHEN NO_DATA_FOUND THEN"
+        query += "\n        DBMS_OUTPUT.PUT_LINE('No data found, ignoring');"
+        query += "\n   END;" 
+        query += "\nEND;" 
+        query += "\n/"
+        log_this("Generated Query To Update ProcessedDS column in AnalysisDataset with Proper value;")
         log_this(query)
         sqlfile.write("\n--Generated Query To Update ProcessedDS column in AnalysisDataset with Proper value")
 	sqlfile.write("\nPROMPT running query To Update ProcessedDS column in AnalysisDataset with Proper value")
@@ -541,14 +556,6 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
         query += "\n                   		DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');"
 	query += "\n          END;"
 	query += "\n   dbms_output.put_line('dataset: ' || item.TMP_DATASET || ' Parent : ' || pitem.BDS);"
-        #query += "\n          BEGIN"
-	#query += "\n   dbms_output.put_line('dataset: ' || item.TMP_DATASET || ' Parent : ' || pitem.BDS);"
-        #query += "\n        	   INSERT INTO TMP_ProcDSParent(ThisDataset, ItsParent) "
-        #query += "\n             	SELECT item.TMP_DATASET, pitem.BDS FROM DUAL;"
-        #query += "\n               EXCEPTION"
-        #query += "\n             	WHEN DUP_VAL_ON_INDEX THEN"
-        #query += "\n                   		DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');"
-	#query += "\n          END;"
         query += "\n      END LOOP;"
         query += "\n   END;"
         query += "\n  END LOOP;"
@@ -592,7 +599,7 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	logfile.flush()
 	sqlfile.flush()
         count += 1 
-	if count > 10: break
+	#if count > 10: break
 	#break
 
   log_this("RENAMING the tables")
@@ -608,26 +615,38 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
   query += "\nalter table TMP_ProcAlgo rename to ProcAlgo;"
   query += "\nalter table ProcDSRuns rename to ORIGProcDSRuns;"
   query += "\nalter table TMP_ProcDSRuns rename to ProcDSRuns;"
-
-  #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% commented out this query, UNCOMMENT in real world
-  #log_this(query)
-  #sqlfile.write(query)
+  log_this(query)
+  sqlfile.write(query)
 
   log_this("RENAMING TMP_Dataset to Dataset in Block, Files, RunLumiQuality, RunLumiDQInt, QualityHistory, IntQualityHistory and FileProcQuality Tables")
-  sqlfile.write("\n--RENAMING TMP_Dataset to Dataset in Block, Files, RunLumiQuality, RunLumiDQInt, QualityHistory, IntQualityHistory and FileProcQuality Tables")
+  colName='Dataset'
   for tableName in ['Block', 'Files', 'RunLumiQuality','RunLumiDQInt','QualityHistory','IntQualityHistory','FileProcQuality']:
 	if tableName=='FileProcQuality': 
-		#query  = "\nALTER TABLE "+tableName+" MODIFY ChildDataset null;"
-		query  = "\nALTER TABLE "+tableName+" DROP COLUMN ChildDataset CASCADE CONSTRAINTS;"
-		query += "\nALTER TABLE "+tableName+" RENAME COLUMN TMP_Dataset to ChildDataset;"
-	else:		
-		query  = "\nALTER TABLE "+tableName+" DROP COLUMN Dataset CASCADE CONSTRAINTS;"
-		query += "\nALTER TABLE "+tableName+" RENAME COLUMN TMP_Dataset to Dataset;"
+		colName='ChildDataset'
+        sqlfile.write("\n--Remove constratins from "+colName+" column in "+tableName+" table")
+	query  = "\nDECLARE"
+	query += "\n stm varchar2(1000);"
+        query += "\nBEGIN"
+        query += "\n for con_name in (select constraint_name from User_cons_columns where table_name ='"+tableName+"' and COLUMN_NAME='"+colName+"')"
+        query += "\n loop"
+        query += "\n    stm := 'alter table "+tableName+" drop constraint ' || con_name.constraint_name;"
+        query += "\n    execute immediate stm;"
+        query += "\n    dbms_output.put_line (stm);"
+        query += "\n end loop;"
+        query += "\nEnd;"
+        query += "\n/"  
+  	log_this(query)
+  	sqlfile.write(query)
+	sqlfile.write("\n--RENAMING TMP_Dataset to Dataset")
+	sqlfile.write("\nALTER TABLE "+tableName+" RENAME COLUMN "+colName+" to ORIG_"+colName+";\n")
+	sqlfile.write("\nALTER TABLE "+tableName+" RENAME COLUMN TMP_Dataset to "+colName+";\n")
 
-	#SET new UQ Keys here
-  	#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% commented out this query, UNCOMMENT in real world
-  	#log_this(query)
-  	#sqlfile.write(query)
+  sqlfile.write("\n--RESTORING UQ constraints on the table")
+  sqlfile.write("\nALTER TABLE RunLumiQuality ADD CONSTRAINT RunLumiQualityUQ UNIQUE (Dataset,Run,Lumi,SubSystem);")
+  sqlfile.write("\nALTER TABLE RunLumiDQInt ADD CONSTRAINT RunLumiDQIntUQ UNIQUE (Dataset,Run,Lumi,SubSystem);")
+  sqlfile.write("\nALTER TABLE QualityHistory ADD CONSTRAINT QualityHistoryUQ UNIQUE (HistoryTimeStamp,Dataset,Run,Lumi,SubSystem);")
+  sqlfile.write("\nALTER TABLE IntQualityHistory ADD CONSTRAINT IntQualityHistoryUQ UNIQUE (HistoryTimeStamp,Dataset,Run,Lumi,SubSystem);")
+  sqlfile.write("\nALTER TABLE FileProcQuality ADD CONSTRAINT FileProcQualityUQ UNIQUE (ParentFile,ChildDataset);")
 
   sqlfile.write("\nPROMPT SCRIPT FINISHED AT")
   sqlfile.write("\nselect systimestamp from dual;")
@@ -636,8 +655,6 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
   sqlfile.write("\nSPOOL OFF")
   logfile.close()
   sqlfile.close()
-
-  print "Rename Sequesces, Triggers???" 
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
