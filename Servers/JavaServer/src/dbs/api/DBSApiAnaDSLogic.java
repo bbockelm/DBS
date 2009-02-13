@@ -1,6 +1,6 @@
 /**
- $Revision: 1.50 $"
- $Id: DBSApiAnaDSLogic.java,v 1.50 2008/11/18 17:11:34 sekhri Exp $"
+ $Revision: 1.51 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.51 2009/02/12 22:41:56 afaq Exp $"
  *
  */
 
@@ -357,7 +357,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			(new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
 		} else {
 			//check that query does not contain "dataset" keyword, its a template definition
-			if (userInput.find() != -1 )
+			if (userInput.indexOf("dataset") != -1 )
 				throw new DBSException("Already Exists", "9001", "You cannot specify dataset clause for a template dataset definition");
 		}
 		 
