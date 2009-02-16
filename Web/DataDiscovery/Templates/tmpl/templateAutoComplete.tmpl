@@ -46,7 +46,7 @@ var schema=['\n','\t'];
 myXHRDataSource = new YAHOO.widget.DS_XHR('./$method', schema);
 //myXHRDataSource = new YAHOO.widget.DS_XHR('./getTableColumn', schema);
 //myXHRDataSource.scriptQueryParam = "name"; // name replace default 'query' 
-myXHRDataSource.scriptQueryAppend = "dbsInst=$dbsInst&table=$table&column=$column&autocomplete=on";
+myXHRDataSource.scriptQueryAppend = "dbsInst=$dbsInst&key=$key&wherekey=$wherekey&autocomplete=on";
 //myXHRDataSource.connTimeout = 3000; 
 myXHRDataSource.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT;
 myXHRDataSource.maxCacheEntries = 60;

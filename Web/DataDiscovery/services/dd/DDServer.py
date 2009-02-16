@@ -24,14 +24,12 @@ import cherrypy
 from   cherrypy    import expose
 from   cherrypy    import tools
 from   cherrypy.lib.static import serve_file
-#from   cherrypy.lib import profiler
 
 # DBS  modules
 from   utils.DDUtil        import *
 from   utils.DDConfig      import *
 from   model.dd.DDHelper   import *
 from   Templates           import *
-from   model.dd.DDSearch   import *
 from   utils.DDParamServer import *
 from   utils.DDWS          import *
 
@@ -39,19 +37,6 @@ from utils.sitedb_tools import SiteDBManager
 from utils.siteconfig_tools import SiteConfigManager
 from utils.phedex_tools import PhedexManager
 from utils.dbs_tools import DBSManager
-
-# experiment
-from model.dd.DDQueryMaker import *
-from model.dd.DDRules      import *
-from model.dbs.Rules       import *
-
-#from   DDLucene  import *
-# load DBS history tables module
-try:
-    from   model.dd.DDTables  import *
-except:
-    print "WARNING! Cannot load DDTables, your persistent history will be turned off"
-    pass
 
 # support for SSL
 try:
@@ -61,7 +46,6 @@ except:
 
 # DBS framework in order to make migration
 try:
-    from DBSAPI.dbsApi import DbsApi
     from DBSAPI.dbsMigrateApi import DbsMigrateApi
 except:
     traceback.print_exc()
@@ -76,7 +60,6 @@ except:
 
 # webtools framework
 from utils.webtools_modules import *
-from utils.dbsapi import DbsApi2
 
 class DDServer(DDLogger,Controller): 
     """
@@ -114,14 +97,14 @@ class DDServer(DDLogger,Controller):
            @rtype : none
            @return: none 
         """
-        t0=time.time()
+        t0 = time.time()
         self.securityApi=""
         try:
-            if context:
-               context.OptionParser ().add_option("-v","--verbose",action="store",type="int", 
-               default=0, dest="verbose",help="specify verbosity level, 0-none, 1-info, 2-debug")
-               self.securityApi=SecurityDBApi(context)
-            Controller.__init__ (self, context, __file__)
+            if  context:
+                context.OptionParser ().add_option("-v","--verbose",action="store",type="int", 
+                default=0, dest="verbose",help="specify verbosity level, 0-none, 1-info, 2-debug")
+                self.securityApi=SecurityDBApi(context)
+                Controller.__init__ (self, context, __file__)
             self.config=self.setConfig(base="DDServer")
         except:
             if verbose:
@@ -133,16 +116,17 @@ class DDServer(DDLogger,Controller):
         setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
 
         # data service managers
-        self.dbsmgr   = DBSManager(self.ddConfig.rs(), verbose)
+        self.dbsmgr   = DBSManager(self.ddConfig.rs(), self.ddConfig.memcache(),
+                                   self.ddConfig.cachelimit(), verbose)
         self.sdb      = SiteDBManager(verbose)
         self.phedex   = PhedexManager(self.sdb, verbose)
         self.sitecfg  = SiteConfigManager(self.sdb, verbose)
 
         self.phedexServer= DDParamServer(server="cmsweb.cern.ch",verbose=verbose)
         self.PhedexURL="https://cmsweb.cern.ch/phedex/prod/Request::Create"
-        self.dbsglobal = DBSGLOBAL
+        self.dbsglobal = self.ddConfig.dbsprimary()
+#        self.dbsglobal = DBSGLOBAL
 #        self.dbsglobal = 'global_r'
-        self.dbs  = self.dbsglobal
         self.baseUrl = ""
         self.topUrl= ""
         self.mastheadUrl = self.ddConfig.masthead()
@@ -168,25 +152,9 @@ class DDServer(DDLogger,Controller):
         self.primD= ""
         self.tier = ""
         self.cmsNames   = {}
-        self.dbManager  = ""
-        try:
-         self.dbManager = DBManager('OBSOLETE need to be removed',verbose)
-        except:
-         if self.verbose:
-            print "WARNING! some of the functionality will be disable due to missing authentication"
-            self.writeLog(getExcept())
-            printExcept()
-         pass
         self.iface      = self.ddConfig.iface()
-        self.helper     = DDHelper(self.dbManager,self.dbs,self.iface,verbose,html=1)
-#        self.helper     = None
-        self.ddrules    = DDRules(verbose)
-        self.dbsrules   = DbsRules(verbose)
-        self.qmaker     = DDQueryMaker(self.dbManager,self.dbs,verbose)
-#        self.qmaker     = None
-        self.dbsdls     = self.helper.getDbsDls()
-        self.dbsList    = self.dbsdls.keys()
-#        self.dbsList    = self.dbsmgr.aliases()
+        self.helper     = DDHelper(self.dbsmgr, self.ddConfig, verbose)
+        self.dbsList    = self.dbsmgr.aliases()
         self.dbsList.sort()
         try:
            self.dbsList.remove(self.dbsglobal)
@@ -198,7 +166,6 @@ class DDServer(DDLogger,Controller):
         self.verbose    = verbose
         self.profile    = profile
         self.dbsDict    = {}
-        self.dbsApi     = {} # dict[dbsInst]=dbsApi
         self.userMode   = 'user'
         self.timer      = self.timerForSummary = time.time()
         self.sumPage    = ""
@@ -216,14 +183,6 @@ class DDServer(DDLogger,Controller):
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
         self.dbsConfig={'url':self.dbsdd,'mode':'POST','version':self.ddConfig.dbsVer(),'retry':2}
-        # made connection to all known DBS instances
-        self.dbManager.connect(self.dbsglobal,self.iface)
-        for dbs in self.dbsList:
-            thread.start_new_thread(self.dbManager.connect,(dbs,self.iface))
-            self.getDbsApi(dbs)
-#        for dbs in self.dbsList:
-#            self.dbManager.connect(dbs,self.iface)
-#            self.getDbsApi(dbs)
         try:
             self.hostname = socket.gethostbyaddr(socket.gethostname())[0]
         except:
@@ -270,45 +229,19 @@ class DDServer(DDLogger,Controller):
         print "+++ DDServer started in %s sec" % totTime
         self.writeLog("DDServer init %s sec" % totTime)
 
-    def getDbsApi(self,dbsInst):
-        if  self.dbsApi.has_key(dbsInst):
-            return self.dbsApi[dbsInst]
-        else:
-            dbsUrl=DBS_INST_URL[dbsInst]
-            dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
-            config = dict(self.dbsConfig)
-            config['url']=dbsUrl
-            dbsApi = DbsApi2(config)
-            self.dbsApi[dbsInst]=dbsApi
-#            dbsApi=self.dbsmgr.getapi(dbsInst)
-#            self.dbsApi[dbsInst]=dbsApi
-            return dbsApi
-
     def readyToRun(self):
         opts=self.context.CmdLineArgs().opts
         try:
-            self.qmaker.setVerbose(opts.verbose)
             self.helper.setVerbose(opts.verbose)
-            self.ddrules.setVerbose(opts.verbose)
             self.setLevel(opts.verbose) # set logger level
+            self.verbose=opts.verbose
         except:
             pass
         self.baseUrl = opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
         self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
         self.footerUrl=self.baseUrl+"sitedb/Common/footer"
-#        self.mastheadUrl=self.baseUrl+"Common/masthead"
-#        self.footerUrl=self.baseUrl+"Common/footer"
-#        self.topUrl=self.baseUrl+"DDServer/"
         self.topUrl=self.baseUrl
-        # I only need this if webtools force to use a new URL structure.
-#        self.dbsdd=self.dbsdd+"/DDServer/"
-#        self.dbsdd=self.dbsdd
-        try:
-           self.verbose=opts.verbose
-           self.helper.setVerbose(self.verbose)
-        except:
-           pass
 
     def sendSOAP(self,host,service,aDict={}):
         envelope=constructSOAPEnvelope(self.ns,service,aDict)
@@ -332,10 +265,6 @@ class DDServer(DDLogger,Controller):
         return page
     redirectPage.exposed=True     
         
-    def setQuiet(self):
-        self.helper.setQuiet()
-        self.quiet=1
-        
     def setContentType(self,type):
         """
            Set CherryPy Content-Type to provided type
@@ -344,7 +273,7 @@ class DDServer(DDLogger,Controller):
            @rtype: none
            @return: none
         """
-        cherrypy.response.headers['Expires']="Thu, 15 Apr 2010 20:00:00 GMT"
+        cherrypy.response.headers['Expires']="Thu, 15 Apr 2012 20:00:00 GMT"
 #        cherrypy.response.headers['Last-Modified']=time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime())
         cherrypy.response.headers['Cache-Control']="no-store, no-cache, must-revalidate, max-age=315360000"
         cherrypy.response.headers['Cache-Control']="post-check=0, pre-check=0"
@@ -425,7 +354,7 @@ class DDServer(DDLogger,Controller):
     def wsGetNDatasets(self,**kwargs):
         self.setContentType('xml')
         xmlDict=self.parseWSInput(**kwargs)
-        nsets = self.helper.nDatasets()
+        nsets = self.helper.nDatasets(dbsInst)
         msg="""<NumberOfDatasets><int>%s</int></NumberOfDatasets>"""%nsets
         page=self.soapMsg(msg)
         self.writeLog(page)
@@ -437,7 +366,7 @@ class DDServer(DDLogger,Controller):
         xmlDict=self.parseWSInput(**kwargs)
         if not xmlDict.has_key('dataset'):
            return self.wsError("Wrong parameter")
-        oDict,mDict = self.helper.datasetSummary(xmlDict['dataset'])
+        oDict,mDict = self.helper.datasetSummary(dbsInst, xmlDict['dataset'])
         key=mDict.keys()[0]
         prdDate,cBy,nblks,blkSize,nFiles,nEvts=mDict[key]
         msg="""
@@ -490,7 +419,7 @@ class DDServer(DDLogger,Controller):
              (time.time()-serviceDict['time'])>5*60: # less then 5 minutes
                aDict={}
                aDict['url']=self.dbsdd
-               aDict['nsets']=self.helper.nDatasets()
+               aDict['nsets']=self.helper.nDatasets(dbsInst)
                print "*** send update to '%s' with aDict=%s"%(url,aDict)
                thread.start_new_thread(self.sendSOAP,(url,"wsUpdateSiteInfo",aDict))
                serviceDict['time']=time.time()
@@ -502,11 +431,11 @@ class DDServer(DDLogger,Controller):
 #            if url==self.dbsdd: continue
 #            aDict={}
 #            aDict['url']=self.dbsdd
-#            aDict['nsets']=self.helper.nDatasets()
+#            aDict['nsets']=self.helper.nDatasets(dbsInst)
 #            print aDict
 ###            thread.start_new_thread(self.sendSOAP,(url,"wsUpdateSiteInfo",aDict))
 
-    def sendErrorReport(self,iMsg=""):
+    def sendErrorReport(self, dbsInst, iMsg=""):
         """
            Send a complete report with provided msg. Capture internals of
            L{DDServer} and L{DBSHelper}.
@@ -524,24 +453,7 @@ class DDServer(DDLogger,Controller):
         msg+="Request url : %s\n"%url
         msg+="\n\n"
         msg+="DDServer:\n"
-        msg+="=======================\n"
-        msg+="%s: %s\n"%("DBS Instance   ",self.dbs)
-        msg+="%s: %s\n"%("site           ",self.site)
-        msg+="%s: %s\n"%("application    ",self.site)
-        msg+="%s: %s\n"%("primary dataset",self.primD)
-        msg+="%s: %s\n"%("Data tier      ",self.tier)
-        msg+="\n" # blank line separating headers from body
-        msg+="DBSHelper:\n"
-        msg+="==========\n"
-        msg+="%s: %s\n"%("DBS Instance   ",self.helper.dbsInstance)
-        try:
-           msg+="%s: %s\n"%("engine         ",self.helper.dbsDB)
-        except:
-           pass
-        msg+="%s: %s\n"%("dbsApi         ",self.helper.dbsApi)
-        msg+="%s: %s\n"%("dbsDLS         ",self.helper.dbsDLS)
-        msg+="%s: %s\n"%("dlsType        ",self.helper.dlsType)
-        msg+="%s: %s\n"%("dlsEndpoint    ",self.helper.endpoint)
+        msg+="%s: %s\n"%("DBS Instance   ", dbsInst)
         sendEmail(msg)
         
     def getCMSNames(self):
@@ -557,21 +469,6 @@ class DDServer(DDLogger,Controller):
              pass
         return self.cmsNames
 
-    def helperInit(self,dbsInst,iface="dd"):
-        """
-           Initialize L{DBSHelper} with given DBS instances
-           @type  dbsInst: string 
-           @param dbsInst: DBS instances 
-           @rtype : none
-           @return: none
-        """
-        self.dbs = dbsInst
-#        if  iface=="dbsapi":
-#            self.qmaker.initDBS(dbsInst,iface)
-#        else:
-        self.helper.setDBSDLS(dbsInst)
-        self.qmaker.initDBS(dbsInst)
-
     def genTopHTML(self,intro=False,userMode='user',onload=''):
         """
            Generates top structure of HTML page using Cheetah template.
@@ -580,6 +477,9 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
+        standalone = 1
+        if  self.securityApi:
+            standalone = 0
         nameSpace = {
                      'host'        : self.dbsdd,
 #                     'baseUrl'     : self.baseUrl,
@@ -589,7 +489,8 @@ class DDServer(DDLogger,Controller):
                      'title'       : 'DBS Data Discovery Page',
                      'dbsGlobal'   : self.dbsglobal,
                      'userMode'    : userMode,
-                     'onload'      : onload
+                     'onload'      : onload,
+                     'standalone'  : standalone 
                     }
         page = templateTop(searchList=[nameSpace]).respond()
         if intro:
@@ -635,7 +536,7 @@ class DDServer(DDLogger,Controller):
         return self._advanced(dbsInst,userMode)
     index.exposed = True 
 
-    def errorReport(self,msg):
+    def errorReport(self, dbsInst, msg):
         """
            Error handle routine.
            @type msg: string
@@ -653,7 +554,7 @@ class DDServer(DDLogger,Controller):
                      'url' : url 
                     }
         t = templateERROR(searchList=[nameSpace]).respond()
-        self.sendErrorReport(msg+"\n"+getExcept())
+        self.sendErrorReport(dbsInst, msg+"\n"+getExcept())
         return str(t)
 
     def glossary(self):
@@ -759,29 +660,10 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in navigator init function")
+            t=self.errorReport(dbsInst, "Fail in navigator init function")
             pass
             return str(t)
     _navigator.exposed=True
-
-    def makeSectionDict(self,dbsInst):
-        self.helperInit(dbsInst)
-        out=""
-        for section in self.sectionDict2.keys():
-            tabOut=str(self.sectionDict2[section])
-            colOut=""
-            for tableName in self.sectionDict2[section]:
-#                cols = self.helper.getTableColumns(tableName)
-                cTemp = self.helper.getTableColumns(tableName)
-                cols=[]
-                for item in cTemp:
-                    cols.append(item.encode('ascii'))
-                if cols.count('ID'): cols.remove('ID')
-                if cols.count('id'): cols.remove('id')
-                colOut+=str(cols)+","
-            colOut=colOut[:-1]
-            out+="""var %sList={'tableNames':%s,'columnNames':[%s]};\n"""%(section,tabOut,colOut)
-        return out
 
     def _config(self,userMode="user"):
         try:
@@ -795,7 +677,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in config init function")
+            t=self.errorReport('', "Fail in config init function")
             pass
             return str(t)
     _config.exposed=True
@@ -808,14 +690,16 @@ class DDServer(DDLogger,Controller):
             page+= self.whereMsg('Analysis dataset search',userMode)
 
             # make auto-completion forms for ads name and def name
-            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDataset','column':'Name','label':'Name:','zIndex':9000,'method':'getTableColumn'}
+#            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDataset','column':'Name','label':'Name:','zIndex':9000,'method':'getTableColumn'}
+            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'key':'ads','wherekey':'ads','label':'Name:','zIndex':9000,'method':'findInDBS'}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsName=str(t)
-            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDSDef','column':'Name','label':'Definition name:','zIndex':8000,'method':'getTableColumn'}
+#            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDSDef','column':'Name','label':'Definition name:','zIndex':8000,'method':'getTableColumn'}
+            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'key':'ads','wherekey':'ads.desc','label':'Definition name:','zIndex':8000,'method':'findInDBS'}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsDefName=str(t)
 
-            tierList = self.helper.getDataTiers()
+            tierList = self.helper.getDataTiers(dbsInst)
             dbsList=list(self.dbsList)
             dbsList.remove(dbsInst)
             dbsList=[dbsInst]+dbsList
@@ -826,7 +710,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in analysis init function")
+            t=self.errorReport(dbsInst, "Fail in analysis init function")
             pass
             return str(t)
     _analysis.exposed=True
@@ -875,14 +759,14 @@ class DDServer(DDLogger,Controller):
                nameSpace = {'userMode':userMode,'ddList':self.ddUrls,'dbsdd':self.dbsdd}
                page+= templateRemoteDD(searchList=[nameSpace]).respond()
                # Walk through all registered DD services and exchange update SOAP msg's
-               nsets = self.helper.nDatasets()
+               nsets = self.helper.nDatasets(dbsInst)
                for url in self.ddUrls:
                    if url!=self.dbsdd:
                       self.sendSOAP(url,"wsUpdateSiteInfo",{'url':self.dbsdd,'reply':self.dbsdd,'nsets':nsets})
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in advanced init function")
+            t=self.errorReport(dbsInst, "Fail in advanced init function")
             pass
             return str(t)
     _advanced.exposed=True
@@ -901,7 +785,7 @@ class DDServer(DDLogger,Controller):
                 page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in advanced init function")
+            t=self.errorReport(dbsInst, "Fail in advanced init function")
             pass
             return str(t)
     _multiSearch.exposed=True
@@ -929,7 +813,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in rss init function")
+            t=self.errorReport('', "Fail in rss init function")
             pass
             return str(t)
     _rss.exposed=True
@@ -946,10 +830,9 @@ class DDServer(DDLogger,Controller):
                return self.genTopHTML()+p+self.genBottomHTML()
         
             # get primDesc and creation date
-            primPubDate,primDesc=self.helper.getPrimDetailsForRSS(prim=primD)
+            primPubDate,primDesc=self.helper.getPrimDetailsForRSS(dbsInst, prim=primD)
             # for given primary, generate procList
-            self.helperInit(dbsInst)
-            procList = self.helper.getProcDSForRss(prim=primD,rel=app)
+            procList = self.helper.getProcDSForRss(dbsInst, prim=primD,rel=app)
             nameSearch={
                         'host'       : self.dbsdd,
                         'prim'       : primD,
@@ -964,7 +847,7 @@ class DDServer(DDLogger,Controller):
             t = templateRSS(searchList=[nameSearch]).respond()
             page=str(t)
         except:
-            t=self.errorReport("Fail in rss init function")
+            t=self.errorReport(dbsInst, "Fail in rss init function")
             page=str(t)
             pass
         if self.verbose==2:
@@ -992,7 +875,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in siteSearch init function")
+            t=self.errorReport('', "Fail in siteSearch init function")
             pass
             return str(t)
     _siteSearch.exposed=True
@@ -1006,7 +889,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in history init function")
+            t=self.errorReport('', "Fail in history init function")
             pass
             return str(t)
     _history.exposed=True
@@ -1023,7 +906,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in help init function")
+            t=self.errorReport('', "Fail in help init function")
             pass
             return str(t)
     _pages.exposed=True
@@ -1047,7 +930,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in help init function")
+            t=self.errorReport('', "Fail in help init function")
             pass
             return str(t)
     _help.exposed=True
@@ -1066,7 +949,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in contact init function")
+            t=self.errorReport('', "Fail in contact init function")
             pass
             return str(t)
     _contact.exposed=True
@@ -1079,7 +962,7 @@ class DDServer(DDLogger,Controller):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('DBS expert page',userMode)
-            dbsTables = self.helper.dbManager.getTableNames(dbsInst)
+            dbsTables = self.dbManager.getTableNames(dbsInst)
             dbsTables.sort()
             nameSpace = {
                          'dbsList'      : self.dbsList,
@@ -1090,7 +973,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in dbsExpert init function")
+            t=self.errorReport(dbsInst, "Fail in dbsExpert init function")
             pass
             return str(t)
     _dbsExpert.exposed=True
@@ -1112,7 +995,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in run search init function")
+            t=self.errorReport(dbsInst, "Fail in run search init function")
             pass
             return str(t)
     _runs.exposed=True
@@ -1124,7 +1007,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in tools init function")
+            t=self.errorReport('', "Fail in tools init function")
             pass
             return str(t)
     _tools.exposed=True
@@ -1135,7 +1018,7 @@ class DDServer(DDLogger,Controller):
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in tools init function")
+            t=self.errorReport('', "Fail in tools init function")
             pass
             return str(t)
     tool_cli.exposed=True
@@ -1157,21 +1040,11 @@ class DDServer(DDLogger,Controller):
         t = templateWhere(searchList=[{'where':'DBS discovery :: '+msg,'userMode':userMode}]).respond()
         return str(t)
 
-    def searchHelper(self,keywords=""):
-        """
-           Helper function which invoke L{DBSHelper.search} to find out data based on input keywords.
-           @type keywords: string
-           @param keywords: keyword string, the keywords are separated by empty spaces
-           @rtype: list
-           @return: a list of [(primD,tier,App version, App family, App exe)]
-        """
-        oList = self.helper.search(keywords)
-        return oList
-        
     def genEmptyUserNavigator(self,dbsInst,userMode="user",auto=0,**kwargs):
         if auto:
            # auto-competion form for processed datasets
-           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
+#           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
+           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'key':'dataset','wherekey':'dataset','label':'','zIndex':9000,'method':'findInDBS'}
            t = templateAutoComplete(searchList=[nameSearch]).respond()
            prdForm=str(t)
         else:
@@ -1216,12 +1089,10 @@ class DDServer(DDLogger,Controller):
                     'dbsInst'     : dbsInst,
                     'userMode'    : userMode,
                     'dbsList'     : self.dbsList,
-                    'groupList'   : self.helper.getPhysicsGroups,
-                    'dataTypes'   : self.helper.getDataTiers(),
-                    'softReleases': self.helper.getSoftwareReleases(),
-#                    'primDatasets': self.helper.getPrimaryDatasets(),
-#                    'siteList'    : self.helper.getSites(), 
-                    'siteDict'    : sortSitesByDomain(self.helper.getSites()), 
+                    'groupList'   : self.helper.getPhysicsGroups(dbsInst),
+                    'dataTypes'   : self.helper.getDataTiers(dbsInst),
+                    'softReleases': self.helper.getSoftwareReleases(dbsInst),
+                    'siteDict'    : sortSitesByDomain(self.helper.getSites(dbsInst)), 
                     'style'       : "width:200px",
                    }
         t = templateUserNav(searchList=[nameSearch]).respond()
@@ -1291,7 +1162,7 @@ class DDServer(DDLogger,Controller):
         try:
             page+="navDict="+self.getDBSDict(dbsInst)
         except:
-            t=self.errorReport("Fail in genNavigatorMenuDict function")
+            t=self.errorReport(dbsInst, "Fail in genNavigatorMenuDict function")
             page+=str(t)
             pass
         page+=endAjaxMsg
@@ -1335,11 +1206,11 @@ class DDServer(DDLogger,Controller):
            page+= self.genBottomHTML()
            return page
         if siteList=="[]":
-           siteList=str(self.helper.getSiteList(dataset.strip()))
+           siteList=str(self.helper.getSiteList(dbsInst, dataset.strip()))
         page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin tasks',userMode)
 
         # auto-competion form for processed datasets
-#        nameSearch={'tag':'blockName','inputId':'blockName','inputName':'blockName','size':'100','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Name','label':'','zIndex':9000,'method':'yuiGetBlocksForDataset'}
+#        nameSearch={'tag':'blockName','inputId':'blockName','inputName':'blockName','size':'100','userMode':userMode,'dbsInst':dbsInst,'key':'block.name','wherekey':'block.name','label':'','zIndex':9000,'method':'findInDBS'}
 #        t = templateAutoComplete(searchList=[nameSearch]).respond()
 #        blkForm=str(t)
         
@@ -1349,7 +1220,7 @@ class DDServer(DDLogger,Controller):
         site="*"
         if kwargs.has_key("site"):
            site=kwargs["site"]
-        blkList=self.helper.getBlocksFromSite(site=site,datasetPath=dataset)
+        blkList=self.helper.getBlocksFromSite(dbsInst, site=site,datasetPath=dataset)
 #        siteDict=sortSitesByDomain(siteList[1:-1].replace(" ","").replace("'","").split(","))
         nameSpace={
                   'dbsInst' : dbsInst,
@@ -1520,9 +1391,9 @@ class DDServer(DDLogger,Controller):
            http_conn = httplib.HTTPSConnection(host,port)
         else:
            http_conn = httplib.HTTPConnection(host,port)
-        if debug:
-           httplib.HTTPConnection.debuglevel = 1
-           httplib.HTTPSConnection.debuglevel = 1
+#        if debug:
+#           httplib.HTTPConnection.debuglevel = 1
+#           httplib.HTTPSConnection.debuglevel = 1
            print "Contact",host,port,path
         headers={"UserID":dn,"Content-type":"application/x-www-form-urlencoded","Accept":"text/plain"}
         if debug:
@@ -1565,23 +1436,22 @@ class DDServer(DDLogger,Controller):
            del kwargs['src_url']
            kwargs['src_url']=DBS_INST_URL[dbs]
         dbsInst=kwargs['dbsInst']
-        self.helperInit(dbsInst)
         dataset=kwargs['dataset']
         if kwargs.has_key('lfn'):
            if kwargs['lfn'].lower()=="all":
-              lfnList=self.helper.getLFNsFromSite(site="all",datasetPath=dataset,run="*")
+              lfnList=self.helper.getLFNsFromSite(dbsInst, site="all",datasetPath=dataset,run="*")
            elif kwargs['lfn'].lower().find("like")!=-1:
               lfn=kwargs['lfn'].split("like:")[1]
-              lfnList=self.helper.getLFNsFromSite(site="all",datasetPath=dataset,run="*",lfn="%%%s%%"%lfn)
+              lfnList=self.helper.getLFNsFromSite(dbsInst, site="all",datasetPath=dataset,run="*",lfn="%%%s%%"%lfn)
            else:
-              lfnList=self.helper.getLFNsFromSite(site="all",datasetPath=dataset,run="*",lfn=lfn)
+              lfnList=self.helper.getLFNsFromSite(dbsInst, site="all",datasetPath=dataset,run="*",lfn=lfn)
            del kwargs['lfn'] # delete lfn key-pair from our dictionary
            kwargs['lfn']=lfnList
         # lookup for block_name and find out a list
         if kwargs.has_key('block_name'):
            block_names=""
            if kwargs['block_name'].lower()=="all":
-              block_names=self.helper.getBlocksFromSite(site="*",datasetPath=dataset)
+              block_names=self.helper.getBlocksFromSite(dbsInst, site="*",datasetPath=dataset)
               del kwargs['block_name'] # delete block_name key-pair from our dictionary
               kwargs['block_name']=block_names
         if kwargs.has_key('dataset'): del kwargs['dataset'] # I don't need it anymore
@@ -1634,8 +1504,8 @@ class DDServer(DDLogger,Controller):
 
     def createAnalysisDS(self,dbsInst,dataset,userMode="user"):
         page = self.genTopHTML(userMode=userMode)
-        bList= self.helper.getBlocksInfo(dataset) 
-        minRun,maxRun=self.helper.getRunRangeForDataset(dataset)
+        bList= self.helper.getBlocksInfo(dbsInst, dataset) 
+        minRun,maxRun=self.helper.getRunRangeForDataset(dbsInst, dataset)
         nameSpace={
                    'dbsInst' : dbsInst,
                    'dataset' : dataset,
@@ -1692,12 +1562,11 @@ class DDServer(DDLogger,Controller):
 
     def createADSFromRunRange(self,dbsInst,dataset,runRanges,userMode="user",**kwargs):
         cherrypy.response.headers['Content-Type']='text/plain'
-        self.helperInit(dbsInst)
         page = ""
 #        page = self.genTopHTML(userMode=userMode)
         # TODO: I need to validate user input, runRanges
         # it should be in a form minR-maxRun,minRun-maxRun,...
-        lfnList=self.helper.getLFNsFromRunRanges(dataset,runRanges)
+        lfnList=self.helper.getLFNsFromRunRanges(dbsInst, dataset,runRanges)
         page+=self.formatLFNList(lfnList,"cff",idx=0)
 #        page+= self.genBottomHTML()
         return page
@@ -1743,141 +1612,8 @@ class DDServer(DDLogger,Controller):
         return page
     createADS_xml.exposed=True
 
-    def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user',**kwargs):
-        """
-           Get all processed datasets for given set of input parameters
-           @type  dbsInst: string
-           @param dbsInst: user selection of DBS menu
-           @type  site: string
-           @param site: user selection of the site, default "All"
-           @type  app: string
-           @param app: user selection of the application, default "*"
-           @type  primD: string
-           @param primD: user selection of the primary dataset, default "*"
-           @type  tier: string
-           @param tier: user selection of the data tier, default "*"
-           @rtype : string
-           @return: returns HTML code
-        """
-        if type(proc) is not types.ListType and len(proc)>1:
-           if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
-               proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
-               caseSensitive=True
-               if kwargs.has_key('caseSensitive'):
-                 if kwargs['caseSensitive']=="on":
-                    caseSensitive=True
-                 else:
-                    caseSensitive=False
-                    proc=proc.upper()
-               # we got a pattern
-               if proc.lower().find("regexp:")!=-1:
-                  arg="Path"
-                  if not caseSensitive:
-                     arg="UPPER(Path)"
-                  # we got regular expression pattern
-                  op,pat=proc.split("regexp:")
-                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause=" REGEXP_LIKE(%s,:p0) ESCAPE '\\'"%arg
-                     bDict={'p0':"%s"%pat.replace("_","\_")}
-                  else:
-                     wClause=" %s REGEXP :p0 "%arg
-                     bDict={'p0':"%s"%pat}
-                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict,caseSensitive=caseSensitive)
-               elif proc.lower().find("like:")!=-1:
-                  arg="tblk.Path"
-                  if not caseSensitive:
-                     arg="UPPER(tblk.Path)"
-                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause,bDict=parseKeywordInput(proc.replace("_","\_"),arg)
-                     nDatasets=self.helper.countBlocks(proc.replace("_","\_"),site,caseSensitive=caseSensitive)
-                  else:
-                     wClause,bDict=parseKeywordInput(proc,arg,type=self.helper.dbManager.dbType[dbsInst])
-                     nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
-               else:
-                  # we got a pattern
-                  wClause=" tblk.Path LIKE :p0 "
-                  if not caseSensitive:
-                     wClause=" UPPER(tblk.Path) LIKE :p0 "
-                  bDict={'p0':"%s"%proc.replace('*','%')}
-                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause+="ESCAPE '\\'"
-                     bDict={'p0':"%s"%proc.replace('*','%').replace("_","\_")}
-                     nDatasets=self.helper.countBlocks("like:%s"%proc.replace("_","\_"),site,caseSensitive=caseSensitive)
-                  else:
-                     nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
-               proc=self.helper.getDatasetPathFromMatch(wClause,bDict=bDict,site=site)
-           else:
-               if proc[0]!="/":
-                  page=self.genTopHTML()
-                  msg ="Dataset name should be in a form /primary/processed/tier<br />"
-                  msg+="You provided '%s'<br />"%proc
-                  msg+="If you need wild-card search please use *%s*<br />"%proc
-                  page+=msg
-                  page+=self.genBottomHTML()
-                  return page
-        try:
-            self.helperInit(dbsInst)
-            page = self.genTopHTML(userMode=userMode)
-            page+= self.whereMsg('Navigator :: Results :: list of datasets',userMode)
-#            page+= self.genResultsHTML()
-            page+= "<pre>"
-            if  type(proc) is not types.ListType and len(proc) and proc!="*":
-                page+=proc+"\n"
-            else:
-                procList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,userMode=userMode,fromRow=0,limit=0,count=0)
-                procList.sort()
-                for procD in procList:
-                    page+=procD+"\n"
-            page+= "</pre>"
-            page+= self.genBottomHTML()
-            return page
-        except:
-            t=self.errorReport("Fail in showProcDatasets function")
-            pass
-            return str(t)
-    showProcDatasets.exposed=True
-
-    def getURL(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",hist=""): 
-        # add URL link to the page
-        siteHTML=urllib.quote(site)
-        if site=="*":
-           siteHTML='All'
-        tierHTML=urllib.quote(tier)
-        if tier=="*":
-           tierHTML='All'
-        histHTML=urllib.quote(hist+"""<hr class="dbs" />""")
-        groupHTML=urllib.quote(group)
-        appHTML=urllib.quote(app)
-        primHTML=urllib.quote(primD)
-        procHTML=urllib.quote(proc)
-        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;hist=%s&amp;_idx=0&amp;ajax=0"""%(self.dbsdd,dbsInst,siteHTML,groupHTML,appHTML,primHTML,tierHTML,procHTML,histHTML)
-        page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,80,'\n'))
-        return page
-
-    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",date="*",userMode='user',fromRow=0,limit=0,count=0):
-        """
-           Call different APIs for given list of app/prim/tier/proc. Return a list of processed
-           datasets.
-        """
-        if string.lower(tier) =="all" or string.lower(tier)=="any": tier="*"
-        if string.lower(site) =="all" or string.lower(site)=="any": site="*"
-        if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
-        if string.lower(group)=="all" or string.lower(group)=="any": group="*"
-        if string.lower(prim) =="all" or string.lower(prim)=="any": prim="*"
-        if string.lower(date) =="all" or string.lower(date)=="any": date="*"
-        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,primType,date,userMode,fromRow,limit,count)
-
-    def getMatch(self,table,column,val,row=0,limit=0):
-        pList=[]
-        whereDict={}
-#        whereDict['%s.%s'%(table,column)]="%"+val.replace('*','').replace('%','')
-        whereDict['%s.%s'%(table,column)]=val.replace('*','%')
-        for item in self.helper.getTableColumn(table,column,row,limit,whereDict):
-            pList.append(item)
-        return pList
-
     def findDatasetsFromLFN(self,dbsInst,lfn,userMode,**kwargs):
-        pList = self.helper.findDatasetsFromLFN(lfn)
+        pList = self.helper.findDatasetsFromLFN(dbsInst, lfn)
         page=self.genTopHTML(userMode=userMode)
         if len(pList):
            page+="<p>Requested LFN %s found in</p>\n<ul>\n"%lfn
@@ -1892,7 +1628,7 @@ class DDServer(DDLogger,Controller):
         return page
     findDatasetsFromLFN.exposed=True
 
-    def getDataHelperViaASearch(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -1971,7 +1707,15 @@ class DDServer(DDLogger,Controller):
                 cond += "and %s like %s " % (key, proc)
             else:
                 cond += "and %s = %s " % (key, proc)
-#        if  primType:
+        if  primType:
+            if  primType.lower() == 'any':
+                primType = "*"
+            if  primType == "*":
+                cond += ""
+            elif  primType.find('*') != -1:
+                cond += "and datatype like %s " % primType
+            else:
+                cond += "and datatype = %s " % primType
         if  date:
             if  date.lower() == 'any':
                 date = "*"
@@ -1981,239 +1725,7 @@ class DDServer(DDLogger,Controller):
             query = "find dataset where " + cond[4:] # eliminate first "and "
         else:
             query = "find dataset where dataset like *"
-        print "\n\n#### query",query
         page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query)
-        return page
-    getDataHelperViaASearch.exposed=True
-
-    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
-        self.helperInit(dbsInst)
-        self.dbs  = dbsInst
-        self.site = site
-        self.app  = app
-        self.primD= primD
-        self.tier = tier
-        
-#        t1=time.time()
-        run=""
-        if kwargs.has_key('run'):
-           run=kwargs['run']
-        nDatasets=0
-        pagerStep=int(pagerStep)
-        if not proc: proc="*"
-        if  type(proc) is types.ListType:
-            proc_orig=proc
-        else:
-            proc_orig=urllib.quote(proc)
-        if string.lower(tier) =="all" or string.lower(tier)=="any": tier="*"
-        if string.lower(site) =="all" or string.lower(site)=="any": site="*"
-        if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
-        if string.lower(group)=="all" or string.lower(group)=="any": group="*"
-        if string.lower(primD)=="all" or string.lower(primD)=="any": primD="*"
-        if string.lower(date) =="all" or string.lower(date)=="any": date="*"
-        if string.lower(primType)=="all" or string.lower(primType)=="any": primType="*"
-        if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
-        if type(proc) is not types.ListType and len(proc)>1:
-           if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
-               proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
-               caseSensitive=True
-               if kwargs.has_key('caseSensitive'):
-                 if kwargs['caseSensitive']=="on":
-                    caseSensitive=True
-                 else:
-                    caseSensitive=False
-                    proc=proc.upper()
-               if proc.lower().find("regexp:")!=-1:
-                  arg="Path"
-                  if not caseSensitive:
-                     arg="UPPER(Path)"
-                  # we got regular expression pattern
-                  op,pat=proc.split("regexp:")
-                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause=" REGEXP_LIKE(%s,:p0) ESCAPE '\\'"%arg
-                     bDict={'p0':"%s"%pat.replace("_","\_")}
-                  else:
-                     wClause=" %s REGEXP :p0 "%arg
-                     bDict={'p0':"%s"%pat}
-                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict,caseSensitive=caseSensitive)
-               elif proc.lower().find("like:")!=-1:
-                  arg="tblk.Path"
-                  if not caseSensitive:
-                     arg="UPPER(tblk.Path)"
-                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause,bDict=parseKeywordInput(proc.replace("_","\_"),arg)
-                     nDatasets=self.helper.countBlocks(proc.replace("_","\_"),site,caseSensitive=caseSensitive)
-                  else:
-                     wClause,bDict=parseKeywordInput(proc,arg,type=self.helper.dbManager.dbType[dbsInst])
-                     nDatasets=self.helper.countBlocks(proc,site,caseSensitive=caseSensitive)
-               else:
-                  # we got a pattern
-                  wClause=" tblk.Path LIKE :p0 "
-                  if not caseSensitive:
-                     wClause=" UPPER(tblk.Path) LIKE :p0 "
-                  bDict={'p0':"%s"%proc.replace('*','%')}
-                  if self.helper.dbManager.dbType[dbsInst]=='oracle':
-                     wClause+="ESCAPE '\\'"
-                     bDict={'p0':"%s"%proc.replace('*','%').replace("_","\_")}
-                     nDatasets=self.helper.countBlocks("like:%s"%proc.replace("_","\_"),site,caseSensitive=caseSensitive)
-                  else:
-                     nDatasets=self.helper.countBlocks("like:%s"%proc,site,caseSensitive=caseSensitive)
-               proc=self.helper.getDatasetPathFromMatch(wClause,row=_idx*pagerStep,limit=pagerStep,bDict=bDict,site=site)
-           else:
-               if proc[0]!="/":
-                  page=self.genTopHTML()
-                  msg ="Dataset name should be in a form /primary/processed/tier<br />"
-                  msg+="You provided '%s'<br />"%proc
-                  msg+="If you need wild-card search please use *%s*<br />"%proc
-                  page+=msg
-                  page+=self.genBottomHTML()
-                  return page
-           
-        self.dbsTime=self.dlsTime=0
-        page=""
-        className="show_inline"
-#        className="hide"
-#        if int(_idx)==0:
-#           className="show_inline"
-            
-        
-#        print "Init step",time.time()-t1
-
-
-        primaryDataset=primD
-        dataTier = tier
-        appPath = app
-        softRel = app
-        if app[0]=="/":
-           softRel=app.split("/")[1]
-        id=0
-        prevPage=""
-        oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
-        if  type(proc) is types.ListType:
-            if not nDatasets:
-               nDatasets = len(proc)
-            if pagerStep:
-               datasetsList = proc[_idx:_idx+pagerStep]
-            else:
-               datasetsList = proc
-            proc=proc_orig
-        elif kwargs.has_key('zstring'):
-           zproc=eval( zlib.decompress(urllib.unquote(kwargs['zstring'])) )
-           nDatasets=len(zproc)
-           datasetsList = zproc[_idx:_idx+pagerStep]
-        else:
-            nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,count=1)
-            datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
-
-        # Construct result page
-        rPage=""
-        if nDatasets:
-           rPage+="Result page:"
-
-#        print "Paging step before loop",time.time()-t1
-        moreParams=""
-        if kwargs:
-           for k in kwargs.keys():
-               moreParams+="&amp;%s=%s"%(k,kwargs[k])
-        # the progress bar for all results
-        if _idx:
-            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx-1,userMode,pagerStep,moreParams)
-        tot=_idx
-        for x in xrange(_idx,_idx+GLOBAL_STEP):
-            if nDatasets>x*pagerStep:
-               tot+=1
-        for index in xrange(_idx,tot):
-           ref=index+1
-           if index==_idx:
-              ref="""<span class="gray_box">%s</span>"""%(index+1)
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,index,userMode,pagerStep,moreParams,ref)
-        if nDatasets>(_idx+1)*pagerStep:
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx+1,userMode,pagerStep,moreParams)
-
-        if _idx and _idx*pagerStep>nDatasets:
-           return "No data found for this request"
-
-#        print "Paging step before snapshot",time.time()-t1
-        page+="""<div id="results_response_%s" class="%s">"""%(_idx,className)
-
-        regList=[]
-        bList=[]
-        id=0
-
-        page+=self.whereMsg('Navigator :: Results',userMode)
-        # check which date has been passed and format it accordingly
-        _date="Any"
-        if date.lower()!="*":
-           if date.find("_")!=-1:
-              d1,d2=date.split("_")
-              _date="%s<br/>%s"%(time.strftime("%Y/%m/%d",time.gmtime(int(d1))),time.strftime("%Y/%m/%d",time.gmtime(int(d2))))
-           else:
-              _date=time.strftime("%Y/%m/%d",time.gmtime(int(date)))
-        # I re-use this dict for different templates
-        pagerId=1
-        _nameSpace = {
-                     'nDatasets': nDatasets,
-                     'datasetList': datasetsList,
-                     'userMode' : userMode,
-                     'dbsInst'  : dbsInst,
-                     'dbsInstUrl': DBS_INST_URL[dbsInst],
-                     'site'     : site,
-                     'rel'      : softRel,
-                     'primD'    : primD,
-                     'tier'     : tier,
-                     'proc'     : proc,
-                     'primType' : primType,
-                     'group'    : group,
-                     'app'      : app,
-                     'date'     : _date,
-                     'unm_date' : date,
-                     'idx'      : _idx,
-                     'ajax'     : ajax,
-                     'phedex'   : phedex,
-                     'host'     : self.dbsdd,
-                     'style'    : "margin-top:-20px",
-                     'rPage'    : rPage,
-                     'pagerStep': pagerStep,
-                     'pagerId'  : pagerId,
-                     'nameForPager': "datasets",
-                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId,moreParams)
-                    }
-        t = templateSnapshot(searchList=[_nameSpace]).respond()
-        snapshot=str(t)
-        page+=snapshot
-        t = templatePagerStep(searchList=[_nameSpace]).respond()
-        page+=str(t)
-#        print "Paging step",time.time()-t1
-#        t2=time.time()
-        if  not nDatasets:
-            page+="""<p><span class="box_red">No data found</span></p>"""
-#        print "####",nDatasets,len(datasetsList)
-        try:
-            dbsInstURL=DBS_INST_URL[dbsInst]
-            for id in xrange(0,len(datasetsList)):
-                dataset=datasetsList[id]
-                dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
-                if mDict:
-                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'cmsNames':self.getCMSNames()}]).respond()
-                    page+=str(t)
-                else:
-                    page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
-#                prdDate, siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
-#                page+= self.dataToHTML(dbsInst,dataset,prdDate,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
-        except:    
-            page+="<verbatim>"+getExcept()+"</verbatim>"
-
-        # end of response tag
-        page+="""</div><hr class="dbs" />"""
-        _nameSpace['style']="" # change style for the pager
-        pagerId+=1
-        _nameSpace['pagerId']=pagerId
-        _nameSpace['onchange']="javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode,pagerId,moreParams)
-        t = templatePagerStep(searchList=[_nameSpace]).respond()
-        page+=str(t)
-        
-#        print "Data step",time.time()-t1, time.time()-t2
-
         return page
     getDataHelper.exposed=True
 
@@ -2227,15 +1739,12 @@ class DDServer(DDLogger,Controller):
     def crabCfg(self,dataset,totEvt,userMode='userMode',**kwargs):
         cherrypy.response.headers['Content-Type']='text/plain'
         page = ""
-#        page=self.genTopHTML(userMode=userMode)
-#        page+=self.whereMsg('Navigator :: Results :: CRAB configuration file :: dataset=%s'%dataset,userMode)
         nameSpace = {
                      'dataset'  : dataset,
                      'totEvt'   : totEvt
                     }
         t = templateCRAB(searchList=[nameSpace]).respond()
         page+=str(t)
-#        page+=self.genBottomHTML()
         return page
     crabCfg.exposed=True
     
@@ -2274,7 +1783,6 @@ class DDServer(DDLogger,Controller):
         tier=tier.upper()
         if app!="*" and app[0]!="/":
            app="/%s/*/*"%app
-        t1=time.time()
         if string.lower(tier)=="all" or string.lower(tier)=="any": tier="*"
         if string.lower(site)=="all" or string.lower(site)=="any": site="*"
         if string.lower(date)=="all" or string.lower(date)=="any": date="*"
@@ -2286,45 +1794,7 @@ class DDServer(DDLogger,Controller):
                date="%d_%d"%(d1,d2)
            except:
                return "Please check that you entered dates in correct format: yyyy/mm/dd"
-        if type(phedex) is types.StringType and string.lower(phedex)=="off":
-           phedex=0
-        if phedex:
-           # we will pass site as phedex parameter in order to create a single 
-           # phedex call in templateProcessedDatasets.tmpl
-           if site=="*":
-              phedex="multiple"
-           else:
-              phedex=site
-        page=""
-        if  int(ajax):
-            # AJAX wants response as "text/xml" type
-            self.setContentType('xml')
-            page="""<ajax-response><response type="object" id="results">"""
-            try:
-                self.helperInit(dbsInst)
-                msg="dbsInst='%s', site='%s', app='%s', primD='%s', tier='%s'"%(dbsInst,site,app,primD,tier)
-                self.writeLog(msg)
-                msg=""
-                self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
-            except:
-                t=self.errorReport("Fail in getData function")
-                page+=str(t)
-            t2=time.time()
-            if userMode!="user" and self.profile:
-               page+=self.responseTime(t2-t1)
-            page+="</response></ajax-response>"
-        else:
-           page=self.genTopHTML(userMode=userMode)
-           if hist:
-              page+=hist
-           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex,**kwargs)
-#           return self.getDataHelperViaASearch(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
-           page+= result
-           page+=self.genBottomHTML()
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
+        return self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
     getData.exposed = True 
 
     def getBlocksInfo(self,dbsInst,dataset,userMode):
@@ -2335,8 +1805,7 @@ class DDServer(DDLogger,Controller):
         page=self.genTopHTML(userMode=userMode)
         try:
             page+= self.whereMsg('Navigator :: Results :: File block information',userMode)
-            self.helperInit(dbsInst)
-            blkList = self.helper.getBlocksInfo(dataset)
+            blkList = self.helper.getBlocksInfo(dbsInst, dataset)
             nameSpace = {
                          'blkList'  : blkList,
                          'proc'     : dataset,
@@ -2347,82 +1816,13 @@ class DDServer(DDLogger,Controller):
             t = templateBlocksInfo(searchList=[nameSpace]).respond()
             page+=str(t)
         except:
-            t=self.errorReport("Fail in getBlocksInfo function")
+            t=self.errorReport(dbsInst, "Fail in getBlocksInfo function")
             page+=str(t)
         page+=self.genBottomHTML()
         if self.verbose==2:
            self.writeLog(page)
         return page
     getBlocksInfo.exposed = True 
-
-    def getDbsData(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
-        """
-           HTML wrapper for Main worker L{getDataHelper}.
-           @type  dbsInst: string
-           @param dbsInst: user selection of DBS menu
-           @type  site: string
-           @param site: user selection of the site, default "All"
-           @type  app: string
-           @param app: user selection of the application, default "*"
-           @type  primD: string
-           @param primD: user selection of the primary dataset, default "*"
-           @type  tier: string
-           @param tier: user selection of the data tier, default "*"
-           @type  i: integer
-           @param i: index to start with
-           @type  j: integer
-           @param j: index to end with
-           @rtype : string
-           @return: returns HTML code
-        """
-        _idx=int(_idx)
-        t1=time.time()
-        if int(ajax):
-           # AJAX wants response as "text/xml" type
-           self.setContentType('xml')
-           page="""<ajax-response><response type="object" id="results_dbs">"""
-        else:
-           page=self.genTopHTML(userMode=userMode)
-        try:
-            if string.lower(tier)=="all": tier="*"
-            self.helperInit(dbsInst)
-            self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
-
-            if type(proc) is not types.ListType:
-               if proc.lower()=="all" or proc.lower()=="any" or proc.lower()=="*":
-                  dList=self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep)
-               else:
-                  dList=[proc]
-            else:
-               dList=proc
-            page+= self.whereMsg('Navigator :: Results :: File block information',userMode)
-            for idx in xrange(0,len(dList)):
-                tid = 't_dbs_'+str(idx)
-                dataset = dList[idx]
-                nameSpace = {
-                             'dbsList'  : self.helper.getDbsData(dataset),
-                             'tableId'  : _idx,
-                             'proc'     : dataset,
-                             'host'     : self.dbsdd,
-                             'dbsInst'  : dbsInst,
-                             'userMode' : userMode
-                            }
-                t = templateDbsInfo(searchList=[nameSpace]).respond()
-                page+=str(t)
-        except:
-            t=self.errorReport("Fail in getDbsData function")
-            page+=str(t)
-        t2=time.time()
-        if userMode!="user" and self.profile:
-           page+=self.responseTime(t2-t1)
-        if int(ajax):
-           page+="</response></ajax-response>"
-        else:
-           page+=self.genBottomHTML()
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    getDbsData.exposed = True 
 
     def getRuns(self,dbsInst,dataset,_idx=0,ajax=0,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
@@ -2447,7 +1847,6 @@ class DDServer(DDLogger,Controller):
         else:
            page=self.genTopHTML(userMode=userMode)
         try:
-            self.helperInit(dbsInst)
             page+=self.whereMsg('Navigator :: Results :: Run information',userMode)
 
             # pager
@@ -2455,7 +1854,7 @@ class DDServer(DDLogger,Controller):
             _minRun=0 # full range for given dataset.
             _maxRun=0 
             try:    
-               nResults,_minRun,_maxRun=self.helper.getRuns(dataset=dataset,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
+               nResults,_minRun,_maxRun=self.helper.getRuns(dbsInst, dataset=dataset,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
                if not nResults: raise "No runs found"
             except:
                traceback.print_exc()
@@ -2508,7 +1907,7 @@ class DDServer(DDLogger,Controller):
             ##### end of the pager
 
             tid = 't_runs_'+str(_idx)
-            runList,runDBInfoDict=self.helper.getRuns(dataset,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
+            runList,runDBInfoDict=self.helper.getRuns(dbsInst, dataset,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
             nameSpace = {
                          'dbsInst'  : dbsInst,
                          'host'     : self.dbsdd,
@@ -2533,7 +1932,7 @@ class DDServer(DDLogger,Controller):
                t = templatePagerStep(searchList=[_nameSpace]).respond()
                page+=str(t)
         except:
-            t=self.errorReport("Fail in getRunsData function")
+            t=self.errorReport(dbsInst, "Fail in getRunsData function")
             page+=str(t)
         t2=time.time()
         if userMode!="user" and self.profile:
@@ -2564,12 +1963,11 @@ class DDServer(DDLogger,Controller):
         else:
            page=self.genTopHTML(userMode=userMode)
         try:
-            self.helperInit(dbsInst)
             page+=self.whereMsg('Run search :: Results :: Run information',userMode)
 
             nResults=0
             try:    
-               res=self.helper.getRuns(dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
+               res=self.helper.getRuns(dbsInst, dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
                nResults=res[0] # res=nRuns, minRun, maxRun
             except:
                msg="No runs found for your request:<br />"
@@ -2617,8 +2015,8 @@ class DDServer(DDLogger,Controller):
             t = templatePagerStep(searchList=[_nameSpace]).respond()
             pagerPage=str(t)
 
-            nRun = self.helper.getNRuns(minRun,maxRun)
-            runList,runDBInfoDict=self.helper.getRuns(dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
+            nRun = self.helper.getNRuns(dbsInst, minRun,maxRun)
+            runList,runDBInfoDict=self.helper.getRuns(dbsInst, dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
             if len(runList):
                 page+=pagerPage
                 nameSpace = {
@@ -2644,7 +2042,7 @@ class DDServer(DDLogger,Controller):
                 page+=str(t)
 #                page+=pagerPage
         except:
-            t=self.errorReport("Fail in getRunsFromRange function")
+            t=self.errorReport(dbsInst, "Fail in getRunsFromRange function")
             page+=str(t)
         t2=time.time()
         if userMode!="user" and self.profile:
@@ -2687,8 +2085,7 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="%s">"""%ajaxId
         run="*"
         try:
-            self.helperInit(dbsInst)
-            lfnDict = self.helper.getLFNs_Runs(blockName)
+            lfnDict = self.helper.getLFNs_Runs(dbsInst, blockName)
             lfnList = lfnDict.keys()
             lfnList.sort()
             page+="""
@@ -2738,8 +2135,7 @@ class DDServer(DDLogger,Controller):
         dataset="*" # I don't retrieve all LFNs from dataset
         run="*"
         try:
-            self.helperInit(dbsInst)
-            lfnList = self.helper.getLFNs(blockName,dataset,run)
+            lfnList = self.helper.getLFNs(dbsInst, blockName,dataset,run)
             page+="""
 <select multiple="multiple" name="%s" id="%s" style="width:1000px;font-size:8px" size="10" onchange="%s">
 <option value="All">
@@ -2771,7 +2167,6 @@ All LFNs in a block
            @return: returns HTML code
         """
         try:
-            self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             t="dataset"
             v=dataset
@@ -2786,7 +2181,7 @@ All LFNs in a block
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in getLFNlist function")
+            t=self.errorReport(dbsInst, "Fail in getLFNlist function")
             pass
             return str(t)
     getLFNlist.exposed = True
@@ -2820,7 +2215,6 @@ All LFNs in a block
         """
         cherrypy.response.headers['Content-Type']='text/plain'
         try:
-            self.helperInit(dbsInst)
             page = ""
 #            page = self.genTopHTML(userMode=userMode)
             t="dataset"
@@ -2828,28 +2222,12 @@ All LFNs in a block
             if blockName and blockName!="*":
                t="block"
                v=blockName
-#            if run and run!='*':
-#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
-#            else:
-#               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
-#            userInput = "find file where"
-#            wClause   = ""
-#            if  blockName and blockName!='*': wClause+=" block=%s "%blockName
-#            if  dataset and dataset!='*':
-#                if wClause: wClause+=" and "
-#                wClause+=" dataset=%s "%dataset
-#            if  run and run!="*":
-#                if wClause: wClause+=" and "
-#                wClause+=" run=%s "%run
-#            userInput+=wClause
-#            print userInput,self.iface
-#            lfnList = self.aSearchResults(dbsInst,userInput,fromRow=-1,limit=-1,method=self.iface)
-            lfnList = self.helper.getLFNs(blockName,dataset,run)
+            lfnList = self.helper.getLFNs(dbsInst, blockName,dataset,run)
             page+=self.formatLFNList(lfnList,what,idx=0)
 #            page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in getLFN_txt function")
+            t=self.errorReport(dbsInst, "Fail in getLFN_txt function")
             pass
             return str(t)
     getLFN_txt.exposed = True
@@ -2874,7 +2252,6 @@ All LFNs in a block
            @return: returns HTML code
         """
         try:
-            self.helperInit(dbsInst)
             format = getArg(kwargs,'format','cff')
             query1 = "find file"
             query2 = "find file.parent"
@@ -2893,52 +2270,10 @@ All LFNs in a block
             page = self.formatLFNPoolSource(lfnList,parentLFNList,format)
             return page
         except:
-            t=self.errorReport("Fail in getLFNsWithParents function")
+            t=self.errorReport(dbsInst, "Fail in getLFNsWithParents function")
             pass
             return str(t)
 
-    def getLFNsWithParents_dd(self,dbsInst,blockName,dataset="",userMode='user',run='*',**kwargs):
-        """
-           Retrieves and represents LFN list in ASCII form
-           @type  dataset: string 
-           @param dataset: dataset name
-           @type blockName: string
-           @param blockName: block name
-           @rtype : string
-           @return: returns HTML code
-        """
-        cherrypy.response.headers['Content-Type']='text/plain'
-        try:
-            self.helperInit(dbsInst)
-            format = getArg(kwargs,'format','cff')
-            page = ""
-#            page = self.genTopHTML(userMode=userMode)
-            t="dataset"
-            v=dataset
-            if blockName and blockName!="*":
-               t="block"
-               v=blockName
-            nLfns = self.helper.countLFNs(blockName=blockName,dataset=dataset,run=run)
-#            print "\n\n#### parents nLFNS",nLfns,dataset
-            if  nLfns>10000:
-                page+="This dataset has %s LFNs, but Data Discovery allows to look-up all parent LFNs only for dataset with less 10K LFNs"%nLfns
-#                page+= self.genBottomHTML()
-            else:
-                t0 = time.time()
-                lfnList = self.helper.getLFNs(blockName=blockName,dataset=dataset,run=run)
-                justLFNs= []
-                for lfn in lfnList: justLFNs.append(lfn[0])
-                parentLFNList = self.helper.getLFNParents(justLFNs)
-                page+=self.formatLFNPoolSource(justLFNs,parentLFNList,format)
-                print len(lfnList),len(parentLFNList)
-                print "\n\n#### LOOKUP parents DD",(time.time()-t0)
-#                page+= self.genBottomHTML()
-            return page
-        except:
-            t=self.errorReport("Fail in getLFNsWithParents function")
-            pass
-            return str(t)
-    
     def formatLFNPoolSource(self,lfnList,parentLfnList,format="cff"):
         if format=="cff":
            t = templateFormatLfn_cff(searchList=[{'lfnList':lfnList,'pfnList':parentLfnList}]).respond()
@@ -2954,18 +2289,12 @@ All LFNs in a block
         """
         cherrypy.response.headers['Content-Type']='text/plain'
         try:
-            self.helperInit(dbsInst)
-#            page = self.genTopHTML(userMode=userMode)
             page =""
-#            if run and run!="*":
-#               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\', run %s'%(site,run),userMode)
-#            else:
-#               page+= self.whereMsg('Navigator :: Results :: LFN list :: site \'%s\''%site,userMode)
             bList=[]
             lfnList=[]
             if site=="None": site="*"
             try:
-                lfnList=self.helper.getLFNsFromSite(site,datasetPath,run)
+                lfnList=self.helper.getLFNsFromSite(dbsInst,site,datasetPath,run)
             except:
                 if self.verbose:
                    self.writeLog(getExcept())
@@ -2979,7 +2308,7 @@ All LFNs in a block
 #            page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in getLFNsForSite function")
+            t=self.errorReport(dbsInst, "Fail in getLFNsForSite function")
             pass
             return str(t)
     getLFNsForSite.exposed=True
@@ -2995,16 +2324,14 @@ All LFNs in a block
            @return: returns HTML code
         """
         try:
-#            self.htmlInit()
-            self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
-            nameSpace={'name':name,'content':self.helper.getConfigContent(dbsInst,id)}
+            nameSpace={'name':name,'content':self.helper.getConfigContent(dbsInst,dbsInst,id)}
             t = templateAppConfigContent(searchList=[nameSpace]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in getConfigContent function")
+            t=self.errorReport(dbsInst, "Fail in getConfigContent function")
             pass
             return str(t)
     getConfigContent.exposed = True
@@ -3021,17 +2348,12 @@ All LFNs in a block
         """
         cherrypy.response.headers['Content-Type']='text/plain'
         try:
-#            self.htmlInit()
-            self.helperInit(dbsInst)
             page=""
-#            page = self.genTopHTML(userMode=userMode)
-#            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
-            lfnList = self.helper.getLFNs(blockName,dataset)
+            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
             page+=self.formatLFNList(lfnList,what="cff",idx=0)
-#            page+= self.genBottomHTML()
             return page
         except:
-            t=self.errorReport("Fail in getLFN_cfg function")
+            t=self.errorReport(dbsInst, "Fail in getLFN_cfg function")
             pass
             return str(t)
     getLFN_cfg.exposed = True
@@ -3046,8 +2368,7 @@ All LFNs in a block
            @rtype : string
            @return: returns HTML code
         """
-        self.helperInit(dbsInst)
-        lfnList = self.helper.getLFNs(blockName,dataset,run)
+        lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
         nameSpace = {
                      'host'      : self.dbsdd,
                      'dbsInst'   : dbsInst,
@@ -3088,7 +2409,6 @@ All LFNs in a block
                      'phedex'     : phedex,
                     }
         t = templateProcessedDatasets(searchList=[nameSpace]).respond()
-#        t = templateLFB(searchList=[nameSpace]).respond()
 	page+=str(t)
         return page
         
@@ -3103,7 +2423,7 @@ All LFNs in a block
             page+=self.whereMsg('Navigator :: Results :: Blocks at site=%s'%site,userMode)
         limit=pagerStep
         offset=int(_idx)*int(pagerStep)
-        dbsList=self.helper.getBlockInfoForSite(site,limit,offset)
+        dbsList=self.helper.getBlockInfoForSite(dbsInst,site,limit,offset)
         rPage="Result page:"
         # the progress bar for all results
         if _idx:
@@ -3123,7 +2443,6 @@ All LFNs in a block
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
         nameSpace = {
-#                     'dbsList'  : self.helper.getBlockInfoForSite(site),
                      'dbsList'  : dbsList,
                      'host'     : self.dbsdd,
                      'dbsInst'  : dbsInst,
@@ -3159,8 +2478,7 @@ All LFNs in a block
         page="""<ajax-response><response type="object" id="results">"""
         try:
             self.formDict['siteForm']=(dbsInst,site)
-            self.helper.setDBSDLS(dbsInst)
-            bList = self.helper.getBlocksFromSite(site)
+            bList = self.helper.getBlocksFromSite(dbsInst,site)
             nameSpace = {
                          'host'   : self.dbsdd,
                          'dbsInst': dbsInst,
@@ -3169,7 +2487,7 @@ All LFNs in a block
                         }
             t = templateFileBlocksFromSite(searchList=[nameSpace]).respond()
         except:
-            t=self.errorReport("Fail in getBlocksFromSite function")
+            t=self.errorReport(dbsInst, "Fail in getBlocksFromSite function")
             pass
         page+= str(t)
         page+="</response></ajax-response>"
@@ -3190,14 +2508,13 @@ All LFNs in a block
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results">"""
         try:
-            self.helper.setDBSDLS(dbsInst)
-            bList = self.helper.getBlocksFromSite(site="any",datasetPath=datasetPath)
+            bList = self.helper.getBlocksFromSite(dbsInst,site="any",datasetPath=datasetPath)
             t="""<select %s size="5" style="width:200px">"""%multiple
             for blk in bList:
                 t+="""<option value="%s">%s</option>"""%blk
             t+="</select>"
         except:
-            t=self.errorReport("Fail in getBlocksFromDataset function")
+            t=self.errorReport(dbsInst, "Fail in getBlocksFromDataset function")
             pass
         page+= str(t)
         page+="</response></ajax-response>"
@@ -3206,24 +2523,6 @@ All LFNs in a block
            self.writeLog(page)
         return page
     getBlocksFromDataset.exposed=True
-
-    # this method can be used for auto-completion forms, it returns a string of columns
-    # see YUI, http://developer.yahoo.com/yui/autocomplete/
-    def yuiGetBlocksForDataset(self,dbsInst,table,column,**kwargs):
-        print "\n### getBlocksForDataset",kwargs
-        page=""
-        whereDict={}
-        if  kwargs.has_key('query'):
-            key='%s.Path'%table
-            whereDict[key]=kwargs['query']
-        # since this method is used only in auto-completion forms, restrict output to 10 results
-        row=0
-        limit=10
-        natList = natsort24(list(self.helper.getTableColumn(table,column,row,limit,whereDict) ))
-        for item in natList:
-            page+="%s\n"%item
-        return page
-    yuiGetBlocksForDataset.exposed=True
 
     def getAllPrimaryDatasets(self,**kwargs):
         """
@@ -3254,8 +2553,7 @@ All LFNs in a block
            @rtype : string
            @return: returns HTML code
         """
-        self.helperInit(dbsInst)
-        dList = self.helper.getPrimaryDatasets(html=1)
+        dList = self.helper.getPrimaryDatasets(dbsInst)
         nameSpace = {
                      'msg'     : "%s: primary datasets"%dbsInst,
                      'dbsInst' : dbsInst,
@@ -3280,40 +2578,6 @@ All LFNs in a block
         return page
     getPrimaryDatasets.exposed=True
 
-    def getApplicationsHelper(self,dbsInst):
-        """
-           Get list of applications for given DBS instances.
-           @type  dbsInst: string
-           @param dbsInst: DBS instances
-           @rtype : string
-           @return: returns HTML code
-        """
-        self.helperInit(dbsInst)
-        dList = self.helper.getApplications()
-        nameSpace = {
-                     'msg'     : "%s: applications"%dbsInst,
-                     'dbsInst' : dbsInst,
-                     'dList'   : dList
-                    }
-        t = templatePrintList(searchList=[nameSpace]).respond()
-        return str(t)
-
-    def getApplications(self,dbsInst,**kwargs):
-        """
-           Generates AJAX response to get applications for given DBS instances
-        """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="<ajax-response>"
-        page+="""<response type="object" id="dbs_apps">"""
-        page+="""<div class="div_scroll">"""+self.getApplicationsHelper(dbsInst)+"</div>"
-        page+="</response>\n"
-        page+="</ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    getApplications.exposed=True
-
     def getBranches(self,dbsInst,**kwargs):
         """
            Generates AJAX response to get ROOT branches for given DBS instances
@@ -3321,7 +2585,6 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="kw_branch">"""
-        self.helperInit(dbsInst)
         dList=['ROOT1','ROOT2','FIXME']
         nameSpace = {'name':'release','iList': dList}
         t = templateSelectList(searchList=[nameSpace]).respond()
@@ -3339,8 +2602,7 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="kw_group_holder">"""
-        self.helperInit(dbsInst)
-        dList=['Any']+self.helper.getPhysicsGroups()
+        dList=['Any']+self.helper.getPhysicsGroups(dbsInst)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'group','iList': dList,'selTag':'kw_group','changeFunction':'','style':style}
@@ -3361,16 +2623,13 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="kw_runRange_holder">"""
-        self.helperInit(dbsInst)
         primD=primType="any"
         for key in kwargs:
             if key=='primType':
                primType=kwargs['primType']
             if key=='primD':
                primD=kwargs['primD']
-        rMin,rMax=self.helper.getRunsForPrimary(primD,primType)
-#        if not rMin: return ""
-#        if not rMax: return ""
+        rMin,rMax=self.helper.getRunsForPrimary(dbsInst,primD,primType)
         style="width:200px"
         page+="""<input id="kw_minRun_holder" name="minRun" value="%s" size="6" />"""%rMin
         page+="--"
@@ -3389,12 +2648,9 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="%s">"""%sel
-        self.helperInit(dbsInst)
-#        dList=['Any']+self.helper.getSites()
-        siteDict=sortSitesByDomain(self.helper.getSites())
+        siteDict=sortSitesByDomain(self.helper.getSites(dbsInst))
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
-#        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':'','style':style}
         nameSpace = {'name':tag,'iList': siteDict,'selTag':tag,'changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
@@ -3413,8 +2669,7 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="kw_tier_holder">"""
-        self.helperInit(dbsInst)
-        dList=['Any']+self.helper.getDataTiers()
+        dList=['Any']+self.helper.getDataTiers(dbsInst)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
@@ -3435,7 +2690,6 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="kw_prim_holder">"""
-        self.helperInit(dbsInst)
         group="*"
         tier="*"
         rel="*"
@@ -3450,7 +2704,7 @@ All LFNs in a block
             if key=='dsType':
                dsType=kwargs['dsType']
 
-        dList = self.helper.getPrimaryDatasets(group,tier,rel,dsType)
+        dList = self.helper.getPrimaryDatasets(dbsInst,group,tier,rel,dsType)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
         cFunc=''
@@ -3473,9 +2727,7 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="kw_release_holder">"""
-        self.helperInit(dbsInst)
-#        relList=self.helper.getSoftwareReleases()
-        relList=natsort24(list( self.helper.getSoftwareReleases() ))
+        relList=natsort24(list( self.helper.getSoftwareReleases(dbsInst) ))
         relList.reverse()
         dList = ['Any']+relList
         cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
@@ -3499,8 +2751,7 @@ All LFNs in a block
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="kw_primType_holder">"""
-        self.helperInit(dbsInst)
-        dList = ['Any']+self.helper.getPrimaryDSTypes()
+        dList = ['Any']+self.helper.getPrimaryDSTypes(dbsInst)
         cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
@@ -3526,8 +2777,7 @@ All LFNs in a block
         """
         try:
             page = self.whereMsg('Navigator :: Results :: Provenance information',userMode)
-            self.helperInit(dbsInst)
-            parents  = self.helper.getDatasetProvenance(dataset)
+            parents  = self.helper.getDatasetProvenance(dbsInst,dataset)
             nameSpace={
                        'host'      : self.dbsdd, 
                        'dataset'   : dataset, 
@@ -3565,60 +2815,12 @@ All LFNs in a block
         return page
     getDatasetProvenance.exposed=True
 
-    def getProvenanceForAllDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,userMode="user",**kwargs): 
-        """
-           AJAX method to retrieve/build provenance graph once user made a choice to lookup
-           data for given input parameters.
-           @type  dbsInst: string
-           @param dbsInst: user selection of DBS menu
-           @type  site: string
-           @param site: user selection of the site, default "All"
-           @type  app: string
-           @param app: user selection of the application, default "*"
-           @type  primD: string
-           @param primD: user selection of the primary dataset, default "*"
-           @type  tier: string
-           @param tier: user selection of the data tier, default "*"
-           @rtype : string
-           @return: returns HTML snippet in AJAX wrapper
-        """
-        _idx=int(_idx)
-        if int(ajax):
-           # AJAX wants response as "text/xml" type
-           self.setContentType('xml')
-           page="""<ajax-response><response type="object" id="parents">"""
-        else:
-           page=self.genTopHTML(userMode=userMode)
-           page+= self.genResultsHTML()
-
-        if string.lower(tier)=="all": tier="*"
-        if string.lower(site)=="all": site="*"
-        self.helperInit(dbsInst)
-        nDatasets = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,count=1)
-        dList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep)
-        className="hide"
-        if int(_idx)==0:
-           className="show_inline"
-        page+="""<div id="parents_response_%s" class="%s">"""%(_idx,className)
-        for dataset in dList:
-            page+=self.getDatasetProvenanceHelper(dbsInst,dataset,userMode)
-        page+="</div>"
-        if int(ajax):
-           page+="</response></ajax-response>"
-        else:
-           page+=self.genBottomHTML()
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    getProvenanceForAllDatasets.exposed = True 
-    
     def getDatasetChildren(self,dbsInst,dataset,userMode='user',**kwargs):
         """
            Get dataset children
         """
         page=self.genTopHTML(userMode=userMode)
-        self.helperInit(dbsInst)
-        children = self.helper.getDatasetChildren(dataset)
+        children = self.helper.getDatasetChildren(dbsInst,dataset)
         nameSpace={
                    'host'      : self.dbsdd, 
                    'dataset'   : dataset, 
@@ -3643,22 +2845,20 @@ All LFNs in a block
         if firstSite=="*": firstSite="All"
         if auto:
            # auto-competion form for processed datasets
-           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':self.dbsglobal,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
+           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':self.dbsglobal,'key':'dataset','wherekey':'dataset','label':'','zIndex':9000,'method':'findInDBS'}
            t = templateAutoComplete(searchList=[nameSearch]).respond()
            prdForm=str(t)
         else:
            prdForm="""<input type="text" name="proc" id="proc" size="80">"""
 
-
-#        siteList=['Any']+self.helper.getSites()
-        siteList=self.helper.getSites()
+        dbsInst = firstDBS
+        siteList=self.helper.getSites(dbsInst)
         siteDict=sortSitesByDomain(siteList)
         nameSpace = {
                      'firstDBS' : firstDBS,
                      'firstSite': firstSite,
                      'dbsList'  : self.dbsList,
                      'dbsGlobal': self.dbsglobal,
-#                     'siteList' : siteList,
                      'siteDict' : siteDict,
                      'userMode' : userMode,
                      'prdForm'  : prdForm,
@@ -3676,7 +2876,6 @@ All LFNs in a block
         p = os.popen("%s -t" % SENDMAIL, "w")
         p.write("To: cms-dbs-support@cern.ch\n")
         p.write("Subject: response from DBS data discovery\n")
-        p.write("From: DBS Data Discovery <cmsdbs@mail.cern.ch>\n")
         p.write("\n") # blank line separating headers from body
         p.write("Message send from DBS discovery page by %s\n"%userEmail)
         p.write("\n") # blank line separating headers from body
@@ -3874,7 +3073,6 @@ All LFNs in a block
         """
             Application configs retriever
         """
-        self.helperInit(dbsInst)
         if int(ajax):
            # AJAX wants response as "text/xml" type
            self.setContentType('xml')
@@ -3882,7 +3080,7 @@ All LFNs in a block
         else:
            page=self.genTopHTML(userMode=userMode)
            page+=self.whereMsg('Navigator :: Results :: Configuration file(s)',userMode)
-        for item in self.helper.listApplicationConfigsContent(appPath,procPath):
+        for item in self.helper.listApplicationConfigsContent(dbsInst,appPath,procPath):
             softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy = item
             nameSpace={
                        'appPath'   : appPath,
@@ -3963,93 +3161,14 @@ All LFNs in a block
         return page
     checkUser.exposed=True
 
-    def selectApplications(self,dbsInst,**kwargs):
-        """
-           Retrieve list of application for given dbs instance
-        """
-        self.helperInit(dbsInst)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="selectApps">"""
-        page+="""<select id="appSelector" onchange="replace('navSelector');showLoadingMessage('selectPrim');ajaxSelectPrim();replace('selectTier','to be defined')">"""
-        page+='<option value="">Select</option>'
-        aList = self.helper.listApplications('*')
-        aList.reverse()
-        for item in aList:
-            family = item.get('family')
-            ver    = item.get('version')
-            exe    = item.get('executable')
-            appVal = '/%s/%s/%s'%(ver,family,exe)
-            page+='<option value="%s">%s</option>'%(appVal,appVal)
-        page+= '</select>'
-        page+="</response></ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    selectApplications.exposed=True
-
-    def selectPrimaryDatasets(self,dbsInst,app,**kwargs):
-        """
-           Retrieve list of primary data tier for given dbs instance and app
-        """
-        self.helperInit(dbsInst)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="selectPrim">"""
-        page+="""<select id="primSelector" onchange="replace('navSelector');showLoadingMessage('selectTier');ajaxSelectTier()">"""
-        page+='<option value="">Select</option>'
-        aList = self.helper.listDatasetsFromApp(app)
-        aList.reverse()
-        for item in aList:
-            empty,dataset,tier,proc = string.split( item['datasetPathName'], "/" )
-            page+='<option value="%s">%s</option>'%(dataset,dataset)
-        page+= '</select>'
-        page+="</response></ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    selectPrimaryDatasets.exposed=True
-
-    def selectDataTiers(self,dbsInst,app,prim,**kwargs):
-        """
-           Retrieve list of data tiers for given dbs instance, app, and primD
-        """
-        self.helperInit(dbsInst)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="selectTier">"""
-        page+="""<select id="tierSelector" onchange="replace('navSelector')">"""
-        page+='<option value="">Select</option>'
-        # in new api we will have listTiers
-#        aList = self.helper.api.listTiers('*')
-
-        # so far all data tiers comes from app and prim
-        aList = self.helper.listDatasetsFromApp(app)
-        aList.reverse()
-        page+='<option value="All">All</option>'
-        for item in aList:
-            empty,dataset,tier,proc = string.split( item['datasetPathName'], "/" )
-            if prim==dataset:
-               page+='<option value="%s">%s</option>'%(tier,tier)
-        page+= '</select>'
-        page+="</response></ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    selectDataTiers.exposed=True
-
     def getDataDescription(self,dbsInst,processedDataset="",userMode='user',**kwargs):
         """ 
             Get data description.
         """
-        self.helperInit(dbsInst)
-        # AJAX wants response as "text/xml" type
-#        self.setContentType('xml')
-#        page="""<ajax-response><response type="element" id="floatDataDescription">"""
         page=self.genTopHTML(userMode=userMode)
         page+=self.whereMsg('Navigator :: Results :: Data description',userMode)
         description=""
-        dList=self.helper.getDataDescription(processedDataset)
+        dList=self.helper.getDataDescription(dbsInst,processedDataset)
         # get formatted output of dataset details
         nameSpace={'dList' : dList, 'dataset':processedDataset,'userMode':userMode }
         t = templateDatasetDetails(searchList=[nameSpace]).respond()
@@ -4057,15 +3176,12 @@ All LFNs in a block
         page+=description
 
         page+=self.genBottomHTML()
-#        page+="</response></ajax-response>"
         if self.verbose==2:
            self.writeLog(page)
         return page
     getDataDescription.exposed=True
 
     def getTableTemplate(self,func,dbsInst,lfn,msg,ajax,userMode='user',**kwargs):
-#        self.htmlInit()
-        self.helperInit(dbsInst)
         tList,iList=func(dbsInst,lfn,userMode)
         p=content=""
         if int(ajax):
@@ -4110,21 +3226,6 @@ All LFNs in a block
         page=self.getTableTemplate(self.helper.getLFN_Lumis,dbsInst,lfn,'LFN lumis',ajax,userMode)
         return page
     getLFN_Lumis.exposed=True
-
-#    def getLFN_Algos(self,dbsInst,lfn,ajax=0,**kwargs):
-#        page=self.getTableTemplate(self.helper.getLFN_Algos,dbsInst,lfn,'LFN algorithms',ajax)
-#        return page
-#    getLFN_Algos.exposed=True
-
-#    def getLFN_Tiers(self,dbsInst,lfn,ajax=0,**kwargs):
-#        page=self.getTableTemplate(self.helper.getLFN_Tiers,dbsInst,lfn,'LFN tiers',ajax)
-#        return page
-#    getLFN_Tiers.exposed=True
-
-#    def getLFN_Parents(self,dbsInst,lfn,ajax=0,**kwargs):
-#        page=self.getTableTemplate(self.helper.getLFN_Parents,dbsInst,lfn,'LFN parents',ajax)
-#        return page
-#    getLFN_Parents.exposed=True
 
     def getFloatBox(self,title="",description="",className="",**kwargs):
         """ 
@@ -4205,56 +3306,27 @@ All LFNs in a block
         return page
     makeSelect.exposed=True
 
-    def getSectionTables(self,dbsInst,section,id,**kwargs):
-        tList = self.sectionDict[section]
-        changeFunction="ChangeCols(%s)"%id
-        return self.makeSelect(tList,"divSectionTables_%s"%id,"sectionTables",changeFunction,"sectionTables_%s"%id,"width:160px")
-    getSectionTables.exposed=True
-
     # this method can be used for auto-completion forms, it returns a string of columns
     # see YUI, http://developer.yahoo.com/yui/autocomplete/
-    def getTableColumn(self,dbsInst,table,column,**kwargs):
-        self.helperInit(dbsInst)
+    def findInDBS(self,dbsInst,key,wherekey,**kwargs):
         page=""
         if kwargs.has_key('autocomplete'):
            if kwargs['autocomplete']=="off":
               return page
-        whereDict={}
-        if  kwargs.has_key('query'):
-            key='%s.%s'%(table,column)
-#            val=kwargs['query'].replace('*','').replace('%','') # remove wildcard
-#            whereDict[key]='%'+val # we will do where like '%s%', see helper.getTableContent
-#            whereDict[key]='%'+kwargs['query'] # we will do "where like '%s%'"
-            whereDict[key]=kwargs['query'] # we will do "where like 's%'"
-        # since this method is used only in auto-completion forms, restrict output to 10 results
+        cond = kwargs['query']
+        if  cond.find('*') != -1:
+            cond = cond.replace('*','%')
+        if  cond.find('%') == -1:
+            cond = '%' + cond + '%'
+        query = "find %s where %s like %s" % (key, wherekey, cond)
         row=0
         limit=10
-        natList = natsort24(list(self.helper.getTableColumn(table,column,row,limit,whereDict) ))
-#        print natList,type(natList)
+        res = self.helper.queryDBS(dbsInst, query, row, limit)
+        natList = natsort24(list(res))
         for item in natList:
             page+="%s\n"%item
         return page
-    getTableColumn.exposed=True
-
-    def getTableColumns(self,dbsInst,tableName,id,**kwargs):
-        self.helperInit(dbsInst)
-        tList = ['All']+self.helper.getTableColumns(tableName)
-        changeFunction=""
-        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id,"width:200px")
-    getTableColumns.exposed=True
-
-    def getTableColumnsFromSection(self,dbsInst,section,id,**kwargs):
-        """
-           This is a fake, since AJAX calls are async, and I need to get
-           columns for the first table in a section, I made explicit call.
-        """
-        self.helperInit(dbsInst)
-        tList = self.sectionDict[section]
-        tableName = tList[0]
-        tList = ['All']+self.helper.getTableColumns(tableName)
-        changeFunction=""
-        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id,style="width:160px")
-    getTableColumnsFromSection.exposed=True
+    findInDBS.exposed=True
 
     def constructQueryParameters(self,kwargs):
         whereClause=""
@@ -4302,132 +3374,6 @@ All LFNs in a block
         return page
     getAliasesFromHistoryDB.exposed=True
 
-    def saveQueryToXML(self,iList,whereClause):
-        xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>"""
-        for item in iList:
-            xmlOutput+="""<select column="%s" />"""%(item)
-        if  whereClause:
-            xmlOutput+="""<where clause="( %s )" />"""%(whereClause)
-        xmlOutput+="""</ddRequest>"""
-        queryInXML=xmlOutput.strip()
-        return queryInXML
-
-    def printXML(self,input,id,ajax=0,**kwargs):
-        xml="""<?xml version="1.0" encoding="utf-8"?><br/>"""+urllib.unquote(input).replace("><","><br/><")
-        xmlOutput=xml.replace("<","&lt;").replace(">","&gt;").replace("&lt;br/&gt;","<br />")
-        if int(ajax):
-            # AJAX wants response as "text/xml" type
-            self.setContentType('xml')
-            page ="""<ajax-response><response type="element" id="%s">"""%id
-            page+="""<div class="float_snippet">"""
-        else:
-            page = self.genTopHTML()
-        if int(ajax):
-           page+="""<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div> """%id
-        page+=xmlOutput
-#        page+="<code>"+xmlOutput+"</code>"
-        page+="""<p/><hr class="dbs" /><div>You may use this XML snippet with <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">DDExplorer</a> a command line interface to Finder.</div>"""
-        if int(ajax):
-           page+="</div>"
-           page+="""</response></ajax-response>"""
-        else:
-           page+=self.genBottomHTML()
-        if self.verbose==2:
-           self.writeLog(page)
-#        print page
-        return page
-    printXML.exposed=True
-
-    def executeSQLQuery(self,dbsInst,query,**kwargs):
-        self.helperInit(dbsInst)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results_finder">"""
-        if  query.find("<ddRequest>")!=-1:
-            # in order to make AJAX works I strip off <?xml...> from query stored in DB
-            # let's check that input doesn't have it
-            xml="""<?xml version="1.0" encoding="utf-8"?>"""
-            if  query.find(xml)!=-1:
-                query+=xml
-            query,oList=self.cliHandler(dbsInst,query,xmlOutput=0) 
-        else:
-            q = string.lower(query.strip())
-            if  q.find("select")==-1:
-                page+="You are attempted execute non select query, it's forbidden"
-                page+="</response></ajax-response>"
-                return page
-            oList = self.helper.executeSQLQuery(query)
-        # get list of table.col and get their actual names from DB
-        tList=[]
-        dateIdxList=[]
-        for item in query.split():
-            if item.find(".")!=-1:
-               table,col=item.split(".")
-               tList.append("%s<br />%s"%(table,col)) 
-               if col.lower().find("date")!=-1:
-                  dateIdxList.append(len(tList)-1)
-        # proceed with query
-        if  type(oList) is not types.ListType:
-            page+=oList
-        else:
-            # if the query was used Table.Col form and we found all columns
-#            print tList,oList
-            if  len(tList)==len(oList[0]):
-                userMode='user'
-                t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'dateIdxList':dateIdxList,'userMode':userMode}]).respond()
-            else:
-                nameSpace={'branch':oList[1:]}
-                t = templateTableBody(searchList=[nameSpace]).respond()
-                content=str(t)
-                nameSpace={'header':oList[0],'content':content}
-                t = templateTable(searchList=[nameSpace]).respond()
-            page+=str(t)
-        page+="</response></ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    executeSQLQuery.exposed=True
-
-    def getDbsSchema(self,dbsInst,table="all",**kwargs):
-        self.helperInit(dbsInst)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results_finder">"""
-        page+= self.helper.getDbsSchema(table)
-        page+="</response></ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    getDbsSchema.exposed=True
-
-    def genTreeElement(self,iParent,dataset):
-        # pass here node,parent pair, as an example we pass 'newNode',node
-        # for DBS DD I need to lookup parent from elsewhere
-        pList = self.helper.getDatasetProvenance(dataset)
-#        page  = "this.nodes.push('%s')"%dataset
-        page  = ""
-        for parent in pList:
-            nodeVar=encode(dataset)
-            href="""href:"javascript:ajaxAddTreeElement('%s','%s')" """%(parent,dataset)
-            if iParent=='root':
-               parent = 'root'
-            else:
-               # update nodes array with new parent (id,dataset) where id autogenerate with
-               # Math.round(100*Math.random()) or somehow get it from array index
-               # lookup an id for given parent and create new name as parent='node_'+id;
-               parent = encode(parent)
-            page+="""var obj= { label: "%s", %s };\nthis.%s= new YAHOO.widget.TextNode(obj,this.%s,false);"""%(dataset,href,nodeVar,parent)
-
-        if not len(pList):
-            nodeVar=encode(dataset)
-            if iParent=='root':
-               parent = 'root'
-            else:
-               parent = encode(iParent)
-            page+="this.%s= new YAHOO.widget.TextNode('%s',this.%s,false);"%(nodeVar,dataset,parent)
-#            page+="this.%s= new YAHOO.widget.HTMLNode('%s &#8212; no parents',this.%s,false);"%(nodeVar,dataset,parent)
-        return page
-
     def addTreeElement(self,parent,node,**kwargs):
         cherrypy.response.headers['Content-Type']='text/xml'
         page="""<ajax-response><response type="object" id="treeViewInfo">
@@ -4437,144 +3383,8 @@ All LFNs in a block
         return page
     addTreeElement.exposed=True
 
-    def cliHandler(self,dbsInst,input,xmlOutput=1):
-        self.helperInit(dbsInst)
-        data=urllib.unquote(input)
-        if self.verbose==1:
-           self.writeLog(data)
-        try:
-            selList  = []
-            conDict  = {}
-            whereList= []
-            helper=self.helper
-            class Handler (xml.sax.handler.ContentHandler):
-                def startElement(self, name, attrs):
-                    if name=='select':
-                       table,col=attrs['column'].split(".")
-                       entry="%s.%s"%(helper.dbManager.getDBTableName(dbsInst,str(table)),str(col))
-                       selList.append(entry)
-                    if name=='list':
-                       selList.append(1)
-                    if name=='where':
-                       clause=str(attrs['clause'])
-                       whereList.append(clause)
-                    if name=='output':
-                       if attrs.has_key('limit'):
-                          conDict['limit']=long(attrs['limit'])
-                       if attrs.has_key('offset'):
-                          conDict['offset']=long(attrs['offset'])
-            xml.sax.parseString (data, Handler ())
-        except:
-            if self.verbose:
-               self.writeLog(getExcept())
-            printExcept()
-            return """<?xml version="1.0" encoding="utf-8"?><ddresponse><exception>%s</exception></ddresponse>"""%getExceptionInHTML()
-        if self.verbose==2:
-           self.writeLog("Selection list:")
-           self.writeLog(str(selList))
-           self.writeLog("Condition list:")
-           self.writeLog(str(conDict))
-           self.writeLog("Where clause list:")
-           self.writeLog(str(whereList))
-        if not len(selList):
-           return """<?xml version="1.0" encoding="utf-8"?><ddresponse></ddresponse>"""
-        if len(selList)==1 and selList[0]==1:
-           oList=self.helper.getAllTableColumns()
-           res="""<?xml version="1.0" encoding="utf-8"?><ddresponse>"""
-           for item in oList:
-                res+="""<row><column name='Table.colName' value='%s' /></row>"""%item
-           res+="""</ddresponse>"""
-           return res
-
-        # setup limits for query
-        limit=offset=0
-        if conDict.has_key('limit'):  limit  = conDict['limit']
-        if conDict.has_key('offset'): offset = conDict['offset']
-        whereClause=' AND '.join(["("+x+")" for x in whereList])
-        query,oList = self.helper.queryMaker(selList,whereClause,limit,offset)
-        if self.verbose:
-           self.writeLog(query)
-        if not xmlOutput:
-           return query,oList
-        if self.verbose==2:
-           self.writeLog(query)
-           self.writeLog(str(oList))
-        res="""<?xml version="1.0" encoding="utf-8"?><ddresponse>"""
-        for iList in oList[1:]: # here first element in a list is column names
-            res+="<row>"
-            for idx in xrange(0,len(iList)):
-                res+="""<column name='%s' value='%s' />"""%(oList[0][idx],iList[idx])
-            res+="</row>"
-        res+="""</ddresponse>"""
-        return res
-    cliHandler.exposed=True
-
-    def convertXMLTOTXT(self,input,id,html=0,ajax=0,**kwargs):
-        if int(ajax):
-            # AJAX wants response as "text/xml" type
-            self.setContentType('xml')
-            page ="""<ajax-response><response type="element" id="%s">"""%id
-            page+="""<div class="float_snippet">"""
-            page+="""<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div> """%id
-        else:
-            page = self.genTopHTML()
-        data=urllib.unquote(input)
-        try:
-            selList  = []
-            conDict  = {}
-            whereList= []
-            dbsInst=self.dbsglobal
-            helper=self.helper
-            class Handler (xml.sax.handler.ContentHandler):
-                def startElement(self, name, attrs):
-                    if name=='select':
-                       table,col=attrs['column'].split(".")
-                       entry="%s.%s"%(helper.dbManager.getDBTableName(dbsInst,str(table)),str(col))
-                       selList.append(entry)
-                    if name=='list':
-                       selList.append(1)
-                    if name=='where':
-                       clause=str(attrs['clause'])
-                       whereList.append(clause)
-                    if name=='output':
-                       if attrs.has_key('limit'):
-                          conDict['limit']=long(attrs['limit'])
-                       if attrs.has_key('offset'):
-                          conDict['offset']=long(attrs['offset'])
-            xml.sax.parseString (data, Handler ())
-        except:
-            if self.verbose:
-               self.writeLog(getExcept())
-            printExcept()
-        out="\n[select]\n"
-        for item in selList:
-            out+=item+"\n"
-        if  whereList:
-            whereClause=' AND '.join(["("+x+")" for x in whereList])
-            out+="\n[where]\n"+whereClause+"\n"
-        if conDict:
-            out+="\n[output]\n"
-            for key in conDict.keys():
-                out+="%s=%s\n"%(key,conDict[key])
-        if html:
-           page+="<pre>"+out+"</pre>"
-        else:
-           page+=out
-
-        page+="""<p/><hr class="dbs" /><div>You may use this TXT snippet with <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">DDExplorer</a> a command line interface to Finder.</div>"""
-        if int(ajax):
-           page+="</div>"
-           page+="""</response></ajax-response>"""
-        else:
-           page+=self.genBottomHTML()
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    convertXMLTOTXT.exposed=True
-    
     def phedexStatus(self,site,datasetPath,id_suffix,**kwargs):
         self.setContentType('xml')
-#        url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
         url="/phedex/prod/XML::TransferStatus"
         params={}
         if site:
@@ -4603,7 +3413,7 @@ All LFNs in a block
             if type(page) is types.StringType:
                page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
         except:
-            t=self.errorReport("Fail in phedexStatus function")
+            t=self.errorReport('', "Fail in phedexStatus function")
             page+="Phedex information is not available at this time"
             pass
         if self.verbose==2:
@@ -4615,16 +3425,12 @@ All LFNs in a block
         self.setContentType('xml')
         runInfoList=[]
         try:
-            runInfoList = self.helper.getRunDBInfo(runs)
-#            print "\n\n### getRunDBInfo response"
-#            print runs
-#            print runInfoList
+            runInfoList = self.helper.getRunDBInfo(dbsInst,runs)
         except:
 #            t=self.errorReport("Fail in getRunDBInfo function")
             pass
         page="""<ajax-response>\n"""
         for run,runInfoDict in runInfoList:
-#            print "\n\n",run,runInfoDict
             if runInfoDict:
                page+="""<response type='object' id="runSummary_hlt_%s">\n"""%run
                page+="""<div style="font-weight:bold">RunInfo:</div>\n"""
@@ -4659,7 +3465,8 @@ All LFNs in a block
         else:
             page=""
         try:
-#            dbsApi = self.getDbsApi(dbsInst)
+            # TODO: turn on int lumi, see code lines below
+#            dbsApi = self.dbsmgr.getapi(dbsInst)
 #            int_lumi= dbsApi.getIntegratedLuminosity(dataset)
 #            page+=formatLumi(int_lumi)
             page+="N/A"
@@ -4694,16 +3501,17 @@ All LFNs in a block
                     'api':'listRunLumiDQ',
                     'dataset':dataset,
                     'xmlinput':xmlinput}
-            dbsUrl=DBS_INST_URL[dbsInst]
+            dbsUrl = self.dbsmgr.geturl(dbsInst)
             dbsUrl=dbsUrl.replace('https','http').replace('_writer','').replace(':8443','')
-#            print "\n\n####Lookup-DQ",dbsInst,dbsUrl,params
             f = urllib.urlopen("%s?%s"%(dbsUrl,urllib.urlencode(params)))
             data=f.read()
-#            print "\n\n####GetDQ",data
             sysDict,subDict=getDQInfo(data)
-#            nameSpace={'tag':"dq_%s"%run,'sysDict':sysDict,'subDict':subDict,'admin':0}
             nameSpace={'tag':"dq_%s"%dqid,'sysDict':sysDict,'subDict':subDict,'admin':0}
-            token = SecurityToken()
+            try:
+                token = SecurityToken()
+            except:
+                token = None
+                pass
             if admin and self.securityApi.hasGroupResponsibility(token.dn,"DataQuality","Global Admin"):
                 nameSpace['admin']=1
                 t = templateDQInfo(searchList=[nameSpace]).respond()
@@ -4738,37 +3546,10 @@ All LFNs in a block
         return results
 
     def aSearchResults(self,dbsInst,userInput,fromRow=-1,limit=-1,method="dbsapi",**kwargs):
-        self.helperInit(dbsInst)
-#        dbsApi = self.getDbsApi(dbsInst)
-        backEnd  = self.helper.dbManager.dbType[dbsInst]
-        if  method=="dbsapi":
-            result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
-        else:
-            if fromRow==-1 and limit==-1:
-               fromRow=0
-               limit=0
-            tabCol   = getArg(kwargs,'tabCol','Table.Column')
-            output   = getArg(kwargs,'output','dataset')
-            sortName = getArg(kwargs,'sortName',output)
-            sortOrder= getArg(kwargs,'sortOrder','desc')
-            case     = 'on' # case sensitive
-            try:
-                sel  = self.ddrules.parser(dbsInst,urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
-                query= self.qmaker.processQuery(dbsInst,sel)
-            except:
-                return traceback.format_exc()
-            result,titleList=self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
+        result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
         return result 
 
     def aSearchShowAll(self,**kwargs):
-        tabCol   = getArg(kwargs,'tabCol','Table.Column')
-        if not tabCol:
-           tabCol= "Table.Column"
-        tableName,colName=tabCol.split(".")
-        tableName= tableName.lower()
-        colName  = colName.lower()
-        sortName = getArg(kwargs,'sortName','')
-        sortOrder= getArg(kwargs,'sortOrder','desc')
         fromRow  = int(getArg(kwargs,'fromRow',-1))
         limit    = int(getArg(kwargs,'limit',-1))
         # if user pass limit/fromRow as -1 we should not apply the limit
@@ -4784,36 +3565,14 @@ All LFNs in a block
         output   = getArg(kwargs,'output','')
         parents  = getArg(kwargs,'parents','')
         cff      = int(getArg(kwargs,'cff',0))
-        self.helperInit(dbsInst)
-        backEnd  = self.helper.dbManager.dbType[dbsInst]
+        backEnd  = self.dbManager.dbType[dbsInst]
         method   = getArg(kwargs,'method',self.iface)
         page     = ""
-#        print "\n\n+++aSearchShowAll",kwargs
-        if  method=="dbsapi":
-            result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
+        if  xml:
+            return self.dbsmgr.exexml(dbsInst, userInput)
         else:
-           try:
-               sel  = self.ddrules.parser(dbsInst,urllib.unquote(userInput),backEnd,sortName,sortOrder,case)
-               query= self.qmaker.processQuery(dbsInst,sel)
-           except:
-               if not html:
-                  return traceback.format_exc()
-               msg ="<pre>%s</pre>"%getExcMessage(userMode)
-               page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
-               return page
-           if  output=='dataset':
-               output = 'block.dataset'
-           result,titleList=self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
-        if parents:
-           what,par = output.split(".")
-           print "orig. result",result
-           parList=[]
-           print "FOUND request for parents:",what,par
-           for res in result:
-               parList.append(self.helper.getParents(what,res[0]))
-           results=list(parList)
-           print "parents     ",result
-
+            result, titleList = self.exeQuery(dbsInst, userInput, fromRow, limit)
+        self.setContentType('plain') 
         cDateIdx =-1
         mDateIdx =-1
         cByIdx   =-1
@@ -4823,115 +3582,58 @@ All LFNs in a block
         for idx in xrange(0,len(ttList)):
             item = ttList[idx]
             if item.find('date')!=-1:
-               if item.find('creationdate')!=-1 or item.find('createdate')!=-1 or item.find('created')!=-1: cDateIdx=idx 
+               if item.find('createdate')!=-1: cDateIdx=idx 
                if item.find('mod')!=-1: mDateIdx=idx 
             if item.find('size')!=-1: sizeIdx=idx
-            if item.find('createdby')!=-1 or item.find('distinguishedname')!=-1: cByIdx=idx
-        if html:
-           page  = self.genTopHTML(userMode=userMode)
-           try:
-              page += "<p>%s sorted by %s in %s order</p>"%(self.ddrules.longName[output].capitalize(),sortName,sortOrder.upper())
-           except: pass
-        else:
-           if xml:
-              page+="\n<output>\n"
-           else:
-              page ="\n"
-              if cff and output=="file":
-                 page+="replace PoolSource.fileNames = {\n"
+            if item.find('createdby')!=-1: cByIdx=idx
+        if  cff and output=="file":
+            page+="replace PoolSource.fileNames = {\n"
         for item in result:
             if output.find(",")==-1:
                res=item[0]
             else:
                res = str(item).strip().replace("'","").replace("(","").replace(")","").replace("[","").replace("]","")
-            if html:
-               page+="%s<br/>"%res
+            if  cff and output=="file":
+                page+="'%s',\n"%res
             else:
-               if xml:
-                  if output.find(",")==-1:
-                     page+="<%s>%s</%s>\n"%(colName,res,colName)
-                  else:
-                     tList=output.split(",")
-                     oList=res.split(",")
-                     page+="  <row>\n"
-                     for idx in xrange(0,len(tList)):
-                         tag=tList[idx]
-                         tag=tag.replace(" ","").replace("(","_").replace(")","")
-                         elem=oList[idx].strip()
-                         if (cDateIdx!=-1 and idx==cDateIdx) or (mDateIdx!=-1 and idx==mDateIdx):
-                            elem=timeGMT(long(elem))
-                         if cByIdx!=-1 and idx==cByIdx:
-                            elem=parseCreatedBy(elem)
-                         page+="    <%s>%s</%s>\n"%(tag,elem,tag)
-                     page+="  </row>\n"
-               else:
-                  if cff and output=="file":
-                     page+="'%s',\n"%res
-                  else:
-                     page+="%s \n"%res
-        if html:
-           page+=self.genBottomHTML()
-        elif xml:
-             page+="</output>\n"
-        else:
-            if cff and output=="file":
-               idx=page.rfind(",")
-               page=page[:idx]+"\n}\n"
+                page+="%s\n"%res
+        if cff and output=="file":
+           idx=page.rfind(",")
+           page=page[:idx]+"\n}\n"
         return page
     aSearchShowAll.exposed=True
 
     def aSearchSummary(self,**kwargs):
-        tabCol   = kwargs['tabCol']
-        if not tabCol:
-           tabCol= "Table.Column"
-        sortName = kwargs['sortName']
-        sortOrder= kwargs['sortOrder']
         fromRow  = kwargs['fromRow']
         limit    = kwargs['limit']
         # if user pass limit/fromRow as -1 we should not apply the limit
         if limit==-1 or fromRow==-1:
            limit = 0
            fromRow=0
-        query    = kwargs['query']
         dbsInst  = kwargs['dbsInst']
         html     = kwargs['html']
         xml      = kwargs['xml']
         userMode = kwargs['userMode']
         case     = kwargs['caseSensitive']
-        output   = kwargs['output']
         grid     = int(getArg(kwargs,'grid',0))
         userInput= kwargs['userInput']
         getRes   = int(getArg(kwargs,'getRes',0))
-        method   = getArg(kwargs,'method','dd')
         userInput= kwargs['userInput']
-#        print "\n\n+++aSearchSummary",kwargs
-        if  method=="dbsapi":
-            result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
+        output   = findOutput(userInput)
+        if  xml:
+            return self.dbsmgr.exexml(dbsInst, userInput, fromRow, limit)
         else:
-            result,titleList=self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
+            sortKey = getArg(kwargs,'sortName','')
+            sortOrder = getArg(kwargs,'sortOrder','')
+            result, tList = self.summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
+            titleList = [x.split('.')[-1] for x in tList]+['LINKS']
+            excludeList = ['LINKS']
         if getRes:
            return result
-        # only take table column names from view's table, otherwise use what was provided by user
-        if output.find(",")!=-1:
-           titleList=output.split(",")
-        elif output.find("total")!=-1 and len(titleList)==1:
-           titleList=[output]
 
         page     = ""
-        if xml:
-           page += "<output>\n"
         num      = kwargs['num']
-        oname    = kwargs['oname']
         link     = kwargs['link']
-        longName = ""
-        try:
-           longName = self.ddrules.longName[output].capitalize()
-        except:
-           pass
-#        if output.find(",")!=-1 or output.find("total")!=-1:
-#           longName=""
-#        else:
-#           longName = self.ddrules.longName[output].capitalize()
         counter  = 0
         cDateIdx =-1
         mDateIdx =-1
@@ -4943,7 +3645,7 @@ All LFNs in a block
         for idx in xrange(0,len(ttList)):
             item = ttList[idx]
             if item.find('date')!=-1:
-               if item.find('creationdate')!=-1 or item.find('createdate')!=-1 or item.find('created')!=-1: cDateIdx=idx 
+               if item.find('createdate') != -1: cDateIdx=idx 
                if item.find('mod')!=-1: mDateIdx=idx 
             if item.find('size')!=-1: sizeIdx=idx
             if item.find('createdby')!=-1: cByIdx=idx
@@ -4970,8 +3672,7 @@ All LFNs in a block
                    else:
                       elem=timeGMTshort(long(elem))
                 elif  sizeIdx!=-1 and jdx==sizeIdx:
-                   bytes = elem
-                   elem=colorSizeHTMLFormat(elem)+" (%s bytes)"%bytes
+                   elem=colorSizeHTMLFormat(elem)
                 if cByIdx!=-1 and jdx==cByIdx:
                    elem=parseCreatedBy(elem)
                 if pathIdx!=-1 and jdx==pathIdx:
@@ -4991,67 +3692,44 @@ All LFNs in a block
                        page+="    <%s>%s</%s>\n"%(tag,elem,tag)
                     else:
                        page+="%s %s \n"%(titleList[jdx],elem)
-            if html and grid and output.find(",")==-1 and output.find("total")==-1: # no multiple select
-               # add more links column
-               more ="""<select style="width:100px" onchange="javascript:load(this.options[this.selectedIndex].value)">\n"""
-               if  output.find(".")==-1:
-                   more+="""<optgroup label="Entities">"""
-               more+="""<option value="">More Info</option>\n"""
-               for key in self.ddrules.tableName.keys():
-                   if key==output: continue
-                   ref  = urllib.quote("find %s where %s=%s"%(key,output,firstElem))
-                   aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,sortOrder,grid)
-                   more+="""<option value='%s'>%s</option>\n"""%(aref,"Find %s"%self.ddrules.longName[key])
-               if  output.find(".")==-1:
-                   more+="</optgroup>\n"
-                   more+="<optgroup label=\"Attributes\">\n"
-                   for _key in self.ddrules.colMember.keys():
-                       item = self.ddrules.colMember[_key]
-                       if type(item) is types.DictType:
-                           if item.keys().count(output):
-                              attr = item[output]
-                              if type(attr) is types.ListType: attrList=attr
-                              else: attrList=[attr]
-                              for elem in attrList:
-                                  ref  = urllib.quote("find %s.%s where %s=%s"%(output,_key,output,firstElem))
-                                  aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,sortOrder,grid)
-                                  more+="""<option value='%s'>%s</option>\n"""%(aref,elem)
-                       else:
-                           ref  = urllib.quote("find %s.%s where %s=%s"%(output,_key,output,firstElem))
-                           aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;sortOrder=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,sortOrder,grid)
-                           more+="""<option value='%s'>%s</option>\n"""%(aref,item)
-                   more+="</optgroup>\n"
-               more+="</select>\n"
-#               page+="<td %s>%s</td>\n"%(td_style,more) # for LINKS, see adding to titleList
-               page+="<td>%s</td>\n"%more # for LINKS, see adding to titleList
-               page+="</tr>\n"
-            if not html:
-               if xml:
-                  page+="  </row>\n"
-               else:
-                  page+="\n"
+            if  html and grid and \
+                output.find(",")==-1 and output.find("total")==-1: # no multiple select
+                # add more links column
+                more ="""<select style="width:100px" onchange="javascript:load(this.options[this.selectedIndex].value)">\n"""
+                more+="""<option value="">More Info</option>\n"""
+                qldict = self.dbsmgr.keys_attrs(dbsInst)
+                if  qldict.has_key(output):
+                    for attr in qldict[output]:
+                        ref  = urllib.quote("find %s.%s where %s=%s"%(output,attr,output,firstElem))
+                        aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,grid)
+                        more+="""<option value='%s'>%s</option>\n"""%(aref,"Find %s.%s"%(output,attr))
+                for key in qldict.keys():
+                    if key==output: continue
+                    ref  = urllib.quote("find %s where %s=%s"%(key,output,firstElem))
+                    aref = """%s/aSearch?userInput=%s&amp;userMode=%s&amp;dbsInst=%s&amp;caseSensitive=%s&amp;grid=%s"""%(self.dbsdd,ref,userMode,dbsInst,case,grid)
+                    more+="""<option value='%s'>%s</option>\n"""%(aref,"Find %s"%key)
+                more+="</select>\n"
+                page+="<td>%s</td>\n"%more # for LINKS, see adding to titleList
+                page+="</tr>\n"
+            if  not html:
+                page+="\n"
             counter+=1
-        if xml:
-           page+="</output>\n"
-        if grid and html and result:
-           tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
-           if output.find(",")==-1 and output.find("total")==-1: # no multi select and total(x)
-              titleList+=['LINKS']
-           for t in titleList:
-               th_class=""
-               if t==titleList[0]: th_class="th_left"
-               if output.find("total")==-1:
-                  t=t.upper().replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
-               if t.lower()=='created' or t.lower()=='creationdate':
-                  t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
-               tab+="<th class=\"%s\">%s</th>"%(th_class,t)
-           tab+="</tr>"
-           page=tab+page+"</table>\n"
-        if html and result:
-           t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':'','iface':method}]).respond()
-           page = str(t)+page
-        if not result:
-           page+="No results"
+        if  grid and html and result:
+            tab="""<table width="100%%" class="dbs_table">\n<tr class="tr_th">"""
+            for t in titleList:
+                th_class=""
+                if  t==titleList[0]: 
+                    th_class="th_left"
+                if t.find('createdate') != -1:
+                    t+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
+                tab+="<th class=\"%s\">%s</th>"%(th_class,t)
+            tab+="</tr>"
+            page=tab+page+"</table>\n"
+        if  html and result:
+            t = templateSortBar(searchList=[{'num':num,'oname':'results','link':link,'titleList':titleList,'excludeList':excludeList,'iface':'dbsapi'}]).respond()
+            page = str(t)+page
+        if  not result:
+            page+="No results"
         return page
 
     def blockSummary(self,**kwargs):
@@ -5075,16 +3753,16 @@ All LFNs in a block
             seList  = []
             minRun  = 10000000000000
             maxRun  = 0
-#            uRunList= []
             for item in results:
                 run,cDate,cBy,mDate,mBy,totLumi,store,sRun,eRun,nEvts,sEvent,eEvent,nLumis=item
-#                if not uRunList.count(run): uRunList.append(run)
                 if run<minRun: minRun=run
                 if run>maxRun: maxRun=run
-                self.helperInit(dbsInst)
-                pDict = self.helper.getPathSEs(run)
+                pDict = self.helper.getPathSEs(dbsInst,run)
                 for dsType,path in pDict.keys():
-                    fSize,nFiles = self.helper.filesStat(path,run)
+                    query = 'find sum(file.size), count(file) where dataset = %s and run = %s' % (path, run)
+                    res, tList = self.exeQuery(dbsInst, query)
+                    fSize, nFiles = res[0]
+
                     seList=pDict[(dsType,path)]
                     runList.append([run,nEvts,nLumis,totLumi,store,sRun,eRun,parseCreatedBy(cBy),timeGMT(cDate),parseCreatedBy(mBy),timeGMT(mDate),dsType,path,seList,fSize,nFiles])
             nameSpace = {
@@ -5093,7 +3771,6 @@ All LFNs in a block
                          'runList'  : runList,
                          'runDBInfo': {},
                          'tableId'  : "runTable",
-#                         'nRun'     : len(uRunList),
                          'nRun'     : nRun,
                          'minRun'   : minRun,
                          'maxRun'   : maxRun,
@@ -5126,142 +3803,121 @@ All LFNs in a block
     def adsdefSummary(self,**kwargs):
         return self.aSearchSummary(**kwargs)
     def datasetSummary(self,**kwargs):
-        tabCol   = kwargs['tabCol']
-        sortName = kwargs['sortName']
-        sortOrder= kwargs['sortOrder']
         fromRow  = kwargs['fromRow']
         limit    = kwargs['limit']
         # if user pass limit/fromRow as -1 we should not apply the limit
         if limit==-1 or fromRow==-1:
            limit = 0
            fromRow=0
-        query    = kwargs['query']
         dbsInst  = kwargs['dbsInst']
         html     = kwargs['html']
         xml      = kwargs['xml']
         userMode = kwargs['userMode']
-        output   = kwargs['output']
         grid     = int(getArg(kwargs,'grid',0))
         num      = kwargs['num']
-        oname    = kwargs['oname']
         link     = kwargs['link']
-        method   = getArg(kwargs,'method','dd')
         userInput= kwargs['userInput']
-        if  method=="dbsapi":
-            result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
-        else:
-            output = 'block.dataset'
-            result,titleList = self.qmaker.executeQuery(dbsInst,output,tabCol,sortName,sortOrder,query,fromRow,limit)
-        if len(titleList)<=2: # no view found, 2 to account for rownum while using ORACLE
-           titleList=['PATH','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
+        result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
+#        if len(titleList)<=2: # no view found, 2 to account for rownum while using ORACLE
+#           titleList=['DATASET','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
         excludeList=[]
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
         page     = ""
         counter  = 0
-        cDate=cBy=size=nblks=nfiles=nevts=nsites=""
-        readItems = 0
+        cDate = cBy = size = nblks = nfiles = nevts = nsites =""
+        run = appPath = site = "*"
+        phedex   =0
+        dbsInstURL = self.dbsmgr.geturl(dbsInst)
+        siteDict = {}
+        useView = 0
+        datasetlist = [item[0] for item in result]
+        dataset2sitedict = self.helper.datasetSummary4Sites(dbsInst, datasetlist)
+
+        excludeList=list(eList)
+        if  len(result[0]) == 1: # no DB summary view found
+            result = self.helper.datasetSummary_json2(dbsInst, datasetlist)
+            titleList=['DATASET','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
+            excludeList=list(titleList[1:])+eList
         for item in result:
-            try:
-                dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
-                excludeList=list(eList)
-                readItems = 1
-            except: # no view found
-                dataset=item[0]
-                excludeList = list(titleList[1:])+eList
-                pass
-            run=appPath=site="*"
-            dbsInstURL=DBS_INST_URL[dbsInst]
-            phedex=0
-            if counter%2:
-               style='class="zebra"'
+            dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
+            sites = []
+            if  dataset2sitedict.has_key(dataset):
+                for row in dataset2sitedict[dataset]:
+                    sites.append(row[0])
+                    siteDict[row[0]]=row[1:]
             else:
-               style=""
-# uncomment back, once datasetSummary view will be fixed
-            self.helperInit(dbsInst)
-            if readItems:
-               sList = self.helper.getSiteList(dataset)
-               dDict = {}
-               for site in sList:
-                   dDict[site]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
-               mDict = dDict
-               if  not sList:
-                   dDict["N/A"]=(timeGMT(cDate),parseCreatedBy(cBy),nblks,size,nfiles,nevts)
+                sites = []
+                siteDict = {}
+            mDict = {'created':timeGMT(cDate),
+                     'creator':parseCreatedBy(cBy),
+                     'blocks':nblks, 'size':size, 'files': nfiles, 
+                     'evts': nevts, 'sites': sites, 'dataset':dataset}
+            uid = genkey(dataset)
+
+#        for item in result:
+#            try:
+#                dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
+#                excludeList=list(eList)
+#                userView = 1
+#            except: # no view found
+#                dataset=item[0]
+#                titleList=['DATASET','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
+#                excludeList = list(titleList[1:])+eList
+#                pass
+            if  counter%2:
+                style='class="zebra"'
             else:
-               dDict,mDict = self.helper.datasetSummary(dataset)
-               if not mDict:
-                  mDict["N/A"]=("","",0,0,0,0)
-# should go away, see above
-#            dDict,mDict = self.helper.datasetSummary(dataset)
-#            if not mDict:
-#               mDict["N/A"]=("","",0,0,0,0)
-# end of temp fix
-            if html:
-               if mDict:
-                   tempDict={'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style,'cmsNames':self.getCMSNames()}
-                   if grid:
-                      t = templateProcessedDatasetsGrid(searchList=[tempDict]).respond()
-                   else:
-                      t = templateProcessedDatasetsLite(searchList=[tempDict]).respond()
-                   page+=str(t)
-               else:
-                   page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
-            else:
-                prdDate,cBy,nblks,blkSize,nFiles,nEvts=mDict.values()[0]
-                seNames=dDict.keys()
-                if xml:
-                   nameSpace={'path':dataset,'date':prdDate,'nEvts':nEvts,'nFiles':nFiles,'nBlks':nblks,'blkSize':blkSize,'sites':seNames,'dDict':dDict}
-                   t = templateDatasetXML(searchList=[nameSpace]).respond()
-                   page+=str(t)
+                style=""
+#            if  useView:
+#                query = 'find site where dataset = %s' % dataset
+#                sites = self.helper.getSiteList(dataset)
+#                mDict = {'created':timeGMT(cDate),
+#                         'creator':parseCreatedBy(cBy),
+#                         'blocks':nblks, 'size':size, 'files': nfiles, 
+#                         'evts': nevts, 'sites': sites, 'dataset':dataset}
+#            else:
+#                mDict = self.helper.datasetSummary_json(dbsInst, dataset)
+#                siteDict = {}
+            if  mDict:
+                tempDict={'dbsInst':dbsInst,'path':dataset,'uid':uid,'appPath':appPath,'siteDict':siteDict,'mDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run,'dbsInstURL':urllib.quote(dbsInstURL),'PhedexURL':self.PhedexURL,'style':style,'cmsNames':self.getCMSNames()}
+                if  grid:
+                    t = templateProcessedDatasetsGrid(searchList=[tempDict]).respond()
                 else:
-                   for idx in xrange(0,len(seNames)):
-                       if not seNames[idx]:
-                          seNames[idx]="N/A"
-#                   page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located %s"%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize),' '.join(seNames))
-                   page+="\n%s, Created %s contains %s events, %s files, %s blocks, %s, located "%(dataset,prdDate,nEvts,nFiles,nblks,sizeFormat(blkSize))
-                   for site in dDict.keys():
-                       page+="%s (files %s/%s) "%(site,dDict[site][4],nFiles) 
+#                    siteDict = {}
+#                    if  dataset2sitedict.has_key(dataset):
+#                        for row in dataset2sitedict[dataset]:
+#                            siteDict[row[0]]=row[1:]
+#                    tempDict['siteDict'] = siteDict
+                    t = templateProcessedDatasetsLite(searchList=[tempDict]).respond()
+                page+=str(t)
+            else:
+                page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
             counter+=1
-        if grid:
-           head=""
-           titleList+=eList
-           for item in titleList:
-               th_class=""
-               item=item.upper().replace("NUMBEROF","").replace("TOTAL","").replace("CREATEDBY","CREATOR").replace("CREATIONDATE","CREATED")
-               if item==titleList[0]: th_class="th_left"
-               if item.lower()=='created' or item.lower()=='creationdate':
-                  item+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
-               head+="<th class=\"%s\">%s</th>"%(th_class,item)
-           head = """<table width="100%%" class="dbs_table">\n<tr class="tr_th">%s</tr>"""%head
-           page=head+page+"</table>"
-        if html:
-           if titleList:
-              t = templateSortBar(searchList=[{'num':num,'out':output,'oname':oname,'link':link,'titleList':titleList,'excludeList':excludeList,'iface':method}]).respond()
-              page = str(t)+page
+        if  grid:
+            head=""
+            titleList+=eList
+            for item in titleList:
+                th_class=""
+                if  item==titleList[0]: th_class="th_left"
+                if  item.find('createdate') != -1:
+                    item+="""<br/><div class="tiny">(dd/mm/yy)</div>"""
+                head+="<th class=\"%s\">%s</th>"%(th_class,item)
+            head = """<table width="100%%" class="dbs_table">\n<tr class="tr_th">%s</tr>"""%head
+            page=head+page+"</table>"
+        if  titleList:
+            t = templateSortBar(searchList=[{'num':num,'oname':'results','link':link,'titleList':titleList,'excludeList':excludeList,'iface':'dbsapi'}]).respond()
+            page = str(t)+page
         return page
 
-    def aSearchCLI(self):
-        return serve_file(os.path.join(os.getcwd(),'tools/DDSearchCLI.py'),content_type='text/plain')
-    aSearchCLI.exposed=True
-
     def aSearchKeys(self):
-        if  self.iface=="dbsapi":
-            try:
-                dbsApi = self.getDbsApi(self.dbsglobal)
-                helpList = dbsApi.getHelp("")
-            except:
-                helpList = []
-                pass
-            t = templateQLHelp(searchList=[{'helpList':helpList,'showExample':1,'msg':""}]).respond()
-            return str(t)
-        else:
-            allKeys=self.ddrules.keywords
-            sKeys  =""
-            for key in allKeys:
-                if key.find(".")!=-1:
-                   k1,k2 = key.split(".")
-                else:
-                   sKeys+="\n<p><b>%s</b>: %s</p>"%(key,self.ddrules.tooltip[key])
-            return sKeys
+        try:
+            dbsApi = self.dbsmgr.getapi(self.dbsglobal)
+            helpList = dbsApi.getHelp("")
+        except:
+            helpList = []
+            pass
+        t = templateQLHelp(searchList=[{'helpList':helpList,'showExample':1,'msg':""}]).respond()
+        return str(t)
 
     def update_kwargs(self,kDict,**kwargs):
         oDict=dict(kDict)
@@ -5274,22 +3930,12 @@ All LFNs in a block
             dbsInst = self.dbsglobal
         t0=time.time()
         _idx=int(_idx)
-        method = getArg(kwargs,'method',self.iface)
-        self.helperInit(dbsInst)
         pagerStep = int(pagerStep)
         html      = getArg(kwargs,'html',1)
-        if not int(html):
-           self.setContentType('plain') 
+        if  not int(html):
+            self.setContentType('plain') 
         xml       = getArg(kwargs,'xml',0)
-        if int(xml):
-           self.setContentType('xml') 
         case      = getArg(kwargs,'caseSensitive','on')
-        sortName  = getArg(kwargs,'sortName','')
-        try:
-            sortName="%s.%s"%(self.ddrules.tableName[sortName],self.ddrules.colName[sortName])
-#            sortName=self.ddrules.colName[sortName]
-        except:
-            sortName=getArg(kwargs,'sortName','')
         details   = getArg(kwargs,'details',1)
         cff       = getArg(kwargs,'cff',0)
         try:
@@ -5298,171 +3944,78 @@ All LFNs in a block
             traceback.print_exc()
             raise "aSearch require input query"
         userInput = urllib.unquote(userInput)
-        try:
-            if method!="dbsapi":
-               self.ddrules.checkSyntax(userInput)
-        except:
-            if html:
-               msg ="<pre>%s</pre>"%getExcMessage(userMode)
-               page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
-            else:
-               page=getExcMessage(userMode)
-            return page
-        userInput = userInput.replace(" path "," dataset ")
-        for pair in [("FIND","find"),("WHERE","where"),("LIKE","like"),("TOTAL","total")]:
-            userInput=userInput.replace(pair[0],pair[1])
-        output    = "dataset"
-        if userInput.lower().find(" where ")!=-1:
-           output=userInput.lower().split(" where ")[0].split("find")[1].strip()
-        try:
-            if output.find(",")!=-1:
-               _out = output
-#               for item in output.split(","):
-#                   _out+= self.ddrules.longName[item.strip()]
-            else:
-               _out     = self.ddrules.longName[output]
-        except:
-            _out=output
-            pass
-        if sortName.lower()=="name":
-           sortName = self.ddrules.colName[output]
-        sortOrder = getArg(kwargs,'sortOrder','desc')
-        backEnd  = self.helper.dbManager.dbType[dbsInst]
-        try :
-            if method!="dbsapi":
-               sel=self.ddrules.parser(dbsInst,urllib.unquote(userInput),backEnd,sortName,sortOrder,case,method)
-            else:
-               userInput = self.dbsrules.preParseInput(userInput)
-               sel = userInput
-        except:
-            if not html:
-               return traceback.format_exc()
-            msg ="<pre>%s</pre>"%getExcMessage(userMode)
-            page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
-            return page
-
         fromRow  =_idx*pagerStep
         limit    = pagerStep
-        oTable   = ""
-        tabCol   = ""
-        if output.find(",")==-1 and method!="dbsapi":
-           if output.find("total")!=-1:
-              o  = output.replace("(","").replace(")","").replace("total","")
-              oTable   = self.ddrules.tableName[o]
-              tabCol   = "%s.%s"%(oTable,self.ddrules.colName[o])
-           else:
-              if output.find(".")!=-1:
-                 oTab,oCol=output.split(".")
-                 oTable   = self.ddrules.tableName[oTab]
-                 tabCol   = "%s.%s"%(oTable,oCol)
-              else:
-                  try:
-                     oTable   = self.ddrules.tableName[output]
-                     tabCol   = "%s.%s"%(oTable,self.ddrules.colName[output])
-                  except: pass
-              
-        if method=="dbsapi":
-            try:
-                query = '' # will be retrieved by executeQuery later
-                nResults = self.countQuery(dbsInst, userInput)
-            except:
-                if getArg(kwargs,'results',0):
-                   return "N/A"
-                if not html:
-                   return traceback.format_exc()
-                msg  = "<pre>%s</pre>"%getExcMessage(userMode)
-                page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
-                return page
-        else:
-
-            try:
-                query= self.qmaker.processQuery(dbsInst,sel,userMode)
-            except:
-                if not html:
-                   return traceback.format_exc()
-                msg ="<pre>%s</pre>"%getExcMessage(userMode)
-                page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
-                return page
-            nResults = self.qmaker.countSel(dbsInst,query,tabCol)
+        if  int(xml):
+            self.setContentType('xml') 
+            return self.dbsmgr.exexml(dbsInst,userInput,fromRow,fromRow+limit)
+        try:
+            nResults = self.countQuery(dbsInst, userInput)
+        except:
+            if getArg(kwargs,'results',0):
+               return "N/A"
+            if not html:
+               return traceback.format_exc()
+            msg  = "<pre>%s</pre>"%getExcMessage(userMode)
+            page = self._advanced(dbsInst=dbsInst,userMode=userMode,msg=msg)
+            return page
 
         # check if asked to return results only
         if getArg(kwargs,'results',0):
            return nResults
 
         # construct output kwargs
-        kDict=self.update_kwargs(kwargs,query=query,output=output,tabCol=tabCol,sortName=sortName,sortOrder=sortOrder,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,caseSensitive=case,case=case,cff=cff,method=method)
+        kDict=self.update_kwargs(kwargs,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,caseSensitive=case,case=case,cff=cff)
 
-        if html:
-           page = self.genTopHTML(userMode=userMode)
-           dbsList = []
-           for dbs in self.dbsList:
-               if  userMode=="user":
-                   if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1:
-                       dbsList.append(dbs)
-               else:
-                   dbsList.append(dbs)
-           try:
-               dbsList.remove(dbsInst)
-           except:
-               pass
-#           dbsList=list(self.dbsList)
-#           dbsList.remove(dbsInst)
-           dbsList=[dbsInst]+dbsList
-           nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput,'aSearchKeys':self.aSearchKeys(),'showHelp':0}
-           t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
-           page+=str(t)
+        if  html:
+            page = self.genTopHTML(userMode=userMode)
+            dbsList = []
+            for dbs in self.dbsList:
+                if  userMode=="user":
+                    if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1:
+                        dbsList.append(dbs)
+                else:
+                    dbsList.append(dbs)
+            try:
+                dbsList.remove(dbsInst)
+            except:
+                pass
+            dbsList=[dbsInst]+dbsList
+            nameSearch={'dbsInst':dbsInst,'userHelp':0,'dbsList':dbsList,'host':self.dbsdd,'style':'','userMode':userMode,'userInput':userInput,'aSearchKeys':self.aSearchKeys(),'showHelp':0}
+            t = templateAdvancedSearchForm(searchList=[nameSearch]).respond()
+            page+=str(t)
+            # Construct result page
+            rPage=""
+            if  nResults:
+                rPage+="Result page:"
+
+            moreParams=""
+            if  kwargs:
+                for k in kwargs.keys():
+                    moreParams+="&amp;%s=%s"%(k,urllib.quote(kwargs[k]))
+            # the progress bar for all results
+            if  _idx:
+                rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">&#171; Prev</a> """%(dbsInst,userMode,_idx-1,pagerStep,moreParams)
+            tot=_idx
+            for x in xrange(_idx,_idx+GLOBAL_STEP):
+                if  nResults>x*pagerStep:
+                    tot+=1
+            for index in xrange(_idx,tot):
+                ref=index+1
+                if  index==_idx:
+                    ref="""<span class="gray_box">%s</span>"""%(index+1)
+                rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s"> %s </a> """%(dbsInst,userMode,index,pagerStep,moreParams,ref)
+            if  nResults>(_idx+1)*pagerStep:
+                rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">Next &#187;</a>"""%(dbsInst,userMode,_idx+1,pagerStep,moreParams)
+
+            if  _idx and _idx*pagerStep>nResults:
+                return "No data found for this request"
+            page+=self.whereMsg('Adv. search :: Results',userMode)
         else:
-           if xml:
-              page="""<?xml version="1.0" encoding="utf-8"?>\n<ddresponse>\n"""
-              page+="<userinput>\n  <input>%s</input>\n  <timeStamp>%s</timeStamp>\n</userinput>\n"%(urllib.unquote(userInput),time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()))
-              if method=="dbsapi":
-		 bParams=bindDict
-	      else:
-                 bParams=self.qmaker.extractBindParams(dbsInst,query)
-              bindParams="\n"
-              for key in bParams:
-                  bindParams+="    <%s>%s</%s>\n"%(key,bParams[key],key)
-              page+="""<query>\n  <sql>\n%s\n  </sql>\n  <bindparams>%s  </bindparams>\n   <executiontime>__time__</executiontime>\n   <asearchtime>__fulltime__</asearchtime>\n</query>\n"""%(formatQuery(str(query).replace("<","&lt;").replace(">","gt;")),bindParams)
-              page+="<results>\n"
-              page+="<total>%s</total>\n"%nResults
-              if pagerStep!=-1:
-                 page+="<show>%s-%s</show>\n"%(_idx*pagerStep,_idx*pagerStep+pagerStep)
-              page+="</results>\n"
-           else:
-              if pagerStep==-1:
-                 page ="\nFound %s %ss\n"%(nResults,_out)
-              else:
-                 page ="\nFound %s %s, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
-
-        if html:
-           # Construct result page
-           rPage=""
-           if nResults:
-              rPage+="Result page:"
-
-           moreParams=""
-           if kwargs:
-              for k in kwargs.keys():
-                  moreParams+="&amp;%s=%s"%(k,urllib.quote(kwargs[k]))
-           # the progress bar for all results
-           if _idx:
-               rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">&#171; Prev</a> """%(dbsInst,userMode,_idx-1,pagerStep,moreParams)
-           tot=_idx
-           for x in xrange(_idx,_idx+GLOBAL_STEP):
-               if nResults>x*pagerStep:
-                  tot+=1
-           for index in xrange(_idx,tot):
-              ref=index+1
-              if index==_idx:
-                 ref="""<span class="gray_box">%s</span>"""%(index+1)
-              rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s"> %s </a> """%(dbsInst,userMode,index,pagerStep,moreParams,ref)
-           if nResults>(_idx+1)*pagerStep:
-              rPage+="""<a href="aSearch?dbsInst=%s&amp;userMode=%s&amp;_idx=%s&amp;pagerStep=%s%s">Next &#187;</a>"""%(dbsInst,userMode,_idx+1,pagerStep,moreParams)
-
-           if _idx and _idx*pagerStep>nResults:
-              return "No data found for this request"
-
-           page+=self.whereMsg('Adv. search :: Results',userMode)
+            if pagerStep==-1:
+               page ="\nFound %s %ss\n"%(nResults,_out)
+            else:
+               page ="\nFound %s %s, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
         # create a link for show all.
         link=""
@@ -5476,105 +4029,74 @@ All LFNs in a block
             link+="%s=%s"%(key,val)
         link="aSearchShowAll?"+link
         kDict['num']=nResults
-        kDict['oname']=_out
         kDict['link']=link
-
-        if output.find("dataset.parents")!=-1:
-           kDict['parents']=output.split(".")[0]
 
         queryTime=0
         try:
             t1=time.time()
-            if userMode=='dbsExpert':
-               sql = self.getQuery(dbsInst, userInput, fromRow, limit)
-               page+="<!--- QUERY --->\n<pre>%s</pre>" % str(sql)
-            if details:
-               if output.find(",")!=-1 or output.find("total")!=-1:
-                  page+=self.aSearchSummary(**kDict)
-               elif output.find("dataset.parents")!=-1: # TEMP
-                  page+=self.aSearchShowAll(**kDict)
-               else:
-                  try: 
-                      method=getattr(self,output+'Summary')
-                      page+=method(**kDict)
-                  except:
-                      pass
-                      page+=self.aSearchSummary(**kDict)
+            if  userMode=='dbsExpert':
+                sql = self.getQuery(dbsInst, userInput, fromRow, limit)
+                page+="<!--- QUERY --->\n<pre>%s</pre>" % sql
+            if  details:
+                try: 
+                    output = findOutput(userInput)
+                    method=getattr(self,output+'Summary')
+                    page+=method(**kDict)
+                except:
+                    traceback.print_exc()
+                    pass
+                    page+=self.aSearchSummary(**kDict)
             else:
-               page+=self.aSearchShowAll(**kDict)
+                page+=self.aSearchShowAll(**kDict)
             queryTime=time.time()-t1
         except:    
-            if html:
-               page+="<verbatim>"+getExcept()+"</verbatim>"
+            if  html:
+                page+="<verbatim>"+getExcept()+"</verbatim>"
             else:
-               if xml:
-                  page+="Server experience a problem processing your request"
-                  page+=getExcept()
-               else:
-                  page+=getExcept()
-        if html:
-           pagerId=1
-           _nameSpace = {
-                        'idx'      : _idx,
-                        'host'     : self.dbsdd,
-                        'style'    : "",
-                        'rPage'    : rPage,
-                        'pagerStep': pagerStep,
-                        'pagerId'  : pagerId,
-#                        'nameForPager': _out+"s",
-                        'nameForPager': "results",
-                        'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s','%s')"%(dbsInst,userMode,fromRow,_idx,pagerId,userInput)
+                page+=getExcept()
+        if  html:
+            pagerId=1
+            _nameSpace = {
+                          'idx'      : _idx,
+                          'host'     : self.dbsdd,
+                          'style'    : "",
+                          'rPage'    : rPage,
+                          'pagerStep': pagerStep,
+                          'pagerId'  : pagerId,
+                          'nameForPager': "results",
+                          'onchange' : "javascript:LoadASearch('%s','%s','%s','%s','%s','%s')"%(dbsInst,userMode,fromRow,_idx,pagerId,userInput)
                        }
-           t = templatePagerStep(searchList=[_nameSpace]).respond()
-           page+="""<hr class="dbs" />"""
-           page+=str(t)
-           page+=self.genBottomHTML()
-        elif xml:
-           page+="</ddresponse>"
-           page=page.replace("__time__","%f sec"%queryTime)
-           page=page.replace("__fulltime__","%f sec"%(time.time()-t0))
+            t = templatePagerStep(searchList=[_nameSpace]).respond()
+            page+="""<hr class="dbs" />"""
+            page+=str(t)
+            page+=self.genBottomHTML()
 	if self.verbose:
            print "aSearch time:",(time.time()-t0)
         return page
     aSearch.exposed=True
 
-    def summaryQuery(self, dbsInst, userInput, fromRow, limit):
+    def summaryQuery(self, dbsInst, userInput, fromRow, limit, sortKey="", sortOrder=""):
         try:
-            return self._summaryQuery(dbsInst, userInput, fromRow, limit)
+            return self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
         except:
             if  self.verbose:
                 traceback.print_exc()
             self.writeLog(getExcept())
             time.sleep(2)
             try:
-                return self._summaryQuery(dbsInst, userInput, fromRow, limit)
+                return self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
             except:
                 traceback.print_exc()
                 self.writeLog(getExcept())
                 raise "Fail in summaryQuery"
 
-    def _summaryQuery(self, dbsInst, userInput, fromRow, limit):
+    def _summaryQuery(self, dbsInst, userInput, fromRow, limit, sortKey="", sortOrder=""):
         if  (not limit and not fromRow) or limit==-1:
             limit=""
             fromRow=""
-        method = "dbsapi"
-        dbsApi = self.getDbsApi(dbsInst)
-        res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-        output    = "dataset"
-        if userInput.lower().find(" where ")!=-1:
-           output=userInput.lower().split(" where ")[0].split("find")[1].strip()
-        tableView = output+"summary"
-        if  self.helper.dbManager.getTableNames(dbsInst).count(tableView):
-            tc = "%s.%s"%(tableView,self.ddrules.colName[output])
-            tableView=self.dbManager.getTable(dbsInst,tableView)
-            self.helperInit(dbsInst, method)
-            sqlView = self.qmaker.wrapToView(tableView,tc,sql)
-            result,titleList=self.qmaker.executeDBSQuery(dbsInst,sqlView,bindDict)
-        else:
-            self.helperInit(dbsInst, method)
-            result,titleList=self.qmaker.executeDBSQuery(dbsInst,sql,bindDict)
-        return result, titleList
+        res = self.dbsmgr.summary(dbsInst, userInput, fromRow, fromRow+limit, sortKey, sortOrder)
+#        res = self.dbsmgr.exe(dbsInst, userInput, fromRow, fromRow+limit)
+        return res
 
     def exeQuery(self, dbsInst, userInput, fromRow, limit):
         try:
@@ -5596,20 +4118,7 @@ All LFNs in a block
         if (not limit and not fromRow) or limit==-1:
            fromRow=""
            limit=""
-#        result, titeList = self.dbsmgr.exe(dbsInst, userInput, begin=fromRow, end=fromRow+limit)
-        dbsApi = self.getDbsApi(dbsInst)
-        res = ''
-        try:
-            res=dbsApi.executeQuery(userInput,begin=fromRow,end=fromRow+limit,type="query")
-        except:
-            traceback.print_exc()
-            raise
-        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-        method = "dbsapi"
-        result = []
-        titleList = []
-        self.helperInit(dbsInst, method)
-        result,titleList=self.qmaker.executeDBSQuery(dbsInst,sql,bindDict)
+        result, titleList = self.dbsmgr.exe(dbsInst, userInput, fromRow, fromRow+limit)
         return result, titleList
 
     def getQuery(self, dbsInst, userInput, fromRow = "", limit = ""):
@@ -5641,16 +4150,6 @@ All LFNs in a block
 
     def _countQuery(self, dbsInst, userInput):
         nResults = self.dbsmgr.count(dbsInst, userInput)
-#        dbsApi = self.getDbsApi(dbsInst)
-#        try:
-#            res = dbsApi.executeQuery(userInput, type="query")
-#        except:
-#            traceback.print_exc()
-#            raise
-#        sql,bindDict,count_sql,count_bindDict=getDBSQuery(res)
-#        method = "dbsapi"
-#        self.helperInit(dbsInst, method)
-#        nResults=self.qmaker.executeDBSCountQuery(dbsInst,count_sql,count_bindDict,iface=method)
         return nResults
 
     def multiSearch(self,userInput,**kwargs):
@@ -5885,8 +4384,6 @@ if __name__ == "__main__":
     context="" # we pass empty context here to be able to run in stand-alone mode
     dbsManager = DDServer(context,opts.verbose,opts.profile)
     print "Using CherryPy:",cherrypy.__version__
-    if opts.quiet:
-       dbsManager.setQuiet()
     port=opts.port
     cherrypy.config.update({'server.socket_port': port,
                             'server.thread_pool': 20,

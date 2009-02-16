@@ -14,7 +14,7 @@ registerAjaxRunSummaryCalls();
 <tr>
 <td align="left">
 #if $nRun and $minRun and $maxRun
-found $nRun run(s). Run range: $minRun-$maxRun. 
+found $nRun results. Run range: $minRun-$maxRun. 
 #end if
 <span id="phedexInfo">
 Show PhEDEx <a href="javascript:getPhedexStatus()">info</a>.
@@ -139,7 +139,10 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 <tr valign="top" bgcolor="$rowColor" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 ### I need to get run type and decide do I need or not provide a link to run quality DB.
 <td align="center" style="$tstyle">
-#if _run_!=$run
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+###if _run_!=$run
 #if $dsType.lower()!='mc'
 <a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$run">
 $run
@@ -150,41 +153,56 @@ DQM
 #else
 $run
 #end if
-#end if
+###end if
 </td>
 <td align="right" style="$tstyle">
-#if _run_!=$run
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+###if _run_!=$run
 $dsType 
-#end if
+###end if
 </td>
 <td align="right" style="$tstyle">
-#if _run_!=$run
-$nEvts
+#if _run_==$run
+<hr class="dbs"/>
 #end if
+###if _run_!=$run
+$nEvts
+###end if
 </td>
 ###<td align="right">$nLumis </td>
 ###<td align="right">$totLumi </td>
 <td align="right" style="$tstyle">
-#if _run_!=$run
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+###if _run_!=$run
 $store
-#end if
+###end if
 </td>
 <td align="right" style="$tstyle">
-#if _run_!=$run
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+###if _run_!=$run
 $sRun
-#end if
+###end if
 </td>
 <td align="right" style="$tstyle">
-#if _run_!=$run
-$eRun
+#if _run_==$run
+<hr class="dbs"/>
 #end if
+###if _run_!=$run
+$eRun
+###end if
 </td>
 #if not $admin
 <td style="$tstyle">
 #if _run_==$run
 <hr class="dbs"/>
 #end if
-<a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off&amp;group=Any&amp;site=Any&amp;tier=Any&amp;app=Any&amp;primType=Any&amp;primD=Any">
+<a href="/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off&amp;group=Any&amp;site=Any&amp;tier=Any&amp;app=Any&amp;primType=Any&amp;primD=Any">
 #set pathName="/"+$procDS[1:].replace("/","<br />/")
 $pathName
 </a>
@@ -256,15 +274,15 @@ $mDate
 #if _run_==$run
 <hr class="dbs"/>
 #end if
-<a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;what=cff">cff</a>
+<a href="/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;what=cff">cff</a>
 <br/>
-<a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">plain</a>
+<a href="/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">plain</a>
 <br/>
-<a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
+<a href="/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
 <br/>
-<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">cff wParents</a>
+<a href="/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">cff wParents</a>
 <br/>
-<a href="$host/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;format=python">py wParents</a>
+<a href="/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;format=python">py wParents</a>
 </td>
 #end if ### end of admin check
 #### Here is Phedex transfer status call for each site

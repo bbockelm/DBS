@@ -158,10 +158,10 @@ Details
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center">
-     ###<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=cff&amp;userMode=$userMode">cff</a>
-     ###<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=txt&amp;userMode=$userMode">plain</a>
-     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>
-     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>
+     ###<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=cff&amp;userMode=$userMode">cff</a>
+     ###<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=txt&amp;userMode=$userMode">plain</a>
+     <a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>
+     <a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>
      </td>
   </tr>
 #end for
@@ -205,9 +205,9 @@ Details
      <td align="right"><div class="dbs_cell">$nFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
-     <a href="$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path&amp;userMode=$userMode">cff</a>, 
-     <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path&amp;userMode=$userMode">txt</a>,
-     <a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path&amp;userMode=$userMode">details</a>
+     <a href="/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path&amp;userMode=$userMode">cff</a>, 
+     <a href="/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path&amp;userMode=$userMode">txt</a>,
+     <a href="/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path&amp;userMode=$userMode">details</a>
      </div>
      </td>
 #if $bStatus=="OPEN" or $bStatus==1

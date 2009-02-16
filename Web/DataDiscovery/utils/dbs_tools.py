@@ -5,59 +5,20 @@
 Set of DBS utilities used by DD
 """
 import re
+import time
+import types
 import traceback
+import memcache
 import elementtree.ElementTree as ET
 
-from   Cheetah.Template import Template
-from   Templates        import *
-from   utils.DDUtil     import findInString
+from   utils.DDUtil     import findInString, genkey, natsort24
 
 # DBS imports
 from   RS.Wrapper import RegService
 from   DBSAPI.dbsApi import DbsApi
 from   utils.dbsapi import DbsApi2
-#from  DBSAPI.dbsMigrateApi import DbsMigrateApi
-#from  MS.Wrapper import API as DBS_MS
 
-### Please note, thise section is temporary until DBS will implement
-### queyring the views
-import sqlalchemy
-import types
-def wrapToView(view, field, query):
-    query=query.replace('\n',' ').replace('\t',' ').strip()
-    query="""SELECT * FROM %s WHERE %s IN (%s)"""%(view,field,query)
-    return query
-
-def executeQueryInDB(dbManager, dbsInst, sql, bindDict, verbose=''):
-    bparams=[]
-    for key in bindDict.keys():
-        bparams.append(sqlalchemy.bindparam(key=key,value=bindDict[key]))
-    sql=sql.replace('\n',' ').replace('\t',' ').strip()
-    sel=sqlalchemy.text(sql, bind=dbManager.engine[dbsInst], bindparams=bparams)
-    if  verbose:
-        print str(sel)
-        print bindDict
-    con = dbManager.connect(dbsInst, 'dbsapi')
-    try:
-        result = con.execute(sel)
-    except:
-        msg="\nDBS instance %s"%dbsInst
-        msg+="\n### Query:\n"+str(sel)
-        msg+= traceback.format_exc()
-        raise "Fail in executeQueryInDB"+msg
-    oList = []
-    tList = []
-    for item in result:
-        if  type(item) is types.StringType:
-            raise item
-        oList.append(item.values())
-        if  not tList:
-            tList=list(item.keys())
-    con.close()
-    return oList, tList
-########################
-
-def gettitles(userInput):
+def gettitles(userinput):
     tList   = []
     findInString(userinput.lower(), 'find', 'where', tList)
     titles  = tList[0].strip().split(",")
@@ -65,7 +26,7 @@ def gettitles(userInput):
 
 def parsedbsquery(i):
     """
-    crwal DBS XML output
+    crawl DBS XML output
     """
     sql   = ""
     bdict = {}
@@ -107,7 +68,7 @@ def dbsquery(data, tag = "python_query"):
 # NOTE: I can't use ANY XML parser since DBS-QL doesn't provide mapping between
 #       user query and output results. Until that done I must use plain text parsing
 #       of DBS-QL results
-def dbsparser(data):
+def dbsparser_old(data):
     # output in a format 
     # <result SUM_FILE_SIZE='25155849149393' FILE_CREATEBY_DN='mlmiller@vocms19.cern.ch' />
     # I wanted this script be completely stand-alone, so I don't want to use XML parsers
@@ -129,7 +90,7 @@ def dbsparser(data):
         oList.append(item)
     return oList, titles
 
-def dbsparser_touse(data):
+def dbsparser(data, tag="results"):
     """
     parse DBS XML output and return (resultList, titleList)
     """
@@ -137,17 +98,21 @@ def dbsparser_touse(data):
     oList = [] # results
     tList = [] # titles
     for i in elem:
-        if  i.tag == "result":
-            oList += [i.attrib.values()]
-            if  not tList:
-                tList = i.attrib.keys()
+        if  i.tag == tag:
+            for j in i:
+                item = []
+                for k in j.getchildren():
+                    item.append(k.text)
+                    if  not tList.count(k.tag):
+                        tList.append(k.tag)
+                oList.append(item)
     return oList, tList
 
 class DBSManager(object):
     """
     DBS manager which construct DBS API based on DBS RS service
     """
-    def __init__(self, use_rs=0, verbose = None):
+    def __init__(self, use_rs=0, cachelist=[], limit=600, verbose = None):
         self.dbsconfig={'mode':'POST', 'retry':2}
         self.verbose = verbose
         self.dbsapi  = {}
@@ -158,7 +123,12 @@ class DBSManager(object):
             self.init_DB()
         else:
             self.init_RS()
+        if  self.verbose:
+            print "\n+++ Using memcached servers", cachelist
+        self.cache   = memcache.Client(cachelist, debug=verbose)
+        self.limit   = int(limit)
 
+    # This will go away once RS is commissioned
     def init_DB(self):
         from utils.DDAuth import DDAuthentication
         auth = DDAuthentication()
@@ -167,7 +137,7 @@ class DBSManager(object):
             dbType, dbName, dbUser, dbPass, host, url = dbAuth.dbInfo()
             dbOwner = dbs.upper()
             url = url.replace('https','http').replace('_writer','').replace(':8443','')
-            version = 'DBS_2_0_4'
+            version = 'DBS_2_0_6'
             self.dbsattr[dbs]={'url':url, 'account':dbUser, 'version':version}
             dbsdict = {'url':url, 'login':dbUser, 'owner':dbOwner,
                        'version':version, 'critical':'Y',
@@ -240,36 +210,36 @@ class DBSManager(object):
         return self.dbsall[dbsalias]['dbtype']
 
 # TODO: I don't need this api once migration to DBS API will be completed
-    def getaccount(self, dbsalias):
-        return 'cms_dbs'
+#    def getaccount(self, dbsalias):
+#        return 'cms_dbs'
 
-    def getlogin(self, dbsalias):
-        return self.dbsall[dbsalias]['login']
+#    def getlogin(self, dbsalias):
+#        return self.dbsall[dbsalias]['login']
 
-    def getowner(self, dbsalias):
-        return self.dbsall[dbsalias]['owner']
+#    def getowner(self, dbsalias):
+#        return self.dbsall[dbsalias]['owner']
 
-    def getpass(self, dbsalias):
-        if dbsalias.find('global') != -1:
-            return 'everyknowsDBS2'
-        return 'everyoneknowsDBS2'
+#    def getpass(self, dbsalias):
+#        if dbsalias.find('global') != -1:
+#            return 'everyknowsDBS2'
+#        return 'everyoneknowsDBS2'
 ################################
 
     def getapi(self, dbsalias):
         """
-        Consutrct (or take from local cache) DBS api for given DBS alias
+        Construct (or take from local cache) DBS api for given DBS alias
         """
         try:
             config  = dict(self.dbsconfig)
             dbsattr = self.dbsattr[dbsalias] 
             config['url'] = dbsattr['url']
             config['version'] = dbsattr['version']
-            if self.dbsapi.has_key(dbsalias):
-               return self.dbsapi[dbsalias]
+            if  self.dbsapi.has_key(dbsalias):
+                return self.dbsapi[dbsalias]
             else:
-               dbsapi = DbsApi2(config)
-               self.dbsapi[dbsalias]=dbsapi
-               return dbsapi
+                dbsapi = DbsApi2(config)
+                self.dbsapi[dbsalias]=dbsapi
+                return dbsapi
         except:
             raise Exception("Fail to construct DBS API")
 
@@ -287,16 +257,71 @@ class DBSManager(object):
         """
         return dbsquery(self.queryxml(dbsalias, userinput, q_start, q_end))
 
+    def getfromcache(self, key, key1, res):
+        if  self.verbose>1:
+            print "\n\n### DBSManager::exe uses cache"
+        rowlist = ['%s' % i for i in range(0, res)]
+        rowdict = self.cache.get_multi(rowlist, key_prefix=key)
+        titles = self.cache.get(key1)
+        keys = natsort24(rowdict.keys())
+        result = [rowdict[k] for k in keys]
+        return result, titles
+
+    def storetocache(self, key, result, key1, titles):
+        rowdict = {}
+        rowid = 0
+        for row in result:
+            rowkey = '%s' % rowid
+            rowdict[rowkey] = row
+            rowid += 1
+        self.cache.set_multi(rowdict, time=self.limit, key_prefix=key)
+        self.cache.set(key, rowid, self.limit)
+        self.cache.set(key1, titles, self.limit)
+
+    def summary(self, dbsalias, userinput, q_start = "", q_end = "", 
+                sort_key = "", sort_order = ""):
+        """
+        Return SQL summary query output for given user input
+        """
+        # ask restults from cache
+        key = genkey('summary:%s:%s:%s:%s:%s:%s' \
+                % (dbsalias, userinput, q_start, q_end, sort_key, sort_order))
+        key1= genkey('titles:%s:%s:%s:%s:%s:%s' \
+                % (dbsalias, userinput, q_start, q_end, sort_key, sort_order))
+        res = self.cache.get(key)
+        if  res and type(res) is types.IntType:
+            return self.getfromcache(key, key1, res)
+
+        dbsapi = self.getapi(dbsalias)
+        data = dbsapi.executeSummary(userinput, begin = q_start, end = q_end,
+                        sortKey = sort_key, sortOrder = sort_order)
+        result, titles = dbsparser(data, 'summary_view')
+        if  not result[0]: # fail to get summary view info
+            result, titles = dbsparser(data)
+
+        # add results to cache
+        self.storetocache(key, result, key1, titles)
+
+        return result, titles
+
     def count(self, dbsalias, userinput):
         """
         Execute DBS query for given user input and return total number of found results
         """
+        # ask restults from cache
+        key = genkey('count:%s:%s' % (dbsalias, userinput))
+        res = self.cache.get(key)
+        if  res:
+            return int(res)
+
         dbsapi = self.getapi(dbsalias)
-#        return dbsapi.countQuery(userinput)
         dbsxml = dbsapi.countQuery(userinput)
         result, titles = dbsparser(dbsxml)
-        return result[0][0]
-#        return len(result)
+        res = int(result[0][0])
+
+        # add results to cache
+        self.cache.set(key, res, self.limit)
+        return res
 
     def exexml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
@@ -309,15 +334,30 @@ class DBSManager(object):
     def exe(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
         Execute DBS query for given user input and return results in a list format
+        returns two lists, one with results and another with titles
         """
+        # ask restults from cache
+        key = genkey('%s:%s:%s:%s' % (dbsalias, userinput, q_start, q_end))
+        key1= genkey('titles:%s:%s:%s:%s' % (dbsalias, userinput, q_start, q_end))
+        res = self.cache.get(key)
+        if  res and type(res) is types.IntType:
+            return self.getfromcache(key, key1, res)
+
         if  not dbsalias or dbsalias.lower() == 'all':
             for alias in self.aliases():
-                print alias
                 result, titles = dbsparser(
                             self.exexml(alias, userinput, q_start, q_end))
                 if  result:
-                    return result, titles
-        return dbsparser(self.exexml(dbsalias, userinput, q_start, q_end))
+                    break
+        else:
+            result, titles = dbsparser(
+                                self.exexml(dbsalias, userinput, q_start, q_end))
+
+        # add results to cache
+        self.storetocache(key, result, key1, titles)
+
+        return result, titles
+
 
     def exehtml(self, dbsalias, userinput, q_start = "", q_end = ""):
         """
@@ -333,13 +373,13 @@ class DBSManager(object):
 # main
 #
 if __name__ == "__main__":
-    dbsmgr = DBSManager()
-    query = "find dataset, site where site like *cern.ch"
-    print "DBS aliases:"
-    dbslist = dbsmgr.aliases()
-    dbslist.sort()
-    print dbslist
-    print dbsmgr.keys_attrs(dbslist[0])
+#    dbsmgr = DBSManager()
+#    query = "find dataset, site where site like *cern.ch"
+#    print "DBS aliases:"
+#    dbslist = dbsmgr.aliases()
+#    dbslist.sort()
+#    print dbslist
+#    print dbsmgr.keys_attrs(dbslist[0])
 
 #    dbsall = dbsmgr.aliases(True)
 #    print dbsall
@@ -357,3 +397,6 @@ if __name__ == "__main__":
 #        print dbsmgr.exe(dbsalias, query, 0, 10)
 #    print dbsmgr.exehtml('all', query, 0, 10)
 #    print dbsmgr.count('all', query)
+    xml=open('sumview.xml', 'r').read()
+    print dbsparser(xml)
+    print dbsparser(xml,"summary_view")

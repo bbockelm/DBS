@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface','rs','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary']
+    iList=['engine','user','password','verbose','dbname','url','iface','rs','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary','memcache','cachelimit']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -56,6 +56,15 @@ class DDConfig:
     if not self.configDict.has_key('ns'):
        return ""
     return self.configDict['ns']
+  def memcache(self):
+    if not self.configDict.has_key('memcache'):
+       return []
+    cachelist = self.configDict['memcache'].split(",")
+    return cachelist
+  def cachelimit(self):
+    if not self.configDict.has_key('cachelimit'):
+       return []
+    return self.configDict['cachelimit']
   def adminUrl(self):
     if not self.configDict.has_key('admin_url'):
        return ""

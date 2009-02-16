@@ -51,7 +51,8 @@ OS X notes:
 ----------
 MySQL and Tomcat has been installed via darwin ports.
 
-sudo /opt/local/bin/mysqld_safe5
+#sudo /opt/local/bin/mysqld_safe5
+sudo /opt/local/lib/mysql5/bin/mysqld_safe --user=mysql &
 
 I modified /opt/local/share/java/tomcat5/bin/setclasspath.sh
 and included into CLASSPATH the mysql jdbc driver

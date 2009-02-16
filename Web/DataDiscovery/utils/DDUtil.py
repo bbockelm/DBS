@@ -9,7 +9,8 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import os, string, sys, time, types, traceback, random, difflib, httplib, urllib, re
+import os, string, sys, time, types, traceback, random, difflib, httplib, urllib
+import md5, re
 import logging, logging.handlers
 import elementtree.ElementTree as ET
 
@@ -36,6 +37,20 @@ TIPS= [
 def singleList(iList):
     return [i[0] for i in iList]
 
+def where_cond(dlist, tag, climit=50):
+    clist = []
+    cond = ""
+    counter = 0
+    for item in dlist:
+        cond += ' or %s=%s' % (tag, item)
+        if  counter == climit:
+            clist.append(cond[3:])
+            counter = 0
+            cond = ""
+        counter += 1
+    clist.append(cond[3:])
+    return clist
+
 def findOutput(input):
     output = ''
     if  input.lower().find(" where ")!=-1:
@@ -59,6 +74,21 @@ def convertTimeToEpoch(tStamp):
     if not yyyymmdd.match(tStamp):
        raise "convertTimeToEpoch: date should be supplied in a form of YYYYMMDD"
     return int(time.mktime(time.strptime(tStamp, '%Y%m%d')))
+
+def convertDBS2DDTime(dbstime):
+    # TODO: check that convertion is correct, example of DBS return
+    # 2007-11-11 21:29:10 CET
+    dstr, hhmmss, zone = dbstime.split()
+    yy, mm, dd = dstr.split('-')
+    months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    mm = months[int(mm)-1]
+    return "%s %s %s %s %s" % (dd, mm, yy, hhmmss, zone)
+
+#    dbstime = dbstime.replace('CET', '').replace('CEST', '').strip()
+#    cettime = time.strptime(dbstime, '%Y-%m-%d %H:%M:%S')
+#    secepoch = time.mktime(cettime) + 3600 # +1 h for GMT
+#    return time.strftime("%d %b %Y %H:%M:%S GMT",
+#                time.gmtime(secepoch))
 
 def findKeyInAList(_list,_key):
     for item in _list:
@@ -183,9 +213,12 @@ SYMBOLS_LIST=[('+','__pl__'),('-','__mi__'),('/','__sl__'),('#','__po__')]
 
 def timeGMT(iTime):
     try:
-       return time.strftime("%d %b %Y %H:%M:%S GMT",time.gmtime(long(iTime)))
+        return time.strftime("%d %b %Y %H:%M:%S GMT",time.gmtime(long(iTime)))
     except:
-       return "Unknown time format, iTime=%s"%iTime
+        try:
+            return convertDBS2DDTime(iTime)
+        except:
+            return "Unknown time format, iTime=%s"%iTime
 
 def timeGMTshort(iTime):
     try:
@@ -883,6 +916,15 @@ def setCherryPyLogger(hdlr,logLevel):
 def removeEmptyLines(s):
     return ''.join(line for line in s.splitlines(1) if not line.isspace())
 
+def genkey(query):
+    """
+    Generate a new key for a given query. We use md5 hash for the
+    query and key is just hex representation of this hash.
+    """
+    keyhash = md5.new()
+    keyhash.update(query)
+    return keyhash.hexdigest()
+
 def textDiff(a, b, th_a="", th_b="", title=""):
     """Takes in strings a and b and returns a human-readable HTML diff."""
     out = []
@@ -998,34 +1040,12 @@ digraph prof {
                   color=colorGood
                else:
                   color=colorBad
-#               dot += "%s -> %s;\n"%(j.attrib['parent'],j.attrib['name'])
-#               dot += "%s %s;\n"%(j.attrib['name'],color)
                if j.tag=="dq_sub_system":
-#                  print j.tag,j.attrib
                   addToDict(sysDict,j.attrib['parent'],[j.attrib['name'],j.attrib['value']])
-#                  dot += "%s -> %s;\n"%(j.attrib['parent'],j.attrib['name'])
-#                  dot += "%s %s;\n"%(j.attrib['name'],color)
                if j.tag=="dq_sub_subsys":
-#                  print j.tag,j.attrib
                   addToDict(subDict,j.attrib['parent'],[j.attrib['name'],j.attrib['value']])
-#    dot+="}\n"
-#    print dot
     node=""
     idx=0
-#    for k in sysDict.keys():
-#        entry=""
-#        for tup in sysDict[k]:
-#            entry+="|<%s> %s"%(tup[0],tup[0])
-#        node+="node%s[label=\"%s\"];\n"%(idx,entry[1:])
-#        idx+=1
-#    for k in subDict.keys():
-#        entry=""
-#        for tup in subDict[k]:
-#            entry+="|<%s> %s"%(tup[0],tup[0])
-#        node+="node%s[label=\"%s\"];\n"%(idx,entry[1:])
-#        idx+=1
-#    print node
-
     return sysDict,subDict
 #
 # main

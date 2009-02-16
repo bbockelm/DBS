@@ -20,6 +20,7 @@ View results:
 </span>
  mode
 </td>
+
 <td align="right">
 <table>
 <tr>
@@ -49,10 +50,28 @@ View results:
 </tr>
 </table>
 </td>
+
 </tr>
 </table>
 </div>
+
+
 <script type="text/javascript">
+function SetSorting() {
+   var input=GetCookie('DBSDD_ainput');
+   if (input.search(' asc')>0) {
+       SetCookie('DBSDD_sortOrder', 'asc');
+   } else {
+       SetCookie('DBSDD_sortOrder', 'desc');
+   }
+   //input = input.strip()
+   var oby = input.search(' by');
+   if (oby>0) {
+       var slist = input.substring(oby,input.length).split(" ");
+       SetCookie('DBSDD_sortName',slist[2]);
+   }
+}
+SetSorting();
 function Update_aSearchForm() {
    var sortName=GetCookie('DBSDD_sortName');
    var sortOrder=GetCookie('DBSDD_sortOrder');
@@ -110,14 +129,17 @@ function ReloadASearch(iface) {
    var userInput=\$('userInput').value;
    var sortName=\$('sel_sortName').value;
    var sortOrder=\$('sortOrder').value;
+/*
    if (iface=='dbsapi') {
       if (userInput.search('order by')>0) {
-         alert('Your input excepression contains order by, ignore GUI sorting');
-         return;
+         //alert('Your input excepression contains order by, ignore GUI sorting');
+         //return;
+         userInput=userInput.substr(0,userInput.search('order by'))+' order by '+sortName+' '+sortOrder;
       } else {
          userInput=userInput+' order by '+sortName+' '+sortOrder;
       }
    }
+*/
    var view=GetCookie('DBSDD_view');
    var grid=0;
    if(view=='grid') {

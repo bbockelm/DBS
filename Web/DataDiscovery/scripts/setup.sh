@@ -53,9 +53,9 @@ if [ -d /usr/local/lib/python${ver} ]; then
 fi
 
 export PYTHONPATH=/data/DBSDataDiscovery/install/lib/python${ver}/site-packages:$PYTHONPATH
-export PYTHONPATH=$DLSHOME/Client/lib:$PYTHONPATH
+#export PYTHONPATH=$DLSHOME/Client/lib:$PYTHONPATH
 export PYTHONPATH=$DBSHOME/Web/DataDiscovery:$PYTHONPATH
-export PYTHONPATH=$DBSHOME/Clients/Python/:$PYTHONPATH
+#export PYTHONPATH=$DBSHOME/Clients/Python/:$PYTHONPATH
 #export PYTHONPATH=$DBSHOME/Clients/PythonAPI/lib:$DBSHOME/Clients/PythonAPI/:$PYTHONPATH
 
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
@@ -67,3 +67,6 @@ export LD_LIBRARY_PATH=/afs/cern.ch/project/oracle/linux/10102gcc323/lib:$LD_LIB
 export TNS_ADMIN=$DDHOME
 
 
+export DBS_DBPARAM=$PWD/DBParam
+export YUI_ROOT=/Users/vk/CMS/yui/build
+export PYTHONPATH=/Users/vk/CMS/COMP/DBS/Web/DataDiscovery/WEBTOOLS:$PYTHONPATH

@@ -36,11 +36,10 @@ class DbsApi2(object):
         self.url    = config['url']
         self.ctype  = 'text/xml'
         self.params = {'apiversion': config['version'], 'api': 'executeQuery'}
+        self.config = config
 
     def getHelp(self, arg=""):
-        config = {'url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
-                    'mode':'POST','version':'DBS_2_0_4','retry':2}
-        dbsApi = DbsApi(config)
+        dbsApi = DbsApi(self.config)
         return dbsApi.getHelp(arg)
 
     def executeQuery(self, query, begin = "", end = "", type = "query"):
@@ -74,13 +73,37 @@ class DbsApi2(object):
         if  error:
             raise Exception(error)
         return data
+
+    def executeSummary(self, query, begin = "", end = "", sortKey = "", sortOrder = ""):
+        params = dict(self.params)
+        params['api']   = 'executeSummary'
+        params['query'] = query
+        params['begin'] = begin
+        params['end']   = end
+        params['sortKey']  = sortKey
+        params['sortOrder']  = sortOrder
+        params['content-type'] = self.ctype
+        data   = urllib2.urlopen(self.url,
+                         urllib.urlencode(params, doseq=True)).read()
+        error  = parseDBSerror(data)
+        if  error:
+            raise Exception(error)
+        return data
+
 #
 # main
 #
 if __name__ == "__main__":
-    config = {'version':'DBS_2_0_4','url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'}
+#    config = {'version':'DBS_2_0_5','url':'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'}
+    config = {'version':'DBS_2_0_6','url':'http://localhost:8880/DBS_VK/servlet/DBSServlet'}
     dbsapi = DbsApi2(config)
     query = 'find site where site like *'
-    data = dbsapi.executeQuery(query,0,10)
+    print "\nCall executeQuery"
+    data = dbsapi.executeQuery(query,0,10,"exe")
+    print data
+    print "\nCall countQuery"
     data = dbsapi.countQuery(query)
+    print data
+    print "\nCall executeSummary"
+    data = dbsapi.executeSummary("find site", 0, 10)
     print data

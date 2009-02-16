@@ -3,7 +3,7 @@
 # Copyright 2007 Cornell University, Ithaca, NY 14853. All rights reserved.
 #
 # Author:  Valentin Kuznetsov, 2007
-# Version: $Id: DDWS.py,v 1.1 2008/08/29 18:44:17 valya Exp $
+# Version: $Id: DDWS.py,v 1.2 2008/10/16 20:19:22 valya Exp $
 """
 Web services toolkit
 """
@@ -79,8 +79,8 @@ def sendSOAPMessage_v1(host,ns,method,envelope,debug=0):
     """Send soap message to cougar.cs.cornell.edu. Right now we use httplib to do a job"""
     http_conn=""
     try:
-	if debug:
-	    httplib.HTTPConnection.debuglevel = 3
+#        if debug:
+#            httplib.HTTPConnection.debuglevel = 3
         if not (host[:7]=="http://" or host[:8]=="https://"):
            raise "invalid URL '%s' it should be in a form http://url or https://url"%host
         hList = urlparse.urlparse(host)
@@ -145,8 +145,8 @@ def sendSOAPMessage(host,ns,method,envelope,debug=0):
     conn=""
     _host="%s"%host
     try:
-        if debug:
-            httplib.HTTPConnection.debuglevel = 1
+#        if debug:
+#            httplib.HTTPConnection.debuglevel = 1
         if not (host[:7]=="http://" or host[:8]=="https://"):
            raise "invalid URL '%s' it should be in a form http://url or https://url"%host
         hList = urlparse.urlparse(host)

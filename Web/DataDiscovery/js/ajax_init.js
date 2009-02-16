@@ -507,11 +507,11 @@ function registerAjaxObjectCalls() {
     lineUpdater = new GetDataUpdater('makeMenu_1','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('makeMenu_1',lineUpdater);
 
-    ajaxEngine.registerRequest('ajaxGetTableColumns','getTableColumns');
+//    ajaxEngine.registerRequest('ajaxGetTableColumns','getTableColumns');
     ajaxEngine.registerRequest('ajaxGetSectionTables','getSectionTables');
-    ajaxEngine.registerRequest('ajaxGetTableColumnsFromSection','getTableColumnsFromSection');
+//    ajaxEngine.registerRequest('ajaxGetTableColumnsFromSection','getTableColumnsFromSection');
 
-    ajaxEngine.registerRequest('ajaxGetDbsSchema','getDbsSchema');
+//    ajaxEngine.registerRequest('ajaxGetDbsSchema','getDbsSchema');
     ajaxEngine.registerRequest('ajaxExecuteQuery','executeSQLQuery');
     ajaxEngine.registerRequest('ajaxFinderSearch','finderSearch');
     ajaxEngine.registerRequest('ajaxFindDSFromFinder','findDSFromFinder');
@@ -580,70 +580,70 @@ function ajaxGetRunDBInfo(run) {
 function ajaxMakeLine(id) {
   ajaxEngine.sendRequest('ajaxMakeLine','id='+id);
 }
-function ajaxGetTableColumns(dbs,tableName,id) {
-  ajaxEngine.sendRequest('ajaxGetTableColumns','dbsInst='+dbs,'tableName='+tableName,'id='+id);
-}
-function ajaxGetTableColumnsFromSection(dbs,section,id) {
-  ajaxEngine.sendRequest('ajaxGetTableColumnsFromSection','dbsInst='+dbs,'section='+section,'id='+id);
-}
-function ajaxGetSectionTables(dbsInst,section,id) {
-    ajaxEngine.sendRequest('ajaxGetSectionTables','dbsInst='+dbsInst,'section='+section,'id='+id);
-}
-function ajaxFillLine(lineId) {
-    dbsInst='localhost';
-    var id=document.getElementById("finder_dbsSelector");
-    if (id) {
-        dbsInst=id.value;
-    }
-    var table=document.getElementById('sectionTables_'+lineId);
-    ajaxEngine.registerRequest('ajaxGetTableColumns','getTableColumns');
-    ajaxGetTableColumns(dbsInst,table.value,lineId);
-}
-function ChangeTables(lineId) {
-    dbsInst='localhost';
-    var id=document.getElementById("finder_dbsSelector");
-    if (id) {
-        dbsInst=id.value;
-    }
-    var id=document.getElementById("selSection_"+lineId);
-    if (id) {
-        var section = id.value;
-        ajaxGetSectionTables(dbsInst,section,lineId);
-        ajaxGetTableColumnsFromSection(dbsInst,section,lineId);
-    }
-}
-function ChangeCols(lineId,tag) {
-    dbsInst='localhost';
-    var id=document.getElementById("finder_dbsSelector");
-    if (id) {
-        dbsInst=id.value;
-    }
-    if(!tag) {
-        tag="sectionTables"
-    }
-    var id=document.getElementById(tag+"_"+lineId);
-    if (id) {
-        var tableName = id.value;
-        ajaxGetTableColumns(dbsInst,tableName,lineId);
-    }
-}
-function ajaxGetDbsSchema(dbsInst,table) {
-    ShowTag('results_finder');
-    if(!dbsInst) {
-        dbsInst='';
-        var dbsList=$('dbsExpert_dbsSelector');
-        for(i=0;i<dbsList.length;i++) {
-           if(dbsList[i].selected) {
-              dbsInst=dbsList[i].value;
-              break;
-           }
-        }
-    }
-    if(!table) {
-        table=$("kw_dbsTables").value
-    }
-    ajaxEngine.sendRequest('ajaxGetDbsSchema','dbsInst='+dbsInst,'table='+table);
-}
+//function ajaxGetTableColumns(dbs,tableName,id) {
+//  ajaxEngine.sendRequest('ajaxGetTableColumns','dbsInst='+dbs,'tableName='+tableName,'id='+id);
+//}
+//function ajaxGetTableColumnsFromSection(dbs,section,id) {
+//  ajaxEngine.sendRequest('ajaxGetTableColumnsFromSection','dbsInst='+dbs,'section='+section,'id='+id);
+//}
+//function ajaxGetSectionTables(dbsInst,section,id) {
+//    ajaxEngine.sendRequest('ajaxGetSectionTables','dbsInst='+dbsInst,'section='+section,'id='+id);
+//}
+//function ajaxFillLine(lineId) {
+//    dbsInst='localhost';
+//    var id=document.getElementById("finder_dbsSelector");
+//    if (id) {
+//        dbsInst=id.value;
+//    }
+//    var table=document.getElementById('sectionTables_'+lineId);
+//    ajaxEngine.registerRequest('ajaxGetTableColumns','getTableColumns');
+//    ajaxGetTableColumns(dbsInst,table.value,lineId);
+//}
+//function ChangeTables(lineId) {
+//    dbsInst='localhost';
+//    var id=document.getElementById("finder_dbsSelector");
+//    if (id) {
+//        dbsInst=id.value;
+//    }
+//    var id=document.getElementById("selSection_"+lineId);
+//    if (id) {
+//        var section = id.value;
+//        ajaxGetSectionTables(dbsInst,section,lineId);
+//        ajaxGetTableColumnsFromSection(dbsInst,section,lineId);
+//    }
+//}
+//function ChangeCols(lineId,tag) {
+//    dbsInst='localhost';
+//    var id=document.getElementById("finder_dbsSelector");
+//    if (id) {
+//        dbsInst=id.value;
+//    }
+//    if(!tag) {
+//        tag="sectionTables"
+//    }
+//    var id=document.getElementById(tag+"_"+lineId);
+//    if (id) {
+//        var tableName = id.value;
+//        ajaxGetTableColumns(dbsInst,tableName,lineId);
+//    }
+//}
+//function ajaxGetDbsSchema(dbsInst,table) {
+//    ShowTag('results_finder');
+//    if(!dbsInst) {
+//        dbsInst='';
+//        var dbsList=$('dbsExpert_dbsSelector');
+//        for(i=0;i<dbsList.length;i++) {
+//           if(dbsList[i].selected) {
+//              dbsInst=dbsList[i].value;
+//              break;
+//           }
+//        }
+//    }
+//    if(!table) {
+//        table=$("kw_dbsTables").value
+//    }
+//    ajaxEngine.sendRequest('ajaxGetDbsSchema','dbsInst='+dbsInst,'table='+table);
+//}
 function registerAjaxLucene() {
     ajaxEngine.registerRequest('ajaxGetLucene','getLucene');
     updater_stats = new GetDataUpdater('webSearchStats','replace','noResultsMenu');
@@ -1469,9 +1469,9 @@ function ajaxPrintXML(input,id) {
     ajaxEngine.sendRequest('ajaxPrintXML','input='+input,'id='+id,'ajax=1');
     ShowTag(id);
 }
-function ajaxConvertXMLTOTXT(input,id) {
-    ajaxEngine.registerRequest('ajaxConvertXMLTOTXT','convertXMLTOTXT');
-    ajaxEngine.registerAjaxElement(id);
-    ajaxEngine.sendRequest('ajaxConvertXMLTOTXT','input='+input,'id='+id,'ajax=1','html=1');
-    ShowTag(id);
-}
+//function ajaxConvertXMLTOTXT(input,id) {
+//    ajaxEngine.registerRequest('ajaxConvertXMLTOTXT','convertXMLTOTXT');
+//    ajaxEngine.registerAjaxElement(id);
+//    ajaxEngine.sendRequest('ajaxConvertXMLTOTXT','input='+input,'id='+id,'ajax=1','html=1');
+//    ShowTag(id);
+//}

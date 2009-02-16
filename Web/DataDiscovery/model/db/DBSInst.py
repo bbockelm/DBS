@@ -112,7 +112,7 @@ class DBManager(DDLogger):
      http://www.sqlalchemy.org
                                 
   """
-  def __init__(self,iface='dbsapi',verbose=0):
+  def __init__(self,dbsmgr,verbose=0):
       """
          DBSDD constructor. 
          @type verbose: boolean or integer
@@ -121,10 +121,9 @@ class DBManager(DDLogger):
          @return: none
       """
       config = DDConfig()
-#      DDLogger.__init__(self,config.loggerDir(),"DBManager",verbose)
       DDLogger.__init__(self,config.loggerDir(),"DBManager",verbose=1)
-      self.iface     = iface
-      self.verbose   =int(verbose)
+      self.dbsmgr    = dbsmgr
+      self.verbose   = int(verbose)
       self.clear()
       
   def setVerbose(self,level):
@@ -158,9 +157,20 @@ class DBManager(DDLogger):
   def connect(self,dbsInst,iface="dd"):
       t_ini=time.time()
       eType='oracle' # default DB back-end
+      dbOwner = ''
       if  not self.engine.has_key(dbsInst):
-          dbAuth = DDAuthentication(dbsInst,self.verbose) 
-          dbType, dbName, dbUser, dbPass, host, url = dbAuth.dbInfo()
+          if  self.dbsmgr:
+              dbType  = self.dbsmgr.getdbtype(dbsInst)
+              dbName  = self.dbsmgr.getaccount(dbsInst)
+              dbUser  = self.dbsmgr.getlogin(dbsInst)
+              dbPass  = self.dbsmgr.getpass(dbsInst)
+              host    = ''
+              url     = self.dbsmgr.geturl(dbsInst)
+              dbOwner = self.dbsmgr.getowner(dbsInst)
+          else:
+              dbAuth  = DDAuthentication(dbsInst,self.verbose) 
+              dbType, dbName, dbUser, dbPass, host, url = dbAuth.dbInfo()
+              dbOwner = dbsInst.upper()
 
           eType  = string.lower(dbType)
           print "DBManager:connect to %s@%s:%s/%s"%(dbType,dbsInst,host,dbName)
@@ -178,8 +188,8 @@ class DBManager(DDLogger):
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
 #             tQuery= "select table_name from user_tables"
              tQuery= "select tname from tab"
-             tQuery="""SELECT table_name FROM all_tables WHERE owner='%s'"""%dbsInst.upper()
-             vQuery="""SELECT view_name FROM all_views WHERE owner='%s'"""%dbsInst.upper()
+             tQuery="""SELECT table_name FROM all_tables WHERE owner='%s'"""%dbOwner
+             vQuery="""SELECT view_name FROM all_views WHERE owner='%s'"""%dbOwner
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
 #             self.writeLog("Use MySQL instance '%s'"%dbsInst)
@@ -193,7 +203,10 @@ class DBManager(DDLogger):
           self.tQuery[dbsInst] = tQuery
           self.vQuery[dbsInst] = vQuery
 
-      con = self.engine[dbsInst].connect()
+      try:
+          con = self.engine[dbsInst].connect()
+      except:
+          raise "Fail to connect to '%s'" % dbsInst
 
       if  not self.dbTables.has_key(dbsInst):
           dbsMeta = sqlalchemy.MetaData()
@@ -208,7 +221,7 @@ class DBManager(DDLogger):
               if self.verbose>1:
                  print "DBS Tables|Views",tName
               if eType=='oracle':
-                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+                 tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbOwner.lower(),oracle_resolve_synonyms=True,useexisting=True)
               else:
                  tables[tName]=sqlalchemy.Table(t[0],dbsMeta,autoload=True)
               if self.verbose>1:
@@ -220,7 +233,7 @@ class DBManager(DDLogger):
                   if self.verbose>1:
                      print "DBS Views",tName
                   if eType=='oracle':
-                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbsInst.lower(),oracle_resolve_synonyms=True,useexisting=True)
+                     tables[tName]=sqlalchemy.Table(tName,dbsMeta,autoload=True,schema=dbOwner.lower(),oracle_resolve_synonyms=True,useexisting=True)
                   else:
                      tables[tName]=sqlalchemy.Table(v[0],dbsMeta,autoload=True)
                   if self.verbose>1:

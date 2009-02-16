@@ -119,7 +119,7 @@ if __name__ == "__main__":
     dataset='/Monitor/Commissioning08-v1/RAW'
     run=66423
     xmlinput="""<?xml version='1.0' standalone='yes'?><dbs><run run_number='%s' lumi_section_number='' /></dbs>"""%run
-    params={'apiversion':'DBS_2_0_2','api':'listRunLumiDQ','xmlinput':xmlinput,'dataset':dataset}
+    params={'apiversion':'DBS_2_0_6','api':'listRunLumiDQ','xmlinput':xmlinput,'dataset':dataset}
     url="cms_dbs_prod_global_writer/servlet/DBSServlet"
     server = DDParamServer(server="cmsdbsprod.cern.ch")
     page = server.sendPostMessage(url,params,debug=1)
