@@ -1910,7 +1910,7 @@ class ApiDispatcher:
 			self.title+=str(name)+'\t'
 			#print "NAME where start_print==1 %s " % str(name)
 			#print self.title
-		if name == 'result':
+		if name == 'row':
 			self.start_print=1
 			#cout=""
 
@@ -1941,6 +1941,7 @@ class ApiDispatcher:
 				self.printme+=str((escape(s)).strip())+'\t'
 
 	   def endElement(self, name):
+		#print name
 		if name=='sql':
 			self.next_is_query=0
 		if name == 'userinput':
@@ -1949,7 +1950,8 @@ class ApiDispatcher:
                         self.next_is_dataset=0
                 if name == 'file':
                         self.new_file=0
-		if name == 'result':
+		if name == 'row':
+			
 			if self.first_time_result:
 				print "-------------------------------------------------------"
 				print self.title+"\n"
