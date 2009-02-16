@@ -1,6 +1,6 @@
 /**
- $Revision: 1.42 $"
- $Id: DBSApiTransferLogic.java,v 1.42 2009/02/06 17:35:55 sekhri Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSApiTransferLogic.java,v 1.43 2009/02/10 19:48:53 sekhri Exp $"
  *
  */
 
@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
@@ -46,41 +48,32 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	}
 	public void listDatasetContents(Connection conn, Writer out, String path, String blockName, String instanceName, String clientVersion, boolean all) throws Exception {
 		
-System.out.println("listDatasetContents line 1");
 		String data[] = parseDSPath(path);
 		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
                 
-System.out.println("listDatasetContents line 2");
 		out.write(((String) "<dataset path='" + path + 
 					"' block_name='" + blockName +
 					"' />\n"));
                 
-System.out.println("listDatasetContents line 3");
                 //Format of insertFile xml has modified slightly, hance changed required here, AA 01/18/2007
                /* out.write(((String) "<dataset path='" + path + "'/>\n" +
                                     "<block block_name='" + blockName +"'>\n"+
                                     "</block>\n")); */
 
                 //FIXME: We need to add storage_elemnts in above xml as well,  AA 01/18/2007 
-System.out.println("listDatasetContents line 4");
 		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
-System.out.println("listDatasetContents line 5");
 		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
 		//pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null);
 		pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null, all);
-System.out.println("listDatasetContents line 6");
 		(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out, path, clientVersion);
 		pdApi.listDatasetParents(conn, out, path);
-System.out.println("listDatasetContents line 7");
 		//bApi.listPathParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
-System.out.println("listDatasetContents line 8");
 		bApi.listBlocks(conn, out, path, blockName, null, "SUPER");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, "", blockName, null, "true");
 
 
-System.out.println("listDatasetContents line 9");
 
 		//CHECK TO SEE IF THIS IS GLOBAL INSTANCE, THEN NO NEED TO TRANSFER BRANCH AND TRIGGER INFORMATION (branchNTrig=false)
 		//String branchNTrig = "true";
@@ -146,11 +139,29 @@ System.out.println("listDatasetContents line 10");
 			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser, clientVersion);
 
 
-System.out.println("Line 1");		
-		Vector runVector = DBSUtil.getVector(pdTable, "run");
-		for (int j = 0; j < runVector.size(); ++j) 
+
+		//This is older code for inserying runs in Processed Dataset
+		/*Vector runVector = DBSUtil.getVector(pdTable, "run");
+		for (int j = 0; j < runVector.size(); ++j) {
+			System.out.println("INSERTRING RUNS ------------------------------->");
 			insertRun(conn, out, (Hashtable)runVector.get(j), dbsUser);
-System.out.println("Line 2");
+			
+		}
+		*/
+		//This is to fix the extra runs coming from old server. We need to check in files before inserting the runs
+		Vector runVector = DBSUtil.getVector(pdTable, "run");
+		Map<String, Boolean> runMap = new HashMap<String, Boolean>();
+		for(Object aRun: runVector) runMap.put( get((Hashtable)aRun, "run_number", true), new Boolean(Boolean.FALSE));
+
+		ArrayList files = DBSUtil.getArrayList(table, "file");
+		for(Object file: files) {
+			ArrayList lumis = DBSUtil.getArrayList((Hashtable)file, "file_lumi_section");
+			for(Object lumi: lumis) {
+				String thisRunN = get((Hashtable)lumi, "run_number", true);
+				if(doesRunExists(runVector, thisRunN)) runMap.put( thisRunN, new Boolean(Boolean.TRUE));
+			}
+		}
+		for(Object aRun: runVector) if(runMap.get(get((Hashtable)aRun, "run_number", true)).booleanValue()) insertRun(conn, out, (Hashtable)aRun, dbsUser);
 
 		//Fix for backward comaptibility of migration from old server to new
 		String data[] = parseDSPath(path);
@@ -167,7 +178,6 @@ System.out.println("Line 2");
 
 		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser, ignoreParent);
 		Vector closeBlockVector = new Vector();
-System.out.println("Line 3");		
 		DBSApiBlockLogic blockApi = new DBSApiBlockLogic(this.data);
 		Vector blockVector = DBSUtil.getVector(pdTable, "block");
 		for (int j = 0; j < blockVector.size(); ++j) {
@@ -186,19 +196,23 @@ System.out.println("Line 3");
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
 		//System.out.println("---------> Inserting files for path " + path);
 
-
-
-
-
-
                 (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getArrayList(table, "file"), dbsUser, ignoreParent);
  
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {
 			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
 		}
-
-		
 	}
+
+	private boolean doesRunExists(Vector runVector, String runNumber) throws Exception{
+		for(Object run: runVector) {
+			if(runNumber.equals(get((Hashtable)run, "run_number", true))) {
+				//insertRun(conn, out, run, dbsUser);
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 }
