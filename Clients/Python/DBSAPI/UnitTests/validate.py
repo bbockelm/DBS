@@ -435,6 +435,10 @@ run_dq_search_criteria = DbsRunLumiDQ (
                                 DQFlagList = [qim_flag_g, qim_flag_b, qim_flag_u, qim_flag_int]
                         )
 
+def assertPrimary(test, prim1, prim2):
+	test.assertEqual(prim1['Name'], prim2['Name'])
+	test.assertEqual(prim1['Type'], prim2['Type'])
+
 def assertAlgo(test, algoIn1, algoIn2):
 	test.assertEqual(algoIn1['ExecutableName'], algoIn2['ExecutableName'])
 	test.assertEqual(algoIn1['ApplicationVersion'], algoIn2['ApplicationVersion'])
@@ -490,6 +494,10 @@ def assertLumi(test, lumiIn1, lumiIn2):
 	
 def assertBlock(test, block1, block2):
 	test.assertEqual(block1['Name'], block2['Name'])
+	test.assertEqual(block1['NumberOfEvents'], block2['NumberOfEvents'])
+	test.assertEqual(block1['OpenForWriting'], block2['OpenForWriting'])
+	test.assertEqual(block1['BlockSize'], block2['BlockSize'])
+	test.assertEqual(block1['NumberOfFiles'], block2['NumberOfFiles'])
 
 def assertFileQ(test, fileQ1, fileQ2):
 	test.assertEqual(fileQ1['Description'], fileQ2['Description'])
@@ -505,8 +513,9 @@ class Test_001(unittest.TestCase):
 		primaryList = api.listPrimaryDatasets(primName)
 		self.assertEqual(len(primaryList), 1)
 		for primaryInDBS in primaryList:
-			self.assertEqual(primName, primaryInDBS['Name'])
-			self.assertEqual(primType, primaryInDBS['Type'])
+			assertPrimary(primaryInDBS, primObj)
+			#self.assertEqual(primName, primaryInDBS['Name'])
+			#self.assertEqual(primType, primaryInDBS['Type'])
 
 class Test_002(unittest.TestCase):
 	def testAlgorithm(self):
