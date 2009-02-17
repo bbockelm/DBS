@@ -309,6 +309,28 @@ class DDHelper(DDLogger):
         res = self.queryDBS(dbsInst, query)
         return res
 
+#    def getNEvt(self, dbsInst, dlist):
+#        query = "find dataset, run, sum(file.numevents) where "
+#        clist = []
+#        cond = ""
+#        counter = 0
+#        for dataset, run in dlist:
+#            cond += ' or (dataset=%s and run=%s' % (dataset, run)
+#            if  counter == climit:
+#                clist.append(cond[3:])
+#                counter = 0
+#                cond = ""
+#            counter += 1
+#        clist.append(cond[3:])
+#        dr_dict = {}
+#        for cond in clist:
+#            newquery = query+cond
+#            res = self.queryDBS(dbsInst, newquery)
+#            for row in res:
+#                dataset, run , nevts = row
+#                dr_dict[(dataset, run)] = nevts
+#        return dr_dict
+        
     def getRuns(self, dbsInst, dataset, primD="*", primType="*", minRun="*", maxRun="*", fromRow=0, limit=0, count=0, userMode="user"):
         if primD.lower() == "any": primD = "*"
         if primType.lower() == "any": primType = "*"
@@ -334,27 +356,21 @@ class DDHelper(DDLogger):
             res.sort()
             return len(res), res[0], res[-1]
     
-#        query = 'find site where dataset = %s' % dataset
-#        if  cond:
-#            query += cond
-#        res = self.queryDBS(dbsInst, query)
-#        selist = []
-#        for se in res:
-#            selist.append(se)
+        query = 'find site where dataset = %s' % dataset
+        if  cond:
+            query += cond
+        res = self.queryDBS(dbsInst, query)
+        selist = [se for se in res]
 
-        # TODO: DBS-QL sql path counting is screw when I added datatype, it doesn't account
-        # for FileRunLumi table
-#        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = %s' % dataset
-        query  = 'find dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = %s' % dataset
+        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) where dataset = %s' % dataset
         if  cond:
             query += cond
         query += ' order by run.number'
         res = self.queryDBS(dbsInst, query, fromRow, limit)
         oList = []
         for item in res:
-#            dsType, path, run, nEvts, nLumis, totLumi, store, \
-            path, run, nEvts, nLumis, totLumi, store, \
-            sRun, eRun, cBy, cDate, mBy, mDate, nFiles, fSize = item
+            dsType, path, run, nEvts, nLumis, totLumi, store, \
+            sRun, eRun, cBy, cDate, mBy, mDate, nFiles, fSize, fNevts = item
 
             if  not run:
                 continue
@@ -372,11 +388,17 @@ class DDHelper(DDLogger):
             cBy   = parseCreatedBy(cBy)
             mBy   = parseCreatedBy(mBy)
 
-            query = 'find datatype, site where dataset = %s and run = %s' % (path, run)
-            result= self.queryDBS(dbsInst, query)
+            if  not nEvts or nEvts == "0":
+                nEvts = fNevts
+
+#            query = 'find datatype, site where dataset = %s and run = %s' % (path, run)
+#            result= self.queryDBS(dbsInst, query)
             # I make assumption that datatype will not change for dataset/run
-            dsType = ""
-            selist = [site for dsType, site in result]
+#            dsType = ""
+#            selist = []
+#            for dsType, site in result:
+#                selist.append(site)
+#            selist = [site for dsType, site in result]
 
             oList.append( [run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path,selist,fSize,nFiles] )
         runDBInfoDict = {}
