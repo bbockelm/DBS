@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.209 $"
- $Id: DBSSql.java,v 1.209 2009/01/30 22:01:17 afaq Exp $"
+ $Revision: 1.210 $"
+ $Id: DBSSql.java,v 1.210 2009/02/11 19:36:17 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1932,7 +1932,16 @@ public class DBSSql {
 
 
         public static String listPathParentOld() throws SQLException {
-
+		String sql = "\tSELECT DISTINCT b.id \n" +
+			"\tFROM "+owner()+"Block b \n" +
+			"\tJOIN "+owner()+"ProcessedDataset procds \n" +
+				"\t\tON b.Dataset = procds.ID \n" +
+			"\tJOIN "+owner()+"ProcDSParent dp \n" +
+				"\t\tON dp.ItsParent = procds.ID \n" +
+			"\tJOIN "+owner()+"Block bl \n" +
+			"\tON bl.Dataset = dp.ThisDataset \n" +
+			 "\tWHERE bl.Path = ?\n";
+		/*
 		String sql = "\tSELECT DISTINCT b.id \n" +
 			"\tFROM "+owner()+"Block b \n" +
 			"\tJOIN "+owner()+"ProcessedDataset procds \n" +
@@ -1942,7 +1951,7 @@ public class DBSSql {
 			 "\tWHERE dp.ThisDataset IN ( \n" + 
 				"\t\tSELECT bl.Dataset FROM " + owner() +"Block bl WHERE bl.Path = ?\n" +
 				"\t) \n";
-
+		*/
                 /*String sql = "\tSELECT fl.Block \n" +
                                 "\tFROM " + owner() + "Files fl \n" +
                                 "\tWHERE fl.ID in ( \n" +

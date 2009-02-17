@@ -1,6 +1,6 @@
 /**
- $Revision: 1.43 $"
- $Id: DBSApiTransferLogic.java,v 1.43 2009/02/10 19:48:53 sekhri Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSApiTransferLogic.java,v 1.44 2009/02/16 20:01:24 sekhri Exp $"
  *
  */
 
@@ -161,7 +161,17 @@ System.out.println("listDatasetContents line 10");
 				if(doesRunExists(runVector, thisRunN)) runMap.put( thisRunN, new Boolean(Boolean.TRUE));
 			}
 		}
-		for(Object aRun: runVector) if(runMap.get(get((Hashtable)aRun, "run_number", true)).booleanValue()) insertRun(conn, out, (Hashtable)aRun, dbsUser);
+		//Make a new set of runsVector for ProcessedDataset
+		Vector newRunVector = new Vector();
+
+		for(Object aRun: runVector)
+			if(runMap.get(get((Hashtable)aRun, "run_number", true)).booleanValue()) {
+				insertRun(conn, out, (Hashtable)aRun, dbsUser);
+				newRunVector.add((Hashtable)aRun);
+			}
+			
+		pdTable.remove("run");
+		pdTable.put("run", newRunVector);
 
 		//Fix for backward comaptibility of migration from old server to new
 		String data[] = parseDSPath(path);

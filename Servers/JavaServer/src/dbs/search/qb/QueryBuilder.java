@@ -418,10 +418,12 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 
-					if(Util.isSame(token, "dataset")) {
+					if(Util.isSame(token, "dataset") && (!Util.isSame(token2, "parent"))) {
 						checkMax(iter);
 						allKws = addUniqueInList(allKws, "ProcessedDataset");
+						System.out.println("1111Adding ProcessedDataset >>>>>>>>>>>>>>>>>>>>>>");
 					}
+				
 
 					Vertex vCombined = u.getMappedVertex(aKw);
 					//System.out.println("\n\n---Changing vCombined " + aKw);
@@ -444,7 +446,9 @@ public class QueryBuilder {
 
 
 						}
+						for(int ai = 0 ; ai != allKws.size() ; ++ai ) System.out.println("kw " + (String)allKws.get(ai));
 					} else {
+
 						//System.out.println("in ELSE ---> u.getRealFromVertex " + u.getRealFromVertex(vCombined));
 						allKws = addUniqueInList(allKws, u.getRealFromVertex(vCombined));
 						checkMax(iter);
@@ -464,6 +468,7 @@ public class QueryBuilder {
 
 
 						}
+						for(int ai = 0 ; ai != allKws.size() ; ++ai ) System.out.println("kw else" + (String)allKws.get(ai));
 						
 					}
 				}
@@ -527,7 +532,10 @@ public class QueryBuilder {
                             if  (key!=null) {
 				if(Util.isSame(key, "dataset")) {
 					if(!isIn(allKws, "Files")) allKws = addUniqueInList(allKws, "Block");
-				}else if(key.startsWith("dataset")) allKws = addUniqueInList(allKws, "ProcessedDataset");
+				}else if(key.startsWith("dataset")) {
+					allKws = addUniqueInList(allKws, "ProcessedDataset");
+					System.out.println("2222Adding ProcessedDataset >>>>>>>>>>>>>>>>>>>>>>");
+				}
                             }
 			} catch (ClassCastException e) {
                         }
