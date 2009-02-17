@@ -1843,9 +1843,14 @@ class ApiDispatcher:
                self.printRED("\n--donotrunquery specified, will not execute the query")
                qu="query"
 
-	data=self.api.executeQuery(userInput, type=qu)
 
-        return self.parseResults(data)
+	data=self.api.executeQuery(userInput, type=qu)
+	
+	print self.api.getApiVersion()
+	if self.api.getApiVersion() < "DBS_2_0_6":
+		return self.parseReultsOldStyle(data)
+        else: 
+		return self.parseResults(data)
 
   def getDataFromDDSearch(self, userInput):
 
@@ -1970,6 +1975,96 @@ class ApiDispatcher:
 
     #print results
     return results
+
+  def parseReultsOldStyle(self, data):
+
+        results={}
+        results['QUERY']=''
+        results['USERINPUT']=''
+        results['DATASETPATH']=''
+        results['ADSFileList']=[]
+
+        if self.optdict.has_key('quiet'):
+                quiet=self.optdict.get('quiet')
+        try:
+        # DbsExecutionError message would arrive in XML, if any
+         class Handler (xml.sax.handler.ContentHandler):
+
+           def __init__(self):
+                xml.sax.handler.ContentHandler.__init__(self)
+                self.next_is_query=0
+                self.next_is_userinput=0
+                self.next_is_dataset=0
+                self.new_file=0
+                self.dataset_once=1
+                self.sql_once=1
+                self.columns = True
+
+           def startElement(self, name, attrs):
+                if name == 'sql':
+                        self.next_is_query=1
+
+                if name == 'userinput':
+                        self.next_is_userinput=1
+
+                # That sucks 
+                if name == 'timeStamp':
+                        self.next_is_userinput=0
+
+
+                if name == 'result':
+                        #result FILES_LOGICALFILENAME   PATH
+                        out=""
+                        if self.columns:
+                                self.columns = False
+                                cout = ""
+                                for akey in attrs.keys():
+                                        cout += akey + '\t'
+                                print cout
+                                print '_________________________________________________________________________________'
+
+                        for akey in attrs.keys():
+                                out += str(attrs[akey]) + '\t'
+
+                        #for aval in attrs.values():
+                        #       out += "    " +str(aval)
+                        if not quiet: print out
+                        if  attrs.has_key('FILES_LOGICALFILENAME'):
+                                aFile={}
+                                aFile['LogicalFileName']=str(attrs['FILES_LOGICALFILENAME'])
+                                results['ADSFileList'].append(aFile)
+                        if self.dataset_once==1:
+                                if  attrs.has_key('PATH'):
+                                        results['DATASETPATH']+=str(escape(attrs['PATH']))
+                                        self.dataset_once=0
+
+           def characters(self, s):
+
+                if str(escape(s)).strip() in ("\n", ""): return
+                elif self.next_is_query==1 and self.sql_once==1:
+                        results['QUERY'] += str(escape(s))
+                        return
+
+                elif self.next_is_userinput==1:
+                        results['USERINPUT']+=str(escape(s))
+                        return
+                else: pass
+
+           def endElement(self, name):
+                if name=='sql':
+                        self.next_is_query=0
+                        self.sql_once=0
+                if name == 'userinput':
+                        self.next_is_userinput=0
+
+         xml.sax.parseString (data, Handler ())
+
+        except SAXParseException, ex:
+         msg = "Unable to parse XML response from DBS Server"
+         msg += "\n  Server not responding as desired %s" % self.Url
+         raise DbsConnectionError (args=msg, code="505")
+        #print results
+        return results
 
   def handleSearchCall(self):
 
