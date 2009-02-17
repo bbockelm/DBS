@@ -588,9 +588,12 @@ public class QueryBuilder {
 						// If path is given in where clause it should op should always be =
 						//if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
 						//queryWhere += "\tProcessedDataset.ID " + handlePath(val);
-						if(isIn(allKws, "Files")) queryWhere += "\tFiles.Block ";
-						else queryWhere += "\tBlock.ID ";
-						queryWhere += handlePath(val, op);
+						if(isIn(allKws, "Files")) { queryWhere += "\tFiles.Block ";
+							queryWhere += handlePath(val, op);
+						} else { 
+							queryWhere += "\tBlock.Path ";
+							queryWhere += handleOp(op, val, bindValues);
+						}
 					}
 				} else if(Util.isSame(key, "dq")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operator should be = . Invalid operator given " + op);
@@ -1082,13 +1085,8 @@ public class QueryBuilder {
 			if(Util.isSame(op, "like") || Util.isSame(op, "not like")) query += "\t" + makeUpper("Block.Path");
 			else query += "\tBlock.Path ";// + op + " ?\n" +
 			//")";
-		/*if(Util.isSame(op, "in")) query += handleIn(path);
-		else if(Util.isSame(op, "like")) query += handleLike(path);
-		else {
-			query += op + " ?\n";
-			bindValues.add(path);
-		}*/
 		query += handleOp(op, path, bindValues) + ")";
+		
 		return query;
 	}
 	private String handleDQ(String dqVal, List<?> cs) throws Exception {

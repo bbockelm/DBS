@@ -252,8 +252,11 @@ executeQuery () {
 	#$CMD query="find dataset where file = *RAW" upper="False"
 	#$CMD query="find dataset"
 	#$CMD query="find dataset.parent where dataset = /DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
+	#$CMD query="find procds.parent where dataset = /DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
+	$CMD query="find procds.parent where dataset = /DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO and file.status != INVALID"
 	#$CMD query="find dataset where dataset.parent = /DY_mumu_10/CMSSW_1_2_3-Spring07-EWK-1175695062/GEN-SIM"
-	$CMD query="find dataset.tag, dataset.createdate where dataset = /DY_mumu_10/CMSSW_1_2_3-Spring07-EWK-1175695062/GEN-SIM"
+	#$CMD query="find dataset.tag, dataset.createdate where dataset = /DY_mumu_10/CMSSW_1_2_3-Spring07-EWK-1175695062/GEN-SIM"
+	#$CMD query="find procds.tag, procds.createdate where dataset = /DY_mumu_10/CMSSW_1_2_3-Spring07-EWK-1175695062/GEN-SIM"
 	
 	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
