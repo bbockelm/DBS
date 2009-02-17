@@ -1846,7 +1846,7 @@ class ApiDispatcher:
 
 	data=self.api.executeQuery(userInput, type=qu)
 	
-	print self.api.getApiVersion()
+	#print self.api.getApiVersion()
 	if self.api.getApiVersion() < "DBS_2_0_6":
 		return self.parseReultsOldStyle(data)
         else: 
