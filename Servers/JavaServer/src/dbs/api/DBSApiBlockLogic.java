@@ -1,6 +1,6 @@
 /**
- $Revision: 1.67 $"
- $Id: DBSApiBlockLogic.java,v 1.67 2009/01/14 19:48:28 afaq Exp $"
+ $Revision: 1.68 $"
+ $Id: DBSApiBlockLogic.java,v 1.68 2009/01/30 21:29:56 afaq Exp $"
  *
  */
 
@@ -442,7 +442,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			} else {
 				//Cannot do such a change any more, if this is GLOBAl intance, give up !!!	
 				if (this.data.instanceName.equals("GLOBAL")) 
-					throw new Exception("DBS GLOBAL DOES NOT MAINTAIN SE/Site information Anymore");
+					throw new Exception("The new SE " + seNameTo +" already exists in DBS GLOBAL and therefore there is NO NEED to call this API.");
 
 				Vector oldBlockIDs = getBlockIDListFromMap(conn, seIDOld);
 				Vector newBlockIDs = getBlockIDListFromMap(conn, seIDNew);
