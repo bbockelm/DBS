@@ -143,13 +143,16 @@ def findInString(s,pat1,pat2,oList=[]):
     return findInString(s[idx2+len(pat2):],pat1,pat2,oList)
 
 def printList(iList,lenList):
-    for idx in range(0,len(iList)):
-        item = str(iList[idx])
-        if  len(item)<lenList[idx]:
-            elem=str(item)+" "*(lenList[idx]-len(item))
-        else: elem = item
-        print elem,
-    print
+    if  type(iList) is types.ListType:
+        for idx in range(0,len(iList)):
+            item = str(iList[idx])
+            if  len(item)<lenList[idx]:
+                elem=str(item)+" "*(lenList[idx]-len(item))
+            else: elem = item
+            print elem,
+        print
+    else:
+        print iList
 
 class DBSManager(object):
     def __init__(self):
