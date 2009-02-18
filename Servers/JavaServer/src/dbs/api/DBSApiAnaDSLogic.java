@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiAnaDSLogic.java,v 1.51 2009/02/12 22:41:56 afaq Exp $"
+ $Revision: 1.52 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.52 2009/02/13 21:23:48 afaq Exp $"
  *
  */
 
@@ -59,8 +59,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ID") +
 					"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
 					"' path='" + get(rs, "PATH") +
-					"' user_input='" + get(rs, "USER_INPUT") +
-					"' sql_query='" + get(rs, "SQL_QUERY") +
+					"' user_input='" + StringEscapeUtils.escapeXml(get(rs, "USER_INPUT")) +
+					"' sql_query='" + StringEscapeUtils.escapeXml(get(rs, "SQL_QUERY")) +
 					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
@@ -195,8 +195,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 								"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
 								"' description='" + get(rs, "ADD_DESCRIPTION") +
 								"' path='" + get(rs, "ANALYSIS_DATASET_DEF_PATH") +
-								"' user_input='" + get(rs, "USER_INPUT") +
-			                                        "' sql_query='" + get(rs, "SQL_QUERY") +
+								"' user_input='" + StringEscapeUtils.escapeXml(get(rs, "USER_INPUT")) +
+			                                        "' sql_query='" + StringEscapeUtils.escapeXml(get(rs, "SQL_QUERY")) +
 								"' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
 								"' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
 								"' created_by='" + get(rs, "ADD_CREATED_BY") +
