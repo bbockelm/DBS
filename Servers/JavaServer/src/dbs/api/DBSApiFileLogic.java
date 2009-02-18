@@ -1,6 +1,6 @@
 /**
- $Revision: 1.117 $"
- $Id: DBSApiFileLogic.java,v 1.117 2009/02/06 17:35:55 sekhri Exp $"
+ $Revision: 1.118 $"
+ $Id: DBSApiFileLogic.java,v 1.118 2009/02/10 19:48:53 sekhri Exp $"
  *
  */
 
@@ -782,6 +782,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Simple vector that keeps track of what runs have already been added to this dataset
 		//Vector runsMapped = new Vector();
 		ArrayList runsMapped = new ArrayList();
+		String cbUserID = null;
+		String creationDate = null;
+		java.util.ArrayList  blockIDList = new java.util.ArrayList();
+
 
                 for (int i = 0; i < files.size() ; ++i) {
                         Hashtable file = (Hashtable)files.get(i);
@@ -794,8 +798,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         String type = get(file, "type", true).toUpperCase();
 
                         String valStatus = get(file, "validation_status", false).toUpperCase();
-                        String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
-                        String creationDate = getTime(file, "creation_date", false);
+                        cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
+                        creationDate = getTime(file, "creation_date", false);
                         ArrayList lumiVector = DBSUtil.getArrayList(file,"file_lumi_section");
                         ArrayList tierVector = DBSUtil.getArrayList(file,"file_data_tier");
                         ArrayList parentVector = DBSUtil.getArrayList(file,"file_parent");
@@ -984,7 +988,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 }
 
 				//Insert Block Parentage
-				insertBlockParentage(conn, out, fileID, blockID, cbUserID, lmbUserID, creationDate);
+				java.util.ArrayList  blockIDListTMP = getFileBlockParentage(conn, out, fileID);
+				for (Object s: blockIDListTMP) 
+						if (!blockIDList.contains(s)) blockIDList.add(s);
+
 
                         if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
                 }//For loop
@@ -993,15 +1000,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 if (newFileInserted) {
                 	DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
                         blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
-                }
+			insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
+		}
 	}
 
-        private void insertBlockParentage(Connection conn, Writer out, String fileID, String blockID, 
-					String cbUserID, String lmbUserID, String creationDate) throws Exception {
+        java.util.ArrayList getFileBlockParentage(Connection conn, Writer out, String fileID) throws Exception {
 
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
-		//List<String> blockIDList = new List<String>();
 		java.util.ArrayList  blockIDList = new java.util.ArrayList();
                 try {
                         ps = DBSSql.listFileParentBlocks(conn, fileID);
@@ -1016,33 +1022,28 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (rs != null) rs.close();
 		}
 
-		try {
-			for (Object s: blockIDList) 
-				insertMap(conn, out, "BlockParent", "ThisBlock", "ItsParent", 
-					blockID, (String) s, cbUserID, lmbUserID, creationDate, true);
-                } catch (SQLException ex) {
-                        String exmsg = ex.getMessage();
-                        if ( exmsg.startsWith("Duplicate entry") ||
-                                exmsg.startsWith("ORA-00001: unique constraint") ) {
-                                ps.close();
-                                return;
-                         }
-                         else
-                                throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
-		}
-
-
-		/*
-		if (blockIDList.size() > 0) {
-			insertMapBatch(conn, out, "BlockParent", "ThisBlock", "ItsParent", 
-						blockID, blockIDList, cbUserID, lmbUserID, creationDate);
-		}*/
-
-
-		
-
+		return blockIDList;
 	}
 
+        void insertBlockParentage(Connection conn, Writer out, String blockID, ArrayList  blockIDList,
+                                        String cbUserID, String lmbUserID, String creationDate) throws Exception {
+
+                for (Object s: blockIDList) {
+                	try {
+                       	       insertMap(conn, out, "BlockParent", "ThisBlock", "ItsParent", 
+                                        blockID, (String) s, cbUserID, lmbUserID, creationDate, true);
+                	} catch (SQLException ex) {
+                        	String exmsg = ex.getMessage();
+                        	if ( exmsg.startsWith("Duplicate entry") ||
+                                	exmsg.startsWith("ORA-00001: unique constraint") ) {
+					//do nothing, just continue
+                         	}
+                         	else
+                                	throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
+                	}
+		}
+
+        }
 
        /**
 	 * Insert a list of Files whose parameters are provided in the passed files <code>java.util.Vector</code>. This vector contains a list of hashtable and is generated externally and filled in with the file parameters by parsing the xml input provided by the client. This method inserts entries into more than one table associated with File table. The the main query that it executes to insert in File table, get generated by <code>dbs.DBSSql.insertFile</code> method.<br> 
@@ -1144,7 +1145,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Get the block ID of the input File
 		String blockID = getFileBlockID(conn, out, lfn);
 		//Insert Block Parentage
-		insertBlockParentage(conn, out, fileID, blockID, cbUserID, lmbUserID, creationDate);
+		java.util.ArrayList  blockIDList = getFileBlockParentage(conn, out, fileID);
+		insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
 
 	}
 	public void deleteFileParent(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
