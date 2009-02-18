@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $
- $Id: DBSApiViewsLogic.java,v 1.1 2009/02/12 19:49:42 valya Exp $
+ $Revision: 1.2 $
+ $Id: DBSApiViewsLogic.java,v 1.2 2009/02/13 19:01:18 valya Exp $
  Author: Valentin Kuznetsov
  **/
 
@@ -58,6 +58,8 @@ public class DBSApiViewsLogic extends DBSApiLogic {
             } else {
                 sql += " DESC ";
             } 
+        } else if (key != null) {
+            sql += " ORDER BY " + key + " DESC";
         }
         PreparedStatement ps = DBManagement.getStatement(conn, sql);
         DBSUtil.writeLog("\n\n" + ps + "\n\n");
