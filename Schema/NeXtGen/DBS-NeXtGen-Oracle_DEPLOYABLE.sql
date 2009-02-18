@@ -3171,6 +3171,21 @@ INSERT INTO QualityValues (Value, CreationDate) VALUES ('UNKNOWN', (select (sysd
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('SUCCESS');
 
+--=== SCRIPT to create entries in DataTier Table
+BEGIN
+ FOR item in (SELECT DISTINCT DataTierOrder FROM DataTierOrder)
+ LOOP
+    BEGIN
+        INSERT INTO DataTier(Name) select item.DataTierOrder from DUAL;
+        EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+               DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');
+    END;
+ END LOOP;
+END;
+/
+
+
 -- Set the Schema Version -- 
 INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, InstanceType, CREATIONDATE) values ('DBS_1_1_5', 'LOCAL', 'ORACLE', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
