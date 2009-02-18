@@ -16,8 +16,17 @@ def parseDBSerror(data):
     """
     parse DBS error in returned XML
     """
-    elem  = ET.fromstring(data)
+    elem = ""
+    try:
+        elem  = ET.fromstring(data)
+    except:
+        print data
+        traceback.print_exc()
+        data = data.replace("<", "&lt;").replace(">", "&gt;")
+        msg = "Fail to parse DBS XML, please see server log\n" + data
+        raise Exception(msg)
     oList = [] # results
+    msg = ""
     for i in elem:
         if  i.tag == "exception":
             code = i.attrib['code']
@@ -25,8 +34,9 @@ def parseDBSerror(data):
             det  = i.attrib['detail']
             det  = det.replace('QUERY','\nQUERY')
             det  = det.replace('POSITION','\nPOSITION')
-            return 'DBS returns:\ncode   = %s,\nmsg    = %s,\ndetail = %s' % \
+            msg += 'DBS returns:\ncode   = %s,\nmsg    = %s,\ndetail = %s' % \
                 (code, msg, det)
+    return msg
 
 class DbsApi2(object):
     """

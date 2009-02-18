@@ -3817,9 +3817,9 @@ All LFNs in a block
         num      = kwargs['num']
         link     = kwargs['link']
         userInput= kwargs['userInput']
-        result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit)
-#        if len(titleList)<=2: # no view found, 2 to account for rownum while using ORACLE
-#           titleList=['DATASET','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
+        sortName = kwargs['sortName']
+        sortOrder= kwargs['sortOrder']
+        result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit, sortName, sortOrder)
         excludeList=[]
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
         page     = ""
@@ -3838,6 +3838,9 @@ All LFNs in a block
             result = self.helper.datasetSummary_json2(dbsInst, datasetlist)
             titleList=['DATASET','CREATED','CREATOR','SIZE','BLOCKS','FILES','EVENTS','SITES']
             excludeList=list(titleList[1:])+eList
+        else:
+            name = 'DATASETSUMMARY.'
+            titleList = [i.upper().replace(name, '') for i in list(titleList)]
         for item in result:
             dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
             sites = []
@@ -3897,6 +3900,7 @@ All LFNs in a block
             head=""
             titleList+=eList
             for item in titleList:
+                item = item.replace('NUMBEROF','').replace('TOTAL','')
                 th_class=""
                 if  item==titleList[0]: th_class="th_left"
                 if  item.find('createdate') != -1:
@@ -3965,7 +3969,10 @@ All LFNs in a block
            return nResults
 
         # construct output kwargs
-        kDict=self.update_kwargs(kwargs,dbsInst=dbsInst,fromRow=fromRow,limit=limit,html=html,xml=xml,userMode=userMode,userInput=userInput,caseSensitive=case,case=case,cff=cff)
+        kDict=self.update_kwargs(kwargs,
+                dbsInst=dbsInst, fromRow=fromRow, limit=limit,
+                html=html, xml=xml, userMode=userMode, userInput=userInput,
+                caseSensitive=case, case=case, cff=cff)
 
         if  html:
             page = self.genTopHTML(userMode=userMode)
@@ -4051,7 +4058,8 @@ All LFNs in a block
             queryTime=time.time()-t1
         except:    
             if  html:
-                page+="<verbatim>"+getExcept()+"</verbatim>"
+#                page+="<verbatim>"+getExcept()+"</verbatim>"
+                page += getExceptionInHTML()
             else:
                 page+=getExcept()
         if  html:
@@ -4088,7 +4096,7 @@ All LFNs in a block
             except:
                 traceback.print_exc()
                 self.writeLog(getExcept())
-                raise "Fail in summaryQuery"
+                raise
 
     def _summaryQuery(self, dbsInst, userInput, fromRow, limit, sortKey="", sortOrder=""):
         if  (not limit and not fromRow) or limit==-1:

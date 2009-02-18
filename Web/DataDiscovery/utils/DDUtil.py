@@ -519,16 +519,18 @@ def getExceptionInHTML():
        returns exception type/value in HTML form
     """
     exp = sys.exc_info()
-    e1  = str(exp[0]).replace('\n',' ').replace('<','&lt;').replace('>','&gt;')
-    e2  = str(exp[1]).replace('\n',' ').replace('<','&lt;').replace('>','&gt;')
+    e1  = str(exp[0]).replace('<','&lt;').replace('>','&gt;')
+    e2  = str(exp[1]).replace('<','&lt;').replace('>','&gt;')
+#    e1  = str(exp[0]).replace('\n',' ').replace('<','&lt;').replace('>','&gt;')
+#    e2  = str(exp[1]).replace('\n',' ').replace('<','&lt;').replace('>','&gt;')
     msg = """
     <table>
     <tr>
-    <td align="right"><b>Exception type:</b></td>
+    <td align="right" valign="top"><b>Exception type:</b></td>
     <td><pre>%s</pre></td>
     </tr>
     <tr>
-    <td align="right"><b>Exception value:</b></td>
+    <td align="right" valign="top"><b>Exception value:</b></td>
     <td><pre>%s</pre></td>
     </tr>
     </table>
@@ -542,12 +544,13 @@ def getExcept(_msg=None):
     msg = ""
     if _msg:
        msg=_msg
-    msg+="Exception type: \n%s\n\n"%sys.exc_info()[0]
-    msg+="Exception value: \n%s\n\n"%sys.exc_info()[1]
-    msg+="Traceback: \n"
-    for m in traceback.format_tb(sys.exc_info()[2]):
-        msg+=m
-    msg+="\n\n"
+    msg += getExcMessage()
+#    msg+="Exception type: \n%s\n\n"%sys.exc_info()[0]
+#    msg+="Exception value: \n%s\n\n"%sys.exc_info()[1]
+#    msg+="Traceback: \n"
+#    for m in traceback.format_tb(sys.exc_info()[2]):
+#        msg+=m
+#    msg+="\n\n"
     return msg
 
 def printExcMessage():
@@ -561,10 +564,11 @@ def printExcMessage():
 def getExcMessage(userMode='user'):
     exStr="%s"%sys.exc_type
     if userMode=='dbsExpert': return traceback.format_exc()
-    if exStr.find(".")==-1: 
-       ex="raise "
+    if  exStr.find(".")==-1: 
+        ex = "raise "
     else:
-       ex=exStr.split(".")[-1]
+        ex=exStr.split(".")[-1]
+        ex = ex.replace("'>", "")
     counter=0
     msg=""
     for m in  traceback.format_exc().split("\n"):
