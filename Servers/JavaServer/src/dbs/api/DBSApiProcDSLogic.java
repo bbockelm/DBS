@@ -75,6 +75,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
 		boolean first = true; 
 
+		System.out.println("DT:::::::::::::::"+patternDT);
+		System.out.println("patternDT::::::::::::::::"+getPattern(patternDT, "data_tier_name_pattern") );
+
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
@@ -136,8 +139,15 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 				//if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
 				if( !dtVec.contains(tier) && !isNull(tier) ) {
-					out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
-					dtVec.add(tier);
+
+                                Vector tmpVec = parseTierVec(tier);
+                                for(Object t: tmpVec) {
+						out.write(((String) "\t<data_tier name='" + t + "'/>\n"));
+						dtVec.add(t);
+                                }
+
+
+					//out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
 					//prevTier = tier;
 				}
 
@@ -457,25 +467,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//In future use can just send us the data_tier (or even justa dataset Path) to save all the trouble
                 Vector tierVector = DBSUtil.getVector(dataset,"data_tier");
 		Vector tierName = new Vector();
-		for(Object s: tierVector) {
-			
-			String tmp = (String) get((Hashtable)s, "name");
-			if ( tmp.contains("-") ) {
-				Vector tmpVec = parseTierVec(tmp);
-				for(Object t: tmpVec) {
-					if (!tierName.contains(t) )
-						tierName.add(t);
-				}
-			}
-			else {	
-				if (!tierName.contains(tmp))
-				tierName.add((String) tmp);
-			}
-			
-		}
-		String dataTier = makeOrderedTierList(conn, tierName);
-
+		for(Object s: tierVector) tierName.add((String) get((Hashtable)s, "name"));	
+                String dataTier = makeOrderedTierList(conn, tierName);
 		Vector runVector = DBSUtil.getVector(dataset,"run");
+	
 		//Set defaults Values
 		if (isNull(status)) status = "VALID";
 		if (isNull(phyGroupName)) phyGroupName = "ALLGROUP";
