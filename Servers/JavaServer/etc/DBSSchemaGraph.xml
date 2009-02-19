@@ -8,14 +8,14 @@
 	<node id="ProcessedDataset" 		user="procds" 		real="ProcessedDataset" 		default="Name"/>
 	<node id="Runs" 			user="run" 		real="Runs" 				default="RunNumber"/>
 	<node id="Files" 			user="file" 		real="Files" 				default="LogicalFileName"/>
-	<node id="DataTier"	 		user="tier" 		real="DataTier" 			default="Name"/>
+	<node id="DataTier"	 		user="tier, procds.tier, dataset.tier, file.tier" 		real="DataTier" 			default="Name"/>
 	<node id="LumiSection" 			user="lumi" 		real="LumiSection" 			default="LumiSectionNumber"/>
 	<node id="AlgorithmConfig" 		user="algo" 		real="AlgorithmConfig" 			default="ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID"/>
 	<node id="QueryableParameterSet" 		user="config" 		real="QueryableParameterSet" 			default="Name"/>
 	<node id="AppFamily" 			user="family, algo.family" 		real="AppFamily" 			default="FamilyName"/>
 	<node id="AppVersion"			user="release, algo.version"		real="AppVersion" 			default="Version"/>
 	<node id="AppExecutable" 		user="exe, algo.exe" 		real="AppExecutable" 			default="ExecutableName"/>
-	<node id="FileTier" 			user="file.tier"	real="FileTier" 			default="Fileid,DataTier"/>
+	<node id="FileTier" 			user="DEPRICATED_file.tier"	real="FileTier" 			default="Fileid,DataTier"/>
 	<node id="FileParentage" 		user="file.parent"	real="FileParentage" 			default="ThisFile,ItsParent"    mapped="Files.LogicalFileName"/>
 	<node id="FileChildage" 		user="file.child"	real="FileChildage" 			default="ThisFile,ItsParent"    mapped="Files.LogicalFileName"/>
 	<node id="FileRunLumi" 			user="frl" 		real="FileRunLumi" 			default="Fileid,Lumi,Run"/>
@@ -25,7 +25,7 @@
 	<node id="FileValidStatus" 		user="file.vstatus" 	real="FileValidStatus" 			default="Status"/>
 	<node id="FileTriggerTag" 		user="ftrigger" 	real="FileTriggerTag" 			default="Fileid,TriggerTag"/>
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
-	<node id="ProcDSTier" 			user="procds.tier,dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
+	<node id="ProcDSTier" 			user="DEPRICATED_procds.tier,DEPRICATED_dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
 	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
 	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"     mapped="AppVersion.Version"/>
 	<node id="AnalysisDataset" 		user="ads" 		real="AnalysisDataset" 			default="Name,Version"/>
@@ -78,6 +78,7 @@
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcAlgo" 		relation="ProcessedDataset.ID = ProcAlgo.Dataset"/>
 	<edge directed="false"	wt="1.5"	source="ProcessedDataset" 	target="ProcDSRuns" 		relation="ProcessedDataset.ID = ProcDSRuns.Dataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcDSTier" 		relation="ProcessedDataset.ID = ProcDSTier.Dataset"/>
+	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="DataTier" 		relation="ProcessedDataset.DataTier = DataTier.ID"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="AnalysisDataset"	relation="ProcessedDataset.ID = AnalysisDataset.ProcessedDS"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="Block"			relation="ProcessedDataset.ID = Block.Dataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset"	 	target="Files"			relation="ProcessedDataset.ID = Files.Dataset"/>

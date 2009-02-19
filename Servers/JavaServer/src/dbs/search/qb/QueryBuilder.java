@@ -491,10 +491,10 @@ public class QueryBuilder {
 				} else if(Util.isSame(key, "release")) {
 					if(isInList(kws, "procds") || isInList(kws, "dataset")) allKws = addUniqueInList(allKws, "ProcAlgo");
 					else addUniqueInList(allKws, "FileAlgo");
-				} else if(Util.isSame(key, "tier")) {
+				} /*else if(Util.isSame(key, "tier")) {
 					if(isInList(kws, "procds") || isInList(kws, "dataset")) allKws = addUniqueInList(allKws, "ProcDSTier");
 					else addUniqueInList(allKws, "FileTier");
-				} else if(Util.isSame(key, "dq")) {
+				}*/ else if(Util.isSame(key, "dq")) {
 					allKws = addUniqueInList(allKws, km.getMappedValue(key, false));
 				} else if(Util.isSame(key, "pset")) {
 					allKws = addUniqueInList(allKws, km.getMappedValue(key, false));
@@ -616,7 +616,7 @@ public class QueryBuilder {
 						if(useAnd)  queryWhere += "\tAND\n";
 						queryWhere += "\tFileAlgo.Algorithm " + handleRelease(op, val);
 					}
-				} else if(Util.isSame(key, "tier")) {
+				} /*else if(Util.isSame(key, "tier")) {
 					boolean useAnd = false;
 					if(isInList(kws, "procds") || isInList(kws, "dataset")) {
 						queryWhere += "\tProcDSTier.DataTier " + handleTier(op, val);
@@ -626,18 +626,18 @@ public class QueryBuilder {
 						queryWhere += "\tFileTier.DataTier " + handleTier(op, val);
 					}
 
-				} else if(Util.isSame(key, "file.release")) {
+				}*/ else if(Util.isSame(key, "file.release")) {
 					queryWhere += "\tFileAlgo.Algorithm" + handleRelease(op, val);
-				} else if(Util.isSame(key, "file.tier")) {
+				} /*else if(Util.isSame(key, "file.tier")) {
 					queryWhere += "\tFileTier.DataTier" + handleTier(op, val);
-				} else if(Util.isSame(key, "lumi.evnum")) {
+				}*/ else if(Util.isSame(key, "lumi.evnum")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When evnum is provided operator should be = . Invalid operator given " + op);
 					queryWhere += handleEvNum(val);
 				} else if(Util.isSame(key, "procds.release") || Util.isSame(key, "dataset.release")) {
 					queryWhere += "\tProcAlgo.Algorithm " + handleRelease(op, val);
-				} else if(Util.isSame(key, "procds.tier") || Util.isSame(key, "dataset.tier") ) {
+				} /*else if(Util.isSame(key, "procds.tier") || Util.isSame(key, "dataset.tier") ) {
 					queryWhere += "\tProcDSTier.DataTier" + handleTier(op, val);
-				} else if(key.endsWith("createdate") ||  key.endsWith("moddate")) {
+				}*/ else if(key.endsWith("createdate") ||  key.endsWith("moddate")) {
 					queryWhere += "\t" + km.getMappedValue(key, true) + handleDate(op, val);
 
 				} else {
@@ -1007,7 +1007,7 @@ public class QueryBuilder {
 			if(k != 0) query += ",";
 			//query += "'" + st.nextToken() + "'";
 			query += "?";
-			bindValues.add(st.nextToken());
+			bindValues.add(st.nextToken().trim());
 		}
 		query += ")";
 		return query;
