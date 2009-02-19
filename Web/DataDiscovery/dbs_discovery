@@ -16,12 +16,26 @@ if [ -z $WEBTOOLS ]; then
    echo "Please define WEBTOOLS environment, e.g. /path/WEBTOOLS"
    exit 1
 fi
+if [ -z $YUI_ROOT ]; then
+   echo "Please define YUI_ROOT environment, e.g. /path/yui"
+   exit 1
+fi
+
 export PYTHONPATH=$DDHOME:$DBSCLIENT:$WEBTOOLS:$PYTHONPATH
 export DBS_DBPARAM=$DDHOME/DBParam
 
+if [ ! -L $DDHOME/YUI ]; then
+    ln -s $YUI_ROOT/build $DDHOME/YUI
+fi
+#if [ ! -L $DDHOME/WEBTOOLS ]; then
+#    ln -s $WEBTOOLS $DDHOME/WEBTOOLS
+#fi
+
+mkdir -p $DDHOME/rss
+
 RETVAL=$?
 
-port=`cat DBSDD.conf | grep -i "port=" | tail -1 | sed "s/PORT=//g"`
+port=`cat $DDHOME/DBSDD.conf | grep -i "port=" | tail -1 | sed "s/PORT=//g"`
 pid=`ps auxw | grep DDServer | grep -v grep | awk '{print $2}'`
 base=dbs_discovery
 
