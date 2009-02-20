@@ -47,7 +47,8 @@ class DDAuthentication:
           raise "Fail to open $DBS_DBPARAM"
       found=0
       content = self.dbparam.readlines()
-      mustHave=['Section','Interface','Database','AuthDBUsername','AuthDBPassword','Host','Url']
+#      mustHave=['Section','Interface','Database','AuthDBUsername','AuthDBPassword','Host','Url']
+      mustHave=['Section','Url']
       readFile=[]
       for s in content:
           line = string.replace(s,"\n","")
@@ -65,11 +66,6 @@ and correct file it points to, to have the following syntax for each registered
 DBS instance:
 
 Section                 cms_dbs_prod_global
-Interface               Oracle
-Database                cms_dbs
-AuthDBUsername          XXXXXX
-AuthDBPassword          ZZZZZZ
-Host                    host_name (e.g. localhost or localhost:3307)
 Url                     servlet URL
 
 """

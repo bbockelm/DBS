@@ -635,7 +635,6 @@ class DDServer(DDLogger,Controller):
     def _status(self, userMode="user", **kwargs):
         page  = self.genTopHTML()
         dbses = dict(self.dbsmgr.dbsattr)
-        print dbses
         t     = templateDBSstatus(searchList=[{'dbsdict':dbses}]).respond()
         page += str(t)
         page += 'For more information please visit <a href="http://cmsdbssrv.cern.ch/rswebapp/html/home.jsf">RS page</a>'
