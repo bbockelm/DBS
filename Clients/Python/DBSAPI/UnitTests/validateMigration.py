@@ -15,9 +15,11 @@ srcURL = sys.argv[1]
 dstURL = sys.argv[2]
 path = sys.argv[3]
 """
-srcURL = "http://cmssrv48.fnal.gov:8383/DBS/servlet/DBSServlet"
+#srcURL = "http://cmssrv48.fnal.gov:8383/DBS/servlet/DBSServlet"
+srcURL = "http://cmsdbsdev1.cern.ch:8880/DBSANZ/servlet/DBSServlet"
 dstURL = "http://cmssrv48.fnal.gov:8383/DBSlocal/servlet/DBSServlet"
-path = "/DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
+#path = "/DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
+path = "/Cosmics/Commissioning08-MW32_v1/RAW"
 
 try:
 	optManager  = DbsOptionParser()
@@ -125,6 +127,11 @@ class Test_005(unittest.TestCase):
 
 			algoSrcList = fileSrcList[i]['AlgoList']
 			algoDstList = fileDstList[i]['AlgoList']
+			algoSrcList.sort(key=lambda obj: obj['ApplicationFamily'])
+			algoDstList.sort(key=lambda obj: obj['ApplicationFamily'])
+			#print algoSrcList
+			#print "_______________________"
+			#print algoDstList
 			for j in range(len(algoSrcList)):
 				valid.assertAlgo(self, algoSrcList[j], algoDstList[j])
 
@@ -149,6 +156,9 @@ class Test_005(unittest.TestCase):
 			runDstList = fileDstList[i]['RunsList']	
 			runSrcList.sort(key=lambda obj: obj['RunNumber'])
 			runDstList.sort(key=lambda obj: obj['RunNumber'])
+			#print runSrcList
+			#print "____________________________________________"
+			#print runDstList
 			for j in range(len(runSrcList)):
 				valid.assertRun(self, runSrcList[j], runDstList[j])
 
