@@ -1,6 +1,6 @@
 /**
- $Revision: 1.118 $"
- $Id: DBSApiFileLogic.java,v 1.118 2009/02/10 19:48:53 sekhri Exp $"
+ $Revision: 1.119 $"
+ $Id: DBSApiFileLogic.java,v 1.119 2009/02/18 20:38:41 afaq Exp $"
  *
  */
 
@@ -107,6 +107,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	
 		//Search can be based on Block Name
 		if(!isNull(blockName)) 	blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
+
+		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && (patternlfn.equals("%") || isNull(patternlfn)))
+                      throw new DBSException("Missing data", "1005",
+                          "Null Fields. Expected either a (Primary, Processed) Dataset, Analysis Dataset, Block or LFN pattern");
 
 		//Block is always required
 		//At least until everyone switches to DBS_1_0_9 and CRAB stop using BLOCK infor from listFiles()
