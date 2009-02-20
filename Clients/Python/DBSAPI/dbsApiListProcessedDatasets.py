@@ -112,11 +112,15 @@ def dbsApiImplListProcessedDatasets(self, patternPrim="*", patternDT="*", patter
                                                 LastModifiedBy=str(attrs['last_modified_by']),
                                                 )
           if name == 'data_tier':
+		"""
 		if api_version < "DBS_2_0_6":
 			# This is how it was done in older versions!
 			self.currDataset['TierList'].append(str(attrs['name']))
 		else: 
             		self.currDataset['TierList']=str(attrs['name']).split('-')
+		"""
+		self.currDataset['TierList'].append(str(attrs['name']))
+
             #self.currDataset['PathList'].append("/" + self.primName + "/" + str(attrs['name']) + "/" + self.procName)
 
           if name == 'path':
