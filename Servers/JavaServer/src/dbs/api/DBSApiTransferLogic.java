@@ -1,6 +1,6 @@
 /**
- $Revision: 1.44 $"
- $Id: DBSApiTransferLogic.java,v 1.44 2009/02/16 20:01:24 sekhri Exp $"
+ $Revision: 1.45 $"
+ $Id: DBSApiTransferLogic.java,v 1.45 2009/02/17 22:03:00 sekhri Exp $"
  *
  */
 
@@ -211,6 +211,13 @@ System.out.println("listDatasetContents line 10");
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {
 			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
+		}
+
+		System.out.println("TRANSFE logoc going to update RUN");
+		//Fix the the number of lumi sections in the RUN
+		for(Object aRun: newRunVector) {
+			System.out.println("TRANSFE logoc UPadating RUN");
+			updateRun(conn, out, (Hashtable) aRun, dbsUser);
 		}
 	}
 
