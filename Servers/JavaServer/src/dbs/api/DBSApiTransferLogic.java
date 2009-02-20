@@ -1,6 +1,6 @@
 /**
- $Revision: 1.45 $"
- $Id: DBSApiTransferLogic.java,v 1.45 2009/02/17 22:03:00 sekhri Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSApiTransferLogic.java,v 1.46 2009/02/20 20:21:23 sekhri Exp $"
  *
  */
 
@@ -186,7 +186,7 @@ System.out.println("listDatasetContents line 10");
 		pdTable.put("data_tier", tierVector);
 		//Fix complete
 
-		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser, ignoreParent);
+		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser, ignoreParent, clientVersion);
 		Vector closeBlockVector = new Vector();
 		DBSApiBlockLogic blockApi = new DBSApiBlockLogic(this.data);
 		Vector blockVector = DBSUtil.getVector(pdTable, "block");

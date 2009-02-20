@@ -1,6 +1,6 @@
 /**
- $Revision: 1.75 $"
- $Id: DBSApiProcDSLogic.java,v 1.75 2009/01/30 21:29:56 afaq Exp $"
+ $Revision: 1.77 $"
+ $Id: DBSApiProcDSLogic.java,v 1.77 2009/02/19 22:35:32 afaq Exp $"
  *
  */
 
@@ -447,10 +447,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
-	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
-		insertProcessedDataset(conn, out, dataset, dbsUser, false);
+	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser, String clientVersion) throws Exception {
+		insertProcessedDataset(conn, out, dataset, dbsUser, false, clientVersion);
 	}
-	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser, boolean ignoreParent) throws Exception {
+	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser, boolean ignoreParent, String clientVersion) throws Exception {
 		//Get the User ID from USERDN
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by"), dbsUser );
@@ -545,23 +545,33 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					cbUserID, lmbUserID, creationDate);
 		}
 
-		//Insert ProcDSParent table by fetching parent File ID
-		if(!ignoreParent) {
-			for (int j = 0; j < parentVector.size(); ++j) {
-				insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent", 
-						procDSID, 
-						getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true), 
-						cbUserID, lmbUserID, creationDate);
-			}
-			
-			String analysisDatasetName = get(dataset, "analysis_datatset_parent", false);
-			if (!isNull(analysisDatasetName))
-	                        insertMap(conn, out, "ProcADSParent", "ThisDataset", "ItsParentADS",
+                //Insert ProcDSParent table by fetching parent File ID
+                if(!ignoreParent) {
+                                if(clientVersion.compareTo("DBS_2_0_6") < 0) {
+                                        //In case of older clients, the parentage information coming from client side is not correct, 
+                                        //lets get the information again and then insert into DBS
+                                        //This should be a temporary fix, and in later versions of DBS we should have a insertMergedDataset() on server side
+                                        ArrayList tmp = listDatasetParentIDs(conn, path);
+                                        for (Object dsParent : tmp) {
+                                                insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent",
+                                                                        procDSID, (String)dsParent, cbUserID, lmbUserID, creationDate);
+                                        }
+                                }
+                                else  {
+                                        for (int j = 0; j < parentVector.size(); ++j) {
+                                                insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent",
+                                                        procDSID,
+                                                        getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true),
+                                                        cbUserID, lmbUserID, creationDate);
+                                        }
+                                }
+                                String analysisDatasetName = get(dataset, "analysis_datatset_parent", false);
+                                if (!isNull(analysisDatasetName))
+                                        insertMap(conn, out, "ProcADSParent", "ThisDataset", "ItsParentADS",
                                                 procDSID,
-						(new DBSApiAnaDSLogic(this.data)).getADSID(conn, analysisDatasetName, true),
+                                                (new DBSApiAnaDSLogic(this.data)).getADSID(conn, analysisDatasetName, true),
                                                 cbUserID, lmbUserID, creationDate);
-			
-		}
+                }
 
 		//Insert ProcDSRun table by fetching Run ID
 		for (int j = 0; j < runVector.size(); ++j) {
