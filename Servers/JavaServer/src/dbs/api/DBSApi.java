@@ -1,6 +1,6 @@
 /**
- $Revision: 1.157 $"
- $Id: DBSApi.java,v 1.157 2009/02/12 19:48:25 valya Exp $"
+ $Revision: 1.158 $"
+ $Id: DBSApi.java,v 1.158 2009/02/20 21:12:16 afaq Exp $"
  *
 */
 
@@ -276,8 +276,6 @@ public class DBSApi {
 			} else if (apiStr.equals("register")) {
 				System.out.println("");
 			} else if (apiStr.equals("listProcessedDatasets")) {
-
-				System.out.println("\nDARN THIS:::"+get(table, "data_tier_name_pattern", false));
 
 				(new DBSApiProcDSLogic(this.data)).listProcessedDatasets(conn, out, 
 						get(table, "primary_datatset_name_pattern", false),
