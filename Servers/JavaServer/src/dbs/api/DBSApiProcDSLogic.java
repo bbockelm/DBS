@@ -75,9 +75,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
 		boolean first = true; 
 
-		System.out.println("DT:::::::::::::::"+patternDT);
-		System.out.println("patternDT::::::::::::::::"+getPattern(patternDT, "data_tier_name_pattern") );
-
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
@@ -137,6 +134,19 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                                 } 
 
 
+
+				if ( !isNull(tier) ) {
+					Vector tmpVec = parseTierVec(tier);
+					for(Object t: tmpVec) {
+						if( !dtVec.contains(t) ) {
+							out.write(((String) "\t<data_tier name='" + t + "'/>\n"));
+							dtVec.add(t);
+						}
+					}
+				}
+
+				/**
+
 				//if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
 				if( !dtVec.contains(tier) && !isNull(tier) ) {
 
@@ -144,12 +154,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                                 for(Object t: tmpVec) {
 						out.write(((String) "\t<data_tier name='" + t + "'/>\n"));
 						dtVec.add(t);
-                                }
+                                } 
 
 
 					//out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
 					//prevTier = tier;
-				}
+				}**/
 
 				//if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(pset) || first) {
 				String uniqueAlgo = ver + exe + fam + pset;
@@ -545,33 +555,33 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					cbUserID, lmbUserID, creationDate);
 		}
 
-                //Insert ProcDSParent table by fetching parent File ID
-                if(!ignoreParent) {
-                                if(clientVersion.compareTo("DBS_2_0_6") < 0) {
-                                        //In case of older clients, the parentage information coming from client side is not correct, 
-                                        //lets get the information again and then insert into DBS
-                                        //This should be a temporary fix, and in later versions of DBS we should have a insertMergedDataset() on server side
-                                        ArrayList tmp = listDatasetParentIDs(conn, path);
-                                        for (Object dsParent : tmp) {
-                                                insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent",
-                                                                        procDSID, (String)dsParent, cbUserID, lmbUserID, creationDate);
-                                        }
-                                }
-                                else  {
-                                        for (int j = 0; j < parentVector.size(); ++j) {
-                                                insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent",
-                                                        procDSID,
-                                                        getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true),
-                                                        cbUserID, lmbUserID, creationDate);
-                                        }
-                                }
-                                String analysisDatasetName = get(dataset, "analysis_datatset_parent", false);
-                                if (!isNull(analysisDatasetName))
-                                        insertMap(conn, out, "ProcADSParent", "ThisDataset", "ItsParentADS",
+		//Insert ProcDSParent table by fetching parent File ID
+		if(!ignoreParent) {
+				if(clientVersion.compareTo("DBS_2_0_6") < 0) {
+					//In case of older clients, the parentage information coming from client side is not correct, 
+					//lets get the information again and then insert into DBS
+					//This should be a temporary fix, and in later versions of DBS we should have a insertMergedDataset() on server side
+					ArrayList tmp = listDatasetParentIDs(conn, path);
+					for (Object dsParent : tmp) {
+						insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent",
+                                                			procDSID, (String)dsParent, cbUserID, lmbUserID, creationDate);
+					}
+				}
+				else {
+					for (int j = 0; j < parentVector.size(); ++j) {
+						insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent", 
+							procDSID, 
+							getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true),
+							cbUserID, lmbUserID, creationDate);
+					}	
+				}
+				String analysisDatasetName = get(dataset, "analysis_datatset_parent", false);
+				if (!isNull(analysisDatasetName))
+	                        	insertMap(conn, out, "ProcADSParent", "ThisDataset", "ItsParentADS",
                                                 procDSID,
-                                                (new DBSApiAnaDSLogic(this.data)).getADSID(conn, analysisDatasetName, true),
+						(new DBSApiAnaDSLogic(this.data)).getADSID(conn, analysisDatasetName, true),
                                                 cbUserID, lmbUserID, creationDate);
-                }
+		}
 
 		//Insert ProcDSRun table by fetching Run ID
 		for (int j = 0; j < runVector.size(); ++j) {
