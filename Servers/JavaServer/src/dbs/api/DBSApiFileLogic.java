@@ -1,6 +1,6 @@
 /**
- $Revision: 1.119 $"
- $Id: DBSApiFileLogic.java,v 1.119 2009/02/18 20:38:41 afaq Exp $"
+ $Revision: 1.120 $"
+ $Id: DBSApiFileLogic.java,v 1.120 2009/02/20 19:08:56 afaq Exp $"
  *
  */
 
@@ -692,7 +692,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		//Verify Block Name
                 String blockName = getBlockPattern(DBSUtil.get(block, "block_name"));
-		System.out.println("BLOCK NAME ----------------->>>>>>>>>>>>>>>>>>>>>>>>" + blockName);
                 if (isNull(blockName) )
                         throw new DBSException("Wrong Parameters", "1038",
                                                         "User must provide a valid blockName");
@@ -796,7 +795,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                         String fileID = "";
                         String lfn = get(file, "lfn", true);
-			System.out.println("FILE NAME ----------------->>>>>>>>>>>>>>>>>>>>>>>>" + lfn);
                         String fileStatus = get(file, "file_status", false).toUpperCase();
 
                         String type = get(file, "type", true).toUpperCase();

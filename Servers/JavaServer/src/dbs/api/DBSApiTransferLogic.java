@@ -1,6 +1,6 @@
 /**
- $Revision: 1.46 $"
- $Id: DBSApiTransferLogic.java,v 1.46 2009/02/20 20:21:23 sekhri Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSApiTransferLogic.java,v 1.47 2009/02/20 21:12:17 afaq Exp $"
  *
  */
 
@@ -105,7 +105,6 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", "", blockName, null, null, attributes, clientVersion, "True", "False");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
 
-System.out.println("listDatasetContents line 10");
 	}
 	
 	
@@ -198,9 +197,7 @@ System.out.println("listDatasetContents line 10");
 				closeBlockVector.add(name);
 				block.remove("open_for_writing");
 			}
-			System.out.println("---------> Inserting block "+name);
 			blockApi.insertBlock(conn, out, block, dbsUser);
-			System.out.println("---------> DONE Inserting block "+name);
 		}
 		
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
@@ -213,10 +210,8 @@ System.out.println("listDatasetContents line 10");
 			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
 		}
 
-		System.out.println("TRANSFE logoc going to update RUN");
 		//Fix the the number of lumi sections in the RUN
 		for(Object aRun: newRunVector) {
-			System.out.println("TRANSFE logoc UPadating RUN");
 			updateRun(conn, out, (Hashtable) aRun, dbsUser);
 		}
 	}
