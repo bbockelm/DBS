@@ -1,6 +1,6 @@
 /**
- $Revision: 1.77 $"
- $Id: DBSApiProcDSLogic.java,v 1.77 2009/02/19 22:35:32 afaq Exp $"
+ $Revision: 1.79 $"
+ $Id: DBSApiProcDSLogic.java,v 1.79 2009/02/20 23:33:57 afaq Exp $"
  *
  */
 
@@ -557,11 +557,14 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 		//Insert ProcDSParent table by fetching parent File ID
 		if(!ignoreParent) {
-				if(clientVersion.compareTo("DBS_2_0_6") < 0) {
+				if(clientVersion.compareTo("DBS_2_0_6") > 0 && parentVector.size() > 0  ) {
 					//In case of older clients, the parentage information coming from client side is not correct, 
 					//lets get the information again and then insert into DBS
 					//This should be a temporary fix, and in later versions of DBS we should have a insertMergedDataset() on server side
 					ArrayList tmp = listDatasetParentIDs(conn, path);
+                                        //FOR Other reasons listDatasetParentIDs add the pathID as well to the parent list
+                                        //This should be addressed LATER
+                                        if ( tmp.contains(procDSID) ) tmp.remove(procDSID);
 					for (Object dsParent : tmp) {
 						insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent",
                                                 			procDSID, (String)dsParent, cbUserID, lmbUserID, creationDate);
