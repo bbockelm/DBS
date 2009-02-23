@@ -8,7 +8,6 @@ class TestSequence(unittest.TestCase):
 def test_generator(dbsurl, query):
 	def test(self):
 		q=query.strip()
-		self._TestCase__testMethodDoc=q
 		api=DBSAPI.dbsApi.DbsApi({'url':dbsurl})
 		api.executeQuery(q)
 	return test
