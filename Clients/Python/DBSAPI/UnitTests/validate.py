@@ -914,7 +914,92 @@ class Test_012(unittest.TestCase):
                                 print "Cannot mark Run Complete"
                                 self.assertEqual(1, 2)  
 
+class Test_013(unittest.TestCase):
+	def testDeleteUndelete(self):
+		print 'testDeleteUndelete'
+		api.deleteProcDS (path2)
+		api.undeleteProcDS (path2)
+
+		procList = api.listProcessedDatasets(patternPrim = primName, patternProc = procName2)
+		self.assertEqual(len(procList), 1)
+		for processedInDBS in procList:
+			#print processedInDBS
+			assertProc(self, procObj2, processedInDBS)
+			self.assertEqual(len(processedInDBS['AlgoList']), 2)
+			for algoInDBS in processedInDBS['AlgoList']:
+				if(algoInDBS['ExecutableName'] == algoExe1):
+					assertAlgo(self, algoObj1, algoInDBS)
+				else:
+					if (algoInDBS['ExecutableName'] == algoExe2):
+						assertAlgo(self, algoObj2, algoInDBS)
+					else:
+						print 'algo %s is not expected', algoInDBS
+						self.assertEqual(1, 2)
+
+
+			self.assertEqual(len(processedInDBS['TierList']), 2)
+			for tierInDBS in processedInDBS['TierList']:
+				if(tierInDBS != tier1 and tierInDBS != tier2):
+					print 'tier %s is not expected', tierInDBS
+					self.assertEqual(1, 2)
+					
+			
+			parentList = api.listDatasetParents(procObj2)
+			#FIXME
+			#self.assertEqual(len(parentList), 1)
+			for parentProcInDBS in parentList:
+				self.assertEqual(primName, parentProcInDBS['PrimaryDataset']['Name'])
+				self.assertEqual(procName1, parentProcInDBS['Name'])
+
+
+		blockList = api.listBlocks(path2)
+		self.assertEqual(len(blockList), 1)
+		for blockInDBS in blockList:
+			self.assertEqual(blockName2, blockInDBS['Name'])
+			self.assertEqual(path2, blockInDBS['Path'])
+			if isGlobal != "GLOBAL": 
+				self.assertEqual(len(blockInDBS['StorageElementList']), 1)
+				for seInDBS in blockInDBS['StorageElementList']:
+					self.assertEqual(seInDBS['Name'], se2)
+
+		if api.getApiVersion() < "DBS_2_0_6":
+			runList = api.listRuns(procObj2)	
+			self.assertEqual(len(runList), 1)
+			for runInDBS in runList:
+				assertRun(self, runObj, runInDBS)
+
+		fileList = api.listFiles(path = path2, retriveList = ['all'], otherDetails = True)
+		self.assertEqual(len(fileList), 2)
+		#fileList.sort(key=lambda obj: obj['LogicalFileName'])
+
+		for fileInDBS in fileList:
+			if(fileObj2['LogicalFileName'] == fileInDBS['LogicalFileName']):
+				assertFile(self, fileObj2, fileInDBS)
+				algoList = fileInDBS['AlgoList']
+				self.assertEqual(len(algoList), 1)
+				for algoInDBS in algoList:
+					assertAlgo(self, algoObj2, algoInDBS)
+
+				lumiList = fileInDBS['LumiList']
+				self.assertEqual(len(lumiList), 1)
+				for lumiInDBS in lumiList:
+					assertLumi(self, lumiObj2, lumiInDBS)
 		
+				parentList = fileInDBS['ParentList']
+				self.assertEqual(len(parentList), 2)
+				parentList.sort(key=lambda obj: obj['LogicalFileName'])
+				for parentInDBS in parentList:
+					if(parentInDBS['LogicalFileName'] == fileObj1['LogicalFileName']):
+						assertFile(self, fileObj1, parentInDBS)
+						pFileBlock=parentInDBS['Block']
+						self.assertEqual(pFileBlock['Name'], blockObj1['Name'])
+
+				runList = fileInDBS['RunsList']	
+				self.assertEqual(len(runList), 1)
+				for runInDBS in runList:
+					self.assertEqual(2, runInDBS['NumberOfLumiSections'])
+					runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
+					assertRun(self, runObj, runInDBS)
 
 if __name__ == '__main__':
 
