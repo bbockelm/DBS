@@ -445,8 +445,6 @@ class Test3(unittest.TestCase):
 		
 			parentList = api.listPathParents(procObj2)	
 			#parentList = api.listDatasetParents(procObj2)
-			import pdb
-			pdb.set_trace()
 			# 2 ka parent is 1
 			#FIXME
 			#self.assertEqual(len(parentList), 1)
