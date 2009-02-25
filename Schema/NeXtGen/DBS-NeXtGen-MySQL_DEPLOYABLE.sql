@@ -795,7 +795,7 @@ CREATE TABLE BlockParent
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(ThisBlock,ItsParent)
-  );
+  ) ENGINE = InnoDB ;
 
 -- ======================================================================
 
@@ -814,7 +814,7 @@ CREATE TABLE FileProcQuality
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(ParentFile,ChildDataset)
-  );
+  )ENGINE = InnoDB ;
 
 -- ======================================================================
 
@@ -827,7 +827,7 @@ CREATE TABLE ProcessingStatus
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
-   );
+   )ENGINE = InnoDB ;
 
 -- ======================================================================
 
@@ -964,7 +964,7 @@ CREATE TABLE IntQualityHistory
     LastModifiedBy        integer,
     primary key(ID),
     unique(HistoryTimeStamp,Run,Lumi,SubSystem, IntDQValue)
-  );
+  ) ENGINE = InnoDB ;
 
 -- ======================================================================
 
