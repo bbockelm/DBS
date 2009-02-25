@@ -1,6 +1,6 @@
 /**
- $Revision: 1.155 $"
- $Id: DBSApiLogic.java,v 1.155 2009/02/11 20:05:47 sekhri Exp $"
+ $Revision: 1.156 $"
+ $Id: DBSApiLogic.java,v 1.156 2009/02/20 20:21:23 sekhri Exp $"
  *
  */
 
@@ -376,9 +376,10 @@ public class DBSApiLogic {
 		String[] tierList = parseTier(tierName);
 		for (int i =0 ; i != tierList.length; ++i) {
 			insertTier(conn, out, tierList[i], cbUserID, lmbUserID, creationDate);
-			insertTierOrder(conn, out, tierList[i], cbUserID, lmbUserID, creationDate);
+			//insertTierOrder is not required from DBS_2_0_6
+			//insertTierOrder(conn, out, tierList[i], cbUserID, lmbUserID, creationDate);
 		}
-		insertTierOrder(conn, out, tierName, cbUserID, lmbUserID, creationDate);
+		//insertTierOrder(conn, out, tierName, cbUserID, lmbUserID, creationDate);
 
 	}
 	

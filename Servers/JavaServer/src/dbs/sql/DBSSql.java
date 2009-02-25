@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.210 $"
- $Id: DBSSql.java,v 1.210 2009/02/11 19:36:17 sekhri Exp $"
+ $Revision: 1.211 $"
+ $Id: DBSSql.java,v 1.211 2009/02/17 22:03:00 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1608,18 +1608,26 @@ public class DBSSql {
                 return ps;
         }
 
+        // ____________________________________________________
+
+        public static PreparedStatement getDataTierOrder(Connection conn) throws SQLException {
+                String sql = "SELECT Name as DATATIERORDER \n" +
+                                "FROM "+owner()+"DataTier";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
 	// ____________________________________________________
-	
+	/*
         public static PreparedStatement getDataTierOrder(Connection conn) throws SQLException {
                 String sql = "SELECT DataTierOrder as DATATIERORDER \n" +
                                 "FROM "+owner()+"DataTierOrder";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
-        }
-	
-	
+        }*/
+		
         public static PreparedStatement listRowsInTable(Connection conn, String tableName, String from, String rows) 
         throws SQLException
         {
