@@ -92,6 +92,7 @@ public class QueryBuilder {
 		String parentJoinQuery = "";
 		String childJoinQuery = "";
 		String pathParentWhereQuery = "";
+		String pathChildWhereQuery = "";
 		String groupByQuery = "";
 		String sumGroupByQuery = "";
 		String sumQuery = "";
@@ -102,6 +103,7 @@ public class QueryBuilder {
 		boolean fileParentAdded = false;
 		boolean fileChildAdded = false;
 		boolean datasetParentAdded = false;
+		boolean datasetChildAdded = false;
 		boolean procDsParentAdded = false;
 		boolean iLumi = isInList(kws, "ilumi");
 		boolean countPresent = false;
@@ -395,7 +397,6 @@ public class QueryBuilder {
 								sumGroupByQuery += toSelect + ",";
 							}
 						}
-				
 						addQuery = false;
 					}
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "dataset")) {
@@ -417,6 +418,27 @@ public class QueryBuilder {
 			
 						addQuery = false;
 					}
+
+					if(Util.isSame(token2, "child") && Util.isSame(token, "dataset")) {
+						//Lets have the same treatment as procds.parent
+						checkMax(iter);
+						allKws = addUniqueInList(allKws, "Block");
+						boolean dontJoin = false;
+						if(datasetChildAdded) dontJoin = true;
+						datasetChildAdded = true;
+						if(!dontJoin) pathChildWhereQuery += handlePathChild();
+						String fqName = "Block.Path AS Dataset_Child";
+						query += fqName;			
+						if(iLumi) groupByQuery +=  "Block.Path ,";		
+						if(sumPresent || countPresent) {
+							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							sumQuery += " Dataset_Child AS Dataset_Child ";
+							sumGroupByQuery += " Dataset_Child ,";
+						}
+			
+						addQuery = false;
+					}
+
 
 					if(Util.isSame(token, "dataset") && (!Util.isSame(token2, "parent"))) {
 						checkMax(iter);
@@ -534,7 +556,6 @@ public class QueryBuilder {
 					if(!isIn(allKws, "Files")) allKws = addUniqueInList(allKws, "Block");
 				}else if(key.startsWith("dataset")) {
 					allKws = addUniqueInList(allKws, "ProcessedDataset");
-					System.out.println("2222Adding ProcessedDataset >>>>>>>>>>>>>>>>>>>>>>");
 				}
                             }
 			} catch (ClassCastException e) {
@@ -582,6 +603,9 @@ public class QueryBuilder {
 				if(Util.isSame(key, "dataset")) {
 					if(pathParentWhereQuery.length() > 0) {
 						queryWhere += pathParentWhereQuery + "";
+						bindValues.add(val);
+					} else if(pathChildWhereQuery.length() > 0) {
+						queryWhere += pathChildWhereQuery + "";
 						bindValues.add(val);
 					}else {
 
@@ -674,7 +698,7 @@ public class QueryBuilder {
 							fileParentAdded = true;
 							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
 							queryWhere += tmpTableName + ".LogicalFileName ";			
-						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
+						} else	if(Util.isSame(token2, "parent") && (Util.isSame(token, "procds") || (Util.isSame(token, "dataset")))) {
 							boolean dontJoin = false;
 							if(procDsParentAdded) dontJoin = true;
 							procDsParentAdded = true;
@@ -973,13 +997,16 @@ public class QueryBuilder {
 	}
 
 	private String handlePathParent() throws Exception {
-
-		System.out.println("This is..temporary continuation ..lets get to this laters....");
 		String sql = "Block.ID in  \n" +
 			"\t(" + DBSSql.listPathParentOld() + ")\n";
-		
 		return sql;
 	}
+	private String handlePathChild() throws Exception {
+		String sql = "Block.ID in  \n" +
+			"\t(" + DBSSql.listPathChild() + ")\n";
+		return sql;
+	}
+
 	private String handleLike(String val, List<String> bindValues) {
 		bindValues.add(val.replace('*','%'));
 		return "LIKE " + makeUpper("?");

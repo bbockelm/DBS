@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.211 $"
- $Id: DBSSql.java,v 1.211 2009/02/17 22:03:00 sekhri Exp $"
+ $Revision: 1.212 $"
+ $Id: DBSSql.java,v 1.212 2009/02/25 20:56:21 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1976,6 +1976,19 @@ public class DBSSql {
                 return sql;
         }
 
+
+        public static String listPathChild() throws SQLException {
+		String sql = "\tSELECT DISTINCT b.id \n" +
+			"\tFROM "+owner()+"Block b \n" +
+			"\tJOIN "+owner()+"ProcessedDataset procds \n" +
+				"\t\tON b.Dataset = procds.ID \n" +
+			"\tJOIN "+owner()+"ProcDSParent dp \n" +
+				"\t\tON dp.ThisDataset = procds.ID \n" +
+			"\tJOIN "+owner()+"Block bl \n" +
+			"\tON bl.Dataset = dp.ItsParent \n" +
+			 "\tWHERE bl.Path = ?\n";
+                return sql;
+        }
 
 
 
