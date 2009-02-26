@@ -933,6 +933,7 @@ public class QueryBuilder {
 		int iter = 0 ;
 		String prev = "";
 		String query = "\nFROM\n\t"  + owner() + (String)lKeywords.get(0) + "\n";
+		if (Util.isSame((String)lKeywords.get(0), "FileChildage")) query = "\nFROM\n\t"  + owner() + "FileParentage  \n";
 		int len = lKeywords.size();
 		for(int i = 1 ; i != len ; ++i ) {
 			++iter;	checkMax(iter);
