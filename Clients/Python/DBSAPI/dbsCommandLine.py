@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
-# Revision: 1.3 $"
-# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+# Revision: $"
+# Id: $"
 #
 #
 ###################################################
@@ -16,27 +16,29 @@
 #
 #
 # system modules
+#
 import os, sys, string, stat, re, time
 import traceback
-#from optparse import OptionParser
 import optparse
-#from optparse import Option
-
-from dbsApi import DbsApi
-
-# DBS specific modules
-from dbsException    import DbsException
-from dbsApiException import *
-
-import threading
-import sys
-from TermUtilities import TerminalController
-from TermUtilities import ProgressBar
-
 import StringIO
 import signal, os
-
 import pprint 
+import threading
+#
+# Determine if DBS API is Available
+dbsAvailable=True
+#
+try:
+  # DBS specific modules
+  from DBSAPI.dbsApi import DbsApi
+  from DBSAPI.dbsException    import DbsException
+  from DBSAPI.dbsApiException import *
+  from DBSAPI.TermUtilities import TerminalController
+  from DBSAPI.TermUtilities import ProgressBar
+except Exception, ex:
+  print "\nUnable to setup DBS environment, will only be running as a query tool\n"
+  dbsAvailable=False
+  
 try:
         import httplib
 
@@ -47,8 +49,7 @@ except Exception, ex:
                 exmsg+="\nPlease remove lib-tk, and lib-dynload from PYTHONPATH and try again\n\n"
                 raise DbsToolError(args=exmsg, code="9999")
 
-import urllib
-
+import urllib, urllib2
 import xml.sax, xml.sax.handler
 from xml.sax.saxutils import escape, unescape
 from xml.sax import SAXParseException
@@ -622,7 +623,7 @@ class DbsOptionParser(optparse.OptionParser):
   def __init__(self):
       optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0.9", conflict_handler="resolve")
 
-      self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
+      self.add_option("--url",action="store", type="string", dest="url", default="http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
       self.add_option("--alias",action="store", type="string", dest="alias", default="NOALIAS",
@@ -664,6 +665,9 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--query", action="store", type="string", dest="query",
            help="Search query used to perform data serach, create ADS Definitions etc ")
+
+      self.add_option("--xml", action="store_true", dest="xml",
+           help="If specified XML from DBS Server will be printed (in general used for debugging) ")
 
       self.add_option("--donotrunquery", action="store_true", default=False, dest="donotrunquery",
            help="If you add this option the query specified will not be run, use with caution with --storequery and --storetemplatequery, \
@@ -803,15 +807,14 @@ class ApiDispatcher:
 
   def __init__(self, args):
    try:
+
     self.helper = cmd_doc_writer()
-    self.term = TerminalController()
-    self.progress=showProgress()
+    if dbsAvailable:
+    	self.term = TerminalController()
+    	self.progress=showProgress()
+	
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
-
-    #See if Twril needs to be ignored
-    if self.optdict.has_key('notwril'):
-	self.progress.notwril=self.optdict['notwril']
 
     # If NO URL is provided, URL from dbs.config will be used
     if opts.__dict__['url'] == "BADURL":
@@ -820,8 +823,11 @@ class ApiDispatcher:
     if opts.__dict__['alias'] == 'NOALIAS':
 	del(opts.__dict__['alias'])
 
-    self.api = DbsApi(opts.__dict__)
-    self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
+    #See if Twril needs to be ignored
+    if dbsAvailable:
+	self.progress.notwril=self.optdict['notwril']
+	self.api = DbsApi(opts.__dict__)
+	self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
 
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
         print_help(self)
@@ -950,7 +956,7 @@ class ApiDispatcher:
 	self.handleSearchCall()
 
     else:
-       self.printRED( "Unsupported API Call '%s', please use --doc or --help" %str(apiCall))
+       print "Unsupported API Call '%s', please use --doc or --help" %str(apiCall)
 
    except DbsApiException, ex:
       self.progress.stop()
@@ -1837,34 +1843,49 @@ class ApiDispatcher:
 	if createCFG not in ('', None):
                 self.handleCreateCFGCall()
 
+  def getDBSversion(self):
+	# hard coded API version will do here
+        params = {'apiversion': 'DBS_2_0_5' ,'api':'getDBSServerVersion'}
+        params = dict(params)
+        data = urllib2.urlopen(self.optdict.get('url'), urllib.urlencode(params, doseq=True))
+        res = data.read()
+        for line in res.split():
+            if  line.find('server_version') != -1:
+                dbsver = line.split('=')[-1]
+                dbsver = dbsver.replace("'","").replace('"','')
+                return dbsver
+        return None
 
   def getDataFromDBSServer(self, userInput, qu="exe"):
         if self.optdict['donotrunquery']:
-               self.printRED("\n--donotrunquery specified, will not execute the query")
+               print "\n--donotrunquery specified, will not execute the query"
                qu="query"
 
-
-	data=self.api.executeQuery(userInput, type=qu)
-	
-	#print self.api.getApiVersion()
-	if self.api.getApiVersion() < "DBS_2_0_6":
-		return self.parseReultsOldStyle(data)
+        dbsver = self.getDBSversion()
+        if  not dbsver or dbsver >= 'DBS_2_0_6': 
+		self.apiversion=dbsver
         else: 
-		return self.parseResults(data)
+		self.apiversion='DBS_2_0_5'
+
+	if dbsAvailable: data=self.api.executeQuery(userInput, type=qu)
+	else : 
+		params = {'apiversion': self.apiversion ,'api':'executeQuery'}
+		params = dict(params)
+		params['query']=userInput
+		params['type']=qu
+		res = urllib2.urlopen(self.optdict.get('url'), urllib.urlencode(params, doseq=True))
+		data = res.read()
+
+	# parse according to Server version, DBS_2_0_6 have different XML coming from server
+        if not self.apiversion >= 'DBS_2_0_6':
+            return self.parseReultsOldStyle(data)
+        else:
+            return self.parseResults(data)
 
   def getDataFromDDSearch(self, userInput):
 
     print "Usage of ASearch is deprecated from DBS_2_0_6"
     sys.exit(0) 
-    #host="https://cmsweb.cern.ch/dbs_discovery_test/"
-    host= "https://cmsweb.cern.ch/dbs_discovery/"
-    #host= "https://cmsweb.cern.ch/dbs_discovery_test/DDServer/"
-    port= 443
-    dbsInst="cms_dbs_prod_global"
-  
-    data=self.sendMessage2DD(host,port,dbsInst,userInput)
-    #,page='0',limit=10,xml=0,case='on',details=0,debug=0)
-    return self.parseResults(data)
 
   def parseResults(self, data):
 
@@ -1876,6 +1897,10 @@ class ApiDispatcher:
 
     if self.optdict.has_key('quiet'):
                 quiet=self.optdict.get('quiet')
+
+    if self.optdict.get('xml'):
+	print data
+	return results
 
     try:
         # DbsExecutionError message would arrive in XML, if any
@@ -1986,6 +2011,10 @@ class ApiDispatcher:
 
         if self.optdict.has_key('quiet'):
                 quiet=self.optdict.get('quiet')
+
+        if self.optdict.get('xml'):
+		print data
+		return results
         try:
         # DbsExecutionError message would arrive in XML, if any
          class Handler (xml.sax.handler.ContentHandler):
@@ -2209,70 +2238,13 @@ class ApiDispatcher:
 	mart.write(safestr)
 	mart.close()
 
-  def sendMessage2DD(self, host,port,dbsInst,userInput,page='0',limit=10000,xml=1,case='on',details=0,debug=0):
-    """
-       Send message to server, message should be an well formed XML document.
-    """
-    print host,port,dbsInst, userInput,page,limit,xml,case,details,debug
-    if xml:
-       xml=1
-    else:
-       xml=0
-    input=urllib.quote(userInput)
-    if debug:
-       httplib.HTTPConnection.debuglevel = 1
-       print "Contact",host,port
-    _port=443
-    if host.find("http://")!=-1:
-       _port=80
-    if host.find("https://")!=-1:
-       _port=443
-    host=host.replace("http://","").replace("https://","")
-    if host.find(":")==-1:
-       port=_port
-    prefix_path=""
-    if host.find("/")!=-1:
-       hs=host.split("/")
-       host=hs[0]
-       prefix_path='/'.join(hs[1:])
-    port=int(port)
-    if port==443:
-       http_conn = httplib.HTTPS(host,port)
-    else:
-       http_conn = httplib.HTTP(host,port)
-    if details: details=1
-    else:       details=0
-    path='/aSearch?dbsInst=%s&html=0&caseSensitive=%s&_idx=%s&pagerStep=%s&userInput=%s&xml=%s&details=%s'%(dbsInst,case,page,limit,input,xml,details)
-    if prefix_path:
-       path="/"+prefix_path+path[1:]
-    http_conn.putrequest('POST',path)
-    http_conn.putheader('Host',host)
-    http_conn.putheader('Content-Type','text/html; charset=utf-8')
-    http_conn.putheader('Content-Length',str(len(input)))
-    http_conn.endheaders()
-    http_conn.send(input)
-
-    (status_code,msg,reply)=http_conn.getreply()
-    data=http_conn.getfile().read()
-    if debug or msg!="OK":
-       print
-       print http_conn.headers
-       print "*** Send message ***"
-       print input
-       print "************************************************************************"
-       print "status code:",status_code
-       print "message:",msg
-       print "************************************************************************"
-       print reply
-    return data
-
-
 # main
 #
 if __name__ == "__main__":
- 
+
   opts = {}
   args = []
+
   try:
 
     optManager  = DbsOptionParser()
@@ -2280,12 +2252,12 @@ if __name__ == "__main__":
 
     ApiDispatcher(opts)
 
-  except DbsApiException, ex:
+  except DBSAPI.DbsApiException, ex:
     print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
     if ex.getErrorCode() not in (None, ""):
       print "DBS Exception Error Code: ", ex.getErrorCode()
 
-  except DbsException, ex:
+  except DBSAPI.DbsException, ex:
     print "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
     if ex.getErrorCode() not in (None, ""):
       print "DBS Exception Error Code: ", ex.getErrorCode()
