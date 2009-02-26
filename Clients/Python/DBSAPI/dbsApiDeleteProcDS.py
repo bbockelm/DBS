@@ -39,6 +39,33 @@ def dbsApiImplDeleteProcDS(self, dataset):
 
    # ------------------------------------------------------------
 
+def dbsApiImplDeleteRecycleBin(self, dataset, block):
+
+    """
+    Removes the block from the recycle bin forever. The block cannot be restored after this operation
+    
+    param: 
+        path : The dataset path represented in the form /primname/procname/datatier
+        blokc : The block represented in the form /primname/procname/datatier#GUID
+                          
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException  
+           
+    examples:
+         api.deleteRecycleBin ("/this/hahah/SIM", "/this/hahah/SIM#GUID")
+ 
+    """   
+
+    path = get_path(dataset)
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    ####logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    data = self._server._call ({ 'api' : 'deleteRecycleBin',
+                         'path' : path,
+                         'block_name' : block }, 'POST')
+    ####logging.log(DBSDEBUG, data)
+
+   # ------------------------------------------------------------
+
 def dbsApiImplUndeleteProcDS(self, dataset):
 
     """
