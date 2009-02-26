@@ -14,14 +14,15 @@ CREATE TABLE Person
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(100),
-    DistinguishedName     varchar(500)      unique not null,
+    DistinguishedName     varchar(500)    not null,
     ContactInfo           varchar(250),
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
-    primary key(ID)
+    primary key(ID),
+    unique (DistinguishedName(500))
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -950,18 +951,18 @@ CREATE TABLE QualityHistory
 
 CREATE TABLE IntQualityHistory
   (
-    ID                    integer,
-    HistoryOf             integer,
+    ID                    BIGINT UNSIGNED,
+    HistoryOf             BIGINT UNSIGNED,
     HistoryTimeStamp      integer   not null,
-    Dataset               integer   not null,
-    Run                   integer   not null,
-    Lumi                  integer,
-    SubSystem             integer   not null,
+    Dataset               BIGINT UNSIGNED not null,
+    Run                   BIGINT UNSIGNED not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
     IntDQValue            integer   not null,
     CreationDate          integer,
-    CreatedBy             integer,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  integer,
-    LastModifiedBy        integer,
+    LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(HistoryTimeStamp,Run,Lumi,SubSystem, IntDQValue)
   ) ENGINE = InnoDB ;
