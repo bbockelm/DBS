@@ -260,7 +260,11 @@ executeQuery () {
 	#$CMD query="find dataset.tier where procds  = CMSSW_1_3_1-Spring07-1349"
 	#$CMD query="find dataset where tier = GEN-SIM-DIGI-RECO"
 	#$CMD query="find dataset where tier in (GEN,   GEN-SIM-DIGI-RECO)"
-	$CMD query="find file.child where block = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
+	#$CMD query="find file.child where block = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
+	#$CMD query="find block.child where block = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
+	#$CMD query="find block.parent where block = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
+	$CMD query="find block where block.parent = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
+	#$CMD query="find file.parent where block = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
 	
 	#$CMD query="find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby"
 	#$CMD query="find file where tier = GEN-SIM-DIGI-RECO"

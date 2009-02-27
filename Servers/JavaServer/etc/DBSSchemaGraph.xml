@@ -27,6 +27,8 @@
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
 	<node id="ProcDSTier" 			user="DEPRICATED_procds.tier,DEPRICATED_dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
 	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
+	<node id="BlockParent" 			user="block.parent"	real="BlockParent" 			default="ThisBlock,ItsParent" mapped="Block.Name"/>
+	<node id="BlockChild" 			user="block.child"	real="BlockChild" 			default="ThisBlock,ItsParent" mapped="Block.Name"/>
 	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"     mapped="AppVersion.Version"/>
 	<node id="AnalysisDataset" 		user="ads" 		real="AnalysisDataset" 			default="Name,Version"/>
 	<node id="AnalysisDSType" 		user="ads.type" 	real="AnalysisDSType" 			default="Type"/>
@@ -113,6 +115,8 @@
 	<edge directed="false"	wt="1"	source="AlgorithmConfig" 		target="QueryableParameterSet"	relation="QueryableParameterSet.ID = AlgorithmConfig.ParameterSetID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileParentage" 		relation="Files.ID = FileParentage.ThisFile"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileChildage"		relation="Files.ID = FileParentage.ItsParent"/>
+	<edge directed="false"	wt="1"	source="Block"	 		target="BlockParent" 		relation="Block.ID = BlockParent.ThisBlock"/>
+	<edge directed="false"	wt="1"	source="Block"	 		target="BlockChild" 		relation="Block.ID = BlockParent.ItsParent"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="BranchHash" 		relation="Files.FileBranch = BranchHash.ID"/>
 	<edge directed="false"	wt="1"	source="BranchHash"		target="BranchHashMap" 		relation="BranchHash.ID = BranchHashMap.BranchHashID"/>
 	<edge directed="false"	wt="1"	source="BranchHashMap" 		target="Branch" 		relation="BranchHashMap.BranchID = Branch.ID"/>

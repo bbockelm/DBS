@@ -91,6 +91,8 @@ public class QueryBuilder {
 		String personJoinQuery = "";
 		String parentJoinQuery = "";
 		String childJoinQuery = "";
+		String blockParentJoinQuery = "";
+		String blockChildJoinQuery = "";
 		String pathParentWhereQuery = "";
 		String pathChildWhereQuery = "";
 		String groupByQuery = "";
@@ -102,6 +104,8 @@ public class QueryBuilder {
 		boolean createByAdded = false;
 		boolean fileParentAdded = false;
 		boolean fileChildAdded = false;
+		boolean blockParentAdded = false;
+		boolean blockChildAdded = false;
 		boolean datasetParentAdded = false;
 		boolean datasetChildAdded = false;
 		boolean procDsParentAdded = false;
@@ -380,6 +384,48 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 				
+					if(Util.isSame(token2, "parent") && Util.isSame(token, "block")) {
+						checkMax(iter);
+						boolean dontJoin = false;
+						if(blockParentAdded) dontJoin = true;
+						blockParentAdded = true;
+						if(!dontJoin) blockParentJoinQuery += handleParent(tmpTableName, "Block", "BlockParent");
+						String fqName = tmpTableName + ".Name";
+						query += fqName + makeAs(fqName);			
+						if(iLumi) groupByQuery += fqName + ",";
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(toSelect.length() != 0) {
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							       	sumQuery += toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+						addQuery = false;
+					}
+
+					if(Util.isSame(token2, "child") && Util.isSame(token, "block")) {
+						checkMax(iter);
+						boolean dontJoin = false;
+						if(blockChildAdded) dontJoin = true;
+						blockChildAdded = true;
+						if(!dontJoin) blockChildJoinQuery += handleBlockChild(tmpTableName, "Block", "BlockParent");
+						String fqName = tmpTableName + ".Name";
+						query += fqName + makeAs(fqName);			
+						if(iLumi) groupByQuery += fqName + ",";			
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(toSelect.length() != 0) {
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+								sumQuery += toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+	
+						addQuery = false;
+					}
+
+
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "procds")) {
 						checkMax(iter);
 						boolean dontJoin = false;
@@ -580,9 +626,13 @@ public class QueryBuilder {
 		query += personJoinQuery;
 		query += parentJoinQuery;
 		query += childJoinQuery;
+		query += blockParentJoinQuery;
+		query += blockChildJoinQuery;
 		personJoinQuery = "";
 		parentJoinQuery = "";
 		childJoinQuery = "";
+		blockChildJoinQuery = "";
+		blockParentJoinQuery = "";
 		String queryWhere = "";
 		if (cs.size() > 0) queryWhere += "\nWHERE\n";
 		
@@ -693,24 +743,33 @@ public class QueryBuilder {
 									"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
 							queryWhere += tmpTableName + ".DistinguishedName ";			
 						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
-							boolean dontJoin = false;
+							throw new Exception("file.parent in where clause is not supported by DBSql anymore. Use file.child in find clause instead. For example find file.child where file = blah");
+							/*boolean dontJoin = false;
 							if(fileParentAdded) dontJoin = true;
 							fileParentAdded = true;
 							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "Files", "FileParentage");
-							queryWhere += tmpTableName + ".LogicalFileName ";			
+							queryWhere += tmpTableName + ".LogicalFileName ";			*/
 						} else	if(Util.isSame(token2, "parent") && (Util.isSame(token, "procds") || (Util.isSame(token, "dataset")))) {
-							boolean dontJoin = false;
+							throw new Exception("dataset.parent in where clause is not supported by DBSql anymore. Use dataset.child in find clause instead. For example find dataset.child where dataset = blah");
+							/*boolean dontJoin = false;
 							if(procDsParentAdded) dontJoin = true;
 							procDsParentAdded = true;
 							//String tmpTableName =  token + "_" + token2;
 							if(!dontJoin) parentJoinQuery += handleParent(tmpTableName, "ProcessedDataset", "ProcDSParent");
-							queryWhere += tmpTableName + ".Name ";			
+							queryWhere += tmpTableName + ".Name ";			*/
+						}  else	if(Util.isSame(token2, "child") && (Util.isSame(token, "procds") || (Util.isSame(token, "dataset")))) {
+							throw new Exception("dataset.child in where clause is not supported by DBSql anymore. Use dataset.parent in find clause instead. For example find dataset.parent where dataset = blah");
 						} else	if(Util.isSame(token2, "child") && Util.isSame(token, "file")) {
-							boolean dontJoin = false;
+							throw new Exception("file.child in where clause is not supported by DBSql anymore. Use file.parent in find clause instead. For example find file.parent where file = blah");
+							/*boolean dontJoin = false;
 							if(fileChildAdded) dontJoin = true;
 							fileChildAdded = true;
 							if(!dontJoin) childJoinQuery += handleChild(tmpTableName, "Files", "FileParentage");
-							queryWhere += tmpTableName + ".LogicalFileName ";			
+							queryWhere += tmpTableName + ".LogicalFileName ";			*/
+						}  else	if(Util.isSame(token2, "child") && Util.isSame(token, "block")) {
+							throw new Exception("block.child in where clause is not supported by DBSql anymore. Use block.parent in find clause instead. For example find block.parent where block = blah");
+						}  else	if(Util.isSame(token2, "parent") && Util.isSame(token, "block")) {
+							throw new Exception("block.parent in where clause is not supported by DBSql anymore. Use block.child in find clause instead. For example find block.child where block = blah");
 						} else doGeneric = true;
 					
 					}else doGeneric = true;
@@ -766,7 +825,7 @@ public class QueryBuilder {
 			bindValues.add("INVALID");
 		}
 		
-		query += personJoinQuery + parentJoinQuery + childJoinQuery + queryWhere + circularConst + invalidConst;
+		query += personJoinQuery + parentJoinQuery + childJoinQuery + blockParentJoinQuery + blockChildJoinQuery +  queryWhere + circularConst + invalidConst;
 		if(groupByQuery.length() > 0) {
 			groupByQuery = groupByQuery.substring(0, groupByQuery.length() - 1);// to get rid of extra comma
 			query += "\n GROUP BY " + groupByQuery;
@@ -932,8 +991,12 @@ public class QueryBuilder {
 		//ArrayList uniquePassed = new ArrayList();
 		int iter = 0 ;
 		String prev = "";
-		String query = "\nFROM\n\t"  + owner() + (String)lKeywords.get(0) + "\n";
-		if (Util.isSame((String)lKeywords.get(0), "FileChildage")) query = "\nFROM\n\t"  + owner() + "FileParentage  \n";
+		String query = "\nFROM\n\t"  + owner();
+		String firstToken = (String)lKeywords.get(0);
+
+		if((Util.isSame(firstToken, "FileChildage"))) firstToken = "FileParentage" ;
+		if((Util.isSame(firstToken, "BlockChild"))) firstToken = "BlockParent" ;
+		query += firstToken + "\n";
 		int len = lKeywords.size();
 		for(int i = 1 ; i != len ; ++i ) {
 			++iter;	checkMax(iter);
@@ -947,6 +1010,7 @@ public class QueryBuilder {
 							String tmp = u.getRealtionFromVertex(v1, v2);
 							query += "\t";
 							if(Util.isSame(v1, "FileChildage")) v1 = "FileParentage";
+							if(Util.isSame(v1, "BlockChild")) v1 = "BlockParent";
 							if(Util.isSame(v1, "FileParentage") ||
 									Util.isSame(v1, "ProcDSParent")) query += "LEFT OUTER ";
 							query += "JOIN " + owner() +  v1 + "\n";
@@ -994,7 +1058,10 @@ public class QueryBuilder {
 	private String handleChild(String tmpTableName, String table1, String table2) throws Exception {
 		return ( "\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
 				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ThisFile\n" );
-
+	}
+	private String handleBlockChild(String tmpTableName, String table1, String table2) throws Exception {
+		return ( "\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
+				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ThisBlock\n" );
 	}
 
 	private String handlePathParent() throws Exception {
