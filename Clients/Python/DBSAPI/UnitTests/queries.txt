@@ -1,7 +1,7 @@
 find dataset
 find file where file.release=CMSSW_1_7_1
-find file,file.status,file.type where procds.release=CMSSW_1_7_1
-find file.id,lumi.id   where procds.release=CMSSW_1_7_1
+#find file,file.status,file.type where procds.release=CMSSW_1_7_1
+#find file.id,lumi.id   where procds.release=CMSSW_1_7_1
 find file.name, file.createdate where run.number=35672 and run.moddate>2
 find file,file.size,dataset where procds.name=Online and file.size>546294916
 find  file,    lumi    where    dataset  =   /CalPrivateGlobal-default/Online/RAW
@@ -30,37 +30,36 @@ find procds.parent,procds.name,file,file.parent  where procds.parent like %
 find file where file.createby like %sekhri% or file.createby = abc
 find file.parent,file where file.name = NEW_TEST0005
 find lumi.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW,/GlobalMar08-Express/Online/RAW)
-find file,file.parent,run,dataset where file.parent like %NEW% or file.parent like %
-find file.id,lumi.id,dataset   where procds.release=CMSSW_1_7_1
+#find file.id,lumi.id,dataset   where procds.release=CMSSW_1_7_1
 find file.createby,file.modby where file.createby like %sekhri% or file.modby like %sekhri% and file.createby like %sek%
 #find procds, procds.createdate,run,lumi.moddate where run.number in (1,2,3)
 find run, run.numevents, run.numlss, run.starttime, run.endtime
 find dataset  where site = T1_FR_CCIN2P3
-find file where run > 1 and run < 1000000
+#find file where run > 1 and run < 1000000
 find procds.status  where dataset = /CalPrivateGlobal-default/Online/RAW
 find procds, procds.era, procds.tag
 find procds, procds.era, procds.tag where dataset = /CalPrivateGlobal-default/Online/RAW
 find site
 find run, run.createdate where run.createdate > 2008-05-01 12:05:12 order by run, run.createdate
 find file.parent, file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM
-find procds.parent,procds.name  where procds.name like %Test% or procds.parent like %
+find procds.parent,procds.name  where procds.name like %Test%
 find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW  or dataset=/abc/Online/RAW
 find file where dq = TIB_DCS=UNKNOWN&Tracker_Global=GOOD&TIB_Local=GOOD and dataset = /Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO
 find dataset, procds.createdate where dq = Tracker_Global=GOOD&TIB_Local=GOOD and dataset = /Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO
 #find file,lumi,dataset where dq = Tracker_Global=GOOD&TIB_Local=GOOD&TIB_DCS=UNKNOWN or file.size > 1000 and dataset=/Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO
-find file, file.tier
+#find file, file.tier
 find file where file.tier = GEN
 find run where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db
 find block , dataset where site = srm-disk.pic.es
 find procds,file where procds.tier = GEN
-find procds,file,file.tier where dataset like *
+#find procds,file,file.tier where dataset like *
 find file where site in ( srm-disk.pic.es, castorsrm.cr)
-find procds,file where procds.tier in (GEN,SIM,RAW)
+find procds where procds.tier in (GEN,SIM,RAW)
 find ads,file
 find release where file like *
 find release where dataset like *
 find release where dataset like * or file like *
-find release where procds like * or file like *
+#find release where procds like * or file like *
 find file.release where procds like * or file like *
 find file,run,lumi where ads.name = MyAds
 find lumi,ads
@@ -70,12 +69,12 @@ find ads, ads.dataset
 find file,run,lumi where ads.name in ( MyAds, Myades )
 find ads,file where dataset = /TestPrimary_001_20080501_10h06m06s/TestProcessed_20080501_10h06m06s/GEN-SIM
 find ads, ads.def, file
-find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0
+#find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0
 find lumi.startevnum, lumi.endevnum, lumi.id where file.createdate > 0
 find file where lumi.evnum  = 150
 find lumi, dataset where lumi.evnum  = 150
 find file, file.createdate where  file.createdate = 2007-04-20 
-find file, file.createdate where  file.createdate = 2007-04-20 11:27:21 CDT  or file.moddate > 2008
+#find file, file.createdate where  file.createdate = 2007-04-20 11:27:21 CDT  or file.moddate > 2008
 find file, file.createdate where  file.createdate = 2007-04-20 11:27:21
 find run, run.createdate where run.createdate = 2008-05-01 12:05:12 order by run
 find run, run.createdate where run.createdate = 2008-05-01 12:05
@@ -102,7 +101,7 @@ find lumi, lumi.starttime, lumi.endtime
 find dataset.id, dataset.status, dataset.era, dataset.tag, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM
 find dataset.release, dataset.era, dataset.tag, dataset.status, dataset.createdate, dataset.moddate, dataset.createby, dataset.modby where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER
 find file.child, file where file = NEW_TEST0002
-find file where file.child = NEW_TEST0005
+find file.parent where file = NEW_TEST0005
 find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0
 find sum(run.numevents) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0
 find sum(block.size)  where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
@@ -142,7 +141,13 @@ find lumi, lumi.starttime, lumi.endtime
 find dataset.id, dataset.status, dataset.era, dataset.tag, dataset.createdate, dataset.createby where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM
 find dataset.release, dataset.era, dataset.tag, dataset.status, dataset.createdate, dataset.createby where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER
 find file.child, file where file = NEW_TEST0002
-find file where file.child = NEW_TEST0005
+find file.parent where file = NEW_TEST0005
+#find block, block.parent where dataset = *RECO
+find block, block.child where dataset = *RAW
+find dataset, dataset.parent where dataset = *RECO
+find dataset, dataset.child where dataset = *RAW
+find procds, procds.parent where dataset = *RECO
+#find procds, procds.child where dataset = *RECO
 find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0
 find sum(run.numevents) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0
 find sum(block.size)  where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
