@@ -68,7 +68,7 @@ psConM = 'test_ConM_' + ran
 
 runNumber = random.choice(range(400000, 500000))
 runNumEvents = 1200
-numLumi = 1234
+numLumi = 2
 totalLumi = 3456
 storeNum = 8907
 startRun = 23456
