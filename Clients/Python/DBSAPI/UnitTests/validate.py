@@ -851,6 +851,8 @@ class Test_010(unittest.TestCase):
                         	self.assertEqual(1, 2)
 
 	def test_02_InsertValues(self):	
+		#Turning off this test, we may revisit or deprecate this in 207
+		return True
 		if isMYSQL=='MYSQL':
                         return True
 
