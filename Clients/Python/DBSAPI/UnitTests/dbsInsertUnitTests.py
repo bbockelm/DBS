@@ -23,6 +23,11 @@ from dbsUnitTestApi import DbsUnitTestApi
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
+
+serverInfo = api.getServerInfo()
+isMYSQL = serverInfo['InstanceType']
+isGlobal = serverInfo['InstanceName']
+
 #mytime = str(time.time())
 mytime = time.strftime("_%Y%m%d_%Hh%Mm%Ss",time.localtime())
 
@@ -843,40 +848,37 @@ adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
 
 #f.write("\n***********************createAnalysisDataset API tests***************************")
 
+if isGlobal != "GLOBAL":
+	apiObj = DbsUnitTestApi(api.addReplicaToBlock, f)
+	apiObj.setVerboseLevel(opts.verbose)
+	f.write("\n\n***********************addReplicaToBlock API tests***************************")
 
-apiObj = DbsUnitTestApi(api.addReplicaToBlock, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************addReplicaToBlock API tests***************************")
+	apiObj.run(block1, "MySE1", excep = False)
+	apiObj.run(block1, "MySE2", excep = False)
+	apiObj.run(block1, "My;SE", excep = True)
+	apiObj.run("/does/not/eist#1234", "MySE1", excep = True)
 
-apiObj.run(block1, "MySE1", excep = False)
-apiObj.run(block1, "MySE2", excep = False)
-apiObj.run(block1, "My;SE", excep = True)
-apiObj.run("/does/not/eist#1234", "MySE1", excep = True)
+	f.write("\n\n***********************addReplicaToBlock API tests***************************")
 
-f.write("\n\n***********************addReplicaToBlock API tests***************************")
+	apiObj = DbsUnitTestApi(api.deleteReplicaFromBlock, f)
+	apiObj.setVerboseLevel(opts.verbose)
+	f.write("\n\n***********************deleteReplicaFromBlock API tests***************************")
 
-apiObj = DbsUnitTestApi(api.deleteReplicaFromBlock, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************deleteReplicaFromBlock API tests***************************")
+	apiObj.run(block1, "MySE1", excep = False)
+	apiObj.run(block1, "My;SE", excep = True)
+	apiObj.run(block1, "DOESNOTEXIST", excep = True)
+	apiObj.run("/does/not/eist#1234", "MySE1", excep = True)
 
-apiObj.run(block1, "MySE1", excep = False)
-apiObj.run(block1, "My;SE", excep = True)
-apiObj.run(block1, "DOESNOTEXIST", excep = True)
-apiObj.run("/does/not/eist#1234", "MySE1", excep = True)
+	f.write("\n\n***********************deleteReplicaFromBlock API tests***************************")
 
-f.write("\n\n***********************deleteReplicaFromBlock API tests***************************")
-
-
-apiObj = DbsUnitTestApi(api.renameSE, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************renameSE API tests***************************")
-
-apiObj.run("MySE2", "MySE2New" + mytime, excep = False)
-apiObj.run("DOESNOTEXIST", "MySE", excep = True)
-apiObj.run("abcd;edf", "ANTHING", excep = True)
-apiObj.run("/does/no", "MySE1", excep = True)
-
-f.write("\n\n***********************renameSE API tests***************************")
+	apiObj = DbsUnitTestApi(api.renameSE, f)
+	apiObj.setVerboseLevel(opts.verbose)
+	f.write("\n\n***********************renameSE API tests***************************")
+	apiObj.run("MySE2", "MySE2New" + mytime, excep = False)
+	apiObj.run("DOESNOTEXIST", "MySE", excep = True)
+	apiObj.run("abcd;edf", "ANTHING", excep = True)
+	apiObj.run("/does/no", "MySE1", excep = True)
+	f.write("\n\n***********************renameSE API tests***************************")
 
 
 apiObj = DbsUnitTestApi(api.closeBlock, f)
