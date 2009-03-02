@@ -109,6 +109,7 @@ public class QueryBuilder {
 		boolean datasetParentAdded = false;
 		boolean datasetChildAdded = false;
 		boolean procDsParentAdded = false;
+		boolean procDsChildAdded = false;
 		boolean iLumi = isInList(kws, "ilumi");
 		boolean countPresent = false;
 		boolean sumPresent = false;
@@ -445,7 +446,68 @@ public class QueryBuilder {
 						}
 						addQuery = false;
 					}
+
+					if(Util.isSame(token2, "child") && Util.isSame(token, "procds")) {
+						checkMax(iter);
+						boolean dontJoin = false;
+						if(procDsChildAdded) dontJoin = true;
+						procDsChildAdded = true;
+						if(!dontJoin) parentJoinQuery += handleProcdsChild(tmpTableName, "ProcessedDataset", "ProcDSParent");
+						String fqName = tmpTableName + ".Name";
+						query += fqName + makeAs(fqName);			
+						if(iLumi) groupByQuery += fqName + ",";	
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(toSelect.length() != 0) {
+								if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							       	sumQuery += toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+							}
+						}
+						addQuery = false;
+					}
+
 					if(Util.isSame(token2, "parent") && Util.isSame(token, "dataset")) {
+						//Lets have the same treatment as procds.parent
+						checkMax(iter);
+						allKws = addUniqueInList(allKws, "Block");
+						boolean dontJoin = false;
+						if(datasetParentAdded) dontJoin = true;
+						datasetParentAdded = true;
+						if(!dontJoin) pathParentWhereQuery += handlePathParent(tmpTableName, "Block", "ProcDSParent");
+						String fqName = tmpTableName + ".Path"; 
+						query += fqName + makeAs(fqName);			
+						if(iLumi) groupByQuery += fqName +  ",";		
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							       	sumQuery += toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+						}
+			
+						addQuery = false;
+					}
+					if(Util.isSame(token2, "child") && Util.isSame(token, "dataset")) {
+						checkMax(iter);
+						allKws = addUniqueInList(allKws, "Block");
+						boolean dontJoin = false;
+						if(datasetChildAdded) dontJoin = true;
+						datasetChildAdded = true;
+						if(!dontJoin) pathChildWhereQuery += handlePathChild(tmpTableName, "Block", "ProcDSParent");
+						String fqName = tmpTableName + ".Path"; 
+						query += fqName + makeAs(fqName);			
+						if(iLumi) groupByQuery += fqName +  ",";		
+						if(sumPresent || countPresent) {
+							String toSelect = makeSumSelect(makeAs(fqName)) + " ";
+							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+							       	sumQuery += toSelect + " AS " + toSelect + " ";
+								sumGroupByQuery += toSelect + ",";
+						}
+			
+						addQuery = false;
+					}
+
+					/*if(Util.isSame(token2, "parent") && Util.isSame(token, "dataset")) {
 						//Lets have the same treatment as procds.parent
 						checkMax(iter);
 						allKws = addUniqueInList(allKws, "Block");
@@ -465,6 +527,7 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 
+
 					if(Util.isSame(token2, "child") && Util.isSame(token, "dataset")) {
 						//Lets have the same treatment as procds.parent
 						checkMax(iter);
@@ -483,14 +546,14 @@ public class QueryBuilder {
 						}
 			
 						addQuery = false;
-					}
+					}*/
 
 
-					if(Util.isSame(token, "dataset") && (!Util.isSame(token2, "parent"))) {
+					/*if(Util.isSame(token, "dataset") && (!Util.isSame(token2, "parent"))) {
 						checkMax(iter);
 						allKws = addUniqueInList(allKws, "ProcessedDataset");
 						System.out.println("1111Adding ProcessedDataset >>>>>>>>>>>>>>>>>>>>>>");
-					}
+					}*/
 				
 
 					Vertex vCombined = u.getMappedVertex(aKw);
@@ -628,6 +691,8 @@ public class QueryBuilder {
 		query += childJoinQuery;
 		query += blockParentJoinQuery;
 		query += blockChildJoinQuery;
+		query += pathParentWhereQuery;
+		query += pathChildWhereQuery;
 		personJoinQuery = "";
 		parentJoinQuery = "";
 		childJoinQuery = "";
@@ -651,13 +716,13 @@ public class QueryBuilder {
                             }
                             if (key!=null) {
 				if(Util.isSame(key, "dataset")) {
-					if(pathParentWhereQuery.length() > 0) {
+					/*if(pathParentWhereQuery.length() > 0) {
 						queryWhere += pathParentWhereQuery + "";
 						bindValues.add(val);
 					} else if(pathChildWhereQuery.length() > 0) {
 						queryWhere += pathChildWhereQuery + "";
 						bindValues.add(val);
-					}else {
+					}else {*/
 
 						// If path is given in where clause it should op should always be =
 						//if(!Util.isSame(op, "=")) throw new Exception("When Path is provided operater should be = . Invalid operater given " + op);
@@ -668,7 +733,7 @@ public class QueryBuilder {
 							queryWhere += "\tBlock.Path ";
 							queryWhere += handleOp(op, val, bindValues);
 						}
-					}
+					//}
 				} else if(Util.isSame(key, "dq")) {
 					if(!Util.isSame(op, "=")) throw new Exception("When dq is provided operator should be = . Invalid operator given " + op);
 					queryWhere += "\tRuns.ID" + handleDQ(val, cs);	
@@ -996,6 +1061,7 @@ public class QueryBuilder {
 
 		if((Util.isSame(firstToken, "FileChildage"))) firstToken = "FileParentage" ;
 		if((Util.isSame(firstToken, "BlockChild"))) firstToken = "BlockParent" ;
+		if((Util.isSame(firstToken, "ProcDSChild"))) firstToken = "ProcDSParent" ;
 		query += firstToken + "\n";
 		int len = lKeywords.size();
 		for(int i = 1 ; i != len ; ++i ) {
@@ -1011,8 +1077,10 @@ public class QueryBuilder {
 							query += "\t";
 							if(Util.isSame(v1, "FileChildage")) v1 = "FileParentage";
 							if(Util.isSame(v1, "BlockChild")) v1 = "BlockParent";
+							if(Util.isSame(v1, "ProcDSChild")) v1 = "ProcDSParent";
 							if(Util.isSame(v1, "FileParentage") ||
-									Util.isSame(v1, "ProcDSParent")) query += "LEFT OUTER ";
+									Util.isSame(v1, "ProcDSParent") ||
+									Util.isSame(v1, "BlockParent")) query += "LEFT OUTER ";
 							query += "JOIN " + owner() +  v1 + "\n";
 							query += "\t\tON " + tmp + "\n";
 							//uniquePassed.add(v1 + "," + v2);
@@ -1059,6 +1127,11 @@ public class QueryBuilder {
 		return ( "\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
 				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ThisFile\n" );
 	}
+
+	private String handleProcdsChild(String tmpTableName, String table1, String table2) throws Exception {
+		return ( "\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
+				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ThisDataset\n" );
+	}
 	private String handleBlockChild(String tmpTableName, String table1, String table2) throws Exception {
 		return ( "\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
 				"\t\tON " + tmpTableName + ".ID = " + table2 + ".ThisBlock\n" );
@@ -1069,6 +1142,26 @@ public class QueryBuilder {
 			"\t(" + DBSSql.listPathParentOld() + ")\n";
 		return sql;
 	}
+	private String handlePathParent(String tmpTableName, String table1, String table2) throws Exception {
+		String procdsTmpTableName = "proc" + tmpTableName;
+		String sql = "\tLEFT OUTER JOIN "  + owner() + "ProcessedDataset " + procdsTmpTableName + " \n" +
+				"\t\t ON ProcDSParent.ItsParent  = " + procdsTmpTableName + ".ID \n" + 
+				"\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
+				"\t\tON " + tmpTableName + ".Dataset = " + "" + procdsTmpTableName + ".ID \n";
+			// "\tWHERE bl.Path = ?\n";
+		return sql;
+	}
+
+	private String handlePathChild(String tmpTableName, String table1, String table2) throws Exception {
+		String procdsTmpTableName = "proc" + tmpTableName;
+		String sql = "\tLEFT OUTER JOIN "  + owner() + "ProcessedDataset " + procdsTmpTableName + " \n" +
+				"\t\t ON ProcDSParent.ThisDataset  = " + procdsTmpTableName + ".ID \n" + 
+				"\tLEFT OUTER JOIN " + owner() + table1 + " " + tmpTableName + "\n" +
+				"\t\tON " + tmpTableName + ".Dataset = " + "" + procdsTmpTableName + ".ID \n";
+			// "\tWHERE bl.Path = ?\n";
+		return sql;
+	}
+
 	private String handlePathChild() throws Exception {
 		String sql = "Block.ID in  \n" +
 			"\t(" + DBSSql.listPathChild() + ")\n";

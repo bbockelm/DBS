@@ -26,7 +26,8 @@
 	<node id="FileTriggerTag" 		user="ftrigger" 	real="FileTriggerTag" 			default="Fileid,TriggerTag"/>
 	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"/>
 	<node id="ProcDSTier" 			user="DEPRICATED_procds.tier,DEPRICATED_dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"/>
-	<node id="ProcDSParent" 		user="procds.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
+	<node id="ProcDSParent" 		user="procds.parent, dataset.parent"	real="ProcDSParent" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
+	<node id="ProcDSChild" 			user="procds.child, dataset.child"	real="ProcDSChild" 			default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"/>
 	<node id="BlockParent" 			user="block.parent"	real="BlockParent" 			default="ThisBlock,ItsParent" mapped="Block.Name"/>
 	<node id="BlockChild" 			user="block.child"	real="BlockChild" 			default="ThisBlock,ItsParent" mapped="Block.Name"/>
 	<node id="ProcAlgo" 			user="procds.release" 	real="ProcAlgo" 			default="Dataset,Algorithm"     mapped="AppVersion.Version"/>
@@ -77,6 +78,7 @@
 	<edge directed="false"	wt="1"	source="PrimaryDataset" 		target="PrimaryDSType" 		relation="PrimaryDSType.ID = PrimaryDataset.Type"/>
 	<edge directed="false"	wt="1"	source="PrimaryDataset" 		target="ProcessedDataset"	relation="PrimaryDataset.ID = ProcessedDataset.PrimaryDataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcDSParent" 		relation="ProcessedDataset.ID = ProcDSParent.ThisDataset"/>
+	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcDSChild" 		relation="ProcessedDataset.ID = ProcDSParent.ItsParent"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcAlgo" 		relation="ProcessedDataset.ID = ProcAlgo.Dataset"/>
 	<edge directed="false"	wt="1.5"	source="ProcessedDataset" 	target="ProcDSRuns" 		relation="ProcessedDataset.ID = ProcDSRuns.Dataset"/>
 	<edge directed="false"	wt="1"	source="ProcessedDataset" 	target="ProcDSTier" 		relation="ProcessedDataset.ID = ProcDSTier.Dataset"/>
