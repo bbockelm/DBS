@@ -563,6 +563,7 @@ public class QueryBuilder {
 						checkMax(iter);
 						if(addQuery) {
 							String mapVal =  km.getMappedValue(aKw, true);
+							allKws = addUniqueInList(allKws, (new StringTokenizer(mapVal, ".")).nextToken());
 							//if(mapVal.equals(aKw)) throw new Exception("The keyword " + aKw + " not yet implemented in Query Builder" );
 							query += mapVal + makeAs(mapVal); 
 							if(iLumi) groupByQuery += mapVal + ",";
