@@ -1319,22 +1319,25 @@ public class QueryBuilder {
 		//System.out.println("VAL is " + dqVal);
 		//Pass in dsQueryForDQ.toString() and tmpBindValues to DBSSql.listRunsForRunLumiDQ
 		//ArrayList sqlObj = DBSSql.listRunsForRunLumiDQ(null, dqVal);
-		ArrayList sqlObj = (new DBSApiDQLogic(null)).listRunsForRunLumiDQ(null, dsQueryForDQ.toString(), tmpBindValues, dqVal);
+
 		String dqQuery = "";
-		if(sqlObj.size() == 2) {
-			dqQuery = (String)sqlObj.get(0);
-			Vector bindVals = (Vector)sqlObj.get(1);
-			iter = 0 ;
-			for(Object s: bindVals) {
-				++iter; checkMax(iter);
-				bindValues.add((String)s);
+
+		try {
+			ArrayList sqlObj = (new DBSApiDQLogic(null)).listRunsForRunLumiDQ(null, dsQueryForDQ.toString(), tmpBindValues, dqVal);
+			if(sqlObj.size() == 2) {
+				dqQuery = (String)sqlObj.get(0);
+				Vector bindVals = (Vector)sqlObj.get(1);
+				iter = 0 ;
+				for(Object s: bindVals) {
+					++iter; checkMax(iter);
+					bindValues.add((String)s);
+				}
 			}
+		} catch (Exception ex) {
+			bindValues.add((String) "-1");
+			return (" IN ( \n ?  )");
 		}
-		//call DQ function
-		//List<String> bindValuesFromDQ = ; //Get from DQ function
-		//for(String s: bindValues) bindValues.add(s);
-		String query = " IN ( \n" + dqQuery + ")";
-		return query;
+		return ( " IN ( \n" + dqQuery + ")" );
 	}
 
 	private String handlePset(String val) throws Exception {
