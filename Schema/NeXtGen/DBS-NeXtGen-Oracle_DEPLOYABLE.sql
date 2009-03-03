@@ -3089,37 +3089,6 @@ INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('AOD', 'Analysis Object Data products TBA', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('AODSIM', 'Analysis Object Data SIM asked by Skim team', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RAW', 'Raw detector output from the HLT system', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI-RECO', 'Min bias data', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'SV Support 102463 for CSA 07', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
---INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
---INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
---INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-HLTDEBUG-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('HLTDEBUG', 'Adding HLTDEBUG as it can be a standalone tier now');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RAW-RECO', 'Added on request of Kristian Hahn');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('FEVT', 'Added on request of Kristian Hahn');
-
 INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -3132,6 +3101,8 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', (select (sysdate - to_d
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AODSIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-HLTDEBUG', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
