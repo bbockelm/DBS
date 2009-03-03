@@ -623,7 +623,10 @@ class DbsOptionParser(optparse.OptionParser):
   def __init__(self):
       optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0.9", conflict_handler="resolve")
 
-      self.add_option("--url",action="store", type="string", dest="url", default="http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+      #self.add_option("--url",action="store", type="string", dest="url", default="http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
+      #     help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
+
+      self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
       self.add_option("--alias",action="store", type="string", dest="alias", default="NOALIAS",
@@ -828,6 +831,7 @@ class ApiDispatcher:
 	self.progress.notwril=self.optdict['notwril']
 	self.api = DbsApi(opts.__dict__)
 	self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
+	self.optdict['url']=self.api.url()
 
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
         print_help(self)
@@ -1860,7 +1864,6 @@ class ApiDispatcher:
         if self.optdict['donotrunquery']:
                print "\n--donotrunquery specified, will not execute the query"
                qu="query"
-
         dbsver = self.getDBSversion()
         if  not dbsver or dbsver >= 'DBS_2_0_6': 
 		self.apiversion=dbsver
@@ -1877,10 +1880,10 @@ class ApiDispatcher:
 		data = res.read()
 
 	# parse according to Server version, DBS_2_0_6 have different XML coming from server
-        if not self.apiversion >= 'DBS_2_0_6':
-            return self.parseReultsOldStyle(data)
-        else:
+        if not self.apiversion or self.apiversion >= 'DBS_2_0_6':
             return self.parseResults(data)
+        else:
+            return self.parseReultsOldStyle(data)
 
   def getDataFromDDSearch(self, userInput):
 
