@@ -227,21 +227,6 @@ CREATE TABLE TimeLog
 
 -- ======================================================================
 
-CREATE TABLE DataTierOrder
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    DataTierOrder         varchar(250)      unique not null,
-    Description           varchar(1000),
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE ReasonCode
   (
     ReasonCode            BIGINT UNSIGNED   not null,
@@ -1164,13 +1149,6 @@ ALTER TABLE TimeLog ADD CONSTRAINT
     TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-ALTER TABLE DataTierOrder ADD CONSTRAINT 
-    DataTierOrder_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE DataTierOrder ADD CONSTRAINT 
-    DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE ReasonCode ADD CONSTRAINT 
     ReasonCode_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -1759,9 +1737,6 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_TimeLog BEFORE INSERT ON TimeLog
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER TR_DataTierOrder BEFORE INSERT ON DataTierOrder
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
 CREATE TRIGGER TR_ReasonCode BEFORE INSERT ON ReasonCode
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1939,9 +1914,6 @@ CREATE TRIGGER UTR_LumiSection BEFORE UPDATE ON LumiSection
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_TimeLog BEFORE UPDATE ON TimeLog
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_DataTierOrder BEFORE UPDATE ON DataTierOrder
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_ReasonCode BEFORE UPDATE ON ReasonCode

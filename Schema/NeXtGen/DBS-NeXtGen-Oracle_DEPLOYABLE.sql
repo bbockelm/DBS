@@ -148,20 +148,6 @@ CREATE TABLE TimeLog
 
 REM ======================================================================
 
-CREATE TABLE DataTierOrder
-  (
-    ID                    integer,
-    DataTierOrder         varchar(250)      unique not null,
-    Description           varchar(1000),
-    CreationDate          integer,
-    CreatedBy             integer,
-    LastModificationDate  integer,
-    LastModifiedBy        integer,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
 CREATE TABLE ReasonCode
   (
     ReasonCode            integer   not null,
@@ -1060,13 +1046,6 @@ ALTER TABLE TimeLog ADD CONSTRAINT
     TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE DataTierOrder ADD CONSTRAINT 
-    DataTierOrder_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE DataTierOrder ADD CONSTRAINT 
-    DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE ReasonCode ADD CONSTRAINT 
     ReasonCode_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -1706,8 +1685,6 @@ PROMPT creating sequence seq_lumisection ;
 create sequence seq_lumisection ;
 PROMPT creating sequence seq_timelog ;
 create sequence seq_timelog ;
-PROMPT creating sequence seq_datatierorder ;
-create sequence seq_datatierorder ;
 PROMPT creating sequence seq_reasoncode ;
 create sequence seq_reasoncode ;
 PROMPT creating sequence seq_recyclebin ;
@@ -1881,12 +1858,6 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: timelog
 /
 
 -- ====================================================
--- AUTO INC TRIGGER FOR datatierorder.ID using SEQ seq_datatierorder
-
-PROMPT AUTO INC TRIGGER FOR Trigger for Table: datatierorder
- CREATE OR REPLACE TRIGGER datatierorder_TRIG before insert on datatierorder    for each row begin     if inserting then       if :NEW.ID is null then          select seq_datatierorder.nextval into :NEW.ID from dual;       end if;    end if; end;
-/
-
 -- ====================================================
 -- AUTO INC TRIGGER FOR reasoncode.ID using SEQ seq_reasoncode
 
@@ -2369,19 +2340,6 @@ END;
 
 PROMPT LastModified Time Stamp Trigger for Table: timelog
 CREATE OR REPLACE TRIGGER TRTStimelog BEFORE INSERT OR UPDATE ON timelog
-FOR EACH ROW declare
-  unixtime integer
-     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
-BEGIN
-  :NEW.LASTMODIFICATIONDATE := unixtime;
-END;
-/
-
--- ====================================================
--- LastModified Time Stamp Trigger
-
-PROMPT LastModified Time Stamp Trigger for Table: datatierorder
-CREATE OR REPLACE TRIGGER TRTSdatatierorder BEFORE INSERT OR UPDATE ON datatierorder
 FOR EACH ROW declare
   unixtime integer
      :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
@@ -3141,21 +3099,6 @@ INSERT INTO QualityValues (Value, CreationDate) VALUES ('UNKNOWN', (select (sysd
 
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('SUCCESS');
-
---=== SCRIPT to create entries in DataTier Table
-BEGIN
- FOR item in (SELECT DISTINCT DataTierOrder FROM DataTierOrder)
- LOOP
-    BEGIN
-        INSERT INTO DataTier(Name) select item.DataTierOrder from DUAL;
-        EXCEPTION
-        WHEN DUP_VAL_ON_INDEX THEN
-               DBMS_OUTPUT.PUT_LINE('Duplicate value found, ignoring');
-    END;
- END LOOP;
-END;
-/
-
 
 -- Set the Schema Version -- 
 INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, InstanceType, CREATIONDATE) values ('DBS_1_1_5', 'LOCAL', 'ORACLE', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
