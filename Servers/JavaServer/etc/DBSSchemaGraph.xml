@@ -126,12 +126,12 @@
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileType" 		relation="Files.FileType = FileType.ID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileValidStatus"	relation="Files.ValidationStatus = FileValidStatus.ID"/>
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileTriggerTag" 	relation="Files.ID = FileTriggerTag.Fileid"/>
-	<edge directed="false"	wt="1"	source="Files"	 		target="FileTier" 		relation="Files.ID = FileTier.Fileid"/>
+	<!--edge directed="false"	wt="1"	source="Files"	 		target="FileTier" 		relation="Files.ID = FileTier.Fileid"/-->
 	<edge directed="false"	wt="1"	source="Files"	 		target="FileAlgo" 		relation="Files.ID = FileAlgo.Fileid"/>
 	<edge directed="false"	wt="1"	source="FileAlgo"	 		target="AlgorithmConfig"	relation="FileAlgo.Algorithm = AlgorithmConfig.ID"/>
 	
 	<edge directed="false"	wt="1"	source="FileRunLumi" 		target="Files"			relation="FileRunLumi.Fileid = Files.ID"/>
-	<edge directed="false"	wt="1"	source="FileTier"	 		target="DataTier" 		relation="FileTier.DataTier = DataTier.ID"/>
+	<!--edge directed="false"	wt="1"	source="FileTier"	 		target="DataTier" 		relation="FileTier.DataTier = DataTier.ID"/-->
 
 	<edge directed="false"	wt="1"	source="PrimaryDataset" 		target="PrimaryDatasetDescription" 		relation="PrimaryDataset.Description = PrimaryDatasetDescription.ID"/>
 	<edge directed="false"	wt="1"	source="PrimaryDatasetDescription" 		target="MCDescription" 		relation="PrimaryDatasetDescription.MCChannelDescriptionID = MCDescription.ID"/>
