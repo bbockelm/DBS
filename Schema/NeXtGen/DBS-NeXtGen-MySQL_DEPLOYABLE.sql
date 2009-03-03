@@ -2100,36 +2100,8 @@ INSERT INTO FileType(Type, CreationDate) VALUES ('STREAMER', UNIX_TIMESTAMP()) ;
 INSERT INTO FileType(Type, CreationDate) VALUES ('PIXDMP', UNIX_TIMESTAMP()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP());
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', UNIX_TIMESTAMP()), ('data',  UNIX_TIMESTAMP()), ('raw', UNIX_TIMESTAMP()) , ('mc', UNIX_TIMESTAMP()), ('cosmic', UNIX_TIMESTAMP()), ('align', UNIX_TIMESTAMP()), ('calib', UNIX_TIMESTAMP());
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data       TBA');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('AOD', 'Analysis Object Data products TBA');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('AODSIM', 'AODSIM Tier asked by Skim Team');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RAW', 'Raw detector output from the HLT system   TBA');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW', 'SV Support 102463 for CSA 07');
 
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-HLTDEBUG', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW-HLTDEBUG', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RECO', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW-RECO', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-RECO', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-HLTDEBUG-RECO', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', 'ADDED DURING CSA08');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('HLTDEBUG', 'Adding HLTDEBUG as it can be a standalone tier now');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RAW-RECO', 'Added on request of Kristian Hahn');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('FEVT', 'Added on request of Kristian Hahn');
-
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()), ('HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI', UNIX_TIMESTAMP()), ('GEN-SIM-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP());
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()), ('HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI', UNIX_TIMESTAMP()), ('GEN-SIM-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG', UNIX_TIMESTAMP()), ('GEN-SIM-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', UNIX_TIMESTAMP()), ('GEN-SIM-DIGI-RECO', UNIX_TIMESTAMP()), ('DIGI-RECO', UNIX_TIMESTAMP()), ('RAW-RECO', UNIX_TIMESTAMP());
 
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
