@@ -26,7 +26,7 @@ find primds
 find procds.createby, run.modby
 find file, procds.createby where  file.modby like %sekhri% and dataset = /CalPrivateGlobal-default/Online/RAW
 find file where file.modby like %sekhri%
-find procds.parent,procds.name,file,file.parent  where procds.parent like %
+#find procds.parent,procds.name,file,file.parent  where procds.parent like %
 find file where file.createby like %sekhri% or file.createby = abc
 find file.parent,file where file.name = NEW_TEST0005
 find lumi.id,file.id where dataset in (/CalPrivateGlobal-default/Online/RAW,/GlobalMar08-Express/Online/RAW)
