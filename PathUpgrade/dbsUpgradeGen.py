@@ -32,8 +32,8 @@ try:
   (opts,args) = optManager.getOpt()
 
   args={}
-  #args['url']='http://cmssrv17.fnal.gov:8989/DBSINT2R/servlet/DBSServlet' 
-  args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
+  args['url']='http://cmssrv17.fnal.gov:8989/WHATEVER/servlet/DBSServlet' 
+  #args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
   #args['url']='http://cmssrv17.fnal.gov:8989/DBSTEST/servlet/DBSServlet'
 
   args['version']='DBS_2_0_5'
@@ -306,6 +306,94 @@ Path                  varchar(500)
 create index tmp_path_id_indx on TMPPathID (ID);
 create index tmp_path_path_indx on TMPPathID (Path);
 
+
+CREATE INDEX ix_AC_ApplicationVersion ON AlgorithmConfig(ApplicationVersion);
+CREATE INDEX ix_AC_ApplicationFamily ON AlgorithmConfig(ApplicationFamily);
+CREATE INDEX ix_AC_ParameterSetID ON AlgorithmConfig(ParameterSetID);
+
+CREATE INDEX ix_ADS_Definition ON AnalysisDataset(Definition);
+CREATE INDEX ix_ADS_PhysicsGroup ON AnalysisDataset(PhysicsGroup);
+CREATE INDEX ix_ADS_ProcessedDS ON AnalysisDataset(ProcessedDS);
+CREATE INDEX ix_ADS_Type ON AnalysisDataset(Type);
+CREATE INDEX ix_ADS_Status ON AnalysisDataset(Status);
+
+CREATE INDEX ix_BLK_Dataset ON Block(Dataset);
+
+CREATE INDEX ix_FL_Dataset ON Files(Dataset);
+CREATE INDEX ix_FL_Block ON Files(Block);
+CREATE INDEX ix_FL_FileStatus ON Files(FileStatus);
+CREATE INDEX ix_FL_FileType ON Files(FileType);
+CREATE INDEX ix_FL_ValidationStatus ON Files(ValidationStatus);
+CREATE INDEX ix_FL_LastModifiedBy ON Files(LastModifiedBy);
+create index IX_FK_FILES_FILEBRANCH on Files(FILEBRANCH);
+
+CREATE INDEX ix_FAC_ItsAssoc ON FileAssoc(ItsAssoc);
+
+CREATE INDEX ix_FA_Algorithm ON FileAlgo(Algorithm);
+
+CREATE INDEX ix_FP_ItsParent ON FileParentage(ItsParent);
+
+create index IX_FK_FILEPROCQUALITY_PSTATUS on FileProcQuality(PROCESSINGSTATUS);
+create index IX_FK_FILEPROCQUALITY_CHILDDS on FileProcQuality(CHILDDATASET);
+
+CREATE INDEX ix_FTT_Fileid ON FileTriggerTag(Fileid);
+
+CREATE INDEX ix_FRL_Lumi ON FileRunLumi(Lumi);
+CREATE INDEX ix_FRL_Run ON FileRunLumi(Run);
+
+CREATE INDEX ix_LS_RunNumber ON LumiSection(RunNumber);
+
+CREATE INDEX ix_PG_PhysicsGroupConvener ON PhysicsGroup(PhysicsGroupConvener);
+
+CREATE INDEX ix_PS_Description ON PrimaryDataset(Description);
+CREATE INDEX ix_PS_Type ON PrimaryDataset(Type);
+
+CREATE INDEX ix_PDD_MCChannelDescriptionID ON PrimaryDatasetDescription(MCChannelDescriptionID);
+CREATE INDEX ix_PDD_OtherDescriptionID ON PrimaryDatasetDescription(OtherDescriptionID);
+
+CREATE INDEX ix_PA_Algorithm ON ProcAlgo(Algorithm);
+
+CREATE INDEX ix_PD_PrimaryDataset ON ProcessedDataset(PrimaryDataset);
+CREATE INDEX ix_PD_PhysicsGroup ON ProcessedDataset(PhysicsGroup);
+CREATE INDEX ix_PD_Status ON ProcessedDataset(Status);
+
+create index IX_FK_PROCADSPARENT_ADSPARENT on ProcADSParent(ITSPARENTADS);
+
+CREATE INDEX ix_PP_ItsParent ON ProcDSParent(ItsParent);
+
+create index IX_FK_PROCDSRUNS_RUN on ProcDSRuns(run);
+
+CREATE INDEX ix_QH_HistoryOf ON QualityHistory(HistoryOf);
+CREATE INDEX ix_QH_Run ON QualityHistory(Run);
+CREATE INDEX ix_QH_Lumi ON QualityHistory(Lumi);
+CREATE INDEX ix_QH_SubSystem ON QualityHistory(SubSystem);
+CREATE INDEX ix_QH_DQValue ON QualityHistory(DQValue);
+
+CREATE INDEX ix_RLQI_RunNumber ON RunLumiDQInt(Run);
+CREATE INDEX ix_RLQI_Lumi ON RunLumiDQInt(Lumi);
+CREATE INDEX ix_RLQI_SubSystem ON RunLumiDQInt(SubSystem);
+
+CREATE INDEX ix_RLQ_Lumi ON RunLumiQuality(Lumi);
+CREATE INDEX ix_RLQ_SubSystem ON RunLumiQuality(SubSystem);
+CREATE INDEX ix_RLQ_DQValue ON RunLumiQuality(DQValue);
+CREATE INDEX ix_RLQ_Run ON RunLumiQuality(Run);
+
+CREATE INDEX ix_SB_BlockID ON SEBlock(BlockID);
+
+CREATE INDEX ix_BLK_OpenForWriting ON Block(OpenForWriting);
+create unique index IX_UNQ_BLK_PATH_ID on Block (PATH,ID);
+create unique index IX_UNQ_BLK_DS_ID on Block(DATASET, ID);
+
+CREATE INDEX ix_FL_QueryableMetadata ON Files(QueryableMetadata);
+create unique index IX_UNQ_FILES_BLOCK_ID on Files(Block,ID);
+
+create index IX_FILERUN_LUMI_lumi_run on FileRunLumi(lumi,run);
+
+create unique index IX_UNQ_PROCESSEDDS_NAME_ID on ProcessedDataset(Name, ID);
+create unique index IX_UNQ_PROCESSEDDS_Primary_ID on ProcessedDataset(PrimaryDataset, ID);
+create unique index IX_UNQ_PROCESSEDDS_AQU_ID on ProcessedDataset(AQUISITIONERA, ID);
+create unique index IX_UNQ_PROCESSEDDS_GTAG_ID on ProcessedDataset(GLOBALTAG, ID);
+
 insert into filetype(type) values ('PIXDMP');
 insert into DataTier (Name) values ('FEVT');
 update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
@@ -358,9 +446,9 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
   sqlfile.write("\n--===========================================================================")
   
   count=0
-  #allPaths = api.listDatasetPaths()
+  allPaths = api.listDatasetPaths()
 
-  allPaths = ['/zz2j-alpgen/CMSSW_1_6_7-CSA07-1205616825/GEN-SIM-DIGI-RAW',
+  allPathsOld = ['/zz2j-alpgen/CMSSW_1_6_7-CSA07-1205616825/GEN-SIM-DIGI-RAW',
       		'/zz2j-alpgen/CMSSW_1_4_9-CSA07-4130/GEN-SIM',
 		'/zz1j-alpgen/CMSSW_1_6_7-HLT-1205617620/GEN-SIM-DIGI-RECO',
 		'/zz1j-alpgen/CMSSW_1_6_7-CSA07-1205616888/GEN-SIM-DIGI-RAW',
@@ -627,7 +715,7 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 	query  = "\nDECLARE"
 	query += "\n stm varchar2(1000);"
         query += "\nBEGIN"
-        query += "\n for con_name in (select constraint_name from User_cons_columns where table_name ='"+tableName+"' and COLUMN_NAME='"+colName+"')"
+        query += "\n for con_name in (select constraint_name from User_cons_columns where table_name ='"+tableName.upper()+"' and COLUMN_NAME='"+colName.upper()+"')"
         query += "\n loop"
         query += "\n    stm := 'alter table "+tableName+" drop constraint ' || con_name.constraint_name;"
         query += "\n    execute immediate stm;"
