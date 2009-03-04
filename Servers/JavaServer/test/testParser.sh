@@ -272,7 +272,7 @@ executeQuery () {
 	#$CMD query="find dataset.xsection where dataset like *"
 	#$CMD query="find dataset.era"
 	#$CMD query="find  block, block.child"
-	$CMD query="find file where file.tier = GEN"
+	$CMD query="find dataset where dataset like * and ((run = 1) or (run between 1 and 2) and run.totlumi=222)"
 	#$CMD query="find  block, block.parent"
 	#$CMD query="find  procds, procds.parent"
 	#$CMD query="find  procds, procds.child"
