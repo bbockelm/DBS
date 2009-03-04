@@ -42,45 +42,7 @@ class CompareInstances(unittest.TestCase):
 
 	def run(self):
 		count=0
-		paths = ['/Cosmics/Commissioning08-MW32_v1/RAW',
-                         '/zz2j-alpgen/CMSSW_1_6_7-CSA07-1205616825/GEN-SIM-DIGI-RAW',
-                         '/zz1j-alpgen/CMSSW_1_6_7-HLT-1205617620/GEN-SIM-DIGI-RECO',
-                         '/zcc2j-alpgen/CMSSW_1_6_7-HLT-1204121116/GEN-SIM-DIGI-RECO',
-                         '/Cosmics/Commissioning08-MW32_v1/RAW',
-                         '/zz3j-alpgen/CMSSW_1_6_7-HLT-1205907476/GEN-SIM-DIGI-RECO',
-                         '/zz3j-alpgen/CMSSW_1_6_7-HLT-1205907476/GEN-SIM-DIGI-RECO',
-                         '/zz3j-alpgen/CMSSW_1_6_7-CSA07-1205907722/RECO',
-                         '/zz3j-alpgen/CMSSW_1_6_7-CSA07-1205736930/GEN-SIM-DIGI-RAW',
-                         '/zz3j-alpgen/CMSSW_1_4_9-CSA07-4131/GEN-SIM',
-                         '/zz2j-alpgen/CMSSW_1_6_7-HLT-1205617522/GEN-SIM-DIGI-RECO',
-                         '/zz2j-alpgen/CMSSW_1_6_7-CSA07-1205618250/RECO',
-                         '/zz2j-alpgen/CMSSW_1_4_9-CSA07-4130/GEN-SIM',
-                         '/zz1j-alpgen/CMSSW_1_6_7-HLT-1205617620/GEN-SIM-DIGI-RECO',
-                         '/zz1j-alpgen/CMSSW_1_6_7-CSA07-1205618302/RECO',
-                         '/zz1j-alpgen/CMSSW_1_6_7-CSA07-1205616888/GEN-SIM-DIGI-RAW',
-                         '/Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO',
-                         '/SUSY_LM2-sftsht/Summer08_IDEAL_V11_redigi_v1/AODSIM',
-                         '/TestBeam2007Ecal-A/Online/RAW',
-                         '/TrackerTIF/CMSSW_1_7_5-Pass4-A4/RECO',
-                         '/TrackerTIF/CMSSW_1_7_5-Pass4Skim-B2/USER',
-                         '/TrackerTIF/Online/RAW',
-                         '/TrackerTIF/Online-CMSSW_1_1_0/RAW',
-                         '/zz3j-alpgen/CMSSW_1_6_7-CSA07-1205736930/GEN-SIM-DIGI-RAW',
-                         '/znn5j_1600ptz3200-alpgen/CMSSW_1_6_7-CSA07-1207117287/GEN-SIM-DIGI-RAW',
-                         '/testbeam_HCalEcalCombined/h2tb2007_default_v1/DIGI-RECO',
-                         '/ppMuX/Summer08_STARTUP_V5_v1/GEN-SIM-RAW',
-                         '/ph4j_300_7000-alpgen/CMSSW_1_6_7-CSA07-1201630273/RECO',
-                         '/mcatnlo_tbq_mu/CMSSW_1_6_7-HLT-1203716749/GEN-SIM-DIGI-RECO',
-                         '/mcatnloWWem/CMSSW_1_6_7-CSA07-3255/GEN-SIM-DIGI-RAW',
-                         '/excitedel_3000GeV/CMSSW_1_6_7-CSA07-3787/GEN-SIM-DIGI-RAW',
-                         '/comphep-bbll/CMSSW_1_6_7-CSA07-3713/GEN-SIM-DIGI-RAW',
-                         '/Exotica_BPrimeBZCW_M250/Summer08_IDEAL_V9_v1/GEN-SIM-RECO',
-                         '/RelValTTbar/CMSSW_2_1_0_pre6-RelVal-1213920853-IDEAL_V2-2nd/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO',
-                         '/RelValTTbar/CMSSW_2_1_0_pre8-RelVal-StorageTest-0_ld_ad-IDEAL_V5/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO',
-                         '/RelValWE/CMSSW_1_7_0_pre11-RelVal-HLT/GEN-SIM-DIGI-RECO',
-                         '/RelValZPrimeJJM700/CMSSW_1_7_0_pre11-RelVal-HLT/GEN-SIM-DIGI-RECO']
-		#paths = ['/QCDenriched_Pt50to80/Summer08_IDEAL_V11_redigi_v1/GEN-SIM-RECO']
-	       	#paths = self.srcApi.listDatasetPaths()
+	       	paths = self.srcApi.listDatasetPaths()
 		for path in paths:
 			self.path=path
 			print "Now processing : %s " % path
