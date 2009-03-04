@@ -55,13 +55,10 @@ keyword	: entity
 constraintList	: constraint1 ( spaces 
 	rel=	logicalOp 		{ constraints.add($rel.text);}
 		spaces constraint1)*;
-lopen		: (lb)*;
-ropen		: (rb)*;
-constraint1     : kl=   lopen   {Constraint c1=new Constraint();c1.setBracket($kl.text);constraints.add(c1);}
-                spaces 
+
+constraint1     : kl=   ('(')*   {Constraint c1=new Constraint();c1.setBracket($kl.text);constraints.add(c1);}
                 constraint 
-                spaces 
-                kr=     ropen   {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);};
+                kr=    (')')*  {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);};
 
 constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 		spaces

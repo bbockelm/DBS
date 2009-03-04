@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.1.1 /Users/vk/Sql.g 2009-01-13 11:37:40
+// $ANTLR 3.1.2 Sql.g 2009-03-04 11:49:57
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -126,15 +126,15 @@ public class SqlLexer extends Lexer {
         super(input,state);
 
     }
-    public String getGrammarFileName() { return "/Users/vk/Sql.g"; }
+    public String getGrammarFileName() { return "Sql.g"; }
 
     // $ANTLR start "T__15"
     public final void mT__15() throws RecognitionException {
         try {
             int _type = T__15;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:3:7: ( '(' )
-            // /Users/vk/Sql.g:3:9: '('
+            // Sql.g:3:7: ( '(' )
+            // Sql.g:3:9: '('
             {
             match('('); 
 
@@ -153,8 +153,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__16;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:4:7: ( ')' )
-            // /Users/vk/Sql.g:4:9: ')'
+            // Sql.g:4:7: ( ')' )
+            // Sql.g:4:9: ')'
             {
             match(')'); 
 
@@ -173,8 +173,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__17;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:5:7: ( 'WHERE' )
-            // /Users/vk/Sql.g:5:9: 'WHERE'
+            // Sql.g:5:7: ( 'WHERE' )
+            // Sql.g:5:9: 'WHERE'
             {
             match("WHERE"); 
 
@@ -194,8 +194,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__18;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:6:7: ( 'where' )
-            // /Users/vk/Sql.g:6:9: 'where'
+            // Sql.g:6:7: ( 'where' )
+            // Sql.g:6:9: 'where'
             {
             match("where"); 
 
@@ -215,8 +215,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__19;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:7:7: ( 'in' )
-            // /Users/vk/Sql.g:7:9: 'in'
+            // Sql.g:7:7: ( 'in' )
+            // Sql.g:7:9: 'in'
             {
             match("in"); 
 
@@ -236,8 +236,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__20;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:8:7: ( 'ads' )
-            // /Users/vk/Sql.g:8:9: 'ads'
+            // Sql.g:8:7: ( 'ads' )
+            // Sql.g:8:9: 'ads'
             {
             match("ads"); 
 
@@ -257,8 +257,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__21;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:9:7: ( 'config' )
-            // /Users/vk/Sql.g:9:9: 'config'
+            // Sql.g:9:7: ( 'config' )
+            // Sql.g:9:9: 'config'
             {
             match("config"); 
 
@@ -278,8 +278,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__22;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:10:7: ( 'dataset' )
-            // /Users/vk/Sql.g:10:9: 'dataset'
+            // Sql.g:10:7: ( 'dataset' )
+            // Sql.g:10:9: 'dataset'
             {
             match("dataset"); 
 
@@ -299,8 +299,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:11:7: ( 'release' )
-            // /Users/vk/Sql.g:11:9: 'release'
+            // Sql.g:11:7: ( 'release' )
+            // Sql.g:11:9: 'release'
             {
             match("release"); 
 
@@ -320,8 +320,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__24;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:12:7: ( 'tier' )
-            // /Users/vk/Sql.g:12:9: 'tier'
+            // Sql.g:12:7: ( 'tier' )
+            // Sql.g:12:9: 'tier'
             {
             match("tier"); 
 
@@ -341,8 +341,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__25;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:13:7: ( 'site' )
-            // /Users/vk/Sql.g:13:9: 'site'
+            // Sql.g:13:7: ( 'site' )
+            // Sql.g:13:9: 'site'
             {
             match("site"); 
 
@@ -362,8 +362,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__26;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:14:7: ( 'block' )
-            // /Users/vk/Sql.g:14:9: 'block'
+            // Sql.g:14:7: ( 'block' )
+            // Sql.g:14:9: 'block'
             {
             match("block"); 
 
@@ -383,8 +383,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__27;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:15:7: ( 'file' )
-            // /Users/vk/Sql.g:15:9: 'file'
+            // Sql.g:15:7: ( 'file' )
+            // Sql.g:15:9: 'file'
             {
             match("file"); 
 
@@ -404,8 +404,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__28;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:16:7: ( 'primds' )
-            // /Users/vk/Sql.g:16:9: 'primds'
+            // Sql.g:16:7: ( 'primds' )
+            // Sql.g:16:9: 'primds'
             {
             match("primds"); 
 
@@ -425,8 +425,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__29;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:17:7: ( 'procds' )
-            // /Users/vk/Sql.g:17:9: 'procds'
+            // Sql.g:17:7: ( 'procds' )
+            // Sql.g:17:9: 'procds'
             {
             match("procds"); 
 
@@ -446,8 +446,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__30;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:18:7: ( 'run' )
-            // /Users/vk/Sql.g:18:9: 'run'
+            // Sql.g:18:7: ( 'run' )
+            // Sql.g:18:9: 'run'
             {
             match("run"); 
 
@@ -467,8 +467,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__31;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:19:7: ( 'lumi' )
-            // /Users/vk/Sql.g:19:9: 'lumi'
+            // Sql.g:19:7: ( 'lumi' )
+            // Sql.g:19:9: 'lumi'
             {
             match("lumi"); 
 
@@ -488,8 +488,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__32;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:20:7: ( 'dq' )
-            // /Users/vk/Sql.g:20:9: 'dq'
+            // Sql.g:20:7: ( 'dq' )
+            // Sql.g:20:9: 'dq'
             {
             match("dq"); 
 
@@ -509,8 +509,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__33;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:21:7: ( 'ilumi' )
-            // /Users/vk/Sql.g:21:9: 'ilumi'
+            // Sql.g:21:7: ( 'ilumi' )
+            // Sql.g:21:9: 'ilumi'
             {
             match("ilumi"); 
 
@@ -530,8 +530,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__34;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:22:7: ( 'phygrp' )
-            // /Users/vk/Sql.g:22:9: 'phygrp'
+            // Sql.g:22:7: ( 'phygrp' )
+            // Sql.g:22:9: 'phygrp'
             {
             match("phygrp"); 
 
@@ -551,8 +551,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__35;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:23:7: ( 'group' )
-            // /Users/vk/Sql.g:23:9: 'group'
+            // Sql.g:23:7: ( 'group' )
+            // Sql.g:23:9: 'group'
             {
             match("group"); 
 
@@ -572,8 +572,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__36;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:24:7: ( 'pset' )
-            // /Users/vk/Sql.g:24:9: 'pset'
+            // Sql.g:24:7: ( 'pset' )
+            // Sql.g:24:9: 'pset'
             {
             match("pset"); 
 
@@ -593,8 +593,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__37;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:25:7: ( 'algo' )
-            // /Users/vk/Sql.g:25:9: 'algo'
+            // Sql.g:25:7: ( 'algo' )
+            // Sql.g:25:9: 'algo'
             {
             match("algo"); 
 
@@ -614,8 +614,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__38;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:26:7: ( 'datatype' )
-            // /Users/vk/Sql.g:26:9: 'datatype'
+            // Sql.g:26:7: ( 'datatype' )
+            // Sql.g:26:9: 'datatype'
             {
             match("datatype"); 
 
@@ -635,8 +635,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__39;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:27:7: ( 'mcdesc' )
-            // /Users/vk/Sql.g:27:9: 'mcdesc'
+            // Sql.g:27:7: ( 'mcdesc' )
+            // Sql.g:27:9: 'mcdesc'
             {
             match("mcdesc"); 
 
@@ -656,8 +656,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__40;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:28:7: ( 'trigdesc' )
-            // /Users/vk/Sql.g:28:9: 'trigdesc'
+            // Sql.g:28:7: ( 'trigdesc' )
+            // Sql.g:28:9: 'trigdesc'
             {
             match("trigdesc"); 
 
@@ -677,8 +677,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__41;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:29:7: ( 'branch' )
-            // /Users/vk/Sql.g:29:9: 'branch'
+            // Sql.g:29:7: ( 'branch' )
+            // Sql.g:29:9: 'branch'
             {
             match("branch"); 
 
@@ -698,8 +698,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__42;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:30:7: ( 'createdate' )
-            // /Users/vk/Sql.g:30:9: 'createdate'
+            // Sql.g:30:7: ( 'createdate' )
+            // Sql.g:30:9: 'createdate'
             {
             match("createdate"); 
 
@@ -719,8 +719,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__43;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:31:7: ( 'moddate' )
-            // /Users/vk/Sql.g:31:9: 'moddate'
+            // Sql.g:31:7: ( 'moddate' )
+            // Sql.g:31:9: 'moddate'
             {
             match("moddate"); 
 
@@ -740,8 +740,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__44;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:32:7: ( 'starttime' )
-            // /Users/vk/Sql.g:32:9: 'starttime'
+            // Sql.g:32:7: ( 'starttime' )
+            // Sql.g:32:9: 'starttime'
             {
             match("starttime"); 
 
@@ -761,8 +761,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__45;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:33:7: ( 'endtime' )
-            // /Users/vk/Sql.g:33:9: 'endtime'
+            // Sql.g:33:7: ( 'endtime' )
+            // Sql.g:33:9: 'endtime'
             {
             match("endtime"); 
 
@@ -782,8 +782,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__46;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:34:7: ( 'createby' )
-            // /Users/vk/Sql.g:34:9: 'createby'
+            // Sql.g:34:7: ( 'createby' )
+            // Sql.g:34:9: 'createby'
             {
             match("createby"); 
 
@@ -803,8 +803,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__47;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:35:7: ( 'modby' )
-            // /Users/vk/Sql.g:35:9: 'modby'
+            // Sql.g:35:7: ( 'modby' )
+            // Sql.g:35:9: 'modby'
             {
             match("modby"); 
 
@@ -824,8 +824,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__48;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:36:7: ( 'name' )
-            // /Users/vk/Sql.g:36:9: 'name'
+            // Sql.g:36:7: ( 'name' )
+            // Sql.g:36:9: 'name'
             {
             match("name"); 
 
@@ -845,8 +845,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__49;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:37:7: ( 'version' )
-            // /Users/vk/Sql.g:37:9: 'version'
+            // Sql.g:37:7: ( 'version' )
+            // Sql.g:37:9: 'version'
             {
             match("version"); 
 
@@ -866,8 +866,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__50;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:38:7: ( 'number' )
-            // /Users/vk/Sql.g:38:9: 'number'
+            // Sql.g:38:7: ( 'number' )
+            // Sql.g:38:9: 'number'
             {
             match("number"); 
 
@@ -887,8 +887,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__51;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:39:7: ( 'startevnum' )
-            // /Users/vk/Sql.g:39:9: 'startevnum'
+            // Sql.g:39:7: ( 'startevnum' )
+            // Sql.g:39:9: 'startevnum'
             {
             match("startevnum"); 
 
@@ -908,8 +908,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__52;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:40:7: ( 'endevnum' )
-            // /Users/vk/Sql.g:40:9: 'endevnum'
+            // Sql.g:40:7: ( 'endevnum' )
+            // Sql.g:40:9: 'endevnum'
             {
             match("endevnum"); 
 
@@ -929,8 +929,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__53;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:41:7: ( 'numevents' )
-            // /Users/vk/Sql.g:41:9: 'numevents'
+            // Sql.g:41:7: ( 'numevents' )
+            // Sql.g:41:9: 'numevents'
             {
             match("numevents"); 
 
@@ -950,8 +950,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__54;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:42:7: ( 'numfiles' )
-            // /Users/vk/Sql.g:42:9: 'numfiles'
+            // Sql.g:42:7: ( 'numfiles' )
+            // Sql.g:42:9: 'numfiles'
             {
             match("numfiles"); 
 
@@ -971,8 +971,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__55;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:43:7: ( 'numlss' )
-            // /Users/vk/Sql.g:43:9: 'numlss'
+            // Sql.g:43:7: ( 'numlss' )
+            // Sql.g:43:9: 'numlss'
             {
             match("numlss"); 
 
@@ -992,8 +992,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__56;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:44:7: ( 'totlumi' )
-            // /Users/vk/Sql.g:44:9: 'totlumi'
+            // Sql.g:44:7: ( 'totlumi' )
+            // Sql.g:44:9: 'totlumi'
             {
             match("totlumi"); 
 
@@ -1013,8 +1013,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__57;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:45:7: ( 'store' )
-            // /Users/vk/Sql.g:45:9: 'store'
+            // Sql.g:45:7: ( 'store' )
+            // Sql.g:45:9: 'store'
             {
             match("store"); 
 
@@ -1034,8 +1034,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__58;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:46:7: ( 'size' )
-            // /Users/vk/Sql.g:46:9: 'size'
+            // Sql.g:46:7: ( 'size' )
+            // Sql.g:46:9: 'size'
             {
             match("size"); 
 
@@ -1055,8 +1055,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__59;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:47:7: ( 'count' )
-            // /Users/vk/Sql.g:47:9: 'count'
+            // Sql.g:47:7: ( 'count' )
+            // Sql.g:47:9: 'count'
             {
             match("count"); 
 
@@ -1076,8 +1076,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__60;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:48:7: ( 'status' )
-            // /Users/vk/Sql.g:48:9: 'status'
+            // Sql.g:48:7: ( 'status' )
+            // Sql.g:48:9: 'status'
             {
             match("status"); 
 
@@ -1097,8 +1097,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__61;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:49:7: ( 'type' )
-            // /Users/vk/Sql.g:49:9: 'type'
+            // Sql.g:49:7: ( 'type' )
+            // Sql.g:49:9: 'type'
             {
             match("type"); 
 
@@ -1118,8 +1118,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__62;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:50:7: ( 'id' )
-            // /Users/vk/Sql.g:50:9: 'id'
+            // Sql.g:50:7: ( 'id' )
+            // Sql.g:50:9: 'id'
             {
             match("id"); 
 
@@ -1139,8 +1139,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__63;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:51:7: ( 'parent' )
-            // /Users/vk/Sql.g:51:9: 'parent'
+            // Sql.g:51:7: ( 'parent' )
+            // Sql.g:51:9: 'parent'
             {
             match("parent"); 
 
@@ -1160,8 +1160,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__64;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:52:7: ( 'child' )
-            // /Users/vk/Sql.g:52:9: 'child'
+            // Sql.g:52:7: ( 'child' )
+            // Sql.g:52:9: 'child'
             {
             match("child"); 
 
@@ -1181,8 +1181,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__65;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:53:7: ( 'def' )
-            // /Users/vk/Sql.g:53:9: 'def'
+            // Sql.g:53:7: ( 'def' )
+            // Sql.g:53:9: 'def'
             {
             match("def"); 
 
@@ -1202,8 +1202,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__66;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:54:7: ( 'evnum' )
-            // /Users/vk/Sql.g:54:9: 'evnum'
+            // Sql.g:54:7: ( 'evnum' )
+            // Sql.g:54:9: 'evnum'
             {
             match("evnum"); 
 
@@ -1223,8 +1223,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__67;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:55:7: ( 'era' )
-            // /Users/vk/Sql.g:55:9: 'era'
+            // Sql.g:55:7: ( 'era' )
+            // Sql.g:55:9: 'era'
             {
             match("era"); 
 
@@ -1244,8 +1244,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__68;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:56:7: ( 'tag' )
-            // /Users/vk/Sql.g:56:9: 'tag'
+            // Sql.g:56:7: ( 'tag' )
+            // Sql.g:56:9: 'tag'
             {
             match("tag"); 
 
@@ -1265,8 +1265,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__69;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:57:7: ( 'xsection' )
-            // /Users/vk/Sql.g:57:9: 'xsection'
+            // Sql.g:57:7: ( 'xsection' )
+            // Sql.g:57:9: 'xsection'
             {
             match("xsection"); 
 
@@ -1286,8 +1286,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__70;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:58:7: ( 'hash' )
-            // /Users/vk/Sql.g:58:9: 'hash'
+            // Sql.g:58:7: ( 'hash' )
+            // Sql.g:58:9: 'hash'
             {
             match("hash"); 
 
@@ -1307,8 +1307,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__71;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:59:7: ( 'content' )
-            // /Users/vk/Sql.g:59:9: 'content'
+            // Sql.g:59:7: ( 'content' )
+            // Sql.g:59:9: 'content'
             {
             match("content"); 
 
@@ -1328,8 +1328,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__72;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:60:7: ( 'family' )
-            // /Users/vk/Sql.g:60:9: 'family'
+            // Sql.g:60:7: ( 'family' )
+            // Sql.g:60:9: 'family'
             {
             match("family"); 
 
@@ -1349,8 +1349,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__73;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:61:7: ( 'exe' )
-            // /Users/vk/Sql.g:61:9: 'exe'
+            // Sql.g:61:7: ( 'exe' )
+            // Sql.g:61:9: 'exe'
             {
             match("exe"); 
 
@@ -1370,8 +1370,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__74;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:62:7: ( 'annotation' )
-            // /Users/vk/Sql.g:62:9: 'annotation'
+            // Sql.g:62:7: ( 'annotation' )
+            // Sql.g:62:9: 'annotation'
             {
             match("annotation"); 
 
@@ -1391,8 +1391,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__75;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:63:7: ( 'checksum' )
-            // /Users/vk/Sql.g:63:9: 'checksum'
+            // Sql.g:63:7: ( 'checksum' )
+            // Sql.g:63:9: 'checksum'
             {
             match("checksum"); 
 
@@ -1412,8 +1412,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__76;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:64:7: ( 'numruns()' )
-            // /Users/vk/Sql.g:64:9: 'numruns()'
+            // Sql.g:64:7: ( 'numruns()' )
+            // Sql.g:64:9: 'numruns()'
             {
             match("numruns()"); 
 
@@ -1433,8 +1433,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__77;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:65:7: ( 'numfiles()' )
-            // /Users/vk/Sql.g:65:9: 'numfiles()'
+            // Sql.g:65:7: ( 'numfiles()' )
+            // Sql.g:65:9: 'numfiles()'
             {
             match("numfiles()"); 
 
@@ -1454,8 +1454,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__78;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:66:7: ( 'dataquality()' )
-            // /Users/vk/Sql.g:66:9: 'dataquality()'
+            // Sql.g:66:7: ( 'dataquality()' )
+            // Sql.g:66:9: 'dataquality()'
             {
             match("dataquality()"); 
 
@@ -1475,8 +1475,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__79;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:67:7: ( 'latest()' )
-            // /Users/vk/Sql.g:67:9: 'latest()'
+            // Sql.g:67:7: ( 'latest()' )
+            // Sql.g:67:9: 'latest()'
             {
             match("latest()"); 
 
@@ -1496,8 +1496,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__80;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:68:7: ( 'parentrelease()' )
-            // /Users/vk/Sql.g:68:9: 'parentrelease()'
+            // Sql.g:68:7: ( 'parentrelease()' )
+            // Sql.g:68:9: 'parentrelease()'
             {
             match("parentrelease()"); 
 
@@ -1517,8 +1517,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__81;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:69:7: ( 'childrelease()' )
-            // /Users/vk/Sql.g:69:9: 'childrelease()'
+            // Sql.g:69:7: ( 'childrelease()' )
+            // Sql.g:69:9: 'childrelease()'
             {
             match("childrelease()"); 
 
@@ -1538,8 +1538,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__82;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:70:7: ( 'intluminosity()' )
-            // /Users/vk/Sql.g:70:9: 'intluminosity()'
+            // Sql.g:70:7: ( 'intluminosity()' )
+            // Sql.g:70:9: 'intluminosity()'
             {
             match("intluminosity()"); 
 
@@ -1559,8 +1559,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__83;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:71:7: ( 'findevents()' )
-            // /Users/vk/Sql.g:71:9: 'findevents()'
+            // Sql.g:71:7: ( 'findevents()' )
+            // Sql.g:71:9: 'findevents()'
             {
             match("findevents()"); 
 
@@ -1580,8 +1580,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__84;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:72:7: ( 'select' )
-            // /Users/vk/Sql.g:72:9: 'select'
+            // Sql.g:72:7: ( 'select' )
+            // Sql.g:72:9: 'select'
             {
             match("select"); 
 
@@ -1601,8 +1601,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__85;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:73:7: ( 'SELECT' )
-            // /Users/vk/Sql.g:73:9: 'SELECT'
+            // Sql.g:73:7: ( 'SELECT' )
+            // Sql.g:73:9: 'SELECT'
             {
             match("SELECT"); 
 
@@ -1622,8 +1622,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__86;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:74:7: ( 'find' )
-            // /Users/vk/Sql.g:74:9: 'find'
+            // Sql.g:74:7: ( 'find' )
+            // Sql.g:74:9: 'find'
             {
             match("find"); 
 
@@ -1643,8 +1643,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__87;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:75:7: ( 'FIND' )
-            // /Users/vk/Sql.g:75:9: 'FIND'
+            // Sql.g:75:7: ( 'FIND' )
+            // Sql.g:75:9: 'FIND'
             {
             match("FIND"); 
 
@@ -1664,8 +1664,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__88;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:76:7: ( 'and' )
-            // /Users/vk/Sql.g:76:9: 'and'
+            // Sql.g:76:7: ( 'and' )
+            // Sql.g:76:9: 'and'
             {
             match("and"); 
 
@@ -1685,8 +1685,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__89;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:77:7: ( 'AND' )
-            // /Users/vk/Sql.g:77:9: 'AND'
+            // Sql.g:77:7: ( 'AND' )
+            // Sql.g:77:9: 'AND'
             {
             match("AND"); 
 
@@ -1706,8 +1706,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__90;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:78:7: ( 'order' )
-            // /Users/vk/Sql.g:78:9: 'order'
+            // Sql.g:78:7: ( 'order' )
+            // Sql.g:78:9: 'order'
             {
             match("order"); 
 
@@ -1727,8 +1727,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__91;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:79:7: ( 'ORDER' )
-            // /Users/vk/Sql.g:79:9: 'ORDER'
+            // Sql.g:79:7: ( 'ORDER' )
+            // Sql.g:79:9: 'ORDER'
             {
             match("ORDER"); 
 
@@ -1748,8 +1748,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__92;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:80:7: ( 'by' )
-            // /Users/vk/Sql.g:80:9: 'by'
+            // Sql.g:80:7: ( 'by' )
+            // Sql.g:80:9: 'by'
             {
             match("by"); 
 
@@ -1769,8 +1769,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__93;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:81:7: ( 'BY' )
-            // /Users/vk/Sql.g:81:9: 'BY'
+            // Sql.g:81:7: ( 'BY' )
+            // Sql.g:81:9: 'BY'
             {
             match("BY"); 
 
@@ -1790,8 +1790,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__94;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:82:7: ( 'or' )
-            // /Users/vk/Sql.g:82:9: 'or'
+            // Sql.g:82:7: ( 'or' )
+            // Sql.g:82:9: 'or'
             {
             match("or"); 
 
@@ -1811,8 +1811,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__95;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:83:7: ( 'OR' )
-            // /Users/vk/Sql.g:83:9: 'OR'
+            // Sql.g:83:7: ( 'OR' )
+            // Sql.g:83:9: 'OR'
             {
             match("OR"); 
 
@@ -1832,8 +1832,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__96;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:84:7: ( 'IN' )
-            // /Users/vk/Sql.g:84:9: 'IN'
+            // Sql.g:84:7: ( 'IN' )
+            // Sql.g:84:9: 'IN'
             {
             match("IN"); 
 
@@ -1853,8 +1853,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__97;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:85:7: ( 'not' )
-            // /Users/vk/Sql.g:85:9: 'not'
+            // Sql.g:85:7: ( 'not' )
+            // Sql.g:85:9: 'not'
             {
             match("not"); 
 
@@ -1874,8 +1874,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__98;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:86:7: ( 'NOT' )
-            // /Users/vk/Sql.g:86:9: 'NOT'
+            // Sql.g:86:7: ( 'NOT' )
+            // Sql.g:86:9: 'NOT'
             {
             match("NOT"); 
 
@@ -1895,8 +1895,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__99;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:87:7: ( 'like' )
-            // /Users/vk/Sql.g:87:9: 'like'
+            // Sql.g:87:7: ( 'like' )
+            // Sql.g:87:9: 'like'
             {
             match("like"); 
 
@@ -1916,8 +1916,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__100;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:88:8: ( 'LIKE' )
-            // /Users/vk/Sql.g:88:10: 'LIKE'
+            // Sql.g:88:8: ( 'LIKE' )
+            // Sql.g:88:10: 'LIKE'
             {
             match("LIKE"); 
 
@@ -1937,8 +1937,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__101;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:89:8: ( 'COUNT' )
-            // /Users/vk/Sql.g:89:10: 'COUNT'
+            // Sql.g:89:8: ( 'COUNT' )
+            // Sql.g:89:10: 'COUNT'
             {
             match("COUNT"); 
 
@@ -1958,8 +1958,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__102;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:90:8: ( 'sum' )
-            // /Users/vk/Sql.g:90:10: 'sum'
+            // Sql.g:90:8: ( 'sum' )
+            // Sql.g:90:10: 'sum'
             {
             match("sum"); 
 
@@ -1979,8 +1979,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__103;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:91:8: ( 'SUM' )
-            // /Users/vk/Sql.g:91:10: 'SUM'
+            // Sql.g:91:8: ( 'SUM' )
+            // Sql.g:91:10: 'SUM'
             {
             match("SUM"); 
 
@@ -2000,8 +2000,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__104;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:92:8: ( 'asc' )
-            // /Users/vk/Sql.g:92:10: 'asc'
+            // Sql.g:92:8: ( 'asc' )
+            // Sql.g:92:10: 'asc'
             {
             match("asc"); 
 
@@ -2021,8 +2021,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__105;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:93:8: ( 'ASC' )
-            // /Users/vk/Sql.g:93:10: 'ASC'
+            // Sql.g:93:8: ( 'ASC' )
+            // Sql.g:93:10: 'ASC'
             {
             match("ASC"); 
 
@@ -2042,8 +2042,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__106;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:94:8: ( 'desc' )
-            // /Users/vk/Sql.g:94:10: 'desc'
+            // Sql.g:94:8: ( 'desc' )
+            // Sql.g:94:10: 'desc'
             {
             match("desc"); 
 
@@ -2063,8 +2063,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__107;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:95:8: ( 'DESC' )
-            // /Users/vk/Sql.g:95:10: 'DESC'
+            // Sql.g:95:8: ( 'DESC' )
+            // Sql.g:95:10: 'DESC'
             {
             match("DESC"); 
 
@@ -2084,8 +2084,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__108;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:96:8: ( 'between' )
-            // /Users/vk/Sql.g:96:10: 'between'
+            // Sql.g:96:8: ( 'between' )
+            // Sql.g:96:10: 'between'
             {
             match("between"); 
 
@@ -2105,8 +2105,8 @@ public class SqlLexer extends Lexer {
         try {
             int _type = T__109;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:97:8: ( 'BETWEEN' )
-            // /Users/vk/Sql.g:97:10: 'BETWEEN'
+            // Sql.g:97:8: ( 'BETWEEN' )
+            // Sql.g:97:10: 'BETWEEN'
             {
             match("BETWEEN"); 
 
@@ -2126,10 +2126,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = VALUE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:165:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+ )
-            // /Users/vk/Sql.g:165:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
+            // Sql.g:162:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+ )
+            // Sql.g:162:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
             {
-            // /Users/vk/Sql.g:165:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
+            // Sql.g:162:9: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '/' | '-' | '_' | ':' | '#' | '*' | '%' )+
             int cnt1=0;
             loop1:
             do {
@@ -2143,7 +2143,7 @@ public class SqlLexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // /Users/vk/Sql.g:
+            	    // Sql.g:
             	    {
             	    if ( input.LA(1)=='#'||input.LA(1)=='%'||input.LA(1)=='*'||input.LA(1)=='-'||(input.LA(1)>='/' && input.LA(1)<=':')||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
             	        input.consume();
@@ -2183,11 +2183,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:171:8: ( ( ',' ) )
-            // /Users/vk/Sql.g:171:9: ( ',' )
+            // Sql.g:168:8: ( ( ',' ) )
+            // Sql.g:168:9: ( ',' )
             {
-            // /Users/vk/Sql.g:171:9: ( ',' )
-            // /Users/vk/Sql.g:171:10: ','
+            // Sql.g:168:9: ( ',' )
+            // Sql.g:168:10: ','
             {
             match(','); 
 
@@ -2209,11 +2209,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = SPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:172:8: ( ( ' ' ) )
-            // /Users/vk/Sql.g:172:9: ( ' ' )
+            // Sql.g:169:8: ( ( ' ' ) )
+            // Sql.g:169:9: ( ' ' )
             {
-            // /Users/vk/Sql.g:172:9: ( ' ' )
-            // /Users/vk/Sql.g:172:10: ' '
+            // Sql.g:169:9: ( ' ' )
+            // Sql.g:169:10: ' '
             {
             match(' '); 
 
@@ -2235,11 +2235,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = DOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:173:6: ( ( '.' ) )
-            // /Users/vk/Sql.g:173:7: ( '.' )
+            // Sql.g:170:6: ( ( '.' ) )
+            // Sql.g:170:7: ( '.' )
             {
-            // /Users/vk/Sql.g:173:7: ( '.' )
-            // /Users/vk/Sql.g:173:8: '.'
+            // Sql.g:170:7: ( '.' )
+            // Sql.g:170:8: '.'
             {
             match('.'); 
 
@@ -2261,11 +2261,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = GT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:175:5: ( ( '>' ) )
-            // /Users/vk/Sql.g:175:6: ( '>' )
+            // Sql.g:172:5: ( ( '>' ) )
+            // Sql.g:172:6: ( '>' )
             {
-            // /Users/vk/Sql.g:175:6: ( '>' )
-            // /Users/vk/Sql.g:175:7: '>'
+            // Sql.g:172:6: ( '>' )
+            // Sql.g:172:7: '>'
             {
             match('>'); 
 
@@ -2287,11 +2287,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = LT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:176:5: ( ( '<' ) )
-            // /Users/vk/Sql.g:176:6: ( '<' )
+            // Sql.g:173:5: ( ( '<' ) )
+            // Sql.g:173:6: ( '<' )
             {
-            // /Users/vk/Sql.g:176:6: ( '<' )
-            // /Users/vk/Sql.g:176:7: '<'
+            // Sql.g:173:6: ( '<' )
+            // Sql.g:173:7: '<'
             {
             match('<'); 
 
@@ -2313,11 +2313,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = EQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:177:5: ( ( '=' ) )
-            // /Users/vk/Sql.g:177:6: ( '=' )
+            // Sql.g:174:5: ( ( '=' ) )
+            // Sql.g:174:6: ( '=' )
             {
-            // /Users/vk/Sql.g:177:6: ( '=' )
-            // /Users/vk/Sql.g:177:7: '='
+            // Sql.g:174:6: ( '=' )
+            // Sql.g:174:7: '='
             {
             match('='); 
 
@@ -2339,11 +2339,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:178:6: ( ( '!' ) )
-            // /Users/vk/Sql.g:178:7: ( '!' )
+            // Sql.g:175:6: ( ( '!' ) )
+            // Sql.g:175:7: ( '!' )
             {
-            // /Users/vk/Sql.g:178:7: ( '!' )
-            // /Users/vk/Sql.g:178:8: '!'
+            // Sql.g:175:7: ( '!' )
+            // Sql.g:175:8: '!'
             {
             match('!'); 
 
@@ -2365,11 +2365,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = AMP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:179:6: ( ( '&' ) )
-            // /Users/vk/Sql.g:179:7: ( '&' )
+            // Sql.g:176:6: ( ( '&' ) )
+            // Sql.g:176:7: ( '&' )
             {
-            // /Users/vk/Sql.g:179:7: ( '&' )
-            // /Users/vk/Sql.g:179:8: '&'
+            // Sql.g:176:7: ( '&' )
+            // Sql.g:176:8: '&'
             {
             match('&'); 
 
@@ -2391,11 +2391,11 @@ public class SqlLexer extends Lexer {
         try {
             int _type = NL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:181:5: ( ( '\\n' ) )
-            // /Users/vk/Sql.g:181:6: ( '\\n' )
+            // Sql.g:178:5: ( ( '\\n' ) )
+            // Sql.g:178:6: ( '\\n' )
             {
-            // /Users/vk/Sql.g:181:6: ( '\\n' )
-            // /Users/vk/Sql.g:181:7: '\\n'
+            // Sql.g:178:6: ( '\\n' )
+            // Sql.g:178:7: '\\n'
             {
             match('\n'); 
 
@@ -2417,10 +2417,10 @@ public class SqlLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/vk/Sql.g:182:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
-            // /Users/vk/Sql.g:182:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:179:6: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
+            // Sql.g:179:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             {
-            // /Users/vk/Sql.g:182:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            // Sql.g:179:8: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             int cnt2=0;
             loop2:
             do {
@@ -2434,7 +2434,7 @@ public class SqlLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // /Users/vk/Sql.g:
+            	    // Sql.g:
             	    {
             	    if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||(input.LA(1)>='\f' && input.LA(1)<='\r')||input.LA(1)==' ' ) {
             	        input.consume();
@@ -2471,747 +2471,747 @@ public class SqlLexer extends Lexer {
     // $ANTLR end "WS"
 
     public void mTokens() throws RecognitionException {
-        // /Users/vk/Sql.g:1:8: ( T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | VALUE | COMMA | SPACE | DOT | GT | LT | EQ | NOT | AMP | NL | WS )
+        // Sql.g:1:8: ( T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | VALUE | COMMA | SPACE | DOT | GT | LT | EQ | NOT | AMP | NL | WS )
         int alt3=106;
         alt3 = dfa3.predict(input);
         switch (alt3) {
             case 1 :
-                // /Users/vk/Sql.g:1:10: T__15
+                // Sql.g:1:10: T__15
                 {
                 mT__15(); 
 
                 }
                 break;
             case 2 :
-                // /Users/vk/Sql.g:1:16: T__16
+                // Sql.g:1:16: T__16
                 {
                 mT__16(); 
 
                 }
                 break;
             case 3 :
-                // /Users/vk/Sql.g:1:22: T__17
+                // Sql.g:1:22: T__17
                 {
                 mT__17(); 
 
                 }
                 break;
             case 4 :
-                // /Users/vk/Sql.g:1:28: T__18
+                // Sql.g:1:28: T__18
                 {
                 mT__18(); 
 
                 }
                 break;
             case 5 :
-                // /Users/vk/Sql.g:1:34: T__19
+                // Sql.g:1:34: T__19
                 {
                 mT__19(); 
 
                 }
                 break;
             case 6 :
-                // /Users/vk/Sql.g:1:40: T__20
+                // Sql.g:1:40: T__20
                 {
                 mT__20(); 
 
                 }
                 break;
             case 7 :
-                // /Users/vk/Sql.g:1:46: T__21
+                // Sql.g:1:46: T__21
                 {
                 mT__21(); 
 
                 }
                 break;
             case 8 :
-                // /Users/vk/Sql.g:1:52: T__22
+                // Sql.g:1:52: T__22
                 {
                 mT__22(); 
 
                 }
                 break;
             case 9 :
-                // /Users/vk/Sql.g:1:58: T__23
+                // Sql.g:1:58: T__23
                 {
                 mT__23(); 
 
                 }
                 break;
             case 10 :
-                // /Users/vk/Sql.g:1:64: T__24
+                // Sql.g:1:64: T__24
                 {
                 mT__24(); 
 
                 }
                 break;
             case 11 :
-                // /Users/vk/Sql.g:1:70: T__25
+                // Sql.g:1:70: T__25
                 {
                 mT__25(); 
 
                 }
                 break;
             case 12 :
-                // /Users/vk/Sql.g:1:76: T__26
+                // Sql.g:1:76: T__26
                 {
                 mT__26(); 
 
                 }
                 break;
             case 13 :
-                // /Users/vk/Sql.g:1:82: T__27
+                // Sql.g:1:82: T__27
                 {
                 mT__27(); 
 
                 }
                 break;
             case 14 :
-                // /Users/vk/Sql.g:1:88: T__28
+                // Sql.g:1:88: T__28
                 {
                 mT__28(); 
 
                 }
                 break;
             case 15 :
-                // /Users/vk/Sql.g:1:94: T__29
+                // Sql.g:1:94: T__29
                 {
                 mT__29(); 
 
                 }
                 break;
             case 16 :
-                // /Users/vk/Sql.g:1:100: T__30
+                // Sql.g:1:100: T__30
                 {
                 mT__30(); 
 
                 }
                 break;
             case 17 :
-                // /Users/vk/Sql.g:1:106: T__31
+                // Sql.g:1:106: T__31
                 {
                 mT__31(); 
 
                 }
                 break;
             case 18 :
-                // /Users/vk/Sql.g:1:112: T__32
+                // Sql.g:1:112: T__32
                 {
                 mT__32(); 
 
                 }
                 break;
             case 19 :
-                // /Users/vk/Sql.g:1:118: T__33
+                // Sql.g:1:118: T__33
                 {
                 mT__33(); 
 
                 }
                 break;
             case 20 :
-                // /Users/vk/Sql.g:1:124: T__34
+                // Sql.g:1:124: T__34
                 {
                 mT__34(); 
 
                 }
                 break;
             case 21 :
-                // /Users/vk/Sql.g:1:130: T__35
+                // Sql.g:1:130: T__35
                 {
                 mT__35(); 
 
                 }
                 break;
             case 22 :
-                // /Users/vk/Sql.g:1:136: T__36
+                // Sql.g:1:136: T__36
                 {
                 mT__36(); 
 
                 }
                 break;
             case 23 :
-                // /Users/vk/Sql.g:1:142: T__37
+                // Sql.g:1:142: T__37
                 {
                 mT__37(); 
 
                 }
                 break;
             case 24 :
-                // /Users/vk/Sql.g:1:148: T__38
+                // Sql.g:1:148: T__38
                 {
                 mT__38(); 
 
                 }
                 break;
             case 25 :
-                // /Users/vk/Sql.g:1:154: T__39
+                // Sql.g:1:154: T__39
                 {
                 mT__39(); 
 
                 }
                 break;
             case 26 :
-                // /Users/vk/Sql.g:1:160: T__40
+                // Sql.g:1:160: T__40
                 {
                 mT__40(); 
 
                 }
                 break;
             case 27 :
-                // /Users/vk/Sql.g:1:166: T__41
+                // Sql.g:1:166: T__41
                 {
                 mT__41(); 
 
                 }
                 break;
             case 28 :
-                // /Users/vk/Sql.g:1:172: T__42
+                // Sql.g:1:172: T__42
                 {
                 mT__42(); 
 
                 }
                 break;
             case 29 :
-                // /Users/vk/Sql.g:1:178: T__43
+                // Sql.g:1:178: T__43
                 {
                 mT__43(); 
 
                 }
                 break;
             case 30 :
-                // /Users/vk/Sql.g:1:184: T__44
+                // Sql.g:1:184: T__44
                 {
                 mT__44(); 
 
                 }
                 break;
             case 31 :
-                // /Users/vk/Sql.g:1:190: T__45
+                // Sql.g:1:190: T__45
                 {
                 mT__45(); 
 
                 }
                 break;
             case 32 :
-                // /Users/vk/Sql.g:1:196: T__46
+                // Sql.g:1:196: T__46
                 {
                 mT__46(); 
 
                 }
                 break;
             case 33 :
-                // /Users/vk/Sql.g:1:202: T__47
+                // Sql.g:1:202: T__47
                 {
                 mT__47(); 
 
                 }
                 break;
             case 34 :
-                // /Users/vk/Sql.g:1:208: T__48
+                // Sql.g:1:208: T__48
                 {
                 mT__48(); 
 
                 }
                 break;
             case 35 :
-                // /Users/vk/Sql.g:1:214: T__49
+                // Sql.g:1:214: T__49
                 {
                 mT__49(); 
 
                 }
                 break;
             case 36 :
-                // /Users/vk/Sql.g:1:220: T__50
+                // Sql.g:1:220: T__50
                 {
                 mT__50(); 
 
                 }
                 break;
             case 37 :
-                // /Users/vk/Sql.g:1:226: T__51
+                // Sql.g:1:226: T__51
                 {
                 mT__51(); 
 
                 }
                 break;
             case 38 :
-                // /Users/vk/Sql.g:1:232: T__52
+                // Sql.g:1:232: T__52
                 {
                 mT__52(); 
 
                 }
                 break;
             case 39 :
-                // /Users/vk/Sql.g:1:238: T__53
+                // Sql.g:1:238: T__53
                 {
                 mT__53(); 
 
                 }
                 break;
             case 40 :
-                // /Users/vk/Sql.g:1:244: T__54
+                // Sql.g:1:244: T__54
                 {
                 mT__54(); 
 
                 }
                 break;
             case 41 :
-                // /Users/vk/Sql.g:1:250: T__55
+                // Sql.g:1:250: T__55
                 {
                 mT__55(); 
 
                 }
                 break;
             case 42 :
-                // /Users/vk/Sql.g:1:256: T__56
+                // Sql.g:1:256: T__56
                 {
                 mT__56(); 
 
                 }
                 break;
             case 43 :
-                // /Users/vk/Sql.g:1:262: T__57
+                // Sql.g:1:262: T__57
                 {
                 mT__57(); 
 
                 }
                 break;
             case 44 :
-                // /Users/vk/Sql.g:1:268: T__58
+                // Sql.g:1:268: T__58
                 {
                 mT__58(); 
 
                 }
                 break;
             case 45 :
-                // /Users/vk/Sql.g:1:274: T__59
+                // Sql.g:1:274: T__59
                 {
                 mT__59(); 
 
                 }
                 break;
             case 46 :
-                // /Users/vk/Sql.g:1:280: T__60
+                // Sql.g:1:280: T__60
                 {
                 mT__60(); 
 
                 }
                 break;
             case 47 :
-                // /Users/vk/Sql.g:1:286: T__61
+                // Sql.g:1:286: T__61
                 {
                 mT__61(); 
 
                 }
                 break;
             case 48 :
-                // /Users/vk/Sql.g:1:292: T__62
+                // Sql.g:1:292: T__62
                 {
                 mT__62(); 
 
                 }
                 break;
             case 49 :
-                // /Users/vk/Sql.g:1:298: T__63
+                // Sql.g:1:298: T__63
                 {
                 mT__63(); 
 
                 }
                 break;
             case 50 :
-                // /Users/vk/Sql.g:1:304: T__64
+                // Sql.g:1:304: T__64
                 {
                 mT__64(); 
 
                 }
                 break;
             case 51 :
-                // /Users/vk/Sql.g:1:310: T__65
+                // Sql.g:1:310: T__65
                 {
                 mT__65(); 
 
                 }
                 break;
             case 52 :
-                // /Users/vk/Sql.g:1:316: T__66
+                // Sql.g:1:316: T__66
                 {
                 mT__66(); 
 
                 }
                 break;
             case 53 :
-                // /Users/vk/Sql.g:1:322: T__67
+                // Sql.g:1:322: T__67
                 {
                 mT__67(); 
 
                 }
                 break;
             case 54 :
-                // /Users/vk/Sql.g:1:328: T__68
+                // Sql.g:1:328: T__68
                 {
                 mT__68(); 
 
                 }
                 break;
             case 55 :
-                // /Users/vk/Sql.g:1:334: T__69
+                // Sql.g:1:334: T__69
                 {
                 mT__69(); 
 
                 }
                 break;
             case 56 :
-                // /Users/vk/Sql.g:1:340: T__70
+                // Sql.g:1:340: T__70
                 {
                 mT__70(); 
 
                 }
                 break;
             case 57 :
-                // /Users/vk/Sql.g:1:346: T__71
+                // Sql.g:1:346: T__71
                 {
                 mT__71(); 
 
                 }
                 break;
             case 58 :
-                // /Users/vk/Sql.g:1:352: T__72
+                // Sql.g:1:352: T__72
                 {
                 mT__72(); 
 
                 }
                 break;
             case 59 :
-                // /Users/vk/Sql.g:1:358: T__73
+                // Sql.g:1:358: T__73
                 {
                 mT__73(); 
 
                 }
                 break;
             case 60 :
-                // /Users/vk/Sql.g:1:364: T__74
+                // Sql.g:1:364: T__74
                 {
                 mT__74(); 
 
                 }
                 break;
             case 61 :
-                // /Users/vk/Sql.g:1:370: T__75
+                // Sql.g:1:370: T__75
                 {
                 mT__75(); 
 
                 }
                 break;
             case 62 :
-                // /Users/vk/Sql.g:1:376: T__76
+                // Sql.g:1:376: T__76
                 {
                 mT__76(); 
 
                 }
                 break;
             case 63 :
-                // /Users/vk/Sql.g:1:382: T__77
+                // Sql.g:1:382: T__77
                 {
                 mT__77(); 
 
                 }
                 break;
             case 64 :
-                // /Users/vk/Sql.g:1:388: T__78
+                // Sql.g:1:388: T__78
                 {
                 mT__78(); 
 
                 }
                 break;
             case 65 :
-                // /Users/vk/Sql.g:1:394: T__79
+                // Sql.g:1:394: T__79
                 {
                 mT__79(); 
 
                 }
                 break;
             case 66 :
-                // /Users/vk/Sql.g:1:400: T__80
+                // Sql.g:1:400: T__80
                 {
                 mT__80(); 
 
                 }
                 break;
             case 67 :
-                // /Users/vk/Sql.g:1:406: T__81
+                // Sql.g:1:406: T__81
                 {
                 mT__81(); 
 
                 }
                 break;
             case 68 :
-                // /Users/vk/Sql.g:1:412: T__82
+                // Sql.g:1:412: T__82
                 {
                 mT__82(); 
 
                 }
                 break;
             case 69 :
-                // /Users/vk/Sql.g:1:418: T__83
+                // Sql.g:1:418: T__83
                 {
                 mT__83(); 
 
                 }
                 break;
             case 70 :
-                // /Users/vk/Sql.g:1:424: T__84
+                // Sql.g:1:424: T__84
                 {
                 mT__84(); 
 
                 }
                 break;
             case 71 :
-                // /Users/vk/Sql.g:1:430: T__85
+                // Sql.g:1:430: T__85
                 {
                 mT__85(); 
 
                 }
                 break;
             case 72 :
-                // /Users/vk/Sql.g:1:436: T__86
+                // Sql.g:1:436: T__86
                 {
                 mT__86(); 
 
                 }
                 break;
             case 73 :
-                // /Users/vk/Sql.g:1:442: T__87
+                // Sql.g:1:442: T__87
                 {
                 mT__87(); 
 
                 }
                 break;
             case 74 :
-                // /Users/vk/Sql.g:1:448: T__88
+                // Sql.g:1:448: T__88
                 {
                 mT__88(); 
 
                 }
                 break;
             case 75 :
-                // /Users/vk/Sql.g:1:454: T__89
+                // Sql.g:1:454: T__89
                 {
                 mT__89(); 
 
                 }
                 break;
             case 76 :
-                // /Users/vk/Sql.g:1:460: T__90
+                // Sql.g:1:460: T__90
                 {
                 mT__90(); 
 
                 }
                 break;
             case 77 :
-                // /Users/vk/Sql.g:1:466: T__91
+                // Sql.g:1:466: T__91
                 {
                 mT__91(); 
 
                 }
                 break;
             case 78 :
-                // /Users/vk/Sql.g:1:472: T__92
+                // Sql.g:1:472: T__92
                 {
                 mT__92(); 
 
                 }
                 break;
             case 79 :
-                // /Users/vk/Sql.g:1:478: T__93
+                // Sql.g:1:478: T__93
                 {
                 mT__93(); 
 
                 }
                 break;
             case 80 :
-                // /Users/vk/Sql.g:1:484: T__94
+                // Sql.g:1:484: T__94
                 {
                 mT__94(); 
 
                 }
                 break;
             case 81 :
-                // /Users/vk/Sql.g:1:490: T__95
+                // Sql.g:1:490: T__95
                 {
                 mT__95(); 
 
                 }
                 break;
             case 82 :
-                // /Users/vk/Sql.g:1:496: T__96
+                // Sql.g:1:496: T__96
                 {
                 mT__96(); 
 
                 }
                 break;
             case 83 :
-                // /Users/vk/Sql.g:1:502: T__97
+                // Sql.g:1:502: T__97
                 {
                 mT__97(); 
 
                 }
                 break;
             case 84 :
-                // /Users/vk/Sql.g:1:508: T__98
+                // Sql.g:1:508: T__98
                 {
                 mT__98(); 
 
                 }
                 break;
             case 85 :
-                // /Users/vk/Sql.g:1:514: T__99
+                // Sql.g:1:514: T__99
                 {
                 mT__99(); 
 
                 }
                 break;
             case 86 :
-                // /Users/vk/Sql.g:1:520: T__100
+                // Sql.g:1:520: T__100
                 {
                 mT__100(); 
 
                 }
                 break;
             case 87 :
-                // /Users/vk/Sql.g:1:527: T__101
+                // Sql.g:1:527: T__101
                 {
                 mT__101(); 
 
                 }
                 break;
             case 88 :
-                // /Users/vk/Sql.g:1:534: T__102
+                // Sql.g:1:534: T__102
                 {
                 mT__102(); 
 
                 }
                 break;
             case 89 :
-                // /Users/vk/Sql.g:1:541: T__103
+                // Sql.g:1:541: T__103
                 {
                 mT__103(); 
 
                 }
                 break;
             case 90 :
-                // /Users/vk/Sql.g:1:548: T__104
+                // Sql.g:1:548: T__104
                 {
                 mT__104(); 
 
                 }
                 break;
             case 91 :
-                // /Users/vk/Sql.g:1:555: T__105
+                // Sql.g:1:555: T__105
                 {
                 mT__105(); 
 
                 }
                 break;
             case 92 :
-                // /Users/vk/Sql.g:1:562: T__106
+                // Sql.g:1:562: T__106
                 {
                 mT__106(); 
 
                 }
                 break;
             case 93 :
-                // /Users/vk/Sql.g:1:569: T__107
+                // Sql.g:1:569: T__107
                 {
                 mT__107(); 
 
                 }
                 break;
             case 94 :
-                // /Users/vk/Sql.g:1:576: T__108
+                // Sql.g:1:576: T__108
                 {
                 mT__108(); 
 
                 }
                 break;
             case 95 :
-                // /Users/vk/Sql.g:1:583: T__109
+                // Sql.g:1:583: T__109
                 {
                 mT__109(); 
 
                 }
                 break;
             case 96 :
-                // /Users/vk/Sql.g:1:590: VALUE
+                // Sql.g:1:590: VALUE
                 {
                 mVALUE(); 
 
                 }
                 break;
             case 97 :
-                // /Users/vk/Sql.g:1:596: COMMA
+                // Sql.g:1:596: COMMA
                 {
                 mCOMMA(); 
 
                 }
                 break;
             case 98 :
-                // /Users/vk/Sql.g:1:602: SPACE
+                // Sql.g:1:602: SPACE
                 {
                 mSPACE(); 
 
                 }
                 break;
             case 99 :
-                // /Users/vk/Sql.g:1:608: DOT
+                // Sql.g:1:608: DOT
                 {
                 mDOT(); 
 
                 }
                 break;
             case 100 :
-                // /Users/vk/Sql.g:1:612: GT
+                // Sql.g:1:612: GT
                 {
                 mGT(); 
 
                 }
                 break;
             case 101 :
-                // /Users/vk/Sql.g:1:615: LT
+                // Sql.g:1:615: LT
                 {
                 mLT(); 
 
                 }
                 break;
             case 102 :
-                // /Users/vk/Sql.g:1:618: EQ
+                // Sql.g:1:618: EQ
                 {
                 mEQ(); 
 
                 }
                 break;
             case 103 :
-                // /Users/vk/Sql.g:1:621: NOT
+                // Sql.g:1:621: NOT
                 {
                 mNOT(); 
 
                 }
                 break;
             case 104 :
-                // /Users/vk/Sql.g:1:625: AMP
+                // Sql.g:1:625: AMP
                 {
                 mAMP(); 
 
                 }
                 break;
             case 105 :
-                // /Users/vk/Sql.g:1:629: NL
+                // Sql.g:1:629: NL
                 {
                 mNL(); 
 
                 }
                 break;
             case 106 :
-                // /Users/vk/Sql.g:1:632: WS
+                // Sql.g:1:632: WS
                 {
                 mWS(); 
 
