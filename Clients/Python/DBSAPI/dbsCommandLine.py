@@ -36,7 +36,7 @@ try:
   from DBSAPI.TermUtilities import TerminalController
   from DBSAPI.TermUtilities import ProgressBar
 except Exception, ex:
-  print "\nUnable to setup DBS environment, will only be running as a query tool\n"
+  #print "\nUnable to setup DBS environment, will only be running as a query tool\n"
   dbsAvailable=False
   
 try:
@@ -802,6 +802,20 @@ class Report(dict):
 # API Call Wrapper
 class ApiDispatcher:
 
+  def makeApi(self):
+    self.api = None
+    #See if Twril needs to be ignored
+    if dbsAvailable:
+        self.progress.notwril=self.optdict['notwril']
+        self.api = DbsApi(opts.__dict__)
+        self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
+        self.optdict['url']=self.api.url()
+
+  def getApi(self):
+	if self.api == None:
+		raise Exception("-1111", "You need to setup DBS Client for this functionality")
+	return self.api
+ 
   def getArgVal(self, args):
 	vals=args.command.split('=')
 	if len(vals) >= 2:
@@ -809,7 +823,7 @@ class ApiDispatcher:
 	else: return ""
 
   def __init__(self, args):
-   try:
+   #try:
 
     self.helper = cmd_doc_writer()
     if dbsAvailable:
@@ -826,12 +840,16 @@ class ApiDispatcher:
     if opts.__dict__['alias'] == 'NOALIAS':
 	del(opts.__dict__['alias'])
 
+    self.makeApi()
+
+    """ 
     #See if Twril needs to be ignored
     if dbsAvailable:
 	self.progress.notwril=self.optdict['notwril']
 	self.api = DbsApi(opts.__dict__)
 	self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
 	self.optdict['url']=self.api.url()
+    """
 
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
         print_help(self)
@@ -842,7 +860,7 @@ class ApiDispatcher:
                 return
 
     if apiCall in ("--version", "version", "-ver", "--ver"):
-        print "DBS API Version: %s" %self.api.getApiVersion()
+        print "DBS API Version: %s" %self.getApi().getApiVersion()
         return
 
     elif apiCall in ("", None):
@@ -956,33 +974,11 @@ class ApiDispatcher:
         self.handleCreateCFGCall()
 
     ##Search data
-    elif apiCall in ('search', '--search') or self.optdict.get('search'):
+    elif apiCall in ('search', '--search') or self.optdict.get('search') :
 	self.handleSearchCall()
 
     else:
        print "Unsupported API Call '%s', please use --doc or --help" %str(apiCall)
-
-   except DbsApiException, ex:
-      self.progress.stop()
-      self.printRED("Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
-      if ex.getErrorCode() not in (None, ""):
-          self.printRED("DBS Exception Error Code: %s "% str(ex.getErrorCode()))
-
-   except DbsException, ex:
-      self.progress.stop()
-      self.printRED( "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
-      if ex.getErrorCode() not in (None, ""):
-          self.printRED( "DBS Exception Error Code: %s " % str(ex.getErrorCode()))
-
-   except Exception, ex:
-        self.progress.stop()
-        self.printRED ("Unknow Exception in user code:")
-        traceback.print_exc(file=sys.stdout)
-
-   except KeyboardInterrupt:
-        self.progress.stop()
-        print "Interrupted."
-        sys.exit(1)
 
   def manageHelp(self):
 
@@ -1005,7 +1001,7 @@ class ApiDispatcher:
 		print " dbs help examples\n"
                 return True
 
-  	entities = self.api.getHelp("")
+  	entities = self.getApi().getHelp("")
 	entityNames = [ x['name'] for x in entities]
 
         if cmd in ("keywords"):
@@ -1041,10 +1037,10 @@ class ApiDispatcher:
 	self.mart_file = ""
 
         #Lets see if user has provided a MART File as destination
-        self.adshome = os.path.expandvars(self.api.adshome())
+        self.adshome = os.path.expandvars(self.getApi().adshome())
         if not os.path.exists(self.adshome):
                 self.printRED("WARNING: Path %s do not exist, ADSHOME (%s) parameter is not set or not a valid path" \
-										% ( self.adshome,  str(self.api.adshome())))
+										% ( self.adshome,  str(self.getApi().adshome())))
 		self.printRED("WARNING: Trying to create ADSHOME (%s) " %str(self.adshome))
 		try:
 			os.mkdir(self.adshome)
@@ -1088,11 +1084,11 @@ class ApiDispatcher:
                 return
         if self.optdict.get('pattern'):
 	  self.progress.start()
-          apiret = self.api.listAnalysisDatasetDefinition(self.optdict.get('pattern'))
+          apiret = self.getApi().listAnalysisDatasetDefinition(self.optdict.get('pattern'))
           self.progress.stop()
         else:
           self.progress.start()
-          apiret = self.api.listAnalysisDatasetDefinition("*")
+          apiret = self.getApi().listAnalysisDatasetDefinition("*")
           self.progress.stop()
         for anObj in apiret:
 		#print anObj
@@ -1145,11 +1141,11 @@ class ApiDispatcher:
 
 	self.setMartParams()
 	if self.KnownQueries!= {} : return #Never do it twice
-        #adshome = os.path.expandvars(self.api.adshome())
+        #adshome = os.path.expandvars(self.getApi().adshome())
         if not os.path.exists(self.adshome):
-                self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+                self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.getApi().adshome()))
 	if not os.path.isdir(self.adshome):
-		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.api.adshome()))
+		self.printRED("ERROR: Path do not exist, ADSHOME (%s) parameter is not set or not a valid path" %str(self.getApi().adshome()))
 
 	dirList=os.listdir(self.adshome)
 	for mart_file in dirList:
@@ -1169,10 +1165,10 @@ class ApiDispatcher:
         self.progress.start()
 	adsversion=self.optdict.get('adsversion')
 	if adsversion in ("", None):
-		apiret = self.api.listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'))
-		#apiret = self.api.listAnalysisDataset()
+		apiret = self.getApi().listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'))
+		#apiret = self.getApi().listAnalysisDataset()
 	else:
-		apiret = self.api.listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'), self.optdict.get('adsversion'))
+		apiret = self.getApi().listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'), self.optdict.get('adsversion'))
         self.progress.stop()
         for anObj in apiret:
                 #print anObj
@@ -1193,11 +1189,11 @@ class ApiDispatcher:
 		return
        	if self.optdict.get('pattern'):
 	  self.progress.start()
-          apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
+          apiret = self.getApi().listPrimaryDatasets(self.optdict.get('pattern'))
 	  self.progress.stop()
         else:
           self.progress.start()
-          apiret = self.api.listPrimaryDatasets("*")
+          apiret = self.getApi().listPrimaryDatasets("*")
           self.progress.stop()
        	for anObj in apiret:
         	print anObj['Name']
@@ -1234,7 +1230,7 @@ class ApiDispatcher:
 
 	# Use faster call if no patter is supplied	
 	if self.optdict.get('path') in (None, '', '*', '/*/*/*'):
-		apiret = self.api.listDatasetPaths()
+		apiret = self.getApi().listDatasetPaths()
 		print "\n"
 		for aPath in apiret:
 			print aPath
@@ -1244,7 +1240,7 @@ class ApiDispatcher:
 		self.progress.stop()
 		return
 	
-        apiret = self.api.listProcessedDatasets(**paramDict)
+        apiret = self.getApi().listProcessedDatasets(**paramDict)
 	self.progress.stop()
 
         #dot.mark_done()
@@ -1342,11 +1338,11 @@ class ApiDispatcher:
         algoparam = self.getAlgoPattern()
         if len(algoparam):
 	     self.progress.start()
-             apiret = self.api.listAlgorithms(**algoparam)
+             apiret = self.getApi().listAlgorithms(**algoparam)
              self.progress.stop()
         else:
 	  self.progress.start()
-          apiret = self.api.listAlgorithms()
+          apiret = self.getApi().listAlgorithms()
           self.progress.stop()
 
         self.printGREEN ("\nListed as:     /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n" )
@@ -1378,7 +1374,7 @@ class ApiDispatcher:
        else:
          self.printBLUE( "Making api call, this may take sometime depending upon size of dataset, please wait....\n")
          self.progress.start()
-	 apiret = self.api.listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern, runNumber=run)
+	 apiret = self.getApi().listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern, runNumber=run)
          self.progress.stop()
          if self.optdict.get('report') :
 		for anObj in apiret:
@@ -1410,7 +1406,7 @@ class ApiDispatcher:
 
        sepattern=self.optdict.get('sepattern') or '*'
        self.progress.start()
-       apiret = self.api.listStorageElements(sepattern)
+       apiret = self.getApi().listStorageElements(sepattern)
        self.progress.stop()
        self.printBLUE( "Listing storage elements, please wait..." )
        for anObj in apiret:
@@ -1432,7 +1428,7 @@ class ApiDispatcher:
        else:
          self.printBLUE( "Listing block, please wait..." )
          self.progress.start()
-         apiret = self.api.listBlocks(dataset=path, block_name=blockpattern, storage_element_name=sepattern)
+         apiret = self.getApi().listBlocks(dataset=path, block_name=blockpattern, storage_element_name=sepattern)
          self.progress.stop()
          if self.optdict.get('report') :
             for anObj in apiret:
@@ -1513,7 +1509,7 @@ class ApiDispatcher:
 	userq=martQ['USERINPUT']
 	self.printGREEN(userq)
 
-	#if self.api.url != martQ['HOSTURL']:
+	#if self.getApi().url != martQ['HOSTURL']:
 	#	self.printRED("Query %s was created from DBS instance at %s " %(usequery, martQ['HOSTURL']) )
 	#	self.printRED("You cannot use the same query for another DBS instance")
 	#	return
@@ -1541,7 +1537,7 @@ class ApiDispatcher:
 
 		stdmgr=manageStdOut()
 		stdmgr.capture()
-		self.api.createAnalysisDatasetDefinition (adsdef)
+		self.getApi().createAnalysisDatasetDefinition (adsdef)
 		stdmgr.restore()
 	except DbsApiException, ex:
 		if ex.getErrorMessage().find("Already Exists") < 0:
@@ -1569,7 +1565,7 @@ class ApiDispatcher:
 		print "Processing, please wait..."
                 stdmgr=manageStdOut()
                 stdmgr.capture()
-		self.api.createAnalysisDataset(ads, usequery)		
+		self.getApi().createAnalysisDataset(ads, usequery)		
 		stdmgr.restore()
 		self.progress.stop()
 		self.printGREEN("Analysis Dataset Created")
@@ -1676,7 +1672,7 @@ class ApiDispatcher:
 	ads_file.write("<?xml version='1.0' standalone='yes'?>")
 	ads_file.write("\n<!-- DBS Version 1 -->")
 	ads_file.write("\n<dbs>")
-	ads_file.write("\n<src url='%s' />" % self.api.url())
+	ads_file.write("\n<src url='%s' />" % self.getApi().url())
 	ads_file.write("\n<dataset path='%s' />" % path)
 	ads_file.write("\n<analysis_dataset_def name='%s' query='%s' />" % (que, self.KnownQueries[que]['QUERY']) )	
 	for aFile in files:
@@ -1848,8 +1844,19 @@ class ApiDispatcher:
                 self.handleCreateCFGCall()
 
   def getDBSversion(self):
-	# hard coded API version will do here
-        params = {'apiversion': 'DBS_2_0_5' ,'api':'getDBSServerVersion'}
+
+	if self.optdict.get('url') in ('BADURL', None, ''):
+		print "BADURL, please specify using --url="
+		raise Exception("-1111", "BADURL, please specify using --url=")
+		return
+
+	if self.optdict.get('url').startswith('https:'):
+		if not dbsAvailable:
+			print "You are using HTTPS URL, you will need to setup DBS Client environment first"
+			raise Exception("-1111", "You are using HTTPS URL, you will need to setup DBS Client environment first")
+			return
+
+        params = {'apiversion': 'DBS_2_0_4' ,'api':'getDBSServerVersion'}
         params = dict(params)
         data = urllib2.urlopen(self.optdict.get('url'), urllib.urlencode(params, doseq=True))
         res = data.read()
@@ -1857,6 +1864,8 @@ class ApiDispatcher:
             if  line.find('server_version') != -1:
                 dbsver = line.split('=')[-1]
                 dbsver = dbsver.replace("'","").replace('"','')
+		if dbsver.find("_pre") != -1: 
+			dbsver = dbsver.split("_pre")[0]
                 return dbsver
         return None
 
@@ -1864,14 +1873,18 @@ class ApiDispatcher:
         if self.optdict['donotrunquery']:
                print "\n--donotrunquery specified, will not execute the query"
                qu="query"
-        dbsver = self.getDBSversion()
-        if  not dbsver or dbsver >= 'DBS_2_0_6': 
-		self.apiversion=dbsver
-        else: 
-		self.apiversion='DBS_2_0_5'
 
-	if dbsAvailable: data=self.api.executeQuery(userInput, type=qu)
+	if dbsAvailable: 
+		data=self.getApi().executeQuery(userInput, type=qu)
+		self.apiversion=self.getApi().getApiVersion()
 	else : 
+
+		dbsver = self.getDBSversion()
+		
+		if  not dbsver or dbsver >= 'DBS_2_0_6':
+			self.apiversion=dbsver
+		else:
+			self.apiversion='DBS_2_0_5'
 		params = {'apiversion': self.apiversion ,'api':'executeQuery'}
 		params = dict(params)
 		params['query']=userInput
@@ -2206,7 +2219,7 @@ class ApiDispatcher:
 	adsdef['USERINPUT']=unescape(userquery)
 	adsdef['QUERY']=sqlquery
 	adsdef['EXISTS_IN_DBS']='false'
-	adsdef['HOSTURL']=self.api.url()
+	adsdef['HOSTURL']=self.getApi().url()
 	adsdef['CREATEDAT']=time.asctime()
 	adsdef['LASTMODIFIEDAT']=time.asctime()
         adsdef['CREATEDBY']=os.environ['USER']
@@ -2255,16 +2268,17 @@ if __name__ == "__main__":
 
     ApiDispatcher(opts)
 
-  except DBSAPI.DbsApiException, ex:
-    print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
-    if ex.getErrorCode() not in (None, ""):
-      print "DBS Exception Error Code: ", ex.getErrorCode()
-
-  except DBSAPI.DbsException, ex:
-    print "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
-    if ex.getErrorCode() not in (None, ""):
-      print "DBS Exception Error Code: ", ex.getErrorCode()
-
   except Exception, ex:
-    if ex.__doc__ != 'Request to exit from the interpreter.' :
-       print "Caught Unknown Exception %s "  % ex
+    try:
+      message=ex.getErrorMessage()
+      code=ex.getErrorCode()
+    except:
+	try:
+        	(code, message) = ex
+    	except:
+        	code = 0
+        	message = ex
+    print "Error: " + str(message)
+    print "Error Code: "  + str(code) 
+
+
