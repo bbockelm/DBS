@@ -31,20 +31,8 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-#DBS Api version
-#__version__ = "DBS_1_0_8"
-__version__ = "$Name:  $"
-#__version__ = "$Name:  $"
-
-
-# DBS Defined Log Levels
-#DBSDEBUG=1
-#DBSINFO=2
-#DBSWARNING=3
-
-
-clientVersion = __version__.replace("$Name:", "")
-clientVersion = clientVersion.replace("$", "").strip()
+#DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
+__version__ = "$Name: $"
 
 def makeAPI(url):
 		#args = {}
@@ -176,10 +164,16 @@ class DbsApi(DbsConfig):
     Note: Config (dbs.config) and Constructor 
       arguments have higher presedence 
     """
-    if __version__ in ("$Name:  $", ""):
+
+    version = __version__.replace("$Name: ", "")
+    version = version.replace("$", "")
+    if version.find("pre") != -1: 
+	version=version.split("_pre")[0]
+    print "Setting client version....%s" %version
+    if version in (""):
 	raise DbsApiException(args="Incorrect parameters: client version not specified use 'version' in dbs.config or pass in CTOR")
 	return
-    return __version__
+    return version
 
   def getApiVersion(self):
     """
