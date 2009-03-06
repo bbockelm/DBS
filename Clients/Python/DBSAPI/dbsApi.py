@@ -32,7 +32,8 @@ from dbsLogger import *
 from dbsUtil import *
 
 #DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
-__version__ = "$Name: $"
+__version__ = "DBS_2_0_4"
+#__version__ = "$Name:  $"
 
 def makeAPI(url):
 		#args = {}
@@ -169,7 +170,6 @@ class DbsApi(DbsConfig):
     version = version.replace("$", "")
     if version.find("pre") != -1: 
 	version=version.split("_pre")[0]
-    print "Setting client version....%s" %version
     if version in (""):
 	raise DbsApiException(args="Incorrect parameters: client version not specified use 'version' in dbs.config or pass in CTOR")
 	return
