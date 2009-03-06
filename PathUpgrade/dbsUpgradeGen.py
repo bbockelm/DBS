@@ -14,15 +14,17 @@ from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
-
-#instance_name='cms_dbs_test'
-#instance_name='cms_dbs_prod_global_intr2'
-instance_name='just_a_test'
+#
+if len(sys.argv) < 3 :
+	print "Usage: %s <ABBR> <URL>" %sys.argv
+	sys.exit(0)
+instance_abbr=sys.argv[1]
+instance_url=sys.argv[2]
 #
 #
-logfile=open(instance_name+'.log', 'w')
-sqlfile=open(instance_name+'.sql', 'w')
-
+logfile=open(instance_abbr+'.log', 'w')
+sqlfile=open(instance_abbr+'.sql', 'w')
+#
 def log_this(msg):
 	print msg
 	logfile.write("\n"+msg)
@@ -32,10 +34,7 @@ try:
   (opts,args) = optManager.getOpt()
 
   args={}
-  args['url']='http://cmssrv17.fnal.gov:8989/WHATEVER/servlet/DBSServlet' 
-  #args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
-  #args['url']='http://cmssrv17.fnal.gov:8989/DBSTEST/servlet/DBSServlet'
-
+  args['url']=instance_url
   args['version']='DBS_2_0_5'
   args['mode']='POST'
   api = DbsApi(args)
@@ -400,8 +399,8 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
 
 """
 
-  sqlfile.write("\nset spool on;")
-  sqlfile.write("\nSPOOL "+instance_name+"_CHANGE.log")
+  sqlfile.write("set spool on;")
+  sqlfile.write("\nSPOOL "+instance_abbr+"_CHANGE.log")
   sqlfile.write("\nSET ECHO ON;")
   sqlfile.write("\nset serveroutput on size unlimited format wrapped")
 
@@ -693,16 +692,10 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
   log_this("RENAMING the tables")
 
   sqlfile.write("\n--RENAMING the tables")
-  query  = "\nalter table ProcessedDataset rename to ORIGProcessedDataset;"
-  query += "\nalter table TMP_ProcessedDataset rename to ProcessedDataset;"
-  query += "\nalter table ProcDSParent rename to ORIGProcDSParent;"
-  query += "\nalter table TMP_ProcDSParent rename to ProcDSParent;"
-  query += "\nalter table BlockParent rename to ORIGBlockParent;"
-  query += "\nalter table TMP_BlockParent rename to BlockParent;"
-  query += "\nalter table ProcAlgo rename to ORIGProcAlgo;"
-  query += "\nalter table TMP_ProcAlgo rename to ProcAlgo;"
-  query += "\nalter table ProcDSRuns rename to ORIGProcDSRuns;"
-  query += "\nalter table TMP_ProcDSRuns rename to ProcDSRuns;"
+  query  = ""
+  for tableName in ['ProcessedDataset', 'ProcDSParent', 'BlockParent', 'ProcAlgo', 'ProcDSRuns']:
+	query += "\nalter table "+tableName+" rename to ORIG"+tableName+";"
+	query += "\nalter table TMP_"+tableName+" rename to "+tableName+";"	
   log_this(query)
   sqlfile.write(query)
 
@@ -736,6 +729,16 @@ update SchemaVersion set SCHEMAVERSION='DBS_1_1_5';
   sqlfile.write("\nALTER TABLE IntQualityHistory ADD CONSTRAINT IntQualityHistoryUQ UNIQUE (HistoryTimeStamp,Dataset,Run,Lumi,SubSystem);")
   sqlfile.write("\nALTER TABLE FileProcQuality ADD CONSTRAINT FileProcQualityUQ UNIQUE (ParentFile,ChildDataset);")
 
+  sqlfile.write("\n--SETTING the GRANTS for the tables")
+  query  = ""
+  for tableName in ['ProcessedDataset', 'ProcDSParent', 'BlockParent', 'ProcAlgo', 'ProcDSRuns']:
+	query += "\ngrant select on "+tableName+" to CMS_DBS_"+instance_abbr+"_READER_ROLE;"
+	query += "\ngrant insert, update on "+tableName+" to CMS_DBS_"+instance_abbr+"_WRITER_ROLE;"
+	query += "\ngrant delete on "+tableName+" to CMS_DBS_"+instance_abbr+"_ADMIN_ROLE;\n"
+
+  log_this(query)
+  sqlfile.write(query)
+ 
   sqlfile.write("\nPROMPT SCRIPT FINISHED AT")
   sqlfile.write("\nselect systimestamp from dual;")
 
