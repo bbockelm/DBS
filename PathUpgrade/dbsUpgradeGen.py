@@ -16,7 +16,7 @@ from DBSAPI.dbsOptions import DbsOptionParser
 from DBSAPI.dbsApi import DbsApi
 #
 if len(sys.argv) < 3 :
-	print "Usage: %s <ABBR> <URL>" %sys.argv
+	print "Usage: %s <ABBR> <URL>" %sys.argv[0]
 	sys.exit(0)
 instance_abbr=sys.argv[1]
 instance_url=sys.argv[2]
