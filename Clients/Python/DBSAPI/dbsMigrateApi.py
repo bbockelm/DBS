@@ -100,7 +100,7 @@ class DbsMigrateApi:
 	
 	def doesPathExistNoForce(self, api, path):
 		tokens = path.split('/')
-		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
+		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2], patternDT = tokens[3])
 		if datasets in [[], None] :
 			return False;
 		else:
@@ -267,7 +267,7 @@ class DbsMigrateApi:
 		
 	def getDatasetStatus(self, path):
 		tokens = path.split('/')
-		datasets = self.apiSrc.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
+		datasets = self.apiSrc.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2], patternDT = tokens[3])
 		for aDataset in datasets:
 			return aDataset['Status']
 		
