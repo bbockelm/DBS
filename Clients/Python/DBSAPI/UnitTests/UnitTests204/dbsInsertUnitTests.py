@@ -25,7 +25,6 @@ api = DbsApi(opts.__dict__)
 mytime = time.strftime("_%Y%m%d_%Hh%Mm%Ss",time.localtime())
 
 serverInfo = api.getServerInfo()
-isMYSQL = serverInfo['InstanceType']
 isGlobal = serverInfo['InstanceName']
 
 f = open("result.txt", "a+")
