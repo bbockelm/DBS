@@ -10,6 +10,7 @@ cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
 CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=executeQuery"
+#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_2_0_6 api=executeQuery"
 #CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_7 api=countQuery"
 #$CMD
 executeQuery () {
@@ -272,7 +273,7 @@ executeQuery () {
 	#$CMD query="find dataset.xsection where dataset like *"
 	#$CMD query="find dataset.era"
 	#$CMD query="find  block, block.child"
-	$CMD query="find dataset where dataset like * and ((run = 1) or (run between 1 and 2) and run.totlumi=222)"
+	#$CMD query="find dataset where dataset like * and ((run = 1) or (run between 1 and 2) and run.totlumi=222)"
 	#$CMD query="find  block, block.parent"
 	#$CMD query="find  procds, procds.parent"
 	#$CMD query="find  procds, procds.child"
@@ -284,7 +285,7 @@ executeQuery () {
 	#$CMD query="find dataset,  dataset.child where dataset = *"
 	#$CMD query="find file.parent where block = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
 	
-	#$CMD query="find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby"
+	$CMD query="find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby"
 	#$CMD query="find file where tier = GEN-SIM-DIGI-RECO"
 	#$CMD query="find file.tier where tier = GEN-SIM-DIGI-RECO"
 	#$CMD query="find file.tier where dataset = /DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"

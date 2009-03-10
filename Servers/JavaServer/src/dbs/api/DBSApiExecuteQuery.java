@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.commons.lang.StringEscapeUtils;
 import db.QueryExecutor;
 import dbs.util.DBSUtil;
 import dbs.search.qb.DateUtil;
@@ -94,7 +95,8 @@ public class DBSApiExecuteQuery {
                                             if (colNames[i].toLowerCase().indexOf("date") != -1) {
                                                 res = (String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)); 
                                             } else {
-                                                res = ((String) get(rs, colNames[i] ));
+						if(name.equals("config.content")) res =  StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )));
+                                                else res = ((String) get(rs, colNames[i] ));
                                             }
                                             result += btag + res + etag;
                                     }
@@ -148,7 +150,8 @@ public class DBSApiExecuteQuery {
 					if(colNames[i].toLowerCase().indexOf("date") != -1) {
 						out.write(((String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)) + "' "));
 										}
-					else out.write(((String) get(rs, colNames[i] ) +"' "));
+					else if(colNames[i].equals("QueryableParameterSet_Content")) out.write( StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )) +"' "));
+						else out.write(((String) get(rs, colNames[i] ) +"' "));
 				}
 				out.write(((String) "/>\n"));
 			}
