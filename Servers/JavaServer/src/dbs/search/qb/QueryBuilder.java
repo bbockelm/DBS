@@ -731,7 +731,8 @@ public class QueryBuilder {
 						if(isIn(allKws, "Files")) { queryWhere += "\tFiles.Block ";
 							queryWhere += handlePath(val, op);
 						} else { 
-							queryWhere += "\tBlock.Path ";
+							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += "\tupper(Block.Path) ";
+							else  queryWhere += "\tBlock.Path ";
 							queryWhere += handleOp(op, val, bindValues);
 						}
 					//}
