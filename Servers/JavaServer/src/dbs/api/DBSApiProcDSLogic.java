@@ -1,6 +1,6 @@
 /**
- $Revision: 1.80 $"
- $Id: DBSApiProcDSLogic.java,v 1.80 2009/02/21 01:36:39 afaq Exp $"
+ $Revision: 1.81 $"
+ $Id: DBSApiProcDSLogic.java,v 1.81 2009/02/24 21:59:08 afaq Exp $"
  *
  */
 
@@ -261,9 +261,14 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
-	 public void listDatasetParents(Connection conn, Writer out, String path) throws Exception {
+
+	public void listDatasetParents(Connection conn, Writer out, String path) throws Exception {
+		listDatasetParents(conn, out, path, false);
+	}
+
+	 public void listDatasetParents(Connection conn, Writer out, String path, Boolean isMigrate) throws Exception {
 		//if(clientVersion.compareTo("DBS_1_1_5") < 0) {
-		(new DBSApiBlockLogic(this.data)).listPathParents(conn, out, path);
+		(new DBSApiBlockLogic(this.data)).listPathParents(conn, out, path, isMigrate);
 		//return;
 		//}
 		PreparedStatement ps = null;

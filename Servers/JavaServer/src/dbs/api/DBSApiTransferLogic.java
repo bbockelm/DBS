@@ -1,6 +1,6 @@
 /**
- $Revision: 1.47 $"
- $Id: DBSApiTransferLogic.java,v 1.47 2009/02/20 21:12:17 afaq Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSApiTransferLogic.java,v 1.48 2009/02/21 00:34:12 afaq Exp $"
  *
  */
 
@@ -67,7 +67,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		//pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null);
 		pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null, all);
 		(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out, path, clientVersion);
-		pdApi.listDatasetParents(conn, out, path);
+		pdApi.listDatasetParents(conn, out, path, true);
 		//bApi.listPathParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
 		bApi.listBlocks(conn, out, path, blockName, null, "SUPER");
@@ -102,7 +102,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", "", "", "", "", blockName, null, null, attributes, clientVersion, "True", "False");
 
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", "", blockName, null, null, attributes, clientVersion, "True", "False");
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", "", blockName, null, null, attributes, clientVersion, "True", "False", true);
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, data[1], data[2], data[3], "", blockName, null, null, attributes, clientVersion, "True", "False");
 
 	}

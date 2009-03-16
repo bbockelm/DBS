@@ -1,6 +1,6 @@
 /**
- $Revision: 1.68 $"
- $Id: DBSApiBlockLogic.java,v 1.68 2009/01/30 21:29:56 afaq Exp $"
+ $Revision: 1.69 $"
+ $Id: DBSApiBlockLogic.java,v 1.69 2009/02/17 18:49:21 sekhri Exp $"
  *
  */
 
@@ -836,21 +836,46 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				dbsUser);
 	}
 
-         public void listPathParents(Connection conn, Writer out, String path) throws Exception {
+	public void listPathParents(Connection conn, Writer out, String path) throws Exception {
+		listPathParents(conn, out, path, false);
+	}
+
+         public void listPathParents(Connection conn, Writer out, String path, Boolean checkUnmerged) throws Exception {
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+		java.util.ArrayList parents = new java.util.ArrayList();
 
                 try {
 			ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
 			pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
-				 String outpath = "/"+get(rs, "PRIMARY_DATASET_NAME")
+				String outpath = "";
+				String dataset=get(rs, "PROCESSED_DATASET_NAME");
+				if ( dataset.endsWith("-unmerged") ) {
+					outpath= "/"+get(rs, "PRIMARY_DATASET_NAME")+"/"+dataset.replaceFirst("-unmerged", "")+"/"+get(rs, "DATA_TIER");
+					//Make sure this path exists, otherwise THROW an error !!!!!!
+					(new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, outpath, true);
+					//This path shouldn't be in the "Parent list, rather its children (The MERGED) should be
+					
+				} else {
+	
+				 	outpath = "/"+get(rs, "PRIMARY_DATASET_NAME")
                                                         +"/"+get(rs, "PROCESSED_DATASET_NAME")
                                                                 +"/"+get(rs, "DATA_TIER");
+				}
 
-                                out.write(((String) "<processed_dataset_parent path='" +  outpath +
+				if ( ! parents.contains(outpath) ) parents.add(outpath);
+                        }
+
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+
+		for (int j = 0; j < parents.size(); ++j) {
+                                out.write(((String) "<processed_dataset_parent path='" +  ((String)parents.get(j)) +
                                                 "' physics_group_name='" +
                                                 "' physics_group_convener='" +
                                                 "' creation_date='" +
@@ -858,12 +883,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                                 "' last_modification_date='" +
                                                 "' last_modified_by='" +
                                                 "'/>\n"));
-                         }
-
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
+		}
 	}
 
 

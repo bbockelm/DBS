@@ -1,6 +1,6 @@
 /**
- $Revision: 1.120 $"
- $Id: DBSApiFileLogic.java,v 1.120 2009/02/20 19:08:56 afaq Exp $"
+ $Revision: 1.121 $"
+ $Id: DBSApiFileLogic.java,v 1.121 2009/02/21 00:34:12 afaq Exp $"
  *
  */
 
@@ -81,7 +81,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ArrayList attributes,
 			String clientVersion,
 			String detail,
-			String otherDetail
+			String otherDetail,
+			Boolean isMigrate
 			) throws Exception {
 
 		boolean allOtherDetails = false;
@@ -174,16 +175,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				boolean otherDetailsOfParent = allOtherDetails;
 				if(DBSUtil.contains(attributes, "retrive_parent_block")) otherDetailsOfParent = true;
 				if(oldClients && detail.equals("True")) {
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent);//Children
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent, isMigrate);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
 					listFileAlgorithms(conn, out, lfn, allOtherDetails);
 					listFileLumis(conn, out, lfn, allOtherDetails);
 					//listFileRuns(conn, out, lfn);
 					listBranch(conn, out, get(rs, "FILE_BRANCH"), allOtherDetails);
 
 				}else if( detail.equals("True")) {	
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles,otherDetailsOfParent);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent);//Children
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles,otherDetailsOfParent, isMigrate);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
 					listFileAlgorithms(conn, out, lfn, allOtherDetails);
 					listFileLumis(conn, out, lfn, allOtherDetails);
 					//listFileRuns(conn, out, lfn);
@@ -191,8 +192,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 					
 				} else {	
-					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent);//Parents
-					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent);//Children
+					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent, isMigrate);//Parents
+					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
 					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn, allOtherDetails);
 					if(DBSUtil.contains(attributes, "retrive_lumi")) {
 									if (!isNull(aDSID) ) listADSFileLumis(conn, out, aDSID, lfn);
@@ -232,20 +233,23 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 */
 	 //public void listFileParents(Connection conn, Writer out, String lfn) throws Exception {
 	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild) throws Exception {
-		 listFileProvenence(conn, out, lfn, parentOrChild, true, true);
+		 listFileProvenence(conn, out, lfn, parentOrChild, true, true, false);
 		 //Note that by default the invalid files will be listed . This is a required behaviour.
 	 }
 	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild, boolean listInvalidFiles) throws Exception {
-		 listFileProvenence(conn, out, lfn, parentOrChild, listInvalidFiles, true);
+		 listFileProvenence(conn, out, lfn, parentOrChild, listInvalidFiles, true, false);
 		 //Note that by default the invalid files will be listed . This is a required behaviour.
 	 }
 
-	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild, boolean listInvalidFiles, boolean detail) throws Exception {
+	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild, boolean listInvalidFiles, boolean detail, Boolean isMigrate) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
+
+		ArrayList parents=new ArrayList();
 		try {
 			//System.out.println("Detail in fileParent is " + detail);
 			//ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
+
 			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles, detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
@@ -255,25 +259,74 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			else tag = "file_child";
 
 			while(rs.next()) {
-				out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
-					"' lfn='" + get(rs, "LFN") +
-					"' checksum='" + getNoExcep(rs, "CHECKSUM") +
-					"' adler32='" + getNoExcep(rs, "ADLER32") +
-					"' md5='" + getNoExcep(rs, "MD5") +
-					"' size='" + getNoExcep(rs, "FILESIZE") +
-					"' queryable_meta_data='" + getNoExcep(rs, "QUERYABLE_META_DATA") +
-					"' number_of_events='" + getNoExcep(rs, "NUMBER_OF_EVENTS") +
-					"' validation_status='" + getNoExcep(rs, "VALIDATION_STATUS") +
-					"' type='" + getNoExcep(rs, "TYPE") +
-					"' status='" + getNoExcep(rs, "STATUS") +
-					"' block_name='" + getNoExcep(rs, "BLOCK_NAME") +
-					"' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
-					"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
-					"' created_by='" + getNoExcep(rs, "CREATED_BY") +
-					"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
-					"' auto_cross_section='" + getNoExcep(rs, "AUTO_CROSS_SECTION") +
-					"'/>\n"));
 
+				String plfn = get(rs, "LFN");
+				if ( isMigrate == true ) {
+					if (plfn.indexOf("unmerged") != -1) {
+						if (parentOrChild==true) {
+							//find file children (MUST have children
+							ps = DBSSql.listFileProvenence(conn, getFileID(conn, plfn, true), true, false, true);
+							pushQuery(ps);
+							ResultSet tmpRS=ps.executeQuery();
+							ArrayList parentVec=new ArrayList();
+							while(tmpRS.next()) {	
+								String pfile=get(tmpRS, "LFN");
+								//System.out.println("pfile!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: "+pfile);
+								parentVec.add(pfile);
+								if (!parents.contains(pfile)) {
+									parents.add(pfile);
+									out.write(((String) "<" + tag + " id='" +  get(tmpRS, "ID") +
+                                 		       			"' lfn='" + (String)pfile +
+                                        				"' checksum='" + getNoExcep(tmpRS, "CHECKSUM") +
+                                        				"' adler32='" + getNoExcep(tmpRS, "ADLER32") +
+                                        				"' md5='" + getNoExcep(tmpRS, "MD5") +
+	                                        			"' size='" + getNoExcep(tmpRS, "FILESIZE") +
+        	                                			"' queryable_meta_data='" + getNoExcep(tmpRS, "QUERYABLE_META_DATA") +
+                	                        			"' number_of_events='" + getNoExcep(tmpRS, "NUMBER_OF_EVENTS") +
+                        	                			"' validation_status='" + getNoExcep(tmpRS, "VALIDATION_STATUS") +
+                                	        			"' type='" + getNoExcep(tmpRS, "TYPE") +
+                                        				"' status='" + getNoExcep(tmpRS, "STATUS") +
+                                        				"' block_name='" + getNoExcep(tmpRS, "BLOCK_NAME") +
+                                        				"' creation_date='" + getNoExcep(tmpRS, "CREATION_DATE") +
+                                        				"' last_modification_date='" + getNoExcep(tmpRS, "LAST_MODIFICATION_DATE") +
+                                      		  			"' created_by='" + getNoExcep(tmpRS, "CREATED_BY") +
+                                        				"' last_modified_by='" + getNoExcep(tmpRS, "LAST_MODIFIED_BY") +
+                                        				"' auto_cross_section='" + getNoExcep(tmpRS, "AUTO_CROSS_SECTION") +
+                                        				"'/>\n"));
+								}
+							}
+							if ( parentVec.size() <= 0 )
+									new DBSException("Missing data", "1005",
+                          							"Expected to find a corresponding merged file for "+plfn);
+
+							if (tmpRS != null) tmpRS.close();
+						}
+						//System.out.println("tag: "+tag);
+						continue;
+					}
+				}
+			//System.out.println("LFN: "+plfn);
+				if (!parents.contains(plfn)) {
+						parents.add(plfn);
+						out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
+						"' lfn='" + get(rs, "LFN") +
+						"' checksum='" + getNoExcep(rs, "CHECKSUM") +
+						"' adler32='" + getNoExcep(rs, "ADLER32") +
+						"' md5='" + getNoExcep(rs, "MD5") +
+						"' size='" + getNoExcep(rs, "FILESIZE") +
+						"' queryable_meta_data='" + getNoExcep(rs, "QUERYABLE_META_DATA") +
+						"' number_of_events='" + getNoExcep(rs, "NUMBER_OF_EVENTS") +
+						"' validation_status='" + getNoExcep(rs, "VALIDATION_STATUS") +
+						"' type='" + getNoExcep(rs, "TYPE") +
+						"' status='" + getNoExcep(rs, "STATUS") +
+						"' block_name='" + getNoExcep(rs, "BLOCK_NAME") +
+						"' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+						"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+						"' created_by='" + getNoExcep(rs, "CREATED_BY") +
+						"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
+						"' auto_cross_section='" + getNoExcep(rs, "AUTO_CROSS_SECTION") +
+						"'/>\n"));
+				}
 			}
 		} finally { 
 			if (rs != null) rs.close();
