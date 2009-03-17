@@ -1,6 +1,6 @@
 /**
- $Revision: 1.121 $"
- $Id: DBSApiFileLogic.java,v 1.121 2009/02/21 00:34:12 afaq Exp $"
+ $Revision: 1.122 $"
+ $Id: DBSApiFileLogic.java,v 1.122 2009/03/16 21:43:38 afaq Exp $"
  *
  */
 
@@ -220,6 +220,30 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	}
 
 
+	private void writeFileParentXML(Writer out, ResultSet rs, String tag) throws Exception {
+
+                                                out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
+                                                "' lfn='" + get(rs, "LFN") +
+                                                "' checksum='" + getNoExcep(rs, "CHECKSUM") +
+                                                "' adler32='" + getNoExcep(rs, "ADLER32") +
+                                                "' md5='" + getNoExcep(rs, "MD5") +
+                                                "' size='" + getNoExcep(rs, "FILESIZE") +
+                                                "' queryable_meta_data='" + getNoExcep(rs, "QUERYABLE_META_DATA") +
+                                                "' number_of_events='" + getNoExcep(rs, "NUMBER_OF_EVENTS") +
+                                                "' validation_status='" + getNoExcep(rs, "VALIDATION_STATUS") +
+                                                "' type='" + getNoExcep(rs, "TYPE") +
+                                                "' status='" + getNoExcep(rs, "STATUS") +
+                                                "' block_name='" + getNoExcep(rs, "BLOCK_NAME") +
+                                                "' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+                                                "' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+                                                "' created_by='" + getNoExcep(rs, "CREATED_BY") +
+                                                "' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
+                                                "' auto_cross_section='" + getNoExcep(rs, "AUTO_CROSS_SECTION") +
+                                                "'/>\n"));
+	}
+
+
+
 
 
 	/**
@@ -246,10 +270,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 
 		ArrayList parents=new ArrayList();
-		try {
-			//System.out.println("Detail in fileParent is " + detail);
-			//ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
+		
+		//Make sure same file cannot be added here
+		parents.add(lfn);
 
+		// We list parents of a file
+		// If its a normal file (i.e. the parent file) than add it to out going list of parents
+		// If its a unmerged file
+		//		:Make sure that its parent is a Merged file, add as it is, if its an unmerged file, find its child that should be an merged file
+		// THIS SUCKS BIG TIME -AA,VS : 03/17/2009
+	
+		try {
 			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles, detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
@@ -259,75 +290,51 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			else tag = "file_child";
 
 			while(rs.next()) {
-
 				String plfn = get(rs, "LFN");
-				if ( isMigrate == true ) {
-					if (plfn.indexOf("unmerged") != -1) {
-						if (parentOrChild==true) {
-							//find file children (MUST have children
-							ps = DBSSql.listFileProvenence(conn, getFileID(conn, plfn, true), true, false, true);
-							pushQuery(ps);
-							ResultSet tmpRS=ps.executeQuery();
-							ArrayList parentVec=new ArrayList();
-							while(tmpRS.next()) {	
-								String pfile=get(tmpRS, "LFN");
-								//System.out.println("pfile!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: "+pfile);
-								parentVec.add(pfile);
-								if (!parents.contains(pfile)) {
-									parents.add(pfile);
-									out.write(((String) "<" + tag + " id='" +  get(tmpRS, "ID") +
-                                 		       			"' lfn='" + (String)pfile +
-                                        				"' checksum='" + getNoExcep(tmpRS, "CHECKSUM") +
-                                        				"' adler32='" + getNoExcep(tmpRS, "ADLER32") +
-                                        				"' md5='" + getNoExcep(tmpRS, "MD5") +
-	                                        			"' size='" + getNoExcep(tmpRS, "FILESIZE") +
-        	                                			"' queryable_meta_data='" + getNoExcep(tmpRS, "QUERYABLE_META_DATA") +
-                	                        			"' number_of_events='" + getNoExcep(tmpRS, "NUMBER_OF_EVENTS") +
-                        	                			"' validation_status='" + getNoExcep(tmpRS, "VALIDATION_STATUS") +
-                                	        			"' type='" + getNoExcep(tmpRS, "TYPE") +
-                                        				"' status='" + getNoExcep(tmpRS, "STATUS") +
-                                        				"' block_name='" + getNoExcep(tmpRS, "BLOCK_NAME") +
-                                        				"' creation_date='" + getNoExcep(tmpRS, "CREATION_DATE") +
-                                        				"' last_modification_date='" + getNoExcep(tmpRS, "LAST_MODIFICATION_DATE") +
-                                      		  			"' created_by='" + getNoExcep(tmpRS, "CREATED_BY") +
-                                        				"' last_modified_by='" + getNoExcep(tmpRS, "LAST_MODIFIED_BY") +
-                                        				"' auto_cross_section='" + getNoExcep(tmpRS, "AUTO_CROSS_SECTION") +
-                                        				"'/>\n"));
-								}
-							}
-							if ( parentVec.size() <= 0 )
-									new DBSException("Missing data", "1005",
-                          							"Expected to find a corresponding merged file for "+plfn);
-
-							if (tmpRS != null) tmpRS.close();
-						}
-						//System.out.println("tag: "+tag);
-						continue;
-					}
-				}
-			//System.out.println("LFN: "+plfn);
-				if (!parents.contains(plfn)) {
+				if ( isMigrate ) {
+					if (plfn.indexOf("unmerged") != -1 && parentOrChild) {
+							ResultSet tmpRSpp= null;
+							try {
+								ps = DBSSql.listFileProvenence(conn, getFileID(conn, plfn, true), true, false, true);
+								tmpRSpp=ps.executeQuery();
+								while(tmpRSpp.next()) {
+									String ppfile=get(tmpRSpp, "LFN");
+									if (ppfile.indexOf("unmerged") != -1)	{
+										ResultSet tmpRSppc=null;
+										try {		
+											ps = DBSSql.listFileProvenence(conn, getFileID(conn, ppfile, true), false, false, true);
+											tmpRSppc=ps.executeQuery();
+											ArrayList ppcVec=new ArrayList();
+											while(tmpRSppc.next()) {
+												String	ppclfn=get(tmpRSppc, "LFN");
+												if (ppclfn.indexOf("unmerged") != -1) continue;
+												else {
+													ppcVec.add(ppclfn);
+													if (!parents.contains(ppclfn)) {
+														writeFileParentXML(out, tmpRSppc, tag);
+														parents.add(ppclfn);
+													}
+												}
+											}//while(tmpRSppc.next())
+											if ( ppcVec.size() <= 0 )
+                                                                    					new DBSException("Missing data", "1005",
+                                                                              					"Expected to find a corresponding merged file for "+ppfile);
+										} finally {if (tmpRSppc != null) tmpRSppc.close();}
+									}
+									else {if (!parents.contains(ppfile)) {parents.add(ppfile); writeFileParentXML(out, tmpRSpp, tag);} }
+								}//while(tmpRSpp.next())
+							} finally {if (tmpRSpp != null) tmpRSpp.close();}
+					} // if (parentOrChild==true) && (plfn.indexOf("unmerged") != -1)
+					else if (!parents.contains(plfn) && plfn.indexOf("unmerged") == -1 ) {
+                                        	parents.add(plfn);
+                                        	writeFileParentXML(out, rs, tag);
+                                        }
+				}//if ( isMigrate == true )
+				else if (!parents.contains(plfn)) {
 						parents.add(plfn);
-						out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
-						"' lfn='" + get(rs, "LFN") +
-						"' checksum='" + getNoExcep(rs, "CHECKSUM") +
-						"' adler32='" + getNoExcep(rs, "ADLER32") +
-						"' md5='" + getNoExcep(rs, "MD5") +
-						"' size='" + getNoExcep(rs, "FILESIZE") +
-						"' queryable_meta_data='" + getNoExcep(rs, "QUERYABLE_META_DATA") +
-						"' number_of_events='" + getNoExcep(rs, "NUMBER_OF_EVENTS") +
-						"' validation_status='" + getNoExcep(rs, "VALIDATION_STATUS") +
-						"' type='" + getNoExcep(rs, "TYPE") +
-						"' status='" + getNoExcep(rs, "STATUS") +
-						"' block_name='" + getNoExcep(rs, "BLOCK_NAME") +
-						"' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
-						"' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
-						"' created_by='" + getNoExcep(rs, "CREATED_BY") +
-						"' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
-						"' auto_cross_section='" + getNoExcep(rs, "AUTO_CROSS_SECTION") +
-						"'/>\n"));
-				}
-			}
+						writeFileParentXML(out, rs, tag);
+				}// if (!parents.contains(plfn))
+			}//While
 		} finally { 
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
