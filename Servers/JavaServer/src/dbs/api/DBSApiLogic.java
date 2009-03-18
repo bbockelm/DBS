@@ -1,6 +1,6 @@
 /**
- $Revision: 1.152 $"
- $Id: DBSApiLogic.java,v 1.152 2008/12/02 22:57:05 afaq Exp $"
+ $Revision: 1.151 $"
+ $Id: DBSApiLogic.java,v 1.151 2008/11/20 20:30:00 sekhri Exp $"
  *
  */
 
@@ -261,8 +261,8 @@ public class DBSApiLogic {
 			pushQuery(ps);
 			querier = new DBSApiExecuteQuery();
 			QueryThread queryThread = null;
-			if(!isCount) queryThread = new QueryThread(out, querier, userQuery, finalQuery, ps);
-			else queryThread = new QueryThread(out, querier, userQuery, finalCountQuery, ps);
+			if(!isCount) queryThread = new QueryThread(out, querier, finalQuery, ps);
+			else queryThread = new QueryThread(out, querier, finalCountQuery, ps);
 
 			long startTime = (new Date()).getTime();
 			final long TIMEOUT = 120000;

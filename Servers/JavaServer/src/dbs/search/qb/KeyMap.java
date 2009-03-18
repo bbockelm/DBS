@@ -7,7 +7,6 @@ public class KeyMap {
 		map.put("file.name", "Files.LogicalFileName");
 		map.put("file.size", "Files.FileSize");
 		map.put("file.id", "Files.ID");
-		map.put("file.checksum", "Files.Checksum");
 		map.put("file.numevents", "Files.NumberOfEvents");
 		map.put("file.createdate", "Files.CreationDate");
 		map.put("file.moddate", "Files.LastModificationDate");
@@ -63,11 +62,6 @@ public class KeyMap {
 		map.put("lumi.endtime", "LumiSection.LumiEndTime");
 		map.put("lumi.createdate", "LumiSection.CreationDate");
 		map.put("lumi.moddate", "LumiSection.LastModificationDate");
-		
-		map.put("branch.name", "Branch.Name");
-		map.put("branch.id", "Branch.ID");
-		map.put("branch.createdate", "Branch.CreationDate");
-		map.put("branch.moddate", "Branch.LastModificationDate");
 		
 		map.put("ads.name", "AnalysisDataset.Name");
 		map.put("ads.id", "AnalysisDataset.ID");
