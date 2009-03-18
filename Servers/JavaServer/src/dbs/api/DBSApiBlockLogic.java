@@ -1,6 +1,6 @@
 /**
- $Revision: 1.69 $"
- $Id: DBSApiBlockLogic.java,v 1.69 2009/02/17 18:49:21 sekhri Exp $"
+ $Revision: 1.70 $"
+ $Id: DBSApiBlockLogic.java,v 1.70 2009/03/16 21:43:38 afaq Exp $"
  *
  */
 
@@ -864,6 +864,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				 	outpath = "/"+get(rs, "PRIMARY_DATASET_NAME")
                                                         +"/"+get(rs, "PROCESSED_DATASET_NAME")
                                                                 +"/"+get(rs, "DATA_TIER");
+					
 				}
 
 				if ( ! parents.contains(outpath) ) parents.add(outpath);
@@ -875,7 +876,12 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 }
 
 		for (int j = 0; j < parents.size(); ++j) {
-                                out.write(((String) "<processed_dataset_parent path='" +  ((String)parents.get(j)) +
+
+
+				String writePath = (String)parents.get(j);
+				//In case of some -unmerged datasets, the same dataset becomes path of itself, to avoid that, line belwo
+				if (!writePath.equals(path))
+                                	out.write(((String) "<processed_dataset_parent path='" + writePath +
                                                 "' physics_group_name='" +
                                                 "' physics_group_convener='" +
                                                 "' creation_date='" +
