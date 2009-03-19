@@ -1,6 +1,6 @@
 /**
- $Revision: 1.122 $"
- $Id: DBSApiFileLogic.java,v 1.122 2009/03/16 21:43:38 afaq Exp $"
+ $Revision: 1.123 $"
+ $Id: DBSApiFileLogic.java,v 1.123 2009/03/17 19:39:03 afaq Exp $"
  *
  */
 
@@ -284,6 +284,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles, detail);
 			pushQuery(ps);
 			rs =  ps.executeQuery();
+
+			//Shunting the code that tests for migration codition, we seems not to need that !
+			isMigrate=false;
+
 			
 			String tag = "";
 			if(parentOrChild) tag = "file_parent";
