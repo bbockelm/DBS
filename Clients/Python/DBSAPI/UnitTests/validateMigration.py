@@ -16,10 +16,19 @@ dstURL = sys.argv[2]
 path = sys.argv[3]
 """
 #srcURL = "http://cmssrv48.fnal.gov:8383/DBS/servlet/DBSServlet"
-srcURL = "http://cmsdbsdev1.cern.ch:8880/DBSANZ/servlet/DBSServlet"
-dstURL = "http://cmssrv48.fnal.gov:8383/DBSlocal/servlet/DBSServlet"
+#srcURL = "http://cmsdbsdev1.cern.ch:8880/DBSANZ/servlet/DBSServlet"
+#dstURL = "http://cmssrv48.fnal.gov:8383/DBSlocal/servlet/DBSServlet"
 #path = "/DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
-path = "/Cosmics/Commissioning08-MW32_v1/RAW"
+#path = "/Cosmics/Commissioning08-MW32_v1/RAW"
+
+srcURL = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+#dstURL = "http://cmssrv48.fnal.gov:8383/DBSlocal/servlet/DBSServlet"
+#dstURL = "http://vocmsvm05.cern.ch:8880/INT2RG_admin/servlet/DBSServlet"
+dstURL = "http://cmssrv17.fnal.gov:8989/DBSTEST/servlet/DBSServlet"
+#path = "/DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
+#path = "/Cosmics/Commissioning08-MW32_v1/RAW"
+#path = "/RelValSinglePiPt100/CMSSW_3_0_0_pre7_IDEAL_30X_v1/GEN-SIM-RECO"
+path = "/RelValSinglePiPt100/CMSSW_3_0_0_pre7_IDEAL_30X_v1/GEN-SIM-RECO"
 
 try:
 	optManager  = DbsOptionParser()
@@ -34,7 +43,7 @@ try:
 	if len(sys.argv) > 4 :
 		block = sys.argv[4]
 
-	#api.migrateDatasetContents(srcURL, dstURL, path, block , False, True)
+	api.migrateDatasetContents(srcURL, dstURL, path, block , False, True)
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
@@ -45,8 +54,10 @@ print "Done"
 args = {}
 args['url'] = srcURL 
 args['mode']='POST'
+args['version']='DBS_2_0_5'
 srcApi = DbsApi(args)
 args['url'] = dstURL 
+args['version']='DBS_2_0_6'
 dstApi = DbsApi(args)
 pathTokens = path.split("/")
 primName = pathTokens[1]
@@ -63,8 +74,10 @@ class Test_002(unittest.TestCase):
 	def testProcessed(self):
 		print 'testProcessed'
 		procSrcList = srcApi.listProcessedDatasets(patternPrim = primName, patternProc = procName)
-		procDstList = dstApi.listProcessedDatasets(patternPrim = primName, patternProc = procName)
+		procDstList = dstApi.listProcessedDatasets(patternPrim = primName, patternProc = procName, patternDT=pathTokens[3])
 		#print processedInDBS
+		print '\n\n\nprocSrcList',procSrcList
+		print '\n\n\nprocDstList',procDstList
 		valid.assertProc(self, procSrcList[0], procDstList[0])
 		for i in range(len(procSrcList[0]['AlgoList'])):
 			valid.assertAlgo(self, procSrcList[0]['AlgoList'][i], procDstList[0]['AlgoList'][i])
