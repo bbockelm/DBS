@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.212 $"
- $Id: DBSSql.java,v 1.212 2009/02/25 20:56:21 afaq Exp $"
+ $Revision: 1.213 $"
+ $Id: DBSSql.java,v 1.213 2009/02/26 20:43:06 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1895,6 +1895,53 @@ public class DBSSql {
                 return ps;
 	}
 
+        public static PreparedStatement listFileDataset(Connection conn, String lfn) throws SQLException {
+
+                String sql = "SELECT DISTINCT \n"+
+        			"Block.Path AS PATH, \n"+
+        			"Block.Dataset AS DATASET \n"+
+				"FROM \n"+
+        			"Block \n"+
+				"JOIN Files \n"+
+                		"ON Block.ID = Files.Block \n"+
+				"WHERE \n"+
+        			"Files.LogicalFileName = ?";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, lfn);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
+        public static PreparedStatement listFileParentDatasets(Connection conn, String lfn) throws SQLException {
+
+                String sql = "SELECT DISTINCT \n"+
+		        	"dataset_parent.Path AS PATH, \n"+ 
+		        	"dataset_parent.ID AS ID \n"+ 
+				"FROM \n"+
+        			"ProcDSParent \n"+
+        			"JOIN ProcessedDataset \n"+
+                			"ON ProcessedDataset.ID = ProcDSParent.ThisDataset \n"+
+        			"JOIN Block \n"+
+                			"ON ProcessedDataset.ID = Block.Dataset \n"+
+        			"JOIN Files \n"+
+                			"ON Block.ID = Files.Block \n"+
+        			"LEFT OUTER JOIN ProcessedDataset procdataset_parent \n"+ 
+                 			"ON ProcDSParent.ItsParent  = procdataset_parent.ID \n"+ 
+        			"LEFT OUTER JOIN Block dataset_parent \n"+
+                			"ON dataset_parent.Dataset = procdataset_parent.ID \n "+
+				"WHERE \n"+
+        				"Files.LogicalFileName = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, lfn);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
+
+
 	public static PreparedStatement listFileParentBlocks(Connection conn, String fileID) throws SQLException {
                 String sql = "SELECT B.ID as ID\n"+
 				"FROM "+owner()+"Block B\n"+
@@ -2946,7 +2993,8 @@ public class DBSSql {
 		}
 			
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
-			"f.LogicalFileName as LFN \n"; 
+			"f.LogicalFileName as LFN, \n" +
+				"f.Dataset as DATASET \n" ;
 		
 			if(detail) sql += ",f.Checksum as CHECKSUM, \n" +
 				"f.FileSize as FILESIZE, \n" +

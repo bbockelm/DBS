@@ -1,6 +1,6 @@
 /**
- $Revision: 1.70 $"
- $Id: DBSApiBlockLogic.java,v 1.70 2009/03/16 21:43:38 afaq Exp $"
+ $Revision: 1.71 $"
+ $Id: DBSApiBlockLogic.java,v 1.71 2009/03/18 17:44:41 afaq Exp $"
  *
  */
 
@@ -853,31 +853,23 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                         while(rs.next()) {
 				String outpath = "";
 				String dataset=get(rs, "PROCESSED_DATASET_NAME");
-				if ( dataset.endsWith("-unmerged") ) {
+				if ( dataset.endsWith("-unmerged") && checkUnmerged) {
 					outpath= "/"+get(rs, "PRIMARY_DATASET_NAME")+"/"+dataset.replaceFirst("-unmerged", "")+"/"+get(rs, "DATA_TIER");
 					//Make sure this path exists, otherwise THROW an error !!!!!!
 					(new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, outpath, true);
 					//This path shouldn't be in the "Parent list, rather its children (The MERGED) should be
-					
 				} else {
-	
 				 	outpath = "/"+get(rs, "PRIMARY_DATASET_NAME")
                                                         +"/"+get(rs, "PROCESSED_DATASET_NAME")
                                                                 +"/"+get(rs, "DATA_TIER");
-					
 				}
-
 				if ( ! parents.contains(outpath) ) parents.add(outpath);
                         }
-
                 } finally {
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
                 }
-
 		for (int j = 0; j < parents.size(); ++j) {
-
-
 				String writePath = (String)parents.get(j);
 				//In case of some -unmerged datasets, the same dataset becomes path of itself, to avoid that, line belwo
 				if (!writePath.equals(path))
@@ -890,6 +882,40 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                                 "' last_modified_by='" +
                                                 "'/>\n"));
 		}
+	}
+
+
+         public java.util.ArrayList listPathParentIDs(Connection conn, Writer out, String path) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+                java.util.ArrayList parents = new java.util.ArrayList();
+
+                try {
+                        ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
+                        pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                String outID = "";
+                                String dataset=get(rs, "PROCESSED_DATASET_NAME");
+                                if ( dataset.endsWith("-unmerged") ) {
+                                        String outpath= "/"+get(rs, "PRIMARY_DATASET_NAME")+"/"+dataset.replaceFirst("-unmerged", "")+"/"+get(rs, "DATA_TIER");
+                                        //Make sure this path exists, otherwise THROW an error !!!!!!
+                                        outID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, outpath, true);
+                                        //This path shouldn't be in the "Parent list, rather its children (The MERGED) should be
+
+                                } else {
+					outID = get(rs, "id");
+                                }
+
+                                if ( ! parents.contains(outID) ) parents.add(outID);
+                        }
+
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+		return parents;
 	}
 
 
