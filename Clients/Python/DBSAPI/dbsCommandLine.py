@@ -806,7 +806,6 @@ class ApiDispatcher:
     self.api = None
     #See if Twril needs to be ignored
     if dbsAvailable:
-        self.progress.notwril=self.optdict['notwril']
         self.api = DbsApi(opts.__dict__)
         self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
         self.optdict['url']=self.api.url()
@@ -823,12 +822,12 @@ class ApiDispatcher:
 	else: return ""
 
   def __init__(self, args):
-   #try:
+   try:
 
     self.helper = cmd_doc_writer()
+    self.progress=showProgress()
     if dbsAvailable:
     	self.term = TerminalController()
-    	self.progress=showProgress()
 	
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
@@ -841,15 +840,7 @@ class ApiDispatcher:
 	del(opts.__dict__['alias'])
 
     self.makeApi()
-
-    """ 
-    #See if Twril needs to be ignored
-    if dbsAvailable:
-	self.progress.notwril=self.optdict['notwril']
-	self.api = DbsApi(opts.__dict__)
-	self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
-	self.optdict['url']=self.api.url()
-    """
+    self.progress.notwril=self.optdict['notwril']
 
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
         print_help(self)
@@ -919,10 +910,14 @@ class ApiDispatcher:
     #Execute the proper API call
     ##listPrimaryDatasets 
     if apiCall in ('listPrimaryDatasets', 'lsp'):
+	#self.optdict['query']="find primds"
+	#self.handleSearchCall()
 	self.handleListPrimaryDatasets()
 
     ##listProcessedDatasets
     elif apiCall in ('listProcessedDatasets', 'lsd'):
+	#self.optdict['query']="find dataset"
+	#self.handleSearchCall()
 	self.handleListProcessedDatasets()
 
     ##listAlgorithms
@@ -979,6 +974,46 @@ class ApiDispatcher:
 
     else:
        print "Unsupported API Call '%s', please use --doc or --help" %str(apiCall)
+
+    """
+
+   except DbsApiException, ex:
+      self.progress.stop()
+      self.printRED("Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
+      if ex.getErrorCode() not in (None, ""):
+          self.printRED("DBS Exception Error Code: %s "% str(ex.getErrorCode()))
+
+   except DbsException, ex:
+      self.progress.stop()
+      self.printRED( "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
+      if ex.getErrorCode() not in (None, ""):
+          self.printRED( "DBS Exception Error Code: %s " % str(ex.getErrorCode()))
+
+   except Exception, ex:
+        self.progress.stop()
+        self.printRED ("Unknow Exception in user code:")
+        traceback.print_exc(file=sys.stdout)
+
+   except KeyboardInterrupt:
+        self.progress.stop()
+        print "Interrupted."
+        sys.exit(1)
+
+    """
+
+   except Exception, ex:
+    try:
+      self.progress.stop()
+      message=ex.getErrorMessage()
+      code=ex.getErrorCode()
+    except:
+        try:
+                (code, message) = ex
+        except:
+                code = 0
+                message = ex
+    print "Error: " + str(message)
+    print "Error Code: "  + str(code)
 
   def manageHelp(self):
 
@@ -1873,7 +1908,8 @@ class ApiDispatcher:
         if self.optdict['donotrunquery']:
                print "\n--donotrunquery specified, will not execute the query"
                qu="query"
-
+	
+        self.progress.start()
 	if dbsAvailable: 
 		data=self.getApi().executeQuery(userInput, type=qu)
 		self.apiversion=self.getApi().getApiVersion()
@@ -1891,7 +1927,7 @@ class ApiDispatcher:
 		params['type']=qu
 		res = urllib2.urlopen(self.optdict.get('url'), urllib.urlencode(params, doseq=True))
 		data = res.read()
-
+        self.progress.stop()
 	# parse according to Server version, DBS_2_0_6 have different XML coming from server
         if not self.apiversion or self.apiversion >= 'DBS_2_0_6':
             return self.parseResults(data)
@@ -2261,13 +2297,14 @@ if __name__ == "__main__":
   opts = {}
   args = []
 
-  try:
+  #try:
 
-    optManager  = DbsOptionParser()
-    (opts,args) = optManager.getOpt()
+  optManager  = DbsOptionParser()
+  (opts,args) = optManager.getOpt()
 
-    ApiDispatcher(opts)
+  ApiDispatcher(opts)
 
+  """
   except Exception, ex:
     try:
       message=ex.getErrorMessage()
@@ -2281,4 +2318,4 @@ if __name__ == "__main__":
     print "Error: " + str(message)
     print "Error Code: "  + str(code) 
 
-
+  """
