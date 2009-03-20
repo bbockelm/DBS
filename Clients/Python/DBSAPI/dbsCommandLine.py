@@ -712,7 +712,7 @@ class DbsOptionParser(optparse.OptionParser):
       ## Always keep this as the last option in the list
       self.add_option("-c","--command", action="store", type="string", default="notspecified", dest="command",
                          help="Command line command, e.g. -c lsp, or --command=listPrimaryDataset, "+ \
-				"Also you can use --help with individual commands, e.g, -c lsp --help ")
+				"Also you can use --help with individual commands, e.g, -c lsp --help, you donot need to specify --command search when providing --query ")
 
       ## capture help
       self.capture_help()
@@ -830,7 +830,21 @@ class ApiDispatcher:
     	self.term = TerminalController()
 	
     self.optdict=args.__dict__
+
+    #If User specified JUST the query on command line....that should be handled as well, for some CRAZY reasons
+    # User is DOG, can specify anything....
     apiCall = self.optdict.get('command', '')
+    if apiCall in ('', 'notspecified'):
+    	qu=self.optdict.get('query', '')
+	if qu in (None, ''):
+		findQuery=""
+		for item in sys.argv:
+			if item.strip().startswith("find"):
+				apiCall="search"
+				self.optdict['query']=item.strip()
+	else: 
+		if qu.strip().startswith("find"):
+			apiCall="search"
 
     # If NO URL is provided, URL from dbs.config will be used
     if opts.__dict__['url'] == "BADURL":
