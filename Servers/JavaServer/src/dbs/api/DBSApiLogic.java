@@ -1,6 +1,6 @@
 /**
- $Revision: 1.157 $"
- $Id: DBSApiLogic.java,v 1.157 2009/02/25 20:56:20 afaq Exp $"
+ $Revision: 1.158 $"
+ $Id: DBSApiLogic.java,v 1.158 2009/02/27 17:37:26 sekhri Exp $"
  *
  */
 
@@ -305,7 +305,7 @@ public class DBSApiLogic {
 
 	public void updateRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
-		System.out.println("UPDATING RUNSSSSSSSSSSSSS noofLUMIS " + get(run, "number_of_lumi_sections", false));	
+		//System.out.println("UPDATING RUNSSSSSSSSSSSSS noofLUMIS " + get(run, "number_of_lumi_sections", false));	
 		String runNumber = get(run, "run_number", true);
 		if(!isNull(getID(conn, "Runs", "RunNumber", runNumber, true)) ) {
 			PreparedStatement ps = null;
