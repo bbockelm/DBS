@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.213 $"
- $Id: DBSSql.java,v 1.213 2009/02/26 20:43:06 sekhri Exp $"
+ $Revision: 1.214 $"
+ $Id: DBSSql.java,v 1.214 2009/03/20 03:28:51 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2409,6 +2409,8 @@ public class DBSSql {
 
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
                         "b.Name as NAME, \n" +
+			"b.Path as PATH, \n" +
+			/*
                         "concat( \n" +
                                 "concat( \n" +
                                         "concat( \n" +
@@ -2419,32 +2421,45 @@ public class DBSSql {
                                         "),'/' \n" +
                                 "), dt.Name \n" +
                         ") as PATH, \n" +
-
+			*/
                         "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
                         "b.BlockSize as BLOCKSIZE, \n" +
                         "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
                         "b.OpenForWriting as OPEN_FOR_WRITING, \n" +
                         "b.CreationDate as CREATION_DATE, \n" +
-                        "b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-                        "se.SEName as STORAGE_ELEMENT_NAME, \n";
-                        if (isGlobal.equals("LOCAL")) sql += " seb.Roles as ROLES, \n";
+                        "b.LastModificationDate as LAST_MODIFICATION_DATE, \n";
+
+                        if (isGlobal.equals("LOCAL")) {
+                                sql += "se.SEName as STORAGE_ELEMENT_NAME, \n" +
+                                        " seb.Roles as ROLES, \n";
+                        } else if (isGlobal.equals("GLOBAL")) {
+                                sql += "blkreplica.se_name as STORAGE_ELEMENT_NAME, \n";
+                        }
+
                         sql += "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM "+owner()+"Block b \n" +
+                        "FROM "+owner()+"Block b \n";
 
+			/*
                         "JOIN "+owner()+"ProcessedDataset procds \n" +
                                 "ON b.Dataset = procds.ID \n" +
                         "JOIN "+owner()+"PrimaryDataset primds \n" +
                                 "ON primds.id = procds.PrimaryDataset \n" +
                         "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
                                 "ON dt.id = procds.datatier \n" +
+			*/
 
+                        if (isGlobal.equals("LOCAL")) {
+                                sql += "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
+                                                "ON seb.BlockID = b.ID \n"+
+                                        "LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
+	                                        "ON se.ID = seb.SEID \n" ;
+                        } else if (isGlobal.equals("GLOBAL")) {
+                                 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica blkreplica \n" +
+                                                "ON blkreplica.block_name = b.Name \n";
+                        }
 
-                        "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
-                                "ON seb.BlockID = b.ID \n" +
-                        "LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
-                                "ON se.ID = seb.SEID \n" +
-                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+                        sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = b.CreatedBy \n" +
                         "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
                                 "ON perlm.id = b.LastModifiedBy \n";
@@ -2467,7 +2482,8 @@ public class DBSSql {
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName, String seName, String isGlobal) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
-
+			"b.Path as PATH, \n" +
+			/*
                         "concat( \n" +
                                 "concat( \n" +
                                         "concat( \n" +
@@ -2478,34 +2494,44 @@ public class DBSSql {
                                         "),'/' \n" +
                                 "), dt.Name \n" +
                         ") as PATH, \n" +
-
+			*/
 			"b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
 			"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"b.CreationDate as CREATION_DATE, \n" +
-			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-			"se.SEName as STORAGE_ELEMENT_NAME, \n";
-			if (isGlobal.equals("LOCAL")) sql += " seb.Roles as ROLES, \n";
+			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n";
+			if (isGlobal.equals("LOCAL")) {
+				sql += "se.SEName as STORAGE_ELEMENT_NAME, \n" +
+					" seb.Roles as ROLES, \n";
+			} else if (isGlobal.equals("GLOBAL")) {
+				sql += "blkreplica.se_name as STORAGE_ELEMENT_NAME, \n";
+			}
 			sql += "percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM "+owner()+"Block b \n" +
-
+				"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+				"FROM "+owner()+"Block b \n";
+			/*
                         "JOIN "+owner()+"ProcessedDataset procds \n" +
-				"ON b.Dataset = procds.ID \n" +
+				"ON b.Dataset = procds.ID \n";
                         "JOIN "+owner()+"PrimaryDataset primds \n" +
                                 "ON primds.id = procds.PrimaryDataset \n" +
                         "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
-                                "ON dt.id = procds.datatier \n" +
+                                "ON dt.id = procds.datatier \n" +*/
 
-			"LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
-				"ON seb.BlockID = b.ID \n" +
-			"LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
-				"ON se.ID = seb.SEID \n" +
-			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
-				"ON percb.id = b.CreatedBy \n" +
-			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-				"ON perlm.id = b.LastModifiedBy \n";
+			if (isGlobal.equals("LOCAL")) {
+				sql += "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
+						"ON seb.BlockID = b.ID \n"+
+					"LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
+						"ON se.ID = seb.SEID \n" ;
+			} else if (isGlobal.equals("GLOBAL")) {
+				 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica blkreplica \n" +
+						"ON blkreplica.block_name = b.Name \n";
+			}
+
+			sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+					"ON percb.id = b.CreatedBy \n" +
+				"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+					"ON perlm.id = b.LastModifiedBy \n";
 
 		boolean useAnd = false;
 		if(!DBSUtil.isNull(procDSID)) {
@@ -2525,7 +2551,8 @@ public class DBSSql {
 		}
 		if(!seName.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "se.SEName like ? \n";
+			if (isGlobal.equals("LOCAL")) sql += "se.SEName like ? \n";
+			if (isGlobal.equals("GLOBAL")) sql += "blkreplica.se_name like ? \n";
 		}
 		
 		sql +=	"ORDER BY b.Name DESC";
