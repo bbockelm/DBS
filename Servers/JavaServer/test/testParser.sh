@@ -285,7 +285,7 @@ executeQuery () {
 	#$CMD query="find dataset,  dataset.child where dataset = *"
 	#$CMD query="find file.parent where block = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW#7f0e573b-9200-41a7-a8af-76268ab3f970"
 	
-	$CMD query="find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby"
+	#$CMD query="find config, config.name, config.type, config.version, config.content, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby"
 	#$CMD query="find file where tier = GEN-SIM-DIGI-RECO"
 	#$CMD query="find file.tier where tier = GEN-SIM-DIGI-RECO"
 	#$CMD query="find file.tier where dataset = /DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
@@ -299,7 +299,7 @@ executeQuery () {
 	#$CMD query="find dataset where site = caf.cern.ch "
 	#$CMD query="find dataset where site = T1_CH_CERN "
 	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby,run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO"
-	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
+	$CMD query="find dataset where dataset = a*bc"
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
 	#$CMD query="find branch.name, branch.createby, branch.createdate, branch.modby, branch.moddate where file=/store/temp/backfill/data/AllRunsTest/Cosmics/RECO/OneOfEachLumi_v1/000/064/818/F0071E05-D6D9-DD11-9CD6-000423D174FE.root"
 

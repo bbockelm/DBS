@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApiParser.java,v 1.19 2007/12/17 16:06:33 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiParser.java,v 1.20 2008/03/19 17:05:31 afaq Exp $"
  *
 */
 
@@ -181,6 +181,7 @@ public class DBSApiParser {
 				psDS.put("data_tier", new Vector());
 				psDS.put("parent", new Vector());
 				psDS.put("algorithm", new Vector());
+				psDS.put("all_algorithms", new Vector());
 				psDS.put("run", new Vector());
 				psDS.put("block", new Vector());
 			} 
@@ -188,9 +189,11 @@ public class DBSApiParser {
 				((Vector)(get(psDS, "data_tier", "processed_dataset"))).add(e.attributes);
 			if (name.equals("processed_dataset_parent") ) 
 				((Vector)(get(psDS, "parent", "processed_dataset"))).add(e.attributes);
-			//if (name.equals("algorithm") ) 
-			if (name.equals("processed_dataset_algorithm") ) 
+			if (name.equals("algorithm") ) 
+			//if (name.equals("processed_dataset_algorithm") ) 
 				((Vector)(get(psDS, "algorithm", "processed_dataset"))).add(e.attributes);
+			if (name.equals("processed_dataset_algorithm") ) 
+				((Vector)(get(psDS, "all_algorithms", "processed_dataset"))).add(e.attributes);
 			if (name.equals("run") ) 
 				((Vector)(get(psDS, "run", "processed_dataset"))).add(e.attributes);
 			if (name.equals("block") ) {

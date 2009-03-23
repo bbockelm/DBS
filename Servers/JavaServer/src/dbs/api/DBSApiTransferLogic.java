@@ -1,6 +1,6 @@
 /**
- $Revision: 1.48 $"
- $Id: DBSApiTransferLogic.java,v 1.48 2009/02/21 00:34:12 afaq Exp $"
+ $Revision: 1.49 $"
+ $Id: DBSApiTransferLogic.java,v 1.49 2009/03/16 21:43:38 afaq Exp $"
  *
  */
 
@@ -133,7 +133,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 
 		(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary_dataset"), dbsUser);
 		Hashtable pdTable = DBSUtil.getTable(table, "processed_dataset");
-		Vector algoVector = DBSUtil.getVector(pdTable, "algorithm");
+		Vector algoVector = DBSUtil.getVector(pdTable, "all_algorithms");
 		for (int j = 0; j < algoVector.size(); ++j) 
 			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser, clientVersion);
 
