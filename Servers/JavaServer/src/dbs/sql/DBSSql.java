@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.214 $"
- $Id: DBSSql.java,v 1.214 2009/03/20 03:28:51 afaq Exp $"
+ $Revision: 1.215 $"
+ $Id: DBSSql.java,v 1.215 2009/03/23 18:38:31 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -859,14 +859,15 @@ public class DBSSql {
                 if (!DBSUtil.isNull(flagID)) sql +=  "AND SubSystem = ? \n";
                 if (!DBSUtil.isNull(value))  sql +=  "AND DQValue = ? \n";
                 if (!DBSUtil.isNull(lumiID)) sql +=  "AND Lumi = ? \n";
+                if (!DBSUtil.isNull(procDSID)) sql +=  "AND Dataset = ? \n";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, runID);
                 if (!DBSUtil.isNull(flagID)) ps.setString(columnIndx++, flagID);
                 if (!DBSUtil.isNull(value))  ps.setString(columnIndx++, value);
-
                 if (!DBSUtil.isNull(lumiID)) ps.setString(columnIndx++, lumiID);
+                if (!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
 
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
@@ -884,14 +885,15 @@ public class DBSSql {
                 if (!DBSUtil.isNull(flagID)) sql +=  "AND SubSystem = ? \n";
                 if (!DBSUtil.isNull(value))  sql +=  "AND IntDQValue = ? \n";
                 if (!DBSUtil.isNull(lumiID)) sql +=  "AND Lumi = ? \n";
+		if (!DBSUtil.isNull(procDSID)) sql +=  "AND Dataset = ? \n";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, runID);
                 if (!DBSUtil.isNull(flagID)) ps.setString(columnIndx++, flagID);
                 if (!DBSUtil.isNull(value))  ps.setString(columnIndx++, value);
-
                 if (!DBSUtil.isNull(lumiID)) ps.setString(columnIndx++, lumiID);
+		if (!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
 
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
