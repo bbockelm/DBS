@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiDQLogic.java,v 1.23 2008/11/13 17:09:45 afaq Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSApiDQLogic.java,v 1.24 2009/03/24 16:41:10 afaq Exp $"
  *
  */
 
@@ -49,29 +49,49 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		//Whatever is the value of this FLAG doesn't matter !!
 		String rowID = getDQIntFlagID(conn, procDSID, runID, lumiID, flag, "", true);
 
-		//THERE is NO History table YET for the INT type of FLAGS (this is next !) 
-		//AA-06/12/2008
-
-                //INSERT into HISTORY table FIRST
-                PreparedStatement ps = null;
-                try {
-                        ps = DBSSql.insertDQIntFlagHistory(conn, rowID);
-                        pushQuery(ps);
-                        ps.execute();
-                } finally {
-                        if (ps != null) ps.close();
+                if (isNull(rowID)) {
+                        //lets try to get parent's flag ID if one exists
+                        //returns parents and also ID of passed dataset
+                        java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDsFromID(conn, procDSID);
+                        for (Object pprocDSID : dsParents) {
+                                //Check to see if a parent DQ flag exists
+                                String prowID =  getDQIntFlagID(conn, (String)pprocDSID, runID, lumiID, flag, "", false);
+                                if (!isNull(prowID)) {
+                                        //Clone it and insert it for this dataset now
+                                        insertDQIntFlag(conn, out, (String)procDSID, runID, lumiID, flag, value,
+                                                                                        cbUserID, creationDate, lmbUserID);
+                                        //get its ID, and further code below will take care of adding the history
+                                        rowID = getDQIntFlagID(conn, procDSID, runID, lumiID, flag, "", true);
+                                        break;
+                                }
+                        }
                 }
 
-                ps = null;
-                try {
-                        ps = DBSSql.updateDQIntFlag(conn, rowID,
+                else {
+
+                	//INSERT into HISTORY table FIRST
+                	PreparedStatement ps = null;
+                	try {
+                        	ps = DBSSql.insertDQIntFlagHistory(conn, rowID);
+	                        pushQuery(ps);
+        	                ps.execute();
+                	} finally {
+	                        if (ps != null) ps.close();
+        	        }
+
+                	ps = null;
+	                try {
+        	                ps = DBSSql.updateDQIntFlag(conn, rowID,
                                                         value,
                                                         lmbUserID);
-                        pushQuery(ps);
-                        ps.executeUpdate();
-                } finally {
-                        if (ps != null) ps.close();
-                }
+                	        pushQuery(ps);
+                        	ps.executeUpdate();
+	                } finally {
+        	                if (ps != null) ps.close();
+                	}
+		}
+                //If rowID is still NULL, the flag is NOT found and hence exception
+                if (isNull(rowID)) throw new DBSException("Unavailable data", "7002", "No DQ entry found" );
 
         }
 
