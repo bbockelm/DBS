@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApiDQLogic.java,v 1.22 2008/09/23 17:54:29 afaq Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApiDQLogic.java,v 1.23 2008/11/13 17:09:45 afaq Exp $"
  *
  */
 
@@ -84,30 +84,53 @@ public class DBSApiDQLogic extends DBSApiLogic {
         {
 		//Find the flag
 		//NO Need to Pass the value, this is the UPDATED Value actually
-                String rowID =  getDQFlagID(conn, procDSID, runID, lumiID, flag, "", true);
+                String rowID =  getDQFlagID(conn, procDSID, runID, lumiID, flag, "", false);
 
-        	//INSERT into HISTORY table FIRST
-                PreparedStatement ps = null;
-                try {
-                        ps = DBSSql.insertDQFlagHistory(conn, rowID);
-			pushQuery(ps);
-                        ps.execute();
-                } finally {
-                        if (ps != null) ps.close();
-                }
+		if (isNull(rowID)) {
+			//lets try to get parent's flag ID if one exists
+                        //returns parents and also ID of passed dataset
+                        java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDsFromID(conn, procDSID);
+                        for (Object pprocDSID : dsParents) {
+				//Check to see if a parent DQ flag exists
+				String prowID =  getDQFlagID(conn, (String)pprocDSID, runID, lumiID, flag, "", false);
+				if (!isNull(prowID)) {
+					//Clone it and insert it for this dataset now
+					insertDQFlag(conn, out, (String)procDSID, runID, lumiID, flag, value, 
+											cbUserID, creationDate, lmbUserID);
+					//get its ID, and further code below will take care of adding the history
+					rowID = getDQFlagID(conn, procDSID, runID, lumiID, flag, "", true);
+					break;
+				}
+			}
+		}
 
+		else {
 
-		//Update its value
-        	ps = null;
-                try {
-                        ps = DBSSql.updateDQFlag(conn, rowID,
+        		//INSERT into HISTORY table FIRST
+                	PreparedStatement ps = null;
+                	try {
+                        	ps = DBSSql.insertDQFlagHistory(conn, rowID);
+				pushQuery(ps);
+                	        ps.execute();
+	                } finally {
+        	                if (ps != null) ps.close();
+                	}
+
+	
+			//Update its value
+        		ps = null;
+	                try {
+        	                ps = DBSSql.updateDQFlag(conn, rowID,
                                                         getID(conn, "QualityValues", "Value", value, true),
                                                         lmbUserID);
-			pushQuery(ps);
-                        ps.executeUpdate();
-                } finally {
-                        if (ps != null) ps.close();
-                }
+				pushQuery(ps);
+                        	ps.executeUpdate();
+	                } finally {
+        	                if (ps != null) ps.close();
+                	}
+		}
+		//If rowID is still NULL, the flag is NOT found and hence exception
+		if (isNull(rowID)) throw new DBSException("Unavailable data", "7002", "No DQ entry found" );
 
         }
 
@@ -756,8 +779,15 @@ public class DBSApiDQLogic extends DBSApiLogic {
 			}			
 
 			//Get the sub-system Vector
+	
 			Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
 			insertDQFlags(conn, out, procDSID, runID, lumiID, subSys, dbsUser);
+
+	                //returns parents and also ID of passed dataset
+        	        //java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDs(conn, path);
+			//Insert DQ for each of the parent and child datasets
+			//for (Object pprocDSID : dsParents)
+			//	insertDQFlags(conn, out, (String)pprocDSID, runID, lumiID, subSys, dbsUser);
 		}
 
 	}
@@ -791,6 +821,10 @@ public class DBSApiDQLogic extends DBSApiLogic {
 	
 		//Add values in batch for each row
 		java.util.ArrayList values = new java.util.ArrayList();
+
+
+
+
 
 		//Loop over each item
 		for (int j = 0; j < subSys.size() ; ++j) {
