@@ -4086,16 +4086,17 @@ All LFNs in a block
         try:
             return self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
         except:
-            if  self.verbose:
-                traceback.print_exc()
-            self.writeLog(getExcept())
-            time.sleep(2)
-            try:
-                return self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
-            except:
-                traceback.print_exc()
-                self.writeLog(getExcept())
-                raise
+            return self.dbsmgr.exe(dbsInst, userInput, fromRow, fromRow+limit)
+#            if  self.verbose:
+#                traceback.print_exc()
+#            self.writeLog(getExcept())
+#            time.sleep(2)
+#            try:
+#                return self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
+#            except:
+#                traceback.print_exc()
+#                self.writeLog(getExcept())
+#                raise
 
     def _summaryQuery(self, dbsInst, userInput, fromRow, limit, sortKey="", sortOrder=""):
         if  (not limit and not fromRow) or limit==-1:
