@@ -11,6 +11,10 @@ public class KeyMap {
 		map.put("file.numevents", "Files.NumberOfEvents");
 		map.put("file.createdate", "Files.CreationDate");
 		map.put("file.moddate", "Files.LastModificationDate");
+		
+		map.put("tier.moddate", "DataTier.LastModificationDate");
+		map.put("tier.createdate", "DataTier.CreationDate");
+		map.put("tier.name", "DataTier.Name");
 
 		map.put("procds.name", "ProcessedDataset.Name");
 		map.put("procds.id", "ProcessedDataset.ID");

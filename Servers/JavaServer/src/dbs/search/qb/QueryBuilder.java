@@ -268,7 +268,7 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 
-					if(Util.isSame(token, "release") || Util.isSame(token, "tier")) {
+					/*if(Util.isSame(token, "release") || Util.isSame(token, "tier") ) {
 						checkMax(iter);
 						String realName = u.getMappedRealName(token);//AppVersion
 						allKws = addUniqueInList(allKws, realName);
@@ -285,7 +285,7 @@ public class QueryBuilder {
 						}
 
 						addQuery = false;
-					}
+					}*/
 
 					if(Util.isSame(token2, "count")) {
 						checkMax(iter);
