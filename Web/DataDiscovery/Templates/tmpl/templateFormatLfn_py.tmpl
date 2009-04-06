@@ -7,7 +7,7 @@ source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = se
 #set $counter=0
 readFiles.extend( [
 #for $lfn in $lfnList
-#if $lfn!=$lfnList[-1] and $counter < 256
+#if $lfn!=$lfnList[-1] and $counter < 254
        '$lfn',
 #else
        '$lfn' ] );
@@ -28,7 +28,7 @@ secFiles.extend( [
 #end if
 #set $counter=0
 #for $pfn in $pfnList
-#if $pfn!=$pfnList[-1] and $counter < 256
+#if $pfn!=$pfnList[-1] and $counter < 254
        '$pfn',
 #else
        '$pfn'] );
