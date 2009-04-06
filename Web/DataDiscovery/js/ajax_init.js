@@ -930,7 +930,10 @@ function ajaxUpdatePrimaryDatasets(_dbs,_cFunc) {
   var group=$('kw_group').value;
   var dsType=$('kw_primType').value;
 //  showLoadingMessage('kw_prim_holder');
+  var id = $('kw_prim');
+  if (id) {
   $('kw_prim').disabled="disabled";
+  }
   if(_cFunc) {
      ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel,'dsType='+dsType,'changeFunction='+_cFunc);
      return;
