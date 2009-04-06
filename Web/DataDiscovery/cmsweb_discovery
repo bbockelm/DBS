@@ -20,6 +20,14 @@ base=cmsweb_discovery
 cmd="cmsWeb --base-url=${url} --port=${port} --default-page /DDServer"
 
 case "$1" in
+ restart_stdout)
+	echo $"Checking for existing DDServer..."
+        if [ ! -z ${pid} ]; then
+          kill -9 ${pid}
+        fi
+	echo $"Restart DDServer..."
+        ${cmd}
+	;;
  restart)
 	echo $"Checking for existing cmsWeb app running data discovery..."
         if [ ! -z ${pid} ]; then
@@ -54,7 +62,7 @@ case "$1" in
         fi
  	;;
  *)
- 	echo $"Usage: $0 {start|stop|status|restart}"
+ 	echo $"Usage: $0 {start|stop|status|restart|restart_stdout}"
 	exit 1
 	;;
 esac
