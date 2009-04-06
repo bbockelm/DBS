@@ -57,19 +57,19 @@ with run $run
 $name<br />
 <table>
 <tr>
-<td><a href="/getLFN_Branches?dbsInst=$dbsInst&lfn=$name&amp;userMode=$userMode">ROOT branches</a></td>
+<td><a href="${host}/getLFN_Branches?dbsInst=$dbsInst&lfn=$name&amp;userMode=$userMode">ROOT branches</a></td>
 <td>|</td>
-<td><a href="/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name&amp;userMode=$userMode">Lumis</a></td>
+<td><a href="${host}/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name&amp;userMode=$userMode">Lumis</a></td>
 #*
 <td>|</td>
 <td><a href="javascript:ajaxGetLumis('$dbsInst','$name')">Lumis2</a></td>
 <td>|</td>
-<td><a href="/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
+<td><a href="${host}/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
 ###<td><a href="javascript:ajaxGetAlgos('$dbsInst','$name')">Algorithms</a></td>
 <td>|</td>
-<td><a href="/getLFN_Tiers?dbsInst=$dbsInst&lfn=$name">Tiers</a></td>
+<td><a href="${host}/getLFN_Tiers?dbsInst=$dbsInst&lfn=$name">Tiers</a></td>
 <td>|</td>
-<td><a href="/getLFN_Parents?dbsInst=$dbsInst&lfn=$name">Parents</a></td>
+<td><a href="${host}/getLFN_Parents?dbsInst=$dbsInst&lfn=$name">Parents</a></td>
 *#
 </tr>
 </table>

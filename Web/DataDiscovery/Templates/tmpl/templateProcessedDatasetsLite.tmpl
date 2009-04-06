@@ -53,40 +53,40 @@ ${_site},
 <span class="box_red"><b>no sites</b></span>
 #end if
 LFNs:
-<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
-<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=py&amp;userMode=$userMode&amp;run=$run">py</a>,
-<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
+<a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
+<a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=py&amp;userMode=$userMode&amp;run=$run">py</a>,
+<a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
 #if $run and not ($run=="*" or $str($run).lower()=="all" or $str($run).lower()=="any")
 <br />
 All data provided for full dataset, while LFNs links given wrt run=$run
 #end if
 , &#8747;<em>L</em>=<span id="intLumi$idPath"></span>
 <br/>
-<a href="/aSearch?dbsInst=$dbsInst&amp;userInput=find+release+where+dataset=$path&amp;userMode=$userMode&amp;caseSensitive=on">
+<a href="${host}/aSearch?dbsInst=$dbsInst&amp;userInput=find+release+where+dataset=$path&amp;userMode=$userMode&amp;caseSensitive=on">
 Release info
 </a>
 ,
-<a href="/getBlocksInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">
+<a href="${host}/getBlocksInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">
 Block info
 </a>
 ,
-<a href="/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">
+<a href="${host}/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">
 Run info
 </a>
 ,
-<a href="/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">
+<a href="${host}/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">
 Conf. files
 </a>
 ,
-<a href="/getDatasetProvenance?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
+<a href="${host}/getDatasetProvenance?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
 Parents
 </a>
 ,
-<a href="/getDatasetChildren?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
+<a href="${host}/getDatasetChildren?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
 Children
 </a>
 ,
-<a href="/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path&amp;userMode=$userMode">
+<a href="${host}/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path&amp;userMode=$userMode">
 Description
 </a>
 ,
@@ -94,15 +94,15 @@ Description
 PhEDEx
 </a>
 ,
-<a href="/createAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path">
+<a href="${host}/createAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path">
 Create ADS
 </a>
 ,
-<a href="/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
+<a href="${host}/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">
 ADS
 </a>
 ,
-<a href="/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
+<a href="${host}/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
 crab.cfg
 </a>
 <p>
@@ -170,8 +170,8 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center">
-     <a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>
-     <a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
+     <a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>
+     <a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
      </td>
   </tr>
 #end for

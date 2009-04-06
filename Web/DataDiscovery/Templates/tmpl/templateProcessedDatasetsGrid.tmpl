@@ -75,14 +75,14 @@ $cBy
 $size
 </td>
 <td>
-<a href="/getBlocksInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">
+<a href="${host}/getBlocksInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">
 $nblks
 </a>
 </td>
 <td>
-<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
-<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=py&amp;userMode=$userMode&amp;run=$run">py</a>,
-<a href="/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">txt</a>,
+<a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
+<a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=py&amp;userMode=$userMode&amp;run=$run">py</a>,
+<a href="${host}/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">txt</a>,
 (${nFiles})
 </td>
 <td>
@@ -95,7 +95,7 @@ $nEvts
 </span>
 </td>
 <td>
-<a href="/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
+<a href="${host}/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">
 cfg
 </a>
 </td>
@@ -107,15 +107,15 @@ cfg
 <td>
 <select id="moreInfo_$idPath" onchange="javascript:LoadSelected('moreInfo_$idPath');" style="width:100px">
 <option value="">More info</option>
-<option value="/aSearch?dbsInst=$dbsInst&amp;userInput=find+release+where+dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode&amp;caseSensitive=on">Release info</option>
-<option value="/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">Run info</option>
-<option value="/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">Conf files</option>
-<option value="/getDatasetProvenance?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Get parents</option>
-<option value="/getDatasetChildren?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Get children</option>
-<option value="/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path&amp;userMode=$userMode">Data Description</option>
+<option value="${host}/aSearch?dbsInst=$dbsInst&amp;userInput=find+release+where+dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode&amp;caseSensitive=on">Release info</option>
+<option value="${host}/getRuns?dbsInst=$dbsInst&amp;dataset=$path&amp;_idx=0&amp;ajax=0&amp;userMode=$userMode">Run info</option>
+<option value="${host}/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;procPath=$path&amp;ajax=0&amp;userMode=$userMode">Conf files</option>
+<option value="${host}/getDatasetProvenance?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Get parents</option>
+<option value="${host}/getDatasetChildren?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Get children</option>
+<option value="${host}/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path&amp;userMode=$userMode">Data Description</option>
 <option value="$PhedexURL?type=xfer&amp;dbschoice=known&amp;dbs=$dbsInstURL&amp;data=$path&amp;priority=1">Subscribe to PhEDEx</option>
-<option value="/createAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path">Create Analysis dataset</option>
-<option value="/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Find Analysis Dataset</option>
+<option value="${host}/createAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path">Create Analysis dataset</option>
+<option value="${host}/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path&amp;ajax=0&amp;userMode=$userMode">Find Analysis Dataset</option>
 </select>
 </td>
 </tr>

@@ -202,7 +202,7 @@ $eRun
 #if _run_==$run
 <hr class="dbs"/>
 #end if
-<a href="/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off&amp;group=Any&amp;site=Any&amp;tier=Any&amp;app=Any&amp;primType=Any&amp;primD=Any">
+<a href="${host}/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off&amp;group=Any&amp;site=Any&amp;tier=Any&amp;app=Any&amp;primType=Any&amp;primD=Any">
 #set pathName="/"+$procDS[1:].replace("/","<br />/")
 $pathName
 </a>
@@ -274,15 +274,15 @@ $mDate
 #if _run_==$run
 <hr class="dbs"/>
 #end if
-<a href="/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;what=cff">cff</a>
+<a href="${host}/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;what=cff">cff</a>
 <br/>
-<a href="/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">plain</a>
+<a href="${host}/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">plain</a>
 <br/>
-<a href="/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
+<a href="${host}/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
 <br/>
-<a href="/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">cff wParents</a>
+<a href="${host}/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">cff wParents</a>
 <br/>
-<a href="/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;format=python">py wParents</a>
+<a href="${host}/getLFNsWithParents?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run&amp;format=python">py wParents</a>
 </td>
 #end if ### end of admin check
 #### Here is Phedex transfer status call for each site

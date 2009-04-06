@@ -56,9 +56,9 @@ contains $len($blkList) block(s)
 <td align="right">$nFiles</td>
 <td align="right">$colorSizeHTMLFormat($blkSize)</td>
 <td align="center">
-<a href="/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode">cff</a>, 
-<a href="/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode">txt</a>,
-<a href="/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode">details</a>
+<a href="${host}/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode">cff</a>, 
+<a href="${host}/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode">txt</a>,
+<a href="${host}/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode">details</a>
 </td>
 #if int($status)==1
 <td align="center" style="background-color:AliceBlue;">OPEN</td>
