@@ -1,6 +1,6 @@
 /**
- $Revision: 1.158 $"
- $Id: DBSApiLogic.java,v 1.158 2009/02/27 17:37:26 sekhri Exp $"
+ $Revision: 1.159 $"
+ $Id: DBSApiLogic.java,v 1.159 2009/03/23 16:49:03 afaq Exp $"
  *
  */
 
@@ -169,6 +169,28 @@ public class DBSApiLogic {
 		ArrayList toReturn = new ArrayList();
 		while(valentinQuery.indexOf("?") != -1) {
 			String pName = ":p" + String.valueOf(pCount);
+                        String pTag = "p" + String.valueOf(pCount);
+			if(pCount >= sizeOfBindValues) val = String.valueOf(bindIntValues.get(pCount - sizeOfBindValues).intValue());
+			else val =  bindValues.get(pCount);
+                        xmlBindValues += "<" + pTag + ">" + val + "</" + pTag + ">\n";
+			//xmlBindValues += "<count>" + val + "</count>\n";
+			valentinQuery = valentinQuery.replaceFirst("[?]", pName);
+			++pCount;
+		}
+		toReturn.add(valentinQuery);
+		toReturn.add(xmlBindValues);
+		return toReturn;
+	}
+
+	/*private ArrayList makeValentinQuery(String query, List<Integer> bindIntValues, List<String> bindValues) {
+		int pCount = 0;
+		String val = "";
+		String xmlBindValues = "";
+		String valentinQuery = query;
+		int sizeOfBindValues = bindValues.size();
+		ArrayList toReturn = new ArrayList();
+		while(valentinQuery.indexOf("?") != -1) {
+			String pName = ":p" + String.valueOf(pCount);
 //                        String pTag = "p" + String.valueOf(pCount);
 			if(pCount >= sizeOfBindValues) val = String.valueOf(bindIntValues.get(pCount - sizeOfBindValues).intValue());
 			else val =  bindValues.get(pCount);
@@ -180,7 +202,7 @@ public class DBSApiLogic {
 		toReturn.add(valentinQuery);
 		toReturn.add(xmlBindValues);
 		return toReturn;
-	}
+	}*/
 	
 	public void countQuery(Connection conn, Writer out, String userQuery, boolean upper, String clientVersion) throws Exception {
 		executeQuery(conn, out, userQuery, "", "", "", upper, true, clientVersion);
