@@ -69,9 +69,9 @@ drop VIEW SiteSummary
 CREATE VIEW SiteSummary (SEName, CreationDate, CreatedBy, NumberOfProcDS) 
 AS SELECT tse.SEName, tse.CreationDate, tp.DistinguishedName, count(DISTINCT tblk.Path) 
 FROM StorageElement tse 
-JOIN SEBlock tseb ON tseb.SEID=tse.ID 
+LEFT OUTER JOIN SEBlock tseb ON tseb.SEID=tse.ID 
 JOIN Block tblk ON tblk.ID=tseb.BlockID 
-JOIN person tp ON tse.CreatedBy = tp.ID 
+LEFT OUTER JOIN person tp ON tse.CreatedBy = tp.ID 
 GROUP BY tse.SEName, tse.CreationDate, tp.DistinguishedName
 /
 
