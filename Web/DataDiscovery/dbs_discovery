@@ -40,7 +40,7 @@ pid=`ps auxw | grep DDServer | grep -v grep | awk '{print $2}'`
 base=dbs_discovery
 
 case "$1" in
- restart_stdout)
+ stdout)
 	echo $"Checking for existing DDServer..."
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
@@ -48,7 +48,7 @@ case "$1" in
 	echo $"Restart DDServer..."
         ${DDHOME}/services/dd/DDServer.py --verbose=0 --port=$port
 	;;
- restart_debug)
+ debug)
 	echo $"Checking for existing DDServer..."
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
@@ -56,7 +56,7 @@ case "$1" in
 	echo $"Restart DDServer..."
         ${DDHOME}/services/dd/DDServer.py --verbose=1 --port=$port
 	;;
- restart_debugfull)
+ debugfull)
 	echo $"Checking for existing DDServer..."
         if [ ! -z ${pid} ]; then
           kill -9 ${pid}
@@ -92,7 +92,7 @@ case "$1" in
         fi
  	;;
  *)
- 	echo $"Usage: $0 {start|stop|status|restart|restart_stdout,debug,debugfull}"
+ 	echo $"Usage: $0 {start|stop|status|restart|stdout,debug,debugfull}"
         echo "restart_stdout will start DD in non-daemon mode, all output will go"
         echo "               to stdout, restart_debug is similar, but with debug"
         echo "               output turned on, restart_debugfull will provide"
