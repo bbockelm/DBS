@@ -3,6 +3,7 @@
 # Author:  Valentin Kuznetsov, 2008
 
 import os
+import sys
 import socket
 import urllib
 import urllib2
@@ -20,8 +21,9 @@ def parseDBSerror(data):
     try:
         elem  = ET.fromstring(data)
     except:
-        print data
+        print "\n### parseDBSerror", data
         traceback.print_exc()
+	sys.__stdout__.flush()
         data = data.replace("<", "&lt;").replace(">", "&gt;")
         msg = "Fail to parse DBS XML, please see server log\n" + data
         raise Exception(msg)
@@ -29,13 +31,16 @@ def parseDBSerror(data):
     msg = ""
     for i in elem:
         if  i.tag == "exception":
-            code = i.attrib['code']
-            msg  = i.attrib['message']
-            det  = i.attrib['detail']
-            det  = det.replace('QUERY','\nQUERY')
-            det  = det.replace('POSITION','\nPOSITION')
-            msg += 'DBS returns:\ncode   = %s,\nmsg    = %s,\ndetail = %s' % \
-                (code, msg, det)
+	    if  i.attrib.has_key('code') and \
+		i.attrib.has_key('message') and \
+		i.attrib.has_key('detail'):
+		code = i.attrib['code']
+		msg  = i.attrib['message']
+		det  = i.attrib['detail']
+		det  = det.replace('QUERY','\nQUERY')
+		det  = det.replace('POSITION','\nPOSITION')
+		msg += 'DBS returns:\ncode   = %s,\nmsg    = %s,\ndetail = %s' % \
+		    (code, msg, det)
     return msg
 
 class DbsApi2(object):
