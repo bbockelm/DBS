@@ -953,29 +953,29 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _contact.exposed=True
 
-    @is_authorized (Role("Global Admin"), Group("DBS"), 
-		    onFail=RedirectToLocalPage ("/redirectPage"))
-    def _dbsExpert(self,dbsInst='',userMode="dbsExpert"):
-        if  not dbsInst:
-            dbsInst = self.dbsglobal
-        try:
-            page = self.genTopHTML(intro=False,userMode=userMode)
-            page+= self.whereMsg('DBS expert page',userMode)
-            dbsTables = self.dbManager.getTableNames(dbsInst)
-            dbsTables.sort()
-            nameSpace = {
-                         'dbsList'      : self.dbsList,
-                         'dbsTables'    : dbsTables
-                        }
-            t = templateMenuDbsExpert(searchList=[nameSpace]).respond()
-            page+= str(t)
-            page+= self.genBottomHTML()
-            return page
-        except:
-            t=self.errorReport(dbsInst, "Fail in dbsExpert init function")
-            pass
-            return str(t)
-    _dbsExpert.exposed=True
+#    @is_authorized (Role("Global Admin"), Group("DBS"), 
+#		    onFail=RedirectToLocalPage ("/redirectPage"))
+#    def _dbsExpert(self,dbsInst='',userMode="dbsExpert"):
+#        if  not dbsInst:
+#            dbsInst = self.dbsglobal
+#        try:
+#            page = self.genTopHTML(intro=False,userMode=userMode)
+#            page+= self.whereMsg('DBS expert page',userMode)
+#            dbsTables = self.dbManager.getTableNames(dbsInst)
+#            dbsTables.sort()
+#            nameSpace = {
+#                         'dbsList'      : self.dbsList,
+#                         'dbsTables'    : dbsTables
+#                        }
+#            t = templateMenuDbsExpert(searchList=[nameSpace]).respond()
+#            page+= str(t)
+#            page+= self.genBottomHTML()
+#            return page
+#        except:
+#            t=self.errorReport(dbsInst, "Fail in dbsExpert init function")
+#            pass
+#            return str(t)
+#    _dbsExpert.exposed=True
 
     def _runs(self,dbsInst='',userMode="user"):
         if  not dbsInst:
@@ -3564,7 +3564,6 @@ All LFNs in a block
         output   = getArg(kwargs,'output','')
         parents  = getArg(kwargs,'parents','')
         cff      = int(getArg(kwargs,'cff',0))
-        backEnd  = self.dbManager.dbType[dbsInst]
         method   = getArg(kwargs,'method',self.iface)
         page     = ""
         if  xml:
@@ -4019,9 +4018,9 @@ All LFNs in a block
             page+=self.whereMsg('Adv. search :: Results',userMode)
         else:
             if pagerStep==-1:
-               page ="\nFound %s %ss\n"%(nResults,_out)
+               page ="\nFound %s results\n" % nResults
             else:
-               page ="\nFound %s %s, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_out,_idx*pagerStep,_idx*pagerStep+pagerStep)
+               page ="\nFound %s results, showing results from %s-%s, to see all results use --limit=-1\n"%(nResults,_idx*pagerStep,_idx*pagerStep+pagerStep)
 
         # create a link for show all.
         link=""

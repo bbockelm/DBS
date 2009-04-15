@@ -241,6 +241,7 @@ class DBSManager(object):
                 self.dbsapi[dbsalias]=dbsapi
                 return dbsapi
         except:
+	    traceback.print_exc()
             raise Exception("Fail to construct DBS API")
 
     def queryxml(self, dbsalias, userinput, q_start = "", q_end = ""):

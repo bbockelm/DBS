@@ -1,21 +1,15 @@
 #!/bin/bash
 
 if [ $# -eq 0 ]; then
-   echo -e "Usage: testNClients.sh N <prod|test>, where N is a number of clients"
+   echo -e "Usage: testNClients.sh N <DD url>, where N is a number of clients"
+   exit
+fi
+if [ $# -ne 2 ]; then
+   echo -e "Usage: testNClients.sh N <DD url>, where N is a number of clients"
    exit
 fi
 nClients=$1
-if [ "${2}" == "testbed" ]; then
-   if [ -z ${3} ]; then
-      echo -e "If testbed is used you MUST provide its URL"
-      exit
-   fi
-   host=${3}
-elif [ "${2}" == "prod" ]; then
-   host=https://cmsweb.cern.ch/dbs_discovery
-else
-   host=https://cmsweb.cern.ch/dbs_discovery_$2
-fi
+host=$2
 echo -e "Using host: $host"
 
 COUNTER=0
