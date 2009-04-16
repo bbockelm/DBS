@@ -33,7 +33,7 @@ about Data Quality and Luminosity.
 \end{abstract}
 
 \section{Introduction}
-Introducetion text
+Introduction text
 
 \section{ITEMS TO COVER}
 \begin{enumerate}
@@ -45,8 +45,29 @@ Introducetion text
 \end{enumerate}
 
 
-\section{DBSql Architecture}
-DBS QL architecture is shown on Pic. \ref{DBS_QL}.
+\section{DBS QL architecture}
+DBS QL semantics was kept very close to SQL one. It natuarally
+maps into user mental model and was easily adopted by CMS
+community. We used the following QL syntax:
+$$
+FIND\,
+key_1,\, key_2,\, ...\, WHERE\,
+<key>\, <op>\, <value>\, AND|OR|BETWEEN\, IN\, ...
+$$
+Here {\it FIND, WHERE, AND, OR, BETWEEN IN} are reserved keywords
+which we adopt from SQL (except {\it FIND}). The keys were defined
+in DBS QL based on slang used by physicists when they talk about
+data. These keys map into DB table/columns and were defined
+as entity and attributes. We discuss those later in this section.
+The operators, {\it op}, where common ones used in SQL, such as
+$>, >=, <, <=, =, like$, etc. The DBS QL supported brackets and
+normal boolean syntax to operate with different conditions.
+Such approach gave a great felxibility to place almost
+arbitrary queries using published DBS QL keys. To achieve that
+we hided DB relationships apart from users while gave them
+a way to explore DB schema via DBS QL keys.
+
+DBS QL architecture is shown on Fig. \ref{DBS_QL}.
 % Here is example of how insert picture in LaTeX.
 \begin{figure}[htb]
 \centering
@@ -54,12 +75,15 @@ DBS QL architecture is shown on Pic. \ref{DBS_QL}.
 \caption{DBS QL architecture.}
 \label{DBS_QL}
 \end{figure}
+It was divided into two parts. A static generation of DBS QL
+parser and lexer by using grammar file and ANTLR tool\cite{ANTLR}
+and generation of SQL query at run time out of provided DBS QL expression.
 
-The user input is interpreted by a lexer and parser, 
-then a Query Builder generates the SQL query that can be executed on 
-the database. The ANTLR \cite{ANTLR} parser/lexer tool 
-usesa grammar file which defines the syntax and semantics for 
-DBSql to generate the parsing/lexing code for compile time. 
+The user input is interpreted by a lexer and parser, who pass it to
+Query Builder. It generates the SQL query which can be executed on 
+the database. The ANTLR parser/lexer tool 
+uses a grammar file which defines the syntax and semantics for 
+DBS QL to generate the parsing/lexing code for compile time. 
 The Query Builder package uses this parser and lexer to interpret 
 the user input query. If the query does not honor the semantics of the 
 grammar, then the parser or lexer will raise an exception. 
@@ -70,10 +94,10 @@ directed graph with nodes representing tables, and edges
 representing relationships between tables. The Query Builder
 then uses the Dijkstra’s shortest path algorithm to determine a 
 path from one table to another and resolve multi-path ambiguities.
-The chosen path is used to construct the final SQLquery. 
+The chosen path is used to construct the final SQL query. 
 
 
-For example the Fig. \ref{ShortestPath} shows database tables 
+For example, the Fig. \ref{ShortestPath} shows database tables 
 T1 through T4  where edges between the tables represents the 
 relationships between the tables. The user can select elements
 from table T1 and T4 without specifying intermediate tables T2 
@@ -98,9 +122,19 @@ T4 $\rightarrow$ T2 $\rightarrow$ T1 (Total weight 5)
 \section{DBS QL Grammar}
 
 
-The figure represents a simplified view of the grammar
-that defines the semantics of the DBSql. Entities are
-like logical tables, and each entity has a set of additional 
+The figure \ref{Grammar} represents a simplified view of the grammar
+that defines the semantics of the DBSql. 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=150mm]{DBSSql_grammar.pdf}
+\caption{
+DBS QL grammar.
+}
+\label{Grammar}
+\end{figure}
+
+
+Entities are like logical tables, and each entity has a set of additional 
 attributes (table’scolumns). The grammar allows any 
 combination of attribute and entity, however not 
 every attribute is appropriate for each entity.
@@ -110,22 +144,17 @@ number of files and file sizes respectively,
 make the language a powerful tool for generating
 summaries. 
 
-\begin{figure}[htb]
-\centering
-\includegraphics[width=150mm]{DBSSql_grammar.pdf}
-\caption{
-DBS QL grammar.
-}
-\label{ShortestPath}
-\end{figure}
-
 The keywords(entity or entity.attribute) used in DBSql 
 are natural within the CMS community. Each keyword maps 
 in to a particular 
 table or table.column in the underlying database. 
-The mapping of these keywords to the table.column are
+The mapping of these keywords to the table.column were
 maintained in a static file that models the graph
-representation of the entire schema.
+representation of the entire schema. For example,
+{\it dataset, block, file, run, lumi} were choosen
+to be entities, while {\it createdate, size}, etc.
+represent their attributes, which can be applied to
+one or more entities.
 
 \section{Acknowledgements}
 
