@@ -1,0 +1,72 @@
+\documentclass[a4paper]{jpconf}
+\usepackage{graphicx}
+\begin{document}
+\title{DBSSql}
+
+\author{Anzar Afaq, Vijay Sekhri, Yuyi Guo, Lee Lueking}
+\address{Fermilab, Batavia, Illinois, USA}
+
+\author{Valentin Kuznetsov}
+%\author{Valentin Kuznetsov, Daniel Riley}
+\address{Cornell University, Ithaca, NY 14853, USA}
+
+\begin{abstract}
+The CMS experiment has implemented a flexible and 
+powerful approach enabling users to find data within 
+the CMS physics data catalog. The Dataset Bookkeeping 
+Service (DBS) comprises a database and the services 
+used to store and access metadata related to its physics 
+data. In addition to the existing WEB based and programmatic 
+API, a generalized query system has been designed and built. 
+This query system has a query language that hides the 
+complexity of the underlying database structure. This provides 
+a way of querying the system that is straightforward for 
+CMS data managers and physicists. The DBS Query Language 
+uses the ANTLR tool to build the input query parser and tokenizer, 
+then a query builder using a graph representation of the 
+DBS schema constructs the actual SQL sent to underlying database. 
+We will describe the design of the query system and provide 
+details of the language components. We will also provide an 
+overview of how this component fits into the overall data 
+discovery system, as well as providing access to information 
+about Data Quality and Luminosity.
+\end{abstract}
+
+\section{Introduction}
+Introducetion text
+
+\section{ITEMS TO COVER}
+\begin{enumerate}
+\item Need for a flexible QL, instead of static web pages
+\item QL as Data search tool, and not a data mining tool (as of yet)
+\item Some (not a whole lot !!!) implementation details.
+\item Integration with DD and CLI
+\item Future plans, DAS and beyond and also looking at Data Mining..
+\end{enumerate}
+
+% Here is example of how insert picture in LaTeX.
+%\begin{figure}[htb]
+%\centering
+%\includegraphics[width=150mm]{filemoverlogic.pdf}
+%\caption{A logic diagram of FileMover service.}
+%\label{FileMoverLogic}
+%\end{figure}
+
+
+\section{Acknowledgements}
+
+This work was supported by National Science Foundation.
+
+\section*{References}
+\begin{thebibliography}{9}
+\bibitem{CRAB} CRAB
+\bibitem{SiteDB} SiteDB
+\bibitem{Phedex} Phedex
+\bibitem{EDM} https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideFrameWork
+\bibitem{DBS} A. Afaq, et. al. ``The CMS Dataset Bookkeeping Service'', CHEP 2007 
+
+\end{thebibliography}
+
+\end{document}
+
+
