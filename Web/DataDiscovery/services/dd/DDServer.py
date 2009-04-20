@@ -721,7 +721,7 @@ class DDServer(DDLogger,Controller):
             dbsList = []
             for dbs in self.dbsList:
                 if  userMode=="user":
-                    if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1:
+                    if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1 or dbs.find('_caf_')!=-1:
                         dbsList.append(dbs)
                 else:
                     dbsList.append(dbs)
@@ -3977,7 +3977,7 @@ All LFNs in a block
             dbsList = []
             for dbs in self.dbsList:
                 if  userMode=="user":
-                    if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1:
+                    if  dbs==self.dbsglobal or dbs.find("ph_analys")!=-1 or dbs.find('_caf_')!=-1:
                         dbsList.append(dbs)
                 else:
                     dbsList.append(dbs)
@@ -4264,7 +4264,7 @@ All LFNs in a block
     def outputConfigMap(self):
         """Log server configuration parameters"""
         serverVars = [
-                      'httpservers',
+#                      'httpservers',
                       'instance',
                       'interrupt',
                       'max_request_body_size',
