@@ -83,7 +83,7 @@ data who satisfy those criteries. For example,
 1.2.3 and has runs between 100 and 200}. Obviously such question is
 hard to address using IR approach while easier with DBMS one if we know
 where to look at. Such set of use cases were reviewed by some of us
-\ref{DBS07} during development of Data Discovery tool for CMS. We explored
+\cite{DBS07} during development of Data Discovery tool for CMS. We explored
 variety of UI's and methods to address those kind of questions. As a
 consequences a DBS Query Language (QL) was born. It represents a mixture
 of both approaches, IR and DBMS, in a sense that it has precise
@@ -109,12 +109,14 @@ DBS QL semantics was kept very close to SQL one. It natuarally
 maps into user mental model and was easily adopted by CMS
 community. After several iteration we end-up with the following syntax:
 \[
-FIND\,
-key_1,\, key_2,\, ...\, WHERE\,
-<key>\, <op>\, <value>\, AND|OR ...
+find\,\,\,
+key_1,\, key_2,\, ...\,\,\, where\,\,\,
+\langle key\rangle\, 
+\langle op\rangle\, 
+\langle value\rangle \,\,\, and|or ...
 \label{QL_syntax}
 \]
-Here $FIND, WHERE, AND, OR$ are reserved keywords
+Here $find, where, and, or$ are reserved keywords
 which we adopted from SQL syntax (except {\it FIND}). The keys,
 both selection and condition ones, were defined
 in DBS QL based on slang used by physicists, e.g. dataset, file, run. 
@@ -182,7 +184,7 @@ relationships between the tables.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=150mm]{DBSSql_shortestpath.pdf}
+\includegraphics[width=80mm]{DBSSql_shortestpath.pdf}
 \caption{
 Shortest path from table T1 to T4 is 
 T1 $\rightarrow$ T2 $\rightarrow$ T3 $\rightarrow$ T4  (Total weight 4) 
