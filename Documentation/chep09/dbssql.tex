@@ -36,74 +36,83 @@ about Data Quality and Luminosity.
 In preparation of data taking the CMS experiment at Large
 Handron Collider developed very sophisticated set of tools
 to collect and bookkeep data effectively. As expected with
-start-up of LHC each year CMS experiment will produce a few
+start-up of LHC the CMS experiment will produce a few
 PB of data each year. Those data will be distributed all
 around the world to allow physicists explore a tiny
-details of our Universe creation. In today's environment
-a fast, efficient data look-up represent not only a
+details of our Universe. In today's environment
+a fast, efficient data look-up represents not only a
 real challenge but also a key ingredient of successfull
 analysis of produced data. In CMS the Data Bookkeeping
 system\cite{DBS} is authorative source of information
 of meta-data produced by the experiment. It collects
-information from broad variety of workflow tools and suppose
-to provide physicists a way to search and look-up their data.
+information from broad variety of workflow tools and allow 
+physicists to search and look-up their data.
 
-\section{Searching for tool}
+\section{Searching for the tool}
 Today there are only two major technologies providing a search capabilities
 for end-users. It is relational DBMS and Information retrieval (IR) systems.
-We outlined their difference in table \ref{IR_DBMS}.
+Each of them has its own strength and weaknesses. 
+We outlined their differences in table \ref{IR_DBMS}.
 
 \begin{table*}[hbt]
 \centering
-\begin{tabular}{ll}\hline\hline
+\begin{tabular}{ll}\hline
+\hline
 
 IR & DBMS \\
 \hline
-Imprecise Semantics & Precise Semantics \\
+Imprecise semantics & Precise semantics \\
 Keyword search & SQL \\
 Unstructured data format & Structured data \\
-Read-Mostly.  Add docs occasionally & Expect reasonable number of updates \\
+Read-mostly, add docs occasionally & Expect reasonable number of updates \\
 Page through top k-results & Generate full answer \\
+\hline
 \hline
 \end{tabular}
 \caption{IR versus DBMS}
 \label{IR_DBMS}
 \end{table*}
 
-Even though they address different domains of search technologies they
-provide a way to look-up desired data. In High Energy Physics the actual data
+While being designed to address a different domain problems today 
+we see that they're become closer to each other. In High Energy Physics (HEP)
+domain field such merging becomes more desired with up-coming LHC era.
+
+In HEP the actual data
 reside on disk while associative meta-data are stored in databases.
-But physicsists wants to look-up this information using flexibility of
+But our users, physicists, wants to look-up data using flexibility of
 IR approach and precision of DBMS. By that we mean that providing a {\it Higgs}
-keyword is not sufficient for DBMS system to know where to map it,
-to which data-service and which schema. In addition our users wants
+keyword is not sufficient for DBMS system to know where to map it. It needs
+to be translated to table.column in underlying schema and passed to appropriate
+data service.
+In addition, our users wants
 to search for data using a set of precise conditions and select only those
-data who satisfy those criteries. For example,
+data which satisfy those criterias. For example, 
 {\it I want to find a Higgs sample who was processed with software release
-1.2.3 and has runs between 100 and 200}. Obviously such question is
-hard to address using IR approach while easier with DBMS one if we know
-where to look at. Such set of use cases were reviewed by some of us
+1.2.3 and has runs between 100 and 200}. Obviously such request is
+hard to address using IR approach while easier with DBMS. 
+Such set of use cases were reviewed by some of us
 \cite{DBS07} during development of Data Discovery tool for CMS. We explored
 variety of UI's and methods to address those kind of questions. As a
 consequences a DBS Query Language (QL) was born. It represents a mixture
 of both approaches, IR and DBMS, in a sense that it has precise
-semantics, use DBMS via data-service for data look-up and flexibility of
+semantics of DBMS for data look-up and flexibility of
 keyword search as in IR systems.
 
 \section{From SQL to QL}
 The growing amount of information stored to DBS system very soon
-becomes a barrier for physicists and data managers efficiently
-look-up their data. Several UI were proposed to solve this issue.
+will represent a challenge for physicists and data managers efficiently
+look-up their data. Several user interfaces were proposed to solve this issue.
 Among them, structured top-down approach where users look-up their
-information from known entities such as trigger line, dataset name, etc.
-going further in details to files and runs. Even though the web UI
+information from provided list of known entities, such as
+trigger line, dataset name, etc.
+Even though the web UI
 was very intuitive to learn via drop down menus related to each
-other, it reaches its limit when number of entries to look in each menu
-become significantly large. Even using modern technology such as
-AJAX, the size of entries in each menu list reach few hundreds.
-Simple management of those lists in a browser become a real issue and
-soon simplicity of data look-up loose its attraction. By that time
-we took orthogonal approach and proposed a simple Query Language (QL).
+other, it reaches its limit when the number of entries to look in each menu
+becomes significantly large.
+Simple management of those lists in a browser represents a real issue and
+soon the simplicity of data look-up loose its attraction. By that time
+we took orthogonal approach and proposed Query Language (QL) as
+a main interface to look-up data in DBS.
 
 DBS QL semantics was kept very close to SQL one. It natuarally
 maps into user mental model and was easily adopted by CMS
@@ -117,39 +126,63 @@ key_1,\, key_2,\, ...\,\,\, where\,\,\,
 \label{QL_syntax}
 \]
 Here $find, where, and, or$ are reserved keywords
-which we adopted from SQL syntax (except {\it FIND}). The keys,
-both selection and condition ones, were defined
+which we adopted from SQL syntax\footnote{Except {\it find} special
+keyword we used all SQL keywords, e. g. {\it between, in}, etc.}
+The keys, both selection and condition ones, were defined
 in DBS QL based on slang used by physicists, e.g. dataset, file, run. 
 These keys map into internal DB table column or just entire table and 
-were structured as entitie and their attributes. For example,
-a {\it file} obviously refers to file name. It represents an
+were structured as entities and their attributes. For example,
+a {\it file} refers to file name. At the same time it represents an
 entity and maps to file table. Obviously such table
-contain more information about a files, such as its size, creation time,
-type etc. This information were referred as file attributes, e.g.
+contain more information about the files, such as their size, creation time,
+type etc. This information were referred as a file attributes, e.g.
 {\it file.size, file.createdate, file.type}. Some of the attributes
-where presented for all QL keys, such as {\it createdate, createby}, etc.,
+where presented for all QL keys, e. g. {\it createdate, createby}, etc.,
 while others were only unique to certain entities, e.g. {\it release.family}.
 
-To accomodate flexibility of searching criteries DBS QL supports
-broad variety of boolean operators, referred as {\it op} in
-\ref{QL_syntax}, such as $>, >=, <, <=, =, like$, etc.  Basically,
+To accomodate flexibility of searching criterias DBS QL supported a
+broad variety of boolean operators, such as $>, >=, <, <=, =, like$, etc.,
+see $\langle op\rangle$ in \ref{QL_syntax}. Basically,
 since we map our QL expression to SQL, our limitation were based
 on SQL one. A complex expressions were very well adopted via
 usage of brackets and combination of constrains.
-Such approach gave us a great felxibility to place almost
-arbitrary queries using published DBS QL keys. To achieve that
-we used Dijkstra’s shortest path algorithm to find a join conditions
+
+The figure \ref{Grammar} represents a simplified view of the grammar
+that defined the semantics of the DBS QL.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=150mm]{DBSSql_grammar.pdf}
+\caption{
+DBS QL grammar.
+}
+\label{Grammar}
+\end{figure}
+In this diagram the entities (keys) are represent logical tables. 
+Each entity has a set of additional attributes (table’s columns). 
+The grammar allows any combination of 
+attribute and entity, however not every attribute
+is appropriate for each entity. An incorrect
+combination was detected by the Query Builder at run time
+and appropriate message was provided to end-user with
+precise position of the error. The aggregation functions, such
+as sum, count where added to the grammar as well. 
+
+Such semantics gave us a great felxibility to construct
+arbitrary queries against DBS using published DBS QL keys.
+To achieve that we defined external mapping between
+tables and a graph nodes and 
+Dijkstra’s shortest path algorithm to find a join conditions
 for provided user query.
 
 \section{DBS QL architecture}
-DBS code has been using a well known 3-tier architecture. The server
+
+The DBS code used a well known 3-tier architecture. The server
 code was developed using Java Servlets placed into tomcat container.
 Its details has been discussed elsewhere\cite{DBS} and we will skip
-them for simplicity. 
+them here. 
 
 The DBS QL was originally prototyped in Python and then implemented
 in Java using ANTRL tool. Its architecture is shown on Fig. \ref{DBS_QL}.
-% Here is example of how insert picture in LaTeX.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=100mm]{DBS_QL_architecture.pdf}
@@ -158,22 +191,21 @@ in Java using ANTRL tool. Its architecture is shown on Fig. \ref{DBS_QL}.
 \end{figure}
 It was divided into two parts. A static generation of DBS QL
 parser and lexer by using grammar file and ANTLR tool\cite{ANTLR}
-and generation of SQL query at run time out of provided user query.
+and generation of the SQL query at run time out of provided user query.
 
 Regarless of UI (web or command-line), the user query was 
-passed to server where it was it was interpreted by a lexer and parser.
+passed to the server where it was interpreted by a lexer and a parser.
 Then the Query Builder generates a valid SQL query suitable for
-executable at DB back-end.\footnote{We did supported officially ORACLE and
+execution at DB back-end.\footnote{We officially supported ORACLE and
 MySQL back-ends.} 
-The ANTLR tool uses an external grammar file which defined 
-the syntax and semantics for DBS QL. It generates the parser and lexer 
+The ANTLR tool was used an external grammar file which defined 
+the syntax and semantics of DBS QL. It generated the parser and lexer 
 code for compile time. Therefore a new addition to QL, such as key,
-attribute and support for boolean expression, had a drawback of
+attribute and/or support for boolean expression, had a drawback of
 regenerating the parser and lexer code and its redeployment on a server.
  
-%\section{DBS QL Grammar}
 The entire database schema was represented as a weighted
-directed graph with nodes representing tables, and edges 
+directed graph with nodes mapped to tables, and edges 
 representing relationships between tables. The Query Builder
 used the Dijkstra’s shortest path algorithm to determine a 
 path from one table to another and resolve multi-path ambiguities.
@@ -185,38 +217,40 @@ relationships between the tables.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=80mm]{DBSSql_shortestpath.pdf}
-\caption{
-Shortest path from table T1 to T4 is 
-T1 $\rightarrow$ T2 $\rightarrow$ T3 $\rightarrow$ T4  (Total weight 4) 
-Shortest path from table T4 to T1 is 
-T4 $\rightarrow$ T2 $\rightarrow$ T1 (Total weight 5) 
+\caption{A graph which represents different paths between tables. The
+numbers are weigths assigned to each table such that a shortest path
+can be computed. For example, the shortest path from table T1 to T4 is 
+T1 $\rightarrow$ T2 $\rightarrow$ T3 $\rightarrow$ T4 with total weight 
+equal 4. While the shortest path from table T4 to T1 is 
+T4 $\rightarrow$ T2 $\rightarrow$ T1, due to prohibited path
+between T2 and T3, with total weight of 5. 
 }
 \label{ShortestPath}
 \end{figure}
+If any ambiguity has happened between 2 or more paths, i.e.
+their total weight was calculated to be the same, we manually 
+resolved it based on concrete use case. 
+Such resolution was done in external schema graph file.
 
 Since DBS QL hided all relationship among tables and didn't
-expose actual table names, the users were allowed to
+expose the actual table names, the users were allowed to
 select any key, key.attribute combinations in their queries.
 Those were mapped back to table, table.columns, such that
 Query Builder was able to find a shortest path
-from table T1 and T4 without specifying intermediate 
-tables T2 and T3 and the join conditions. In this
-particular example the Query Builder determines
+from one table to another without specifying intermediate
+tables and join conditions.
+In this forementioned example \ref{ShortestPath},
+if user specified
+$
+find\,\, key_1, key_4\,\, where\,\, ...
+$
+and $key_1, key_4$ maps into T1 table and T4 tables respectively,
+the Query Builder determines
 the shortest path 
 T1$\rightarrow$T2$\rightarrow$T3$\rightarrow$T4 
 and added the intermediate tables 
-and join conditions in the final SQL query. 
+and the join conditions to the final SQL query. 
 
-The figure \ref{Grammar} represents a simplified view of the grammar
-that defines the semantics of the DBS QL.
-\begin{figure}[htb]
-\centering
-\includegraphics[width=150mm]{DBSSql_grammar.pdf}
-\caption{
-DBS QL grammar.
-}
-\label{Grammar}
-\end{figure}
 It is worthwhile to mention that DBS QL can be adopted to
 any DB schema, using any DB back-end and programming interface.
 It provides additional mapping between your data model and
@@ -225,7 +259,7 @@ and relational model of your data. Such mapping is important
 to allow users place their queries without any knowledge of
 underlying data model. 
 In fact, as will be discussed in
-next section, currently we exploring a possiblity to
+next section, we currently exploring a possiblity to
 expand DBS QL to other data services and combine them
 into a single aggregation layer for end-users.
 
@@ -238,12 +272,12 @@ efficiently. Over time the Data Discovery UI has
 change several times, from menu-driven approach using
 direct connection to DB to DBS QL presentation layer
 using stateless connection to any DBS instances deployed
-within CMS. Our users start adopting DBS QL in their
+within CMS. Our users started adopting DBS QL in their
 own applications, performing monitoring of their
-site usage, customizing views for data-center (RAC)
-and developing easy to use data-service, such as
+site usage, customizing views for data-centers
+and developing easy to use data-services, such as
 FileMover\cite{FileMover}. To demonstrate both simplicity,
-flexibility of DBS QL here is a simple (realistic)
+flexibility of DBS QL here is a simple, but realistic,
 code snippet in python which query run summary information
 for given dataset
 \begin{verbatim}
@@ -256,33 +290,37 @@ data=urllib2.urlopen(dbsurl,
              urllib.urlencode(params,doseq=True)).read()
 result = data.read()
 \end{verbatim}
-DBS itself provided a simple stand-alone command line tool
+Along with Data Discovery web interface the DBS itself 
+provided a simple stand-alone command line tool
 to search data from a fingertips of the users in their
 favorite environment. This tool was written
 in python, doesn't require any dependencies and can
 be used on any OSes within CMS community.
 
 Moreover, DBS QL simplicity force us to explore a further
-extention of QL to other data-services deployed in CMS under
-umbrella of Data Aggregation Service (DAS). The DAS idea is
-novel within CMS and still under development, but in short
-it allows users to place query across multiple data-services,
-such as DBS, SiteDB, PhEDEx, Luminosity DB, etc. It naturally
-expand boundaries of DBS QL to other services providing
-end-users a reach set and flexible keys to be used in their
-queries.
+extentions of QL to other data-services deployed in CMS under
+the umbrella of Data Aggregation Service (DAS). The DAS idea is
+novel within CMS and still under development.
+It allows users to place query across multiple data-services,
+such as DBS, SiteDB, PhEDEx, Luminosity DB, etc. Its semantic
+is based on DBS QL one and naturally
+expand boundaries of later to other services providing
+end-users a reach set of flexible keys to be used in their
+queries. But instead of mapping DAS QL into a single
+schema, we exploring how to map it to data-service APIs. 
 
 \section{Summary}
 We discussed a novel approach of searching data within CMS
 collaboration. It is based on flexible,
 intuitive and expandable query language using
-semantics of physicsists in their daily operations.
+semantics of mental model of physicsists used in their 
+daily operations.
 By hiding relationships and mapping well-known
 keys and their attributes to underlying data-service
 schema we achieve a scalable power of QL. Its utilization
 were well adopted in CMS via web interface and widely
 expanded in various workflow and analysis tools. Physicists
-were able to quickly answer their question about data by
+were able to quickly answer their questions about data by
 speficying selection keys and providing set of conditions
 in their user query. We demostrated that such approach
 can be adopted to any DB schema and can be implemented
