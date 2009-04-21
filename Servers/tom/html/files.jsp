@@ -8,6 +8,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 
 	<h:panelGrid columns="2">
 
+	<h:form>
 		<rich:panel bodyClass="rich-laguna-panel-no-header">
 			<ui:include src="singlestreamerfile.jsp">
 				<ui:param name="id" value="streamerFilesTable"/>
@@ -15,6 +16,8 @@ xmlns:a4j="http://richfaces.org/a4j">
 				<ui:param name="header" value="Streamer Files"/>
 			</ui:include>
 		</rich:panel>
+	</h:form>
+	<h:form>
 
 		<rich:panel bodyClass="rich-laguna-panel-no-header">
 			<ui:include src="singlefile.jsp">
@@ -23,6 +26,8 @@ xmlns:a4j="http://richfaces.org/a4j">
 				<ui:param name="header" value="Merged Files"/>
 			</ui:include>
 		</rich:panel>
+	</h:form>
+	<h:form>
 		<rich:panel bodyClass="rich-laguna-panel-no-header">
 			<ui:include src="singlefile.jsp">
 				<ui:param name="id" value="unmergedFileTable"/>
@@ -30,6 +35,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 				<ui:param name="header" value="Unmerged Files"/>
 			</ui:include>
 		</rich:panel>
+	</h:form>
 	</h:panelGrid>
 
 </body>

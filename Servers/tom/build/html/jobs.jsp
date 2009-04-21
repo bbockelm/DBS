@@ -7,6 +7,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 <body>
 
 	<h:panelGrid columns="2">
+		<h:form>
 		<rich:panel bodyClass="rich-laguna-panel-no-header">
 			<ui:include src="singlejob.jsp">
 				<ui:param name="id" value="repackJobTable"/>
@@ -17,6 +18,8 @@ xmlns:a4j="http://richfaces.org/a4j">
 			</ui:include>
 
 		</rich:panel>
+		</h:form>
+		<h:form>
 		<rich:panel bodyClass="rich-laguna-panel-no-header">
 			<ui:include src="singlejob.jsp">
 				<ui:param name="id" value="mergedJobTable"/>
@@ -26,6 +29,8 @@ xmlns:a4j="http://richfaces.org/a4j">
 				<ui:param name="navOutput" value="files"/>
 			</ui:include>
 		</rich:panel>
+		</h:form>
+		<h:form>
 			<rich:panel bodyClass="rich-laguna-panel-no-header">
 			<ui:include src="singlejob.jsp">
 				<ui:param name="id" value="recoJobTable"/>
@@ -35,6 +40,8 @@ xmlns:a4j="http://richfaces.org/a4j">
 				<ui:param name="navOutput" value="files"/>
 			</ui:include>
 		</rich:panel>
+		</h:form>
+		<h:form>
 		<rich:panel bodyClass="rich-laguna-panel-no-header">
 			<ui:include src="singlejob.jsp">
 				<ui:param name="id" value="alcaSkimJobTable"/>
@@ -44,7 +51,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 				<ui:param name="navOutput" value="files"/>
 			</ui:include>
 		</rich:panel>
-
+		</h:form>
 	
 	</h:panelGrid>
 

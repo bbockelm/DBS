@@ -49,7 +49,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 		<f:facet name="footer">
 			<rich:datascroller ajaxSingle="true"
 				for="#{id}"
-				reRender="#{id}"
+				reRender="form1"
 				maxPages="10"
 				rendered="true"/>
 		</f:facet>

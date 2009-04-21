@@ -10,6 +10,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 	<ui:include src="menu.jsp"/>
 	<h:form binding="#{streamerFileDetailBean.form1}" id="form1">
 		<h:panelGrid columns="1">
+			<h:commandLink action="rundetail"><h:outputText value="Go Back"/></h:commandLink>
 			<rich:tabPanel id="StreamerFileDetailPanel"><rich:tab label="Streamer Files" id="streamerFileDetailTab">
 				<ui:include src="singlestreamerfile.jsp">
 					<ui:param name="id" value="streamerFilesTable1"/>

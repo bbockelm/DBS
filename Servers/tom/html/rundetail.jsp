@@ -8,8 +8,9 @@ xmlns:a4j="http://richfaces.org/a4j">
 
 	<div align="center">
 	<ui:include src="menu.jsp"/>
-	<h:form binding="#{runDetailBean.form1}" id="form1">
 		<h:panelGrid columns="1">
+	<h:form binding="#{runDetailBean.form1}" id="form1">
+			<h:commandLink action="run"><h:outputText value="Go Back"/></h:commandLink>
 			<rich:tabPanel id="RunDetailPanel"><rich:tab label="Run Detail" id="runDetailTab">
 				<rich:dataTable columnClasses="column-index"
 					id="runDetailTable"
@@ -73,6 +74,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 				</rich:dataTable>
 			</rich:tab></rich:tabPanel>
 
+	</h:form>
 
  	                <rich:tabPanel id="JobsPanel"><rich:tab label="Jobs" id="jobTab">
 				<ui:include src="jobs.jsp"/>
@@ -82,7 +84,6 @@ xmlns:a4j="http://richfaces.org/a4j">
 			</rich:tab></rich:tabPanel>
 
 		</h:panelGrid>
-	</h:form>
 	</div>
 </body>
 </html>

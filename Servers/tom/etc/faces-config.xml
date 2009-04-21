@@ -80,6 +80,27 @@
 			<to-view-id>/html/streamerfiledetail.jsp</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/html/rundetail.jsp</from-view-id>
+		<navigation-case>
+			<from-outcome>run</from-outcome>
+			<to-view-id>/html/run.jsp</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/html/filedetail.jsp</from-view-id>
+		<navigation-case>
+			<from-outcome>rundetail</from-outcome>
+			<to-view-id>/html/rundetail.jsp</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/html/streamerfiledetail.jsp</from-view-id>
+		<navigation-case>
+			<from-outcome>rundetail</from-outcome>
+			<to-view-id>/html/rundetail.jsp</to-view-id>
+		</navigation-case>
+	</navigation-rule>
 
 						      
 </faces-config>

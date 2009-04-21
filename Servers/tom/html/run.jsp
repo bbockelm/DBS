@@ -60,11 +60,12 @@ xmlns:a4j="http://richfaces.org/a4j">
 						<h:outputText value="#{runVar.streamers}"/>
 					</rich:column> 
 					<f:facet name="footer">
-						<rich:datascroller ajaxSingle="true"
-							for="runTable"
+						<rich:datascroller
+							ajaxSingle="true"
 							reRender="runTable"
+							for="runTable"
 							maxPages="10"
-							rendered="true"/>
+							/>
 					</f:facet>
 				</rich:dataTable>
 			</rich:tab></rich:tabPanel>
