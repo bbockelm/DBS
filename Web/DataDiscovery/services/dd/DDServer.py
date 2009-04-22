@@ -1173,7 +1173,11 @@ class DDServer(DDLogger,Controller):
     #################### ADMIN FORMS #######################
     def _admin(self,**kwargs):
         page = self.genTopHTML()
-        nameSpace = { 'dbsInst':self.dbs, 'userMode':'expert', 'user': self.getUserFromCookie() }
+        try:
+            dbsInst = kwargs['dbsInst']
+        except:
+            dbsInst = 'cms_dbs_prod_global'
+        nameSpace = { 'dbsInst':dbsInst, 'userMode':'expert', 'user': self.getUserFromCookie() }
         t = templateAdministrateForm(searchList=[nameSpace]).respond()
         page+= str(t)
 #        page+= """<hr class="dbs" />"""
@@ -1186,8 +1190,12 @@ class DDServer(DDLogger,Controller):
 
     def redirectAdminPage(self,**kwargs):
         page = self.genTopHTML()
+        try:
+            dbsInst = kwargs['dbsInst']
+        except:
+            dbsInst = 'cms_dbs_prod_global'
         page+= "<div><b>You have unsufficient privileges to administrate datasets. Please contact cms-dbs-support [at] cern [dot] ch with this request.</b></div><br/><br/>"
-        nameSpace = { 'dbsInst':self.dbs, 'userMode':'expert', 'user': self.getUserFromCookie() }
+        nameSpace = { 'dbsInst':dbsInst, 'userMode':'expert', 'user': self.getUserFromCookie() }
         t = templateAdministrateForm(searchList=[nameSpace]).respond()
         page+= str(t)
         page+= self.genBottomHTML()
