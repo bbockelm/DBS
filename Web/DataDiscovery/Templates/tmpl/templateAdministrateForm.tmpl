@@ -16,14 +16,20 @@ Please use Login link at right upper corner of the page.
 <div class="sectionhead">ADMINISTER DATASET</div>
 <hr class="dbs" />
 <table>
+
 <tr>
 <td>
 DBS instance:
 </td>
 <td>
-$dbsInst
+<select id="dbsInst" name="dbsInst" onchange="javascript:ReloadMethod('$host','_admin','expert')">
+#for dbs in $dbslist
+<option valya="$dbs">$dbs</option>
+#end for
+</select>
 </td>
 </tr>
+
 <tr>
 <td>
 Dataset:
@@ -39,5 +45,6 @@ Dataset:
 </td>
 </tr>
 </table>
+
 <!-- end of templateAdministrateForm.tmpl -->
 

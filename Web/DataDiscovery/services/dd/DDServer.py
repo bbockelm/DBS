@@ -1177,7 +1177,10 @@ class DDServer(DDLogger,Controller):
             dbsInst = kwargs['dbsInst']
         except:
             dbsInst = 'cms_dbs_prod_global'
-        nameSpace = { 'dbsInst':dbsInst, 'userMode':'expert', 'user': self.getUserFromCookie() }
+	dbslist = list(self.dbsList)
+	dbslist.remove(dbsInst)
+	dbslist = [dbsInst] + dbslist
+        nameSpace = {'host':self.dbsdd, 'dbsInst':dbsInst, 'dbslist':dbslist, 'userMode':'expert', 'user': self.getUserFromCookie() }
         t = templateAdministrateForm(searchList=[nameSpace]).respond()
         page+= str(t)
 #        page+= """<hr class="dbs" />"""
