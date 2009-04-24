@@ -206,7 +206,8 @@ regenerating the parser and lexer code and its redeployment on a server.
  
 The entire database schema was represented as a weighted
 directed graph with nodes mapped to tables, and edges 
-representing relationships between tables. The Query Builder
+representing relationships between tables\cite{GraphTool}.
+The Query Builder
 used the Dijkstra’s shortest path algorithm to determine a 
 path from one table to another and resolve multi-path ambiguities.
 The chosen path is used to construct the final SQL query. 
@@ -250,6 +251,61 @@ the shortest path
 T1$\rightarrow$T2$\rightarrow$T3$\rightarrow$T4 
 and added the intermediate tables 
 and the join conditions to the final SQL query. 
+
+Let us demonstrate the example of DBS QL user query mapping
+into SQL statement. Assume that user ask the following
+question: {\it I want to find number of files, their total
+size for all file which belong to dataset with name Online
+and run less then 224. In addition I want to restrict
+the file size less then 10}. Such question can be
+expressed in DBS QL as simple as
+
+\begin{verbatim}
+find file.count, file.size where 
+     file.size > 10 and run < 224 and dataset = Online*
+\end{verbatim}
+
+As you can see it is very intuitive expression which
+fits really well into human mental model. The Query
+Builder construct out of it the following SQL expression:
+
+\begin{verbatim}
+SELECT COUNT(DISTINCT COUNT_SUB_Files) AS COUNT_Files, 
+    Files_FileSize AS Files_FileSize  
+    FROM (SELECT DISTINCT Files.LogicalFileName AS COUNT_SUB_Files
+         ,Files.FileSize AS Files_FileSize
+            FROM Files
+            JOIN FileRunLumi ON FileRunLumi.Fileid = Files.ID
+            JOIN Runs ON Runs.ID = FileRunLumi.Run
+            WHERE Files.FileSize > :p0 
+                  AND Runs.RunNumber < :p1
+                  AND Files.Block IN 
+                  (SELECT Block.ID FROM Block 
+                   WHERE upper(Block.Path) LIKE upper(:p2) )
+             AND FileRunLumi.Fileid = Files.ID
+             AND FileRunLumi.Run = Runs.ID
+         ) sumtable GROUP BY Files_FileSize
+<p0>10</p0> <p1>224</p1><p2>Online%</p2>
+
+\end{verbatim}
+By default we used JOIN between all tables where associative
+constrains, either via unique key or foreign key relationships,
+exists. The aggregation was appropriately done via sub-query.
+The ordering was also allowed in DBS QL via {\it order by}
+expression, e.g. 
+\begin{verbatim}
+find dataset where run > 100 order by run desc
+\end{verbatim}
+In this example, the relationship between dataset and run
+were established in a query to allow proper ordering.
+We also support the customizable time-stamp, e.g.
+\begin{verbatim}
+find file where file.createdate = 2007-04-20 11:27:21 CDT 
+     or file.moddate > 2008 or run = 234
+\end{verbatim}
+It becomes a very handy feature of DBS QL since our
+users spread all over around the world. All of those rules
+where easily adopted via power of ANTRL.
 
 It is worthwhile to mention that DBS QL can be adopted to
 any DB schema, using any DB back-end and programming interface.
@@ -337,6 +393,7 @@ This work was supported by National Science Foundation.
 ``A multi-dimensional view on information retrieval of CMS data'', CHEP 2007
 \bibitem{DD} https://cmsweb.cern.ch/dbs\_discovery
 \bibitem{ANTLR} http://www.antlr.org
+\bibitem{GraphTool} http://www.ics.uci.edu
 \bibitem{FileMover} B. Bockelman, V. Kuznetsov ``CMS FileMover: one click data'', CHEP 2009
 
 \end{thebibliography}
