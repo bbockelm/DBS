@@ -20,7 +20,7 @@ from DBSAPI.dbsOptions import DbsOptionParser
 import profile
 import hotshot, hotshot.stats
 
-HOW_MANY_FILES=1000
+HOW_MANY_FILES=10
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
@@ -40,7 +40,7 @@ proc = DbsProcessedDataset (
         Name="TestProcessedDS001", 
         PhysicsGroup="BPositive",
         Status="Valid",
-        TierList=['SIM', 'GEN'],
+        TierList=['GEN', 'SIM'],
         AlgoList=[algo],
         )
 
@@ -80,7 +80,7 @@ myfile1= DbsFile (
         Dataset= proc,
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM', 'GEN'],
+        TierList= ['GEN', 'SIM'],
 	BranchHash="001234565798685",
         #ParentList = ['NEW_TEST0003']  
          )
@@ -94,6 +94,7 @@ block['Name']="/test_primary_001/TestProcessedDS001/GEN-SIM#12345-"+str(HOW_MANY
 print "Inserting Files Into", api.insertBlock (proc, block)
 #print "Wait........"
 try:
+    each_call=[]
     time_taken=0.0
     for i in range(HOW_MANY_FILES):
 	rnd=str(os.popen('uuidgen').readline().strip())
@@ -108,10 +109,13 @@ try:
         stats.sort_stats('time', 'calls')
         #stats.print_stats(1)
 	time_taken += stats.total_tt
+	each_call.append(stats.total_tt)
 
     print "\nTotal Time Taken: ", time_taken, "seconds"
     print "\nTime Per File Insertion: ", time_taken/HOW_MANY_FILES, "seconds\n"	
-
+    each_call.sort()
+    med = ( each_call[((len(each_call)-1)/2)]+each_call[((len(each_call)+1)/2)] ) / 2
+    print "\nMEDIAN:  %s " %str(med)
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):
