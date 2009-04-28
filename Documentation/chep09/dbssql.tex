@@ -149,9 +149,11 @@ type etc. These can be accessed as attributes of the file entity, {\it e.g.,}
 are present for all QL keys, {\it e.g.,} {\it createdate, createby}, {\it etc.},
 while other attributes are unique to certain entities, {\it e.g.,} {\it release.family}.
 
-To accommodate a variety of search criteria, DBS QL supports a
+To accommodate a variety of search criteria, DBS QL supports
 the usual set of boolean operators, including $>, >=, <, <=, =, like$, {\it etc.};
+{\bf
 details can be found $\langle op\rangle$ in \ref{QL_syntax}.
+}
 Since a DBS QL query is mapped directly to SQL, our limitations query expressivity
 are derived from SQL.  Complex queries can be expressed using
 brackets and combinations of constraints.
@@ -250,7 +252,9 @@ ambiguity, guided by concrete use cases.
 
 Since DBS QL hides all explicit relationships between tables and does not
 expose the actual table names, users may
-specify any combination of entities and attributes in their queries.
+specify any combination of entities and attributes in their queries.\footnote{\bf
+We evaluated generated SQL queries and applied concrete threshold for those
+with loose query conditions to avoid DB abuse.}
 These are mapped to table, columns, keys and joins according to
 shortest connecting path found by the Query Builder in the schema graph.
 All necessary joins, keys and intermediate tables are found as part of the
@@ -273,8 +277,9 @@ the string ``Online''
 and the run number is less then 224. In addition I want to restrict the query
 to files with size less then 10}. This question can be
 expressed in DBS QL as simply as
+%find file.count, file.size where 
 \begin{verbatim}
-find file.count, file.size where 
+find count(file), sum(file) where 
      file.size > 10 and run < 224 and dataset = Online*
 \end{verbatim}
 One measure of how well our query language fits the mental model of our users is
@@ -296,7 +301,7 @@ SELECT COUNT(DISTINCT COUNT_SUB_Files) AS COUNT_Files,
              AND FileRunLumi.Fileid = Files.ID
              AND FileRunLumi.Run = Runs.ID
          ) sumtable GROUP BY Files_FileSize
-<p0>10</p0> <p1>224</p1><p2>Online%</p2>
+<p0>10</p0> <p1>224</p1> <p2>Online%</p2>
 \end{verbatim}
 (where p0, p1 and p2 specify Oracle variable bindings\footnote{We officially support Oracle and
 MySQL back-ends.}).
@@ -320,17 +325,49 @@ find file where file.createdate = 2007-04-20 11:27:21 CDT
 This is a very convenient feature for an international collaboration.
 All such rules are easy to implement and adjust via the ANTLR parser grammar.
 
+{\bf
+In some cases the efficiency of auto-generated queries was questionable, especially
+when multiple selection keys and conditions where pass to DBS QL. To address this
+issue we're evaluating a replacement procedure of such auto-generated queries with
+hand-written ones. In fact, for single look-up entities, e.g. {\it find dataset}
+or {\it find run} we used DB views to look-up aggregation information
+about them. As a result we manually optimized our queries and represent a
+summary information for end-users. For example, for query {\it find dataset},
+using pre-defined summary view, we look-up number of blocks, 
+files in a dataset, its total size, number of events, integrated luminosity. 
+This approach increase usability of look-up data and optmization of underlying
+SQL statements. Moreover when new information about entity where requested from users,
+we just swap the underlying view, making a change transparent to end-users.
+}
+
 It is worth noting that DBS QL can be adopted to
 any DB schema, using any standard SQL DB back-end and programming interface.
 What DBS QL provides is additional mapping between your data model and
 user interface by making a bridge between the user's mental model
-and the relational model of your data. Providing this mapping enables
+and the relational model of your data. 
+
+{\bf
+If model requires any changes, it can be done
+transparently to end-users, via new mapping in DBS QL grammar. In fact,
+such changes where successfully done during different release cycles of
+DBS QL implementation.
+}
+
+Providing this mapping enables
 users to make complex queries without detailed knowledge of
 the underlying data model. 
 In fact, as will be discussed in the
 next section, we are currently exploring the possibility of
 expanding DBS QL to other CMS data services, seamlessly combining them
 into a single aggregated service that can be queried through a single interface.
+
+{\bf
+Finally, DBS QL completes the overall picture of data provenance in CMS data model.
+The DBS QL queries together with meta-data information stored in files represented
+a full stack of provenance information. Also, they can be used
+as an input for futher analysis of commonly used queries, providing a way for
+optimization DBS service via pre-fetching mechanism.
+}
 
 \section{DBS QL integration with other CMS services}
 
