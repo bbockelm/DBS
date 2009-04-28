@@ -32,8 +32,7 @@ from dbsLogger import *
 from dbsUtil import *
 
 #DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
-__version__ = "DBS_2_0_4"
-#__version__ = "$Name:  $"
+__version__ = "$Name:  $"
 
 def makeAPI(url):
 		#args = {}
