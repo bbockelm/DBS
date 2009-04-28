@@ -127,6 +127,8 @@ class DDServer(DDLogger,Controller):
         self.dbsglobal = self.ddConfig.dbsprimary()
 #        self.dbsglobal = DBSGLOBAL
 #        self.dbsglobal = 'global_r'
+        self.yyyymmdd=re.compile('^\d{8}$')
+        self.pathMatch=re.compile("^\/[^/]+\/[^/]+\/[^/]+$")
         self.baseUrl = ""
         self.topUrl= ""
         self.mastheadUrl = self.ddConfig.masthead()
@@ -3953,6 +3955,15 @@ All LFNs in a block
         cff       = getArg(kwargs,'cff',0)
         try:
             userInput = kwargs['userInput']
+            if  len(userInput.split())==1 and userInput.find("=")==-1 and \
+                userInput.find(">")==-1 and userInput.find("<")==-1:
+                if  not self.pathMatch.match(userInput) and \
+                        userInput.find("*") == -1:
+                    userInput = "*%s*" % userInput
+                if  userInput.find("*") != -1:
+                    userInput = "find dataset where dataset like %s" % userInput
+                else:
+                    userInput = "find dataset where dataset = %s" % userInput
         except:
             traceback.print_exc()
             raise "aSearch require input query"
