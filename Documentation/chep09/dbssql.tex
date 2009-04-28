@@ -279,7 +279,7 @@ to files with size less then 10}. This question can be
 expressed in DBS QL as simply as
 %find file.count, file.size where 
 \begin{verbatim}
-find count(file), sum(file) where 
+find count(file), sum(file.size) where 
      file.size > 10 and run < 224 and dataset = Online*
 \end{verbatim}
 One measure of how well our query language fits the mental model of our users is
