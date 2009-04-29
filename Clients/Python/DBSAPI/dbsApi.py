@@ -169,6 +169,8 @@ class DbsApi(DbsConfig):
     version = version.replace("$", "")
     if version.find("pre") != -1: 
 	version=version.split("_pre")[0]
+    if version.find("patch") != -1:
+	version=version.split("_patch")[0]
     if version in (""):
 	raise DbsApiException(args="Incorrect parameters: client version not specified use 'version' in dbs.config or pass in CTOR")
 	return
