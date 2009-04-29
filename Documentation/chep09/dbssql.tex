@@ -27,11 +27,14 @@ tables or keys. The DBS Query Language
 uses the ANTLR tool to build the input query parser and tokenizer, 
 followed by a query builder that uses a graph representation of the 
 DBS schema to construct the SQL query sent to underlying database. 
-We will describe the design of the query system and provide 
-details of the language components. We will also provide an 
-overview of how this component fits into the overall data 
-discovery system architecture, as well as providing access to other information sources
-such as the independent Data Quality and Luminosity databases.
+We will describe the design of the query system, provide 
+details of the language components
+and overview of how this component fits into the overall data 
+discovery system architecture.
+%We will also provide an 
+%overview of how this component fits into the overall data 
+%discovery system architecture, as well as providing access to other information sources
+%such as the independent Data Quality and Luminosity databases.
 \end{abstract}
 
 \section{Introduction}
@@ -384,10 +387,9 @@ for a specified dataset
 import urllib, urllib2
 
 dbsurl = "http://host/DBSServlet"
-query  = "find run, run.numevents, count(files) where dataset=/a/b/c"
+query  = "find run, run.numevents, count(file) where dataset=/a/b/c"
 params = {'apiversion':'DBS_2_0_6','api':'executeQuery', 'query': query} 
-data=urllib2.urlopen(dbsurl,
-             urllib.urlencode(params,doseq=True)).read()
+data=urllib2.urlopen(dbsurl,urllib.urlencode(params).read()
 result = data.read()
 \end{verbatim}
 In addition to the Data Discovery web interface, the DBS also
