@@ -3855,6 +3855,7 @@ All LFNs in a block
         for item in result:
             dataset,cDate,cBy,size,nblks,nfiles,nevts,nsites=item
             sites = []
+            siteDict = {}
             if  dataset2sitedict.has_key(dataset):
                 for row in dataset2sitedict[dataset]:
                     sites.append(row[0])
@@ -3955,19 +3956,29 @@ All LFNs in a block
         cff       = getArg(kwargs,'cff',0)
         try:
             userInput = kwargs['userInput']
-            if  len(userInput.split())==1 and userInput.find("=")==-1 and \
-                userInput.find(">")==-1 and userInput.find("<")==-1:
-                if  not self.pathMatch.match(userInput) and \
-                        userInput.find("*") == -1:
-                    userInput = "*%s*" % userInput
-                if  userInput.find("*") != -1:
-                    userInput = "find dataset where dataset like %s" % userInput
-                else:
-                    userInput = "find dataset where dataset = %s" % userInput
         except:
             traceback.print_exc()
             raise "aSearch require input query"
         userInput = urllib.unquote(userInput)
+        if  len(userInput.split())==1 and userInput.find("=")==-1 and \
+            userInput.find(">")==-1 and userInput.find("<")==-1:
+            if  not self.pathMatch.match(userInput) and \
+                    userInput.find("*") == -1:
+                userInput = "*%s*" % userInput
+            if  userInput.find("*") != -1:
+                userInput = "find dataset where dataset like %s" % userInput
+            else:
+                userInput = "find dataset where dataset = %s" % userInput
+        sortName = getArg(kwargs, 'sortName', '')
+        sortOrder= getArg(kwargs, 'sortOrder', '')
+        if  sortName and sortOrder:
+            if  userInput.find(' order by ') == -1:
+                userInput += " order by %s %s" % (sortName.lower(), sortOrder.lower())
+            else:
+                userInput = userInput.split(' order by ')[0] + \
+                        " order by %s %s" % (sortName.lower(), sortOrder.lower())
+        kwargs['userInput'] = userInput
+
         fromRow  =_idx*pagerStep
         limit    = pagerStep
         if  int(xml):
