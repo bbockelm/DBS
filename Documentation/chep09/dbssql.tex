@@ -21,7 +21,7 @@ in addition to the existing web and programmatic interfaces to the DBS.
 This query system is based on a query language that hides the 
 complexity of the underlying database structure by discovering the join conditions between
 database tables. This provides 
-a way of query the system that is simple and straightforward for 
+a way of querying the system that is simple and straightforward for 
 CMS data managers and physicists to use without requiring knowledge of the database
 tables or keys. The DBS Query Language 
 uses the ANTLR tool to build the input query parser and tokenizer, 
@@ -59,7 +59,7 @@ CMS researchers to easily find the data relevant to their analyses.
 
 Today there are two major technologies providing search capabilities
 for end-users: relational Database Management Systems (DBMS), and Information Retrieval (IR) systems.
-Each of these has its own strength and weaknesses, which
+Each of these has its own strengths and weaknesses, which
 are outlined in table \ref{IR_DBMS}.
 
 \begin{table*}[hbt]
@@ -129,14 +129,14 @@ DBS QL as the primary user interface for finding data in the DBS.
 The DBS QL syntax was intentionally kept very close to SQL.  With some minor amendments, this syntax naturally
 maps into the user mental model and was easily adopted by the CMS
 community. After several iterations of user testing, we adopted the following syntax:
-\[
+\begin{equation}
 find\,\,\,
 key_1,\, key_2,\, ...\,\,\, where\,\,\,
 \langle key\rangle\, 
 \langle op\rangle\, 
 \langle value\rangle \,\,\, and|or ...
 \label{QL_syntax}
-\]
+\end{equation}
 Here $find, where, and, or$ are reserved keywords
 adapted from SQL syntax\footnote{Except for the {\it find} special
 keyword we used all SQL keywords, e. g. {\it between, in}, etc.}
@@ -153,8 +153,9 @@ are present for all QL keys, {\it e.g.,} {\it createdate, createby}, {\it etc.},
 while other attributes are unique to certain entities, {\it e.g.,} {\it release.family}.
 
 To accommodate a variety of search criteria, DBS QL supports
-the usual set of boolean operators, including $>, >=, <, <=, =, like$, {\it etc.};
-details can be found in the $\langle op\rangle$ section of \ref{QL_syntax}.
+the usual set of boolean operators, including $>, >=, <, <=, =, like$, {\it etc.},
+as shown by $\langle op\rangle$ symbol in Eq. \ref{QL_syntax}.
+%details can be found in the $\langle op\rangle$ section of \ref{QL_syntax}.
 Since a DBS QL query is mapped directly to SQL, our limitations query expressivity
 are derived from SQL.  Complex queries can be expressed using
 brackets and combinations of constraints.
@@ -430,7 +431,8 @@ in any language.
 
 \section{Acknowledgements}
 
-This work was supported by the National Science Foundation and Department of Energy of the United States of America.
+This work was supported by the National Science Foundation and Department of Energy of the United States of America. Fermilab is operated by Fermi Research Alliance, LLC under Contract
+No. DE-AC02-07CH11359 with the United States Department of Energy.
 
 \section*{References}
 \begin{thebibliography}{9}
