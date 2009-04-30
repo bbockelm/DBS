@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.faces.component.html.HtmlForm;
 
 import org.richfaces.component.html.HtmlRichMessage;
+import tom.ui.util.FacesUtils;
 import tom.dm.entity.StreamerFile;
 
 
@@ -44,11 +45,25 @@ public class StreamerFileDetailBackingBean extends BaseBean {
 		return loadTable;
 	}
 	public  List<StreamerFile> getStreamerFiles() {
+		Object o = FacesUtils.getRequestParameter("jobId");
+		if (o == null) return this.streamerFiles;
+		long jobIdFromUrl = Long.valueOf((String)o);
+		o = FacesUtils.getRequestParameter("reload");
+		if((jobIdFromUrl != this.jobId) || (o != null)) {
+			this.loadTable = true;
+			this.init();
+		}
+
 		return this.streamerFiles;
 	}
 	protected void init() {
+		Object o = FacesUtils.getRequestParameter("jobId");
+                if (o != null)	this.jobId = Long.valueOf((String)o);
+
 		System.out.println("JOB ID is " + this.jobId);
 		System.out.println("loadTable is " + this.loadTable);
+		//System.out.println("In streamer file back bean page is " + ((javax.servlet.http.HttpServletRequest)javax.faces.context.FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRequestURL() + "\n\n");
+		//System.out.println("VIEW ID " + javax.faces.context.FacesContext.getCurrentInstance().getViewRoot().getViewId());
 		if(this.loadTable) {
 			try {
 				

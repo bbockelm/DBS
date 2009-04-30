@@ -5,14 +5,18 @@ xmlns:h="http://java.sun.com/jsf/html"
 xmlns:f="http://java.sun.com/jsf/core"
 xmlns:rich="http://richfaces.org/rich"
 xmlns:a4j="http://richfaces.org/a4j">
-<body>
-
-
 <script language="javascript">
 	function jsPrint() {
 		window.print();
-}
+	}
+	function timedRefresh(timeoutPeriod) {
+		setTimeout("location.reload(true);",timeoutPeriod);
+	}
 </script>
+
+<body onload="JavaScript:timedRefresh(120000);">
+
+
 
 
 <h:form id="formM">
@@ -72,12 +76,13 @@ xmlns:a4j="http://richfaces.org/a4j">
 
 	</rich:toolBarGroup>
 	<rich:toolBarGroup location="right">                       
-		<h:graphicImage id="print" height="32" width="32" url="/html/images/print-32x32.png" onclick="jsPrint()"/>
-		<h:outputLabel value="Print" for="print" onclick="jsPrint()"/>
-	</rich:toolBarGroup>
-	<rich:toolBarGroup location="right">                       
 		<h:graphicImage id="refresh" height="32" width="32" url="/html/images/refresh-32x32.png" onclick="window.location.reload(true)"/>
 		<h:outputLabel value="Refresh" for="refresh" onclick="window.location.reload(true)"/>
+	</rich:toolBarGroup>
+
+	<rich:toolBarGroup location="right">                       
+		<h:graphicImage id="print" height="32" width="32" url="/html/images/print-32x32.png" onclick="jsPrint()"/>
+		<h:outputLabel value="Print" for="print" onclick="jsPrint()"/>
 	</rich:toolBarGroup>
 	<rich:toolBarGroup location="right">    
 		<h:graphicImage id="contact" height="32" width="32" url="/html/images/mail-32x32.png" onclick="parent.location='mailto:sekhri@fnal.gov?subject=TOM Web Interface'"/>
@@ -85,6 +90,7 @@ xmlns:a4j="http://richfaces.org/a4j">
 	</rich:toolBarGroup>
 																																																																					
 </rich:toolBar>
+
 </h:form>
 </body>
 </html>

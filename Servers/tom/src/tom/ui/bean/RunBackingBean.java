@@ -5,11 +5,13 @@ import java.util.ArrayList;
 
 import javax.faces.component.html.HtmlForm;
 
+
 import org.richfaces.component.html.HtmlRichMessage;
 import tom.dm.entity.Run;
 import tom.dm.entity.Job;
 import tom.dm.entity.RepackedStat;
 import tom.dm.entity.Stat;
+import tom.ui.util.FacesUtils;
 
 
 public class RunBackingBean extends BaseBean {
@@ -47,6 +49,11 @@ public class RunBackingBean extends BaseBean {
 		return loadTable;
 	}
 	public  List<Run> getRuns() {
+		Object o = FacesUtils.getRequestParameter("reload");
+		if(o != null) {
+			this.loadTable = false;
+			this.init();
+		}
 		return this.runs;
 	}
 	public  List<Job> getRepackMergedAcquiredJobs() {
@@ -99,5 +106,12 @@ public class RunBackingBean extends BaseBean {
 				loadTable = false;
 			}
 		}
+	}
+
+	public String reload() {
+		System.out.println("Invaliding the session BEGIN");
+		FacesUtils.invalidateSession();
+		System.out.println("Invaliding the session DONE");
+		return "";
 	}
 }

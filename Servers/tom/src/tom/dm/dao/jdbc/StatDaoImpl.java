@@ -61,8 +61,8 @@ public class StatDaoImpl extends JdbcDaoSupport implements StatDao {
 								RepackedStat stat = new RepackedStat();
 								stat.setSuccessfulJobs(rs.getLong("Success"));
 								stat.setFailedJobs(rs.getLong("Failed"));
-								stat.setUsedJobs(rs.getLong("New"));
-								stat.setNewJobs(rs.getLong("Used"));
+								stat.setUsedJobs(rs.getLong("Used"));
+								stat.setNewJobs(rs.getLong("New"));
 								return stat;
 							}
 						});

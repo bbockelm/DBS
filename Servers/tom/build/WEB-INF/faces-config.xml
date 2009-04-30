@@ -22,6 +22,10 @@
 			<property-name>serviceLocator</property-name>
 			<value>#{serviceLocatorBean}</value>
 		</managed-property>
+		<managed-property>
+			<property-name>runId</property-name>
+			<value>0</value>
+		</managed-property>
 	</managed-bean>
 
 	<managed-bean>
@@ -65,6 +69,10 @@
 			<from-outcome>success</from-outcome>
 			<to-view-id>/html/rundetail.jsp</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<to-view-id>/html/run.jsp</to-view-id>
+		</navigation-case>
+
 	</navigation-rule>
 	<navigation-rule>
 		<from-view-id>/html/rundetail.jsp</from-view-id>
@@ -72,27 +80,30 @@
 			<from-outcome>files</from-outcome>
 			<to-view-id>/html/filedetail.jsp</to-view-id>
 		</navigation-case>
-	</navigation-rule>
-	<navigation-rule>
-		<from-view-id>/html/rundetail.jsp</from-view-id>
 		<navigation-case>
 			<from-outcome>streamerfiles</from-outcome>
 			<to-view-id>/html/streamerfiledetail.jsp</to-view-id>
 		</navigation-case>
-	</navigation-rule>
-	<navigation-rule>
-		<from-view-id>/html/rundetail.jsp</from-view-id>
 		<navigation-case>
 			<from-outcome>run</from-outcome>
 			<to-view-id>/html/run.jsp</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<to-view-id>/html/rundetail.jsp</to-view-id>
+		</navigation-case>
+
 	</navigation-rule>
+
 	<navigation-rule>
 		<from-view-id>/html/filedetail.jsp</from-view-id>
 		<navigation-case>
 			<from-outcome>rundetail</from-outcome>
 			<to-view-id>/html/rundetail.jsp</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<to-view-id>/html/filedetail.jsp</to-view-id>
+		</navigation-case>
+
 	</navigation-rule>
 	<navigation-rule>
 		<from-view-id>/html/streamerfiledetail.jsp</from-view-id>
@@ -100,7 +111,13 @@
 			<from-outcome>rundetail</from-outcome>
 			<to-view-id>/html/rundetail.jsp</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<to-view-id>/html/streamerfiledetail.jsp</to-view-id>
+		</navigation-case>
+
 	</navigation-rule>
 
-						      
+	<lifecycle>
+		<phase-listener>tom.ui.util.CacheControlPhaseListener</phase-listener>
+	</lifecycle>
 </faces-config>

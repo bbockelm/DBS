@@ -5,7 +5,6 @@ xmlns:f="http://java.sun.com/jsf/core"
 xmlns:rich="http://richfaces.org/rich"
 xmlns:a4j="http://richfaces.org/a4j">
 <body>
-	<h:outputText value="New Jobshahahha the valie uis -- > "/>
-	<h:outputText value="#{menuBean}"/>
+	<h:outputText value="Hurray You session timeout It works "/>
 </body>
 </html>

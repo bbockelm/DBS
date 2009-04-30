@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import javax.faces.component.html.HtmlForm;
+import tom.ui.util.FacesUtils;
 
 import org.richfaces.component.html.HtmlRichMessage;
 import tom.dm.entity.RunDetail;
@@ -56,6 +57,14 @@ public class RunDetailBackingBean extends BaseBean {
 		return loadTable;
 	}
 	public  List<RunDetail> getRunDetails() {
+		Object o = FacesUtils.getRequestParameter("runId");
+		if (o == null) return this.runDetails;
+		long runIdFromUrl = Long.valueOf((String)o);
+		o = FacesUtils.getRequestParameter("reload");
+		if((runIdFromUrl != this.runId) || (o != null)) {
+			this.loadTable = true;
+			this.init();
+		}
 		return this.runDetails;
 	}
 	public  List<FileBase> getMergedFiles() {
@@ -81,6 +90,9 @@ public class RunDetailBackingBean extends BaseBean {
 	}
 
 	protected void init() {
+		System.out.println("PARAM runId " + FacesUtils.getRequestParameter("runId"));
+		Object o = FacesUtils.getRequestParameter("runId");
+                if (o != null)	this.runId = Long.valueOf((String)o);
 		System.out.println("RUN ID is " + this.runId);
 		System.out.println("loadTable is " + this.loadTable);
 		if(this.loadTable) {
@@ -100,4 +112,7 @@ public class RunDetailBackingBean extends BaseBean {
 			}
 		}
 	}
+
+
+
 }

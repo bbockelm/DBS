@@ -2,6 +2,7 @@ package tom.ui.util;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.faces.context.FacesContext;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.Application;
@@ -150,5 +151,9 @@ public class FacesUtils {
 	
 	private static String getJsfEl(String value) {
 		return "#{" + value + "}";
+	}
+
+	public static void invalidateSession() {
+		((HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(false)).invalidate();
 	}
 }

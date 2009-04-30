@@ -119,7 +119,8 @@ public class RunDaoImpl extends JdbcDaoSupport implements RunDao {
 						"r.ACQ_ERA, st.STATUS , count(distinct str.streamer_id) AS STREAMERS " +
 						"FROM RUN r, RUN_STATUS st, streamer str where str.run_id = r.run_id " +
 						"AND r.RUN_STATUS = st.ID  " +
-						"GROUP BY r.RUN_ID, r.START_TIME, r.END_TIME, r.PROCESS, r.VERSION, r.HLTKEY, r.ACQ_ERA, st.STATUS",
+						"GROUP BY r.RUN_ID, r.START_TIME, r.END_TIME, r.PROCESS, r.VERSION, r.HLTKEY, r.ACQ_ERA, st.STATUS " +
+						"ORDER BY r.RUN_ID  ",
 						new RowMapper() {
 							public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 								Run run = new Run();
