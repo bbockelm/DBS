@@ -8,7 +8,8 @@
 	<property name="targetWsdlDir" value="${configTargetDir}/wsdl"/>
 	<property name="targetHtmlDir" value="${targetDir}/html"/>
 	<property name="targetClassDir" value="${targetDir}/WEB-INF/classes"/>
-	<property name="libraryDir" value="${basedir}/lib"/>
+	<property name="libraryDir" value="${basedir}/lib.tomcat5"/>
+	<!--property name="libraryDir" value="${basedir}/lib"/-->
 	<property name="htmlDir" value="${basedir}/html"/>
 	<property name="app.name" value="tom"/>
 	<property environment="env"/>
