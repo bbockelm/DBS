@@ -91,7 +91,7 @@ do
 # Clean up
 #
 #
-  /bin/rm *.rfm
+  /bin/rm *.rfm *.root
 # Done!
 #
 done
