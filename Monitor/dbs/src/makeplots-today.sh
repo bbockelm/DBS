@@ -118,7 +118,8 @@ fi
 # Clean up
 #
 #
-  /bin/rm *.rfm *.txt *.root
+  # save one day's worth so they can be reused for "yesterday" tomorrow
+  find *.rfm *.txt *.root -mtime +1|xargs rm
 # Done!
 #
 done
