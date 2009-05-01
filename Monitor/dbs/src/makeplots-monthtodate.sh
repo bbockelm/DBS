@@ -74,4 +74,10 @@ do
 # Done!
 #
 done
+#
+#
+# Clean up
+#
+#
+  /bin/rm *.rfm *.txt *.root
 exit

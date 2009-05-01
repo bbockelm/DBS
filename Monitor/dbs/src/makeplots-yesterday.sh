@@ -86,7 +86,7 @@ do
 # Clean up
 #
 #
-  /bin/rm *.rfm
+  /bin/rm *.rfm *.txt *.root
 # Done!
 #
 done
