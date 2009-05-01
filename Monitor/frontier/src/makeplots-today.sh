@@ -91,7 +91,7 @@ do
 # Clean up
 #
 #
-  /bin/rm *.rfm *.root
+  find *.rfm *.root -mtime +1|xargs rm
 # Done!
 #
 done
