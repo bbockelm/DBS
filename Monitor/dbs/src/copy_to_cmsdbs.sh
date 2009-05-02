@@ -73,5 +73,7 @@ ln -s ${logdir}/localhost_access_log.${today}.txt /home/cmsdbs/log/tomcat_access
 fi
 fi
 cd ${logdir}
-find *.txt -mtime +0 -exec gzip -f {} \;
+find -name "*.txt" -mtime +0 -exec gzip -f {} \;
+cd ${logdir}/httpd
+find -name "*.log" -mtime +0 -exec gzip -f {} \;
 exit
