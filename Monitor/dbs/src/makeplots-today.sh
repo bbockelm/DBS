@@ -122,5 +122,15 @@ fi
   find *.rfm *.txt *.root -mtime +1|xargs rm
 # Done!
 #
+
+#
+
 done
+#
+# compress the DBS logfiles in $logdir older than 3 days
+#
+cd $logdir
+find *.txt -mtime +2 | xargs gzip -f
+# done!
+	
 exit
