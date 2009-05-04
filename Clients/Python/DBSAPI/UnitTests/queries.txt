@@ -113,8 +113,8 @@ find file where phygrp in (BPositive,Any )
 find file,run where phygrp in (BPositive,Any )
 find phygrp.id, phygrp.name
 find phygrp, phygrp.id, phygrp.createdate , phygrp.moddate, phygrp.createby, phygrp.modby
-find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a
-find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0
+#find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a
+#find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0
 find dataset  where site = T1_FR_CCIN2P3
 find dataset  where site in ( T1_FR_CCIN2P3, T1_TW_ASGC)
 find dataset  where site like *A*
@@ -159,8 +159,8 @@ find file where phygrp in (BPositive,Any )
 find file,run where phygrp in (BPositive,Any )
 find phygrp.id, phygrp.name
 find phygrp, phygrp.id, phygrp.createdate , phygrp.createby, phygrp.modby
-find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a
-find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0
+#find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a
+#find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0
 find dataset  where site = T1_FR_CCIN2P3
 find dataset  where site in ( T1_FR_CCIN2P3, T1_TW_ASGC)
 find dataset  where site like *A*
