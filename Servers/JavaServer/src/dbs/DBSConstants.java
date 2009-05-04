@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.70 $"
- $Id: DBSConstants.java,v 1.70 2009/01/30 21:29:55 afaq Exp $"
+ $Revision: 1.71 $"
+ $Id: DBSConstants.java,v 1.71 2009/02/10 19:48:53 sekhri Exp $"
  *
 */
 package dbs;
@@ -17,13 +17,13 @@ public class DBSConstants {
 	public static boolean DEBUG = false;
 	public static boolean DEBUGCACHE = false;
 	//public static boolean ERROR = false;
-	public static boolean USECACHE = false;
+	//public static boolean USECACHE = false;
 
 
 	//public static boolean DEBUGCACHE = true;
 	//public static boolean DEBUG = true;
 	public static boolean ERROR = true;
-	//public static boolean USECACHE = true;//If this parameter is set to true, the server will use the cache
+	public static boolean USECACHE = true;//If this parameter is set to true, the server will use the cache
 
 	public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
 	public static String XML_FOOTER = "</dbs>\n";
