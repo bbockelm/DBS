@@ -16,7 +16,7 @@ from   utils.DDUtil     import findInString, genkey, natsort24
 # DBS imports
 from   RS.Wrapper import RegService
 from   DBSAPI.dbsApi import DbsApi
-from   utils.dbsapi import DbsApi2
+from   utils.dbsapi import DbsApi2, parseDBSerror
 
 def gettitles(userinput):
     tList   = []
@@ -93,7 +93,19 @@ def dbsparser_old(data):
 def dbsparser(data, tag="results"):
     """
     parse DBS XML output and return (resultList, titleList)
+
+    If DBS doesn't support view it should throw exception, like
+    <dbs>
+    <summary_view>
+    <exception>
+    java.sql.SQLException: ORA-00936: missing expression
+    </exception>
+    </summary_view>
+    <SUCCESS/>
+    </dbs>
     """
+    if  data.find("<exception>") != -1:
+        raise Exeption(data)
     elem  = ET.fromstring(data)
     oList = [] # results
     tList = [] # titles

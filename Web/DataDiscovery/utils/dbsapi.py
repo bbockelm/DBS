@@ -41,6 +41,8 @@ def parseDBSerror(data):
 		det  = det.replace('POSITION','\nPOSITION')
 		msg += 'DBS returns:\ncode   = %s,\nmsg    = %s,\ndetail = %s' % \
 		    (code, msg, det)
+            else:
+                msg = i.text
     return msg
 
 class DbsApi2(object):
