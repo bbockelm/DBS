@@ -51,12 +51,13 @@ public class StreamerFileDetailBackingBean extends BaseBean {
 		o = FacesUtils.getRequestParameter("reload");
 		if((jobIdFromUrl != this.jobId) || (o != null)) {
 			this.loadTable = true;
-			this.init();
+			this.initNew();
 		}
 
 		return this.streamerFiles;
 	}
-	protected void init() {
+	protected void init() {}
+	protected void initNew() {
 		Object o = FacesUtils.getRequestParameter("jobId");
                 if (o != null)	this.jobId = Long.valueOf((String)o);
 

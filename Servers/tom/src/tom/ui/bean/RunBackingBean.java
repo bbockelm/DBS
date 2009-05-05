@@ -52,7 +52,7 @@ public class RunBackingBean extends BaseBean {
 		Object o = FacesUtils.getRequestParameter("reload");
 		if(o != null) {
 			this.loadTable = false;
-			this.init();
+			this.initNew();
 		}
 		return this.runs;
 	}
@@ -87,7 +87,9 @@ public class RunBackingBean extends BaseBean {
 		return this.alcaSkimStat;
 	}
 
-	protected void init() {
+	protected void init() {}
+	protected void initNew() {
+	
 		if(!loadTable) {
 			try {
 				this.runs = getServiceLocator().getRunService().listRuns();

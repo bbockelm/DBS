@@ -63,7 +63,7 @@ public class RunDetailBackingBean extends BaseBean {
 		o = FacesUtils.getRequestParameter("reload");
 		if((runIdFromUrl != this.runId) || (o != null)) {
 			this.loadTable = true;
-			this.init();
+			this.initNew();
 		}
 		return this.runDetails;
 	}
@@ -89,7 +89,8 @@ public class RunDetailBackingBean extends BaseBean {
 		return this.alcaSkimJobs;
 	}
 
-	protected void init() {
+	protected void init() {}
+	protected void initNew() {
 		System.out.println("PARAM runId " + FacesUtils.getRequestParameter("runId"));
 		Object o = FacesUtils.getRequestParameter("runId");
                 if (o != null)	this.runId = Long.valueOf((String)o);
