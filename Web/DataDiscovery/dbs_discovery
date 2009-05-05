@@ -8,11 +8,11 @@ if [ -z ${DDHOME} ]; then
    echo $"The DDHOME environment is not set"
    exit 1
 fi
-if [ -z $DBSCLIENT ]; then
+if [ -z $DBS_CLIENT_ROOT ]; then
    echo "Please define DBSCLIENT environment, e.g. /path/COMP/DBS/Clients/Python"
    exit 1
 fi
-if [ -z $WEBTOOLS ]; then
+if [ -z $WEBTOOLS_ROOT ]; then
    echo "Please define WEBTOOLS environment, e.g. /path/WEBTOOLS"
    exit 1
 fi
