@@ -32,9 +32,11 @@ class DDOptionParser:
     self.parser.add_option("--xml",action="store_true",dest="xml",
          help="request output in XML format")
     self.parser.add_option("--page",action="store",type="string",default="0",dest="page",
-         help="specify output page, should come together with --limit and --details")
+         help="specify output page, should come together with --limit and --summary")
     self.parser.add_option("--limit",action="store",type="string",default="10",dest="limit",
          help="specify a limit on output, e.g. 50 results, the --limit=-1 will list all results")
+    self.parser.add_option("--summary",action="store_true",dest="summary",
+         help="return summary information")
   def getOpt(self):
     """
         Returns parse list of options
@@ -79,7 +81,7 @@ def parseDBSoutput_DBS_2_0_6(data, titles):
                 data = parseDate(subnode.data)
             else:
                 data = subnode.data
-            olist.append(data)
+            olist.append((subnode.parentNode.tagName,data))
         if  len(olist) == 1:
             datalist.append(olist[-1])
         else:
@@ -188,7 +190,7 @@ class DBSManager(object):
         else:
             return parseDBSoutput_DBS_2_0_5(data, titles)
 
-    def query(self, query, url=None, explain=None, result=None):
+    def query(self, query, url=None, explain=None, result=None, summary=False, begin=None, end=None):
         if  url:
             testurl = url
         else:
@@ -197,6 +199,12 @@ class DBSManager(object):
             dbsInstList = self.dbsinstances
         else:
             dbsInstList = [self.dbs]
+        if  summary:
+            self.params['api'] = 'executeSummary'
+        if  begin:
+            self.params['begin'] = begin
+        if  end:
+            self.params['end'] = end
         self.params['query']=query
         titles = []
         output = []
@@ -222,16 +230,31 @@ class DBSManager(object):
                 print data
                 return
             oList,lenList = self.parseDBSoutput(dbsurl, data, titles)
-            if  result and oList:
-                return oList
-            if  explain and oList:
-                printList(titles,lenList)
-                explain = None
-            for item in oList:
-                printList(item,lenList)
-            if  oList or testurl:
-                break
-                break
+            if  summary:
+                padding = 0
+                for item in oList:
+                    if  type(item) is types.ListType:
+                        if  item == oList[0]:
+                            for tag, data in item:
+                                name = tag.split('.')[-1]
+                                if  padding < len(name):
+                                    padding = len(name)
+                        for tag,data in item:
+                            name = tag.split('.')[-1].lower()
+                            pad  = (padding - len(name))*" "
+                            print "%s%s: %s" % (name, pad, data)
+                        print
+            else:
+                if  result and oList:
+                    return oList
+                if  explain and oList:
+                    printList(titles,lenList)
+                    explain = None
+                for item in oList:
+                    printList(item,lenList)
+                if  oList or testurl:
+                    break
+                    break
         print
 
 #
@@ -255,7 +278,7 @@ if __name__ == "__main__":
     else:
         print "\nUsage: %s --help" % sys.argv[0]
         sys.exit(0)
+    url = None
     if  opts.url:
-        dbsMgr.query(input, url=opts.url)
-    else:
-        dbsMgr.query(input)
+        url = opts.url
+    dbsMgr.query(input, url=opts.url, summary=opts.summary, begin=opts.page, end=opts.limit)
