@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $
- $Id: DBSApiViewsLogic.java,v 1.2 2009/02/13 19:01:18 valya Exp $
+ $Revision: 1.3 $
+ $Id: DBSApiViewsLogic.java,v 1.3 2009/02/18 02:48:56 valya Exp $
  Author: Valentin Kuznetsov
  **/
 
@@ -111,9 +111,17 @@ public class DBSApiViewsLogic extends DBSApiLogic {
         String userQuery, String begin, String end, 
         String sortKey, String sortOrder)
     throws Exception {
+        if(begin == null || end == null || begin.equals("") || end.equals("")) {
+           throw new Exception("Unbound query is not allowed in summary view");
+        } 
+        int lbound = new Integer(begin).intValue();
+        int rbound = new Integer(end).intValue();
+        if ((rbound-lbound)>100) {
+           throw new Exception("Too wide range for summary view");
+        }
+
         // Step 1, call executeQuery to get SQL for userQuery
-//        ArrayList objList = executeQuery(conn, out, userQuery, begin, end, false);
-        ArrayList objList = executeQuery(conn, out, userQuery, "", "", false);
+        ArrayList objList = executeQuery(conn, out, userQuery, begin, end, false);
         String finalQuery = (String)objList.get(1);
         List<String> bindValues = (List<String>)objList.get(2);
         List<Integer> bindIntValues = (List<Integer>)objList.get(3);
@@ -173,30 +181,18 @@ public class DBSApiViewsLogic extends DBSApiLogic {
             view = "AdsSummary";
         }
 
-        // based on provided begin/end define bounds for result loop
-        int lbound = 0;
-        int rbound = 0;
-        if(begin != null && !begin.equals("")) {
-           lbound = new Integer(begin).intValue();
-        }
-        if(end != null && !end.equals("")) {
-           rbound = new Integer(end).intValue();
-        } else {
-           rbound = resList.size();
-        }
-
         try {
             getSummary(conn, out, view, lbound, rbound, key, resList, sortKey, sortOrder);
+            out.write( "<results>\n" );
+            for(int i=lbound;i<rbound;i++) {
+                out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
+            }
+            out.write( "</results>\n" );
         } catch(Exception e) {
             DBSUtil.writeLog("\nexecuteSummary exception: " + e + "\n");
             out.write( "<summary_view>\n" );
             out.write( "<exception>\n" + e + "\n</exception>\n" );
             out.write( "</summary_view>\n" );
         }
-        out.write( "<results>\n" );
-        for(int i=lbound;i<rbound;i++) {
-            out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
-        }
-        out.write( "</results>\n" );
     }
 }
