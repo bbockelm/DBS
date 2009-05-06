@@ -21,6 +21,7 @@ public class QueryBuilder {
 	private boolean upper;
 	private ArrayList bindValues;
 	private ArrayList bindIntValues;
+	private List<String> listForOracleOrderInOutermostQuery;
 	GraphUtil u = null;
 	private String db = "";
 	private String countQuery = "";
@@ -28,6 +29,7 @@ public class QueryBuilder {
 		this.db = db;
 		bindValues = new ArrayList();
 		bindIntValues = new ArrayList();
+		listForOracleOrderInOutermostQuery = new ArrayList<String>();
 		km = new KeyMap();
 		//u = GraphUtil.getInstance("/home/sekhri/DBS/Servers/JavaServer/etc/DBSSchemaGraph.xml");
 		u = GraphUtil.getInstance("WEB-INF/DBSSchemaGraph.xml");
@@ -902,9 +904,7 @@ public class QueryBuilder {
 		for(Object o: okws){
 			++iter;	checkMax(iter);
 			String orderBy = (String)o;
-			if(!orderOnce) {
-				query += " ORDER BY ";
-			}
+			if(!orderOnce) query += " ORDER BY ";
 			if(orderOnce) query += ",";
 			String orderToken = "";
 			if(Util.isSame(orderBy, "dataset")) orderToken = "Block.Path";
@@ -933,6 +933,8 @@ public class QueryBuilder {
 			}
 
 			query += orderToken;
+			if (Util.isSame(orderToken, "Block.Path")) listForOracleOrderInOutermostQuery.add("PATH");
+			else listForOracleOrderInOutermostQuery.add(orderToken.replace('.', '_'));
 			orderOnce = true;
 		}
 		if(okws.size() > 0) {
@@ -1018,6 +1020,15 @@ public class QueryBuilder {
 
 		}
 		toReturn += " FROM (SELECT x.*, rownum as rnum FROM (\n" + query + "\n) x) where rnum between ? and ?";
+		boolean orderOnce = false;
+		if (listForOracleOrderInOutermostQuery.size() > 0) {
+			toReturn += " ORDER BY ";
+			for(String orderToken: listForOracleOrderInOutermostQuery) {
+				if(orderOnce) toReturn += " , ";
+				toReturn += orderToken;
+				orderOnce = true;
+			}
+		}
 		return toReturn;
 			
 			
