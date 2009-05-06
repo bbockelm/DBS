@@ -1380,8 +1380,8 @@ public class QueryBuilder {
 		System.out.println("VAL is " + val);
 		String extraQuery = "";
 		if(Util.isSame(op, "like")) extraQuery = "\t" + makeUpper("StorageElement.SEName");
-		if(Util.isSame(op, "not like")) throw new Exception("NOT LIKE is not supported with site");
 		else extraQuery = "\tStorageElement.SEName ";
+		if(Util.isSame(op, "not like")) throw new Exception("NOT LIKE is not supported with site");
 		String query = " IN ( \n";
 		if(Util.isSame(op, "!=")) query = " NOT IN ( \n";
 		SiteClient cc = new SiteClient();

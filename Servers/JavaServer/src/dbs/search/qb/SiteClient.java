@@ -3,9 +3,12 @@ package dbs.search.qb;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import dbs.util.DBSConfig;
+import org.json.JSONObject;
+import org.json.JSONException;
 import gov.fnal.ms.client.util.HttpUtil;
 
 public class SiteClient {
@@ -18,7 +21,8 @@ public class SiteClient {
 		this.url = dbsConfig.getSiteServiceURL();
 
 	}
-	public List<String> parse(String input, String tag) throws Exception {
+
+	public List<String> parse_DEPRICATED(String input, String tag) throws Exception {
 		String matchBegin = tag + "': '";
 		String matchEnd = "'}";
 
@@ -41,10 +45,40 @@ public class SiteClient {
 		
 		return toReturn;
 	}
+
+	public List<String> parse(String input, String tag) throws Exception {
+		List<String> toReturn = new ArrayList<String>();
+		JSONObject jobj = new JSONObject(input);
+		if(jobj == null) return toReturn;
+		String objs[] = JSONObject.getNames(jobj);
+		if (objs == null) return toReturn;
+		for(String a: objs) {
+			//System.out.println("Names  " + a);
+			//System.out.println (innerJobj);
+			JSONObject innerJobj = jobj.getJSONObject(a);
+			if (innerJobj == null) continue;
+			String keys[] = JSONObject.getNames(innerJobj);
+			if (keys == null) continue;
+			for (String aKey: keys) {
+				if(aKey.equals(tag)) {
+					StringTokenizer st = new StringTokenizer(innerJobj.getString(aKey), ",");
+					for(int i=0; i <= st.countTokens() ; ++i) {
+						String token = st.nextToken();
+						System.out.println(token);
+						toReturn.add(token);
+						//System.out.println(innerJobj.getString(aKey));
+					}
+				}
+			}
+		}
+		return toReturn;
+	}
+
 	public List<String> getSE(String siteName) throws Exception {
 		String instanceUrl = this.url + "?name=" + siteName;
+		//System.out.println("URL is " + instanceUrl);
 		String response = hu.readUrl(instanceUrl);
-		//System.out.println(response);
+		System.out.println(response);
 		List<String> toReturn = parse(response, "name");
 		toReturn.add(siteName);
 		return toReturn;

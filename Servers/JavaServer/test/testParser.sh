@@ -5,7 +5,7 @@ if [ "${JAVA_HOME}" = "" ]; then
 fi
 savePWD=$PWD
 cd $BASE/../../LibValut
-CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.2.2.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar:$PWD/msclient.jar
+CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar:$PWD/sqlitejdbc-v036-nested.jar:$PWD/antlrworks-1.2.2.jar:$PWD/commons-collections-3.2.jar:$PWD/jung-1.7.6.jar:$PWD/commons-lang-2.4.jar:$PWD/msclient.jar:$PWD/json.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
@@ -203,14 +203,17 @@ executeQuery () {
 	
 	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
-	#$CMD query="find dataset where site != caf.cern.ch "
+	#$CMD query="find site where site like *ch "
+	$CMD query="find site where site = srm.cern.ch "
+	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO "
 	#$CMD query="find dataset where site = caf.cern.ch "
 	#$CMD query="find dataset where site = T1_CH_CERN "
 	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby,run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO"
 	#$CMD query="find site, dataset where dataset = **"
 	#$CMD query="find site, block.id, block where dataset = /SiStripCommissioning08-edm/Online/RAW"
 	#$CMD query="find dataset, run.number, count(file), sum(file.size) where dataset = /HcalHPDNoise/Commissioning08-CRUZET4_v1/RAW order by run.number, dataset desc" begin=0 end=5
-	$CMD query="find dataset, run.number, count(file), sum(file.size) where dataset = /HcalHPDNoise/Commissioning08-CRUZET4_v1/RAW" begin=0 end=5
+	#$CMD query="find dataset, run.number, count(file), sum(file.size) where dataset = /HcalHPDNoise/Commissioning08-CRUZET4_v1/RAW" begin=0 end=5
+	#$CMD query="find branch.name, branch.createby, branch.createdate, branch.modby, branch.moddate where file=/store/temp/backfill/data/AllRunsTest/Cosmics/RECO/OneOfEachLumi_v1/000/064/818/F0071E05-D6D9-DD11-9CD6-000423D174FE.root"
 	#$CMD query="find dataset where site in (T1_CH_CERN , T0_CH_CERN) "
 	#$CMD query="find branch.name, branch.createby, branch.createdate, branch.modby, branch.moddate where file=/store/temp/backfill/data/AllRunsTest/Cosmics/RECO/OneOfEachLumi_v1/000/064/818/F0071E05-D6D9-DD11-9CD6-000423D174FE.root"
 
