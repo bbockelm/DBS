@@ -606,7 +606,8 @@ def redirected_print_help(self):
 # This function just dumps the generic help text on screen
 def print_help(self):
 	print saved_help.getvalue()
-	term=TerminalController()
+	if dbsAvailable:
+		term=TerminalController()
 	helper = cmd_doc_writer()
         print helper.command_short_help()
         #print term.BLUE+helper.command_short_help()+term.NORMAL
