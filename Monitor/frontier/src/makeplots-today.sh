@@ -4,12 +4,10 @@
 #
 # Set up root
 #
-#if [ -z "$ROOTSYS" ]
-#then
-export ROOTSYS="/afs/cern.ch/sw/lcg/external/root/5.16.00/slc4_ia32_gcc34/root"
-PATH="${PATH}:$ROOTSYS/bin"
-export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
-#fi
+export ROOTSYS="/afs/cern.ch/cms/sw/slc4_amd64_gcc345/lcg/root/5.18.00-CMS19a/"
+export PATH="$ROOTSYS/bin:${PATH}"
+#X11R6="/usr/X11R6/lib64"
+export LD_LIBRARY_PATH="$ROOTSYS/lib:$ORACLE_HOME/lib:$LD_LIBRARY_PATH"
 echo "ROOTSYS $ROOTSYS"
 echo "PATH $PATH"
 echo "LD_LIBRARY_PATH $LD_LIBRARY_PATH"
@@ -18,11 +16,12 @@ which root
 #
 # Uses temp area for work
 #
+basedir=/home/dbfrontier
 servicenames="cmsfrontier" # cmst0dbs cmstestdbs"
-workdir=/data/squid_logs/temp
-plotdir=/home/dbfrontier/local/apache/squidplots
-srcdir=/data/squid_logs/src
-logdir=/data/squid_logs
+workdir=$basedir/data/squid_logs/temp
+plotdir=$basedir/local/apache/squidplots
+srcdir=$basedir/apps/DBS/Monitor/frontier/src
+logdir=$basedir/data/squid_logs
 #today="`date +%Y%m%d`"
 today="`date +%Y-%m-%d`"
 #today="2007-12-17" #for testing purposes only
@@ -48,7 +47,7 @@ do
 # copy and unzip logs for today into work area
 # 
   /bin/cp $logdir/${service}*${today}*.rfm.gz .
-  gunzip *.gz
+  gunzip -f *.gz
 #
 # reformat, and make the root tree files
 #
@@ -78,6 +77,7 @@ do
  if [ ! -d $plotdir/${service}/${today} ];then
    mkdir $plotdir/${service}/${today}
    rm $plotdir/${service}/today
+   rm $plotdir/${service}/yesterday
    ln -s $plotdir/${service}/${today} $plotdir/${service}/today
    ln -s $plotdir/${service}/${yesterday} $plotdir/${service}/yesterday
  fi
