@@ -3831,7 +3831,7 @@ All LFNs in a block
         userInput= kwargs['userInput']
         sortName = getArg(kwargs, 'sortName', '')
         sortOrder= getArg(kwargs, 'sortOrder', '')
-        print "\n\n#### datasetSummary", sortName, sortOrder
+#        print "\n\n#### datasetSummary", sortName, sortOrder
         result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit, sortName, sortOrder)
         excludeList=[]
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
