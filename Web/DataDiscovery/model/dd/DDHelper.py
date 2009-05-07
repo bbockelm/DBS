@@ -115,12 +115,26 @@ class DDHelper(DDLogger):
             sitesdict = {}
             for dataset, nsites in res1:
                 sitesdict[dataset] = nsites
+            totsize = 0
+            totfiles = 0
+            totevts = 0
+            totblks = 0
+            nsites = 0
             for item in res2:
-                dataset, pdate, cby, totsize, totfiles, totevts, totblks = item
-                nsites = 0
-                if  sitesdict.has_key(dataset):
-                    nsites = sitesdict[dataset]
-                rdict[dataset] = [pdate, cby, totsize, totblks, totfiles, totevts] + [nsites]
+                dataset, pdate, cby, size, files, evts, blks = item
+                totsize  += long(size)
+                totfiles += long(files)
+                totevts  += long(evts)
+                totblks  += long(blks)
+            if  sitesdict.has_key(dataset):
+                nsites = sitesdict[dataset]
+            rdict[dataset] = [pdate, cby, totsize, totblks, totfiles, totevts] + [nsites]
+#            for item in res2:
+#                dataset, pdate, cby, totsize, totfiles, totevts, totblks = item
+#                nsites = 0
+#                if  sitesdict.has_key(dataset):
+#                    nsites = sitesdict[dataset]
+#                rdict[dataset] = [pdate, cby, totsize, totblks, totfiles, totevts] + [nsites]
         result = [[dataset]+rdict[dataset] for dataset in dlist]
         return result
 
