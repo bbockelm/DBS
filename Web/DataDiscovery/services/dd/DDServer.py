@@ -1737,7 +1737,8 @@ class DDServer(DDLogger,Controller):
             query = "find dataset where " + cond[4:] # eliminate first "and "
         else:
             query = "find dataset where dataset like *"
-        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query,sortName='dataset',sortOrder='desc')
+#        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query,sortName='dataset',sortOrder='desc')
+        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query)
         return page
     getDataHelper.exposed=True
 
@@ -3828,8 +3829,9 @@ All LFNs in a block
         num      = kwargs['num']
         link     = kwargs['link']
         userInput= kwargs['userInput']
-        sortName = kwargs['sortName']
-        sortOrder= kwargs['sortOrder']
+        sortName = getArg(kwargs, 'sortName', '')
+        sortOrder= getArg(kwargs, 'sortOrder', '')
+        print "\n\n#### datasetSummary", sortName, sortOrder
         result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit, sortName, sortOrder)
         excludeList=[]
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
@@ -3971,12 +3973,12 @@ All LFNs in a block
                 userInput = "find dataset where dataset = %s" % userInput
         sortName = getArg(kwargs, 'sortName', '')
         sortOrder= getArg(kwargs, 'sortOrder', '')
-        if  sortName and sortOrder:
-            if  userInput.find(' order by ') == -1:
-                userInput += " order by %s %s" % (sortName.lower(), sortOrder.lower())
-            else:
-                userInput = userInput.split(' order by ')[0] + \
-                        " order by %s %s" % (sortName.lower(), sortOrder.lower())
+#        if  sortName and sortOrder:
+#            if  userInput.find(' order by ') == -1:
+#                userInput += " order by %s %s" % (sortName.lower(), sortOrder.lower())
+#            else:
+#                userInput = userInput.split(' order by ')[0] + \
+#                        " order by %s %s" % (sortName.lower(), sortOrder.lower())
         kwargs['userInput'] = userInput
 
         fromRow  =_idx*pagerStep

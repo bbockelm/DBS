@@ -28,6 +28,7 @@ View results:
 #if len($titleList)
 #set sortName=$titleList[0]
 <select id="sel_sortName" onchange="javascript:ReloadASearch('$iface');">
+<option value="">Sort by</option>
 #for item in $titleList
 #if not $excludeList.count($item)
 <option value="$item">Sort by $item</option>

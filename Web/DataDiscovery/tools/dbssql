@@ -151,7 +151,9 @@ def printList(iList,lenList):
             if  len(item)<lenList[idx]:
                 elem=str(item)+" "*(lenList[idx]-len(item))
             else: elem = item
-            print elem,
+            tup = eval(elem)
+            print tup[-1],
+#            print elem,
         print
     else:
         print iList
