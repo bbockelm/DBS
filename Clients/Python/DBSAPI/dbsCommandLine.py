@@ -606,8 +606,7 @@ def redirected_print_help(self):
 # This function just dumps the generic help text on screen
 def print_help(self):
 	print saved_help.getvalue()
-	if dbsAvailable:
-		term=TerminalController()
+	term=TerminalController()
 	helper = cmd_doc_writer()
         print helper.command_short_help()
         #print term.BLUE+helper.command_short_help()+term.NORMAL
@@ -1919,6 +1918,8 @@ class ApiDispatcher:
                 dbsver = dbsver.replace("'","").replace('"','')
 		if dbsver.find("_pre") != -1: 
 			dbsver = dbsver.split("_pre")[0]
+		if dbsver.find("patch") != -1:
+			dbsver=dbsver.split("_patch")[0]
                 return dbsver
         return None
 
@@ -1945,6 +1946,7 @@ class ApiDispatcher:
 		params['type']=qu
 		res = urllib2.urlopen(self.optdict.get('url'), urllib.urlencode(params, doseq=True))
 		data = res.read()
+
         self.progress.stop()
 	# parse according to Server version, DBS_2_0_6 have different XML coming from server
         if not self.apiversion or self.apiversion >= 'DBS_2_0_6':
