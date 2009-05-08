@@ -39,10 +39,8 @@ else
   hour="`date +%k`"
 fi
 echo "hour=$hour"
-let yestersec=($midnight - 86400)
-midnight=`date +%s -d"$month $day 00:00:00 CET $year"` #today midnight
-let yestersec=($midnight - 86400)
-yesterday=`date +%Y-%m-%d -d@$yestersec`
+yesterday="`date -d 'yesterday'  +%Y-%m-%d`"
+
 #temp fix
 #yesterday=$today
 #echo "today: $today, midnight: $midnight, yesterday: $yesterday"
@@ -63,7 +61,7 @@ scp -q -F /data/cmsdbs/.ssh/config ${logdir}/localhost_access_log.${yesterday}.t
 if [ -d ${logdir}/httpd ]; then
    hour=23
    echo "Copying at `date`:access_log.${today}.${hour}.log"
-    scp -q -F /data/cmsdbs/.ssh/config ${logdir}/httpd/access_log.${yesterday}.$hour.log dbfrontier@cmsdbs:data/dbs_logs/${host}_access_log_httpd.${today}.${hour}.txt
+    scp -q -F /data/cmsdbs/.ssh/config ${logdir}/httpd/access_log.${yesterday}.$hour.log dbfrontier@cmsdbs:data/dbs_logs/${host}_access_log_httpd.${yesterday}.${hour}.txt
 #
 # Make link for lemon monitoring
 #
