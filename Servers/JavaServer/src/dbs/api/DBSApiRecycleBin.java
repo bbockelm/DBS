@@ -4,6 +4,7 @@
 
 package dbs.api;
 import java.sql.Connection;
+import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.io.Writer;
@@ -27,7 +28,31 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 		super(data);
 		this.data = data;
 	}
-
+	public void listRecycleBin(Connection conn, Writer out, String path) throws Exception {
+	    PreparedStatement ps = null;
+	    ResultSet rs =  null;
+	    try{
+		ps = DBSSql.listRecycleBin(conn,path);
+		pushQuery(ps);
+		rs=ps.executeQuery();
+		while(rs.next()) {
+		    out.write(((String) "<path = '" + get(rs, "path")+
+			"' block='" + get(rs, "blockname")+
+			"' creationdate='"+ new Date(Long.parseLong(get(rs, "creationdate").trim())*1000)+
+			"' createdby='" + get(rs, "name")+
+			"'/>\n"));
+		}
+	    }finally {
+		    if (rs != null) rs.close();
+		    if (ps != null) ps.close();
+		    }
+	}
+							 
+	public void listRecycleBin(Connection conn, Writer out) throws Exception { 
+	    try{
+		listRecycleBin(conn, out , "");
+	    }finally{ }
+	}
 	public void insertRecycleBin(Connection conn, Writer out, String path, String blockName, String xml, String lmbUserID, String cbUserID, String creationDate) throws Exception {
 		if( !isNull(getMapIDNoCheck(conn, "RecycleBin", "Path", "BlockName", path, blockName, false))) 
 			throw new DBSException("Already Exists", "1020", "RecycleBin with Path " + path + " and block " + blockName + " Already Exists. Remove this entry first");

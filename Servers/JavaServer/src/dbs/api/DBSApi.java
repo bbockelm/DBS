@@ -1,6 +1,6 @@
 /**
- $Revision: 1.160 $"
- $Id: DBSApi.java,v 1.160 2009/03/16 21:43:38 afaq Exp $"
+ $Revision: 1.161 $"
+ $Id: DBSApi.java,v 1.161 2009/05/01 16:35:25 afaq Exp $"
  *
 */
 
@@ -275,6 +275,8 @@ public class DBSApi {
 				
 			} else if (apiStr.equals("register")) {
 				System.out.println("");
+			} else if (apiStr.equals("listRecycleBin")){
+				(new DBSApiRecycleBin(this.data)).listRecycleBin(conn, out, get(table, "path", false));
 			} else if (apiStr.equals("listProcessedDatasets")) {
 
 				(new DBSApiProcDSLogic(this.data)).listProcessedDatasets(conn, out, 

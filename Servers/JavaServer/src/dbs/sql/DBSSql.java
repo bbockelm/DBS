@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.215 $"
- $Id: DBSSql.java,v 1.215 2009/03/23 18:38:31 afaq Exp $"
+ $Revision: 1.216 $"
+ $Id: DBSSql.java,v 1.216 2009/03/24 16:42:43 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -175,7 +175,19 @@ public class DBSSql {
 		return getInsertSQL(conn, "RecycleBin", table);
 	}
 
-
+    /********************************************************************
+     * Added for release 207.
+     * Y. Guo   May 5 2009 
+     ********************************************************************/
+    public static PreparedStatement listRecycleBin(Connection conn, String path) throws SQLException {
+        String sql = "SELECT PATH, BLOCKNAME, R.CREATIONDATE CREATIONDATE, DISTINGUISHEDNAME NAME from " +
+	                    owner()+"RECYCLEBIN R join " + owner()+" PERSON P on P.ID= R.CREATEDBY ";
+        if(path !="") sql += " where path=?"; 			    
+	PreparedStatement ps = DBManagement.getStatement(conn, sql);
+	if (path != "")ps.setString(1, path);
+	DBSUtil.writeLog("\n\n" + ps + "\n\n");
+	return ps;
+     }
        	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
 		Hashtable table = new Hashtable();
 		table.put(key, value);
