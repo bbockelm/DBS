@@ -128,6 +128,29 @@ public class Help {
 
 
 		kw = new Keyword();
+		kw.entity = "release";
+		kw.attrs.add("createdate");
+		kw.attrs.add("moddate");
+		kw.attrs.add("createby");
+		kw.attrs.add("modby");
+		kw.attrs.add("count");
+		kw.attrs.add("id");
+
+		e = new Example();
+		e.desc = "I want to find all releases";
+		e.query = "find release";
+		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find all CMSSW_1 release series";
+		e.query = "find release where release like CMSSW_1*";
+		kw.examples.add(e);
+		map.put(kw.entity, kw);
+
+
+		//-------------------------------------------------------------------------
+
+
+		kw = new Keyword();
 		kw.entity = "dataset";
 		kw.attrs.add("parent");
 		kw.attrs.add("release");
@@ -190,6 +213,8 @@ public class Help {
 		e.desc = "I want to find configuration and its attributes like name, hash, content, version, type, annotation, creation date, modification date, created by, modified by in a dataset";
 		e.query = "find config.name, config.hash, config.content, config.version, config.type, config. annotation, config.createdate, config.moddate, config.createby, config.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
 		kw.examples.add(e);
+		map.put(kw.entity, kw);
+
 		//-------------------------------------------------------------------------
 
 		kw = new Keyword();
@@ -244,6 +269,7 @@ public class Help {
 		kw.attrs.add("parent");
 		kw.attrs.add("child");
 		kw.attrs.add("tier");
+		kw.attrs.add("type");
 		kw.attrs.add("numevents");
 		kw.attrs.add("checksum");
 		kw.attrs.add("createdate");
@@ -605,6 +631,7 @@ public class Help {
 		kw.attrs.add("version");
 		kw.attrs.add("exe");
 		kw.attrs.add("family");
+		kw.attrs.add("content");
 		kw.attrs.add("createdate");
 		kw.attrs.add("moddate");
 		kw.attrs.add("createby");
@@ -709,6 +736,8 @@ public class Help {
 		e.desc = "I want to find MC description attributes like its definition, content, and decay chain (parents), creation date, modification date, created by, modified by in a dataset";
 		e.query = "find mcdesc.def, mcdesc.content, mcdesc.parent, mcdesc.createdate, mcdesc.moddate, mcdesc.createby, mcdesc.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
 		kw.examples.add(e);
+		map.put(kw.entity, kw);
+
 		//-------------------------------------------------------------------------
 
 		kw = new Keyword();
@@ -728,6 +757,8 @@ public class Help {
 		e.desc = "I want to find trigger description attributes like its definition, creation date, modification date, created by, modified by in a dataset";
 		e.query = "find trigdesc.def, trigdesc.createdate, trigdesc.moddate, trigdesc.createby, trigdesc.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
 		kw.examples.add(e);
+		map.put(kw.entity, kw);
+
 		//-------------------------------------------------------------------------
 
 
