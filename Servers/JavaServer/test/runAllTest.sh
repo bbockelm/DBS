@@ -24,6 +24,8 @@ tier_name2="SIM"
 #tier_name2="This_is_a_test_tier_SIM_$rand"
 #tier_name2="This_is_a_test_tier_SIM"
 processed_name="This_is_a_test_processed_$rand"
+path_junk="/TkAlCosmics0T/Summer08_COSMMC_21X_v1/GEN-SIM-RAW"
+path_empty=""
 #path="/$primary_name/$tier_name1/$processed_name"
 path="/$primary_name/$processed_name/$tier_name1-$tier_name2"
 path_child="/$primary_name/CHILD_$processed_name/$tier_name2"
@@ -61,6 +63,24 @@ display () {
 	fi
 }
 
+listRecycleBin() {
+    message="Executing listRecycleBin API..."
+    echo $message >> $outFile ; echo $message
+    out=`$CMD api=listRecycleBin path=$path_empty`
+    #out=`$CMD api=listRecycleBin path=/TestPrimary_002_20070207_16h08m26s/TestProcessed_20070207_16h08m26s/SIM_20070207_16h08m26s
+    display "$out"
+}
+
+listRecycleBin2() {
+    message="Executing listRecycleBin API..."
+    echo $message >> $outFile ; echo $message
+    out=`$CMD api=listRecycleBin `
+    #out=`$CMD api=listRecycleBin path=/TestPrimary_002_20070207_16h08m26s/TestProcessed_20070207_16h08m26s/SIM_20070207_16h08m26s
+    display "$out"
+}
+
+
+
 listPrimaryDatasets () {
 	message="Executing listPrimaryDatasets API..."
 	echo $message >> $outFile ; echo $message
@@ -75,7 +95,6 @@ listDatasetSummary () {
 	out=`$CMD api=listDatasetSummary path=$path_child`
 	display "$out"
 }
-
 
 listProcessedDatasets () {
 	message="Executing listProcessedDatasets API..."
@@ -744,7 +763,7 @@ getHelp () {
 	out=`$CMD api=getHelp`
 	echo "$out"
 }
-getHelp
+#getHelp
 #getIntegratedLuminosity
 #executeQuery
 #getIntegratedLuminosity	
@@ -766,6 +785,8 @@ getHelp
 ##listAnalysisDatasetDefinition
 ##listAnalysisDataset
 ##
+#listRecycleBin
+#listRecycleBin2
 #listPrimaryDatasets
 #listPathParents
 #listProcessedDatasets
