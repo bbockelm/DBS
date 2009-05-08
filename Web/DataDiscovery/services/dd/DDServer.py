@@ -1737,8 +1737,8 @@ class DDServer(DDLogger,Controller):
             query = "find dataset where " + cond[4:] # eliminate first "and "
         else:
             query = "find dataset where dataset like *"
-#        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query,sortName='dataset',sortOrder='desc')
-        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query)
+        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query,sortName='dataset.createdate',sortOrder='desc')
+#        page=self.aSearch(dbsInst=dbsInst,userMode=userMode,_idx=_idx,pagerStep=pagerStep,userInput=query)
         return page
     getDataHelper.exposed=True
 
