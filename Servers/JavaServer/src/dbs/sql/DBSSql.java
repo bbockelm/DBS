@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.216 $"
- $Id: DBSSql.java,v 1.216 2009/03/24 16:42:43 afaq Exp $"
+ $Revision: 1.217 $"
+ $Id: DBSSql.java,v 1.217 2009/05/08 14:52:31 yuyi Exp $"
  *
  */
 package dbs.sql;
@@ -1955,8 +1955,21 @@ public class DBSSql {
 
 
 
+        public static PreparedStatement listFileParentBlocks(Connection conn, String fileID) throws SQLException {
+                String sql = "SELECT B.ID as ID\n"+
+                                "FROM "+owner()+"Block B\n"+
+                                "JOIN "+owner()+"Files FL\n"+
+                                "  ON FL.Block=B.ID\n"+
+                                "LEFT OUTER JOIN "+owner()+"FileParentage FP\n"+
+                                "  ON FP.ThisFile = FL.ID\n"+
+                                "WHERE FL.ID = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, fileID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
-	public static PreparedStatement listFileParentBlocks(Connection conn, String fileID) throws SQLException {
+	public static PreparedStatement listFileParentBlocks_DELETEME(Connection conn, String fileID) throws SQLException {
                 String sql = "SELECT B.ID as ID\n"+
 				"FROM "+owner()+"Block B\n"+
                                 "JOIN "+owner()+"Files FL\n"+
