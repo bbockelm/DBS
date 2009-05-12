@@ -1,6 +1,6 @@
 /**
- $Revision: 1.124 $"
- $Id: DBSApiFileLogic.java,v 1.124 2009/03/19 15:38:22 afaq Exp $"
+ $Revision: 1.125 $"
+ $Id: DBSApiFileLogic.java,v 1.125 2009/03/19 22:07:42 afaq Exp $"
  *
  */
 
@@ -1151,10 +1151,24 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		return blockIDList;
 	}
 
+
         void insertBlockParentage(Connection conn, Writer out, String blockID, ArrayList  blockIDList,
                                         String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		try {
+			insertMapBatch(conn, out, "BlockParent", "ThisBlock", "ItsParent",
+                                        blockID, blockIDList, cbUserID, lmbUserID, creationDate);
 
-                for (Object s: blockIDList) {
+                        } catch (SQLException ex) {
+                                String exmsg = ex.getMessage();
+                                if ( exmsg.startsWith("Duplicate entry") ||
+                                        exmsg.startsWith("ORA-00001: unique constraint") ) {
+                                        //do nothing, just continue
+                                }
+                                else
+                                        throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
+                        }
+
+/*                for (Object s: blockIDList) {
                 	try {
                        	       insertMap(conn, out, "BlockParent", "ThisBlock", "ItsParent", 
                                         blockID, (String) s, cbUserID, lmbUserID, creationDate, true);
@@ -1168,7 +1182,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 	throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
                 	}
 		}
-
+*/
         }
 
        /**
