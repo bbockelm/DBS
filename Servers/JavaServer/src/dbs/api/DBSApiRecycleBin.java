@@ -36,7 +36,7 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 		pushQuery(ps);
 		rs=ps.executeQuery();
 		while(rs.next()) {
-		    out.write(((String) "<path = '" + get(rs, "path")+
+		    out.write(((String) "<recycle_bin path='" + get(rs, "path")+
 			"' block='" + get(rs, "blockname")+
 			"' creationdate='"+ new Date(Long.parseLong(get(rs, "creationdate").trim())*1000)+
 			"' createdby='" + get(rs, "name")+
