@@ -18,164 +18,109 @@ catch (RecognitionException e) {
 }
 }
 
-stmt	: select spaces selectList spaces where spaces constraintList spaces 
-	| select spaces selectList spaces
-	| select spaces selectList spaces order spaces by spaces orderList
-	| select spaces selectList spaces where spaces constraintList spaces order spaces by spaces orderList;
+stmt	: select selectList (where constraintList)? (order by orderList)?;
+//stmt	: select selectList;
 
 
-spaces	: (SPACE)*;
-
-orderList	:okw=	keyword 		{okws.add($okw.text);}
+orderList	:orderList1
+		| orderList1 
+		oing = ordering {orderingkw=$oing.text;};
+orderList1	:okw=	simpleKw 		{okws.add($okw.text);}
  		(
-		spaces
 		COMMA
-		spaces
- 	okw=	keyword  		{okws.add($okw.text);}
+		okw=	simpleKw  		{okws.add($okw.text);}
  		)*
-		spaces
-	oing = 	ordering {orderingkw=$oing.text;}
 		; 
 
-ordering 	: (asc|desc)?;	 
-selectList	:kw=	keyword 		{kws.add($kw.text);}
+ordering 	: asc|desc;	 
+selectList	:kw=	slkeyword 		{kws.add($kw.text);}
  		(
-		spaces
 		COMMA
-		spaces
- 	kw=	keyword  		{kws.add($kw.text);}
+	 	kw=	slkeyword  		{kws.add($kw.text);}
  		)*;		 
  		
-keyword	: entity 
-	| entity DOT attr
-	| entity DOT funct
-	| count spaces '(' spaces entity spaces ')'
-	| sum spaces '(' spaces entity DOT attr spaces ')';
+simpleKw	: entity
+		| entity DOT attr;
+slkeyword	: simpleKw
+		| funct LB simpleKw RB;
 	
-constraintList	: constraint1 ( spaces 
+constraintList	: constraint1 ( 
 	rel=	logicalOp 		{ constraints.add($rel.text);}
-		spaces constraint1)*;
-lopen		: (lb)*;
-ropen		: (rb)*;
+		constraint1)*;
+lopen		: LB(LB)*;
+ropen		: RB(RB)*;
 constraint1     : kl=   lopen   {Constraint c1=new Constraint();c1.setBracket($kl.text);constraints.add(c1);}
-                constraint 
-                kr=     ropen   {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);};
+                constraint
+		(
+		rel=    logicalOp               { constraints.add($rel.text);}
+		constraint
+		)*
+                kr=     ropen   {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);}
+		| constraint;
 
-constraint	: kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
-		spaces
-	 op=	compOpt 	{c.setOp($op.text);}   
-		spaces
-	 val=	genValue 	{c.setValue($val.text); constraints.add(c); 	}               
+constraint	:
+	kw=	simpleKw 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
+	op=	compOpt 	{c.setOp($op.text);}   
+	val=	genValue 	{c.setValue($val.text); constraints.add(c); 	}               
 		|
-	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
-		spaces 
+	kw=	simpleKw 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 	op1=	in 	 	{c.setOp($op1.text);}  
-		spaces '('
-		spaces
-	val1=	valueList 		{c.setValue($val1.text); constraints.add(c);}
-		spaces
-		')'               
+		LB
+	val1=	inValue 		{c.setValue($val1.text); constraints.add(c);}
+		RB               
 		| 
-	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
-		spaces 
-	op2=	like 		{c.setOp($op2.text);} 
-		spaces 
-	val2=	dotValue 		{c.setValue($val2.text); constraints.add(c);}
+	kw=	simpleKw 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
+	op2=	genLike 		{c.setOp($op2.text);} 
+	val2=	genValue 		{c.setValue($val2.text); constraints.add(c);}
 		|
- 	kw=	keyword 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
-		spaces 
+ 	kw=	simpleKw 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 	op3=	between		{c.setOp($op3.text);} 
-		spaces 
 	val3=	betValue 		{c.setValue($val3.text); constraints.add(c);};                  
-                 
 
-where	:('WHERE' | 'where');
-dotValue        : VALUE 
-		| 'in'
-		| VALUE DOT 'in'
-		| VALUE DOT VALUE
-		| VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE
-		| VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE DOT VALUE
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE 
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE 
-		| VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT VALUE DOT 'in'
-		| VALUE SPACE VALUE
-		| VALUE SPACE VALUE SPACE VALUE;
-//dateValue	: (DIGIT);
 
-//cfgValue        : VALUE DOT VALUE SPACE LT SPACE VALUE;
-valueList	:dotValue ( spaces COMMA spaces dotValue )*;
-//cfgList		:dotValue ( spaces AMP spaces dotValue )*;
-compOpt		:(EQ)
-		|(LT)
-		|(GT)
-		|(NOT)(EQ)
-		|(EQ)(GT)
-		|(EQ)(LT)
-		|(LT)(EQ)
-		|(GT)(EQ)
-		|(LT)(GT);
+compOpt		:EQ
+		|LT
+		|GT
+		|NOT EQ
+		|EQ GT
+		|EQ LT
+		|LT EQ
+		|GT EQ
+		|LT GT;
+genValue	: VALUE (VALUE)* (DOT VALUE)* (compOpt VALUE)* ;
+//genValue	:dotValue
+//		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
+betValue	:genValue and genValue;
+inValue		:genValue ( COMMA genValue )*;
+logicalOp	:and|or;
 
-genValue	:dotValue
-		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
-betValue	:dotValue spaces and spaces dotValue;
-//cfgValue	: genValue (spaces AMP spaces genValue)*;
-
-//likeValue 	:(dotValue| STAR)+;
-//likeValue 	:(dotValue)+;
-//likes		:(not)? spaces like;
-logicalOp	:(and|or);
-entity		: ('ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group'| 'pset'| 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch');
-attr		:('createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family'| 'exe' | 'annotation' | 'checksum' );
-funct		:('numruns()' | 'numfiles()' | 'dataquality()' | 'latest()' | 'parentrelease()' | 'childrelease()' | 'intluminosity()' | 'findevents()' );
-select		:('select' | 'SELECT' | 'find' | 'FIND');
-and		:('and' | 'AND');
-order		:('order' | 'ORDER');
-by		:('by' | 'BY');
-or		:('or' | 'OR');
-in		:('in' | 'IN');
-not		:('not' | 'NOT');
-like		:('like' | 'LIKE' | 'not' spaces 'like' | 'NOT' spaces 'LIKE');
-//like		:('like' | 'LIKE');
-count		:('count' | 'COUNT');
-sum		:('sum' | 'SUM');
-asc		:('asc' | 'ASC');
-desc		:('desc' | 'DESC');
-between		:('between' | 'BETWEEN');
-lb		: ('(');
-rb		: (')');
-//likeLeft	:('LikeLeft');
-//likeRight	:('LikeRight');
-//likeCfg		:('<like>');
-//pset		:('pset');
-VALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' )+ ;
-//DVALUE		:('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'.' )+ ;
-//DIGIT		:('0'..'9');
-//DASH		:('-');
-//COLON		:(':');
-//CHAR		:('a'..'z'|'A'..'Z');
-COMMA		:(',');
-SPACE		:(' ');
-DOT		:('.');
-//QUOTE		:('"');
-GT		:('>');
-LT		:('<');
-EQ		:('=');
-NOT		:('!');
-AMP		:('&');
-//STAR		:('*'|'%');
-NL		:('\n');
+entity		:'ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group'| 'pset'| 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch';
+attr		:'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family'| 'exe' | 'annotation' | 'checksum' ;
+funct		:'count' | 'sum' | 'COUNT' | 'SUM';
+select		:'select' | 'SELECT' | 'find' | 'FIND';
+and		:'and' | 'AND';
+order		:'order' | 'ORDER';
+by		:'by' | 'BY';
+or		:'or' | 'OR';
+in		:'in' | 'IN';
+not		:'not' | 'NOT';
+like		:'like' | 'LIKE';
+notLike		: not like;
+genLike		: like | notLike;
+asc		:'asc' | 'ASC';
+desc		:'desc' | 'DESC';
+between		:'between' | 'BETWEEN';
+//VALUE		:('a' .. 'z' | '0' .. '9' | 'A' .. 'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' | '&' | '>' | '<' | '=' | '!')* ;
+VALUE		:('a' .. 'z' | '0' .. '9' | 'A' .. 'Z' | '/'|'-'|'_'|':'|'#'|'*'|'%' | '&') ('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' | '&')* ;
+where		:'where' | 'WHERE';
+LB		: '(';
+RB		: ')';
+COMMA		:',';
+DOT		:'.';
+GT		:'>';
+LT		:'<';
+EQ		:'=';
+NOT		:'!';
+//AMP		:'&';
 WS 		: ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ 	{ $channel = HIDDEN; } ;
 

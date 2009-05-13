@@ -171,7 +171,7 @@ executeQuery () {
 
 }
 #$CMD query="find file,file.parent where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
-#$CMD query="find lumi.id,file.id where dq = Tracker_Global=GOOD&TIB_Local=BAD&TIB_DCS=UNKNOWN and dataset = /CalPrivateGlobal-default/Online/RAW" 
+$CMD query="find lumi.id,file.id where dq = Tracker_Global=GOOD&TIB_Local=BAD&TIB_DCS=UNKNOWN and dataset = /CalPrivateGlobal-default/Online/RAW" 
 #$CMD query="find file where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
 	#$CMD query="find block.parent where dataset = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW"
 	#$CMD query="find  dataset, dataset.parent"
@@ -181,7 +181,8 @@ executeQuery () {
 	#$CMD query="find dataset.xsection where dataset like *"
 	#$CMD query="find dataset.era"
 	#$CMD query="find  block, block.child"
-	#$CMD query="find dataset where dataset like * and ((run = 1) or (run between 1 and 2) and run.totlumi=222)"
+	#$CMD query="find dataset where dataset like * and ((run = 1) or (run between 1 and 2)) and run=222"
+	#$CMD query="find dataset where dataset like * and (run = 1)  and run=222"
 	#$CMD query="find  block, block.parent"
 	#$CMD query="find  procds, procds.parent"
 	#$CMD query="find  procds, procds.child"
@@ -204,7 +205,7 @@ executeQuery () {
 	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
 	#$CMD query="find site where site like *ch "
-	$CMD query="find site where site = srm.cern.ch "
+	#$CMD query="find dataset where     (    dataset = *abc*   and file.size > 2 ) or   (file.size =1 and    dataset like xyz*  )"
 	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO "
 	#$CMD query="find dataset where site = caf.cern.ch "
 	#$CMD query="find dataset where site = T1_CH_CERN "
