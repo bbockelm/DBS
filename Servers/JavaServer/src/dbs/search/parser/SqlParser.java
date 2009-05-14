@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.1.2 Sql.g 2009-05-13 13:32:53
+// $ANTLR 3.1.2 Sql.g 2009-05-14 11:51:38
 
 
 import java.util.ArrayList;
@@ -15,102 +15,102 @@ public class SqlParser extends Parser {
     public static final String[] tokenNames = new String[] {
         "<invalid>", "<EOR>", "<DOWN>", "<UP>", "COMMA", "DOT", "LB", "RB", "EQ", "LT", "GT", "NOT", "VALUE", "WS", "'ads'", "'config'", "'dataset'", "'release'", "'tier'", "'site'", "'block'", "'file'", "'primds'", "'procds'", "'run'", "'lumi'", "'dq'", "'ilumi'", "'phygrp'", "'group'", "'pset'", "'algo'", "'datatype'", "'mcdesc'", "'trigdesc'", "'branch'", "'createdate'", "'moddate'", "'starttime'", "'endtime'", "'createby'", "'modby'", "'name'", "'version'", "'number'", "'startevnum'", "'endevnum'", "'numevents'", "'numfiles'", "'numlss'", "'totlumi'", "'store'", "'size'", "'count'", "'status'", "'type'", "'id'", "'parent'", "'child'", "'def'", "'evnum'", "'era'", "'tag'", "'xsection'", "'hash'", "'content'", "'family'", "'exe'", "'annotation'", "'checksum'", "'sum'", "'COUNT'", "'SUM'", "'select'", "'SELECT'", "'find'", "'FIND'", "'and'", "'AND'", "'order'", "'ORDER'", "'by'", "'BY'", "'or'", "'OR'", "'in'", "'IN'", "'not'", "'NOT'", "'like'", "'LIKE'", "'asc'", "'ASC'", "'desc'", "'DESC'", "'between'", "'BETWEEN'", "'where'", "'WHERE'"
     };
-    public static final int LT=9;
-    public static final int T__29=29;
-    public static final int T__28=28;
-    public static final int T__27=27;
-    public static final int T__26=26;
-    public static final int T__25=25;
-    public static final int T__24=24;
-    public static final int T__23=23;
-    public static final int T__22=22;
+    public static final int COMMA=4;
+    public static final int T__42=42;
+    public static final int RB=7;
+    public static final int T__47=47;
+    public static final int T__73=73;
     public static final int T__21=21;
-    public static final int T__20=20;
-    public static final int NOT=11;
-    public static final int EOF=-1;
-    public static final int T__93=93;
-    public static final int T__19=19;
-    public static final int T__94=94;
-    public static final int T__91=91;
-    public static final int T__92=92;
-    public static final int T__16=16;
-    public static final int T__15=15;
-    public static final int T__90=90;
-    public static final int T__18=18;
-    public static final int T__17=17;
-    public static final int T__14=14;
-    public static final int EQ=8;
-    public static final int T__98=98;
-    public static final int T__97=97;
-    public static final int T__96=96;
-    public static final int T__95=95;
-    public static final int T__80=80;
-    public static final int T__81=81;
-    public static final int T__82=82;
-    public static final int T__83=83;
-    public static final int VALUE=12;
-    public static final int T__85=85;
-    public static final int T__84=84;
-    public static final int T__87=87;
-    public static final int T__86=86;
-    public static final int T__89=89;
-    public static final int T__88=88;
-    public static final int WS=13;
-    public static final int T__71=71;
     public static final int T__72=72;
     public static final int T__70=70;
-    public static final int GT=10;
-    public static final int T__76=76;
-    public static final int T__75=75;
-    public static final int T__74=74;
-    public static final int T__73=73;
-    public static final int T__79=79;
-    public static final int T__78=78;
-    public static final int T__77=77;
-    public static final int T__68=68;
-    public static final int T__69=69;
-    public static final int T__66=66;
-    public static final int T__67=67;
-    public static final int T__64=64;
-    public static final int T__65=65;
-    public static final int T__62=62;
-    public static final int RB=7;
-    public static final int T__63=63;
-    public static final int T__61=61;
-    public static final int T__60=60;
-    public static final int T__55=55;
-    public static final int T__56=56;
-    public static final int T__57=57;
-    public static final int T__58=58;
-    public static final int T__51=51;
-    public static final int T__52=52;
-    public static final int T__53=53;
-    public static final int T__54=54;
-    public static final int COMMA=4;
-    public static final int T__59=59;
     public static final int DOT=5;
-    public static final int T__50=50;
-    public static final int T__42=42;
-    public static final int T__43=43;
-    public static final int T__40=40;
-    public static final int T__41=41;
-    public static final int T__46=46;
-    public static final int T__47=47;
-    public static final int T__44=44;
-    public static final int T__45=45;
-    public static final int T__48=48;
-    public static final int T__49=49;
-    public static final int T__30=30;
-    public static final int T__31=31;
-    public static final int T__32=32;
-    public static final int T__33=33;
-    public static final int T__34=34;
-    public static final int T__35=35;
-    public static final int T__36=36;
-    public static final int T__37=37;
-    public static final int T__38=38;
     public static final int T__39=39;
+    public static final int T__30=30;
+    public static final int T__46=46;
+    public static final int T__96=96;
+    public static final int T__49=49;
+    public static final int T__48=48;
+    public static final int T__54=54;
+    public static final int T__89=89;
+    public static final int T__20=20;
+    public static final int WS=13;
+    public static final int EQ=8;
+    public static final int T__79=79;
+    public static final int T__64=64;
+    public static final int LT=9;
+    public static final int T__44=44;
+    public static final int T__66=66;
+    public static final int T__92=92;
+    public static final int T__14=14;
+    public static final int T__88=88;
+    public static final int T__22=22;
+    public static final int T__90=90;
+    public static final int T__63=63;
+    public static final int T__43=43;
+    public static final int T__91=91;
+    public static final int T__40=40;
     public static final int LB=6;
+    public static final int T__85=85;
+    public static final int T__26=26;
+    public static final int T__25=25;
+    public static final int T__60=60;
+    public static final int T__41=41;
+    public static final int T__93=93;
+    public static final int T__86=86;
+    public static final int T__28=28;
+    public static final int T__23=23;
+    public static final int T__57=57;
+    public static final int T__94=94;
+    public static final int T__51=51;
+    public static final int T__80=80;
+    public static final int T__69=69;
+    public static final int T__95=95;
+    public static final int T__50=50;
+    public static final int T__19=19;
+    public static final int T__65=65;
+    public static final int VALUE=12;
+    public static final int T__67=67;
+    public static final int T__87=87;
+    public static final int T__74=74;
+    public static final int T__52=52;
+    public static final int T__68=68;
+    public static final int T__17=17;
+    public static final int T__62=62;
+    public static final int T__27=27;
+    public static final int T__24=24;
+    public static final int T__61=61;
+    public static final int T__59=59;
+    public static final int T__34=34;
+    public static final int T__98=98;
+    public static final int T__15=15;
+    public static final int T__56=56;
+    public static final int T__35=35;
+    public static final int T__78=78;
+    public static final int T__36=36;
+    public static final int T__58=58;
+    public static final int GT=10;
+    public static final int T__33=33;
+    public static final int T__77=77;
+    public static final int T__45=45;
+    public static final int T__29=29;
+    public static final int T__55=55;
+    public static final int T__84=84;
+    public static final int T__97=97;
+    public static final int T__75=75;
+    public static final int T__31=31;
+    public static final int EOF=-1;
+    public static final int T__53=53;
+    public static final int T__32=32;
+    public static final int T__16=16;
+    public static final int T__38=38;
+    public static final int T__37=37;
+    public static final int T__76=76;
+    public static final int T__82=82;
+    public static final int T__81=81;
+    public static final int T__83=83;
+    public static final int NOT=11;
+    public static final int T__18=18;
+    public static final int T__71=71;
 
     // delegates
     // delegators
@@ -948,18 +948,18 @@ public class SqlParser extends Parser {
                             alt14=1;
                             }
                             break;
+                        case 95:
+                        case 96:
+                            {
+                            alt14=4;
+                            }
+                            break;
                         case 87:
                         case 88:
                         case 89:
                         case 90:
                             {
                             alt14=3;
-                            }
-                            break;
-                        case 95:
-                        case 96:
-                            {
-                            alt14=4;
                             }
                             break;
                         case 85:
@@ -998,18 +998,18 @@ public class SqlParser extends Parser {
                     alt14=3;
                     }
                     break;
-                case 85:
-                case 86:
-                    {
-                    alt14=2;
-                    }
-                    break;
                 case EQ:
                 case LT:
                 case GT:
                 case NOT:
                     {
                     alt14=1;
+                    }
+                    break;
+                case 85:
+                case 86:
+                    {
+                    alt14=2;
                     }
                     break;
                 default:
@@ -2102,26 +2102,26 @@ public class SqlParser extends Parser {
     static final String DFA3_eotS =
         "\12\uffff";
     static final String DFA3_eofS =
-        "\1\uffff\1\3\4\uffff\2\3\1\uffff\1\3";
+        "\1\uffff\1\4\4\uffff\2\4\1\uffff\1\4";
     static final String DFA3_minS =
-        "\1\16\1\4\1\16\1\uffff\1\20\1\uffff\2\4\1\20\1\4";
+        "\1\16\1\4\1\16\2\uffff\1\20\2\4\1\20\1\4";
     static final String DFA3_maxS =
-        "\1\43\1\136\1\43\1\uffff\1\105\1\uffff\2\136\1\105\1\136";
+        "\1\43\1\136\1\43\2\uffff\1\105\2\136\1\105\1\136";
     static final String DFA3_acceptS =
-        "\3\uffff\1\1\1\uffff\1\2\4\uffff";
+        "\3\uffff\1\2\1\1\5\uffff";
     static final String DFA3_specialS =
         "\12\uffff}>";
     static final String[] DFA3_transitionS = {
             "\26\1",
-            "\1\2\1\4\125\uffff\4\5",
+            "\1\2\1\5\125\uffff\4\3",
             "\26\6",
             "",
-            "\3\7\21\uffff\42\7",
             "",
-            "\1\2\1\10\125\uffff\4\5",
-            "\1\2\126\uffff\4\5",
+            "\3\7\21\uffff\42\7",
+            "\1\2\1\10\125\uffff\4\3",
+            "\1\2\126\uffff\4\3",
             "\3\11\21\uffff\42\11",
-            "\1\2\126\uffff\4\5"
+            "\1\2\126\uffff\4\3"
     };
 
     static final short[] DFA3_eot = DFA.unpackEncodedString(DFA3_eotS);

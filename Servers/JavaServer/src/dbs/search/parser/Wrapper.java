@@ -93,27 +93,33 @@ public class Wrapper {
 			bindIntValues = qb.getBindIntValues();
 			countQuery = qb.getCountQuery();
 		} catch (NoViableAltException nvae) {
+			//String msg = makeExcepMsg(nvae.token);
+			/*
 			Token t =  nvae.token;
 			String msg = "Invalid Token " + t.getText() + " on line " + t.getLine() + " at column " + t.getCharPositionInLine() + "\n";
 			msg += "QUERY    " + query + "\nPOSITION ";
 			int pos = t.getCharPositionInLine();
 			if ( pos > 0 )	for(int i = 0; i != pos; ++i) msg += " ";
 			//for(int i = 0; i != pos; ++i) msg += " ";
-			msg += "^\n";
-			//System.out.println("col " + nvae.getColumn());
-			//System.out.println("file name " + nvae.getFilename());
-			//System.out.println("line " + t.getLine());
-			//System.out.println("col " + t.getColumn());
-			//System.out.println("index " + t.getTokenIndex());
-			//System.out.println("position " + t.getCharPositionInLine());
-			//System.out.println("type " + t.getType());
-			//System.out.println("msg " + t.getText());
-                        //throw new Exception (nvae.toString());
-                        throw new Exception (msg);
+			msg += "^\n";*/
+
+                        throw new Exception (makeExcepMsg(nvae.token, query));
+		} catch (MismatchedSetException mse) {
+			throw new Exception (makeExcepMsg(mse.token, query));
 		} catch (Exception e) {
                         throw new Exception (e.toString());
                 }		
 		return queryToReturn;
 		//return "";
 		}
+	private String makeExcepMsg(Token t, String query) {
+			String msg = "Invalid Token " + t.getText() + " on line " + t.getLine() + " at column " + t.getCharPositionInLine() + "\n";
+			msg += "QUERY    " + query + "\nPOSITION ";
+			int pos = t.getCharPositionInLine();
+			if ( pos > 0 )	for(int i = 0; i != pos; ++i) msg += " ";
+			//for(int i = 0; i != pos; ++i) msg += " ";
+			msg += "^\n";
+			return msg;
+
+	}
 }

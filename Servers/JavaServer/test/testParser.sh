@@ -204,7 +204,7 @@ executeQuery () {
 	
 	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
-	$CMD query="find sum(file.size), count(file), dataset where dataset = ** "
+	#$CMD query="find sum(file.size), count(file.a), dataseta where dataset = ** "
 	#$CMD query="find dataset where     (    dataset = *abc*   and file.size > 2 ) or   (file.size =1 and    dataset like xyz*  )"
 	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO "
 	#$CMD query="find dataset where site = caf.cern.ch "
