@@ -170,8 +170,8 @@ executeQuery () {
 
 
 }
-#$CMD query="find file,file.parent where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
-$CMD query="find lumi.id,file.id where dq = Tracker_Global=GOOD&TIB_Local=BAD&TIB_DCS=UNKNOWN and dataset = /CalPrivateGlobal-default/Online/RAW" 
+	#$CMD query="find file,file.parent where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
+	#$CMD query="find lumi.id,file.id where dq = Tracker_Global=GOOD&TIB_Local=BAD&TIB_DCS=UNKNOWN and dataset = /CalPrivateGlobal-default/Online/RAW" 
 #$CMD query="find file where dq = Tracker_Global=GOOD&TIB_Local=GOOD" 
 	#$CMD query="find block.parent where dataset = /AH115bb_tau_tau_2l/Summer08_IDEAL_V9_v1/GEN-SIM-RAW"
 	#$CMD query="find  dataset, dataset.parent"
@@ -204,11 +204,11 @@ $CMD query="find lumi.id,file.id where dq = Tracker_Global=GOOD&TIB_Local=BAD&TI
 	
 	#$CMD query="find datatype.type, datatype.id, datatype.createdate, datatype.moddate where dataset = *on*"
 	#$CMD query="find datatype, datatype.id, datatype.createdate, datatype.moddate, datatype.createby, datatype.modby"
-	#$CMD query="find site where site like *ch "
+	$CMD query="find sum(file.size), count(file), dataset where dataset = ** "
 	#$CMD query="find dataset where     (    dataset = *abc*   and file.size > 2 ) or   (file.size =1 and    dataset like xyz*  )"
 	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO "
 	#$CMD query="find dataset where site = caf.cern.ch "
-	#$CMD query="find dataset where site = T1_CH_CERN "
+	#$CMD query="find dataset,site,sum(block.numevents),sum(block.size) where dataset=/TTbar-madgraph/geenen-TTBarWinter09IDEAL_V11_FastSim_v1_IIIb_PAT_DBSTEST-23e0a7a80519399331d983d3a29007f8/USER"
 	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby,run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO"
 	#$CMD query="find site, dataset where dataset = **"
 	#$CMD query="find site, block.id, block where dataset = /SiStripCommissioning08-edm/Online/RAW"

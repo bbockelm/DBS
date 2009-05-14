@@ -10,7 +10,7 @@ cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
 #CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.qb.SiteClient T1_UK_RAL"
-#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.qb.SiteClient %ch"
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.qb.SiteClient dsjkhdsjk"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.qb.SiteClient %ch"
+#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.search.qb.SiteClient dsjkhdsjk"
 $CMD
 

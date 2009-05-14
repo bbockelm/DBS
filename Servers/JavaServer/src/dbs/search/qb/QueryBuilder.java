@@ -165,9 +165,10 @@ public class QueryBuilder {
 				String tmpKw = km.getMappedValue(keyword, true);
 				query +=  tmpKw + " AS " + asKeyword ;
 				if(iLumi) groupByQuery += tmpKw + ",";
-				String tmp =  makeQueryFromDefaults(u.getMappedVertex(entity));
+				/*String tmp =  makeQueryFromDefaults(u.getMappedVertex(entity));
 				tmp = tmp.substring(0, tmp.length() - 1); // To get rid of last space
 				query += "\n\t," + tmp + "_SUM ";
+				*/
 			} else if(aKw.toLowerCase().startsWith("count")) {
 				checkMax(iter);
 				aKw = aKw.toLowerCase();
