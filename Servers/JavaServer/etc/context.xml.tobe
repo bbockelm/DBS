@@ -8,7 +8,7 @@
 		username="__insert_username__" 
 		password="__insert_password__" 
 		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3316/DBS_2_0_6?autoReconnect=true"/>
+		url="jdbc:mysql://localhost:3316/DBS_2_0_7?autoReconnect=true"/>
 
 	<Register service="jnp://cmsdbssrv.cern.ch:1099"
 		alias=""	
@@ -25,7 +25,7 @@
 
 	<SchemaOwner schemaowner="__MYSQL__"/> <!-- Possible vales are schema_owner, EMPTY STRING and __MYSQL__ /-->
 	<SupportedSchemaVersion schemaversion="DBS_1_1_5" />
-	<SupportedClientVersions clientversions="DBS_1_0_1, DBS_1_0_5, DBS_1_0_7, DBS_1_0_8, DBS_1_0_9, DBS_1_1_2, DBS_1_2_0, DBS_1_2_1, DBS_1_2_3, DBS_1_2_4, DBS_1_2_5, DBS_1_2_6, DBS_1_2_7, DBS_1_2_8, DBS_1_2_9, DBS_2_0_0, DBS_2_0_2, DBS_2_0_3, DBS_2_0_4, DBS_2_0_5, DBS_2_0_6" />
+	<SupportedClientVersions clientversions="DBS_1_0_1, DBS_1_0_5, DBS_1_0_7, DBS_1_0_8, DBS_1_0_9, DBS_1_1_2, DBS_1_2_0, DBS_1_2_1, DBS_1_2_3, DBS_1_2_4, DBS_1_2_5, DBS_1_2_6, DBS_1_2_7, DBS_1_2_8, DBS_1_2_9, DBS_2_0_0, DBS_2_0_2, DBS_2_0_3, DBS_2_0_4, DBS_2_0_5, DBS_2_0_6, DBS_2_0_7" />
 	<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
 </Context>
 								
