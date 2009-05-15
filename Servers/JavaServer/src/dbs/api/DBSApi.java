@@ -1,6 +1,6 @@
 /**
- $Revision: 1.161 $"
- $Id: DBSApi.java,v 1.161 2009/05/01 16:35:25 afaq Exp $"
+ $Revision: 1.162 $"
+ $Id: DBSApi.java,v 1.162 2009/05/08 14:51:45 yuyi Exp $"
  *
 */
 
@@ -288,14 +288,14 @@ public class DBSApi {
 						get(table, "app_executable_name", false),
 						get(table, "ps_name", false)
 						);
-			//} else if (apiStr.equals("executeSummary")) {
-			//	(new DBSApiViewsLogic(this.data)).executeSummary(conn, out, 
-			//			get(table, "query", true),
-                        //                        get(table, "begin", false),
-                        //                        get(table, "end", false),
-                        //                        get(table, "sortKey", false),
-                        //                        get(table, "sortOrder", false)
-			//			);
+                        } else if (apiStr.equals("executeSummary")) {
+                        	(new DBSApiViewsLogic(this.data)).executeSummary(conn, out, 
+                        			get(table, "query", true),
+                                                get(table, "begin", false),
+                                                get(table, "end", false),
+                                                get(table, "sortKey", false),
+                                                get(table, "sortOrder", false)
+                        			);
 			} else if (apiStr.equals("listDatasetContents")) {
 				(new DBSApiTransferLogic(this.data)).listDatasetContents(conn, out, 
 						get(table, "path", false),
