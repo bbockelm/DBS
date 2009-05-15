@@ -1002,6 +1002,15 @@ class Test_013(unittest.TestCase):
 					self.assertEqual(2, runInDBS['NumberOfLumiSections'])
 					runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
 					assertRun(self, runObj, runInDBS)
+class Test_014(unittest.TestCase):
+        def testListRecycleBin(self):
+	    print 'ListRecycleBin'
+	    api.deleteProcDS (path1)
+	    recycleBinList = api.listRecycleBin(path1)
+	    self.assertEqual(len(recycleBinList), 1)
+	    for rb in recycleBinList:
+		self.assertEqual(rb['block'], blockName1)
+	    
 
 if __name__ == '__main__':
 
