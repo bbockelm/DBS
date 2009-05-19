@@ -78,6 +78,7 @@ invalidStatus = 'INVALID'
 validStatus = 'VALID'
 procName1 = 'test_processed_1_' + ran
 procName2 = 'test_processed_2_' + ran
+procNameG = 'test_processed_G_' + ran
 procNameM = 'test_processed_M_' + ran
 phyGrp = 'BPositive'
 procStatus = validStatus
@@ -88,6 +89,7 @@ tag = 'test_Tag_' + ran
 path1 = '/' + primName + '/' + procName1 + '/' + tier1 + '-' + tier2
 path2 = '/' + primName + '/' + procName2 + '/' + tier1 + '-' + tier2
 pathM = '/' + primName + '/' + procNameM + '/' + tier1 + '-' + tier2
+pathG = '/' + primName + '/' + procNameG + '/' + tier1 + '-' + tier2
 
 lsNumber1 = random.choice(range(10000))
 stEvNum1 = 1234
@@ -109,6 +111,7 @@ blockName2 = path2 + '#' + str(random.choice(range(10000)))
 blockName3 = path1 + '#' + str(random.choice(range(10000)))
 blockName4 = path1 + '#' + str(random.choice(range(10000)))
 blockNameM = pathM + '#' + str(random.choice(range(10000)))
+blockNameG = pathG + '#' + str(random.choice(range(10000)))
 
 fileName1 = 'test_file_name_1_' + ran
 fileCkecksum1 = 'test_cksum_1_' + ran
@@ -149,6 +152,16 @@ fileSizeM = 56322657
 fileStatusM = validStatus
 fileValidStatusM = validStatus
 fileTypeM = 'STREAMER'
+
+fileNameG = 'test_file_name_G_' + ran
+fileNumEventsG = 234567
+fileCkecksumG = 'test_cksum_G_' + ran
+fileAdler32G = 'test_adler32_G_' + ran
+fileMd5G = 'test_md5_G_' + ran
+fileSizeG = 563226500
+fileStatusG = validStatus
+fileValidStatusG = validStatus
+fileTypeG = 'STREAMER'
 
 qim_name1="Tracker_Global"
 qim_name2="TIB_Local"
@@ -246,6 +259,19 @@ procObjM = DbsProcessedDataset (
 		XtCrossSection=3.3
 		)
 
+procObjG = DbsProcessedDataset (
+                PrimaryDataset = primObj,
+                Name = procNameG,
+                AcquisitionEra = era,
+                GlobalTag = tag,
+                PhysicsGroup = phyGrp,
+                Status = procStatus,
+                TierList = [tier1, tier2],
+                AlgoList = [algoObjM],
+                RunsList = [runNumber],
+                XtCrossSection=3.3
+                )
+
 lumiObj1 = DbsLumiSection (
 		LumiSectionNumber = lsNumber1,
 		StartEventNumber = stEvNum1,
@@ -283,6 +309,12 @@ blockObj4 = DbsFileBlock (
 blockObjM = DbsFileBlock (
 		Name = blockNameM
 		)
+
+blockObjG = DbsFileBlock (
+                Name = blockNameG
+                )
+
+
 
 fileObj1 = DbsFile (
 		Checksum = fileCkecksum1,
@@ -388,6 +420,23 @@ fileObjM = DbsFile (
 		Block = blockObjM,
 		AutoCrossSection=3.0
 		)
+
+fileObjG = DbsFile (
+                Checksum = fileCkecksumG,
+                Adler32 = fileAdler32G,
+                Md5 = fileMd5G,
+                LogicalFileName = fileNameG,
+                NumberOfEvents = fileNumEventsG,
+                FileSize = fileSizeG,
+                Status = fileStatusG,
+                ValidationStatus = fileValidStatusG,
+                FileType = fileTypeG,
+                Dataset = procObjG,
+                AlgoList = [algoObjM],
+                TierList = [tier1, tier2],
+                Block = blockObjG,
+                AutoCrossSection=3.0
+                )
 
 fileQualityObj = DbsFileProcessingQuality(
         ParentFile=file_name(fileName1),
@@ -1005,11 +1054,14 @@ class Test_013(unittest.TestCase):
 class Test_014(unittest.TestCase):
         def testListRecycleBin(self):
 	    print 'ListRecycleBin'
-	    api.deleteProcDS (path1)
-	    recycleBinList = api.listRecycleBin(path1)
+            api.insertProcessedDataset (procObjG)
+            api.insertBlock (procObjG, blockObjG, [se1, se2])
+            api.insertFiles(procObjG, [fileObjG], blockObjG)
+	    api.deleteProcDS (pathG)
+	    recycleBinList = api.listRecycleBin(pathG)
 	    self.assertEqual(len(recycleBinList), 1)
 	    for rb in recycleBinList:
-		self.assertEqual(rb['block'], blockName1)
+		self.assertEqual(rb['block'], blockNameG)
 	    
 
 if __name__ == '__main__':
