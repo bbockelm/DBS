@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Create views for ORACLE instances"
-for dbs in "CMS_DBS_PROD_GLOBAL" "CMS_DBS_PROD_LOCAL_01"
+for dbs in "CMS_DBS_PROD_GLOBAL"
 do
     cat view_templates.sql \
     | sed "s/@build.schema.owner.name@/$dbs/" > oracle_views_$dbs.sql
