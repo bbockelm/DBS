@@ -20,7 +20,6 @@ find run,lumi where dataset like %Online%
 find run,lumi,file where dataset  like  %Online%
 find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW
 find primds where primds.name like %test%
-find dataset
 find procds, procds.createdate
 find primds
 find procds.createby, run.modby
@@ -115,62 +114,27 @@ find phygrp.id, phygrp.name
 find phygrp, phygrp.id, phygrp.createdate , phygrp.moddate, phygrp.createby, phygrp.modby
 #find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a
 #find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0
-find dataset  where site = T1_FR_CCIN2P3
 find dataset  where site in ( T1_FR_CCIN2P3, T1_TW_ASGC)
 find dataset  where site like *A*
 find dataset  where site like castorsrm.cr.cnaf*
 find dataset  where site = castorsrm.cr.cnaf.infn.it
 find dataset  where site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff
 find dataset, site
-find site
 find dataset where run between 51437 and 51450 or run between 0 and 30000
 find dataset where dataset.id between 1 and 2 or dataset like *on*
-find run where primds = test_primary_001
-find count(file), dataset where dataset like *
-find sum(file.size), dataset where file.size > 0
-find file, dataset where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db
-find file where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db
-find dataset where release = test_Ver1_eaf67699-b539-487d-8713-07df617379db
-find block
 find block, block.size,  block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
 find block.size,  block.createdate, block.moddate, block.createby, block.modby where block = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO#01123fd3-5486-41fe-8b90-7dbb8fbe69b8
-find block.count where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
-find count(block) where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
-find run.count where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM
-find lumi, lumi.starttime, lumi.endtime
 find dataset.id, dataset.status, dataset.era, dataset.tag, dataset.createdate, dataset.createby where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM
 find dataset.release, dataset.era, dataset.tag, dataset.status, dataset.createdate, dataset.createby where dataset = /CSA07Muon/Skim-zToTauTau_MuTau-Tier0-A1-Chowder/USER
-find file.child, file where file = NEW_TEST0002
-find file.parent where file = NEW_TEST0005
 #find block, block.parent where dataset = *RECO
 find block, block.child where dataset = *RAW
 find dataset, dataset.parent where dataset = *RECO
 find dataset, dataset.child where dataset = *RAW
 find procds, procds.parent where dataset = *RECO
 #find procds, procds.child where dataset = *RECO
-find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0
-find sum(run.numevents) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.size > 0
-find sum(block.size)  where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
-find phygrp
 find phygrp where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM
 find dataset where phygrp like *BPositive
-find dataset where phygrp in (BPositive,Any )
-find file where phygrp in (BPositive,Any )
-find file,run where phygrp in (BPositive,Any )
-find phygrp.id, phygrp.name
 find phygrp, phygrp.id, phygrp.createdate , phygrp.createby, phygrp.modby
-#find dataset where pset = associatorL25PixelTauIsolated.coneSize>0&associatorL25SingleTau.coneSize>0&associatorL25SingleTau.jets<>a
-#find file, lumi where pset = associatorL25PixelTauIsolated.coneSize>0
-find dataset  where site = T1_FR_CCIN2P3
-find dataset  where site in ( T1_FR_CCIN2P3, T1_TW_ASGC)
-find dataset  where site like *A*
-find dataset  where site like castorsrm.cr.cnaf*
-find dataset  where site = castorsrm.cr.cnaf.infn.it
-find dataset  where site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff
-find dataset, site
-find site
-find dataset where run between 51437 and 51450 or run between 0 and 30000
-find dataset where dataset.id between 1 and 2 or dataset like *on*
 find algo.family, algo.version, algo.exe, algo.modby,algo.createby, algo.createdate, algo.moddate
 find  dataset where algo.version = CMSSW or algo.family = CMS*
 find algo.family, algo.version, algo.exe where file = MyLogocalFileName
