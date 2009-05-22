@@ -1063,7 +1063,24 @@ class Test_014(unittest.TestCase):
 	    for rb in recycleBinList:
 		self.assertEqual(rb['block'], blockNameG)
 	    
-
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(Test_001))
+    suite.addTest(unittest.makeSuite(Test_002))
+    suite.addTest(unittest.makeSuite(Test_003))
+    suite.addTest(unittest.makeSuite(Test_004))
+    suite.addTest(unittest.makeSuite(Test_005))
+    suite.addTest(unittest.makeSuite(Test_006))
+    suite.addTest(unittest.makeSuite(Test_007))
+    suite.addTest(unittest.makeSuite(Test_008))
+    suite.addTest(unittest.makeSuite(Test_009))
+    suite.addTest(unittest.makeSuite(Test_010))
+    suite.addTest(unittest.makeSuite(Test_011))
+    suite.addTest(unittest.makeSuite(Test_012))
+    suite.addTest(unittest.makeSuite(Test_013))
+    suite.addTest(unittest.makeSuite(Test_014))
+    return suite
+                                                                    
 if __name__ == '__main__':
 
         unittest.main()
