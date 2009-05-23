@@ -80,8 +80,6 @@ class testDBS(unittest.TestCase):
         self.url = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
         self.ver = 'DBS_2_0_6'
 
-        self.url = os.environ['DBS_TEST_URL']
-        self.ver = os.environ['DBS_TEST_VER']
         
         self.url = api.url()
         self.ver = api.version()
