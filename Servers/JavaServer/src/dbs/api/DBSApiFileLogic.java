@@ -1,6 +1,6 @@
 /**
- $Revision: 1.125 $"
- $Id: DBSApiFileLogic.java,v 1.125 2009/03/19 22:07:42 afaq Exp $"
+ $Revision: 1.126 $"
+ $Id: DBSApiFileLogic.java,v 1.126 2009/05/12 14:33:25 afaq Exp $"
  *
  */
 
@@ -912,6 +912,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String cbUserID = null;
 		String creationDate = null;
 		java.util.ArrayList  blockIDList = new java.util.ArrayList();
+		
+		Vector runstoUpdate = new Vector();
 
 
                 for (int i = 0; i < files.size() ; ++i) {
@@ -1033,7 +1035,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				}
 				
                                 //Insert FileParentage for all the child of give by the client. Used during Merge operation
-				//ANZAR you SUCKS. You are inserting the child as the parents.
 				valueVec.clear();
 				for (int j = 0; j < childVector.size(); ++j)
 					valueVec.add(getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true));
@@ -1054,7 +1055,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 		keys.add("CreationDate");
 		                keys.add("CreatedBy");
 		                keys.add("LastModifiedBy");
-
+				
                                 for (int j = 0; j < lumiVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)lumiVector.get(j);
                                         String thisRunN = get(hashTable, "run_number", true);
@@ -1064,7 +1065,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         if ( !isNull(lsNumber) ) {
 						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false);
 						if( isNull(lumiID)) {
+							//insertLumiSection: does perform updateLumiCount in the run
                                                         insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+							runstoUpdate.add(runID);
                                                 }
 						valueVec.add(fileID);
 						valueVec.add(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true));
@@ -1118,8 +1121,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				for (Object s: blockIDListTMP) 
 						if (!blockIDList.contains(s)) blockIDList.add(s);
 
-
-                        if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
+                        if ( i%10 == 0) conn.commit(); //For Every 10 files commit the changes
                 }//For loop
 
                 //Update Block numberOfFiles and Size
@@ -1127,6 +1129,19 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 	DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
                         blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
 			insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
+
+			//New file(s) inserted, we need to update the run (to reflect correct lumiSection count) 
+
+			//If dead lock occurs, we end up rolling back HUGE transaction, lets have a smaller transaction to rollback
+			conn.commit();
+	                //Lock the associated run tables rows for deadlock avoidance
+	                lockRunRows(conn, out, runstoUpdate);
+
+        	        //Fix the the number of lumi sections in the RUN
+                	for(Object aRun: runstoUpdate) {
+                        	String runNumber = get((Hashtable)aRun, "run_number", true);
+                        	updateRunLumiCount(conn, out, runNumber);
+                	}
 		}
 	}
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.50 $"
- $Id: DBSApiTransferLogic.java,v 1.50 2009/03/23 14:49:37 sekhri Exp $"
+ $Revision: 1.51 $"
+ $Id: DBSApiTransferLogic.java,v 1.51 2009/05/26 18:05:07 afaq Exp $"
  *
  */
 
@@ -213,17 +213,17 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
 		}
 
-		conn.commit();
+		//No need of this code here AA/VJ - 05/27/2009
+		//conn.commit();
 		//Lock the associated run tables rows for deadlock avoidance
-		lockRunRows(conn, out, newRunVector);
-
+		//lockRunRows(conn, out, newRunVector);
 		//Fix the the number of lumi sections in the RUN
-		for(Object aRun: newRunVector) {
-			String runNumber = get((Hashtable)aRun, "run_number", true);
-			updateRunLumiCount(conn, out, runNumber);
-		//	updateRun(conn, out, (Hashtable) aRun, dbsUser);
-		//	System.out.println("POOOOhhhhhhhhhHuuuuuu");
-		}
+		//for(Object aRun: newRunVector) {
+		//	String runNumber = get((Hashtable)aRun, "run_number", true);
+		//	updateRunLumiCount(conn, out, runNumber);
+		////	updateRun(conn, out, (Hashtable) aRun, dbsUser);
+		////	System.out.println("POOOOhhhhhhhhhHuuuuuu");
+		//}
 	}
 
 	private boolean doesRunExists(Vector runVector, String runNumber) throws Exception{
