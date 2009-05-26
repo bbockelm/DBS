@@ -1,6 +1,6 @@
 /**
- $Revision: 1.159 $"
- $Id: DBSApiLogic.java,v 1.159 2009/03/23 16:49:03 afaq Exp $"
+ $Revision: 1.160 $"
+ $Id: DBSApiLogic.java,v 1.160 2009/04/07 18:20:02 sekhri Exp $"
  *
  */
 
@@ -464,15 +464,21 @@ public class DBSApiLogic {
 				if (ps != null) ps.close();
 			}
 
+
+			//updateRunLumiCount(conn, out, runID);
+
+			/**
 	                //Update the Run to reflect the LumiSection count
         	        ps = null;
                 	try {
                         	ps = DBSSql.updateRunLumiCount(conn, runID);
 				pushQuery(ps);
                         	ps.executeUpdate();
+				System.out.println ("\n NOT Updating RUN table");
                 	} finally {
                         	if (ps != null) ps.close();
                 	}
+			**/
 
 
 
@@ -481,6 +487,44 @@ public class DBSApiLogic {
 		}
 
 	}
+
+	protected void lockRunRows(Connection conn, Writer out, Vector newRunVector) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			//Lock the run table for update
+			ps = DBSSql.lockRuns(conn, newRunVector);
+			pushQuery(ps);
+			ps.executeQuery();
+		} finally {
+                                if (ps != null) ps.close();
+               	}
+			
+	}
+
+        protected void updateRunLumiCount(Connection conn, Writer out, String runID) throws Exception {
+	PreparedStatement ps = null;
+	ResultSet rs = null;
+
+	String lumiCount=null;
+	try {
+		ps = DBSSql.getLumiCount(conn, runID);
+		pushQuery(ps);
+		rs = ps.executeQuery();
+		while(rs.next()) lumiCount=get(rs, "LUMICOUNT");
+		if (!isNull(lumiCount)) {
+			ps = DBSSql.updateRunLumiCount(conn, runID, lumiCount);
+			pushQuery(ps);
+			ps.executeUpdate();
+		}
+	} finally {
+		if (ps != null) ps.close();
+		if (rs != null) rs.close();
+        }
+
+
+	}
+
+
 
 /*
 	protected void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String cbUserID, String lmbUserID, String creationDate) throws Exception {
