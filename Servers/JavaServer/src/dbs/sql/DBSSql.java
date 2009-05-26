@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.218 $"
- $Id: DBSSql.java,v 1.218 2009/05/12 14:32:18 afaq Exp $"
+ $Revision: 1.219 $"
+ $Id: DBSSql.java,v 1.219 2009/05/15 21:42:44 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -983,7 +983,54 @@ public class DBSSql {
 	}
 
 
-        public static PreparedStatement updateRunLumiCount(Connection conn, String runID) throws SQLException {
+        public static PreparedStatement getLumiCount(Connection conn, String runID) throws SQLException {
+
+                String sql =  "SELECT COUNT(*) AS LUMICOUNT FROM "+owner()+"LumiSection WHERE RunNumber = ? \n";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, runID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                
+                return ps;
+        }               
+
+	public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
+		String sql = "SELECT ID, NumberOfLumiSections FROM Runs where ID IN (\n";
+		boolean first = true;
+		for(Object aRun: newRunVector) {
+			if (!first) sql += ", ";
+			sql += "?";
+			first=false;
+		}
+		//sql += ") LOCK IN SHARE MODE ";
+		sql += ") FOR UPDATE  ";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		for(Object aRun: newRunVector) {
+                        String runNumber = (String)((Hashtable)aRun).get("run_number");
+			ps.setString(columnIndx++, runNumber);
+		}
+
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;	
+	}
+
+        public static PreparedStatement updateRunLumiCount(Connection conn, String runID, String lumiCount) throws SQLException {
+
+		String sql = "UPDATE "+owner()+"Runs SET \n" +
+			"NumberOfLumiSections = ? \n" +
+			"WHERE ID = ? ";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+	 	ps.setString(columnIndx++, lumiCount);
+	 	ps.setString(columnIndx++, runID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+        }
+
+
+        public static PreparedStatement updateRunLumiCountOLD(Connection conn, String runID) throws SQLException {
 
 		String sql = "UPDATE "+owner()+"Runs SET \n" +
 			"NumberOfLumiSections = (SELECT COUNT(*) FROM "+owner()+"LumiSection WHERE RunNumber = ?) \n" +
@@ -996,6 +1043,7 @@ public class DBSSql {
 
                 return ps;
         }
+
 
 								
 	 public static PreparedStatement updateLumiSection(Connection conn, String lumiNumber, String runNumber, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String lmbUserID) throws SQLException {

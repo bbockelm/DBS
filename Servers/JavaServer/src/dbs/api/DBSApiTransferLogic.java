@@ -1,6 +1,6 @@
 /**
- $Revision: 1.49 $"
- $Id: DBSApiTransferLogic.java,v 1.49 2009/03/16 21:43:38 afaq Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSApiTransferLogic.java,v 1.50 2009/03/23 14:49:37 sekhri Exp $"
  *
  */
 
@@ -203,6 +203,9 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
 		//System.out.println("---------> Inserting files for path " + path);
 
+
+		conn.commit();
+
                 (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getArrayList(table, "file"), dbsUser, ignoreParent);
  
 		//Close all the block which were created as open block
@@ -210,9 +213,16 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
 		}
 
+		conn.commit();
+		//Lock the associated run tables rows for deadlock avoidance
+		lockRunRows(conn, out, newRunVector);
+
 		//Fix the the number of lumi sections in the RUN
 		for(Object aRun: newRunVector) {
-			updateRun(conn, out, (Hashtable) aRun, dbsUser);
+			String runNumber = get((Hashtable)aRun, "run_number", true);
+			updateRunLumiCount(conn, out, runNumber);
+		//	updateRun(conn, out, (Hashtable) aRun, dbsUser);
+		//	System.out.println("POOOOhhhhhhhhhHuuuuuu");
 		}
 	}
 
