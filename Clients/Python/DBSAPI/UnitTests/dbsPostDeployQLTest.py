@@ -170,7 +170,7 @@ def suite(type,machines,dnsname=False):
 def usage():
     progName = os.path.basename(sys.argv[0])
     print "Usage:"
-    print "  %s --instype=<reader|writer|admin|all> --machine=<cmsdbsprod|cmst0dbs|cmsdbs<1|2>|cmst0dbs<1|2>|all> -dnsname" %progName
+    print "python  %s --instype=<reader|writer|admin|all> --machine=<cmsdbsprod|cmst0dbs|cmsdbs<1|2>|cmst0dbs<1|2>|all> -dnsname" %progName
     print " "
 if __name__ == '__main__':
     instype = None
@@ -184,6 +184,9 @@ if __name__ == '__main__':
             machine =  arg[1]
         elif arg[0] == "-dnsname":
             dnsname = True
+        elif arg[0] =="-h" or arg[0] == "--help":
+            usage()
+            sys.exit(1)
         else:
             print "Ignoring unrecognized argument: %s" % a
     if instype == 'all' or instype == None:
