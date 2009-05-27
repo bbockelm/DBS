@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.219 $"
- $Id: DBSSql.java,v 1.219 2009/05/15 21:42:44 afaq Exp $"
+ $Revision: 1.220 $"
+ $Id: DBSSql.java,v 1.220 2009/05/26 18:03:39 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -994,7 +994,29 @@ public class DBSSql {
                 return ps;
         }               
 
-	public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
+
+        public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
+                String sql = "SELECT ID FROM Runs where ID = \n";
+                boolean first = true;
+                for(Object aRun: newRunVector) {
+                        if (!first) sql += " OR ID = ";
+                        sql += "?";
+                        first=false;
+                }
+                //sql += ") LOCK IN SHARE MODE ";
+                sql += " FOR UPDATE  ";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                for(Object aRun: newRunVector) {
+                        ps.setString(columnIndx++, (String)aRun);
+                }
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		System.out.println("\n" + ps + "\n");
+                return ps;
+        }
+
+	public static PreparedStatement lockRunsOLD2(Connection conn, Vector newRunVector) throws SQLException {
 		String sql = "SELECT ID, NumberOfLumiSections FROM Runs where ID IN (\n";
 		boolean first = true;
 		for(Object aRun: newRunVector) {

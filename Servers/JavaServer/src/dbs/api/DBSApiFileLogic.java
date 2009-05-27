@@ -1,6 +1,6 @@
 /**
- $Revision: 1.126 $"
- $Id: DBSApiFileLogic.java,v 1.126 2009/05/12 14:33:25 afaq Exp $"
+ $Revision: 1.127 $"
+ $Id: DBSApiFileLogic.java,v 1.127 2009/05/26 18:23:36 afaq Exp $"
  *
  */
 
@@ -1005,7 +1005,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 //if(isNull(fileID)) fileID = getFileID(conn, lfn);
                                 //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
                                 //FileID is needed if any of the other table information is provided i.e the vector size is > 0
-                                if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0)
+                                if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0 || childVector.size() > 0 )
                                         if(isNull(fileID)) fileID = getFileID(conn, lfn, true);
                                         //fileID = getFileID(conn, lfn, true);
 
@@ -1066,8 +1066,18 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false);
 						if( isNull(lumiID)) {
 							//insertLumiSection: does perform updateLumiCount in the run
-                                                        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-							runstoUpdate.add(runID);
+	                                                try {
+								insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+				                        } catch (SQLException ex) {
+        				                        String exmsg = ex.getMessage();
+                                				if ( exmsg.startsWith("Duplicate entry") ||
+                                        				exmsg.startsWith("ORA-00001: unique constraint") ) {
+                                        				//do nothing, just continue
+                                			}
+                                			else  throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
+                        				}
+
+							if (!runstoUpdate.contains(runID)) runstoUpdate.add(runID);
                                                 }
 						valueVec.add(fileID);
 						valueVec.add(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true));
@@ -1135,13 +1145,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			//If dead lock occurs, we end up rolling back HUGE transaction, lets have a smaller transaction to rollback
 			conn.commit();
 	                //Lock the associated run tables rows for deadlock avoidance
-	                lockRunRows(conn, out, runstoUpdate);
+	                if (runstoUpdate.size() > 0) {
+				lockRunRows(conn, out, runstoUpdate);
 
-        	        //Fix the the number of lumi sections in the RUN
-                	for(Object aRun: runstoUpdate) {
-                        	String runNumber = get((Hashtable)aRun, "run_number", true);
-                        	updateRunLumiCount(conn, out, runNumber);
-                	}
+        	        	//Fix the the number of lumi sections in the RUN
+                		for(Object aRun: runstoUpdate) {
+                        		updateRunLumiCount(conn, out, (String)aRun);
+                		}
+			}
 		}
 	}
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.11 $"
- $Id: DBSApiPersonLogic.java,v 1.11 2007/11/16 21:29:36 sekhri Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSApiPersonLogic.java,v 1.12 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -13,6 +13,9 @@ import java.util.Hashtable;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import java.sql.SQLException;
+
+
 
 /**
 * A class that has the core business logic of all the Person APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -63,6 +66,14 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
 				pushQuery(ps);
 				ps.execute();
+                        } catch (SQLException ex) {
+                                String exmsg = ex.getMessage();
+                                if ( exmsg.startsWith("Duplicate entry") ||
+                                        exmsg.startsWith("ORA-00001: unique constraint") ) {
+                                        //do nothing, just continue
+                                }
+                                else
+                                        throw new SQLException("'"+ex.getMessage()+"' insertPerson failed for unknown reasons");
 			} finally {
 				if (ps != null) ps.close();
 			}
