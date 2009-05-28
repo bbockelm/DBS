@@ -42,10 +42,10 @@ def checkSQLAlchemyVersion():
        print "##### DD ERROR: Cannot determine SQLAlchemy version"
        sys.__stdout__.flush()
        traceback.print_exc()
-    if not (int(rel)>=0 and int(max)>=4 and int(min)>=5):
-       msg="##### DD ERROR: Wrong SQLAlchemy version='%s', DD depends on 0.4.5 and higher"%ver
-       sys.__stdout__.flush()
-       raise msg
+#    if not (int(rel)>=0 and int(max)>=4 and int(min)>=5):
+#       msg="##### DD ERROR: Wrong SQLAlchemy version='%s', DD depends on 0.4.5 and higher"%ver
+#       sys.__stdout__.flush()
+#       raise msg
 checkSQLAlchemyVersion()
 ################################################################################################
 # DBS1, CGI server

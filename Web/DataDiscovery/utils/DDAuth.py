@@ -38,6 +38,7 @@ class DDAuthentication:
       self.verbose = verbose
       self.dbparam = ""
       self.dbsInst = []
+      self.dbsparams = {}
 #      self.url     = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
       self.url     = ""
       try:
@@ -48,7 +49,7 @@ class DDAuthentication:
       found=0
       content = self.dbparam.readlines()
 #      mustHave=['Section','Interface','Database','AuthDBUsername','AuthDBPassword','Host','Url']
-      mustHave=['Section','Url']
+      mustHave=['Section','Url', 'SecureUrl']
       readFile=[]
       for s in content:
           line = string.replace(s,"\n","")
@@ -67,6 +68,7 @@ DBS instance:
 
 Section                 cms_dbs_prod_global
 Url                     servlet URL
+SecureUrl               servlet URL
 
 """
           msg+="Found    : %s\n"%readFile
@@ -75,13 +77,13 @@ Url                     servlet URL
 
       dbs=""
       url=""
+      surl=""
       for s in content:
           line = string.replace(s,"\n","")
           lines= string.split(line)
           if not len(lines): continue
           if lines[0][0]=="#": continue
           if lines[0]=="Section":
-#             if not self.dbsInst.count(lines[1]) and lines[1].find("cms_dbs")!=-1:
              if not self.dbsInst.count(lines[1]):
                 self.dbsInst.append(lines[1])
                 dbs=lines[1]
@@ -91,27 +93,33 @@ Url                     servlet URL
              else:
                 found = 0
           if found:
-             if lines[0]=="Interface":
-                self.iface = lines[1]
-             if lines[0]=="Database":
-                self.db = lines[1]
-             if lines[0]=="AuthDBUsername":
-                self.user = lines[1]
-             if lines[0]=="AuthDBPassword":
-                self.passwd = lines[1]
-             if lines[0]=="Host":
-                if len(lines)>1:
-                   self.host = lines[1]
              if lines[0]=="Url":
                 url = lines[1]
                 self.url = url
+             if lines[0]=="SecureUrl":
+                if  len(lines)>1:
+                    surl = lines[1]
+                else:
+                    surl = ''
           else:
              if lines[0]=="Url":
                 url = lines[1]
+             if lines[0]=="SecureUrl":
+                if  len(lines)>1:
+                    surl = lines[1]
+                else:
+                    surl = ''
           DBS_INST_URL[dbs]=url
+          self.dbsparams[dbs] = (url, surl)
 
   def dbsInstances(self):
       return self.dbsInst
+
+  def dbsInfo(self, dbs):
+      if  self.dbsparams.has_key(dbs):
+          return self.dbsparams[dbs]
+      else:
+          return (None, None)
 
   def dbInfo(self):
       """

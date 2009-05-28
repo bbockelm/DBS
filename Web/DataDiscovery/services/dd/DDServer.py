@@ -32,6 +32,7 @@ from   model.dd.DDHelper   import *
 from   Templates           import *
 from   utils.DDParamServer import *
 from   utils.DDWS          import *
+from utils.DDAuth import DDAuthentication
 
 from utils.sitedb_tools import SiteDBManager
 from utils.siteconfig_tools import SiteConfigManager
@@ -116,6 +117,7 @@ class DDServer(DDLogger,Controller):
         setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
 
         # data service managers
+        self.auth     = DDAuthentication()
         self.dbsmgr   = DBSManager(self.ddConfig.rs(), self.ddConfig.memcache(),
                                    self.ddConfig.cachelimit(), verbose)
         self.sdb      = SiteDBManager(verbose)
@@ -240,7 +242,10 @@ class DDServer(DDLogger,Controller):
         except:
             pass
         self.baseUrl = opts.baseUrl
-        if self.baseUrl[-1]!="/": self.baseUrl+="/"
+        print "===> baseURL", self.baseUrl
+        if  not self.baseUrl:
+            self.baseUrl="/"
+#        if self.baseUrl[-1]!="/": self.baseUrl+="/"
         self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
         self.footerUrl=self.baseUrl+"sitedb/Common/footer"
         self.topUrl=self.baseUrl
@@ -3840,7 +3845,11 @@ All LFNs in a block
         cDate = cBy = size = nblks = nfiles = nevts = nsites =""
         run = appPath = site = "*"
         phedex   =0
-        dbsInstURL = self.dbsmgr.geturl(dbsInst)
+#        dbsInstURL = self.dbsmgr.geturl(dbsInst)
+        dbsInstURL = self.auth.dbsInfo(dbsInst)[1] # use DDAuthentication and read secure DBS URL
+        if  not dbsInstURL:
+            dbsInstURL = self.dbsmgr.geturl(dbsInst)
+            
         siteDict = {}
         useView = 0
         datasetlist = [item[0] for item in result]
