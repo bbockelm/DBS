@@ -17,7 +17,39 @@ ql3 = "find run where  run.number > 1"
 ql4 = "find release where release>CMSSW_1_6_7" 
 ql5 = "find file where release > CMSSW_1_6_7 and site like *.fnal.gov"
 qllist = [ql1,ql2,ql3,ql4,ql5]
-version = "DBS_2_0_6"
+
+class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
+    def __init__(self, key, cert):
+        urllib2.HTTPSHandler.__init__(self)
+        self.key = key
+        self.cert = cert
+    def https_open(self, req):
+        return  self.do_open(self.getConnection, req)
+    def getConnection(self, host, timeout=300):
+        return httplib.HTTPSConnection(host, key_file=self.key,cert_file=self.cert)
+def getKeyCert():
+    # First presendence to HOST Certificate, RARE
+    if os.environ.has_key('X509_HOST_CERT'):
+        proxy = os.environ['X509_HOST_CERT']
+        key = os.environ['X509_HOST_KEY']
+    # Second preference to User Proxy, very common
+    elif os.environ.has_key('X509_USER_PROXY'):
+        proxy = os.environ['X509_USER_PROXY']
+        key = proxy
+    # Third preference to User Cert/Proxy combinition
+    elif os.environ.has_key('X509_USER_CERT'):
+        proxy = os.environ['X509_USER_CERT']
+        key = os.environ['X509_USER_KEY']
+    # Worst case, look for proxy at default location /tmp/x509up_u$uid
+    else :
+        uid = os.getuid()
+        proxy = '/tmp/x509up_u'+str(uid)
+        key = proxy
+    #Set but not found
+    if not os.path.exists(proxy) or not os.path.exists(key):
+        raise Exception("Required Proxy for Secure Call not found for user '%s', please do init your proxy" %os.getlogin())
+    # All looks OK, still doesn't gurantee proxy's validity etc.
+    return key, proxy
 
 class urlGenerator :
     def __init__(self,type,machines,dnsname):
@@ -176,6 +208,7 @@ if __name__ == '__main__':
     instype = None
     machine = None
     dnsname = False
+    version = "DBS_2_0_6"
     for a in sys.argv[1:]:
         arg = string.split(a, "=")
         if arg[0] == "--instype":
@@ -195,6 +228,10 @@ if __name__ == '__main__':
     if machine == 'all' or machine == None:
         machines = ['cmsdbsprod','cmst0dbs']
     else: machines = [machine]
+    if type.count('writer')+type.count('admin') != 0:
+        key,cert = getKeyCert()
+        opener = urllib2.build_opener(HTTPSClientAuthHandler(key,cert))
+        urllib2.install_opener(opener)        
     Suite = suite(type,machines,dnsname)
     runner = unittest.TextTestRunner()
     runner.run(Suite)
