@@ -23,6 +23,9 @@ qListMod=[]
 
 for q in qList:
     if not q.startswith("#") and q!="" and q not in qListMod:
+        if q.find(" dq") != -1:
+            if isMYSQL == "MYSQL":
+                continue
         qListMod.append(q)
 suite=unittest.TestSuite()
 
@@ -33,9 +36,6 @@ def test_generator( query):
     def test(self):
         q=query.strip()
         api.executeQuery(q)
-    if q.find(" dq") == -1:
-        if isMYSQL == "MYSQL":
-            return True
     return test
         
 
