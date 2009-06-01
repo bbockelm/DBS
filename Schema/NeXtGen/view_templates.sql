@@ -13,7 +13,7 @@ JOIN FileStatus tfs ON tf.FileStatus=tfs.ID JOIN Person tp ON tf.CreatedBy = tp.
 
 PROMPT Create VIEW ReleaseSummary
 
-drop VIEW ReleaseSummary
+Drop VIEW ReleaseSummary
 /
 
 CREATE VIEW ReleaseSummary (Version, CreationDate, CreatedBy, FamilyName, ExecutableName) 
@@ -26,7 +26,7 @@ JOIN Person tp ON tav.CreatedBy = tp.ID
 
 PROMPT Create VIEW RunSummary
 
-drop VIEW RunSummary
+Drop VIEW RunSummary
 /
 
 CREATE VIEW RunSummary (RunNumber, CreationDate, CreatedBy, ModificationDate, ModifiedBy, TotLumi, StoreNumber, StartOfRun, EndOfRun, NumberOfEvents, StartEvent, EndEvent, NumberOfLumis)
@@ -44,7 +44,7 @@ tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvents, tls.StartEventNum
 
 PROMPT Create VIEW RunManagerSummary
 
-drop VIEW RunManagerSummary
+Drop VIEW RunManagerSummary
 /
 
 CREATE VIEW RunManagerSummary (RunNumber, CreationDate, CreatedBy, TotLumi, StoreNumber, StartOfRun, EndOfRun, StartEvent, 
@@ -63,7 +63,7 @@ tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tls.StartEventNumber, tls.EndEventNu
 
 PROMPT Create VIEW SiteSummary
 
-drop VIEW SiteSummary
+Drop VIEW SiteSummary
 /
 
 CREATE VIEW SiteSummary (SEName, CreationDate, CreatedBy, NumberOfProcDS) 
@@ -77,7 +77,7 @@ GROUP BY tse.SEName, tse.CreationDate, tp.DistinguishedName
 
 PROMPT CREATE VIEW PrimSummary
 
-drop VIEW PrimSummary
+Drop VIEW PrimSummary
 /
 
 CREATE VIEW PrimSummary (Name, CreationDate, CreatedBy, PrimType, NumberOfProcDS) 
@@ -91,7 +91,7 @@ GROUP BY tprm.Name, tprm.CreationDate, tp.DistinguishedName, tprmt.Type
 
 PROMPT CREATE VIEW ProcSummary
 
-drop VIEW ProcSummary
+Drop VIEW ProcSummary
 /
 
 CREATE VIEW ProcSummary (Name, CreationDate, CreatedBy, NumberOfBlocks, BlocksSize, NumberOfFiles, NumberOfEvents) 
@@ -106,7 +106,7 @@ GROUP BY tprd.Name, tprd.CreationDate, tp.DistinguishedName
 PROMPT CREATE VIEW TierSummary
 
 
-drop VIEW TierSummary
+Drop VIEW TierSummary
 /
 
 CREATE VIEW TierSummary (Name, CreationDate, CreatedBy, NumberOfProcDS) 
@@ -120,7 +120,7 @@ JOIN Person tp ON tdt.CreatedBy = tp.ID GROUP BY tdt.Name, tdt.CreationDate, tp.
 
 PROMPT CREATE VIEW DatasetSummary
 
-drop VIEW DatasetSummary
+Drop VIEW DatasetSummary
 /
 
 CREATE VIEW DatasetSummary (Path, CreationDate, CreatedBy, TotalSize,  NumberOfBlocks, NumberOfFiles,
@@ -138,7 +138,7 @@ GROUP BY tblk.Path, tprd.CreationDate, tp.DistinguishedName
 
 PROMPT CREATE VIEW AdsBigSummary
 
-drop VIEW AdsBigSummary
+Drop VIEW AdsBigSummary
 /
 
 CREATE VIEW AdsBigSummary 
@@ -161,7 +161,7 @@ JOIN Person tp ON tads.CreatedBy = tp.ID
 
 PROMPT CREATE VIEW AdsSummary
 
-drop VIEW AdsSummary
+Drop VIEW AdsSummary
 /
 
 CREATE VIEW AdsSummary 
