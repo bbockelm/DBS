@@ -673,21 +673,6 @@ CREATE TABLE ProcDSRuns
 
 REM ======================================================================
 
-CREATE TABLE ProcDSTier
-  (
-    ID                    integer,
-    Dataset               integer   not null,
-    DataTier              integer   not null,
-    CreationDate          integer,
-    CreatedBy             integer,
-    LastModificationDate  integer,
-    LastModifiedBy        integer,
-    primary key(ID),
-    unique(Dataset,DataTier)
-  );
-
-REM ======================================================================
-
 CREATE TABLE ProcDSParent
   (
     ID                    integer,
@@ -1432,19 +1417,6 @@ ALTER TABLE ProcessingStatus ADD CONSTRAINT
 /
 
 
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE ProcDSParent ADD CONSTRAINT 
     ProcDSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on delete CASCADE
 /
@@ -1755,8 +1727,6 @@ PROMPT creating sequence seq_processeddataset ;
 create sequence seq_processeddataset ;
 PROMPT creating sequence seq_procdsruns ;
 create sequence seq_procdsruns ;
-PROMPT creating sequence seq_procdstier ;
-create sequence seq_procdstier ;
 PROMPT creating sequence seq_procdsparent ;
 create sequence seq_procdsparent ;
 PROMPT creating sequence seq_procalgo ;
@@ -2101,13 +2071,6 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: processeddataset
 
 PROMPT AUTO INC TRIGGER FOR Trigger for Table: procdsruns
  CREATE OR REPLACE TRIGGER procdsruns_TRIG before insert on procdsruns    for each row begin     if inserting then       if :NEW.ID is null then          select seq_procdsruns.nextval into :NEW.ID from dual;       end if;    end if; end;
-/
-
--- ====================================================
--- AUTO INC TRIGGER FOR procdstier.ID using SEQ seq_procdstier
-
-PROMPT AUTO INC TRIGGER FOR Trigger for Table: procdstier
- CREATE OR REPLACE TRIGGER procdstier_TRIG before insert on procdstier    for each row begin     if inserting then       if :NEW.ID is null then          select seq_procdstier.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
 -- ====================================================
@@ -2770,19 +2733,6 @@ END;
 
 PROMPT LastModified Time Stamp Trigger for Table: procdsruns
 CREATE OR REPLACE TRIGGER TRTSprocdsruns BEFORE INSERT OR UPDATE ON procdsruns
-FOR EACH ROW declare
-  unixtime integer
-     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
-BEGIN
-  :NEW.LASTMODIFICATIONDATE := unixtime;
-END;
-/
-
--- ====================================================
--- LastModified Time Stamp Trigger
-
-PROMPT LastModified Time Stamp Trigger for Table: procdstier
-CREATE OR REPLACE TRIGGER TRTSprocdstier BEFORE INSERT OR UPDATE ON procdstier
 FOR EACH ROW declare
   unixtime integer
      :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;
