@@ -172,8 +172,7 @@ Drop VIEW TierSummary
 CREATE VIEW TierSummary (Name, CreationDate, CreatedBy, NumberOfProcDS) 
 AS SELECT tdt.Name, tdt.CreationDate, tp.DistinguishedName, count(tprd.Name) 
 FROM ProcessedDataset tprd 
-JOIN ProcDSTier tpdst ON tprd.ID=tpdst.Dataset 
-JOIN DataTier tdt ON tpdst.DataTier=tdt.ID 
+JOIN DataTier tdt ON tprd.DataTier=tdt.ID 
 JOIN Person tp ON tdt.CreatedBy = tp.ID GROUP BY tdt.Name, tdt.CreationDate, tp.DistinguishedName
 
 /
