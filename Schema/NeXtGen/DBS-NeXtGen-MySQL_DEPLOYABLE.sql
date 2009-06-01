@@ -4,9 +4,9 @@
 -- === Build : 756
 -- ======================================================================
 
-drop database if exists DBS_2_0_6;
-create database DBS_2_0_6;
-use DBS_2_0_6;
+drop database if exists DBS_2_0_7;
+create database DBS_2_0_7;
+use DBS_2_0_7;
 
 -- ======================================================================
 
