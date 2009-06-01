@@ -8,7 +8,7 @@ BEGIN
    LOOP
       FETCH cur_view INTO v_view;
       EXIT WHEN cur_view%NOTFOUND;
-      dbms_output.put_line ('select count(*) into l_count from '|| v_view);
+      dbms_output.put_line ('select count(*) into l_count from '|| v_view || ';');
    END LOOP;    
    CLOSE cur_view;
 END;
