@@ -1,6 +1,6 @@
 /**
- $Revision: 1.127 $"
- $Id: DBSApiFileLogic.java,v 1.127 2009/05/26 18:23:36 afaq Exp $"
+ $Revision: 1.128 $"
+ $Id: DBSApiFileLogic.java,v 1.128 2009/05/27 21:16:55 afaq Exp $"
  *
  */
 
@@ -17,6 +17,22 @@ import dbs.util.DBSUtil;
 import codec.Base64;
 import dbs.DBSException;
 import java.sql.SQLException;
+
+
+
+
+
+
+import db.DBManagement;
+//import dbs.util.DBSConfig;
+
+
+
+
+
+
+
+
 
 /**
 * A class that has the core business logic of all the File APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -811,7 +827,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	//Then it insert files with all information
 	//Makes is pretty speedy operation
 	//ANZAR: 12/03/2007
-        public void insertFilesInBlock(Connection conn, Writer out, Hashtable block, ArrayList files, Hashtable dbsUser, boolean ignoreParent) throws Exception {
+        public void insertFilesInBlock(Connection conn, Writer out, Hashtable block, ArrayList files, Hashtable dbsUser, boolean ignoreParent, boolean calledFromTranfer) throws Exception {
 
 
 		//Verify Block Name
@@ -1068,6 +1084,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 							//insertLumiSection: does perform updateLumiCount in the run
 	                                                try {
 								insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+								conn.commit();
 				                        } catch (SQLException ex) {
         				                        String exmsg = ex.getMessage();
                                 				if ( exmsg.startsWith("Duplicate entry") ||
@@ -1130,31 +1147,66 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				java.util.ArrayList  blockIDListTMP = getFileBlockParentage(conn, out, fileID);
 				for (Object s: blockIDListTMP) 
 						if (!blockIDList.contains(s)) blockIDList.add(s);
-
-                        if ( i%10 == 0) conn.commit(); //For Every 10 files commit the changes
+                        if ( i%10 == 0) 
+				conn.commit(); //For Every 10 files commit the changes
                 }//For loop
+
 
                 //Update Block numberOfFiles and Size
                 if (newFileInserted) {
                 	DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
                         blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
 			insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
+			//FIXME/////////////////////updateRunsSpecial(out, runstoUpdate);
+			if (!calledFromTranfer) updateRunsSpecial(out, runstoUpdate);
+		}
+		
 
-			//New file(s) inserted, we need to update the run (to reflect correct lumiSection count) 
+	}
 
-			//If dead lock occurs, we end up rolling back HUGE transaction, lets have a smaller transaction to rollback
-			conn.commit();
-	                //Lock the associated run tables rows for deadlock avoidance
-	                if (runstoUpdate.size() > 0) {
-				lockRunRows(conn, out, runstoUpdate);
 
-        	        	//Fix the the number of lumi sections in the RUN
-                		for(Object aRun: runstoUpdate) {
-                        		updateRunLumiCount(conn, out, (String)aRun);
-                		}
+	public void updateRunsSpecial(Writer out, Vector runstoUpdate) throws Exception  {
+		Connection conn1 = null;
+
+		boolean comeagain=true;
+		for (int tt=0; tt !=10;++tt) {
+			if (comeagain) {
+				try {
+					conn1 = DBManagement.getDBConnManInstance().getConnection();
+					//Lock the associated run tables rows for deadlock avoidance
+					if (runstoUpdate.size() > 0) {
+						//conn1.setAutoCommit(false);
+						//lockRunRows(conn1, out, runstoUpdate);
+						//Fix the the number of lumi sections in the RUN
+						for(Object aRun: runstoUpdate) updateRunLumiCount(conn1, out, (String)aRun);
+						comeagain = false;
+					}
+				} catch (SQLException ex) {
+					String exmsg = ex.getMessage();
+					if ( exmsg.startsWith("Deadlock found")) {
+						//may introduce some delay here ??
+						System.out.println("RETRYING FAILED Deadlocked transaction...");
+						comeagain = true;
+					}
+					//already tried 09 times, what are my chances for the 10th time 
+					else if (tt==9) throw ex;
+				} finally {
+					if (conn1 != null) conn1.close();	
+					
+				}
 			}
 		}
 	}
+
+
+/*private Connection getConnection() throws Exception {
+
+DBSConfig config = DBSConfig.getInstance();
+return DBManagement.getConnection( config.getDbDriver(),
+                                        config.getDbURL(),
+                                        config.getDbUserName(),
+                                        config.getDbUserPasswd());
+}*/
 
         java.util.ArrayList getFileBlockParentage(Connection conn, Writer out, String fileID) throws Exception {
 
@@ -1239,13 +1291,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 */
 	public void insertFiles(Connection conn, Writer out, String path, String primary, 
 							String proc, Hashtable block, ArrayList files, Hashtable dbsUser) throws Exception { 
-		insertFiles(conn, out, path, primary, proc, block, files, dbsUser, false);
+		insertFiles(conn, out, path, primary, proc, block, files, dbsUser, false, false);
 	}
 
         public void insertFiles(Connection conn, Writer out, String path, String primary, 
 					String proc, Hashtable block, ArrayList files, 
-						Hashtable dbsUser, boolean ignoreParent) throws Exception { 
-
+						Hashtable dbsUser, boolean ignoreParent, boolean calledFromTranfer) throws Exception { 
 
 		//The presedence order is Block, then Path, then (Primary, Process Dataset)
 		//InsertFile in Block iks the only used method, so removing all other ways to insert a file - AA 01/15/2009
@@ -1254,8 +1305,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		//If Block is provided, cut the crap and jump to simpler implementation.
 		if (!isNull(blockName)) {
-			 insertFilesInBlock(conn, out, block, files, dbsUser, ignoreParent);
-			return;
+			 insertFilesInBlock(conn, out, block, files, dbsUser, ignoreParent, calledFromTranfer);
 		}
 
 		return;
@@ -1580,6 +1630,4 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		}
 		return getID(conn, "FileValidStatus", "Status", status , excep);
 	}
-
-
 }

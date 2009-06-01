@@ -3,7 +3,7 @@
 		auth="Container" 
 		type="javax.sql.DataSource"
 		maxActive="100" 
-		maxIdle="1" 
+		maxIdle="10" 
 		maxWait="-1"
 		username="__insert_username__" 
 		password="__insert_password__" 

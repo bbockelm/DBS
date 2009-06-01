@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiTransferLogic.java,v 1.51 2009/05/26 18:05:07 afaq Exp $"
+ $Revision: 1.52 $"
+ $Id: DBSApiTransferLogic.java,v 1.52 2009/05/26 18:23:36 afaq Exp $"
  *
  */
 
@@ -206,7 +206,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 
 		conn.commit();
 
-                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getArrayList(table, "file"), dbsUser, ignoreParent);
+                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getArrayList(table, "file"), dbsUser, ignoreParent, true);
  
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {
@@ -218,12 +218,12 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		//Lock the associated run tables rows for deadlock avoidance
 		//lockRunRows(conn, out, newRunVector);
 		//Fix the the number of lumi sections in the RUN
-		//for(Object aRun: newRunVector) {
-		//	String runNumber = get((Hashtable)aRun, "run_number", true);
+		for(Object aRun: newRunVector) {
+			String runNumber = get((Hashtable)aRun, "run_number", true);
 		//	updateRunLumiCount(conn, out, runNumber);
-		////	updateRun(conn, out, (Hashtable) aRun, dbsUser);
+			updateRun(conn, out, (Hashtable) aRun, dbsUser);
 		////	System.out.println("POOOOhhhhhhhhhHuuuuuu");
-		//}
+		}
 	}
 
 	private boolean doesRunExists(Vector runVector, String runNumber) throws Exception{
