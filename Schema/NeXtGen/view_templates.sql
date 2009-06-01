@@ -103,21 +103,6 @@ JOIN Person tp ON tprd.CreatedBy = tp.ID
 GROUP BY tprd.Name, tprd.CreationDate, tp.DistinguishedName
 /
 
-PROMPT CREATE VIEW TierSummary
-
-
-Drop VIEW TierSummary
-/
-
-CREATE VIEW TierSummary (Name, CreationDate, CreatedBy, NumberOfProcDS) 
-AS SELECT tdt.Name, tdt.CreationDate, tp.DistinguishedName, count(tprd.Name) 
-FROM ProcessedDataset tprd 
-JOIN ProcDSTier tpdst ON tprd.ID=tpdst.Dataset 
-JOIN DataTier tdt ON tpdst.DataTier=tdt.ID 
-JOIN Person tp ON tdt.CreatedBy = tp.ID GROUP BY tdt.Name, tdt.CreationDate, tp.DistinguishedName
-
-/
-
 PROMPT CREATE VIEW DatasetSummary
 
 Drop VIEW DatasetSummary
@@ -178,6 +163,22 @@ JOIN PhysicsGroup tpg ON tads.PhysicsGroup=tpg.ID
 JOIN Person tp ON tads.CreatedBy = tp.ID
 /
 
+PROMPT CREATE VIEW TierSummary
+
+
+Drop VIEW TierSummary
+/
+
+CREATE VIEW TierSummary (Name, CreationDate, CreatedBy, NumberOfProcDS) 
+AS SELECT tdt.Name, tdt.CreationDate, tp.DistinguishedName, count(tprd.Name) 
+FROM ProcessedDataset tprd 
+JOIN ProcDSTier tpdst ON tprd.ID=tpdst.Dataset 
+JOIN DataTier tdt ON tpdst.DataTier=tdt.ID 
+JOIN Person tp ON tdt.CreatedBy = tp.ID GROUP BY tdt.Name, tdt.CreationDate, tp.DistinguishedName
+
+/
+
+
 PROMPT Grant select on FileSummary to  '@build.schema.owner.name@_READER'
 Grant select on FileSummary to @build.schema.owner.name@_READER
 /
@@ -207,10 +208,6 @@ PROMPT Grant select on ProcSummary to  '@build.schema.owner.name@_READER'
 Grant select on ProcSummary to @build.schema.owner.name@_READER
 /
 
-PROMPT Grant select on TierSummary to  '@build.schema.owner.name@_READER'
-Grant select on TierSummary to @build.schema.owner.name@_READER
-/
-
 PROMPT Grant select on DatasetSummary to  '@build.schema.owner.name@_READER'
 Grant select on DatasetSummary to @build.schema.owner.name@_READER
 /
@@ -222,3 +219,8 @@ Grant select on AdsBigSummary to @build.schema.owner.name@_READER
 PROMPT Grant select on AdsSummary to  '@build.schema.owner.name@_READER'
 Grant select on AdsSummary to @build.schema.owner.name@_READER
 /
+
+PROMPT Grant select on TierSummary to  '@build.schema.owner.name@_READER'
+Grant select on TierSummary to @build.schema.owner.name@_READER
+/
+
