@@ -112,11 +112,11 @@ CREATE VIEW DatasetSummary (Path, CreationDate, CreatedBy, TotalSize,  NumberOfB
 NumberOfEvents, NumberOfSites) 
 AS SELECT DISTINCT tblk.Path, tprd.CreationDate, tp.DistinguishedName,  sum(tblk.BlockSize),
 count(tblk.Name), sum(tblk.NumberOfFiles), sum(tblk.NumberOfEvents),
-(SELECT COUNT(DISTINCT tse.SEName) FROM storageelement tse JOIN  seblock tseb ON tseb.SEID = tse.ID
-LEFT OUTER JOIN block tblk2 ON tseb.BlockID = tblk2.ID WHERE  tblk2.path=tblk.path
+(SELECT COUNT(DISTINCT tse.SEName) FROM StorageElement tse JOIN  SEBlock tseb ON tseb.SEID = tse.ID
+LEFT OUTER JOIN Block tblk2 ON tseb.BlockID = tblk2.ID WHERE  tblk2.path=tblk.path
 )
-FROM ProcessedDataset tprd JOIN block tblk ON tblk.Dataset = tprd.ID
-JOIN primarydataset tpm ON tprd.PrimaryDataset = tpm.ID
+FROM ProcessedDataset tprd JOIN Block tblk ON tblk.Dataset = tprd.ID
+JOIN PrimaryDataset tpm ON tprd.PrimaryDataset = tpm.ID
 JOIN Person tp ON tprd.CreatedBy = tp.ID
 GROUP BY tblk.Path, tprd.CreationDate, tp.DistinguishedName
 /
