@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.220 $"
- $Id: DBSSql.java,v 1.220 2009/05/26 18:03:39 afaq Exp $"
+ $Revision: 1.221 $"
+ $Id: DBSSql.java,v 1.221 2009/05/27 21:16:55 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -181,7 +181,7 @@ public class DBSSql {
      ********************************************************************/
     public static PreparedStatement listRecycleBin(Connection conn, String path) throws SQLException {
         String sql = "SELECT PATH, BLOCKNAME, R.CREATIONDATE CREATIONDATE, DISTINGUISHEDNAME NAME from " +
-	                    owner()+"RECYCLEBIN R join " + owner()+" PERSON P on P.ID= R.CREATEDBY ";
+	                    owner()+"RecycleBin R join " + owner()+" Person P on P.ID= R.CREATEDBY ";
         if(path !="") sql += " where path=?"; 			    
 	PreparedStatement ps = DBManagement.getStatement(conn, sql);
 	if (path != "")ps.setString(1, path);
@@ -995,8 +995,8 @@ public class DBSSql {
         }               
 
 
-        public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
-                String sql = "SELECT ID FROM Runs where ID = \n";
+        public static PreparedStatement lockRunsOLD(Connection conn, Vector newRunVector) throws SQLException {
+                String sql = "SELECT * FROM Runs where ID = \n";
                 boolean first = true;
                 for(Object aRun: newRunVector) {
                         if (!first) sql += " OR ID = ";
@@ -1005,7 +1005,8 @@ public class DBSSql {
                 }
                 //sql += ") LOCK IN SHARE MODE ";
                 sql += " FOR UPDATE  ";
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                PreparedStatement ps = DBManagement.getStatementScrollable(conn, sql);
+                //PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 for(Object aRun: newRunVector) {
                         ps.setString(columnIndx++, (String)aRun);
@@ -1016,7 +1017,7 @@ public class DBSSql {
                 return ps;
         }
 
-	public static PreparedStatement lockRunsOLD2(Connection conn, Vector newRunVector) throws SQLException {
+	public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
 		String sql = "SELECT ID, NumberOfLumiSections FROM Runs where ID IN (\n";
 		boolean first = true;
 		for(Object aRun: newRunVector) {
@@ -1029,8 +1030,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		for(Object aRun: newRunVector) {
-                        String runNumber = (String)((Hashtable)aRun).get("run_number");
-			ps.setString(columnIndx++, runNumber);
+			ps.setString(columnIndx++, (String)aRun);
 		}
 
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
