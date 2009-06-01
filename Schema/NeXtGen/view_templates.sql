@@ -1,6 +1,6 @@
-PROMPT Create View  FileSummary
+PROMPT Create VIEW  FileSummary
 
-Drop view FileSummary
+Drop VIEW FileSummary
 /
 
 CREATE VIEW FileSummary (LogicalFileName, CreationDate, CreatedBy, Checksum, NumberOfEvents, 

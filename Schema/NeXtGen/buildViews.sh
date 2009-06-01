@@ -11,4 +11,4 @@ echo "Create views for MySQL"
 cat view_templates.sql | grep -v -i prompt \
 | perl -0777 -ple 's!(_READER)\n/!$1!sg' \
 | grep -v -i grant | sed "s/\//;/g" \
-| sed "s/Drop view/drop view if exists/g" > mysql_views.sql
+| sed "s/Drop VIEW/drop view if exists/g" > mysql_views.sql
