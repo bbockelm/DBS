@@ -1,6 +1,6 @@
 /**
- $Revision: 1.52 $"
- $Id: DBSApiTransferLogic.java,v 1.52 2009/05/26 18:23:36 afaq Exp $"
+ $Revision: 1.53 $"
+ $Id: DBSApiTransferLogic.java,v 1.53 2009/06/01 19:18:40 sekhri Exp $"
  *
  */
 
@@ -161,16 +161,24 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			}
 		}
 		//Make a new set of runsVector for ProcessedDataset
-		Vector newRunVector = new Vector();
-
-		for(Object aRun: runVector)
-			if(runMap.get(get((Hashtable)aRun, "run_number", true)).booleanValue()) {
-				insertRun(conn, out, (Hashtable)aRun, dbsUser);
-				newRunVector.add((Hashtable)aRun);
+		Vector runsToUpdate = new Vector();
+		Vector newRuns = new Vector();
+		//FIXME 
+		/*
+			This functionality is not required aftre all the DBS servers are 206 or higher.
+		*/
+		for(Object aRun: runVector) {
+			String runNum = get((Hashtable)aRun, "run_number", true);
+			if(runMap.get(runNum).booleanValue()) {
+				String runID = getID(conn, "Runs", "RunNumber", runNum , false);
+				if(isNull(runID)) insertRun(conn, out, (Hashtable)aRun, dbsUser);
+				else runsToUpdate.add((Hashtable)aRun);
+				newRuns.add((Hashtable)aRun);
 			}
-			
+		}
+	
 		pdTable.remove("run");
-		pdTable.put("run", newRunVector);
+		pdTable.put("run", newRuns);
 
 		//Fix for backward comaptibility of migration from old server to new
 		String data[] = parseDSPath(path);
@@ -213,17 +221,27 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
 		}
 
-		//No need of this code here AA/VJ - 05/27/2009
-		//conn.commit();
-		//Lock the associated run tables rows for deadlock avoidance
-		//lockRunRows(conn, out, newRunVector);
-		//Fix the the number of lumi sections in the RUN
-		for(Object aRun: newRunVector) {
-			String runNumber = get((Hashtable)aRun, "run_number", true);
-		//	updateRunLumiCount(conn, out, runNumber);
-			updateRun(conn, out, (Hashtable) aRun, dbsUser);
-		////	System.out.println("POOOOhhhhhhhhhHuuuuuu");
+		//WE do not want to do the following if this is GLOBAL instance
+
+
+
+		if (runsToUpdate.size() > 0) {
+			//conn.commit();
+
+			//FIXME the the number of lumi sections in the RUN
+			for(Object aRun: runsToUpdate) {
+				String runNumber = get((Hashtable)aRun, "run_number", true);
+				updateRunLumiCount(conn, out, runNumber);
+
+
+
+			//	updateRunLumiCount(conn, out, runNumber);
+				//updateRun(conn, out, (Hashtable) aRun, dbsUser);
+			////	System.out.println("POOOOhhhhhhhhhHuuuuuu");
+			}
+
 		}
+
 	}
 
 	private boolean doesRunExists(Vector runVector, String runNumber) throws Exception{
