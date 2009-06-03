@@ -1,6 +1,6 @@
 /**
- $Revision: 1.162 $"
- $Id: DBSApi.java,v 1.162 2009/05/08 14:51:45 yuyi Exp $"
+ $Revision: 1.163 $"
+ $Id: DBSApi.java,v 1.163 2009/05/15 16:36:44 valya Exp $"
  *
 */
 
@@ -156,8 +156,9 @@ public class DBSApi {
 	       return suppSchemaVer;
 	}
 
-	private String checkSchemaVersion() throws Exception {
-		Connection conn =  getConnection();
+	private String checkSchemaVersion(Connection conn) throws Exception {
+
+		//Connection conn =  getConnection();
 		String dbsSchemaVersion="";
 		try {
 			String sql = "select SchemaVersion from SchemaVersion";
@@ -178,7 +179,7 @@ public class DBSApi {
 				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, $DBS_SERVER_CONFIG Version is " + suppSchemaVer + " Current schema version in DB is :" + dbsSchemaVersion); 
 			}
 		} finally {
-			if(conn != null) conn.close();
+			//if(conn != null) conn.close();
                 }
 		return dbsSchemaVersion;
         }  
@@ -252,17 +253,17 @@ public class DBSApi {
         	        String apiVersion = get(table, "apiversion", true);
                 	DBSUtil.writeLog("apiStr: "+apiStr);
                         
-
-			
 			conn = getConnection();
 			conn.setAutoCommit(false);
+
 			cache = DBSDataCache.getDBSDataCacheInstance(conn);
 			this.data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(conn));
-			api = new DBSApiLogic(data);
-	                checkVersion(apiVersion);
- 
-        	        String dbsSchemaVersion = checkSchemaVersion();
 
+			api = new DBSApiLogic(data);
+
+	                checkVersion(apiVersion);
+        	        String dbsSchemaVersion = checkSchemaVersion(conn);
+ 
 			if (apiStr.equals("getDBSServerVersion")) {
 				String serverVersion = DBSConstants.DBSTag;
 				serverVersion = serverVersion.replace("$Name:", "");	
