@@ -1,6 +1,6 @@
 /**
- $Revision: 1.160 $"
- $Id: DBSApiLogic.java,v 1.160 2009/04/07 18:20:02 sekhri Exp $"
+ $Revision: 1.161 $"
+ $Id: DBSApiLogic.java,v 1.161 2009/05/26 18:06:58 afaq Exp $"
  *
  */
 
@@ -769,12 +769,8 @@ public class DBSApiLogic {
                 } catch (SQLException ex) {
                         String exmsg = ex.getMessage();
 
-			System.out.println(exmsg);
-
                         if ( exmsg.startsWith("Duplicate entry") ||
                                 exmsg.startsWith("ORA-00001: unique constraint") ) {
-                                ps.close();
-                                return;
                          }
 			 else
 				throw new SQLException("'"+ex.getMessage()+"' insertMapBatch failed for Table:"+
@@ -797,8 +793,6 @@ public class DBSApiLogic {
                         String exmsg = ex.getMessage();
                         if ( exmsg.startsWith("Duplicate entry") ||
                                 exmsg.startsWith("ORA-00001: unique constraint") ) {
-                                ps.close();
-                                return;
                          }
                          else
                         	throw new SQLException("'"+ex.getMessage()+"' insertMapBatch failed for Table:"+
@@ -814,14 +808,13 @@ public class DBSApiLogic {
 		if (keys.size() <= 0 || valueVec.size() <=0 ) return;
 	 	PreparedStatement ps = null;
                 try {
-			ps = DBSSql.getInsertSQLBatch (conn, "FileRunLumi", keys, valueVec);
+			ps = DBSSql.getInsertSQLBatch (conn, tableName, keys, valueVec);
 			pushQuery(ps);
                         ps.executeBatch();
 		} catch (SQLException ex) {
 			String exmsg = ex.getMessage();
 			if ( exmsg.startsWith("Duplicate entry") || 
 				exmsg.startsWith("ORA-00001: unique constraint") ) {
-				return;
 			} else {
 				throw new SQLException("'"+ex.getMessage()+
                                 	                      " Query failed is "+ps);
