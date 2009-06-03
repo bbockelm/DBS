@@ -1,6 +1,6 @@
 /**
- $Revision: 1.128 $"
- $Id: DBSApiFileLogic.java,v 1.128 2009/05/27 21:16:55 afaq Exp $"
+ $Revision: 1.129 $"
+ $Id: DBSApiFileLogic.java,v 1.129 2009/06/01 19:18:40 sekhri Exp $"
  *
  */
 
@@ -111,7 +111,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String patternlfn = "";
 		Vector tierIDList = new Vector();
 		if(otherDetail.equals("True")) allOtherDetails = true;
-		//System.out.println("Detail in listFiles is " + allOtherDetails);
 			
 		if(contains(attributes, "retrive_invalid_files")) listInvalidFiles = true;
 		//Search can be based on LFN pattern
@@ -135,7 +134,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		//if old client then send empty xml
 		boolean oldClients = false;
-		//System.out.println("clientVersion " + clientVersion + " clientVersion.compareTo DBS_1_0_8 " + clientVersion.compareTo("DBS_1_0_8") );
 		if(clientVersion.compareTo("DBS_1_0_9") < 0) oldClients = true;
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
@@ -1084,20 +1082,23 @@ public class DBSApiFileLogic extends DBSApiLogic {
 							//insertLumiSection: does perform updateLumiCount in the run
 	                                                try {
 								insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-								conn.commit();
+								//conn.commit();
 				                        } catch (SQLException ex) {
         				                        String exmsg = ex.getMessage();
                                 				if ( exmsg.startsWith("Duplicate entry") ||
                                         				exmsg.startsWith("ORA-00001: unique constraint") ) {
                                         				//do nothing, just continue
                                 			}
-                                			else  throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
+                                			else  throw new SQLException("'"+ex.getMessage()+"' insertLumiSection failed for unknown reasons");
                         				}
 
 							if (!runstoUpdate.contains(runID)) runstoUpdate.add(runID);
                                                 }
+						try{
+						lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
 						valueVec.add(fileID);
-						valueVec.add(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true));
+						valueVec.add(lumiID);
+						//valueVec.add(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true));
 						valueVec.add(runID);
 						valueVec.add(creationDate);
 		                                valueVec.add(cbUserID);
@@ -1147,7 +1148,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				java.util.ArrayList  blockIDListTMP = getFileBlockParentage(conn, out, fileID);
 				for (Object s: blockIDListTMP) 
 						if (!blockIDList.contains(s)) blockIDList.add(s);
-                        if ( i%10 == 0) 
+                        //if ( i%10 == 0) 
 				conn.commit(); //For Every 10 files commit the changes
                 }//For loop
 

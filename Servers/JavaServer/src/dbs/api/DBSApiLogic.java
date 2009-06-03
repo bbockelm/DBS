@@ -1,6 +1,6 @@
 /**
- $Revision: 1.161 $"
- $Id: DBSApiLogic.java,v 1.161 2009/05/26 18:06:58 afaq Exp $"
+ $Revision: 1.162 $"
+ $Id: DBSApiLogic.java,v 1.162 2009/06/03 15:14:59 afaq Exp $"
  *
  */
 
@@ -1122,7 +1122,13 @@ public class DBSApiLogic {
 			pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				if(excep) throw new DBSException("Unavailable data", "1012", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
+				if(excep) {
+					System.out.println("Just b4 throwing exception...excep::"+excep
+					 			+ key1 + " : " + value1 + " : " + key2 + " : " + value2);
+			
+					throw new DBSException("Unavailable data", "1012", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
+
+				}
 				else return null;
 			}
 			id = get(rs, "ID");
