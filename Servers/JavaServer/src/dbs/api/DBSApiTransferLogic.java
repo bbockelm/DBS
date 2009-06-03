@@ -1,6 +1,6 @@
 /**
- $Revision: 1.53 $"
- $Id: DBSApiTransferLogic.java,v 1.53 2009/06/01 19:18:40 sekhri Exp $"
+ $Revision: 1.54 $"
+ $Id: DBSApiTransferLogic.java,v 1.54 2009/06/02 21:54:25 afaq Exp $"
  *
  */
 
@@ -226,14 +226,12 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 
 
 		if (runsToUpdate.size() > 0) {
-			//conn.commit();
+			conn.commit();
 
 			//FIXME the the number of lumi sections in the RUN
 			for(Object aRun: runsToUpdate) {
 				String runNumber = get((Hashtable)aRun, "run_number", true);
 				updateRunLumiCount(conn, out, runNumber);
-
-
 
 			//	updateRunLumiCount(conn, out, runNumber);
 				//updateRun(conn, out, (Hashtable) aRun, dbsUser);

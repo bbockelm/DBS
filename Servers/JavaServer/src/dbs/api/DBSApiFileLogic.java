@@ -1,6 +1,6 @@
 /**
- $Revision: 1.129 $"
- $Id: DBSApiFileLogic.java,v 1.129 2009/06/01 19:18:40 sekhri Exp $"
+ $Revision: 1.130 $"
+ $Id: DBSApiFileLogic.java,v 1.130 2009/06/03 19:30:15 afaq Exp $"
  *
  */
 
@@ -1094,11 +1094,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 							if (!runstoUpdate.contains(runID)) runstoUpdate.add(runID);
                                                 }
-						try{
 						lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
 						valueVec.add(fileID);
 						valueVec.add(lumiID);
-						//valueVec.add(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true));
 						valueVec.add(runID);
 						valueVec.add(creationDate);
 		                                valueVec.add(cbUserID);
