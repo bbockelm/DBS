@@ -1,6 +1,6 @@
 /**
- $Revision: 1.82 $"
- $Id: DBSApiProcDSLogic.java,v 1.82 2009/03/16 21:43:38 afaq Exp $"
+ $Revision: 1.83 $"
+ $Id: DBSApiProcDSLogic.java,v 1.83 2009/03/24 16:41:10 afaq Exp $"
  *
  */
 
@@ -491,6 +491,13 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String creationDate = getTime(dataset, "creation_date", false);
 
 		String procDSName = get(dataset, "processed_datatset_name", true);
+
+		if (this.data.instanceName.equals("GLOBAL")) {
+			if (procDSName.endsWith("unmerged"))
+				throw new DBSException("Bad Data", "1047",
+                                                "An unmerged dataset cannot be migrated to DBS GLOBAL");
+		}
+
 		String phyGroupName = getStr(dataset, "physics_group_name", false);
 		String phyGroupCon = getStr(dataset, "physics_group_convener", false);
 		String status = get(dataset, "status", false).toUpperCase();
