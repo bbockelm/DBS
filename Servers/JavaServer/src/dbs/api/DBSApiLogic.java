@@ -1,6 +1,6 @@
 /**
- $Revision: 1.164 $"
- $Id: DBSApiLogic.java,v 1.164 2009/06/03 19:34:36 afaq Exp $"
+ $Revision: 1.165 $"
+ $Id: DBSApiLogic.java,v 1.165 2009/06/04 14:35:53 sekhri Exp $"
  *
  */
 
@@ -286,7 +286,7 @@ public class DBSApiLogic {
 			else queryThread = new QueryThread(out, querier, userQuery, finalCountQuery, ps, clientVersion);
 
 			long startTime = (new Date()).getTime();
-			final long TIMEOUT = 600000;
+			final long TIMEOUT = 300000;
 			//final long TIMEOUT = 4000;
 			final long SLEEPINTERVAL = 1000;
 			queryThread.start();
