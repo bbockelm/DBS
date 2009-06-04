@@ -1,6 +1,6 @@
 /**
- $Revision: 1.163 $"
- $Id: DBSApiLogic.java,v 1.163 2009/06/03 19:30:15 afaq Exp $"
+ $Revision: 1.164 $"
+ $Id: DBSApiLogic.java,v 1.164 2009/06/03 19:34:36 afaq Exp $"
  *
  */
 
@@ -211,10 +211,12 @@ public class DBSApiLogic {
 	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper, String clientVersion) throws Exception {
 		executeQuery(conn, out, userQuery, begin, end, type, upper, false, clientVersion);
 	}
+
 	public void executeQuery(Connection conn, Writer out, String userQuery, String begin, String end, String type, boolean upper, boolean isCount, String clientVersion) throws Exception {
 		String tokens[] = userQuery.split(" ");
 		if (tokens.length == 1) userQuery = "find dataset where dataset like %" + userQuery + "%";
-		System.out.println("executeQuery DATE :" + (new Date()).toString());
+		Date startDate = new Date();
+		System.out.println("executeQuery Start DATE :" + startDate.toString());
 		System.out.println("____________________________________ User Query ___________________________________");
 		System.out.println(userQuery);
 		System.out.println("___________________________________________________________________________________");
@@ -233,10 +235,6 @@ public class DBSApiLogic {
 		String xmlBindValues = (String)valentinQueryList.get(1);
 		String countQuery = (String)makeValentinQuery(finalCountQuery, bindIntValues, bindValues).get(0);
 
-
-		//String countQuery = valentinQuery;
-		//countQuery = "SELECT COUNT(*) " + countQuery.substring(countQuery.indexOf("FROM"));
-		
 		out.write("<userinput>\n");
 		out.write("<input>\n");
 		out.write(StringEscapeUtils.escapeXml(userQuery) + "\n");
@@ -271,7 +269,7 @@ public class DBSApiLogic {
 		out.write("</bindparams>\n");
 		out.write("</count_query>\n");
 
-	
+
 
 		if(type.equals("query")) return;
 			
@@ -295,9 +293,9 @@ public class DBSApiLogic {
 			while(true) {
 				long endTime = (new Date()).getTime();
 				if((endTime - startTime ) < TIMEOUT) {
-					System.out.println("Start time " + startTime + "  end time " + endTime + "  diff " + (endTime - startTime ));
+					//System.out.println("Start time " + startTime + "  end time " + endTime + "  diff " + (endTime - startTime ));
 					if(!queryThread.isAlive()) {
-						System.out.println("checked to see if alive . NOT ALIVE");
+						//System.out.println("checked to see if alive . NOT ALIVE");
 						if(queryThread.getError() != null) throw queryThread.getError();
 						return;
 					}
@@ -315,13 +313,17 @@ public class DBSApiLogic {
 					throw new Exception("Your query " + userQuery + "took too long to execute . It is killed. The generated query is " + StringEscapeUtils.escapeXml(tmpQuery));
 					//System.out.println("Intrupting thread DONE");
 				}
-			}
-			
-			
+			}			
 		} finally {
 			if (querier != null) querier.close();
+			Date endDate = new Date();
+			System.out.println("executeQuery End DATE :" + endDate.toString());
+			System.out.println("Total execution time " + ((endDate.getTime() - startDate.getTime())/1000) + " Seconds");
 			System.out.println("_______________________________EXECUTE QUERY DONE _________________________");
 		}
+
+
+
 	}
 
 

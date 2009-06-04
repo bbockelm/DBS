@@ -40,11 +40,11 @@ public class Wrapper {
 			ArrayList okws = parser.okws;
 			ArrayList cs = parser.constraints;
 			String orderingkw = parser.orderingkw;
-			if (orderingkw == null) {
+			/*if (orderingkw == null) {
                             System.out.println("orderingkw is NULL");
                         } else {
 			    System.out.println("ordering is "+ orderingkw);
-                        }
+                        }*/
                         // merge ordering and selection keywords to allow users to specify
                         // ordering while not doing this selection, e. g.
                         // find dataset where ... ordering by run
@@ -76,8 +76,8 @@ public class Wrapper {
                             }
                         }
 
-			for (int i =0 ; i!= kws.size(); ++i) 
-				System.out.println("KEWORD\t" + kws.get(i));
+			//for (int i =0 ; i!= kws.size(); ++i) 
+			//	System.out.println("KEWORD\t" + kws.get(i));
 		
 			/*for (int i =0 ; i!= cs.size(); ++i) {
 				Object obj = cs.get(i);

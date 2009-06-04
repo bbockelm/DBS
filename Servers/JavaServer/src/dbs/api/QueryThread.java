@@ -26,7 +26,7 @@ public class QueryThread extends Thread {
 		try {
 			if(clientVersion.compareTo("DBS_2_0_6") < 0) querier.runQueryForOldClients(out, query, statement);
 			else querier.runQuery(out, userquery, query, statement);
-			System.out.println("Thread " + threadName + " completed");
+			//System.out.println("Thread " + threadName + " completed");
 		} catch (Exception e) {
 			System.out.println("\tInterruptedException in thread " + threadName);
 			System.out.println("ERROR is " + e.getMessage());
