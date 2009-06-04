@@ -17,22 +17,7 @@ import dbs.util.DBSUtil;
 import codec.Base64;
 import dbs.DBSException;
 import java.sql.SQLException;
-
-
-
-
-
-
 import db.DBManagement;
-//import dbs.util.DBSConfig;
-
-
-
-
-
-
-
-
 
 /**
 * A class that has the core business logic of all the File APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -918,7 +903,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 String lastBranchHash = null;
                 String branchID = null;
 		//Vector that just hold some cache values for insertMap function.
-		//ArrayList valueVec = new ArrayList();
+		ArrayList valueVec = new ArrayList();
 		//Vector valueVec = new Vector();
 		//Simple vector that keeps track of what runs have already been added to this dataset
 		//Vector runsMapped = new Vector();
@@ -926,94 +911,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String cbUserID = null;
 		String creationDate = null;
 		java.util.ArrayList  blockIDList = new java.util.ArrayList();
-                        
 		
-		//Vector runstoUpdate = new Vector();
+		Vector runstoUpdate = new Vector();
+
 
                 for (int i = 0; i < files.size() ; ++i) {
-	                boolean comeagain=true;
-        	        for (int tt=0; tt !=10;++tt) {
-                	        if (comeagain) {
-						//This SHOULD  be done for EACH file (new connection), SUX !!!
-                                	        Connection connFile = DBManagement.getDBConnManInstance().getConnection();
-						connFile.setAutoCommit(false);
+                        Hashtable file = (Hashtable)files.get(i);
 
-                        			Hashtable file = (Hashtable)files.get(i);
-
-                        	        try {
-						String fileID= atomicFileInsert(connFile, out, file, blockID, procDSID, cbUserID, lmbUserID, creationDate, ignoreParent,
-									statusTable, typeTable, valStatusTable, runsMapped, dbsUser
-	
-						);
-		                                //Retrieve and Store Block Parentage
-                		                java.util.ArrayList  blockIDListTMP = getFileBlockParentage(connFile, out, fileID);
-                                		for (Object s: blockIDListTMP)
-                                                	if (!blockIDList.contains(s)) blockIDList.add(s);
-						if (!isNull(fileID)) newFileInserted = true;
-						connFile.commit();
-
-                                	} catch (SQLException ex) {
-                                        	String exmsg = ex.getMessage();
-						//String excode = 
-                                        	if ( exmsg.startsWith("Deadlock found")  && tt <= 9) {
-                                                	//may introduce some delay here ??
-                                                	System.out.println("RETRYING FAILED Deadlocked transaction...");
-                                                	comeagain = true;
-							connFile.rollback();
-                                        	}
-                                        	//already tried 09 times, what are my chances for the 10th time 
-						//It will covery ANY failure, not just the Deadlock
-                                        	else {
-							System.out.println("insertFile failed for WEIRD REASONS: "+exmsg+" \n STILL RETRYING before exhausting, YOU may need to tune the number of count its retried.......!!!!!!!!!!....");
-							connFile.rollback();
-                                                	comeagain = true;
-							if ( tt  >= 9 ) {
-                                                		comeagain = false;
-								throw ex;
-							}
-						} 
-                                	} finally {
-                                        	if (connFile != null) connFile.close();
-
-                                	}
-				}
-			}
-					
-		}
-
-                //Update Block numberOfFiles and Size
-                if (newFileInserted) {
-                        DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
-                        blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
-                        insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
-                        //FIXME/////////////////////updateRunsSpecial(out, runstoUpdate);
-                        //FIXME 222222222222222222222222222222222222222222222222222222222222222222222222if (!calledFromTranfer) updateRunsSpecial(out, runstoUpdate);
-                }
-
-	}
-
-	private String atomicFileInsert(Connection conn, Writer out, Hashtable file, String blockID, 
-					String procDSID, String cbUserID, String lmbUserID, String creationDate, boolean ignoreParent ,
-		Hashtable statusTable,
-                Hashtable typeTable,
-                Hashtable valStatusTable, ArrayList runsMapped, Hashtable dbsUser) throws Exception {
-                String statusID = "";
-                String typeID = "";
-                String valStatusID = "";
-
-                String thisBranchHash = null;
-                String lastBranchHash = null;
-                String branchID = null;
-
-
-                PreparedStatement ps = null;
-                ResultSet rs =  null;
-
-
-cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
-
-		Vector runstoUpdate = new Vector();
-		ArrayList valueVec = new ArrayList();
                         String fileID = "";
                         String lfn = get(file, "lfn", true);
                         String fileStatus = get(file, "file_status", false).toUpperCase();
@@ -1021,6 +925,7 @@ cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
                         String type = get(file, "type", true).toUpperCase();
 
                         String valStatus = get(file, "validation_status", false).toUpperCase();
+                        cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
                         creationDate = getTime(file, "creation_date", false);
                         ArrayList lumiVector = DBSUtil.getArrayList(file,"file_lumi_section");
                         ArrayList tierVector = DBSUtil.getArrayList(file,"file_data_tier");
@@ -1077,7 +982,7 @@ cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
 
 					pushQuery(ps);
                                 	ps.execute();
-					//newFileInserted = true;
+					newFileInserted = true;
 				} catch (SQLException ex) {
 					String exmsg = ex.getMessage();
 					if ( exmsg.startsWith("Duplicate entry") || 
@@ -1087,9 +992,8 @@ cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
 						//Shouldn't RETURN from here, just continue
 						//return; 
 					} else {
-						throw ex;
- 						//throw new SQLException("'"+ex.getMessage()+"' insertFile for LogicalFileName:"+lfn+
-                                        	//	" Query failed is"+ps);
+ 						throw new SQLException("'"+ex.getMessage()+"' insertFile for LogicalFileName:"+lfn+
+                                        		" Query failed is"+ps);
 					}
 				}
 				finally {
@@ -1170,8 +1074,7 @@ cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
                                         				exmsg.startsWith("ORA-00001: unique constraint") ) {
                                         				//do nothing, just continue
                                 			}
-							else throw ex;
-                                			//else  throw new SQLException("'"+ex.getMessage()+"' insertLumiSection failed for unknown reasons");
+                                			else  throw new SQLException("'"+ex.getMessage()+"' insertLumiSection failed for unknown reasons");
                         				}
 
 							if (!runstoUpdate.contains(runID)) runstoUpdate.add(runID);
@@ -1224,7 +1127,25 @@ cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
                                                                 cbUserID, lmbUserID, creationDate, true);
                                 }
 
-		return fileID;
+				//Insert Block Parentage
+				java.util.ArrayList  blockIDListTMP = getFileBlockParentage(conn, out, fileID);
+				for (Object s: blockIDListTMP) 
+						if (!blockIDList.contains(s)) blockIDList.add(s);
+                        //if ( i%10 == 0) 
+				conn.commit(); //For Every 10 files commit the changes
+                }//For loop
+
+
+                //Update Block numberOfFiles and Size
+                if (newFileInserted) {
+                	DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
+                        blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
+			insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
+			//FIXME/////////////////////updateRunsSpecial(out, runstoUpdate);
+			if (!calledFromTranfer) updateRunsSpecial(out, runstoUpdate);
+		}
+		
+
 	}
 
 
