@@ -1378,7 +1378,7 @@ public class QueryBuilder {
 	}
 
 	private String handleSite(String val, String op) throws Exception {
-		System.out.println("VAL is " + val);
+		//System.out.println("VAL is " + val);
 		String extraQuery = "";
 		if(Util.isSame(op, "like")) extraQuery = "\t" + makeUpper("StorageElement.SEName");
 		else extraQuery = "\tStorageElement.SEName ";
