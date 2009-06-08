@@ -33,7 +33,7 @@ CREATE VIEW RunSummary (RunNumber, CreationDate, CreatedBy, ModificationDate, Mo
 AS SELECT tr.RunNumber, tr.CreationDate, tp.DistinguishedName, 
 tr.LastModificationDate, tp2.DistinguishedName,
 tr.TotalLuminosity, tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tr.NumberOfEvents,
-tls.StartEventNumber, tls.EndEventNumber, count(tls.LumiSectionNumber) 
+tls.StartEventNumber, tls.EndEventNumber, count(DISTINCT tls.LumiSectionNumber) 
 FROM Runs tr JOIN LumiSection tls ON tr.ID=tls.RunNumber 
 JOIN Person tp ON tr.CreatedBy = tp.ID 
 JOIN Person tp2 ON tr.LastModifiedBy = tp2.ID
@@ -51,7 +51,7 @@ CREATE VIEW RunManagerSummary (RunNumber, CreationDate, CreatedBy, TotLumi, Stor
 EndEvent, Path, NumberOfLumis, NumberOfFiles) 
 AS SELECT DISTINCT tr.RunNumber, tr.CreationDate, tp.DistinguishedName, tr.TotalLuminosity, 
 tr.StoreNumber, tr.StartOfRun, tr.EndOfRun, tls.StartEventNumber, tls.EndEventNumber, tblk.Path, 
-count(DISTINCT tls.LumiSectionNumber), count(tf.LogicalFileName) 
+count(DISTINCT tls.LumiSectionNumber), count(DISTINCT tf.LogicalFileName) 
 FROM Runs tr JOIN LumiSection tls ON tr.ID=tls.RunNumber 
 JOIN FileRunLumi tfrl ON tfrl.Run=tr.ID 
 JOIN Files tf ON tf.ID=tfrl.FileId 
@@ -81,7 +81,7 @@ Drop VIEW PrimSummary
 /
 
 CREATE VIEW PrimSummary (Name, CreationDate, CreatedBy, PrimType, NumberOfProcDS) 
-AS SELECT tprm.Name, tprm.CreationDate, tp.DistinguishedName, tprmt.Type, count(tprd.Name) 
+AS SELECT tprm.Name, tprm.CreationDate, tp.DistinguishedName, tprmt.Type, count(DISTINCT tprd.Name) 
 FROM PrimaryDataset tprm 
 JOIN PrimaryDSType tprmt ON tprmt.ID=tprm.Type 
 JOIN ProcessedDataset tprd ON tprm.ID=tprd.PrimaryDataset 
@@ -95,7 +95,7 @@ Drop VIEW ProcSummary
 /
 
 CREATE VIEW ProcSummary (Name, CreationDate, CreatedBy, NumberOfBlocks, BlocksSize, NumberOfFiles, NumberOfEvents) 
-AS SELECT tprd.Name, tprd.CreationDate, tp.DistinguishedName, count(tblk.Name), 
+AS SELECT tprd.Name, tprd.CreationDate, tp.DistinguishedName, count(DISTINCT tblk.Name), 
 sum(tblk.BlockSize), sum(tblk.NumberOfFiles), sum(tblk.NumberOfEvents) 
 FROM ProcessedDataset tprd 
 JOIN Block tblk ON tprd.ID=tblk.Dataset 
@@ -111,7 +111,7 @@ Drop VIEW DatasetSummary
 CREATE VIEW DatasetSummary (Path, CreationDate, CreatedBy, TotalSize,  NumberOfBlocks, NumberOfFiles,
 NumberOfEvents, NumberOfSites) 
 AS SELECT DISTINCT tblk.Path, tprd.CreationDate, tp.DistinguishedName,  sum(tblk.BlockSize),
-count(tblk.Name), sum(tblk.NumberOfFiles), sum(tblk.NumberOfEvents),
+count(DISTINCT tblk.Name), sum(tblk.NumberOfFiles), sum(tblk.NumberOfEvents),
 (SELECT COUNT(DISTINCT tse.SEName) FROM StorageElement tse JOIN  SEBlock tseb ON tseb.SEID = tse.ID
 LEFT OUTER JOIN Block tblk2 ON tseb.BlockID = tblk2.ID WHERE  tblk2.path=tblk.path
 )
@@ -170,7 +170,7 @@ Drop VIEW TierSummary
 /
 
 CREATE VIEW TierSummary (Name, CreationDate, CreatedBy, NumberOfProcDS) 
-AS SELECT tdt.Name, tdt.CreationDate, tp.DistinguishedName, count(tprd.Name) 
+AS SELECT tdt.Name, tdt.CreationDate, tp.DistinguishedName, count(DISTINCT tprd.Name) 
 FROM ProcessedDataset tprd 
 JOIN DataTier tdt ON tprd.DataTier=tdt.ID 
 JOIN Person tp ON tdt.CreatedBy = tp.ID GROUP BY tdt.Name, tdt.CreationDate, tp.DistinguishedName
