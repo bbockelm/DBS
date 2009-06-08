@@ -1,6 +1,6 @@
 /**
- $Revision: 1.131 $"
- $Id: DBSApiFileLogic.java,v 1.131 2009/06/03 19:34:36 afaq Exp $"
+ $Revision: 1.133 $"
+ $Id: DBSApiFileLogic.java,v 1.133 2009/06/04 21:11:35 afaq Exp $"
  *
  */
 
@@ -1216,7 +1216,9 @@ return DBManagement.getConnection( config.getDbDriver(),
 
         void insertBlockParentage(Connection conn, Writer out, String blockID, ArrayList  blockIDList,
                                         String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		try {
+		/*try {
+
+
 			insertMapBatch(conn, out, "BlockParent", "ThisBlock", "ItsParent",
                                         blockID, blockIDList, cbUserID, lmbUserID, creationDate);
 
@@ -1228,9 +1230,9 @@ return DBManagement.getConnection( config.getDbDriver(),
                                 }
                                 else
                                         throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
-                        }
+                        }*/
 
-/*                for (Object s: blockIDList) {
+                for (Object s: blockIDList) {
                 	try {
                        	       insertMap(conn, out, "BlockParent", "ThisBlock", "ItsParent", 
                                         blockID, (String) s, cbUserID, lmbUserID, creationDate, true);
@@ -1244,7 +1246,7 @@ return DBManagement.getConnection( config.getDbDriver(),
                                 	throw new SQLException("'"+ex.getMessage()+"' insertBlockParentage failed for unknown reasons");
                 	}
 		}
-*/
+
         }
 
        /**
@@ -1347,6 +1349,11 @@ return DBManagement.getConnection( config.getDbDriver(),
 		//Insert Block Parentage
 		java.util.ArrayList  blockIDList = getFileBlockParentage(conn, out, fileID);
 		insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
+
+
+		System.out.println("\n JUST added :: " + blockID + "List : " + blockIDList );
+		conn.commit();
+
 
 	}
 	public void deleteFileParent(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
