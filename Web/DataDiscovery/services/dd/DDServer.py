@@ -15,6 +15,12 @@ import thread, smtplib, tempfile, zlib, traceback
 import xml.sax, xml.sax.handler
 from   xml.sax.saxutils import escape
 from xml.dom import *
+try:
+    # Python 2.5
+    import xml.etree.ElementTree as ET
+except:
+    # prior requires elementtree
+    import elementtree.ElementTree as ET
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -311,7 +317,7 @@ class DDServer(DDLogger,Controller):
         data = request.body.read(clen)
         
         request.soap_start = data[:2048]
-        soapreq = elementtree.ElementTree.fromstring(data)
+        soapreq = ET.fromstring(data)
 
         # find the body of the request and the specific method name that has
         # been requested.
@@ -1426,7 +1432,7 @@ class DDServer(DDLogger,Controller):
         status   = ""
         if code==200:
            data=response.read()
-           elem=elementtree.ElementTree.fromstring(data)
+           elem=ET.fromstring(data)
            for i in elem:
                if i.tag=="request":
                   id=i.attrib['id']

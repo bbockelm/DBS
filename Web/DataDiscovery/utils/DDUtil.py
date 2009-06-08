@@ -12,7 +12,12 @@ Common utilities module used by DBS data discovery.
 import os, string, sys, time, types, traceback, random, difflib, httplib, urllib
 import md5, re
 import logging, logging.handlers
-import elementtree.ElementTree as ET
+try:
+    # Python 2.5
+    import xml.etree.ElementTree as ET
+except:
+    # prior requires elementtree
+    import elementtree.ElementTree as ET
 
 # import DBS modules
 import DDOptions

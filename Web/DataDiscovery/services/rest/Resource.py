@@ -28,9 +28,21 @@ OPTIONS         YES             Requests the server to return details about capa
 -----------------------------------------------------------------------------------------
 """
 
-import cherrypy, traceback, simplejson, time, types
+import cherrypy, traceback, time, types
 from cherrypy.lib.cptools import accept
-import elementtree.ElementTree as ET
+try:
+    # Python 2.5
+    import xml.etree.ElementTree as ET
+except:
+    # prior requires elementtree
+    import elementtree.ElementTree as ET
+try:
+    # Python 2.6
+    import json
+except:
+    # Prior to 2.6 requires simplejson
+    import simplejson as json
+
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -168,7 +180,7 @@ class DataCache(object):
     def to_json(self):
         if not self.data:
            return {}
-        return simplejson.dumps(decodeDBSXML(self.data), sort_keys=True, indent=4)
+        return json.dumps(decodeDBSXML(self.data), sort_keys=True, indent=4)
     def to_html(self,host,url,mastheadUrl,footerUrl,dbsInst):
         try:
             page = genTopHTML(host,url,mastheadUrl,footerUrl,dbsInst)

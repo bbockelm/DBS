@@ -11,8 +11,7 @@ Data Discovery Manager
 
 # import system modules
 import string, sys, time, types, popen2, httplib
-import elementtree, traceback
-from elementtree.ElementTree import fromstring
+import traceback
 
 # import DBS modules
 import utils.DDOptions

@@ -4,10 +4,14 @@
 
 import time
 import traceback
-import elementtree
-from   elementtree.ElementTree import fromstring
 from   utils.DDUtil import singleList, DDLogger, parseCreatedBy, timeGMT
 from   utils.DDUtil import sizeFormat, addToDict, convertDBS2DDTime, where_cond
+try:
+    # Python 2.5
+    import xml.etree.ElementTree as ET
+except:
+    # prior requires elementtree
+    import elementtree.ElementTree as ET
 
 class DDHelper(DDLogger): 
     """
@@ -444,7 +448,7 @@ class DDHelper(DDLogger):
         r1 = conn.getresponse()
         if int(r1.status)==200:
            data=r1.read()
-           elem=elementtree.ElementTree.fromstring(data)
+           elem=ET.fromstring(data)
            for i in elem:
                if i.tag=="query":
                   query_data=i # get query
@@ -802,7 +806,7 @@ MCDescription:      %s
         opener = urllib2.build_opener(http_handler)
         req    = urllib2.Request(url,urllib.urlencode(iParams,doseq=True))
         data   = opener.open(req).read()
-        elem=elementtree.ElementTree.fromstring(data)
+        elem   = ET.fromstring(data)
         for i in elem:
             if i.tag=="runInfo":
                query_data=i # get query

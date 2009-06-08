@@ -8,8 +8,13 @@ import socket
 import urllib
 import urllib2
 import traceback
-import elementtree.ElementTree as ET
 from   DBSAPI.dbsApi import DbsApi
+try:
+    # Python 2.5
+    import xml.etree.ElementTree as ET
+except:
+    # prior requires elementtree
+    import elementtree.ElementTree as ET
 
 socket.setdefaulttimeout(30000)
 

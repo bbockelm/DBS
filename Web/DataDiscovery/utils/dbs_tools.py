@@ -9,7 +9,12 @@ import time
 import types
 import traceback
 import memcache
-import elementtree.ElementTree as ET
+try:
+    # Python 2.5
+    import xml.etree.ElementTree as ET
+except:
+    # prior requires elementtree
+    import elementtree.ElementTree as ET
 
 from   utils.DDUtil     import findInString, genkey, natsort24
 
