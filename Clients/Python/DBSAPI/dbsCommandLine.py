@@ -1087,18 +1087,25 @@ class ApiDispatcher:
 	#Loaded with MART Queries
 	self.KnownQueries = {}
 	self.mart_file = ""
-
-        #Lets see if user has provided a MART File as destination
-        self.adshome = os.path.expandvars(self.getApi().adshome())
-        if not os.path.exists(self.adshome):
-                self.printRED("WARNING: Path %s do not exist, ADSHOME (%s) parameter is not set or not a valid path" \
+	try :
+        	#Lets see if user has provided a MART File as destination
+        	self.adshome = os.path.expandvars(self.getApi().adshome())
+        	if not os.path.exists(self.adshome):
+                	self.printRED("WARNING: Path %s do not exist, ADSHOME (%s) parameter is not set or not a valid path" \
 										% ( self.adshome,  str(self.getApi().adshome())))
-		self.printRED("WARNING: Trying to create ADSHOME (%s) " %str(self.adshome))
+			self.printRED("WARNING: Trying to create ADSHOME (%s) " %str(self.adshome))
+			try:
+				os.mkdir(self.adshome)
+			except:
+				self.printRED("ERROR: Unable to create ADSHOME (%s) " %str(self.adshome))
+                		return False
+	except DbsException, ex:
 		try:
-			os.mkdir(self.adshome)
-		except:
-			self.printRED("ERROR: Unable to create ADSHOME (%s) " %str(self.adshome))
-                	return False
+			self.adshome = os.path.expandvars("$PWD")
+	 	except:
+			pass
+		if self.adshome in (None, ""):
+			self.adshome=os.getcwd()
 
         mart_file_name = self.optdict.get('dbsmartfile') or ''
         if mart_file_name not in ('', None):
