@@ -85,13 +85,6 @@ class testDBS(unittest.TestCase):
         self.params = {'apiversion':self.ver,
                        'api':'executeSummary','begin':'0','end':'1'}
 
-    def test_no_executeSummary(self): 
-        params = dict(self.params)
-        params['query'] = 'find dataset where dataset like *CRUZET4*'
-        result = call(self.url, params)
-        expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<exception message=' ____________ API Invoked executeSummary____________\nInvalid API'  code ='1018' detail ='The api executeSummary provided by the client is not valid'/>\n\n<stack_trace>\n</stack_trace>\n</dbs>\n"""
-        self.assertRaises(Exception, expect, result)
-
     def test_unboundquery_executeSummary(self): 
         params = dict(self.params)
         params['query'] = 'find dataset where dataset like *CRUZET4*'
@@ -110,12 +103,16 @@ class testDBS(unittest.TestCase):
         expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<exception message=' ____________ API Invoked executeSummary____________\nInvalid API'  code ='4000' detail ='Too wide range for summary view'/>\n\n<stack_trace>\n</stack_trace>\n</dbs>\n" != "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<exception message=' ____________ API Invoked executeSummary____________\nUnexpected execution exception'  code ='4000' detail ='Too wide range for summary view'/>\n\n<stack_trace>\n</stack_trace>\n</dbs>\n"""
         self.assertRaises(Exception, expect, result)
 
-    def test_executeSummary_noparams(self): 
+    def test_executeSummary_nodata(self): 
+        """In this case executeSummary will construct inproper query like
+        SELECT * FROM DatasetSummary WHERE Path IN ()  ORDER BY Path DESC
+        where no parameters will be send to (). MySQL will complain about ) ORDER BY Path DESC
+        while ORACLE will say ORA-00936: missing expression"""
         params = dict(self.params)
         params['query'] = 'find dataset where dataset like *CRUZET4*'
         result = call(self.url, params)
         expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<summary_view>\n<exception>\njava.sql.SQLException: ORA-00936: missing expression\n\n</exception>\n</summary_view>\n<SUCCESS/>\n</dbs>\n"""
-        self.assertEqual(expect, result)
+        self.assertRaises(Exception, expect, result)
 
     def test_executeSummary_releasesummary(self): 
         selkeys= ['release', 'algo.createdate', 'algo.createby',
