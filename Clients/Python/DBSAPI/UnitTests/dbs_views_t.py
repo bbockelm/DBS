@@ -15,16 +15,6 @@ import os
 import sys
 from xml.dom.minidom import parse, parseString
 
-from DBSAPI.dbsApi import DbsApi
-from DBSAPI.dbsException import *
-from DBSAPI.dbsApiException import *
-from DBSAPI.dbsOptions import DbsOptionParser
-from DBSAPI.dbsUtil import *
-
-optManager  = DbsOptionParser()
-(opts,args) = optManager.getOpt()
-api = DbsApi(opts.__dict__)
-
 def parseDBSoutput(data, exclude=None):
     """
     DBS XML parser for DBS server DBS_2_0_6 and later
@@ -78,10 +68,8 @@ class testDBS(unittest.TestCase):
         """
         self.url = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
         self.ver = 'DBS_2_0_6'
-#        self.url = os.environ['DBS_TEST_URL']
-#        self.ver = os.environ['DBS_TEST_VER']
-        self.url = api.url()
-        self.ver = api.version()        
+        self.url = os.environ['DBS_TEST_URL']
+        self.ver = os.environ['DBS_TEST_VER']
         self.params = {'apiversion':self.ver,
                        'api':'executeSummary','begin':'0','end':'1'}
 
@@ -386,10 +374,7 @@ class testDBS(unittest.TestCase):
                 itemlist.append(val)
             dbs_summary.append(itemlist)
         self.assertEqual(dbs_query, dbs_summary)
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(testDBS))
-    return suite
+
 #
 # main
 #
