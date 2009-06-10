@@ -22,6 +22,7 @@ public class QueryBuilder {
 	private ArrayList bindValues;
 	private ArrayList bindIntValues;
 	private List<String> listForOracleOrderInOutermostQuery;
+	private String orderingkwOracleOutermostQuery;
 	GraphUtil u = null;
 	private String db = "";
 	private String countQuery = "";
@@ -87,6 +88,7 @@ public class QueryBuilder {
 	//public String genQuery(ArrayList kws, ArrayList cs, String begin, String end) throws Exception{
 	public String genQuery(ArrayList kws, ArrayList cs, ArrayList okws, String orderingkw, String begin, String end, boolean upper) throws Exception{
 		this.upper = upper;
+		orderingkwOracleOutermostQuery = orderingkw;
 		//Store all the keywors both from select and where in allKws
 		fixConstForLike(cs);
 
@@ -1029,7 +1031,10 @@ public class QueryBuilder {
 				toReturn += orderToken;
 				orderOnce = true;
 			}
+			if (Util.isSame(orderingkwOracleOutermostQuery, "asc")) toReturn += " ASC";
+			else if (Util.isSame(orderingkwOracleOutermostQuery, "desc")) toReturn += " DESC";
 		}
+
 		return toReturn;
 			
 			

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.163 $"
- $Id: DBSApi.java,v 1.163 2009/05/15 16:36:44 valya Exp $"
+ $Revision: 1.164 $"
+ $Id: DBSApi.java,v 1.164 2009/06/03 15:17:12 afaq Exp $"
  *
 */
 
@@ -649,6 +649,8 @@ public class DBSApi {
 						dbsUser);
 				
 			} else if (apiStr.equals("insertDatasetContents")) {
+			//try{
+				//conn.setAutoCommit(true);
 				boolean ignoreParent = false;
 				String ignoreParentStr = get(table, "ignore_parent", false);
 				if (ignoreParentStr.equals("true")) ignoreParent = true;
@@ -657,6 +659,10 @@ public class DBSApi {
 						dbsUser,
 						ignoreParent,
 						apiVersion);
+			/*}catch(Exception ex) {
+				System.out.println("MY MESSAGE ----------------->>>>>\n\n\n" + ex.getMessage());
+				ex.printStackTrace();
+			}*/
 
                         } else if (apiStr.equals("openBlock")) {
                                 (new DBSApiBlockLogic(this.data)).openBlock(conn, out,
