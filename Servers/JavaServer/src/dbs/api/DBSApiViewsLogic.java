@@ -74,18 +74,9 @@ public class DBSApiViewsLogic extends DBSApiLogic {
     throws Exception {
         PreparedStatement ps = null;
         ResultSet rs =  null;
-//        ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
-//        pushQuery(ps);
-//        rs =  ps.executeQuery();
-        try {
-            ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
-            pushQuery(ps);
-            rs =  ps.executeQuery();
-        } catch(Exception e) {
-            out.write( ((String)"<summary_view>\n"));
-            out.write("</summary_view>\n");
-            return;
-        }
+        ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
+        pushQuery(ps);
+        rs =  ps.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int numberOfColumns = rsmd.getColumnCount();
         out.write( ((String)"<summary_view>\n"));
@@ -193,10 +184,8 @@ public class DBSApiViewsLogic extends DBSApiLogic {
         try {
             getSummary(conn, out, view, lbound, rbound, key, resList, sortKey, sortOrder);
             out.write( "<results>\n" );
-            if  (!resList.isEmpty()) {
-                for(int i=lbound;i<rbound;i++) {
-                    out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
-                }
+            for(int i=lbound;i<rbound;i++) {
+                out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
             }
             out.write( "</results>\n" );
         } catch(Exception e) {

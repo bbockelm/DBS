@@ -5,7 +5,6 @@
  */
 
 package dbs.api;
-import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -249,9 +248,10 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 		if (isNull(openForWriting)) openForWriting = "1";
 
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertBlock(conn,
+		if(getBlockID(conn, name, false, false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertBlock(conn,
 					"0",// A new block should always have 0 size
 					name,
 					procDSID,
@@ -263,15 +263,14 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					userID,
 					creationDate);
 
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
-		} finally { 
-			if (ps != null) ps.close();
-                }
+				pushQuery(ps);
+				ps.execute();
+			} finally { 
+				if (ps != null) ps.close();
+	                }
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
+		}
 
 		//Storage Element will be added to an existing block
 		String blockID = "";

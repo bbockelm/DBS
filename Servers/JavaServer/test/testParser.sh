@@ -210,7 +210,7 @@ executeQuery () {
 	#$CMD query="find dataset where site = caf.cern.ch "
 	#$CMD query="find dataset,site,sum(block.numevents),sum(block.size) where dataset=/TTbar-madgraph/geenen-TTBarWinter09IDEAL_V11_FastSim_v1_IIIb_PAT_DBSTEST-23e0a7a80519399331d983d3a29007f8/USER"
 	#$CMD query="find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby,run.createdate, run.modby, run.moddate, count(file), sum(file.size) where dataset = /EndcapsMuon/CRUZET3_CRUZET3_V2P_v3/RECO"
-	$CMD query="find dataset  where file = * order by dataset asc" begin=0 end=5
+	$CMD query="find dataset  where site = T1_FR_CCIN2P3"
 	#$CMD query="find site, block.id, block where dataset = /SiStripCommissioning08-edm/Online/RAW"
 	#$CMD query="find dataset, run.number, count(file), sum(file.size) where dataset = /HcalHPDNoise/Commissioning08-CRUZET4_v1/RAW order by run.number, dataset desc" begin=0 end=5
 	#$CMD query="find dataset, run.number, count(file), sum(file.size) where dataset = /HcalHPDNoise/Commissioning08-CRUZET4_v1/RAW" begin=0 end=5

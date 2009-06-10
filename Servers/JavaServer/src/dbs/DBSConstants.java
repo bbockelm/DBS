@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.71 $"
- $Id: DBSConstants.java,v 1.71 2009/02/10 19:48:53 sekhri Exp $"
+ $Revision: 1.72 $"
+ $Id: DBSConstants.java,v 1.72 2009/05/04 15:56:21 afaq Exp $"
  *
 */
 package dbs;
@@ -32,6 +32,6 @@ public class DBSConstants {
 	public static String XML_WARNNING_HEADER = "<warnning>\n";
 	public static String XML_WARNNING_FOOTER = "</warnning>\n";
 	public static String XML_SUCCESS = "<SUCCESS/>\n";
-        public static String DBSTag = "$Name:  $";
+        public static String DBSTag = "$Name: DBS_2_0_7_pre6 $";
 
 }

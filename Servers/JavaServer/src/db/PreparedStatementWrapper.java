@@ -641,7 +641,6 @@ public class PreparedStatementWrapper implements PreparedStatement {
 	
 	/**
 	* {@inheritDoc}
-	
 	public void setNClob(int parameterIndex, java.io.Reader r)  throws SQLException {
 		embedded.setNClob(parameterIndex, r);
 		bindParams.put(new Integer(parameterIndex), r);
@@ -690,68 +689,7 @@ public class PreparedStatementWrapper implements PreparedStatement {
 		
 	}
 
-	public void setAsciiStream(int parameterIndex,java.io.InputStream i,long l) throws SQLException{
-		embedded.setAsciiStream(parameterIndex, i, l);
-		bindParams.put(new Integer(parameterIndex), i);
-
-	}
-	public void setSQLXML(int parameterIndex,java.sql.SQLXML s) throws SQLException{
-		embedded.setSQLXML(parameterIndex, s);
-		bindParams.put(new Integer(parameterIndex), s);
-	}
-	public void setNClob(int parameterIndex, java.io.Reader r, long l)  throws SQLException {
-		embedded.setNClob(parameterIndex, r, l);
-		bindParams.put(new Integer(parameterIndex), r);
-		
-	}
-	public void setBlob(int parameterIndex, java.io.InputStream i, long l)  throws SQLException {
-		embedded.setBlob(parameterIndex, i, l);
-		bindParams.put(new Integer(parameterIndex), i);
-		
-	}
-	public void setClob(int parameterIndex, java.io.Reader r, long l)  throws SQLException {
-		embedded.setClob(parameterIndex, r, l);
-		bindParams.put(new Integer(parameterIndex), r);
-		
-	}
-	public void setNClob(int parameterIndex,java.sql.NClob n)   throws SQLException {
-		embedded.setClob(parameterIndex, n);
-		bindParams.put(new Integer(parameterIndex), n);
-
-	}
-	public void setNCharacterStream(int parameterIndex,java.io.Reader r,long l)   throws SQLException {
-		embedded.setNCharacterStream(parameterIndex, r, l);
-		bindParams.put(new Integer(parameterIndex), r);
-
-	}
-	public void setNString(int parameterIndex,java.lang.String s)   throws SQLException {
-		embedded.setNString(parameterIndex, s);
-		bindParams.put(new Integer(parameterIndex), s);
-
-	}
-	public void setRowId(int parameterIndex,java.sql.RowId r) throws SQLException {
-		embedded.setRowId(parameterIndex, r);
-		bindParams.put(new Integer(parameterIndex), r);
-
-	}
-	public boolean isPoolable()   throws SQLException {
-		return embedded.isPoolable();
-
-	}
-
-	public void setPoolable(boolean b) throws SQLException {
-		embedded.setPoolable(b);
-
-	}
-
-	public boolean isClosed()   throws SQLException {
-		return embedded.isClosed();
-
-	}
-
-
 	*/
-
 
 
 

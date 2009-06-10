@@ -995,7 +995,7 @@ public class DBSSql {
         }               
 
 
-        public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
+        public static PreparedStatement lockRunsOLD(Connection conn, Vector newRunVector) throws SQLException {
                 String sql = "SELECT * FROM Runs where ID = \n";
                 boolean first = true;
                 for(Object aRun: newRunVector) {
@@ -1013,11 +1013,11 @@ public class DBSSql {
                 }
 
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		//System.out.println("\n" + ps + "\n");
+		System.out.println("\n" + ps + "\n");
                 return ps;
         }
 
-	public static PreparedStatement lockRunsOLD(Connection conn, Vector newRunVector) throws SQLException {
+	public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
 		String sql = "SELECT ID, NumberOfLumiSections FROM Runs where ID IN (\n";
 		boolean first = true;
 		for(Object aRun: newRunVector) {
@@ -3866,7 +3866,6 @@ public class DBSSql {
 
         public static PreparedStatement getInsertSQLBatch (Connection conn, String tableName, ArrayList keys, ArrayList values) throws SQLException  {
 		String sql = "INSERT INTO " + owner()+tableName + " ( ";
-		//String sql = "INSERT DELAYED INTO " + owner()+tableName + " ( ";
 		int first=0;
 		String slct = "select ";
 		for (int i=0; i!=keys.size();++i) {

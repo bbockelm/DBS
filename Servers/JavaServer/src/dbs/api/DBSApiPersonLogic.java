@@ -59,19 +59,27 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	protected void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		//if (isNull(lmbUserID)) lmbUserID = "0";//0 is user not created by anyone
 		//if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
-		PreparedStatement ps = null;
-		try {
-			//FIXME it is not important to store whoi created this person 
-			ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Person " + userDN + " Already Exists");
-		} finally {
-			if (ps != null) ps.close();
-		}
+		if( getIDNoCheck(conn, "Person", "DistinguishedName", userDN , false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				//FIXME it is not important to store whoi created this person 
+				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
+				ps.execute();
+                        } catch (SQLException ex) {
+                                String exmsg = ex.getMessage();
+                                if ( exmsg.startsWith("Duplicate entry") ||
+                                        exmsg.startsWith("ORA-00001: unique constraint") ) {
+                                        //do nothing, just continue
+                                }
+                                else
+                                        throw new SQLException("'"+ex.getMessage()+"' insertPerson failed for unknown reasons");
+			} finally {
+				if (ps != null) ps.close();
+			}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Person " + userDN + " Already Exists");
+		}	
 
 	}
 

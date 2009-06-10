@@ -117,10 +117,10 @@ public class DBSApiLogic {
 		String numLumiSec = get(run, "number_of_lumi_sections", false);
 		if (isNull(numLumiSec)) numLumiSec = "0";
 
-		//if(getID(conn, "Runs", "RunNumber", runNumber, false) == null ) {
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertRun(conn, 
+		if(getID(conn, "Runs", "RunNumber", runNumber, false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertRun(conn, 
 					runNumber,
 					get(run, "number_of_events", true),
 					numLumiSec,
@@ -132,15 +132,14 @@ public class DBSApiLogic {
 					personApi.getUserID(conn, dbsUser),
 					getTime(run, "creation_date", false));
 
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Run " + runNumber + " Already Exists");
-		} finally { 
+				pushQuery(ps);
+				ps.execute();
+			} finally { 
 				if (ps != null) ps.close();
-		} 
+        	        }
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Run " + runNumber + " Already Exists");
+		}
 
 	}
 	
@@ -448,11 +447,11 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 
                 //LumiSectionNumber in UQ within this Run only
-                //if( isNull(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false)) ) { 
+                if( isNull(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false)) ) { 
 		//if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 		//Insert a new Lumi Section by feting the run ID 
-		try {
-			ps = DBSSql.insertLumiSection(conn,
+			try {
+				ps = DBSSql.insertLumiSection(conn,
 						lsNumber,
                                                 runID,
 						get(lumi, "start_event_number", true),
@@ -462,15 +461,11 @@ public class DBSApiLogic {
 						cbUserID,
 						lmbUserID,
 						creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "LumiSection " + lsNumber + " Already Exists");
-		} finally {
-			if (ps != null) ps.close();
-		}
+				pushQuery(ps);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
 
 
 			//updateRunLumiCount(conn, out, runID);
@@ -490,6 +485,9 @@ public class DBSApiLogic {
 
 
 
+		} else {
+			writeWarning(out, "Already Exists", "1020", "LumiSection " + lsNumber + " Already Exists");
+		}
 
 	}
 
@@ -515,14 +513,7 @@ public class DBSApiLogic {
 		ps = DBSSql.getLumiCount(conn, runID);
 		pushQuery(ps);
 		rs = ps.executeQuery();
-		if(rs.next()) lumiCount=get(rs, "LUMICOUNT");
-	} finally {
-		if (ps != null) ps.close();
-		if (rs != null) rs.close();
-
-	}
-	conn.commit();
-	try{
+		while(rs.next()) lumiCount=get(rs, "LUMICOUNT");
 		if (!isNull(lumiCount)) {
 			ps = DBSSql.updateRunLumiCount(conn, runID, lumiCount);
 			pushQuery(ps);
@@ -530,7 +521,7 @@ public class DBSApiLogic {
 		}
 	} finally {
 		if (ps != null) ps.close();
-
+		if (rs != null) rs.close();
         }
 
 
@@ -571,13 +562,9 @@ public class DBSApiLogic {
 
 */
 	protected static void writeWarning(Writer out, String message, String code, String detail) throws Exception {
-		if(out != null) {
-			out.write("<warning");
-			if(message != null) out.write(" message='" + message.replace('\'',' ') + "' ");
-			if(code != null) out.write(" code ='" + code.replace('\'',' ') + "' ");
-			if(detail != null) out.write(" detail ='" + detail.replace('\'',' ') + "'");
-			out.write(" />\n");
-		}
+		out.write("<warning message='" + message.replace('\'',' ') + "' ");
+		out.write(" code ='" + code.replace('\'',' ') + "' ");
+		out.write(" detail ='" + detail.replace('\'',' ') + "' />\n");
 		out.flush();
 	}
 
@@ -702,19 +689,19 @@ public class DBSApiLogic {
 	private boolean insertNameMain(Connection conn, Writer out, String table, String key, String value, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
 		if(isNull(lmbUserID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertName(conn, table, key, value, cbUserID, lmbUserID, creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else return false;
-		}finally {
-			if (ps != null) ps.close();
+		if(isNull(getID(conn, table, key, value, false))) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertName(conn, table, key, value, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
+			return true;
+		} else {
 		}
-		return true;
+		return false;
 	}
 
 
@@ -753,25 +740,23 @@ public class DBSApiLogic {
 	}
 
 	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2, String cbUserID, String lmbUserID, String creationDate, boolean check) throws Exception {
+		boolean goForward = true;
 		if(check) {
-			/*if( !isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
+			if( !isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
 				writeWarning(out, "Already Exists", "1020", "Table " + tableName + 
 						" " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " Already Exists");
 				goForward = false;
-			}*/	
+			}	
 		}
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, cbUserID, lmbUserID, creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Table " + tableName + 
-					" " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " Already Exists");
-		} finally {
-			if (ps != null) ps.close();
+		if(goForward) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
 		}
 	}
 
@@ -912,27 +897,25 @@ public class DBSApiLogic {
 	}
 
         protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String key3, String value1, String value2, String value3, String cbUserID, String lmbUserID, String creationDate, boolean check) throws Exception {
+		boolean goForward = true;
 		if(check) {
-	                /*if( !isNull(getMapID(conn, tableName, key1, key2, key3, value1, value2, value3, false)) ) {
+	                if( !isNull(getMapID(conn, tableName, key1, key2, key3, value1, value2, value3, false)) ) {
                         	writeWarning(out, "Already Exists", "1020", "Table " + tableName + " " + key1 + " " + key2 
 					+  " " + key3 + " with values " + value1 + " " + value2 +  " " + value3 + " Already Exists");
 				goForward = false;
-                	}*/
+                	}
 		}
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertMap(conn, tableName, key1, key2, key3, value1, 
-					value2, value3, cbUserID, lmbUserID, creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Table " + tableName + " " + key1 + " " + key2
-					+  " " + key3 + " with values " + value1 + " " + value2 +  " " + value3 + " Already Exists");
-                } finally {
-                        if (ps != null) ps.close();
-                }
+		if (goForward) {
+                        PreparedStatement ps = null;
+                        try {
+                                ps = DBSSql.insertMap(conn, tableName, key1, key2, key3, value1, 
+							value2, value3, cbUserID, lmbUserID, creationDate);
+				pushQuery(ps);
+                                ps.execute();
+                        } finally {
+                                if (ps != null) ps.close();
+                        }
+		}
         }
 
 
@@ -964,8 +947,9 @@ public class DBSApiLogic {
 	protected void insertPhysicsGroup(Connection conn, Writer out, String name, String phyGroupCon, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		//Insert a new Person if it does not exists
 		(new DBSApiPersonLogic(this.data)).insertPerson(conn, out,  "", phyGroupCon, "", cbUserID, lmbUserID, creationDate); //FIXME Get userName and contactInfo also
-		PreparedStatement ps = null;
-		try {
+		if( getID(conn, "PhysicsGroup", "PhysicsGroupName", name, false) == null ) {
+			PreparedStatement ps = null;
+			try {
 				ps = DBSSql.insertPhysicsGroup(conn,
 					name, 
 					getIDNoCheck(conn, "Person", "DistinguishedName", phyGroupCon, true), 
@@ -974,13 +958,12 @@ public class DBSApiLogic {
 					creationDate);
 				pushQuery(ps);
 				ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Physics Group " + name + " Already Exists");
-		} finally {
-			if (ps != null) ps.close();
-		}
+			} finally {
+				if (ps != null) ps.close();
+			}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Physics Group " + name + " Already Exists");
+		}	
 
 	}
 

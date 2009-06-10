@@ -649,8 +649,6 @@ public class DBSApi {
 						dbsUser);
 				
 			} else if (apiStr.equals("insertDatasetContents")) {
-			//try{
-				//conn.setAutoCommit(true);
 				boolean ignoreParent = false;
 				String ignoreParentStr = get(table, "ignore_parent", false);
 				if (ignoreParentStr.equals("true")) ignoreParent = true;
@@ -659,10 +657,6 @@ public class DBSApi {
 						dbsUser,
 						ignoreParent,
 						apiVersion);
-			/*}catch(Exception ex) {
-				System.out.println("MY MESSAGE ----------------->>>>>\n\n\n" + ex.getMessage());
-				ex.printStackTrace();
-			}*/
 
                         } else if (apiStr.equals("openBlock")) {
                                 (new DBSApiBlockLogic(this.data)).openBlock(conn, out,

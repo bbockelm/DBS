@@ -126,20 +126,17 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
                 //FIXME: Confirm with Vijay -- Change made by AA 01/18/2007, Block is passed as a separate object now.
 		//System.out.println("in transfer this.data.apiName is  "+ this.data.apiName);
 		String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
-		conn.commit();
                 Hashtable fileblock = new Hashtable();
                 fileblock.put("block_name", blockName);
                   
                 //FIXME: We need to accomodate storage_elements for Block in migrate also ??
 
 		(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary_dataset"), dbsUser);
-		conn.commit();
 		Hashtable pdTable = DBSUtil.getTable(table, "processed_dataset");
 		Vector algoVector = DBSUtil.getVector(pdTable, "all_algorithms");
-		for (int j = 0; j < algoVector.size(); ++j) {
+		for (int j = 0; j < algoVector.size(); ++j) 
 			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser, clientVersion);
-			conn.commit();
-		}
+
 
 
 		//This is older code for inserying runs in Processed Dataset
@@ -174,14 +171,11 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			String runNum = get((Hashtable)aRun, "run_number", true);
 			if(runMap.get(runNum).booleanValue()) {
 				String runID = getID(conn, "Runs", "RunNumber", runNum , false);
-				conn.commit();
 				if(isNull(runID)) insertRun(conn, out, (Hashtable)aRun, dbsUser);
 				else runsToUpdate.add((Hashtable)aRun);
 				newRuns.add((Hashtable)aRun);
-				conn.commit();
 			}
 		}
-		conn.commit();
 	
 		pdTable.remove("run");
 		pdTable.put("run", newRuns);
@@ -200,7 +194,6 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		//Fix complete
 
 		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser, ignoreParent, clientVersion);
-		//conn.commit();
 		Vector closeBlockVector = new Vector();
 		DBSApiBlockLogic blockApi = new DBSApiBlockLogic(this.data);
 		Vector blockVector = DBSUtil.getVector(pdTable, "block");
@@ -213,7 +206,6 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 				block.remove("open_for_writing");
 			}
 			blockApi.insertBlock(conn, out, block, dbsUser);
-			//conn.commit();
 		}
 		
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
@@ -223,35 +215,30 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		conn.commit();
 
                 (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getArrayList(table, "file"), dbsUser, ignoreParent, true);
-		conn.commit();
  
-		
+		//Close all the block which were created as open block
+		for (int j = 0; j < closeBlockVector.size(); ++j) {
+			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
+		}
+
 		//WE do not want to do the following if this is GLOBAL instance
 
 
 
-
-		//FIXME the the number of lumi sections in the RUN
-		for(Object aRun: runsToUpdate) {
-			String runNumber = get((Hashtable)aRun, "run_number", true);
-			//conn.commit();
-			updateRunLumiCount(conn, out, runNumber);
+		if (runsToUpdate.size() > 0) {
 			conn.commit();
+
+			//FIXME the the number of lumi sections in the RUN
+			for(Object aRun: runsToUpdate) {
+				String runNumber = get((Hashtable)aRun, "run_number", true);
+				updateRunLumiCount(conn, out, runNumber);
 
 			//	updateRunLumiCount(conn, out, runNumber);
 				//updateRun(conn, out, (Hashtable) aRun, dbsUser);
 			////	System.out.println("POOOOhhhhhhhhhHuuuuuu");
+			}
+
 		}
-
-
-
-		conn.commit();
-		//Close all the block which were created as open block
-		for (int j = 0; j < closeBlockVector.size(); ++j) {
-			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
-			conn.commit();
-		}
-
 
 	}
 

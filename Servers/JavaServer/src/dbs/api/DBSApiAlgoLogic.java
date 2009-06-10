@@ -5,7 +5,6 @@
  */
 
 package dbs.api;
-import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -174,24 +173,23 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		insertParameterSet(conn, out, algo, cbUserID, userID, creationDate, clientVersion);
 			    
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertApplication(conn, 
+		if(getAlgorithmID(conn, version, family, exe, psHash, false) == null) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertApplication(conn, 
 					getID(conn, "AppExecutable", "ExecutableName", exe, true), 
 					getID(conn, "AppVersion", "Version", version, true), 
 					getID(conn, "AppFamily", "FamilyName", family, true), 
 					getID(conn, "QueryableParameterSet", "Hash", psHash, true), 
 					cbUserID, userID, creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Algorithm Configuration  " + version + " " + family +  " " + exe + " " + psHash + " Already Exists");
-
-		} finally { 
-			if (ps != null) ps.close();
-        	}
+				pushQuery(ps);
+				ps.execute();
+			} finally { 
+				if (ps != null) ps.close();
+	        	}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Algorithm Configuration  " + version + " " + family +  " " + exe + " " + psHash + " Already Exists");
+		}
 
        }
 
@@ -216,17 +214,24 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
                         psHash = "NO_PSET_HASH";
                 }
 
-		PreparedStatement ps = null;
-		try {
-			String contentBase64 = get(algo, "ps_content");
-			if(!isNull(contentBase64)) contentBase64 = new String(Base64.decode(contentBase64));
+		if( getID(conn, "QueryableParameterSet", "Hash", psHash, false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				String contentBase64 = get(algo, "ps_content");
+				if(!isNull(contentBase64)) contentBase64 = new String(Base64.decode(contentBase64));
 
-			String annotationBase64 = get(algo, "ps_annotation");
-			if(clientVersion.compareTo("DBS_1_0_7") >= 0) {
-				if(!isNull(annotationBase64)) annotationBase64 = new String(Base64.decode(annotationBase64));
-			}
+				String annotationBase64 = get(algo, "ps_annotation");
+				if(clientVersion.compareTo("DBS_1_0_7") >= 0) {
+	                                if(!isNull(annotationBase64)) annotationBase64 = new String(Base64.decode(annotationBase64));
+				}
 
-			ps = DBSSql.insertParameterSet(conn,
+				//System.out.println("annotationBase64 " + annotationBase64);
+				/*byte[] checkEncode = Base64.decode(annotation);
+				if(checkEncode == null) annotationBase64 = new String(checkEncode);
+				else annotationBase64 = annotation;
+				*/
+
+				ps = DBSSql.insertParameterSet(conn,
 						psHash,
 						get(algo, "ps_name"), 
 						get(algo, "ps_version"), 
@@ -236,16 +241,14 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
                                                 //FIXME We are allowing every thing in content, need to fix it
 						contentBase64, 
 						cbUserID, userID, creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "Parameter Set " + psHash +  " Already Exists");
-
-		} finally {
-			if (ps != null) ps.close();
-		}
+				pushQuery(ps);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Parameter Set " + psHash +  " Already Exists");
+		}	
 
 	}
 
