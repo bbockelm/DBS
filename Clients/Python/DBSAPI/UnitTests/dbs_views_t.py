@@ -102,8 +102,10 @@ class testDBS(unittest.TestCase):
         params = dict(self.params)
         params['query'] = 'find dataset where dataset like *CRUZET4*'
         result = call(self.url, params)
-        expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<summary_view>\n<exception>\njava.sql.SQLException: ORA-00936: missing expression\n\n</exception>\n</summary_view>\n<SUCCESS/>\n</dbs>\n"""
+#        expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<summary_view>\n<exception>\njava.sql.SQLException: ORA-00936: missing expression\n\n</exception>\n</summary_view>\n<SUCCESS/>\n</dbs>\n"""
+        expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<summary_view>\n</summary_view>\n<results>\n</results>\n<SUCCESS/>\n</dbs>\n"""
         self.assertEqual(expect, result)
+#        self.assertRaises(Exception, expect, result)
 
     def test_executeSummary_releasesummary(self): 
         selkeys= ['release', 'algo.createdate', 'algo.createby',
@@ -362,6 +364,7 @@ class testDBS(unittest.TestCase):
 
         # call executeSummary
         query ="find dataset where " + cond
+        query ="find dataset where dataset like *CRUZET4*"
         params['query'] = query
         params['api'] = 'executeSummary'
         params['sortKey'] = 'Path'
