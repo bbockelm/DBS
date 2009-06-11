@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $
- $Id: DBSApiViewsLogic.java,v 1.4 2009/05/05 02:11:58 valya Exp $
+ $Revision: 1.5 $
+ $Id: DBSApiViewsLogic.java,v 1.5 2009/06/10 12:47:50 valya Exp $
  Author: Valentin Kuznetsov
  **/
 
@@ -74,9 +74,18 @@ public class DBSApiViewsLogic extends DBSApiLogic {
     throws Exception {
         PreparedStatement ps = null;
         ResultSet rs =  null;
-        ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
-        pushQuery(ps);
-        rs =  ps.executeQuery();
+//        ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
+//        pushQuery(ps);
+//        rs =  ps.executeQuery();
+        try {
+            ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
+            pushQuery(ps);
+            rs =  ps.executeQuery();
+        } catch(Exception e) {
+            out.write( ((String)"<summary_view>\n"));
+            out.write("</summary_view>\n");
+            return;
+        }
         ResultSetMetaData rsmd = rs.getMetaData();
         int numberOfColumns = rsmd.getColumnCount();
         out.write( ((String)"<summary_view>\n"));
@@ -184,8 +193,10 @@ public class DBSApiViewsLogic extends DBSApiLogic {
         try {
             getSummary(conn, out, view, lbound, rbound, key, resList, sortKey, sortOrder);
             out.write( "<results>\n" );
-            for(int i=lbound;i<rbound;i++) {
-                out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
+            if  (!resList.isEmpty()) {
+                for(int i=lbound;i<rbound;i++) {
+                    out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
+                }
             }
             out.write( "</results>\n" );
         } catch(Exception e) {
