@@ -93,13 +93,14 @@ class DDHelper(DDLogger):
         """
         sitedict = {}
         clist = where_cond(dlist, 'dataset')
-        query = 'find dataset,site,sum(block.numevents),sum(block.numfiles),sum(block.size) where '
+        query = 'find dataset,site,sum(block.numevents),sum(block.numfiles),sum(block.size)'
         for cond in clist:
-            newquery = query+cond
-            res = self.queryDBS(dbsInst, newquery)
-            for row in res:
-                dataset, site, nevts, nfiles, size = row
-                addToDict(sitedict, dataset, (site, nevts, nfiles, size))
+            if  cond:
+                newquery = query + ' where ' + cond
+                res = self.queryDBS(dbsInst, newquery)
+                for row in res:
+                    dataset, site, nevts, nfiles, size = row
+                    addToDict(sitedict, dataset, (site, nevts, nfiles, size))
         return sitedict
 
     def datasetSummary_json2(self, dbsInst, dlist):
