@@ -230,8 +230,19 @@ class DbsMigrateApi:
 				raise ex
 	
 	def migrateBlock(self, path, blockName):
+		"""
+		migrateBlock, if their are parents, only the parent Block is migrated
+
+		"""
 		#Get the parents of the path
 		self.checkDatasetStatus(path)
+
+		###Here we can get Parents of the Block and then migrate the recurrsively
+		parentblocks = self.apiSrc.listBlockParents(block_name=blockName)
+		if parentblocks not in [[], None] :
+			for ablock in parentblocks:
+				self.migrateBlock(ablock['Path'], ablock['Name'])
+		"""
 		datasets = self.getParentPathList(self.apiSrc, path)
 		if datasets not in [[], None] :
 			for dataset in datasets:
@@ -239,7 +250,8 @@ class DbsMigrateApi:
 				#if not self.doesPathExist(self.apiDst, dataset):
 				#print "calling self.migratePath"
 				self.migratePath( dataset)
-				
+		"""
+		
 		if self.doesPathExistNoForce(self.apiDst, path):
 			 found = False
 			 blockInDst = self.apiDst.listBlocks(path)
