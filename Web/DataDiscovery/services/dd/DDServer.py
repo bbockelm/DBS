@@ -3844,6 +3844,10 @@ All LFNs in a block
         sortOrder= getArg(kwargs, 'sortOrder', '')
 #        print "\n\n#### datasetSummary", sortName, sortOrder
         result, titleList = self.summaryQuery(dbsInst, userInput, fromRow, limit, sortName, sortOrder)
+
+        if  not result: # no datasets found
+            return ""
+
         excludeList=[]
         eList=['CRAB','&#8747;<em>L</em>','LINKS']
         page     = ""
@@ -3986,6 +3990,14 @@ All LFNs in a block
                 userInput = "find dataset where dataset like %s" % userInput
             else:
                 userInput = "find dataset where dataset = %s" % userInput
+
+        # on request of Si, #108501, add valid status for dataset
+        if  userInput.find('find dataset where') != -1:
+            if  userInput.find('dataset.status') == -1:
+                userInput += ' and dataset.status=VALID'
+        if  userInput.strip() == 'find dataset':
+            userInput += ' where dataset.status=VALID'
+
         sortName = getArg(kwargs, 'sortName', '')
         sortOrder= getArg(kwargs, 'sortOrder', '')
 #        if  sortName and sortOrder:
