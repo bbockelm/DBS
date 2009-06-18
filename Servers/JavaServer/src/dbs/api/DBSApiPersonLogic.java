@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiPersonLogic.java,v 1.13 2009/05/27 21:16:55 afaq Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApiPersonLogic.java,v 1.14 2009/06/10 16:46:06 sekhri Exp $"
  *
  */
 
@@ -59,27 +59,19 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	protected void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		//if (isNull(lmbUserID)) lmbUserID = "0";//0 is user not created by anyone
 		//if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
-		if( getIDNoCheck(conn, "Person", "DistinguishedName", userDN , false) == null ) {
-			PreparedStatement ps = null;
-			try {
-				//FIXME it is not important to store whoi created this person 
-				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
-				pushQuery(ps);
-				ps.execute();
-                        } catch (SQLException ex) {
-                                String exmsg = ex.getMessage();
-                                if ( exmsg.startsWith("Duplicate entry") ||
-                                        exmsg.startsWith("ORA-00001: unique constraint") ) {
-                                        //do nothing, just continue
-                                }
-                                else
-                                        throw new SQLException("'"+ex.getMessage()+"' insertPerson failed for unknown reasons");
-			} finally {
-				if (ps != null) ps.close();
-			}
-		} else {
-			writeWarning(out, "Already Exists", "1020", "Person " + userDN + " Already Exists");
-		}	
+		PreparedStatement ps = null;
+		try {
+			//FIXME it is not important to store whoi created this person 
+			ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
+			pushQuery(ps);
+			ps.execute();
+		} catch (SQLException ex) {
+			String exmsg = ex.getMessage();
+			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+			else writeWarning(out, "Already Exists", "1020", "Person " + userDN + " Already Exists");
+		} finally {
+			if (ps != null) ps.close();
+		}
 
 	}
 

@@ -1,10 +1,11 @@
 /**
- $Revision: 1.72 $"
- $Id: DBSApiBlockLogic.java,v 1.72 2009/03/20 03:28:50 afaq Exp $"
+ $Revision: 1.73 $"
+ $Id: DBSApiBlockLogic.java,v 1.73 2009/06/10 16:46:06 sekhri Exp $"
  *
  */
 
 package dbs.api;
+import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -248,10 +249,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 		if (isNull(openForWriting)) openForWriting = "1";
 
-		if(getBlockID(conn, name, false, false) == null ) {
-			PreparedStatement ps = null;
-			try {
-				ps = DBSSql.insertBlock(conn,
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertBlock(conn,
 					"0",// A new block should always have 0 size
 					name,
 					procDSID,
@@ -263,14 +263,15 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					userID,
 					creationDate);
 
-				pushQuery(ps);
-				ps.execute();
-			} finally { 
-				if (ps != null) ps.close();
-	                }
-		} else {
-			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
-		}
+			pushQuery(ps);
+			ps.execute();
+		} catch (SQLException ex) {
+			String exmsg = ex.getMessage();
+			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+			else writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
+		} finally { 
+			if (ps != null) ps.close();
+                }
 
 		//Storage Element will be added to an existing block
 		String blockID = "";

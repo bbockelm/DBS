@@ -1,6 +1,6 @@
 /**
- $Revision: 1.134 $"
- $Id: DBSApiFileLogic.java,v 1.134 2009/06/08 14:33:50 afaq Exp $"
+ $Revision: 1.135 $"
+ $Id: DBSApiFileLogic.java,v 1.135 2009/06/10 16:46:06 sekhri Exp $"
  *
  */
 
@@ -748,33 +748,35 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		
 		//Lets insert BrtanchHash if not already there
 		String branchHash = DBSUtil.get(branchInfo, "branch_hash");
-		String branchHashID = getID(conn, "BranchHash", "Hash", branchHash, false);
+		//String branchHashID = getID(conn, "BranchHash", "Hash", branchHash, false);
 
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
                 String cbUserID = personApi.getUserID(conn, get(branchInfo, "created_by"), dbsUser );
                 String creationDate = getTime(branchInfo, "creation_date", false);
 
-                if( branchHashID == null ) {
-                        PreparedStatement ps = null;
-                        try {
-                                String contentBase64 = get(branchInfo, "content");
+                //if( branchHashID == null ) {
+                PreparedStatement ps = null;
+                try {
+                        String contentBase64 = get(branchInfo, "content");
 
-                                if(!isNull(contentBase64)) contentBase64 = new String(Base64.decode(contentBase64));
+                        if(!isNull(contentBase64)) contentBase64 = new String(Base64.decode(contentBase64));
 
-                                ps = DBSSql.insertBranchHash(conn,
+                        ps = DBSSql.insertBranchHash(conn,
                                                 branchHash,
 						contentBase64,
                                                 get(branchInfo, "description"),
                                                 cbUserID, lmbUserID, creationDate);
-				pushQuery(ps);
-                                ps.execute();
-				branchHashID = getID(conn, "BranchHash", "Hash", branchHash, true);
-                        } finally {
-                                if (ps != null) ps.close();
-                        }
-                } else {
-                        writeWarning(out, "Already Exists", "1020", "Branch Hash " + branchHash +  " Already Exists");
+			pushQuery(ps);
+                        ps.execute();
+		} catch (SQLException ex) {
+			String exmsg = ex.getMessage();
+			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+			else writeWarning(out, "Already Exists", "1020", "Branch Hash " + branchHash +  " Already Exists");
+
+                } finally {
+                        if (ps != null) ps.close();
                 }
+		String branchHashID = getID(conn, "BranchHash", "Hash", branchHash, true);
 
 		//Lest insert the BranchHashMap entries
 		//get the list of branches
@@ -862,6 +864,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (rs != null) rs.close();
                         if (ps != null) ps.close();
 		}
+		//AA conn.commit();
 
 		//We have ALL infor about the Block, lets decide if its OK to write to this Block
 
@@ -883,11 +886,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		//Is it OK to write to this Dataset ??
 		procDSApiObj.checkProcDSStatus(conn, out, path, procDSID);
+		//conn.commit();
 
                 //File insert will happen now     **************************
 
                 //Get the User ID from USERDN
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
+		conn.commit();
 
                 //These tables are used to store the types and staus fileds along with thier id
                 //If the id can be fetched from here then we do not have to fietch it from database again and again
@@ -926,6 +931,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                         String valStatus = get(file, "validation_status", false).toUpperCase();
                         cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
+			//AA conn.commit();
                         creationDate = getTime(file, "creation_date", false);
                         ArrayList lumiVector = DBSUtil.getArrayList(file,"file_lumi_section");
                         ArrayList tierVector = DBSUtil.getArrayList(file,"file_data_tier");
@@ -947,20 +953,24 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         statusID = getFileStatusID(conn,  fileStatus, true);
                                         statusTable.put(fileStatus, statusID);
                                 }
+				//AAconn.commit();
                                 if( isNull(typeID = get(typeTable, type)) ) {
                                         typeID = getFileTypeID(conn, type, true);
                                         typeTable.put(type, typeID);
                                 }
+				//AAconn.commit();
                                 if( isNull(valStatusID = get(valStatusTable, valStatus)) ) {
                                         valStatusID = getFileValStatusID(conn, valStatus, true);
                                         valStatusTable.put(valStatus, valStatusID);
                                 }
+				//AAconn.commit();
 
                                 thisBranchHash = get(file, "branch_hash", false);
                                 if (! thisBranchHash.equals(lastBranchHash) ) {
                                         branchID = getID(conn, "BranchHash", "Hash", thisBranchHash, false);
                                         lastBranchHash = thisBranchHash;
                                 }
+				//AAconn.commit();
 				//Try to insert a Fille if its already there (Break out!), For all other reasons throw exception.
 				try {
                                 	ps = DBSSql.insertFile(conn,
@@ -985,27 +995,19 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					newFileInserted = true;
 				} catch (SQLException ex) {
 					String exmsg = ex.getMessage();
-					if ( exmsg.startsWith("Duplicate entry") || 
-						exmsg.startsWith("ORA-00001: unique constraint") ) {
-						writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
-						ps.close();
-						//Shouldn't RETURN from here, just continue
-						//return; 
-					} else {
- 						throw new SQLException("'"+ex.getMessage()+"' insertFile for LogicalFileName:"+lfn+
-                                        		" Query failed is"+ps);
-					}
-				}
-				finally {
+					if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+					else writeWarning(out, "Already Exists", "1020", "Logical File Name  " + lfn + " Already Exists");
 
+				}finally {
                                 	if (ps != null) ps.close();
 				}
-				
+				//AAconn.commit();
                                 //if(isNull(fileID)) fileID = getFileID(conn, lfn);
                                 //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
                                 //FileID is needed if any of the other table information is provided i.e the vector size is > 0
-                                if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0 || childVector.size() > 0 )
-                                        if(isNull(fileID)) fileID = getFileID(conn, lfn, true);
+                                //if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0 || childVector.size() > 0 )
+				if(isNull(fileID)) fileID = getFileID(conn, lfn, true);
+				//conn.commit();
                                         //fileID = getFileID(conn, lfn, true);
 
                                 //Insert FileAlgo table by fetching application ID. 
@@ -1022,6 +1024,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                                         true));
 				}
 				insertMapBatch(conn, out, "FileAlgo", "Fileid", "Algorithm", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				//AAconn.commit();
                                 //Insert FileTier table by fetching data tier ID
 				valueVec.clear();
 				
@@ -1032,12 +1035,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						valueVec.add(getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true));
 					insertMapBatch(conn, out, "FileParentage", "ThisFile", "ItsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 				}
+				//AAconn.commit();
 				
                                 //Insert FileParentage for all the child of give by the client. Used during Merge operation
 				valueVec.clear();
 				for (int j = 0; j < childVector.size(); ++j)
 					valueVec.add(getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true));
 				insertMapBatch(conn, out, "FileParentage", "ItsParent", "ThisFile", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				//AAconn.commit();
 
 //----------------------------Lumi/Run mapping 				
                                 //Insert FileLumi table by first inserting and then fetching Lumi Section ID
@@ -1054,38 +1059,27 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 		keys.add("CreationDate");
 		                keys.add("CreatedBy");
 		                keys.add("LastModifiedBy");
-				
+				Vector tmpRunVector = new Vector();
                                 for (int j = 0; j < lumiVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)lumiVector.get(j);
                                         String thisRunN = get(hashTable, "run_number", true);
                                         runID = getID(conn, "Runs", "RunNumber",  thisRunN, true);
+					//conn.commit();
                                         String lsNumber = get(hashTable, "lumi_section_number", false);
 
                                         if ( !isNull(lsNumber) ) {
-						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false);
-						if( isNull(lumiID)) {
-							//insertLumiSection: does perform updateLumiCount in the run
-	                                                try {
-								insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-								//conn.commit();
-				                        } catch (SQLException ex) {
-        				                        String exmsg = ex.getMessage();
-                                				if ( exmsg.startsWith("Duplicate entry") ||
-                                        				exmsg.startsWith("ORA-00001: unique constraint") ) {
-                                        				//do nothing, just continue
-                                			}
-                                			else  throw new SQLException("'"+ex.getMessage()+"' insertLumiSection failed for unknown reasons");
-                        				}
-
-							if (!runstoUpdate.contains(runID)) runstoUpdate.add(runID);
-                                                }
-						lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
+						insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+						conn.commit();//Release lock on Run Table
+						if (!runstoUpdate.contains(runID)) runstoUpdate.add(runID);
+						String lumiID = getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true);
 						valueVec.add(fileID);
 						valueVec.add(lumiID);
 						valueVec.add(runID);
 						valueVec.add(creationDate);
 		                                valueVec.add(cbUserID);
                 		                valueVec.add(lmbUserID);
+
+						tmpRunVector.add(runID);
 
 					} else {
 						//No Lumi
@@ -1094,16 +1088,26 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						lumiOnlyValueVec.add(creationDate);
 		                                lumiOnlyValueVec.add(cbUserID);
                 		                lumiOnlyValueVec.add(lmbUserID);
+
+						tmpRunVector.add(runID);
 					}
+					//AA conn.commit();
 					// Insert ProcDS-Run Map, if its already not there
-                                        insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
-                                                        procDSID, runID,
-                                                        cbUserID, lmbUserID, creationDate, true);
+					insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+							procDSID, runID,
+							cbUserID, lmbUserID, creationDate, true);
+					//AA conn.commit();//Release lock on Run Table
+
 
 				}
-
+				conn.commit();
+				if(tmpRunVector.size() > 0) lockRunRows(conn, out, tmpRunVector);
 				insertGeneralBatch(conn, out, "FileRunLumi", keys, valueVec);
+				//conn.commit();
 				insertGeneralBatch(conn, out, "FileRunLumi", keys, lumiOnlyValueVec);
+				conn.commit();
+
+
 
 //----------------------------Lumi/Run mapping done				
 
@@ -1117,6 +1121,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                         get(hashTable, "number_of_events"),
                                                         cbUserID, lmbUserID, creationDate, true);
                                 }
+				//AA conn.commit();
 
                                 //Insert the file association   
                                 String fileAssoc = get(file, "file_assoc", false);
@@ -1126,6 +1131,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                                 getID(conn, "Files", "LogicalFileName", fileAssoc, true),
                                                                 cbUserID, lmbUserID, creationDate, true);
                                 }
+				//AA conn.commit();
 
 				//Insert Block Parentage
 				java.util.ArrayList  blockIDListTMP = getFileBlockParentage(conn, out, fileID);
@@ -1140,10 +1146,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 if (newFileInserted) {
                 	DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
                         blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
+			//AA conn.commit();
 			insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
+			//AA conn.commit();
 			//FIXME/////////////////////updateRunsSpecial(out, runstoUpdate);
 			if (!calledFromTranfer) updateRunsSpecial(out, runstoUpdate);
 		}
+		conn.commit();
 		
 
 	}
@@ -1157,13 +1166,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (comeagain) {
 				try {
 					conn1 = DBManagement.getDBConnManInstance().getConnection();
+					conn1.setAutoCommit(false);
 					//Lock the associated run tables rows for deadlock avoidance
 					if (runstoUpdate.size() > 0) {
 						//conn1.setAutoCommit(false);
 						//lockRunRows(conn1, out, runstoUpdate);
 						//Fix the the number of lumi sections in the RUN
 						for(Object aRun: runstoUpdate) updateRunLumiCount(conn1, out, (String)aRun);
+						
 						comeagain = false;
+						
 					}
 				} catch (SQLException ex) {
 					String exmsg = ex.getMessage();
@@ -1175,7 +1187,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					//already tried 09 times, what are my chances for the 10th time 
 					else if (tt==9) throw ex;
 				} finally {
-					if (conn1 != null) conn1.close();	
+					if (conn1 != null) { conn1.commit(); conn1.close(); }	 
 					
 				}
 			}
@@ -1351,7 +1363,7 @@ return DBManagement.getConnection( config.getDbDriver(),
 		insertBlockParentage(conn, out, blockID, blockIDList, cbUserID, lmbUserID, creationDate);
 
 
-		System.out.println("\n JUST added :: " + blockID + "List : " + blockIDList );
+		//System.out.println("\n JUST added :: " + blockID + "List : " + blockIDList );
 		conn.commit();
 
 

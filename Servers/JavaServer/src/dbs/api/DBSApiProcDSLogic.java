@@ -1,10 +1,11 @@
 /**
- $Revision: 1.84 $"
- $Id: DBSApiProcDSLogic.java,v 1.84 2009/06/04 22:10:15 afaq Exp $"
+ $Revision: 1.85 $"
+ $Id: DBSApiProcDSLogic.java,v 1.85 2009/06/10 16:46:06 sekhri Exp $"
  *
  */
 
 package dbs.api;
+import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -532,10 +533,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
 		String path =  "/" + primaryName + "/" + procDSName + "/" + dataTier;
 		//String path =  "/" + primaryName + "/" + procDSName +  "/nothing";
-		if( isNull(procDSID = getProcessedDSID(conn, path, false) ) ){
-			PreparedStatement ps = null;
-			try {
-				ps = DBSSql.insertProcessedDatatset(conn, 
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertProcessedDatatset(conn, 
 					procDSName,
 					getID(conn, "PrimaryDataset", "Name", 
 						primaryName, 
@@ -549,15 +549,16 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					cbUserID,
 					lmbUserID,
 					creationDate);
-				pushQuery(ps);
-				ps.execute();
-        	        } finally {
-				if (ps != null) ps.close();
-	                }
+			pushQuery(ps);
+			ps.execute();
+		} catch (SQLException ex) {
+			String exmsg = ex.getMessage();
+			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+			else writeWarning(out, "Already Exists", "1020", "ProcessedDataset " + procDSName + " Already Exists");
+       	        } finally {
+			if (ps != null) ps.close();
+                }
 
-		} else {
-			writeWarning(out, "Already Exists", "1020", "ProcessedDataset " + procDSName + " Already Exists");
-		}
 
 
 		//Fetch the Processed Datatset ID that was just inseted or fetched , to be used for subsequent insert of other tables.
