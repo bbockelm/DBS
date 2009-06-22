@@ -32,7 +32,7 @@ from dbsLogger import *
 from dbsUtil import *
 
 #DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
-__version__ = "$Name:  $"
+__version__ = "$Name: $"
 
 def makeAPI(url):
 		#args = {}
@@ -1423,21 +1423,25 @@ if __name__ == "__main__":
 		'https://vocms31.cern.ch:8443/cms_dbs_caf_analysis_01_writer/servlet/DBSServlet',
 		]
 
-    url_list_t0=[
+    url_list_t0_alias=[
 		'https://cmst0dbs.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
 		'https://cmst0dbs.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
 		'http://cmst0dbs.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
 		'http://cmst0dbs.cern.ch/cms_dbs_int_tier0/servlet/DBSServlet',
                 'https://cmst0dbs.cern.ch:8443/cms_dbs_prod_tier0_admin/servlet/DBSServlet',
                 'https://cmst0dbs.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
-
+    		]
+    #cmst0dbs2
+    url_list_t0_05=[
                 'https://vocms05.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
                 'https://vocms05.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
                 'http://vocms05.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
                 'http://vocms05.cern.ch/cms_dbs_int_tier0/servlet/DBSServlet',
                 'https://vocms05.cern.ch:8443/cms_dbs_prod_tier0_admin/servlet/DBSServlet',
                 'https://vocms05.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
-
+		]
+    #cmst0dbs1
+    url_list_t0_02=[
                 'https://vocms02.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
                 'https://vocms02.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
                 'http://vocms02.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
@@ -1447,13 +1451,15 @@ if __name__ == "__main__":
 		]
 
     url_list=[]
-    #url_list.extend(url_list_alias)
+    url_list.extend(url_list_alias)
     #url_list.extend(url_list_30)
     #url_list.extend(url_list_31)
-    url_list.extend(url_list_t0)
+    url_list.extend(url_list_t0_alias)
+    #url_list.extend(url_list_t0_02)
+    #url_list.extend(url_list_t0_05)
 
     args['mode']='POST'
-    args['version']='DBS_2_0_6'
+    args['version']='DBS_2_0_8'
     args['level']='DBSINFO'
     #api = DbsApi(args)
 
