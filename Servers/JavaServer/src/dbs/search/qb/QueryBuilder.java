@@ -172,24 +172,41 @@ public class QueryBuilder {
 			} else if(aKw.toLowerCase().startsWith("count")) {
 				checkMax(iter);
 				aKw = aKw.toLowerCase();
-				String entity = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
-				entity = entity.trim();
-				//System.out.println("entity = " + entity);
+				String keyword = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
+				keyword = keyword.trim();
+				StringTokenizer st = (new StringTokenizer(keyword, "."));
+				int noOfTokens = st.countTokens();
+				//System.out.println("No Of Tokens " + st.countTokens());
+				String entity = st.nextToken();
 				String realName = u.getMappedRealName(entity);
-				allKws = addUniqueInList(allKws, realName);
+				if(noOfTokens == 1) {
+					allKws = addUniqueInList(allKws, realName);
+					//System.out.println("entity = " + entity);
+					String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
+					if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use count(" + entity + ")");
+					query += realName + "." + defaultStr + " AS COUNT_SUB_" + realName;
+					if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+					sumQuery += "COUNT(DISTINCT COUNT_SUB_" + realName + ") AS COUNT_" + realName;
+				} else if(noOfTokens == 2) {
+					String tmpKw = "";
+					Vertex vCombined = u.getMappedVertex(keyword);
+					if(vCombined != null) {
+						String realVal = u.getRealFromVertex(vCombined);
+						allKws = addUniqueInList(allKws, realVal);
+						StringTokenizer st2 = new StringTokenizer(u.getDefaultFromVertex(vCombined), ",");
+						if(st2.countTokens() != 1) throw new Exception("Cannot use count(" + keyword + ")");
+						tmpKw = realVal + "." + st2.nextToken();
+					} else {
+						allKws = addUniqueInList(allKws, realName);
+						tmpKw = km.getMappedValue(keyword, true);
+					}
 
-				String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
-				if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use count(" + entity + ")");
-				//query += "COUNT(DISTINCT " + realName + "." + defaultStr + ") AS COUNT";
-				query += realName + "." + defaultStr + " AS COUNT_SUB_" + realName;
-				if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
-				//if(sumQuery.length() != 0) sumQuery += ",\n\t";
-				//else if(!sumQuery.startsWith("SELECT")) sumQuery += "SELECT ";
-				sumQuery += "COUNT(DISTINCT COUNT_SUB_" + realName + ") AS COUNT_" + realName;
-				/*if(sumPresent) {
-					sumQuery += ",\n\t COUNT AS COUNT";
-					sumGroupByQuery += " COUNT ,";
-				}*/
+					String asKeyword = keyword.replace('.', '_');
+					if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
+					sumQuery += "COUNT(DISTINCT COUNT_SUB_" + asKeyword + ") AS COUNT_" + asKeyword + " ";
+					//String tmpKw = km.getMappedValue(keyword, true);
+					query +=  tmpKw + " AS COUNT_SUB_" + asKeyword ;
+				} else throw new Exception("Cannot use count(" + keyword + ")");
 			} else if(Util.isSame(aKw, "dataset")) {
 				checkMax(iter);
 				allKws = addUniqueInList(allKws, "Block");
@@ -510,53 +527,6 @@ public class QueryBuilder {
 						addQuery = false;
 					}
 
-					/*if(Util.isSame(token2, "parent") && Util.isSame(token, "dataset")) {
-						//Lets have the same treatment as procds.parent
-						checkMax(iter);
-						allKws = addUniqueInList(allKws, "Block");
-						boolean dontJoin = false;
-						if(datasetParentAdded) dontJoin = true;
-						datasetParentAdded = true;
-						if(!dontJoin) pathParentWhereQuery += handlePathParent();
-						String fqName = "Block.Path AS Dataset_Parent";
-						query += fqName;			
-						if(iLumi) groupByQuery +=  "Block.Path ,";		
-						if(sumPresent || countPresent) {
-							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
-							sumQuery += " Dataset_Parent AS Dataset_Parent ";
-							sumGroupByQuery += " Dataset_Parent ,";
-						}
-			
-						addQuery = false;
-					}
-
-
-					if(Util.isSame(token2, "child") && Util.isSame(token, "dataset")) {
-						//Lets have the same treatment as procds.parent
-						checkMax(iter);
-						allKws = addUniqueInList(allKws, "Block");
-						boolean dontJoin = false;
-						if(datasetChildAdded) dontJoin = true;
-						datasetChildAdded = true;
-						if(!dontJoin) pathChildWhereQuery += handlePathChild();
-						String fqName = "Block.Path AS Dataset_Child";
-						query += fqName;			
-						if(iLumi) groupByQuery +=  "Block.Path ,";		
-						if(sumPresent || countPresent) {
-							if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
-							sumQuery += " Dataset_Child AS Dataset_Child ";
-							sumGroupByQuery += " Dataset_Child ,";
-						}
-			
-						addQuery = false;
-					}*/
-
-
-					/*if(Util.isSame(token, "dataset") && (!Util.isSame(token2, "parent"))) {
-						checkMax(iter);
-						allKws = addUniqueInList(allKws, "ProcessedDataset");
-						System.out.println("1111Adding ProcessedDataset >>>>>>>>>>>>>>>>>>>>>>");
-					}*/
 				
 
 					Vertex vCombined = u.getMappedVertex(aKw);
@@ -581,7 +551,7 @@ public class QueryBuilder {
 
 
 						}
-						for(int ai = 0 ; ai != allKws.size() ; ++ai ) System.out.println("kw " + (String)allKws.get(ai));
+						//for(int ai = 0 ; ai != allKws.size() ; ++ai ) System.out.println("kw " + (String)allKws.get(ai));
 					} else {
 
 						//System.out.println("in ELSE ---> u.getRealFromVertex " + u.getRealFromVertex(vCombined));
@@ -603,7 +573,7 @@ public class QueryBuilder {
 
 
 						}
-						for(int ai = 0 ; ai != allKws.size() ; ++ai ) System.out.println("kw else" + (String)allKws.get(ai));
+						//for(int ai = 0 ; ai != allKws.size() ; ++ai ) System.out.println("kw else" + (String)allKws.get(ai));
 						
 					}
 				}
