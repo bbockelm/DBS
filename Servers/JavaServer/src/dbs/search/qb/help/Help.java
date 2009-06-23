@@ -731,6 +731,7 @@ public class Help {
 		e = new Example();
 		e.desc = "I want to find MC description used for given  dataset";
 		e.query = "find mcdesc where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		kw.examples.add(e);
 
 		e = new Example();
 		e.desc = "I want to find MC description attributes like its definition, content, and decay chain (parents), creation date, modification date, created by, modified by in a dataset";
@@ -752,6 +753,7 @@ public class Help {
 		e = new Example();
 		e.desc = "I want to find trigger description used for given  dataset";
 		e.query = "find trigdesc where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO";
+		kw.examples.add(e);
 
 		e = new Example();
 		e.desc = "I want to find trigger description attributes like its definition, creation date, modification date, created by, modified by in a dataset";
@@ -761,6 +763,84 @@ public class Help {
 
 		//-------------------------------------------------------------------------
 
+
+
+		map.put("count", aggregateFuncts("count"));
+		map.put("sum", aggregateFuncts("sum"));
+		map.put("min", aggregateFuncts("min"));
+		map.put("max", aggregateFuncts("max"));
+		map.put("avg", aggregateFuncts("avg"));
+
+		//-------------------------------------------------------------------------
+
+	}
+
+	private Keyword aggregateFuncts(String entity) {
+		Keyword kw = new Keyword();
+		kw.entity = entity;
+		Example e;
+
+		e = new Example();
+		e.desc = "I want to find total size of the files in a specified dataset";
+		e.query = "find sum(file.size) where dataset =/test_primary_001/TestProcessedDS002/GEN-SIM"; 
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find total size of the files per dataset dataset basis";
+		e.query = "find sum(file.size), dataset where dataset = *";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find total size of the files and number of files in all datasets";
+		e.query = "find sum(file.size), count(file), dataset where dataset = *";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find number of files per run of a specified dataset";
+		e.query = "find count(file), run where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find number of blocks and average size of a block per dataset";
+		e.query = "find count(block), avg(block.size), dataset where dataset = *RAW";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find maximum file size and minimum file size in a primary dataset";
+		e.query = "find max(file.size), min(file.size) where primds =  test_primary_001";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find maximum file size, minimum file size and average file size in a primary dataset";
+		e.query = "find max(file.size), min(file.size), avg(file.size) where primds =  test_primary_001";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find number of files that are invalid";
+		e.query = "find count(file) where file.status =  INVALID";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find number of files that are invalid per dataset";
+		e.query = "find count(file), dataset where file.status =  INVALID";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find number of file status";
+		e.query = "find count(file.status)";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find average start time of all run";
+		e.query = "find avg(run.starttime)";
+		kw.examples.add(e);
+
+		e = new Example();
+		e.desc = "I want to find number of lumi sections in specified runs per dataset";
+		e.query = "find count(lumi), dataset where run in (1,2,3 )";
+		kw.examples.add(e);
+
+		return kw;
 
 	}
 
