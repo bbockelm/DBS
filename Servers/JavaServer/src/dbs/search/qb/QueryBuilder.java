@@ -128,9 +128,14 @@ public class QueryBuilder {
 		}
 		for (int i =0 ; i!= kws.size(); ++i) {
 			++iter;	checkMax(iter);
-			String aKw = (String)kws.get(i);
-			if(aKw.toLowerCase().startsWith("count") || aKw.toLowerCase().endsWith("count")) countPresent = true;
-			if(aKw.toLowerCase().startsWith("sum")) sumPresent = true;
+			String aKw = ((String)kws.get(i)).toLowerCase();
+			if(aKw.startsWith("count") 
+				|| aKw.endsWith("count") 
+				|| aKw.startsWith("min")
+				|| aKw.startsWith("max")
+				|| aKw.startsWith("avg"))
+				countPresent = true;
+			if(aKw.startsWith("sum")) sumPresent = true;
 		}
 		
 		if(sumPresent || countPresent) sumQuery += selectStr;
@@ -165,28 +170,32 @@ public class QueryBuilder {
 				String tmpKw = km.getMappedValue(keyword, true);
 				query +=  tmpKw + " AS " + asKeyword ;
 				if(iLumi) groupByQuery += tmpKw + ",";
-				/*String tmp =  makeQueryFromDefaults(u.getMappedVertex(entity));
-				tmp = tmp.substring(0, tmp.length() - 1); // To get rid of last space
-				query += "\n\t," + tmp + "_SUM ";
-				*/
-			} else if(aKw.toLowerCase().startsWith("count")) {
-				checkMax(iter);
+
+			} else if(aKw.toLowerCase().startsWith("max")
+				|| aKw.toLowerCase().startsWith("min")
+				|| aKw.toLowerCase().startsWith("avg")
+				|| aKw.toLowerCase().startsWith("count")) {
 				aKw = aKw.toLowerCase();
+				String functToUse = "";
+				System.out.println("line 2");
+				if(aKw.startsWith("max")) functToUse = "MAX";
+				if(aKw.startsWith("min")) functToUse = "MIN";
+				if(aKw.startsWith("avg")) functToUse = "AVG";
+				if(aKw.startsWith("count")) functToUse = "COUNT";
+				checkMax(iter);
 				String keyword = aKw.substring(aKw.indexOf("(") + 1, aKw.indexOf(")"));
 				keyword = keyword.trim();
 				StringTokenizer st = (new StringTokenizer(keyword, "."));
 				int noOfTokens = st.countTokens();
-				//System.out.println("No Of Tokens " + st.countTokens());
 				String entity = st.nextToken();
 				String realName = u.getMappedRealName(entity);
 				if(noOfTokens == 1) {
 					allKws = addUniqueInList(allKws, realName);
-					//System.out.println("entity = " + entity);
 					String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
-					if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use count(" + entity + ")");
-					query += realName + "." + defaultStr + " AS COUNT_SUB_" + realName;
+					if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use " + functToUse + "(" + entity + ")");
+					query += realName + "." + defaultStr + " AS " + functToUse + "_SUB_" + realName;
 					if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
-					sumQuery += "COUNT(DISTINCT COUNT_SUB_" + realName + ") AS COUNT_" + realName;
+					sumQuery += functToUse + "(DISTINCT " + functToUse + "_SUB_" + realName + ") AS " + functToUse + "_" + realName;
 				} else if(noOfTokens == 2) {
 					String tmpKw = "";
 					Vertex vCombined = u.getMappedVertex(keyword);
@@ -194,7 +203,7 @@ public class QueryBuilder {
 						String realVal = u.getRealFromVertex(vCombined);
 						allKws = addUniqueInList(allKws, realVal);
 						StringTokenizer st2 = new StringTokenizer(u.getDefaultFromVertex(vCombined), ",");
-						if(st2.countTokens() != 1) throw new Exception("Cannot use count(" + keyword + ")");
+						if(st2.countTokens() != 1) throw new Exception("Cannot use " + functToUse + "(" + keyword + ")");
 						tmpKw = realVal + "." + st2.nextToken();
 					} else {
 						allKws = addUniqueInList(allKws, realName);
@@ -203,10 +212,10 @@ public class QueryBuilder {
 
 					String asKeyword = keyword.replace('.', '_');
 					if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
-					sumQuery += "COUNT(DISTINCT COUNT_SUB_" + asKeyword + ") AS COUNT_" + asKeyword + " ";
-					//String tmpKw = km.getMappedValue(keyword, true);
-					query +=  tmpKw + " AS COUNT_SUB_" + asKeyword ;
-				} else throw new Exception("Cannot use count(" + keyword + ")");
+					sumQuery += functToUse + "(DISTINCT " + functToUse + "_SUB_" + asKeyword + ") AS " + functToUse + "_" + asKeyword + " ";
+					query +=  tmpKw + " AS " + functToUse + "_SUB_" + asKeyword ;
+				} else throw new Exception("Cannot use " + functToUse + "(" + keyword + ")");
+
 			} else if(Util.isSame(aKw, "dataset")) {
 				checkMax(iter);
 				allKws = addUniqueInList(allKws, "Block");
@@ -218,7 +227,7 @@ public class QueryBuilder {
 					sumGroupByQuery += " PATH ,";
 				}
 			} else {
-			//System.out.println("line 2.2");
+			System.out.println("line 2.2");
 				if(iLumi && (i < 2) ) {
 					allKws = addUniqueInList(allKws, "Runs");
 					allKws = addUniqueInList(allKws, "LumiSection");
@@ -232,7 +241,6 @@ public class QueryBuilder {
 				Vertex vFirst = u.getMappedVertex(token);
 				String real = u.getRealFromVertex(vFirst);
 				allKws = addUniqueInList(allKws, real);
-			//System.out.println("line 4");
 				//if(Util.isSame(real, "LumiSection")) allKws = addUniqueInList(allKws, "Runs");
 				if(count == 1) {
 					//Get default from vertex
