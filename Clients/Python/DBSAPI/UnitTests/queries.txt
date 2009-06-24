@@ -155,3 +155,19 @@ find algo.version, algo.family, algo.exe where algo.family like *
 find config, config.type, config.version, config.hash, config.id, config.createdate, config.createby, config.moddate, config.modby
 find mcdesc,  mcdesc.def, mcdesc.parent, mcdesc.createdate, mcdesc.createby where primds like *
 find trigdesc, trigdesc.createdate, trigdesc.createby where primds like *
+find count(dataset)  where file.size > 10
+find count(file.id)  where file.size > 10
+find count(file)  where file.size > 10
+find count(file.type)  where file.size > 10
+find count(file.status) where file.size > 0
+find count(file.status)
+find max(file.status)
+find min(file.status)
+find avg(file.size) where dataset = *RAW
+find max(file.size), min(file.size), avg(file.size), run where dataset = *RAW
+find max(file.size), min(file.size), avg(block.size), run where dataset = *RAW
+find avg(run.starttime)
+find max(run.starttime)
+find primds, primds.createby where primds.createby = *Sekhri*
+find file where file.createby = null
+find block where site = null
