@@ -789,7 +789,8 @@ public class QueryBuilder {
 							if(!dontJoin)
 								personJoinQuery += "\tJOIN " + owner() + "Person " + tmpTableName + "\n" +
 									"\t\tON " + u.getMappedRealName(token) + "." + personField + " = " + tmpTableName + ".ID\n";
-							queryWhere += tmpTableName + ".DistinguishedName ";			
+							if(Util.isSame(op, "like") || Util.isSame(op, "not like")) queryWhere += makeUpper(tmpTableName + ".DistinguishedName ");
+							else queryWhere += tmpTableName + ".DistinguishedName ";			
 						} else	if(Util.isSame(token2, "parent") && Util.isSame(token, "file")) {
 							throw new Exception("file.parent in where clause is not supported by DBSql anymore. Use file.child in find clause instead. For example find file.child where file = blah");
 							/*boolean dontJoin = false;
