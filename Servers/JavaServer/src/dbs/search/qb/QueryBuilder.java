@@ -726,8 +726,8 @@ public class QueryBuilder {
 
 				} else if(Util.isSame(key, "site")) {
 					//if(!Util.isSame(op, "=") && !Util.isSame(op, "in")) throw new Exception("When site is provided operator should be = . Invalid operator given " + op);
-					queryWhere += "\t(StorageElement.SEName" + handleSite(val, op) + ")";	
-					//queryWhere += "\tStorageElement.SEName" + handleSite(val, op);	
+					if(Util.isSame(val.toUpperCase(), "NULL")) queryWhere += "\tSEBlock.BlockID is NULL ";	
+					else queryWhere += "\t(StorageElement.SEName" + handleSite(val, op) + ")";	
 
 				} else if(Util.isSame(key, "release")) {
 					boolean useAnd = false;
@@ -1073,6 +1073,8 @@ public class QueryBuilder {
 							if(Util.isSame(v1, "ProcDSChild")) v1 = "ProcDSParent";
 							if(Util.isSame(v1, "FileParentage") ||
 									Util.isSame(v1, "ProcDSParent") ||
+									Util.isSame(v1, "StorageElement") ||
+									Util.isSame(v1, "SEBlock") ||
 									Util.isSame(v1, "BlockParent")) query += "LEFT OUTER ";
 							query += "JOIN " + owner() +  v1 + "\n";
 							query += "\t\tON " + tmp + "\n";
@@ -1178,6 +1180,11 @@ public class QueryBuilder {
 		return "NOT LIKE " + makeUpper("?");
 	}
 
+	private String handleNullValue() {
+		//bindValues.add(val);
+		return "IS NULL";
+	}
+
 	private String handleIn(String val, List<String> bindValues)  throws Exception {
     		String query = "IN (";
     		StringTokenizer st = new StringTokenizer(val, ",");
@@ -1199,6 +1206,7 @@ public class QueryBuilder {
 		else if(Util.isSame(op, "like")) query += handleLike(val, bindValues);
 		else if(Util.isSame(op, "not like")) query += handleNotLike(val, bindValues);
 		else if(Util.isSame(op, "between")) query += handleBetween(val, bindValues);
+		else if(Util.isSame(val.toUpperCase(), "NULL")) query += handleNullValue();
 		else {
 			query += op + " ?\n";
 			bindValues.add(val);
