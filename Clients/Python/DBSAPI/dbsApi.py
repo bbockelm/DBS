@@ -32,7 +32,7 @@ from dbsLogger import *
 from dbsUtil import *
 
 #DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
-__version__ = "$Name: $"
+__version__ = "$Name:  $"
 
 def makeAPI(url):
 		#args = {}
@@ -167,6 +167,7 @@ class DbsApi(DbsConfig):
 
     version = __version__.replace("$Name: ", "")
     version = version.replace("$", "")
+    version = version.strip()
     if version.find("pre") != -1: 
 	version=version.split("_pre")[0]
     if version.find("patch") != -1:
