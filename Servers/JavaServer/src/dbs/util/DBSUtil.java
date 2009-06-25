@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.19 $"
- $Id: DBSUtil.java,v 1.19 2008/09/24 19:31:15 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSUtil.java,v 1.20 2008/11/20 17:35:40 sekhri Exp $"
  *
 */
 
@@ -197,6 +197,10 @@ public class DBSUtil {
 	 */
 	public static void writeCacheLog(String logText) {
 		if (DBSConstants.DEBUGCACHE) System.out.println(logText);
+	}
+
+	public static void writeQLLog(String logText) {
+		if (DBSConstants.DEBUGQL) System.out.println(logText);
 	}
 
 	public static int getNumberOfRows(ResultSet rs) throws SQLException {

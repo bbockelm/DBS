@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.72 $"
- $Id: DBSConstants.java,v 1.72 2009/05/04 15:56:21 afaq Exp $"
+ $Revision: 1.73 $"
+ $Id: DBSConstants.java,v 1.73 2009/06/10 20:33:50 yuyi Exp $"
  *
 */
 package dbs;
@@ -16,11 +16,13 @@ public class DBSConstants {
 
 	public static boolean DEBUG = false;
 	public static boolean DEBUGCACHE = false;
+	public static boolean DEBUGQL = false;
 	//public static boolean ERROR = false;
 	//public static boolean USECACHE = false;
 
 
 	//public static boolean DEBUGCACHE = true;
+	//public static boolean DEBUGQL = true;
 	//public static boolean DEBUG = true;
 	public static boolean ERROR = true;
 	public static boolean USECACHE = true;//If this parameter is set to true, the server will use the cache
@@ -32,6 +34,6 @@ public class DBSConstants {
 	public static String XML_WARNNING_HEADER = "<warnning>\n";
 	public static String XML_WARNNING_FOOTER = "</warnning>\n";
 	public static String XML_SUCCESS = "<SUCCESS/>\n";
-        public static String DBSTag = "$Name: DBS_2_0_7_pre6 $";
+        public static String DBSTag = "$Name:  $";
 
 }

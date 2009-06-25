@@ -227,7 +227,6 @@ public class QueryBuilder {
 					sumGroupByQuery += " PATH ,";
 				}
 			} else {
-			System.out.println("line 2.2");
 				if(iLumi && (i < 2) ) {
 					allKws = addUniqueInList(allKws, "Runs");
 					allKws = addUniqueInList(allKws, "LumiSection");
