@@ -227,8 +227,10 @@ executeQuery () {
 	#$CMD query="find primds, primds.createby where primds.createby = Sekhri"
 	#$CMD query="find file.type where file.createby = null"
 	#$CMD query="find site where site = null or file.size > 1000"
+	$CMD query="find dataset, file, lumi where ( run<=66533 OR (run>=66893 AND run<=67085) OR (run>=67264 AND run<=67432) OR (run>=67676 AND run<=67777) OR (run>=69536 AND run<=69671) OR (run>=70088 AND run<=99999)) and dataset=/Cosmics/Commissioning08_CRAFT_ALL_V11_227_Tosca090216_ReReco_FromTrackerPointing_v2/RAW-RECO"
 	#$CMD query="find run,  count(file.size) where dataset = *RAW"
-	#$CMD query="find file.type"
+	#$CMD query="find dataset, file, lumi where ( run<=66533 OR (( run>=66893 AND run<=67085 ) or (run>=66896 AND run<=67086) ) ) and dataset=/Cosmics/*"
+	#$CMD query="find dataset, file, lumi where (((run<=66533 OR (run>=66893 AND (run<=67085)))  or (run>=66896 AND run<=67086))   and dataset=/Cosmics/*)"
 	#$CMD query="find site, block.id, block where dataset = /SiStripCommissioning08-edm/Online/RAW"
 	#$CMD query="find dataset, run.number, count(file), sum(file.size) where dataset = /HcalHPDNoise/Commissioning08-CRUZET4_v1/RAW order by run.number, dataset desc" begin=0 end=5
 	#$CMD query="find dataset, run.number, count(file), sum(file.size) where dataset = /HcalHPDNoise/Commissioning08-CRUZET4_v1/RAW" begin=0 end=5

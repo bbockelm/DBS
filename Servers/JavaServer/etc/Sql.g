@@ -18,7 +18,7 @@ catch (RecognitionException e) {
 }
 }
 
-stmt	: select selectList (where constraintList)? (order by orderList)?;
+stmt	: select selectList where constraintList (order by orderList)?;
 //stmt	: select selectList;
 
 
@@ -44,20 +44,34 @@ simpleKw	: entity
 slkeyword	: simpleKw
 		| funct LB simpleKw RB;
 	
-constraintList	: constraint1 ( 
+/*constraintList1	: constraint1 ( 
 	rel=	logicalOp 		{ constraints.add($rel.text);}
+		constraint1)*;*/
+lopen		: (LB)*;
+ropen		: (RB)*;
+
+
+
+constraintList	:constraint1
+		(
+		rel=    logicalOp  { constraints.add($rel.text);}
 		constraint1)*;
-lopen		: LB(LB)*;
-ropen		: RB(RB)*;
+constraint1	:
+		kl=   lopen {Constraint c1=new Constraint();c1.setBracket($kl.text);constraints.add(c1);}
+		constraint
+		kr=     ropen {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);};
+//lopenrel	: (LB)*;
+//ropenrel	: (RB)*;
+/*
 constraint1     : kl=   lopen   {Constraint c1=new Constraint();c1.setBracket($kl.text);constraints.add(c1);}
                 constraint
 		(
 		rel=    logicalOp               { constraints.add($rel.text);}
 		constraint
 		)*
-                kr=     ropen   {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);}
-		| constraint;
-
+                kr=     ropen   {Constraint c=new Constraint();c.setBracket($kr.text); constraints.add(c);};
+//		| constraint;
+*/
 constraint	:
 	kw=	simpleKw 		{Constraint c= new Constraint(); c.setKey($kw.text);} 
 	op=	compOpt 	{c.setOp($op.text);}   
