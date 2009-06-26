@@ -87,14 +87,24 @@ DBS TOOLS
 comprehensive command line toolkit to retrieve and manipulate data in DBS. 
 <br/>
 <span class="box_red">NOTE:</span>
-This toolkit depends on
-DBS API and installed as a part of CMS dbs-client RPM.
+Official stand-alone DBS querying tool. Can be downloaded from CMS CVS repository, use this
+<a href="http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/COMP/DBS/Clients/Python/DBSAPI/dbsCommandLine.py?view=co">link</a>
 <div id="_dbscli"><a href="javascript:ShowTag('dbscli')">more</a></div>
 </div>
 <div class="hide" id="dbscli">
-#set usage=os.popen('dbs --help').read()
 <pre>
-$usage
+python dbsCommandLine.py --query="find site where site=T2_UK" 
+--url=http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet
+-------------------------------------------------------
+site    
+
+se2.ppgrid1.rhul.ac.uk  
+se02.esc.qmul.ac.uk     
+lcgse01.phy.bris.ac.uk  
+heplnx204.pp.rl.ac.uk   
+gw-3.ccc.ucl.ac.uk      
+gfe02.hep.ph.ic.ac.uk   
+dgc-grid-50.brunel.ac.uk
 </pre>
 </div>
 <br/>
@@ -104,59 +114,22 @@ $usage
 <!-- new item -->
 
 <li>
-<a href="tool_cli">dbssql</a> 
+<a href="dbssql">dbssql</a>
 <div class="explain">
-simple querying tool.
-<br/>
-<span class="box_red">NOTE:</span>
-This toolkit depends on
-DBS API and installed as a part of CMS dbs-client RPM.
-<div id="_dbssql"><a href="javascript:ShowTag('dbssql')">more</a></div>
-</div>
-<div class="hide" id="dbssql">
-Usage: dbssql <query>, where query in a form of DBS-QL.
-<div class="sectionhead">EXAMPLE:</div>
-<pre>
-dbssql find site where dataset like *CRUZET4*
-
-Using DBS instance at: http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet
-STORAGEELEMENT_SENAME   
-_________________________________________________________________________________
-ccsrm.in2p3.fr  
-srm-disk.pic.es 
-castorsrm.cr.cnaf.infn.it       
-storm.ifca.es   
-gridka-dCache.fzk.de    
-cmssrm.fnal.gov 
-srm.unl.edu     
-srm.cern.ch     
-srm-cms.gridpp.rl.ac.uk 
-srm.grid.sinica.edu.tw
-</pre>
-</div>
-<br/>
-<br/>
-</li>
-
-<!-- new item -->
-
-<li>
-<a href="aSearchCLI">DDSearchCLI.py</a>
-<div class="explain">
-a CLI counterpart for Data Discovery.
+stand-alone DBS querying tool
 <br/>
 <span class="box_red">NOTE:</span>
 No installation is required, just download the script and change its permission to be executable.
-<div id="_aSearchCLI"><a href="javascript:ShowTag('aSearchCLI')">more</a></div>
+<div id="_dbssql"><a href="javascript:ShowTag('dbssql')">more</a></div>
 </div>
-<div class="hide" id="aSearchCLI">
-#set usage=os.popen('./tools/DDSearchCLI.py --help').read()
+<div class="hide" id="dbssql">
+#set usage=os.popen('./tools/dbssql --help').read()
 <pre>
 $usage
 </pre>
 <div class="sectionhead">EXAMPLE:</div>
 <pre>
-./DDSearchCLI.py --input="find dataset where dataset like *"
+./dbssql --input="find dataset where dataset like *"
 </pre>
 </div>
 <br/>

@@ -1034,6 +1034,9 @@ class DDServer(DDLogger,Controller):
             pass
             return str(t)
     tool_cli.exposed=True
+    def dbssql(self):
+        return serve_file(os.path.join(os.getcwd(),'tools/dbssql'),content_type='text/plain')
+    dbssql.exposed=True
     def tool_du(self):
         return serve_file(os.path.join(os.getcwd(),'tools/cms-dbs-du'),content_type='text/plain')
     tool_du.exposed=True
