@@ -1,8 +1,12 @@
+cd ..
 source conf.sh
+cd -
 uuid=`uuidgen`
 if [ -f $timeLog ]
 then
+	mkdir -p logs
 	mv $timeLog "${timeLog}_${uuid}"
+	mv "${timeLog}_${uuid}" logs
 	touch $timeLog
 fi
 
@@ -25,4 +29,4 @@ migrateDataset()
 	done
 }
 migrateDataset $1 $2
-./poll_for_completion.sh $2
+./poll_for_completion.sh $2 $timeLog
