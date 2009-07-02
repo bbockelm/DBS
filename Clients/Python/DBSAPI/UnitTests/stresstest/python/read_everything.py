@@ -22,7 +22,8 @@ try:
 	print "\n\nListing Datasets "
 	paths = api.listDatasetPaths()
 	ranIndex = random.randint(1,len(paths))
-	myDataset = paths[ranIndex]
+	#myDataset = paths[ranIndex]
+	myDataset = "/Wjets-sherpa/Summer08_IDEAL_V12_v1/GEN-SIM-RAW"
 	print "Selected dataset is %s", myDataset
 
 	print "\nListing Blocks "
