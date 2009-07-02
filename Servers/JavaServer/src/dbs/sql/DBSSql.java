@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.224 $"
- $Id: DBSSql.java,v 1.224 2009/06/10 20:33:52 yuyi Exp $"
+ $Revision: 1.225 $"
+ $Id: DBSSql.java,v 1.225 2009/07/02 16:48:35 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1018,7 +1018,7 @@ public class DBSSql {
         }
 
 	public static PreparedStatement lockRuns(Connection conn, Vector newRunVector) throws SQLException {
-		String sql = "SELECT ID, NumberOfLumiSections FROM Runs where ID IN (\n";
+		String sql = "SELECT ID, NumberOfLumiSections FROM "+owner()+"Runs where ID IN (\n";
 		boolean first = true;
 		for(Object aRun: newRunVector) {
 			if (!first) sql += ", ";
