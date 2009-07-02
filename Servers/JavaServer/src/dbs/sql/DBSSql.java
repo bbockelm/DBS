@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.222 $"
- $Id: DBSSql.java,v 1.222 2009/06/01 16:23:15 afaq Exp $"
+ $Revision: 1.224 $"
+ $Id: DBSSql.java,v 1.224 2009/06/10 20:33:52 yuyi Exp $"
  *
  */
 package dbs.sql;
@@ -996,7 +996,7 @@ public class DBSSql {
 
 
         public static PreparedStatement lockRunsOLD(Connection conn, Vector newRunVector) throws SQLException {
-                String sql = "SELECT * FROM Runs where ID = \n";
+                String sql = "SELECT * FROM "+owner()+"Runs where ID = \n";
                 boolean first = true;
                 for(Object aRun: newRunVector) {
                         if (!first) sql += " OR ID = ";
