@@ -2974,8 +2974,8 @@ INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('EXPORTED', (select (sysda
 
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('PRODUCTION', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('DEPRECATED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('RO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
