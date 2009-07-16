@@ -3055,6 +3055,6 @@ INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) VALUES ('SUCCESS');
 
 -- Set the Schema Version -- 
-INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, InstanceType, CREATIONDATE) values ('DBS_1_1_5', 'LOCAL', 'ORACLE', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, InstanceType, CREATIONDATE) values ('DBS_1_1_6', 'LOCAL', 'ORACLE', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 commit;

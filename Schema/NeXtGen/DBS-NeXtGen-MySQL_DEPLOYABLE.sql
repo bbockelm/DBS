@@ -2101,6 +2101,6 @@ INSERT INTO QualityValues (Value, CreationDate) VALUES ("GOOD", UNIX_TIMESTAMP()
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, InstanceType, CreationDate) values ('DBS_1_1_5', 'LOCAL', 'MYSQL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, InstanceType, CreationDate) values ('DBS_1_1_6', 'LOCAL', 'MYSQL', UNIX_TIMESTAMP());
 
 commit;
