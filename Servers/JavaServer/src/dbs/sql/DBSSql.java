@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.225 $"
- $Id: DBSSql.java,v 1.225 2009/07/02 16:48:35 afaq Exp $"
+ $Revision: 1.226 $"
+ $Id: DBSSql.java,v 1.226 2009/07/02 16:53:17 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1203,7 +1203,9 @@ public class DBSSql {
 	// SQL for inserting ProcessedDatatset and its related tables.
 	// ____________________________________________________
 
-	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String tierID, String phyGroupID, String statusID, String aquisitionEra, String globalTag, String xtCrossSection, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String
+	tierID, String phyGroupID, String statusID, String aquisitionEra, String globalTag, String xtCrossSection, String
+	cbUserID, String lmbUserID, String cDate, String description) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Name", name);
 		table.put("PrimaryDataset", primDSID);
@@ -1216,6 +1218,7 @@ public class DBSSql {
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);
+		table.put("DESCRIPTION", description);
 		return getInsertSQL(conn, "ProcessedDataset", table);
 	}
 	
@@ -1783,7 +1786,8 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT procds.id as ID, \n" +
 			"primds.Name as PRIMARY_DATASET_NAME, \n" +
 			"procds.name as PROCESSED_DATASET_NAME, \n" +
-			"dt.Name as DATA_TIER \n"+
+			"dt.Name as DATA_TIER, \n"+
+			"procds.DESCRIPTION as PATH_DESCRIPTION \n " + 
 			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
@@ -1852,6 +1856,7 @@ public class DBSSql {
                         "procds.XtCrossSection as XT_CROSS_SECTION, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"procds.DESCRIPTION as PATH_DESCRIPTION, \n " + 
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
 			"perpg.DistinguishedName as PHYSICS_GROUP_CONVENER, \n" +
 			"av.Version as APP_VERSION, \n" +
