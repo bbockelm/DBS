@@ -20,7 +20,7 @@ try:
   #for proc in api.listProcessedDatasets("test_primary_001", "*", "TestProcessedDS002"):
   #for proc in api.listProcessedDatasets(patternPrim="Cosmics",  patternProc = "Commissioning08-CRUZET4_v1"):
   #/RelValMinBias/CMSSW_2_1_2_STARTUP_V5_v3/GEN-SIM-RECO
-  path = '/RelValMinBias/CMSSW_2_1_2_STARTUP_V5_v3/GEN-SIM-RECO'
+  path = '/test_primary_001/*/*'
   params = path.split('/')
   for proc in api.listProcessedDatasets(patternPrim=params[1],  patternProc = params[2]):
      """
@@ -34,6 +34,7 @@ try:
 	     for atmpAlgo in tmpAlgoList :
 		     print atmpAlgo['ParameterSetID']['Content']
      """
+     print proc
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
