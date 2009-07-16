@@ -122,6 +122,7 @@ CREATE TABLE ProcessedDataset
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
+    DESCRIPTION           varchar(1000),
 
     primary key(ID),
     unique(Name,PrimaryDataset, DataTier)
