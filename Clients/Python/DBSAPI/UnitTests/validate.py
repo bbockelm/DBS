@@ -243,7 +243,8 @@ procObj2 = DbsProcessedDataset (
 		AlgoList = [algoObj1, algoObj2],
 		ParentList = [path1],
 		RunsList = [runNumber],
-		XtCrossSection=2.2
+		XtCrossSection=2.2,
+		Description = "MY comment for the path"
 		)
 
 procObjM = DbsProcessedDataset (
@@ -511,6 +512,7 @@ def assertProc(test, procIn1, procIn2):
 	test.assertEqual(procIn1['PhysicsGroup'], procIn2['PhysicsGroup'])
 	test.assertEqual(procIn1['Status'], procIn2['Status'])
 	test.assertEqual(procIn1['XtCrossSection'], procIn2['XtCrossSection'])
+	test.assertEqual(procIn1['Description'], procIn2['Description'])
 
 def assertRun(test, runIn1, runIn2):
 	test.assertEqual(runIn1['RunNumber'], runIn2['RunNumber'])
