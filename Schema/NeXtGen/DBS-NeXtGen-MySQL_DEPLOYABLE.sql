@@ -1273,21 +1273,21 @@ ALTER TABLE FileParentage ADD CONSTRAINT
     FileParentageLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
---ALTER TABLE FileRunLumi ADD CONSTRAINT 
+-- ALTER TABLE FileRunLumi ADD CONSTRAINT 
 --    FileRunLumi_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
---;
---ALTER TABLE FileRunLumi ADD CONSTRAINT 
+-- ;
+-- ALTER TABLE FileRunLumi ADD CONSTRAINT 
 --    FileRunLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
---;
---ALTER TABLE FileRunLumi ADD CONSTRAINT 
+-- ;
+-- ALTER TABLE FileRunLumi ADD CONSTRAINT 
 --    FileRunLumi_Run_FK foreign key(Run) references Runs(ID)
---;
---ALTER TABLE FileRunLumi ADD CONSTRAINT 
+-- ;
+-- ALTER TABLE FileRunLumi ADD CONSTRAINT 
 --    FileRunLumi_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
---;
---ALTER TABLE FileRunLumi ADD CONSTRAINT 
+-- ;
+-- ALTER TABLE FileRunLumi ADD CONSTRAINT 
 --    FileRunLumi_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
---;
+-- ;
 
 ALTER TABLE FileAlgo ADD CONSTRAINT 
     FileAlgo_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
