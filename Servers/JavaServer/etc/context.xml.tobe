@@ -25,7 +25,7 @@
 	<Certificate hostcert="" certpass="" />
 
 	<SchemaOwner schemaowner="__MYSQL__"/> <!-- Possible vales are schema_owner, EMPTY STRING and __MYSQL__ /-->
-	<SupportedSchemaVersion schemaversion="DBS_1_1_5" />
+	<SupportedSchemaVersion schemaversion="DBS_1_1_6" />
 	<SupportedClientVersions clientversions="DBS_2_0_5, DBS_2_0_6, DBS_2_0_7, DBS_2_0_8" />
 	<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
 </Context>
