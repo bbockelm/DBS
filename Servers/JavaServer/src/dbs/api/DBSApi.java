@@ -1,6 +1,6 @@
 /**
- $Revision: 1.167 $"
- $Id: DBSApi.java,v 1.167 2009/06/11 16:20:03 afaq Exp $"
+ $Revision: 1.168 $"
+ $Id: DBSApi.java,v 1.168 2009/06/18 19:45:22 afaq Exp $"
  *
 */
 
@@ -70,7 +70,10 @@ import org.apache.commons.lang.StringEscapeUtils;
  * <b>insertProcessedDataset</b>  <br>
 		<"?xml version='1.0' standalone='yes'?"> <br>
 		<"dbs"> <br>
-			<"processed_dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName' physics_group_convener='ANZARDN' status='VALID'"> <br>
+			<"processed_dataset primary_datatset_name='$primary_name'
+			processed_datatset_name='$processed_name' open_for_writing='y'
+			physics_group_name='AnyName' physics_group_convener='ANZARDN'
+			status='VALID' description='my comments'"> <br>
 				<"data_tier name='$tier_name1'/"> <br>
 				<"algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY1' ps_type='DUMMYTYPE1' ps_annotation='ANN1' ps_content='DUMMYCON'/"> <br>
 				<"algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY2' ps_type='DUMMYTYPE2' ps_annotation='ANN2' ps_content='DUMMYCON'/"> <br>

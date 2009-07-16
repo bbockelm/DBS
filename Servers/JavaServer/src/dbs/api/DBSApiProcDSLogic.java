@@ -1,6 +1,6 @@
 /**
- $Revision: 1.85 $"
- $Id: DBSApiProcDSLogic.java,v 1.85 2009/06/10 16:46:06 sekhri Exp $"
+ $Revision: 1.87 $"
+ $Id: DBSApiProcDSLogic.java,v 1.87 2009/06/18 19:45:22 afaq Exp $"
  *
  */
 
@@ -72,6 +72,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		HashSet algoVec = null; 
                 String primDSName = null;
                 String procDSName = null;
+		//String description = null;
 		
 		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
 		boolean first = true; 
@@ -116,7 +117,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
 							"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
 							"' created_by='" + get(rs, "CREATED_BY") +
-							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY")+ "'" )) ;
+							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+							"' Description='" + get(rs, "PATH_DESCRIPTION")+ "'")) ;
 							
 							if (!DBSUtil.isNull(get(rs, "XT_CROSS_SECTION"))) 
 								out.write(((String) " external_cross_section='" + get(rs, "XT_CROSS_SECTION")+ "'" ));
@@ -502,6 +504,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String phyGroupName = getStr(dataset, "physics_group_name", false);
 		String phyGroupCon = getStr(dataset, "physics_group_convener", false);
 		String status = get(dataset, "status", false).toUpperCase();
+		String description = getStr(dataset, "Description", false);
+		
 
 		//Vector tierVector = DBSUtil.getVector(dataset,"data_tier");
 		Vector parentVector = DBSUtil.getVector(dataset,"parent");
@@ -548,7 +552,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					get(dataset, "external_cross_section", false),
 					cbUserID,
 					lmbUserID,
-					creationDate);
+					creationDate,
+					description);
 			pushQuery(ps);
 			ps.execute();
 		} catch (SQLException ex) {
