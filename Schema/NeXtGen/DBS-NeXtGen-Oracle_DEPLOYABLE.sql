@@ -651,6 +651,7 @@ CREATE TABLE ProcessedDataset
     CreationDate          integer,
     LastModifiedBy        integer,
     LastModificationDate  integer,
+    DESCRIPTION           varchar(1000),
     primary key(ID),
     unique(Name,PrimaryDataset, DataTier)
   );
