@@ -324,6 +324,11 @@ public class Help {
 		e.desc = "I want to sum up the size of all the files in a particular dataset";
 		e.query = "find sum(file.size) where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM";
 		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find those file that do not have any person associated with it";
+		e.query = "find file where file.createby = null";
+		kw.examples.add(e);
+
 		map.put(kw.entity, kw);
 
 
@@ -489,6 +494,10 @@ public class Help {
 		e = new Example();
 		e.desc = "I want to find all blocks and all datasets at a particular storage element";
 		e.query = "find block , dataset where site = srm-disk.pic.es";
+		kw.examples.add(e);
+		e = new Example();
+		e.desc = "I want to find all blocks that are not aviable on any site";
+		e.query = "find block where site = null";
 		kw.examples.add(e);
 		map.put(kw.entity, kw);
 
