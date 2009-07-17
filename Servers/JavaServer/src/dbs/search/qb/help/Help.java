@@ -496,7 +496,7 @@ public class Help {
 		e.query = "find block , dataset where site = srm-disk.pic.es";
 		kw.examples.add(e);
 		e = new Example();
-		e.desc = "I want to find all blocks that are not aviable on any site";
+		e.desc = "I want to find all blocks that are not available on any site";
 		e.query = "find block where site = null";
 		kw.examples.add(e);
 		map.put(kw.entity, kw);
