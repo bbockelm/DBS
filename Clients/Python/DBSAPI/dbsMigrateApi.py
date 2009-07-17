@@ -165,15 +165,57 @@ class DbsMigrateApi:
 			if int(ex.getErrorCode()) != 1008: raise ex
 		#except Exception, ge:
 		#	print 'excpeiton was rasied'
-		for aBlockInSrc in blockInSrc:
-			if not self.isBlockIn(aBlockInSrc, blockInDst):
-				self.migrateBlockBasic(path, aBlockInSrc['Name'])
-			else :
-				print "-----------------------------------------------------------------------------------"
-				print "Ignoring path %s " %path
-				print "            block %s " %aBlockInSrc['Name']
-				print "because it already exist in the destination DBS and has NOT changed in source DBS"
-				print "-----------------------------------------------------------------------------------\n"
+
+		# If no block are found in source dataset
+		# we can just simple migrate the DATASET (Processed Dataset et el) with no files	
+		if len(blockInSrc) <= 0:
+			self.migratePathNoBlocks(path)
+		else:
+			for aBlockInSrc in blockInSrc:
+				if not self.isBlockIn(aBlockInSrc, blockInDst):
+					self.migrateBlockBasic(path, aBlockInSrc['Name'])
+				else :
+					print "-----------------------------------------------------------------------------------"
+					print "Ignoring path %s " %path
+					print "            block %s " %aBlockInSrc['Name']
+					print "because it already exist in the destination DBS and has NOT changed in source DBS"
+					print "-----------------------------------------------------------------------------------\n"
+
+
+	def migratePathNoBlocks(self, path):
+		try:
+    			token = path.split("/")
+			src_ds = self.apiSrc.listProcessedDatasets(token[1], token[3], token[2])
+    			proc = src_ds[0]
+			# List algo details from source and insert then in dest.
+			for algo in proc['AlgoList']:
+				for srcAlgo in self.apiSrc.listAlgorithms(
+								patternVer=algo['ApplicationVersion'], 
+								patternFam=algo['ApplicationFamily'], 
+								patternExe=algo['ExecutableName'], 
+								patternPS=algo['ParameterSetID']['Hash'] ):
+					self.apiDst.insertAlgorithm(srcAlgo)
+
+    			#Grab the parents as well, hopefully the parenats are already migarted, otherwise its naturally n error condition
+    			proc['ParentList'] = self.apiSrc.listDatasetParents(path)
+
+    			#Create the dataset
+    			self.apiDst.insertProcessedDataset (proc)
+
+    			#Lets grab the Runs as well
+    			ds_runs = self.apiSrc.listRuns(path)
+    			#And add the to newly created dataset
+    			for aRun in ds_runs:
+				# Might have to insert the run first
+				self.apiDst.insertRun(aRun)
+				# Associate run to the procDS
+        			self.apiDst.insertRunInPD(proc, aRun['RunNumber'])
+			print "-----------------------------------------------------------------------------------"
+			print " Migrated path : %s without blocks or files (empty) " % path
+			print "-----------------------------------------------------------------------------------"
+		except DbsApiException, ex:
+			print "Unable to migrate the dataset path %s " %path
+			raise ex
 
 	def migratePathROBasic(self, path):
 		for block in self.apiSrc.listBlocks(path):
