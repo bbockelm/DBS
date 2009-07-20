@@ -257,7 +257,8 @@ procObjM = DbsProcessedDataset (
 		TierList = [tier1, tier2],
 		AlgoList = [algoObjM],
 		RunsList = [runNumber],
-		XtCrossSection=3.3
+		XtCrossSection=3.3,
+		Description = "MY comment for the path"
 		)
 
 procObjG = DbsProcessedDataset (
@@ -796,6 +797,7 @@ class Test_008(unittest.TestCase):
 		for processedInDBS in procList:
 			# Auto CRosss section for Merged Datasets will not be equal
 			processedInDBS['XtCrossSection']=procObjM['XtCrossSection']
+
 			assertProc(self, procObjM, processedInDBS)
 			self.assertEqual(len(processedInDBS['AlgoList']), 3)
 			
