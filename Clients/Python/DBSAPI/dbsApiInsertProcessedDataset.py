@@ -81,7 +81,7 @@ def dbsApiImplInsertProcessedDataset(self, dataset):
     xmlinput += " external_cross_section='"+str(dataset.get('XtCrossSection', ""))+"'"
     xmlinput += " status='"+dataset.get('Status', "") +"'"
     xmlinput += " Description='" + dataset.get('Description', "") +"'>" 
-    print xmlinput
+    #print xmlinput
     
     for tier in dataset.get('TierList',[]):
         xmlinput += "<data_tier name='"+tier+"'/>"
