@@ -82,7 +82,7 @@ CREATE TABLE SchemaVersion
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-
+    DBS_RELEASE_VERSION  varchar(100),
     primary key(ID)
   ) ENGINE = InnoDB ;
 
@@ -2101,6 +2101,7 @@ INSERT INTO QualityValues (Value, CreationDate) VALUES ("GOOD", UNIX_TIMESTAMP()
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('FAILED');
 INSERT INTO ProcessingStatus(PROCESSINGSTATUS) values ('SUCCESS');
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, InstanceType, CreationDate) values ('DBS_1_1_6', 'LOCAL', 'MYSQL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, InstanceType, CreationDate, DBS_RELEASE_VERSION) values
+('DBS_1_1_6', 'LOCAL', 'MYSQL', UNIX_TIMESTAMP(), 'DBS_2_0_8');
 
 commit;
