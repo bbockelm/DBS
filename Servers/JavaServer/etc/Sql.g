@@ -18,7 +18,7 @@ catch (RecognitionException e) {
 }
 }
 
-stmt	: select selectList where constraintList (order by orderList)?;
+stmt	: select selectList (where constraintList)? (order by orderList)?;
 //stmt	: select selectList;
 
 
