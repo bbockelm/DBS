@@ -1,6 +1,6 @@
 /**
- $Revision: 1.73 $"
- $Id: DBSApiBlockLogic.java,v 1.73 2009/06/10 16:46:06 sekhri Exp $"
+ $Revision: 1.75 $"
+ $Id: DBSApiBlockLogic.java,v 1.75 2009/06/18 19:45:22 afaq Exp $"
  *
  */
 
@@ -470,9 +470,11 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				}
 				//Finally delete the old Storage Element
 				deleteName(conn, out, "StorageElement", "SEName", seNameFrom);
+				String truncated=deleteSeMaps + updatedSE + ".Further Old Storage Element " + seNameFrom + "is deleted ";
+				if (truncated.length() >= 1000) truncated=truncated.substring(0, 999);
 				insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName",
 					"Some older SE-Block maps may have been deleted, or renamed",
-					deleteSeMaps + updatedSE + ".Further Old Storage Element " + seNameFrom + "is deleted ",
+					truncated,
 					dbsUser);
 			}
 	
