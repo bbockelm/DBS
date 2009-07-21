@@ -2026,6 +2026,9 @@ class ApiDispatcher:
 		if name == 'row':
 			self.start_print=1
 			#cout=""
+		#Add extra space to line to be printed ONLY if the TAG is one of the asked-for rows
+		if name in self.titleList:
+			self.printme+="   "
 
 	   def characters(self, s):
 
@@ -2051,7 +2054,7 @@ class ApiDispatcher:
 			if self.start_print:
 				#cout += str((escape(s)).strip())
 				#print (escape(s)).strip()
-				self.printme+=str((escape(s)).strip())+'\t'
+				self.printme+=str((escape(s)).strip())
 
 	   def endElement(self, name):
 		#print name
@@ -2070,7 +2073,7 @@ class ApiDispatcher:
 					print "-------------------------------------------------------"
 					print self.title+"\n"
 				self.first_time_result=0
-			print self.printme
+			print "%s" % self.printme.strip()
                         self.printme=""
 			self.start_print=0
 
