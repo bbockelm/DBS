@@ -142,7 +142,13 @@ public class QueryBuilder {
 		String query = "SELECT DISTINCT \n\t";
                 // If requested CLOB data, such as QueryableParameterSet.Content
                 // we should not either converted it to string data type
-                if (isInList(kws, "config.content") ) {
+                if (isInList(kws, "config.content") 
+			|| isInList(kws, "sum(file.size)") 
+			|| isInList(kws, "avg(file.size)") 
+			|| isInList(kws, "sum(block.size)")
+			|| isInList(kws, "avg(block.size)")
+			|| isInList(kws, "sum(block.numfiles)")
+			){
 		    query = "SELECT \n\t";
                 }
 		for (int i =0 ; i!= kws.size(); ++i) {
@@ -1477,7 +1483,7 @@ public class QueryBuilder {
 	private boolean isInList(ArrayList keyWords, String aKw) {
 			//System.out.println("line 3.1");
 		for(Object kw: keyWords) {
-			if(((String)kw).equals(aKw))return true;
+			if(((String)kw).trim().replaceAll(" ","").equals(aKw)) return true;
 		}
 		return false;
 	}
