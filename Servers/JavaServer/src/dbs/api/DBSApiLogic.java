@@ -1,6 +1,6 @@
 /**
- $Revision: 1.170 $"
- $Id: DBSApiLogic.java,v 1.170 2009/06/18 19:45:22 afaq Exp $"
+ $Revision: 1.171 $"
+ $Id: DBSApiLogic.java,v 1.171 2009/06/25 14:38:32 sekhri Exp $"
  *
  */
 
@@ -361,6 +361,7 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 		if( !isNull(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true)))  { 
 			try {
+
 				ps = DBSSql.updateLumiSection(conn,
 						lsNumber,
 						runID,
@@ -448,11 +449,10 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 
                 //LumiSectionNumber in UQ within this Run only
-                //if( isNull(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false)) ) { 
-		//if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
-		//Insert a new Lumi Section by feting the run ID 
-		try {
-			ps = DBSSql.insertLumiSection(conn,
+                if( isNull(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false)) ) { 
+			//Insert a new Lumi Section by feting the run ID 
+			try {
+				ps = DBSSql.insertLumiSection(conn,
 						lsNumber,
                                                 runID,
 						get(lumi, "start_event_number", true),
@@ -462,16 +462,16 @@ public class DBSApiLogic {
 						cbUserID,
 						lmbUserID,
 						creationDate);
-			pushQuery(ps);
-			ps.execute();
-		} catch (SQLException ex) {
-			String exmsg = ex.getMessage();
-			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-			else writeWarning(out, "Already Exists", "1020", "LumiSection " + lsNumber + " Already Exists");
-		} finally {
-			if (ps != null) ps.close();
+				pushQuery(ps);
+				ps.execute();
+			} catch (SQLException ex) {
+				String exmsg = ex.getMessage();
+				if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+				else writeWarning(out, "Already Exists", "1020", "LumiSection " + lsNumber + " Already Exists");
+			} finally {
+				if (ps != null) ps.close();
+			}
 		}
-
 
 			//updateRunLumiCount(conn, out, runID);
 
@@ -487,10 +487,6 @@ public class DBSApiLogic {
                         	if (ps != null) ps.close();
                 	}
 			**/
-
-
-
-
 	}
 
 	protected void lockRunRows(Connection conn, Writer out, Vector newRunVector) throws Exception {
