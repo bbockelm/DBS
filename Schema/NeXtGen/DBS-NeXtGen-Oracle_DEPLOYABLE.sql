@@ -2983,6 +2983,9 @@ INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('RO', (select (sysdate -
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 INSERT INTO FileType(Type, CreationDate) VALUES ('PIXDMP', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('LUMI-VDM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('LUMI-SA', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('LUMI', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 
 INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 

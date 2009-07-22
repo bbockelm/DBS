@@ -2071,6 +2071,9 @@ INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTA
 INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;
 INSERT INTO FileType(Type, CreationDate) VALUES ('STREAMER', UNIX_TIMESTAMP()) ;
 INSERT INTO FileType(Type, CreationDate) VALUES ('PIXDMP', UNIX_TIMESTAMP()) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('LUMI', UNIX_TIMESTAMP()) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('LUMI-SA', UNIX_TIMESTAMP()) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('LUMI-VDM', UNIX_TIMESTAMP()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP());
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', UNIX_TIMESTAMP()), ('data',  UNIX_TIMESTAMP()), ('raw', UNIX_TIMESTAMP()) , ('mc', UNIX_TIMESTAMP()), ('cosmic', UNIX_TIMESTAMP()), ('align', UNIX_TIMESTAMP()), ('calib', UNIX_TIMESTAMP());
 
