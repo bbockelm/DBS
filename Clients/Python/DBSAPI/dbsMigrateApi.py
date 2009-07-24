@@ -79,9 +79,9 @@ class DbsMigrateApi:
 							if(aPath not in self.allPaths):
 								pathList.append(aPath)
 								self.allPaths.append(aPath)
-							else:
-								pathList.append(aPath)
-								self.allPaths.append(aPath)
+						else:
+							pathList.append(aPath)
+							self.allPaths.append(aPath)
 
 		print "parents %s " %pathList				
 		return pathList
@@ -132,7 +132,7 @@ class DbsMigrateApi:
 		for aDataset in pathList:
 			#print 'checking ', aDataset
 			found = False
-			parentsOfDataset = self.getParentPathList(self.apiSrc, aDataset)
+			parentsOfDataset = self.getParentPathList(self.apiSrc, aDataset, False)
 			for aParentOfDataset in parentsOfDataset:
 				#print 'aParentOfDataset ' , aParentOfDataset
 				if aParentOfDataset in pathList: 
