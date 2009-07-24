@@ -55,7 +55,7 @@ class DbsMigrateApi:
 		print "parents %s " %pathList				
 		return pathList
 	"""
-	def getParentPathList(self, api, path):
+	def getParentPathList(self, api, path, ignoreDuplicate = True):
 		print 'getting parents for %s' %path
 		self.allPaths.append(path)
 		pathList = []
@@ -70,12 +70,19 @@ class DbsMigrateApi:
 						for proc in api.listProcessedDatasets(patternPrim = \
 								dataset['PrimaryDataset']['Name'],  patternProc = dataset['Name']):
                                         		for aPath in proc['PathList']:
-                                                		if(aPath not in self.allPaths):
-                                                        		pathList.append(aPath)
+                                                		if(ignoreDuplicate) :
+									if(aPath not in self.allPaths):
+        	                                                		pathList.append(aPath)
+								else : pathList.append(aPath)
 					else: 
-						if(aPath not in self.allPaths):
-							pathList.append(aPath)
-							self.allPaths.append(aPath)
+						if(ignoreDuplicate) :
+							if(aPath not in self.allPaths):
+								pathList.append(aPath)
+								self.allPaths.append(aPath)
+							else:
+								pathList.append(aPath)
+								self.allPaths.append(aPath)
+
 		print "parents %s " %pathList				
 		return pathList
 
@@ -116,13 +123,46 @@ class DbsMigrateApi:
 				 #if aBlock['LastModificationDate'] != blockToCheck['LastModificationDate']: return False
 				 return True
 		return False
-		
+	
+
+	def sortParentPathList(self, pathList):
+		#print 'passed in pathList ', pathList
+		finalList = []
+		tmpList = []
+		for aDataset in pathList:
+			#print 'checking ', aDataset
+			found = False
+			parentsOfDataset = self.getParentPathList(self.apiSrc, aDataset)
+			for aParentOfDataset in parentsOfDataset:
+				#print 'aParentOfDataset ' , aParentOfDataset
+				if aParentOfDataset in pathList: 
+					if aParentOfDataset not in finalList : finalList.append(aParentOfDataset)
+					#print 'FOUND ' 
+					found = True
+			if not found: 
+				if aDataset not in finalList : finalList.append(aDataset)
+			else:
+				if aDataset not in tmpList : tmpList.append(aDataset)
+
+		for tmpDataset in tmpList:
+			if tmpDataset not in finalList : finalList.append(tmpDataset)
+		#print 'before retuning ', finalList
+
+		return finalList
+
+
+
 	def migratePath(self, path):
 		
 		#Get the parents of the path
 		self.checkDatasetStatus(path)
 		datasets = self.getParentPathList(self.apiSrc, path)
 		if datasets not in [[], None] :
+			print 'Sorting the parents because they themselves can be parents of each other'
+			tmpDatasets = self.sortParentPathList(datasets)
+			datasets = tmpDatasets[:]
+			#print 'SORTED LIST ', datasets
+			#return
 			for dataset in datasets:
 				#Does the parent exist in dst DBS
 				if not self.doesPathExist(self.apiDst, dataset):
@@ -407,8 +447,29 @@ class DbsMigrateApi:
 			return line
 		else:
 			return ""
-		
+
+
+
 """
+from dbsApi import DbsApi
+def makeAPI(url):
+                #args = {}
+                #args['url'] = url
+                args = {}
+                if url.startswith('http'):
+                        args['url'] = url
+                        args['mode'] = 'POST'
+
+                return DbsApi(args)
+
+apiSrc = makeAPI('http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet')
+apiDst  = makeAPI('http://cmssrv48.fnal.gov:8383/DBS/servlet/DBSServlet')
+myList = ['/Cosmics/Commissioning08_CRAFT_ALL_V9_225-v2/RECO', '/Cosmics/Commissioning08-v1/RAW'] 
+#myList = ['/Cosmics/Commissioning08_CRAFT_ALL_V9_225-v2/RECO'] 
+api = DbsMigrateApi(apiSrc, apiDst)
+myList = api.sortParentPathList(myList)
+print myList
+		
 usage = "\n****************************************************************" + \
 	"\npython dbsMigrateRecursive.py source_url targert_url datasetPath blockName" + \
 	"\nIf you do not supply this op parameter then the default is assumed which is both." + \
