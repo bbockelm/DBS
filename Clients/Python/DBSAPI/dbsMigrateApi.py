@@ -359,15 +359,15 @@ class DbsMigrateApi:
 		#self.migrateBlockBasic(path, blockName)
 		
 		
-	def getDatasetStatus(self, path):
+	def getDatasetStatus(self, api, path):
 		tokens = path.split('/')
-		datasets = self.apiSrc.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2], patternDT = tokens[3])
+		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2], patternDT = tokens[3])
 		for aDataset in datasets:
 			return aDataset['Status']
 		
 	
-	def isDatasetStatusRO(self, path):
-		if self.getDatasetStatus(path) == "RO":
+	def isDatasetStatusRO(self, api, path):
+		if self.getDatasetStatus(api, path) == "RO":
 			return True
 		else:
 			return False
@@ -419,9 +419,13 @@ class DbsMigrateApi:
 		self.apiDst.updateProcDSStatus(path, "RO")
 	
 	def checkDatasetStatus(self, path):
-		if self.isDatasetStatusRO(path):
-			 raise DbsBadRequest (args = "Read Only dataset " + path + " CANNOT be Migrated.", code = 1222)
-	
+		if self.isDatasetStatusRO(self.apiSrc, path):
+			raise DbsBadRequest (args = "Read Only dataset " + path + " CANNOT be Migrated.", code = 1222)
+
+                # Check the dataset status in Dst first, if it exists and if its status is RO, then we cannot migrate it
+                if self.doesPathExistNoForce(self.apiDst, path):
+                        if self.isDatasetStatusRO(self.apiDst, path):
+                                raise DbsBadRequest (args = "Dataset " + path + " already exists at destination as a Read Only dataset it CANNOT be Re-Migrated.", code = 1225)
 
 	def checkInstances(self, srcInstanceName, dstInstanceName):
 		if dstInstanceName == "LOCAL" and srcInstanceName == "LOCAL" :
