@@ -66,10 +66,12 @@ class testDBS(unittest.TestCase):
         """
         set up DAS core module
         """
-        self.url = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+        self.url = "http://vocmsvm05.cern.ch:8880/cms_dbs_int_global_writer/servlet/DBSServlet"
+        self.url = "http://vocmsvm05.cern.ch:8880/CMS_DBS/servlet/DBSServlet"
         self.ver = 'DBS_2_0_6'
-        self.url = os.environ['DBS_TEST_URL']
-        self.ver = os.environ['DBS_TEST_VER']
+	
+        #self.url = os.environ['DBS_TEST_URL']
+        #self.ver = os.environ['DBS_TEST_VER']
         self.params = {'apiversion':self.ver,
                        'api':'executeSummary','begin':'0','end':'1'}
 
@@ -120,6 +122,7 @@ class testDBS(unittest.TestCase):
         params['query'] = query
         params['api'] = 'executeQuery'
         result = call(self.url, params, check=True)
+
         dbs_query = []
         for item in parseDBSoutput(result):
             for key, val in item:
@@ -355,6 +358,7 @@ class testDBS(unittest.TestCase):
         params['query'] = query
         params['api'] = 'executeQuery'
         result = call(self.url, params, check=True)
+
         dbs_query = []
         for item in parseDBSoutput(result):
             itemlist = []
@@ -363,11 +367,12 @@ class testDBS(unittest.TestCase):
             dbs_query.append(itemlist)
 
         # call executeSummary
-        query ="find dataset where " + cond
-        query ="find dataset where dataset like *CRUZET4*"
+        query ="find dataset where " + "dataset like * order by dataset asc"
+        ###########query ="find dataset where dataset like *CRUZET4*"
         params['query'] = query
         params['api'] = 'executeSummary'
         params['sortKey'] = 'Path'
+        #params['sortOrder'] = 'desc'
         params['sortOrder'] = 'desc'
         result = call(self.url, params, check=True)
         dbs_summary = []
@@ -376,7 +381,7 @@ class testDBS(unittest.TestCase):
             for key, val in item[:4]: # we take first 4 elements see above
                 itemlist.append(val)
             dbs_summary.append(itemlist)
-        self.assertEqual(dbs_query, dbs_summary)
+        self.assertEqual(str(dbs_query), str(dbs_summary))
 
 #
 # main
