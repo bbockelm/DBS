@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $
- $Id: DBSApiViewsLogic.java,v 1.5 2009/06/10 12:47:50 valya Exp $
+ $Revision: 1.7 $
+ $Id: DBSApiViewsLogic.java,v 1.7 2009/06/11 15:34:33 valya Exp $
  Author: Valentin Kuznetsov
  **/
 
@@ -132,11 +132,14 @@ public class DBSApiViewsLogic extends DBSApiLogic {
         // Step 1, call executeQuery to get SQL for userQuery
         ArrayList objList = executeQuery(conn, out, userQuery, begin, end, false);
         String finalQuery = (String)objList.get(1);
+
         List<String> bindValues = (List<String>)objList.get(2);
         List<Integer> bindIntValues = (List<Integer>)objList.get(3);
+
         // Step 2, execute SQL to get results
         PreparedStatement ps = 
                 DBSSql.getQuery(conn, finalQuery, bindValues, bindIntValues);
+
         List<String> resList = new ArrayList();
         ResultSet rs =  null;
         try {
@@ -194,6 +197,11 @@ public class DBSApiViewsLogic extends DBSApiLogic {
             getSummary(conn, out, view, lbound, rbound, key, resList, sortKey, sortOrder);
             out.write( "<results>\n" );
             if  (!resList.isEmpty()) {
+
+		//AA-07/30/2009, cannot go abve the limit of rows returned by database
+		//even if user specifies a ridiculously large right bound
+		if (resList.size() < rbound) rbound=resList.size();
+
                 for(int i=lbound;i<rbound;i++) {
                     out.write( "<row>\n<"+skey+">"+resList.get(i)+"</"+skey+">\n"+"</row>\n" );
                 }
