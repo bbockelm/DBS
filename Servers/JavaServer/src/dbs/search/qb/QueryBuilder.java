@@ -148,6 +148,7 @@ public class QueryBuilder {
 			|| isInList(kws, "sum(block.size)")
 			|| isInList(kws, "avg(block.size)")
 			|| isInList(kws, "sum(block.numfiles)")
+			|| isInList(kws, "sum(file.numevents)")
 			){
 		    query = "SELECT \n\t";
                 }
