@@ -1,8 +1,8 @@
 #!/bin/bash
 
 LOGFILE="cron_"`hostname -s`"_gmf.log"
-
-cd /home/cmsdbs/GridmapAuthorization
+APP_DIR=/home/cmsdbs/src/GridMap/GridmapAuthorization
+cd APP_DIR
 
 source ./setup.sh
 #MAPFILES=("gridmapfile_PRODG_writer" "gridmapfile_PRODL_writer" "gridmapfile_ANALYSIS_writer" "gridmapfile_PRODG_admin" "gridmapfile_PRODL_admin" "gridmapfile_ANALYSIS_admin" "gridmapfile_T0_writer" "gridmapfile_T0_admin")
@@ -25,7 +25,7 @@ if [ -s /tmp/${MAPFILE} ] ; then
         mv /home/cmsdbs/certs/${MAPFILE}.new /home/cmsdbs/certs/${MAPFILE} 
         chmod 400 /home/cmsdbs/certs/${MAPFILE} 
         DPOSTFIX=`date +%Y_%m_%d_%H:%M`
-        cp /home/cmsdbs/certs/${MAPFILE}  /home/cmsdbs/GridmapAuthorization/archive/${MAPFILE}.$DPOSTFIX
+        cp /home/cmsdbs/certs/${MAPFILE}  $APP_DIR/archive/${MAPFILE}.$DPOSTFIX
 else
         #mail -s `hostname`": Gridmafile generation failed" cms-dbs-support@cern.ch < ./${LOGFILE}
         #use sendmail to set a different "From":
@@ -49,7 +49,7 @@ do
 	        mv /home/cmsdbs/certs/${MAPFILES[index]}.new /home/cmsdbs/certs/${MAPFILES[index]} 
 	        chmod 400 /home/cmsdbs/certs/${MAPFILES[index]} 
 	        DPOSTFIX=`date +%Y_%m_%d_%H:%M`
-	        cp /home/cmsdbs/certs/${MAPFILES[index]}  /home/cmsdbs/GridmapAuthorization/archive/${MAPFILES[index]}.$DPOSTFIX
+	        cp /home/cmsdbs/certs/${MAPFILES[index]}  $APP_DIR/archive/${MAPFILES[index]}.$DPOSTFIX
 	else
         #mail -s `hostname`": Gridmafile generation failed" cms-dbs-support@cern.ch < ./${LOGFILE}
         #use sendmail to set a different "From":

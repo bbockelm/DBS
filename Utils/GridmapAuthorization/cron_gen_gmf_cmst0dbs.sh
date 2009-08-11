@@ -1,8 +1,8 @@
 #!/bin/bash
 
 LOGFILE="cron_"`hostname -s`"_gmf.log"
-
-cd /home/cmsdbs/GridmapAuthorization
+APP_DIR=/home/cmsdbs/src/GridMap/GridmapAuthorization
+cd $APP_DIR
 
 source ./setup.sh
 #MAPFILES=("gridmapfile_PRODG_writer" "gridmapfile_PRODL_writer" "gridmapfile_ANALYSIS_writer" "gridmapfile_PRODG_admin" "gridmapfile_PRODL_admin" "gridmapfile_ANALYSIS_admin" "gridmapfile_T0_writer" "gridmapfile_T0_admin")
@@ -27,7 +27,7 @@ do
 	        mv /home/cmsdbs/certs/${MAPFILES[i]}.new /home/cmsdbs/certs/${MAPFILES[i]} 
 	        chmod 400 /home/cmsdbs/certs/${MAPFILES[i]} 
 	        DPOSTFIX=`date +%Y_%m_%d_%H:%M`
-	        cp /home/cmsdbs/certs/${MAPFILES[i]}  /home/cmsdbs/GridmapAuthorization/archive/${MAPFILES[i]}.$DPOSTFIX
+	        cp /home/cmsdbs/certs/${MAPFILES[i]}  $APP_DIR/archive/${MAPFILES[i]}.$DPOSTFIX
 	else
         #mail -s `hostname`": Gridmafile generation failed" cms-dbs-support@cern.ch < ./${LOGFILE}
         #use sendmail to set a different "From":
