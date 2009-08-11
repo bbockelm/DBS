@@ -2,7 +2,7 @@
 
 LOGFILE="cron_"`hostname -s`"_gmf.log"
 APP_DIR=/home/cmsdbs/src/GridMap/GridmapAuthorization
-cd APP_DIR
+cd $APP_DIR
 
 source ./setup.sh
 #MAPFILES=("gridmapfile_PRODG_writer" "gridmapfile_PRODL_writer" "gridmapfile_ANALYSIS_writer" "gridmapfile_PRODG_admin" "gridmapfile_PRODL_admin" "gridmapfile_ANALYSIS_admin" "gridmapfile_T0_writer" "gridmapfile_T0_admin")
