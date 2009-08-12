@@ -38,8 +38,8 @@ else
         echo "Gridmapfile generation failed"
 fi
 
-MAPFILES=("gridmapfile_PRODL_writer" "gridmapfile_ANALYSIS_writer" "gridmapfile_PRODG_admin" "gridmapfile_PRODL_admin" "gridmapfile_ANALYSIS_admin" )
-for index in 0 1 2 3 4
+MAPFILES=("gridmapfile_PRODL_writer"  "gridmapfile_PRODG_admin" "gridmapfile_PRODL_admin" "gridmapfile_ANALYSIS_admin" )
+for index in 0 1 2 3 
 do 
 	if [ -s /tmp/${MAPFILES[index]} ] ; then
 	        rm -f ./${MAPFILES[index]} 
@@ -62,3 +62,27 @@ do
 	       	echo "Gridmapfile generation failed"
 	fi
 done
+
+MAPFILE="gridmapfile_ANALYSIS_writer"
+if [ -s /tmp/${MAPFILE} ] ; then
+        rm -f ./${MAPFILE}
+        mv /tmp/${MAPFILE}  .
+        echo "\"/DC=ch/DC=cern/OU=computers/CN=vocms39.cern.ch\" sekhri" >> ./${MAPFILE}
+        chmod 600 /home/cmsdbs/certs/${MAPFILE}
+        cp ./${MAPFILE}  /home/cmsdbs/certs/${MAPFILE}.new
+        mv /home/cmsdbs/certs/${MAPFILE}.new /home/cmsdbs/certs/${MAPFILE}
+        chmod 400 /home/cmsdbs/certs/${MAPFILE}
+        DPOSTFIX=`date +%Y_%m_%d_%H:%M`
+        cp /home/cmsdbs/certs/${MAPFILE}  $APP_DIR/archive/${MAPFILE}.$DPOSTFIX
+else
+        #mail -s `hostname`": Gridmafile generation failed" cms-dbs-support@cern.ch < ./${LOGFILE}
+        #use sendmail to set a different "From":
+        TO="cms-dbs-support@cern.ch"
+        (echo "From: cmsdbs `basename $0` <cmsdbs@mail.cern.ch>"
+        echo "To: ${TO}"
+        echo "Subject: `hostname`: ${MAPFILE}  generation failed"
+        echo
+        cat ${LOGFILE})|/usr/lib/sendmail  ${TO}
+        echo "Gridmapfile generation failed"
+fi
+
