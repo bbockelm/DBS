@@ -25,7 +25,7 @@ tmpFile=$PWD/mygridmap
 
 rm -rf $tmpFile
 gridmapfile="/tmp/gridmapfile_T0_writer"
-group="/cms/dbs/Role=dbs_writer, /cms/dbs/Role=dbs_admin"
+group="/cms/dbs/Role=dbs_writer,/cms/dbs/Role=dbs_admin"
 $JAVA_HOME/bin/java -classpath $CLASSPATH -Daxis.socketSecureFactory=org.glite.security.trustmanager.axis.AXISSocketFactory -DsslConfigFile=$AF -Daxis.ClientConfigFile=client-config.wsdd VO2GridMap $tmpFile $url $group
 mv $tmpFile $gridmapfile
 
