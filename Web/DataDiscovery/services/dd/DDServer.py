@@ -3997,9 +3997,9 @@ All LFNs in a block
         # on request of Si, #108501, add valid status for dataset
         if  userInput.find('find dataset where') != -1:
             if  userInput.find('dataset.status') == -1:
-                userInput += ' and dataset.status=VALID'
+                userInput += ' and dataset.status like VALID*'
         if  userInput.strip() == 'find dataset':
-            userInput += ' where dataset.status=VALID'
+            userInput += ' where dataset.status like VALID*'
 
         sortName = getArg(kwargs, 'sortName', '')
         sortOrder= getArg(kwargs, 'sortOrder', '')
