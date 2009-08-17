@@ -19,7 +19,11 @@ $dataset
 has the following list of $who:
 <table class="offset_left">
 #for dataset in $oList
+#if $dataset
 #set path=$urllib.quote($dataset)
+#else
+#set path=$dataset
+#end if
 <tr>
 <td align="left">
 <b>
