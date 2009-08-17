@@ -1980,6 +1980,12 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
+        if  int(maxRun) - int(minRun) > 100:
+            page  = self.genTopHTML(userMode=userMode)
+            page += "<p>You requested more then 100 runs. Such query takes too much"
+            page += " time in DBS to proceed. Please re-evaluate your request.</p>"
+            page += self.genBottomHTML()
+            return page
         _idx=int(_idx)
         pagerStep=int(pagerStep)
         t1=time.time()
