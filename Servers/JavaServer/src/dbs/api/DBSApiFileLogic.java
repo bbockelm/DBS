@@ -1,6 +1,6 @@
 /**
- $Revision: 1.135 $"
- $Id: DBSApiFileLogic.java,v 1.135 2009/06/10 16:46:06 sekhri Exp $"
+ $Revision: 1.137 $"
+ $Id: DBSApiFileLogic.java,v 1.137 2009/06/18 19:45:22 afaq Exp $"
  *
  */
 
@@ -1079,7 +1079,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		                                valueVec.add(cbUserID);
                 		                valueVec.add(lmbUserID);
 
-						tmpRunVector.add(runID);
+						if (!tmpRunVector.contains(runID)) tmpRunVector.add(runID);
 
 					} else {
 						//No Lumi
@@ -1089,7 +1089,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		                                lumiOnlyValueVec.add(cbUserID);
                 		                lumiOnlyValueVec.add(lmbUserID);
 
-						tmpRunVector.add(runID);
+						if (!tmpRunVector.contains(runID)) tmpRunVector.add(runID);
 					}
 					//AA conn.commit();
 					// Insert ProcDS-Run Map, if its already not there
