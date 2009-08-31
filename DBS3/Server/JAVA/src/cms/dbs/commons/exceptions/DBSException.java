@@ -1,11 +1,13 @@
 /**
+ * 
+ $Revision: $"
+ $Id: $"
  *
- */
+ * A thin wrapper around <code>java.lang.Exception</code> 
+*/
+
 package cms.dbs.commons.exceptions;
 
-/**
-* A thin wrapper around <code>java.lang.Exception</code> 
-*/
 public class DBSException extends Exception{
 	private String detail;
 
