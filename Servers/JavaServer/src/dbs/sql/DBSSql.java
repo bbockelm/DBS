@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.226 $"
- $Id: DBSSql.java,v 1.226 2009/07/02 16:53:17 afaq Exp $"
+ $Revision: 1.227 $"
+ $Id: DBSSql.java,v 1.227 2009/07/16 14:40:30 yuyi Exp $"
  *
  */
 package dbs.sql;
@@ -341,7 +341,7 @@ public class DBSSql {
 
                 //HistoryTimeStamp  MUSt be provided by Trigger later ON.
                 String sql = "INSERT INTO "+owner()+"IntQualityHistory \n "+
-                                " (HistoryOf, Run,  Lumi, SubSystem, IntDQValue, \n" +
+                                " (HistoryOf, Datatset, Run,  Lumi, SubSystem, IntDQValue, \n" +
                                 " CreationDate, CreatedBy, LastModificationDate, LastModifiedBy, \n"+
                                 " HistoryTimeStamp) select ID, Dataset, Run, Lumi, SubSystem, IntDQValue, CreationDate, \n" +
                                 " CreatedBy, LastModificationDate, LastModifiedBy, " +
