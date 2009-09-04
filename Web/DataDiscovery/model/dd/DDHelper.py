@@ -410,8 +410,10 @@ class DDHelper(DDLogger):
             cBy   = parseCreatedBy(cBy)
             mBy   = parseCreatedBy(mBy)
 
-            if  not nEvts or nEvts == "0":
-                nEvts = fNevts
+            # http://savannah.cern.ch/bugs/?55304
+#            if  not nEvts or nEvts == "0":
+#                nEvts = fNevts
+            nEvts = fNevts
 
 #            query = 'find datatype, site where dataset = %s and run = %s' % (path, run)
 #            result= self.queryDBS(dbsInst, query)

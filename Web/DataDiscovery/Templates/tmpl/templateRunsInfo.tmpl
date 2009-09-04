@@ -63,7 +63,6 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 #set tstyle="padding:2px"
 <td style="$tstyle">Run</td>
 <td style="$tstyle">Type</td>
-<td style="$tstyle">Events</td>
 ###<td style="$tstyle">Lumi sec.</td>
 ###<td style="$tstyle">Total L</td>
 <td style="$tstyle">Store</td>
@@ -71,6 +70,7 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 <td style="$tstyle">End of run</td>
 #if not $admin
 <td style="$tstyle">dataset</td>
+<td style="$tstyle"># Events</td>
 <td style="$tstyle"># Files</td>
 <td style="$tstyle">Size</td>
 #end if
@@ -144,10 +144,10 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 #end if
 ###if _run_!=$run
 #if $dsType.lower()!='mc'
-<a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$run">
+<a href="https://cmswbm.web.cern.ch/cmswbm/cmsdb/servlet/RunSummary?RUN=$run&DB=cms_omds_lb">
 $run
 </a>
-<a href="http://cmsmon.cern.ch/cmsdb/servlet/DQMBrowser?RUN=$run">
+<a href="https://cmswbm.web.cern.ch/cmswbm/cmsdb/servlet/DQMBrowser?RUN=$run&DB=cms_omds_lb">
 DQM
 </a>
 #else
@@ -161,14 +161,6 @@ $run
 #end if
 ###if _run_!=$run
 $dsType 
-###end if
-</td>
-<td align="right" style="$tstyle">
-#if _run_==$run
-<hr class="dbs"/>
-#end if
-###if _run_!=$run
-$nEvts
 ###end if
 </td>
 ###<td align="right">$nLumis </td>
@@ -206,6 +198,14 @@ $eRun
 #set pathName="/"+$procDS[1:].replace("/","<br />/")
 $pathName
 </a>
+</td>
+<td align="right" style="$tstyle">
+#if _run_==$run
+<hr class="dbs"/>
+#end if
+###if _run_!=$run
+$nEvts
+###end if
 </td>
 <td align="right" style="$tstyle">
 #if _run_==$run
