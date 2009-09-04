@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.2 $"
+ $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
  *
  * Data Object from table : SITES
 */
@@ -20,6 +20,14 @@ public class Site extends JSONObject {
                 this.putOnce("SITE_NAME", (String) siteName );
         }
 
+	int getSiteID ( ) {
+		int siteID = null;
+               	if (!JSONObject.NULL.equals(this.get("SITE_ID"))) {
+                       	siteID = (Integer) this.get("SITE_ID");
+               	}
+                return siteID;
+        }
+	
 	String getSiteName ( ) {
 		String siteName = null;
                	if (!JSONObject.NULL.equals(this.get("SITE_NAME"))) {

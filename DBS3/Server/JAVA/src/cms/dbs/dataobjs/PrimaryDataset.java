@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.2 $"
+ $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
  *
  * Data Object from table : PRIMARY_DATASETS
 */
@@ -23,6 +23,38 @@ public class PrimaryDataset extends JSONObject {
                 this.putOnce("CREATE_BY", (String) createBy );
         }
 
+	int getPrimaryDSID ( ) {
+		int primaryDSID = null;
+               	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_ID"))) {
+                       	primaryDSID = (Integer) this.get("PRIMARY_DS_ID");
+               	}
+                return primaryDSID;
+        }
+	
+	String getPrimaryDSName ( ) {
+		String primaryDSName = null;
+               	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_NAME"))) {
+                       	primaryDSName = (String) this.get("PRIMARY_DS_NAME");
+               	}
+                return primaryDSName;
+        }
+	
+	int getPrimaryDSTypeID ( ) {
+		int primaryDSTypeID = null;
+               	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_TYPE_ID"))) {
+                       	primaryDSTypeID = (Integer) this.get("PRIMARY_DS_TYPE_ID");
+               	}
+                return primaryDSTypeID;
+        }
+	
+	int getCreationDate ( ) {
+		int creationDate = null;
+               	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
+                       	creationDate = (Integer) this.get("CREATION_DATE");
+               	}
+                return creationDate;
+        }
+	
 	String getCreateBy ( ) {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {

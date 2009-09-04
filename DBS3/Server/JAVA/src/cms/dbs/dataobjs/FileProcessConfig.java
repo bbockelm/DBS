@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.2 $"
+ $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
  *
  * Data Object from table : FILE_PROCESS_CONFIGS
 */
@@ -21,8 +21,24 @@ public class FileProcessConfig extends JSONObject {
                 this.putOnce("PROCESS_CONFIG_ID", (Integer) processConfigID );
         }
 
+	int getFileProcessConfigID ( ) {
+		int fileProcessConfigID = null;
+               	if (!JSONObject.NULL.equals(this.get("FILE_PROCESS_CONFIG_ID"))) {
+                       	fileProcessConfigID = (Integer) this.get("FILE_PROCESS_CONFIG_ID");
+               	}
+                return fileProcessConfigID;
+        }
+	
+	int getFileID ( ) {
+		int fileID = null;
+               	if (!JSONObject.NULL.equals(this.get("FILE_ID"))) {
+                       	fileID = (Integer) this.get("FILE_ID");
+               	}
+                return fileID;
+        }
+	
 	int getProcessConfigID ( ) {
-		Integer processConfigID = null;
+		int processConfigID = null;
                	if (!JSONObject.NULL.equals(this.get("PROCESS_CONFIG_ID"))) {
                        	processConfigID = (Integer) this.get("PROCESS_CONFIG_ID");
                	}

@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.2 $"
+ $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
  *
  * Data Object from table : PATH_TYPES
 */
@@ -20,6 +20,14 @@ public class PathType extends JSONObject {
                 this.putOnce("PATH_TYPE", (String) pathType );
         }
 
+	int getPathTypeID ( ) {
+		int pathTypeID = null;
+               	if (!JSONObject.NULL.equals(this.get("PATH_TYPE_ID"))) {
+                       	pathTypeID = (Integer) this.get("PATH_TYPE_ID");
+               	}
+                return pathTypeID;
+        }
+	
 	String getPathType ( ) {
 		String pathType = null;
                	if (!JSONObject.NULL.equals(this.get("PATH_TYPE"))) {

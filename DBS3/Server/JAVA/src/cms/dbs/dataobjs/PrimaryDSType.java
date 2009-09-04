@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.2 $"
+ $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
  *
  * Data Object from table : PRIMARY_DS_TYPES
 */
@@ -20,6 +20,14 @@ public class PrimaryDSType extends JSONObject {
                 this.putOnce("PRIMARY_DS_TYPE", (String) primaryDSType );
         }
 
+	int getPrimaryDSTypeID ( ) {
+		int primaryDSTypeID = null;
+               	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_TYPE_ID"))) {
+                       	primaryDSTypeID = (Integer) this.get("PRIMARY_DS_TYPE_ID");
+               	}
+                return primaryDSTypeID;
+        }
+	
 	String getPrimaryDSType ( ) {
 		String primaryDSType = null;
                	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_TYPE"))) {
