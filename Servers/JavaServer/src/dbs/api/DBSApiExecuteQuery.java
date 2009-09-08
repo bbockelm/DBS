@@ -92,17 +92,28 @@ public class DBSApiExecuteQuery {
                                             String btag = "\n  <"  + name + ">";
                                             String etag = "</" + name + ">";
                                             String res  = "";
+
+					    if(name.equals("config.content")) res =  StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )));
+						else res = ((String) get(rs, colNames[i] ));
+
+					/** 
+						// We do not need to convert the date into string format, 
+						// that should be done on client side (if at all required -AA 09/08/2009
+	
                                             if (colNames[i].toLowerCase().indexOf("date") != -1) {
                                                 res = (String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)); 
                                             } else {
 						if(name.equals("config.content")) res =  StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )));
                                                 else res = ((String) get(rs, colNames[i] ));
                                             }
+					*/					
+
                                             result += btag + res + etag;
                                     }
                                 }
                                 out.write("\n<row>");
                                 out.write(result);
+
                                 out.write("\n</row>");
 
 /*
@@ -147,11 +158,17 @@ public class DBSApiExecuteQuery {
 				out.write(((String) "<result "));
 				for (int i = 0; i != numberOfColumns; ++i) {
 					out.write(((String) colNames[i] + "='"));
+					if(colNames[i].equals("QueryableParameterSet_Content")) out.write( StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )) +"' "));
+					else out.write(((String) get(rs, colNames[i] ) +"' "));
+
+					/**
 					if(colNames[i].toLowerCase().indexOf("date") != -1) {
 						out.write(((String)DateUtil.epoch2DateStr(String.valueOf(Long.valueOf(get(rs, colNames[i]))*1000)) + "' "));
 										}
 					else if(colNames[i].equals("QueryableParameterSet_Content")) out.write( StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )) +"' "));
 						else out.write(((String) get(rs, colNames[i] ) +"' "));
+					*/
+
 				}
 				out.write(((String) "/>\n"));
 			}
