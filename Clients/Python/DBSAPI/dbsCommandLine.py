@@ -2002,9 +2002,14 @@ class ApiDispatcher:
 		self.title=""
 		self.printme=""
 		self.first_time_result=1	
+		self.do_date=0
 
            def startElement(self, name, attrs):
 		#print name
+		if name.find('moddate') != -1 :
+			self.do_date=1 
+		if name.find('createdate') != -1 :
+			self.do_date=1
 		if name == 'sql':
 			self.next_is_query=1
 		
@@ -2055,7 +2060,12 @@ class ApiDispatcher:
 			if self.start_print:
 				#cout += str((escape(s)).strip())
 				#print (escape(s)).strip()
-				self.printme+=str((escape(s)).strip())
+				if self.do_date:
+					self.printme+=time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long((escape(s)).strip())))
+					self.do_date=0
+				else:
+					self.printme+=str((escape(s)).strip())
+					
 
 	   def endElement(self, name):
 		#print name
@@ -2074,6 +2084,7 @@ class ApiDispatcher:
 					print "-------------------------------------------------------"
 					print self.title+"\n"
 				self.first_time_result=0
+			print "%s" % self.printme.strip()
 			print "%s" % self.printme.strip()
                         self.printme=""
 			self.start_print=0
