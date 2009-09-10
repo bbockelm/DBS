@@ -1,6 +1,6 @@
 /**
- $Revision: 1.168 $"
- $Id: DBSApi.java,v 1.168 2009/06/18 19:45:22 afaq Exp $"
+ $Revision: 1.169 $"
+ $Id: DBSApi.java,v 1.169 2009/07/16 14:38:36 yuyi Exp $"
  *
 */
 
@@ -781,7 +781,7 @@ public class DBSApi {
 						get(table, "tag", false)
 						);
 			} else if (apiStr.equals("executeQuery")) {
-				System.out.println("executeQuery invoked by " + get(dbsUser, "user_dn", false));
+				//System.out.println("executeQuery invoked by " + get(dbsUser, "user_dn", false));
 				String upperStr = get(table, "upper", false);
 				boolean upper = true;
 				if(!isNull(upperStr)) {
@@ -796,7 +796,7 @@ public class DBSApi {
 									  apiVersion
 									  );
 			} else if (apiStr.equals("countQuery")) {
-				System.out.println("countQuery invoked by " + get(dbsUser, "user_dn", false));
+				//System.out.println("countQuery invoked by " + get(dbsUser, "user_dn", false));
 				String upperStr = get(table, "upper", false);
 				boolean upper = true;
 				if(!isNull(upperStr)) {
