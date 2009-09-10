@@ -64,7 +64,7 @@ public class SiteClient {
 					StringTokenizer st = new StringTokenizer(innerJobj.getString(aKey), ",");
 					for(int i=0; i <= st.countTokens() ; ++i) {
 						String token = st.nextToken();
-						System.out.println(token);
+						//System.out.println(token);
 						toReturn.add(token);
 						//System.out.println(innerJobj.getString(aKey));
 					}
@@ -78,7 +78,7 @@ public class SiteClient {
 		String instanceUrl = this.url + "?name=" + siteName;
 		//System.out.println("URL is " + instanceUrl);
 		String response = hu.readUrl(instanceUrl);
-		System.out.println(response);
+		//System.out.println(response);
 		List<String> toReturn = parse(response, "name");
 		toReturn.add(siteName);
 		return toReturn;
