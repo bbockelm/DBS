@@ -1,5 +1,5 @@
 /***
- * $Id$
+ * $Id: PrimaryDatasetQO.java,v 1.1 2009/09/09 15:52:41 yuyi Exp $
  *
  * This is the class for primary dataset query objects.
  * @author Y. Guo
@@ -11,7 +11,8 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import cms.dbs.commons.db;
-import cms.dbs.dataobjs;
+import cms.dbs.dataobjs.PrimaryDataset;
+import cms.dbs.dataobjs.PrimaryDSType;
 
 public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
 
@@ -41,7 +42,7 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
                 String typeName = rs.getString("PT.PRIMARY_DS_TYPE");
                 int dt = rs.getInt("P.CREATION_DATE");
                 String by = rs.getString("P.CREATE_BY");
-                restlt.put(PrimaryDataset(pID, name, typeID, dt,by));
+                restlt.put(PrimaryDataset(pID, name, PrimaryDSType(typeID, typeName), dt,by));
             } finally {
                if (rs != null) rs.close();
                if (ps != null) ps.close();
@@ -81,7 +82,7 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
 		String typeName = rs.getString("PT.PRIMARY_DS_TYPE");
 		int dt = rs.getInt("P.CREATION_DATE");
 		String by = rs.getString("P.CREATE_BY");
-		restlt.put(PrimaryDataset(pID, name, typeID, dt,by));
+		restlt.put(PrimaryDataset(pID, name, PrimaryDSType(typeID, typeName), dt,by));
 	    } finally {
 		if (rs != null) rs.close();
 		if (ps != null) ps.close();
