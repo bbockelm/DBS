@@ -142,7 +142,9 @@ public class QueryBuilder {
 		String query = "SELECT DISTINCT \n\t";
                 // If requested CLOB data, such as QueryableParameterSet.Content
                 // we should not either converted it to string data type
-                if (isInList(kws, "config.content") 
+
+		//WE Do need DISTINCT (but we need to build the query in a very different way)
+                /**if (isInList(kws, "config.content") 
 			|| isInList(kws, "sum(file.size)") 
 			|| isInList(kws, "avg(file.size)") 
 			|| isInList(kws, "sum(block.size)")
@@ -151,7 +153,8 @@ public class QueryBuilder {
 			|| isInList(kws, "sum(file.numevents)")
 			){
 		    query = "SELECT \n\t";
-                }
+                }*/
+
 		for (int i =0 ; i!= kws.size(); ++i) {
 			++iter;	checkMax(iter);
 			String aKw = (String)kws.get(i);
@@ -170,12 +173,18 @@ public class QueryBuilder {
 				//System.out.println("entity " + entity);
 				String realName = u.getMappedRealName(entity);
 				allKws = addUniqueInList(allKws, realName);
-				//if(!sumQuery.startsWith("SELECT")) sumQuery += " SELECT ";
 				if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
 				sumQuery += "SUM(" + asKeyword + ") AS SUM_" + asKeyword + " ";
-				//query += "SUM(" + km.getMappedValue(keyword, true) + ") AS SUM_" + keyword.replace('.', '_') ;
+
+				//AA-09/11/09--add the UQ of the table as DISTINCT select
+				// otherwise files with same size gets eliminated from selection (file.size is just an example)
+				String uniqueKey = realName+"."+u.getDefaultFromVertex(u.getVertex(realName));
+				String uqAsKeyword = uniqueKey.replace('.', '_');
+				query += uniqueKey + " AS c_" + uqAsKeyword + " ,";
+
 				String tmpKw = km.getMappedValue(keyword, true);
 				query +=  tmpKw + " AS " + asKeyword ;
+
 				if(iLumi) groupByQuery += tmpKw + ",";
 
 			} else if(aKw.toLowerCase().startsWith("max")
@@ -184,7 +193,6 @@ public class QueryBuilder {
 				|| aKw.toLowerCase().startsWith("count")) {
 				aKw = aKw.toLowerCase();
 				String functToUse = "";
-				System.out.println("line 2");
 				if(aKw.startsWith("max")) functToUse = "MAX";
 				if(aKw.startsWith("min")) functToUse = "MIN";
 				if(aKw.startsWith("avg")) functToUse = "AVG";
@@ -250,7 +258,6 @@ public class QueryBuilder {
 				//if(Util.isSame(real, "LumiSection")) allKws = addUniqueInList(allKws, "Runs");
 				if(count == 1) {
 					//Get default from vertex
-			//System.out.println("line 5");
 					checkMax(iter);
 					String tmp =  makeQueryFromDefaults(vFirst);	
 					query += tmp;
@@ -266,7 +273,6 @@ public class QueryBuilder {
 						
 				} else {
 
-			//System.out.println("line 6");
 					checkMax(iter);
 					boolean addQuery = true;
 					String token2 = st.nextToken();
@@ -402,7 +408,6 @@ public class QueryBuilder {
 						boolean dontJoin = false;
 						if(fileChildAdded) dontJoin = true;
 						fileChildAdded = true;
-						//System.out.println("childJoinQuery " + childJoinQuery+ "  dontJoin " + dontJoin);
 						if(!dontJoin) childJoinQuery += handleChild(tmpTableName, "Files", "FileParentage");
 						String fqName = tmpTableName + ".LogicalFileName";
 						query += fqName + makeAs(fqName);			
@@ -929,6 +934,10 @@ public class QueryBuilder {
 		}
 		
 		if(sumQuery.length() != 0) {
+
+			//System.out.println("\n:sumQuery:::::::::::" + sumQuery);
+			//System.out.println("\n:query:::::::::::" + query);
+
 			query = sumQuery + " FROM (" +  query + ") sumtable ";
 			if(sumGroupByQuery.length() > 0) {
 				sumGroupByQuery = sumGroupByQuery.substring(0, sumGroupByQuery.length() - 1);// to get rid of extra comma
@@ -1318,7 +1327,7 @@ public class QueryBuilder {
                         }
 			lastObj = obj;
 		}
-		System.out.println("QUERY is " + dsQueryForDQ.toString());
+		//System.out.println("QUERY is " + dsQueryForDQ.toString());
 		//for (String s: tmpBindValues) System.out.println("BValue " + s);
 
 		if(!found) throw new Exception("dataset is required when using dq queries. Please provide a dataset name in the query. Example query would be : find run where dq=blahblah and dataset = /prim/proc/tier");
