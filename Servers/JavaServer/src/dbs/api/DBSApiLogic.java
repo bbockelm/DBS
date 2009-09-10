@@ -1,6 +1,6 @@
 /**
- $Revision: 1.171 $"
- $Id: DBSApiLogic.java,v 1.171 2009/06/25 14:38:32 sekhri Exp $"
+ $Revision: 1.172 $"
+ $Id: DBSApiLogic.java,v 1.172 2009/07/22 14:54:07 afaq Exp $"
  *
  */
 
@@ -217,10 +217,10 @@ public class DBSApiLogic {
 		String tokens[] = userQuery.split(" ");
 		if (tokens.length == 1) userQuery = "find dataset where dataset like %" + userQuery + "%";
 		Date startDate = new Date();
-		System.out.println("Start Time :" + startDate.toString());
-		//System.out.println("____________________________________ User Query ___________________________________");
-		System.out.println("\t" + userQuery);
-		//System.out.println("___________________________________________________________________________________");
+		DBSUtil.writeQLLog("Start Time :" + startDate.toString());
+		DBSUtil.writeQLLog("____________________________________ User Query ___________________________________");
+		DBSUtil.writeQLLog("\t" + userQuery);
+		DBSUtil.writeQLLog("___________________________________________________________________________________");
 		ArrayList objList = executeQuery(conn, out, userQuery, begin, end, upper);
 		String finalQuery = (String)objList.get(1);
 		DBSUtil.writeQLLog("_________________________________ Generated Query _________________________________");
@@ -318,8 +318,8 @@ public class DBSApiLogic {
 		} finally {
 			if (querier != null) querier.close();
 			Date endDate = new Date();
-			System.out.println("End Time :" + endDate.toString());
-			System.out.println("Total execution time " + ((endDate.getTime() - startDate.getTime())/1000) + " Seconds \n");
+			DBSUtil.writeQLLog("End Time :" + endDate.toString());
+			DBSUtil.writeQLLog("Total execution time " + ((endDate.getTime() - startDate.getTime())/1000) + " Seconds \n");
 			//System.out.println("_______________________________EXECUTE QUERY DONE _________________________");
 		}
 
