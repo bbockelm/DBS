@@ -1,3 +1,17 @@
+/**
+ * $Id$
+ *
+ * A class that can create the database connections <code>java.sql.Connection</code> managed either 
+ * by tomcat connection pooling or external source. It also has method to create a prepared statements 
+ * <code>java.sql.PreparedStatement</code> that can be used to execute SQL queries. 
+ * For connection pooling only one object of this class can be made  and thus it works as a singleton. 
+ * The connection pooling that this class use is standard pooling provided by apache tomcat. 
+ * For externally managing the connections a static method getConnection can be called which 
+ * create a new connection every time it is called. 
+ *
+ **/
+
+
 package cms.dbs.commons.db;
 
 import java.sql.Connection;
@@ -11,16 +25,6 @@ import javax.naming.InitialContext;
 
 import cms.dbs.commons.db.PreparedStatementWrapper;
 
-/**
- * A class that can create the database connections <code>java.sql.Connection</code> managed either 
- * by tomcat connection pooling or external source. It also has method to create a prepared statements 
- * <code>java.sql.PreparedStatement</code> that can be used to execute SQL queries. 
- * For connection pooling only one object of this class can be made  and thus it works as a singleton. 
- * The connection pooling that this class use is standard pooling provided by apache tomcat. 
- * For externally managing the connections a static method getConnection can be called which 
- * create a new connection every time it is called. 
- *
- **/
 public class DBManagement {
 	private static DBManagement instance = null;
 	private static Boolean mutex = new Boolean(true);
