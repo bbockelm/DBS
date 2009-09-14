@@ -1,10 +1,10 @@
 /***
- * $Id: PrimaryDatasetQO.java,v 1.1 2009/09/09 15:52:41 yuyi Exp $
+ * $Id: PrimaryDatasetQO.java,v 1.2 2009/09/10 13:45:04 yuyi Exp $
  *
  * This is the class for primary dataset query objects.
  * @author Y. Guo
  ***/
-package cms.dbs.queryobjs.impl.objects;
+package cms.dbs.queryobjs;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -62,9 +62,17 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
 	    "JOIN " + schemaOwner + "PRIMARY_DS_TYPES PT ON " +
 	    " PT.PRIMARY_DS_TYPE_ID=P.PRIMARY_DS_TYPE_ID WHERE ";
 	for (int i=0; i<condSize; i++){
-	    JSONObject c = cond.getJSONObject(i);
-	    if (i=0) sql += " P.PRIMARY_DS_NAME = ?";
-	    else sql +=  " or P.PRIMARY_DS_NAME = ?";
+	    PrimaryDataset c = (PrimaryDataset)cond.getJSONObject(i);
+	    if (i=0){
+	        if ((c.getPrimaryDSName).indexOf('%') != -1 || (c.getPrimaryDSName).indexOf('%') != -1)
+		sql += " P.PRIMARY_DS_NAME like ?";
+		else  sql += " P.PRIMARY_DS_NAME = ?";
+	    }
+	    else{
+		if ((c.getPrimaryDSName).indexOf('%') != -1 || (c.getPrimaryDSName).indexOf('%') != -1)
+		sql +=  " or P.PRIMARY_DS_NAME like ?";
+		else sql +=  " or P.PRIMARY_DS_NAME = ?";
+	    }
 	}
         PreparedStatement ps = null;
 	ResultSet rs = null;
