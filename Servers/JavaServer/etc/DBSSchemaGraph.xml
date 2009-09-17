@@ -95,7 +95,7 @@
 
 	<edge directed="false"	wt="1"	source="ProcDSTier" 		target="DataTier" 		relation="ProcDSTier.DataTier = DataTier.ID"/>
 	
-	<edge directed="false"	wt="1"	source="ProcDSRuns" 		target="Runs"	 		relation="ProcDSRuns.Run = Runs.ID"/>
+	<edge directed="false"	wt="1.5"	source="ProcDSRuns" 		target="Runs"	 		relation="ProcDSRuns.Run = Runs.ID"/>
 	<edge directed="false"	wt="1"	source="Runs" 			target="LumiSection"		relation="Runs.ID = LumiSection.RunNumber"/>
 	<edge directed="false"	wt="1"	source="Runs" 			target="FileRunLumi"		relation="Runs.ID = FileRunLumi.Run"/>
 	<edge directed="false"	wt="1"	source="LumiSection" 		target="FileRunLumi"		relation="LumiSection.ID = FileRunLumi.Lumi"/>
