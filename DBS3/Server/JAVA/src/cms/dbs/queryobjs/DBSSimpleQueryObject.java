@@ -1,19 +1,17 @@
 /***
- * $Id$
+ * $Id: DBSSimpleQueryObject.java,v 1.1 2009/09/09 15:52:41 yuyi Exp $
  *
  * This is the super class for simple query objects. All other simple query object will inherent from this class.
  * The insert, update, select, delete and bulk insert funtions will needed to be implemented in the sub classes.
  * @author Y. Guo
  ***/
-package cms.dbs.queryobjs.impl.objects;
+package cms.dbs.queryobjs;
 
 import java.sql.PreparedStatement;
 import org.json.JSONObject;
 import org.json.JSONArray;
-
-import cms.dbs.commons.db;
-import cms.dbs.commons.exceptions;
-import cms.dbs.commons.utils;
+import cms.dbs.commons.exceptions.DBSException;
+import cms.dbs.commons.utils.DBSSrvcConfig;
 
 public class DBSSimpleQueryObject{
     protected JSONArray result = null;
@@ -22,24 +20,23 @@ public class DBSSimpleQueryObject{
     protected PreparedStatement ps = null;
     protected String schemaOwner = null;
      
-    DBSSimpleQueryObject(JSONArray cond){
+    DBSSimpleQueryObject(JSONArray cond) throws Exception{
 	this.cond = cond;
 	try {
             DBSSrvcConfig config = DBSSrvcConfig.getInstance();
             this.schemaOwner = config.getSchemaOwner();
-        } catch (dbs.DBSException ex) {
-            throw new SQLException("Failed to setup Schema Owner Name");
+        } catch (DBSException ex) {
+            throw ex;
         }
-
     }
     
-     DBSSimpleQueryObject(){
+     DBSSimpleQueryObject() throws Exception{
         this.cond = null;
 	try {
             DBSSrvcConfig config = DBSSrvcConfig.getInstance();
             this.schemaOwner = config.getSchemaOwner();
-        } catch (dbs.DBSException ex) {
-            throw new SQLException("Failed to setup Schema Owner Name");
+        } catch (DBSException ex) {
+            throw ex;
         }
 
     }
