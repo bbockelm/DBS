@@ -7,7 +7,7 @@
 	<property name="configtargetdir" value="${basedir}/bin/WEB-INF"/>
 	<property name="metatargetdir" value="${basedir}/bin/META-INF"/>
 	<property name="libraryolddir" value="/home/anzar/devDBS/LetsTag/DBS/LibValut/"/>
-	<property name="app.name" value="DQSrvcTEST"/>
+	<property name="app.name" value="DBSServer"/>
 	<property environment="env"/>
 	<property name="jredir" value="${env.JAVA_HOME}/jre/lib"/>
 	<path id="libraries">
