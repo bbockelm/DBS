@@ -1,5 +1,5 @@
 /*******************************************************
- * $Id$
+ * $Id: DBSSrvcConfig.java,v 1.1 2009/09/09 16:38:08 yuyi Exp $
  *
  * A singleton that reads a config file from $DBS_HOME/etc
  * and creates a hash tables of k,v pairs there in.
@@ -12,8 +12,6 @@
 
 package cms.dbs.commons.utils;
 
-import xml.DBSXMLParser;
-import xml.Element;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,9 +19,10 @@ import java.lang.System;
 import java.lang.CloneNotSupportedException;
 import java.util.Hashtable;
 import java.util.Vector;
-import cms.dbs.commons.exceptions;
+import cms.dbs.commons.exceptions.DBSException;
 import cms.dbs.commons.utils.DBSSrvcUtil;
-import cms.dbs.commons.utils.DBSXMLParser
+import cms.dbs.commons.utils.DBSXMLParser;
+import cms.dbs.commons.utils.Element;
 
 public class DBSSrvcConfig {
         //Doesn't make sence to put values in a Hashtable, as you need to know what you want
@@ -157,6 +156,7 @@ public class DBSSrvcConfig {
 		if (supportedSchemaVersion == null ) {
 		    throw new DBSException("Configuration Error",  "Database SCHEMA_VERSION not found in Config File");
 		}
+		/** NO registration is needed for now
 		if (regServiceURL == null ) {
 		    throw new DBSException("Configuration Error",  "Registration Service URL not found in Config File");
 		}
@@ -175,6 +175,7 @@ public class DBSSrvcConfig {
 		if (adminDN == null ) {
 		    throw new DBSException("Configuration Error",  "Admin DN not found in Config File");
 		}
+		**/
 		if (supportedClientVersions == null ) {
 		    throw new DBSException("Configuration Error",  "Supported CLIENT_VERSIONS not found in Config File");
 		}
@@ -232,7 +233,7 @@ public class DBSSrvcConfig {
 
         public static synchronized DBSSrvcConfig getInstance()throws DBSException{
 	    //System.out.println("get instance called emtpy ");
-	    if (ref == null)ref = new DBSConfig(null);
+	    if (ref == null)ref = new DBSSrvcConfig(null);
 	    return ref;
 	}
         public String getDbUserName(){
@@ -300,10 +301,10 @@ public class DBSSrvcConfig {
         public static void main(String args[])
         {
            try{
-                 DBSConfig config = DBSConfig.getInstance();
+                 DBSSrvcConfig config = DBSSrvcConfig.getInstance();
 
               }catch (DBSException ex) {
-                System.out.println("EXECPTION RAISED: "+ex.getMessage()+" "+ex.getDetail()+" "+ex.getCode());
+                System.out.println("EXECPTION RAISED: "+ex.getMessage()+" "+ex.getDetail());
               }catch (Exception ex) {
                 System.out.println("EXECPTION RAISED: "+ex.getMessage());
               }  

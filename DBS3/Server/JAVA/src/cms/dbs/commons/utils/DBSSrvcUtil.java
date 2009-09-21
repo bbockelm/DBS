@@ -1,6 +1,6 @@
 /**
- $Revision: $
- $Id: $
+ $Revision: 1.1 $
+ $Id: DBSSrvcUtil.java,v 1.1 2009/08/31 20:27:38 afaq Exp $
  * Contains general utility static methods
 */
 
@@ -24,8 +24,8 @@ import java.net.UnknownHostException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletConfig;
 
-import dqsrvc.util.DQSrvcConstants;
-import dqsrvc.exception.DQSrvcException;
+import cms.dbs.commons.utils.DBSSrvcConstants;
+import cms.dbs.commons.exceptions.DBSException;
 
 import java.security.*;
 import java.math.*;
@@ -57,18 +57,18 @@ public class DBSSrvcUtil {
 	}
 
 	public static void writeLog(String logText) {
-		if (DQSrvcConstants.DEBUG) System.out.println(logText);
+		if (DBSSrvcConstants.DEBUG) System.out.println(logText);
 	}
 
 	public static void writeErrorLog(String logText) {
-		if (DQSrvcConstants.ERROR) System.err.println(logText);
+		if (DBSSrvcConstants.ERROR) System.err.println(logText);
 	}
 
 
 	public String[] parseDSPath(String path) throws Exception {
 		String[] data = path.split("/");
 		if(data.length != 4) {
-			throw new DQSrvcException("Invalid format", "1007", " Expected a path in format /PRIMARY/TIER/PROCESSED given " + path);
+			throw new DBSException("Invalid format", " Expected a path in format /PRIMARY/TIER/PROCESSED given " + path);
 		}
 		return data;
 	}

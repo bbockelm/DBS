@@ -1,5 +1,5 @@
 /***
- * $Id$
+ * $Id: PrimaryDatasetBO.java,v 1.1 2009/09/14 14:57:16 yuyi Exp $
  *
  * This is the class for primary dataset business objects.
  * @author Y. Guo
@@ -12,43 +12,38 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import cms.dbs.commons.db;
 import cms.dbs.dataobjs.PrimaryDataset;
 import cms.dbs.dataobjs.PrimaryDSType;
 import cms.dbs.queryobjs.PrimaryDatasetQO;
 
-public class PrimaryDatasetBO extends DBSBusinessObject throws Exception{
+public class PrimaryDatasetBO extends DBSBusinessObject{
     private Connection conn = null;
-    public PrimaryDatasetBO(){
+    
+    public PrimaryDatasetBO() throws Exception {
 	super();
 	conn = getConnection();
     }
 
     protected void finalize() throws Exception {
-	try {
-	    if (conn != null) conn.close();        // close open connection
-	} finally {
-	    super.finalize();
-	}
+	if (conn != null) conn.close();        // close open connection
     }
     
     public void closeConnection() throws Exception{
 	if(conn != null) conn.close();
     }
 
-    public JSONArray getPrimaryDatasets(Primarydataset cond){
-	String dsName = cond.getPrimaryDSName;
+    public JSONArray getPrimaryDatasets(PrimaryDataset cond) throws Exception{
+	String dsName = cond.getPrimaryDSName();
 	PrimaryDatasetQO primaryDS = null;
-	if(dsName.equlas("*") || dsName.equals("%")){
+	if(dsName.equals("%")){
 	    //No condition needed. 
 	    primaryDS = new PrimaryDatasetQO();
-	    return primaryDS.listiAllPrimaryDatasets(conn);
+	    return primaryDS.listAllPrimaryDatasets(conn);
 	}
 	else{
 	    primaryDS = new  PrimaryDatasetQO((new JSONArray()).put(cond));
-	    return primaryDS.listiAllPrimaryDatasets(cond);
+	    return primaryDS.listPrimaryDatasets(conn);
 	}
-	return null;
     }
 
 }
