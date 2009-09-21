@@ -43,6 +43,10 @@ scheduler = glite
 server_name = bari
 
 [CMSSW]
+#if $dbsInst != "cms_dbs_prod_global"
+# dbs instance: $dbsInst
+dbs_url = $dbsUrl
+#end if
 datasetpath=$dataset
 pset=INSERT YOUR PSET HERE
 total_number_of_events=-1

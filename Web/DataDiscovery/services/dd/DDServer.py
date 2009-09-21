@@ -1763,10 +1763,12 @@ class DDServer(DDLogger,Controller):
         page=str(t)
         return page
         
-    def crabCfg(self,dataset,totEvt,userMode='userMode',**kwargs):
+    def crabCfg(self,dbsInst,dataset,totEvt,userMode='userMode',**kwargs):
         cherrypy.response.headers['Content-Type']='text/plain'
         page = ""
         nameSpace = {
+                     'dbsInst'  : dbsInst,
+                     'dbsUrl'   : self.dbsmgr.geturl(dbsInst),
                      'dataset'  : dataset,
                      'totEvt'   : totEvt
                     }
