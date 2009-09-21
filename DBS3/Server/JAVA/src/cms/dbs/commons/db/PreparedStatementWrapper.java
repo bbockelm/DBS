@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: PreparedStatementWrapper.java,v 1.2 2009/09/14 15:07:54 yuyi Exp $
  *
  * A wrapper around <code>java.sql.PreparedStatement<code> class that can store the bind variables 
  * and can regenerate the SQL query. The main usage for the wrapper is to print out the sql 
@@ -31,7 +31,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.TreeMap;
 import java.util.Map;
-
+import java.io.Reader;
 
 /**
  * A wrapper around <code>java.sql.PreparedStatement<code> class that can store the bind 
@@ -647,5 +647,112 @@ public class PreparedStatementWrapper implements PreparedStatement {
 	public ResultSet executeQuery(String sql) throws SQLException {
 		return embedded.executeQuery(sql);
 	}
-	
+      
+        public void setNClob(int parameterIndex, java.io.Reader r)  throws SQLException {
+                embedded.setNClob(parameterIndex, r);
+                bindParams.put(new Integer(parameterIndex), r);
+        }
+        public void setClob(int parameterIndex, java.io.Reader r)  throws SQLException {
+                embedded.setClob(parameterIndex, r);
+                bindParams.put(new Integer(parameterIndex), r);
+                
+        }
+        public void setNCharacterStream(int parameterIndex, java.io.Reader r)  throws SQLException {
+                embedded.setNCharacterStream(parameterIndex, r);
+                bindParams.put(new Integer(parameterIndex), r);
+                
+        }
+        public void setCharacterStream(int parameterIndex, java.io.Reader r)  throws SQLException {
+                embedded.setCharacterStream(parameterIndex, r);
+                bindParams.put(new Integer(parameterIndex), r);
+                
+        }
+        public void setCharacterStream(int parameterIndex, java.io.Reader r, long l)  throws SQLException {
+                embedded.setCharacterStream(parameterIndex, r, l);
+                bindParams.put(new Integer(parameterIndex), r);
+        }
+
+        public void setBlob(int parameterIndex, java.io.InputStream i)  throws SQLException {
+                embedded.setBlob(parameterIndex, i);
+                bindParams.put(new Integer(parameterIndex), i);
+	}
+        public void setBinaryStream(int parameterIndex, java.io.InputStream i)  throws SQLException {
+                embedded.setBinaryStream(parameterIndex, i);
+                bindParams.put(new Integer(parameterIndex), i);
+                
+        }
+        public void setAsciiStream(int parameterIndex, java.io.InputStream i)  throws SQLException {
+                embedded.setAsciiStream(parameterIndex, i);
+                bindParams.put(new Integer(parameterIndex), i);
+                
+        }
+        public void setBinaryStream(int parameterIndex, java.io.InputStream i, long l)  throws SQLException {
+                embedded.setBinaryStream(parameterIndex, i, l);
+                bindParams.put(new Integer(parameterIndex), i);
+                
+        }
+
+        public void setAsciiStream(int parameterIndex,java.io.InputStream i,long l) throws SQLException{
+                embedded.setAsciiStream(parameterIndex, i, l);
+                bindParams.put(new Integer(parameterIndex), i);
+
+        }
+        public void setSQLXML(int parameterIndex,java.sql.SQLXML s) throws SQLException{
+                embedded.setSQLXML(parameterIndex, s);
+                bindParams.put(new Integer(parameterIndex), s);
+        }
+        public void setNClob(int parameterIndex, java.io.Reader r, long l)  throws SQLException {
+                embedded.setNClob(parameterIndex, r, l);
+                bindParams.put(new Integer(parameterIndex), r);
+        }
+        public void setBlob(int parameterIndex, java.io.InputStream i, long l)  throws SQLException {
+                embedded.setBlob(parameterIndex, i, l);
+                bindParams.put(new Integer(parameterIndex), i);
+                
+        }
+        public void setClob(int parameterIndex, java.io.Reader r, long l)  throws SQLException {
+                embedded.setClob(parameterIndex, r, l);
+                bindParams.put(new Integer(parameterIndex), r);
+                
+        }
+        public void setNClob(int parameterIndex,java.sql.NClob n)   throws SQLException {
+                embedded.setClob(parameterIndex, n);
+                bindParams.put(new Integer(parameterIndex), n);
+
+        }
+        public void setNCharacterStream(int parameterIndex,java.io.Reader r,long l)   throws SQLException {
+                embedded.setNCharacterStream(parameterIndex, r, l);
+                bindParams.put(new Integer(parameterIndex), r);
+
+        }
+        public void setNString(int parameterIndex,java.lang.String s)   throws SQLException {
+                embedded.setNString(parameterIndex, s);
+                bindParams.put(new Integer(parameterIndex), s);
+
+        }
+        public void setRowId(int parameterIndex,java.sql.RowId r) throws SQLException {
+                embedded.setRowId(parameterIndex, r);
+                bindParams.put(new Integer(parameterIndex), r);
+	}
+        public boolean isPoolable()   throws SQLException {
+                return embedded.isPoolable();
+
+        }
+
+        public void setPoolable(boolean b) throws SQLException {
+                embedded.setPoolable(b);
+
+        }
+
+        public boolean isClosed()   throws SQLException {
+                return embedded.isClosed();
+
+        }
+	public boolean isWrapperFor(java.lang.Class x ) throws SQLException {
+	    return true;
+	}	
+	 public java.lang.Class unwrap(java.lang.Class x ) throws SQLException {
+            return x;
+        }	
+
 }
