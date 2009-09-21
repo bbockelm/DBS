@@ -1,9 +1,11 @@
 /****
- * $Id$
+ * $Id: DBSServlet.java,v 1.2 2009/09/14 15:06:24 yuyi Exp $
  *
  ****/
 package cms.dbs.servlets;
 
+import java.io.CharArrayWriter;
+import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -22,6 +24,9 @@ import org.json.JSONArray;
 
 
 import cms.dbs.commons.db.DBManagement;
+import cms.dbs.commons.exceptions.DBSException;
+import cms.dbs.commons.utils.DBSSrvcConfig;
+import cms.dbs.commons.utils.DBSSrvcUtil;
 
 /*
 need to be updated for DBS3
@@ -57,7 +62,7 @@ public class DBSServlet extends HttpServlet{
        			System.out.println("SEREVER INFO: "+context.getServerInfo() );
        			System.out.println("---------------------------------------------------------------");
        			System.out.println("DBS reading configuration file");
-       			DBSConfig dbsconfig = DBSConfig.getInstance(configFilePath);
+       			DBSSrvcConfig dbsconfig = DBSSrvcConfig.getInstance(configFilePath);
        			System.out.println("DBS configuration file read successfully");
        			System.out.println("---------------------------------------------------------------\n");
        			System.out.println("DBS making database connection");
@@ -107,7 +112,7 @@ public class DBSServlet extends HttpServlet{
 		String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
 		response.setContentType("application/x-json");;
 		PrintWriter out = response.getWriter();
-		DBSDispatcher DSP = new DBSDispatcher(); 
+	//need to be implemented	DBSDispatcher DSP = new DBSDispatcher(); 
       
 		/*
 		* If the DN is not set properly then look for DN in the http header sent by the client. 
@@ -116,7 +121,7 @@ public class DBSServlet extends HttpServlet{
 		if (dn == null) {
 			dn = request.getHeader("UserID");
 			if (dn == null) dn = "web-client";
-			DBSUtil.writeLog("NO DN, using UserID: " + dn + " from HTTP header");
+			DBSSrvcUtil.writeLog("NO DN, using UserID: " + dn + " from HTTP header");
 		}
 		
 		try {
@@ -124,7 +129,7 @@ public class DBSServlet extends HttpServlet{
 			//System.out.println("URL is ------------- > "  + url);
                         
 			//only writeLog when (DBSConstants.DEBUG=true
-			DBSUtil.writeLog("DN of the user is " + dn);
+			DBSSrvcUtil.writeLog("DN of the user is " + dn);
 			
 			/***
                          Not sure about this part if the client send a JSON object.
@@ -133,7 +138,7 @@ public class DBSServlet extends HttpServlet{
 	        	//if(charset == null) charset = "UTF-8";
         		//BufferedReader in = new BufferedReader
 	            	//(new InputStreamReader(request.getInputStream(), charset));
-			int buf_size = request.getContentLength;
+			int buf_size = request.getContentLength();
 			BufferedReader in = request.getReader();
         		// Read the request
 	        	CharArrayWriter data = new CharArrayWriter();
@@ -146,9 +151,10 @@ public class DBSServlet extends HttpServlet{
         		JSONObject json_req = null;
             		json_req = new JSONObject(data.toString());
 
-			DSP.ApiCall(out, json_req, dn);
+			//DSP.ApiCall(out, json_req, dn);
 
 		} catch(Exception e) {
+		/***  Need to be rewriten
 			try {
 	                        if (api != null) api.writeException(out, "Servlet Error", "500",  e.getMessage()); 
 			} catch(Exception ex) {
@@ -157,6 +163,7 @@ public class DBSServlet extends HttpServlet{
 			}
                         e.printStackTrace(); 
 			throw new ServletException(e);
+	      ****/		
 		} finally {
 			if (out != null) out.close();
 		}
