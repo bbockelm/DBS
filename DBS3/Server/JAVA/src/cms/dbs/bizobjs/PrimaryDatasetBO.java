@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasetBO.java,v 1.1 2009/09/14 14:57:16 yuyi Exp $
+ * $Id: PrimaryDatasetBO.java,v 1.2 2009/09/21 15:07:15 yuyi Exp $
  *
  * This is the class for primary dataset business objects.
  * @author Y. Guo
@@ -32,19 +32,21 @@ public class PrimaryDatasetBO extends DBSBusinessObject{
 	if(conn != null) conn.close();
     }
 
-    public JSONArray getPrimaryDatasets(PrimaryDataset cond) throws Exception{
-	String dsName = cond.getPrimaryDSName();
-	PrimaryDatasetQO primaryDS = null;
-	if(dsName.equals("%")){
-	    //No condition needed. 
-	    primaryDS = new PrimaryDatasetQO();
-	    return primaryDS.listAllPrimaryDatasets(conn);
-	}
-	else{
-	    primaryDS = new  PrimaryDatasetQO((new JSONArray()).put(cond));
-	    return primaryDS.listPrimaryDatasets(conn);
-	}
+    public void commitConnection() throws Exception{
+	if(conn != null) conn.commit();
     }
+
+    public JSONArray getPrimaryDatasets(PrimaryDataset cond) throws Exception{
+	PrimaryDatasetQO primaryDS = new  PrimaryDatasetQO();
+	return primaryDS.listPrimaryDatasets(conn, cond);
+	
+    }
+
+   public void insertPrimaryDataset(PrimaryDataset cond) throws Exception{
+	PrimaryDatasetQO primaryDS = new  PrimaryDatasetQO();
+	primaryDS.putPrimaryDataset(conn, cond);
+	//conn.commit(); 
+   }
 
 }
 

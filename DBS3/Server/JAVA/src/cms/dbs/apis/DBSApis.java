@@ -1,5 +1,5 @@
 /***
- * $Id: DBSApis.java,v 1.1 2009/09/14 15:02:02 yuyi Exp $
+ * $Id: DBSApis.java,v 1.2 2009/09/21 15:05:39 yuyi Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
@@ -20,8 +20,17 @@ public class DBSApis {
 	JSONArray result = new JSONArray();
 	PrimaryDatasetBO pBO = new PrimaryDatasetBO();
 	result = pBO.getPrimaryDatasets(cd);
+	pBO.closeConnection();
 	return result;
     }
+
+    public static void DBSApiInsertPrimaryDataset(PrimaryDataset cd) throws Exception{
+	PrimaryDatasetBO pBO = new PrimaryDatasetBO();
+	pBO.insertPrimaryDataset(cd);
+	pBO.commitConnection();
+	pBO.closeConnection();
+    }//end DBSApiInsertPrimaryDataset
+    
     public static void main (String args[]){
 	try{
 	    PrimaryDataset cd = new PrimaryDataset(0, "%", null, 0, "");
@@ -34,7 +43,10 @@ public class DBSApis {
             for(int i=0; i<result2.length();i++){
                  System.out.println(result2.optJSONObject(i));
             }
-
+	    System.out.println("***Insert new primary dataset TEST2 ***");
+	    PrimaryDSType PT = new PrimaryDSType(0, "test");
+	    PrimaryDataset PD = new PrimaryDataset(0, "TEST3", PT, 0, "");
+	    new DBSApis().DBSApiInsertPrimaryDataset(PD);
 	}
 	catch (DBSException ex){
 	    System.out.println("DBSException raised :" + ex.getMessage() + ". " + ex.getDetail());

@@ -1,5 +1,5 @@
 /***
- * $Id: DBSSimpleQueryObject.java,v 1.1 2009/09/09 15:52:41 yuyi Exp $
+ * $Id: DBSSimpleQueryObject.java,v 1.2 2009/09/21 15:21:12 yuyi Exp $
  *
  * This is the super class for simple query objects. All other simple query object will inherent from this class.
  * The insert, update, select, delete and bulk insert funtions will needed to be implemented in the sub classes.
@@ -15,23 +15,11 @@ import cms.dbs.commons.utils.DBSSrvcConfig;
 
 public class DBSSimpleQueryObject{
     protected JSONArray result = null;
-    protected JSONArray cond = null;
    // private String sql = null; construct inside the functions.
     protected PreparedStatement ps = null;
     protected String schemaOwner = null;
      
-    DBSSimpleQueryObject(JSONArray cond) throws Exception{
-	this.cond = cond;
-	try {
-            DBSSrvcConfig config = DBSSrvcConfig.getInstance();
-            this.schemaOwner = config.getSchemaOwner();
-        } catch (DBSException ex) {
-            throw ex;
-        }
-    }
-    
-     DBSSimpleQueryObject() throws Exception{
-        this.cond = null;
+    DBSSimpleQueryObject() throws Exception{
 	try {
             DBSSrvcConfig config = DBSSrvcConfig.getInstance();
             this.schemaOwner = config.getSchemaOwner();
@@ -54,9 +42,6 @@ public class DBSSimpleQueryObject{
 	return result;
     }
 
-    public JSONArray getDataObjs(){
-	return cond;
-    }
 
     public JSONArray DBSSelect(){
     //update the result using the select

@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.2 $"
- $Id: PrimaryDSType.java,v 1.2 2009/09/04 20:24:48 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: PrimaryDSType.java,v 1.3 2009/09/21 15:10:38 yuyi Exp $"
  *
  * Data Object from table : PRIMARY_DS_TYPES
 */
@@ -23,7 +23,7 @@ public class PrimaryDSType extends JSONObject {
                 this.putOnce("PRIMARY_DS_TYPE",  primaryDSType );
         }
 
-	int getPrimaryDSTypeID ( ) throws Exception{
+	public int getPrimaryDSTypeID ( ) throws Exception{
 		int primaryDSTypeID = 0;
                	if (!JSONObject.NULL.equals(this.getInt("PRIMARY_DS_TYPE_ID"))) {
                        	primaryDSTypeID = this.getInt("PRIMARY_DS_TYPE_ID");
@@ -31,7 +31,7 @@ public class PrimaryDSType extends JSONObject {
                 return primaryDSTypeID;
         }
 	
-	String getPrimaryDSType ( ) throws Exception{
+	public String getPrimaryDSType ( ) throws Exception{
 		String primaryDSType = null;
                	if (!JSONObject.NULL.equals(this.getString("PRIMARY_DS_TYPE"))) {
                        	primaryDSType =  this.getString("PRIMARY_DS_TYPE");
