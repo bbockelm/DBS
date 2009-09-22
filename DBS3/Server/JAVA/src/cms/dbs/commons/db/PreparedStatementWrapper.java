@@ -1,5 +1,5 @@
 /**
- * $Id: PreparedStatementWrapper.java,v 1.2 2009/09/14 15:07:54 yuyi Exp $
+ * $Id: PreparedStatementWrapper.java,v 1.3 2009/09/21 14:56:39 yuyi Exp $
  *
  * A wrapper around <code>java.sql.PreparedStatement<code> class that can store the bind variables 
  * and can regenerate the SQL query. The main usage for the wrapper is to print out the sql 
@@ -215,11 +215,11 @@ public class PreparedStatementWrapper implements PreparedStatement {
 	/**
 	* {@inheritDoc}
 	*/
+	@Deprecated
 	public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
 		embedded.setUnicodeStream(parameterIndex, x, length);
 		bindParams.put(new Integer(parameterIndex), x);
 	}
-
 	/**
 	* {@inheritDoc}
 	*/
