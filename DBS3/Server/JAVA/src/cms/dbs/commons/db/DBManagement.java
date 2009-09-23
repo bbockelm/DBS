@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: DBManagement.java,v 1.2 2009/09/14 15:07:54 yuyi Exp $
  *
  * A class that can create the database connections <code>java.sql.Connection</code> managed either 
  * by tomcat connection pooling or external source. It also has method to create a prepared statements 
@@ -79,15 +79,6 @@ public class DBManagement {
 			//System.out.println("This must be a standalone client");
 		}
 	}
-	/**
-	 * This is a private constructor of this class.To get an instance of this class getDBConnManInstance 
-	 * method should be used. This constructor creates a datasource object to be used for creating connection 
-	 * to the database. The datasource object is provided by the Tomcat connection pooling interface. It catches 
-	 * a javax.naming.NoInitialContextException exception that would happen only if this class is not invoked within 
-	 * the tomcat container i.e as a standalone application.
-	 * @throws Exception - Various types of exception can be thrown from this method related to invalid data 
-	 * source name or invalid contex, etc.
-	 */
 	private DBManagement() throws Exception {
 		try {
 			if ( (ds = (DataSource)(((Context)((new InitialContext()).lookup("java:/comp/env"))).lookup("jdbc/dbs"))) == null ) {
@@ -126,6 +117,7 @@ public class DBManagement {
 	 * @throws Exception A database connection exception can be thrown if it either fails to load the database driver 
 	 * or could not make a connection to the database.
 	 */
+	 //This is a static method so it doesnot need any DBManager instance to use it. 
 	public static Connection getConnection(String driver, String url, String userId, String password) throws Exception {
 		Class.forName(driver);
 		return DriverManager.getConnection(url,userId,password);
