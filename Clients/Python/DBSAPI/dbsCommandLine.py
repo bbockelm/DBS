@@ -2085,7 +2085,6 @@ class ApiDispatcher:
 					print self.title+"\n"
 				self.first_time_result=0
 			print "%s" % self.printme.strip()
-			print "%s" % self.printme.strip()
                         self.printme=""
 			self.start_print=0
 
@@ -2205,6 +2204,10 @@ class ApiDispatcher:
          self.helper._help_search()
          return
     userInput=self.optdict.get('query') or ''
+
+    if userInput in ('=') or userInput.startswith('='):
+	print "Do you have empty spaces before and/or after --query ? that is invalid, please use --query=\"find ...\""
+	return
 
     if userInput in ('', None):
 	print "No search criteria specified, Use --query= to specify a serach query (Do you want --usequery=?)"
