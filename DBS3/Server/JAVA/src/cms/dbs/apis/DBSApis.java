@@ -1,5 +1,5 @@
 /***
- * $Id: DBSApis.java,v 1.2 2009/09/21 15:05:39 yuyi Exp $
+ * $Id: DBSApis.java,v 1.3 2009/09/22 19:06:13 yuyi Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
@@ -16,12 +16,15 @@ public class DBSApis {
 
     public DBSApis(){
     }
-    public static JSONArray DBSApiFindPrimaryDatasets( PrimaryDataset cd) throws Exception{
+    public static JSONObject DBSApiFindPrimaryDatasets( PrimaryDataset cd) throws Exception{
 	JSONArray result = new JSONArray();
 	PrimaryDatasetBO pBO = new PrimaryDatasetBO();
 	result = pBO.getPrimaryDatasets(cd);
 	pBO.closeConnection();
-	return result;
+	JSONObject retn = new JSONObject();
+	retn.putOnce("input", cd);
+	retn.putOnce("result", result);
+	return retn;
     }
 
     public static void DBSApiInsertPrimaryDataset(PrimaryDataset cd) throws Exception{
@@ -34,18 +37,18 @@ public class DBSApis {
     public static void main (String args[]){
 	try{
 	    PrimaryDataset cd = new PrimaryDataset(0, "%", null, 0, "");
-	    JSONArray result = new DBSApis().DBSApiFindPrimaryDatasets(cd);
+	    JSONArray result = (new DBSApis().DBSApiFindPrimaryDatasets(cd)).getJSONArray("result");
 	    for(int i=0; i<result.length();i++){
 		 System.out.println(result.optJSONObject(i));
 	    }
             PrimaryDataset cd2 = new PrimaryDataset(0, "Cosm%", null, 0, "");
-            JSONArray result2 = new DBSApis().DBSApiFindPrimaryDatasets(cd2);
+            JSONArray result2 = (new DBSApis().DBSApiFindPrimaryDatasets(cd2)).getJSONArray("result");
             for(int i=0; i<result2.length();i++){
                  System.out.println(result2.optJSONObject(i));
             }
-	    System.out.println("***Insert new primary dataset TEST2 ***");
+	    System.out.println("***Insert new primary dataset TEST4 ***");
 	    PrimaryDSType PT = new PrimaryDSType(0, "test");
-	    PrimaryDataset PD = new PrimaryDataset(0, "TEST3", PT, 0, "");
+	    PrimaryDataset PD = new PrimaryDataset(0, "TEST4", PT, 0, "");
 	    new DBSApis().DBSApiInsertPrimaryDataset(PD);
 	}
 	catch (DBSException ex){
