@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasetQO.java,v 1.4 2009/09/21 15:21:12 yuyi Exp $
+ * $Id: PrimaryDatasetQO.java,v 1.5 2009/09/22 19:06:13 yuyi Exp $
  *
  * This is the class for primary dataset query objects.
  * @author Y. Guo
@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import cms.dbs.commons.db.DBManagement;
+import cms.dbs.commons.db.SequenceManager;
 import cms.dbs.commons.exceptions.DBSException;
 import cms.dbs.commons.utils.DBSSrvcUtil;
 import cms.dbs.dataobjs.PrimaryDataset;
@@ -28,15 +29,17 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
 	PrimaryDSType PType = cond1.getPrimaryDSTypeDO();
 	int PTId = (listPrimaryDSType(conn, PType.getPrimaryDSType())).getPrimaryDSTypeID();
 	String PName = cond1.getPrimaryDSName();
-	String sql = "insert into " + schemaOwner + "PRIMARY_DATASETS(PRIMARY_DS_NAME, PRIMARY_DS_TYPE_ID)"
-		    + "values(?,?)";
+	String sql = "insert into " + schemaOwner + "PRIMARY_DATASETS(PRIMARY_DS_NAME, PRIMARY_DS_TYPE_ID, PRIMARY_DS_ID)"
+		    + "values(?,?,?)";
 	PreparedStatement ps = null;
         try{
+	    int PId = SequenceManager.getSequence(conn, "seq_PDS");
 	    ps = DBManagement.getStatement(conn, sql);
 	    if(PName != null && !PName.equals("") && PName.indexOf('_') == -1 
 		&& PName.indexOf('%') == -1)ps.setString(1, PName);
 	    else throw new DBSException("Input Data Error", "Primary Dataset Name " + PName + "is invalid");
 	    ps.setInt(2, PTId);
+	    ps.setInt(3, PId);
 	    ps.execute();
 	}catch (SQLException ex) {
 	    String exmsg = ex.getMessage();
