@@ -14,8 +14,8 @@ try:
 	optManager  = DbsOptionParser()
 	(opts,args) = optManager.getOpt()
 	args = {}
-	args['url']='http://cmssrv17.fnal.gov:8989/DBS_1_0_5_STABLE/servlet/DBSServlet' 
-	#args['version']='DBS_1_0_7'
+	args['url']='' 
+	args['version']='DBS_1_0_7'
 	args['mode']='POST'
 	api = DbsApi(args)
       
