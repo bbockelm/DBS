@@ -1,6 +1,6 @@
 /**
- $Revision: 1.87 $"
- $Id: DBSApiProcDSLogic.java,v 1.87 2009/06/18 19:45:22 afaq Exp $"
+ $Revision: 1.88 $"
+ $Id: DBSApiProcDSLogic.java,v 1.88 2009/07/16 14:38:36 yuyi Exp $"
  *
  */
 
@@ -954,4 +954,21 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 		return  id;
 	}
+
+/**
+ * This is added according to users' request for updating the descraption field of a existing dataset in DBS.
+ *
+ * Y. Guo Sep. 28 2009
+ **/
+	public void updateProcDSDesc(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
+                PreparedStatement ps = null;
+		try{
+		    String procDSID = getProcessedDSID(conn, path, true);
+		    ps =  DBSSql.updateProcDSDesc(conn, procDSID, value, personApi.getUserID(conn, dbsUser));
+		    pushQuery(ps);
+		    ps.execute();
+		}finally {
+		    if (ps != null) ps.close();
+                }
+        }
 }
