@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.227 $"
- $Id: DBSSql.java,v 1.227 2009/07/16 14:40:30 yuyi Exp $"
+ $Revision: 1.228 $"
+ $Id: DBSSql.java,v 1.228 2009/09/01 16:19:07 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -131,6 +131,20 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, xSection);
+                ps.setString(columnIndx++, lmbUserID);
+                ps.setString(columnIndx++, procDSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+	 public static PreparedStatement updateProcDSDesc(Connection conn, String procDSID, String desc, String lmbUserID) throws SQLException {
+                String sql = "UPDATE " +  owner()+"ProcessedDataset \n" +
+                        "SET description = ?, \n" +
+                        "LastModifiedBy = ? \n" +
+                        "WHERE ID = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, desc);
                 ps.setString(columnIndx++, lmbUserID);
                 ps.setString(columnIndx++, procDSID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
