@@ -14,12 +14,12 @@ try:
 	optManager  = DbsOptionParser()
 	(opts,args) = optManager.getOpt()
 	args = {}
-	args['url']='' 
-	args['version']='DBS_1_0_7'
+	# These dummy values are required to create the DbsApi object so let them here
+	args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
+	args['version']='DBS_2_0_8'
 	args['mode']='POST'
 	api = DbsApi(args)
-      
-	#api = DbsApi(opts.__dict__)
+
 	srcURL = sys.argv[1]
 	dstURL = sys.argv[2]
 	path = sys.argv[3]
@@ -28,7 +28,6 @@ try:
 		block = sys.argv[4]
 
 	api.migrateDatasetContents(srcURL, dstURL, path, block , False, True)
-	#print api.listPrimaryDatasets();
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
