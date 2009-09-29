@@ -1,9 +1,7 @@
 grammar Sql;
 
 @header {
-
 import java.util.ArrayList;
-
 }
 
 @members {
@@ -12,6 +10,7 @@ ArrayList okws = new ArrayList();
 ArrayList constraints = new ArrayList();
 String orderingkw = "";
 }
+
 @rulecatch {
 catch (RecognitionException e) {
 	throw e;
@@ -101,12 +100,14 @@ compOpt		:EQ
 		|LT EQ
 		|GT EQ
 		|LT GT;
-genValue	: VALUE (VALUE)* (DOT VALUE)* (compOpt VALUE)* ;
+genValue	: (VALUE | keyword) (DOT (VALUE | keyword))* (compOpt (VALUE | keyword))* ;
 //genValue	:dotValue
 //		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
 betValue	:genValue and genValue;
 inValue		:genValue ( COMMA genValue )*;
 logicalOp	:and|or;
+
+keyword		: entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where;
 
 entity		:'ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group'| 'pset'| 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch';
 attr		:'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family'| 'exe' | 'annotation' | 'checksum' ;
