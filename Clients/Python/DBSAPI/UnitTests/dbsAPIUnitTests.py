@@ -926,6 +926,17 @@ class Test_updateProcDSStatusAPI(unittest.TestCase):
         self.assertRaises(DbsApiException,api.updateProcDSStatus,"/aa/does/notexist","INVALID")
         self.assertRaises(DbsApiException,api.updateProcDSStatus,path,"IN;VALID")
         
+class Test_dbsApiUpdateProcDSDescAPI(unittest.TestCase):
+    def test_dbsApiUpdateProcDSDesc(self):
+        print "dbsApiUpdateProcDSDesc"
+        try:
+            api.dbsApiUpdateProcDSDesc(path,"this dataset description changed after dataset inserted into DB")
+        except DbsApiException:
+            self.fail("Expected no Error")
+        self.assertRaises(DbsApiException,api.dbsApiUpdateProcDSDesc ,path,"this dataset description changed after dataset inserted into DB")
+
+
+
 class Test_insertBlockAPI(unittest.TestCase):
     def test_insertBlock(self):
         print "insertBlock"
