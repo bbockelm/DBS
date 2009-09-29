@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.46 $"
- $Id: DBSServlet.java,v 1.46 2009/02/02 21:24:31 sekhri Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSServlet.java,v 1.47 2009/02/09 20:39:39 sekhri Exp $"
 
  */
 package dbs;
@@ -132,6 +132,12 @@ public class DBSServlet extends HttpServlet{
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
 		String apiStr = request.getParameter("api");
+
+		/**
+			//-- AA 
+			//-- 09/29/2009
+			//-- Commenting out the code that sending information to deprecated registration service (JBoss based registartion service)
+			//-- we will be adding a new CouchDB based registration service (if Simon fullfils his promises ;) ) 
 		try {
 			RegisterLock rLock = RegisterLock.getRegisterLockInstance();
 			if(apiStr != null) {
@@ -147,7 +153,8 @@ public class DBSServlet extends HttpServlet{
 			System.out.println("REGISTRATION Message "+ e.getMessage());
 			e.printStackTrace();
     		}
-
+		**/
+		
 		response.setContentType("text/xml");
 		String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
 
