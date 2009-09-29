@@ -367,7 +367,7 @@ class DbsMigrateApi:
 		
 	
 	def isDatasetStatusRO(self, api, path):
-		if self.getDatasetStatus(api, path) == "RO":
+		if self.getDatasetStatus(api, path) == "VALID-RO":
 			return True
 		else:
 			return False
@@ -416,7 +416,7 @@ class DbsMigrateApi:
 			
 	
 	def setDatasetStatusAsRO(self, path):
-		self.apiDst.updateProcDSStatus(path, "RO")
+		self.apiDst.updateProcDSStatus(path, "VALID-RO")
 	
 	def checkDatasetStatus(self, path):
 		if self.isDatasetStatusRO(self.apiSrc, path):
