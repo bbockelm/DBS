@@ -76,8 +76,8 @@ class DbsMigrateApi:
 								else : pathList.append(aPath)
 					else: 
 						if(ignoreDuplicate) :
+							pathList.append(aPath)
 							if(aPath not in self.allPaths):
-								pathList.append(aPath)
 								self.allPaths.append(aPath)
 						else:
 							pathList.append(aPath)
