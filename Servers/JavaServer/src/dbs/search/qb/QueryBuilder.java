@@ -117,7 +117,7 @@ public class QueryBuilder {
 		boolean sumPresent = false;
 		int iter = 0;
 		ArrayList allKws = new ArrayList();
-		if(isInList(kws, "file") || isInList(kws, "file.status")) {
+		if(isInListRelaxed(kws, "file") && !isInList(kws, "file.status")) {
 			invalidFile = true;
 			allKws = addUniqueInList(allKws, "FileStatus");
 
@@ -737,7 +737,17 @@ public class QueryBuilder {
 
 				} else if(Util.isSame(key, "site")) {
 					//if(!Util.isSame(op, "=") && !Util.isSame(op, "in")) throw new Exception("When site is provided operator should be = . Invalid operator given " + op);
-					if(Util.isSame(val.toUpperCase(), "NULL")) queryWhere += "\tSEBlock.BlockID is NULL ";	
+					if(Util.isSame(val.toUpperCase(), "NULL")) {
+                                                if(Util.isSame(op, "=")) {
+					                queryWhere += "\tSEBlock.BlockID is NULL ";
+				                } else {
+                                                        if (Util.isSame(op, "!=")) {
+					                        queryWhere += "\tSEBlock.BlockID is NOT NULL ";
+                                                        } else {
+                                                                throw new Exception("Invalid operator for NULL site comparison: " + op);
+                                                        }
+			                        }
+				        }
 					else queryWhere += "\t(StorageElement.SEName" + handleSite(val, op) + ")";	
 
 				} else if(Util.isSame(key, "release")) {
