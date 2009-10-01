@@ -1,5 +1,5 @@
 package dbs.search.parser;
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 Sql.g 2009-10-01 16:12:48
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 Sql.g 2009-10-01 19:29:03
 
 import java.util.ArrayList;
 
@@ -496,11 +496,11 @@ public class SqlParser extends Parser {
             if ( ((LA7_0>=15 && LA7_0<=36)) ) {
                 int LA7_1 = input.LA(2);
 
-                if ( (LA7_1==EOF||LA7_1==COMMA||(LA7_1>=RB && LA7_1<=NOT)||LA7_1==14||(LA7_1>=84 && LA7_1<=85)||(LA7_1>=90 && LA7_1<=103)) ) {
-                    alt7=1;
-                }
-                else if ( (LA7_1==DOT) ) {
+                if ( (LA7_1==DOT) ) {
                     alt7=2;
+                }
+                else if ( (LA7_1==EOF||LA7_1==COMMA||(LA7_1>=RB && LA7_1<=NOT)||LA7_1==14||(LA7_1>=84 && LA7_1<=85)||(LA7_1>=90 && LA7_1<=103)) ) {
+                    alt7=1;
                 }
                 else {
                     NoViableAltException nvae =
@@ -883,10 +883,18 @@ public class SqlParser extends Parser {
 
                     if ( ((LA12_2>=17 && LA12_2<=19)||(LA12_2>=37 && LA12_2<=70)) ) {
                         switch ( input.LA(4) ) {
-                        case 100:
-                        case 101:
+                        case EQ:
+                        case LT:
+                        case GT:
+                        case NOT:
                             {
-                            alt12=4;
+                            alt12=1;
+                            }
+                            break;
+                        case 90:
+                        case 91:
+                            {
+                            alt12=2;
                             }
                             break;
                         case 92:
@@ -897,18 +905,10 @@ public class SqlParser extends Parser {
                             alt12=3;
                             }
                             break;
-                        case 90:
-                        case 91:
+                        case 100:
+                        case 101:
                             {
-                            alt12=2;
-                            }
-                            break;
-                        case EQ:
-                        case LT:
-                        case GT:
-                        case NOT:
-                            {
-                            alt12=1;
+                            alt12=4;
                             }
                             break;
                         default:
@@ -933,6 +933,14 @@ public class SqlParser extends Parser {
                     alt12=4;
                     }
                     break;
+                case 92:
+                case 93:
+                case 94:
+                case 95:
+                    {
+                    alt12=3;
+                    }
+                    break;
                 case 90:
                 case 91:
                     {
@@ -945,14 +953,6 @@ public class SqlParser extends Parser {
                 case NOT:
                     {
                     alt12=1;
-                    }
-                    break;
-                case 92:
-                case 93:
-                case 94:
-                case 95:
-                    {
-                    alt12=3;
                     }
                     break;
                 default:
@@ -1183,14 +1183,14 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start "genValue"
-    // Sql.g:104:1: genValue : ( VALUE | keyword ) ( DOT ( VALUE | keyword ) )* ( compOpt ( VALUE | keyword ) )* ;
+    // Sql.g:104:1: genValue : ( VALUE | keyword ) ( VALUE )* ( DOT ( VALUE | keyword ) )* ( compOpt ( VALUE | keyword ) )* ;
     public final SqlParser.genValue_return genValue() throws RecognitionException {
         SqlParser.genValue_return retval = new SqlParser.genValue_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:104:10: ( ( VALUE | keyword ) ( DOT ( VALUE | keyword ) )* ( compOpt ( VALUE | keyword ) )* )
-            // Sql.g:104:12: ( VALUE | keyword ) ( DOT ( VALUE | keyword ) )* ( compOpt ( VALUE | keyword ) )*
+            // Sql.g:104:10: ( ( VALUE | keyword ) ( VALUE )* ( DOT ( VALUE | keyword ) )* ( compOpt ( VALUE | keyword ) )* )
+            // Sql.g:104:12: ( VALUE | keyword ) ( VALUE )* ( DOT ( VALUE | keyword ) )* ( compOpt ( VALUE | keyword ) )*
             {
             // Sql.g:104:12: ( VALUE | keyword )
             int alt14=2;
@@ -1230,50 +1230,75 @@ public class SqlParser extends Parser {
 
             }
 
-            // Sql.g:104:30: ( DOT ( VALUE | keyword ) )*
-            loop16:
+            // Sql.g:104:30: ( VALUE )*
+            loop15:
             do {
-                int alt16=2;
-                int LA16_0 = input.LA(1);
+                int alt15=2;
+                int LA15_0 = input.LA(1);
 
-                if ( (LA16_0==DOT) ) {
-                    alt16=1;
+                if ( (LA15_0==VALUE) ) {
+                    alt15=1;
                 }
 
 
-                switch (alt16) {
+                switch (alt15) {
             	case 1 :
-            	    // Sql.g:104:31: DOT ( VALUE | keyword )
+            	    // Sql.g:104:30: VALUE
             	    {
-            	    match(input,DOT,FOLLOW_DOT_in_genValue601); 
-            	    // Sql.g:104:35: ( VALUE | keyword )
-            	    int alt15=2;
-            	    int LA15_0 = input.LA(1);
+            	    match(input,VALUE,FOLLOW_VALUE_in_genValue600); 
 
-            	    if ( (LA15_0==VALUE) ) {
-            	        alt15=1;
             	    }
-            	    else if ( ((LA15_0>=15 && LA15_0<=103)) ) {
-            	        alt15=2;
+            	    break;
+
+            	default :
+            	    break loop15;
+                }
+            } while (true);
+
+            // Sql.g:104:37: ( DOT ( VALUE | keyword ) )*
+            loop17:
+            do {
+                int alt17=2;
+                int LA17_0 = input.LA(1);
+
+                if ( (LA17_0==DOT) ) {
+                    alt17=1;
+                }
+
+
+                switch (alt17) {
+            	case 1 :
+            	    // Sql.g:104:38: DOT ( VALUE | keyword )
+            	    {
+            	    match(input,DOT,FOLLOW_DOT_in_genValue604); 
+            	    // Sql.g:104:42: ( VALUE | keyword )
+            	    int alt16=2;
+            	    int LA16_0 = input.LA(1);
+
+            	    if ( (LA16_0==VALUE) ) {
+            	        alt16=1;
+            	    }
+            	    else if ( ((LA16_0>=15 && LA16_0<=103)) ) {
+            	        alt16=2;
             	    }
             	    else {
             	        NoViableAltException nvae =
-            	            new NoViableAltException("", 15, 0, input);
+            	            new NoViableAltException("", 16, 0, input);
 
             	        throw nvae;
             	    }
-            	    switch (alt15) {
+            	    switch (alt16) {
             	        case 1 :
-            	            // Sql.g:104:36: VALUE
+            	            // Sql.g:104:43: VALUE
             	            {
-            	            match(input,VALUE,FOLLOW_VALUE_in_genValue604); 
+            	            match(input,VALUE,FOLLOW_VALUE_in_genValue607); 
 
             	            }
             	            break;
             	        case 2 :
-            	            // Sql.g:104:44: keyword
+            	            // Sql.g:104:51: keyword
             	            {
-            	            pushFollow(FOLLOW_keyword_in_genValue608);
+            	            pushFollow(FOLLOW_keyword_in_genValue611);
             	            keyword();
 
             	            state._fsp--;
@@ -1289,58 +1314,58 @@ public class SqlParser extends Parser {
             	    break;
 
             	default :
-            	    break loop16;
+            	    break loop17;
                 }
             } while (true);
 
-            // Sql.g:104:55: ( compOpt ( VALUE | keyword ) )*
-            loop18:
+            // Sql.g:104:62: ( compOpt ( VALUE | keyword ) )*
+            loop19:
             do {
-                int alt18=2;
-                int LA18_0 = input.LA(1);
+                int alt19=2;
+                int LA19_0 = input.LA(1);
 
-                if ( ((LA18_0>=EQ && LA18_0<=NOT)) ) {
-                    alt18=1;
+                if ( ((LA19_0>=EQ && LA19_0<=NOT)) ) {
+                    alt19=1;
                 }
 
 
-                switch (alt18) {
+                switch (alt19) {
             	case 1 :
-            	    // Sql.g:104:56: compOpt ( VALUE | keyword )
+            	    // Sql.g:104:63: compOpt ( VALUE | keyword )
             	    {
-            	    pushFollow(FOLLOW_compOpt_in_genValue614);
+            	    pushFollow(FOLLOW_compOpt_in_genValue617);
             	    compOpt();
 
             	    state._fsp--;
 
-            	    // Sql.g:104:64: ( VALUE | keyword )
-            	    int alt17=2;
-            	    int LA17_0 = input.LA(1);
+            	    // Sql.g:104:71: ( VALUE | keyword )
+            	    int alt18=2;
+            	    int LA18_0 = input.LA(1);
 
-            	    if ( (LA17_0==VALUE) ) {
-            	        alt17=1;
+            	    if ( (LA18_0==VALUE) ) {
+            	        alt18=1;
             	    }
-            	    else if ( ((LA17_0>=15 && LA17_0<=103)) ) {
-            	        alt17=2;
+            	    else if ( ((LA18_0>=15 && LA18_0<=103)) ) {
+            	        alt18=2;
             	    }
             	    else {
             	        NoViableAltException nvae =
-            	            new NoViableAltException("", 17, 0, input);
+            	            new NoViableAltException("", 18, 0, input);
 
             	        throw nvae;
             	    }
-            	    switch (alt17) {
+            	    switch (alt18) {
             	        case 1 :
-            	            // Sql.g:104:65: VALUE
+            	            // Sql.g:104:72: VALUE
             	            {
-            	            match(input,VALUE,FOLLOW_VALUE_in_genValue617); 
+            	            match(input,VALUE,FOLLOW_VALUE_in_genValue620); 
 
             	            }
             	            break;
             	        case 2 :
-            	            // Sql.g:104:73: keyword
+            	            // Sql.g:104:80: keyword
             	            {
-            	            pushFollow(FOLLOW_keyword_in_genValue621);
+            	            pushFollow(FOLLOW_keyword_in_genValue624);
             	            keyword();
 
             	            state._fsp--;
@@ -1356,7 +1381,7 @@ public class SqlParser extends Parser {
             	    break;
 
             	default :
-            	    break loop18;
+            	    break loop19;
                 }
             } while (true);
 
@@ -1389,17 +1414,17 @@ public class SqlParser extends Parser {
             // Sql.g:107:10: ( genValue and genValue )
             // Sql.g:107:11: genValue and genValue
             {
-            pushFollow(FOLLOW_genValue_in_betValue633);
+            pushFollow(FOLLOW_genValue_in_betValue636);
             genValue();
 
             state._fsp--;
 
-            pushFollow(FOLLOW_and_in_betValue635);
+            pushFollow(FOLLOW_and_in_betValue638);
             and();
 
             state._fsp--;
 
-            pushFollow(FOLLOW_genValue_in_betValue637);
+            pushFollow(FOLLOW_genValue_in_betValue640);
             genValue();
 
             state._fsp--;
@@ -1433,28 +1458,28 @@ public class SqlParser extends Parser {
             // Sql.g:108:10: ( genValue ( COMMA genValue )* )
             // Sql.g:108:11: genValue ( COMMA genValue )*
             {
-            pushFollow(FOLLOW_genValue_in_inValue644);
+            pushFollow(FOLLOW_genValue_in_inValue647);
             genValue();
 
             state._fsp--;
 
             // Sql.g:108:20: ( COMMA genValue )*
-            loop19:
+            loop20:
             do {
-                int alt19=2;
-                int LA19_0 = input.LA(1);
+                int alt20=2;
+                int LA20_0 = input.LA(1);
 
-                if ( (LA19_0==COMMA) ) {
-                    alt19=1;
+                if ( (LA20_0==COMMA) ) {
+                    alt20=1;
                 }
 
 
-                switch (alt19) {
+                switch (alt20) {
             	case 1 :
             	    // Sql.g:108:22: COMMA genValue
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_inValue648); 
-            	    pushFollow(FOLLOW_genValue_in_inValue650);
+            	    match(input,COMMA,FOLLOW_COMMA_in_inValue651); 
+            	    pushFollow(FOLLOW_genValue_in_inValue653);
             	    genValue();
 
             	    state._fsp--;
@@ -1464,7 +1489,7 @@ public class SqlParser extends Parser {
             	    break;
 
             	default :
-            	    break loop19;
+            	    break loop20;
                 }
             } while (true);
 
@@ -1495,26 +1520,26 @@ public class SqlParser extends Parser {
 
         try {
             // Sql.g:109:11: ( and | or )
-            int alt20=2;
-            int LA20_0 = input.LA(1);
+            int alt21=2;
+            int LA21_0 = input.LA(1);
 
-            if ( ((LA20_0>=82 && LA20_0<=83)) ) {
-                alt20=1;
+            if ( ((LA21_0>=82 && LA21_0<=83)) ) {
+                alt21=1;
             }
-            else if ( ((LA20_0>=88 && LA20_0<=89)) ) {
-                alt20=2;
+            else if ( ((LA21_0>=88 && LA21_0<=89)) ) {
+                alt21=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("", 20, 0, input);
+                    new NoViableAltException("", 21, 0, input);
 
                 throw nvae;
             }
-            switch (alt20) {
+            switch (alt21) {
                 case 1 :
                     // Sql.g:109:12: and
                     {
-                    pushFollow(FOLLOW_and_in_logicalOp659);
+                    pushFollow(FOLLOW_and_in_logicalOp662);
                     and();
 
                     state._fsp--;
@@ -1525,7 +1550,7 @@ public class SqlParser extends Parser {
                 case 2 :
                     // Sql.g:109:16: or
                     {
-                    pushFollow(FOLLOW_or_in_logicalOp661);
+                    pushFollow(FOLLOW_or_in_logicalOp664);
                     or();
 
                     state._fsp--;
@@ -1549,198 +1574,11 @@ public class SqlParser extends Parser {
     // $ANTLR end "logicalOp"
 
 
-    // $ANTLR start "keyword"
-    // Sql.g:111:1: keyword : ( entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where );
-    public final void keyword() throws RecognitionException {
-        try {
-            // Sql.g:111:10: ( entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where )
-            int alt21=15;
-            alt21 = dfa21.predict(input);
-            switch (alt21) {
-                case 1 :
-                    // Sql.g:111:12: entity
-                    {
-                    pushFollow(FOLLOW_entity_in_keyword670);
-                    entity();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 2 :
-                    // Sql.g:111:21: attr
-                    {
-                    pushFollow(FOLLOW_attr_in_keyword674);
-                    attr();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 3 :
-                    // Sql.g:111:28: funct
-                    {
-                    pushFollow(FOLLOW_funct_in_keyword678);
-                    funct();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 4 :
-                    // Sql.g:111:36: select
-                    {
-                    pushFollow(FOLLOW_select_in_keyword682);
-                    select();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 5 :
-                    // Sql.g:111:45: and
-                    {
-                    pushFollow(FOLLOW_and_in_keyword686);
-                    and();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 6 :
-                    // Sql.g:111:51: order
-                    {
-                    pushFollow(FOLLOW_order_in_keyword690);
-                    order();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 7 :
-                    // Sql.g:111:59: by
-                    {
-                    pushFollow(FOLLOW_by_in_keyword694);
-                    by();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 8 :
-                    // Sql.g:111:64: or
-                    {
-                    pushFollow(FOLLOW_or_in_keyword698);
-                    or();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 9 :
-                    // Sql.g:111:69: in
-                    {
-                    pushFollow(FOLLOW_in_in_keyword702);
-                    in();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 10 :
-                    // Sql.g:111:74: not
-                    {
-                    pushFollow(FOLLOW_not_in_keyword706);
-                    not();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 11 :
-                    // Sql.g:111:80: like
-                    {
-                    pushFollow(FOLLOW_like_in_keyword710);
-                    like();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 12 :
-                    // Sql.g:111:87: asc
-                    {
-                    pushFollow(FOLLOW_asc_in_keyword714);
-                    asc();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 13 :
-                    // Sql.g:111:93: desc
-                    {
-                    pushFollow(FOLLOW_desc_in_keyword718);
-                    desc();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 14 :
-                    // Sql.g:111:100: between
-                    {
-                    pushFollow(FOLLOW_between_in_keyword722);
-                    between();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-                case 15 :
-                    // Sql.g:111:110: where
-                    {
-                    pushFollow(FOLLOW_where_in_keyword726);
-                    where();
-
-                    state._fsp--;
-
-
-                    }
-                    break;
-
-            }
-        }
-
-        catch (RecognitionException e) {
-        	throw e;
-        }
-        finally {
-        }
-        return ;
-    }
-    // $ANTLR end "keyword"
-
-
     // $ANTLR start "entity"
-    // Sql.g:113:1: entity : ( 'ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' | 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch' );
+    // Sql.g:111:1: entity : ( 'ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' | 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch' );
     public final void entity() throws RecognitionException {
         try {
-            // Sql.g:113:9: ( 'ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' | 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch' )
+            // Sql.g:111:9: ( 'ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group' | 'pset' | 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch' )
             // Sql.g:
             {
             if ( (input.LA(1)>=15 && input.LA(1)<=36) ) {
@@ -1768,10 +1606,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "attr"
-    // Sql.g:114:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family' | 'exe' | 'annotation' | 'checksum' );
+    // Sql.g:112:1: attr : ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family' | 'exe' | 'annotation' | 'checksum' );
     public final void attr() throws RecognitionException {
         try {
-            // Sql.g:114:7: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family' | 'exe' | 'annotation' | 'checksum' )
+            // Sql.g:112:7: ( 'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family' | 'exe' | 'annotation' | 'checksum' )
             // Sql.g:
             {
             if ( (input.LA(1)>=17 && input.LA(1)<=19)||(input.LA(1)>=37 && input.LA(1)<=70) ) {
@@ -1799,10 +1637,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "funct"
-    // Sql.g:115:1: funct : ( 'count' | 'sum' | 'max' | 'min' | 'avg' | 'COUNT' | 'SUM' | 'MAX' | 'MIN' | 'AVG' );
+    // Sql.g:113:1: funct : ( 'count' | 'sum' | 'max' | 'min' | 'avg' | 'COUNT' | 'SUM' | 'MAX' | 'MIN' | 'AVG' );
     public final void funct() throws RecognitionException {
         try {
-            // Sql.g:115:8: ( 'count' | 'sum' | 'max' | 'min' | 'avg' | 'COUNT' | 'SUM' | 'MAX' | 'MIN' | 'AVG' )
+            // Sql.g:113:8: ( 'count' | 'sum' | 'max' | 'min' | 'avg' | 'COUNT' | 'SUM' | 'MAX' | 'MIN' | 'AVG' )
             // Sql.g:
             {
             if ( input.LA(1)==54||(input.LA(1)>=71 && input.LA(1)<=79) ) {
@@ -1830,10 +1668,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "select"
-    // Sql.g:117:1: select : ( 'find' | 'FIND' );
+    // Sql.g:115:1: select : ( 'find' | 'FIND' );
     public final void select() throws RecognitionException {
         try {
-            // Sql.g:117:9: ( 'find' | 'FIND' )
+            // Sql.g:115:9: ( 'find' | 'FIND' )
             // Sql.g:
             {
             if ( (input.LA(1)>=80 && input.LA(1)<=81) ) {
@@ -1861,10 +1699,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "and"
-    // Sql.g:118:1: and : ( 'and' | 'AND' );
+    // Sql.g:116:1: and : ( 'and' | 'AND' );
     public final void and() throws RecognitionException {
         try {
-            // Sql.g:118:6: ( 'and' | 'AND' )
+            // Sql.g:116:6: ( 'and' | 'AND' )
             // Sql.g:
             {
             if ( (input.LA(1)>=82 && input.LA(1)<=83) ) {
@@ -1892,10 +1730,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "order"
-    // Sql.g:119:1: order : ( 'order' | 'ORDER' );
+    // Sql.g:117:1: order : ( 'order' | 'ORDER' );
     public final void order() throws RecognitionException {
         try {
-            // Sql.g:119:8: ( 'order' | 'ORDER' )
+            // Sql.g:117:8: ( 'order' | 'ORDER' )
             // Sql.g:
             {
             if ( (input.LA(1)>=84 && input.LA(1)<=85) ) {
@@ -1923,10 +1761,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "by"
-    // Sql.g:120:1: by : ( 'by' | 'BY' );
+    // Sql.g:118:1: by : ( 'by' | 'BY' );
     public final void by() throws RecognitionException {
         try {
-            // Sql.g:120:5: ( 'by' | 'BY' )
+            // Sql.g:118:5: ( 'by' | 'BY' )
             // Sql.g:
             {
             if ( (input.LA(1)>=86 && input.LA(1)<=87) ) {
@@ -1954,10 +1792,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "or"
-    // Sql.g:121:1: or : ( 'or' | 'OR' );
+    // Sql.g:119:1: or : ( 'or' | 'OR' );
     public final void or() throws RecognitionException {
         try {
-            // Sql.g:121:5: ( 'or' | 'OR' )
+            // Sql.g:119:5: ( 'or' | 'OR' )
             // Sql.g:
             {
             if ( (input.LA(1)>=88 && input.LA(1)<=89) ) {
@@ -1987,13 +1825,13 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start "in"
-    // Sql.g:122:1: in : ( 'in' | 'IN' );
+    // Sql.g:120:1: in : ( 'in' | 'IN' );
     public final SqlParser.in_return in() throws RecognitionException {
         SqlParser.in_return retval = new SqlParser.in_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:122:5: ( 'in' | 'IN' )
+            // Sql.g:120:5: ( 'in' | 'IN' )
             // Sql.g:
             {
             if ( (input.LA(1)>=90 && input.LA(1)<=91) ) {
@@ -2023,10 +1861,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "not"
-    // Sql.g:123:1: not : ( 'not' | 'NOT' );
+    // Sql.g:121:1: not : ( 'not' | 'NOT' );
     public final void not() throws RecognitionException {
         try {
-            // Sql.g:123:6: ( 'not' | 'NOT' )
+            // Sql.g:121:6: ( 'not' | 'NOT' )
             // Sql.g:
             {
             if ( (input.LA(1)>=92 && input.LA(1)<=93) ) {
@@ -2054,10 +1892,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "like"
-    // Sql.g:124:1: like : ( 'like' | 'LIKE' );
+    // Sql.g:122:1: like : ( 'like' | 'LIKE' );
     public final void like() throws RecognitionException {
         try {
-            // Sql.g:124:7: ( 'like' | 'LIKE' )
+            // Sql.g:122:7: ( 'like' | 'LIKE' )
             // Sql.g:
             {
             if ( (input.LA(1)>=94 && input.LA(1)<=95) ) {
@@ -2085,18 +1923,18 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "notLike"
-    // Sql.g:125:1: notLike : not like ;
+    // Sql.g:123:1: notLike : not like ;
     public final void notLike() throws RecognitionException {
         try {
-            // Sql.g:125:10: ( not like )
-            // Sql.g:125:12: not like
+            // Sql.g:123:10: ( not like )
+            // Sql.g:123:12: not like
             {
-            pushFollow(FOLLOW_not_in_notLike1107);
+            pushFollow(FOLLOW_not_in_notLike1045);
             not();
 
             state._fsp--;
 
-            pushFollow(FOLLOW_like_in_notLike1109);
+            pushFollow(FOLLOW_like_in_notLike1047);
             like();
 
             state._fsp--;
@@ -2119,13 +1957,13 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start "genLike"
-    // Sql.g:126:1: genLike : ( like | notLike );
+    // Sql.g:124:1: genLike : ( like | notLike );
     public final SqlParser.genLike_return genLike() throws RecognitionException {
         SqlParser.genLike_return retval = new SqlParser.genLike_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:126:10: ( like | notLike )
+            // Sql.g:124:10: ( like | notLike )
             int alt22=2;
             int LA22_0 = input.LA(1);
 
@@ -2143,9 +1981,9 @@ public class SqlParser extends Parser {
             }
             switch (alt22) {
                 case 1 :
-                    // Sql.g:126:12: like
+                    // Sql.g:124:12: like
                     {
-                    pushFollow(FOLLOW_like_in_genLike1117);
+                    pushFollow(FOLLOW_like_in_genLike1055);
                     like();
 
                     state._fsp--;
@@ -2154,9 +1992,9 @@ public class SqlParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Sql.g:126:19: notLike
+                    // Sql.g:124:19: notLike
                     {
-                    pushFollow(FOLLOW_notLike_in_genLike1121);
+                    pushFollow(FOLLOW_notLike_in_genLike1059);
                     notLike();
 
                     state._fsp--;
@@ -2181,10 +2019,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "asc"
-    // Sql.g:127:1: asc : ( 'asc' | 'ASC' );
+    // Sql.g:125:1: asc : ( 'asc' | 'ASC' );
     public final void asc() throws RecognitionException {
         try {
-            // Sql.g:127:6: ( 'asc' | 'ASC' )
+            // Sql.g:125:6: ( 'asc' | 'ASC' )
             // Sql.g:
             {
             if ( (input.LA(1)>=96 && input.LA(1)<=97) ) {
@@ -2212,10 +2050,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "desc"
-    // Sql.g:128:1: desc : ( 'desc' | 'DESC' );
+    // Sql.g:126:1: desc : ( 'desc' | 'DESC' );
     public final void desc() throws RecognitionException {
         try {
-            // Sql.g:128:7: ( 'desc' | 'DESC' )
+            // Sql.g:126:7: ( 'desc' | 'DESC' )
             // Sql.g:
             {
             if ( (input.LA(1)>=98 && input.LA(1)<=99) ) {
@@ -2245,13 +2083,13 @@ public class SqlParser extends Parser {
     };
 
     // $ANTLR start "between"
-    // Sql.g:129:1: between : ( 'between' | 'BETWEEN' );
+    // Sql.g:127:1: between : ( 'between' | 'BETWEEN' );
     public final SqlParser.between_return between() throws RecognitionException {
         SqlParser.between_return retval = new SqlParser.between_return();
         retval.start = input.LT(1);
 
         try {
-            // Sql.g:129:10: ( 'between' | 'BETWEEN' )
+            // Sql.g:127:10: ( 'between' | 'BETWEEN' )
             // Sql.g:
             {
             if ( (input.LA(1)>=100 && input.LA(1)<=101) ) {
@@ -2281,10 +2119,10 @@ public class SqlParser extends Parser {
 
 
     // $ANTLR start "where"
-    // Sql.g:132:1: where : ( 'where' | 'WHERE' );
+    // Sql.g:128:1: where : ( 'where' | 'WHERE' );
     public final void where() throws RecognitionException {
         try {
-            // Sql.g:132:8: ( 'where' | 'WHERE' )
+            // Sql.g:128:8: ( 'where' | 'WHERE' )
             // Sql.g:
             {
             if ( (input.LA(1)>=102 && input.LA(1)<=103) ) {
@@ -2310,35 +2148,222 @@ public class SqlParser extends Parser {
     }
     // $ANTLR end "where"
 
+
+    // $ANTLR start "keyword"
+    // Sql.g:130:1: keyword : ( entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where );
+    public final void keyword() throws RecognitionException {
+        try {
+            // Sql.g:130:10: ( entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where )
+            int alt23=15;
+            alt23 = dfa23.predict(input);
+            switch (alt23) {
+                case 1 :
+                    // Sql.g:130:12: entity
+                    {
+                    pushFollow(FOLLOW_entity_in_keyword1112);
+                    entity();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 2 :
+                    // Sql.g:130:21: attr
+                    {
+                    pushFollow(FOLLOW_attr_in_keyword1116);
+                    attr();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 3 :
+                    // Sql.g:130:28: funct
+                    {
+                    pushFollow(FOLLOW_funct_in_keyword1120);
+                    funct();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 4 :
+                    // Sql.g:130:36: select
+                    {
+                    pushFollow(FOLLOW_select_in_keyword1124);
+                    select();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 5 :
+                    // Sql.g:130:45: and
+                    {
+                    pushFollow(FOLLOW_and_in_keyword1128);
+                    and();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 6 :
+                    // Sql.g:130:51: order
+                    {
+                    pushFollow(FOLLOW_order_in_keyword1132);
+                    order();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 7 :
+                    // Sql.g:130:59: by
+                    {
+                    pushFollow(FOLLOW_by_in_keyword1136);
+                    by();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 8 :
+                    // Sql.g:130:64: or
+                    {
+                    pushFollow(FOLLOW_or_in_keyword1140);
+                    or();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 9 :
+                    // Sql.g:130:69: in
+                    {
+                    pushFollow(FOLLOW_in_in_keyword1144);
+                    in();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 10 :
+                    // Sql.g:130:74: not
+                    {
+                    pushFollow(FOLLOW_not_in_keyword1148);
+                    not();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 11 :
+                    // Sql.g:130:80: like
+                    {
+                    pushFollow(FOLLOW_like_in_keyword1152);
+                    like();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 12 :
+                    // Sql.g:130:87: asc
+                    {
+                    pushFollow(FOLLOW_asc_in_keyword1156);
+                    asc();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 13 :
+                    // Sql.g:130:93: desc
+                    {
+                    pushFollow(FOLLOW_desc_in_keyword1160);
+                    desc();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 14 :
+                    // Sql.g:130:100: between
+                    {
+                    pushFollow(FOLLOW_between_in_keyword1164);
+                    between();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+                case 15 :
+                    // Sql.g:130:110: where
+                    {
+                    pushFollow(FOLLOW_where_in_keyword1168);
+                    where();
+
+                    state._fsp--;
+
+
+                    }
+                    break;
+
+            }
+        }
+
+        catch (RecognitionException e) {
+        	throw e;
+        }
+        finally {
+        }
+        return ;
+    }
+    // $ANTLR end "keyword"
+
     // Delegated rules
 
 
     protected DFA3 dfa3 = new DFA3(this);
     protected DFA13 dfa13 = new DFA13(this);
-    protected DFA21 dfa21 = new DFA21(this);
+    protected DFA23 dfa23 = new DFA23(this);
     static final String DFA3_eotS =
         "\12\uffff";
     static final String DFA3_eofS =
-        "\1\uffff\1\5\4\uffff\2\5\1\uffff\1\5";
+        "\1\uffff\1\3\4\uffff\2\3\1\uffff\1\3";
     static final String DFA3_minS =
-        "\1\17\1\4\1\21\1\17\2\uffff\2\4\1\21\1\4";
+        "\1\17\1\4\1\17\1\uffff\1\21\1\uffff\2\4\1\21\1\4";
     static final String DFA3_maxS =
-        "\1\44\1\143\1\106\1\44\2\uffff\2\143\1\106\1\143";
+        "\1\44\1\143\1\44\1\uffff\1\106\1\uffff\2\143\1\106\1\143";
     static final String DFA3_acceptS =
-        "\4\uffff\1\2\1\1\4\uffff";
+        "\3\uffff\1\1\1\uffff\1\2\4\uffff";
     static final String DFA3_specialS =
         "\12\uffff}>";
     static final String[] DFA3_transitionS = {
             "\26\1",
-            "\1\3\1\2\10\uffff\1\5\121\uffff\4\4",
-            "\3\6\21\uffff\42\6",
-            "\26\7",
+            "\1\2\1\4\10\uffff\1\3\121\uffff\4\5",
+            "\26\6",
             "",
+            "\3\7\21\uffff\42\7",
             "",
-            "\1\3\11\uffff\1\5\121\uffff\4\4",
-            "\1\3\1\10\10\uffff\1\5\121\uffff\4\4",
+            "\1\2\1\10\10\uffff\1\3\121\uffff\4\5",
+            "\1\2\11\uffff\1\3\121\uffff\4\5",
             "\3\11\21\uffff\42\11",
-            "\1\3\11\uffff\1\5\121\uffff\4\4"
+            "\1\2\11\uffff\1\3\121\uffff\4\5"
     };
 
     static final short[] DFA3_eot = DFA.unpackEncodedString(DFA3_eotS);
@@ -2435,20 +2460,20 @@ public class SqlParser extends Parser {
             return "95:1: compOpt : ( EQ | LT | GT | NOT EQ | EQ GT | EQ LT | LT EQ | GT EQ | LT GT );";
         }
     }
-    static final String DFA21_eotS =
+    static final String DFA23_eotS =
         "\20\uffff";
-    static final String DFA21_eofS =
+    static final String DFA23_eofS =
         "\20\uffff";
-    static final String DFA21_minS =
+    static final String DFA23_minS =
         "\1\17\17\uffff";
-    static final String DFA21_maxS =
+    static final String DFA23_maxS =
         "\1\147\17\uffff";
-    static final String DFA21_acceptS =
+    static final String DFA23_acceptS =
         "\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1"+
         "\15\1\16\1\17";
-    static final String DFA21_specialS =
+    static final String DFA23_specialS =
         "\20\uffff}>";
-    static final String[] DFA21_transitionS = {
+    static final String[] DFA23_transitionS = {
             "\26\1\42\2\11\3\2\4\2\5\2\6\2\7\2\10\2\11\2\12\2\13\2\14\2\15"+
             "\2\16\2\17",
             "",
@@ -2468,37 +2493,37 @@ public class SqlParser extends Parser {
             ""
     };
 
-    static final short[] DFA21_eot = DFA.unpackEncodedString(DFA21_eotS);
-    static final short[] DFA21_eof = DFA.unpackEncodedString(DFA21_eofS);
-    static final char[] DFA21_min = DFA.unpackEncodedStringToUnsignedChars(DFA21_minS);
-    static final char[] DFA21_max = DFA.unpackEncodedStringToUnsignedChars(DFA21_maxS);
-    static final short[] DFA21_accept = DFA.unpackEncodedString(DFA21_acceptS);
-    static final short[] DFA21_special = DFA.unpackEncodedString(DFA21_specialS);
-    static final short[][] DFA21_transition;
+    static final short[] DFA23_eot = DFA.unpackEncodedString(DFA23_eotS);
+    static final short[] DFA23_eof = DFA.unpackEncodedString(DFA23_eofS);
+    static final char[] DFA23_min = DFA.unpackEncodedStringToUnsignedChars(DFA23_minS);
+    static final char[] DFA23_max = DFA.unpackEncodedStringToUnsignedChars(DFA23_maxS);
+    static final short[] DFA23_accept = DFA.unpackEncodedString(DFA23_acceptS);
+    static final short[] DFA23_special = DFA.unpackEncodedString(DFA23_specialS);
+    static final short[][] DFA23_transition;
 
     static {
-        int numStates = DFA21_transitionS.length;
-        DFA21_transition = new short[numStates][];
+        int numStates = DFA23_transitionS.length;
+        DFA23_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA21_transition[i] = DFA.unpackEncodedString(DFA21_transitionS[i]);
+            DFA23_transition[i] = DFA.unpackEncodedString(DFA23_transitionS[i]);
         }
     }
 
-    class DFA21 extends DFA {
+    class DFA23 extends DFA {
 
-        public DFA21(BaseRecognizer recognizer) {
+        public DFA23(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 21;
-            this.eot = DFA21_eot;
-            this.eof = DFA21_eof;
-            this.min = DFA21_min;
-            this.max = DFA21_max;
-            this.accept = DFA21_accept;
-            this.special = DFA21_special;
-            this.transition = DFA21_transition;
+            this.decisionNumber = 23;
+            this.eot = DFA23_eot;
+            this.eof = DFA23_eof;
+            this.min = DFA23_min;
+            this.max = DFA23_max;
+            this.accept = DFA23_accept;
+            this.special = DFA23_special;
+            this.transition = DFA23_transition;
         }
         public String getDescription() {
-            return "111:1: keyword : ( entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where );";
+            return "130:1: keyword : ( entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where );";
         }
     }
  
@@ -2568,37 +2593,23 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_EQ_in_compOpt578 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_LT_in_compOpt583 = new BitSet(new long[]{0x0000000000000400L});
     public static final BitSet FOLLOW_GT_in_compOpt585 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_in_genValue593 = new BitSet(new long[]{0x0000000000000F22L});
-    public static final BitSet FOLLOW_keyword_in_genValue597 = new BitSet(new long[]{0x0000000000000F22L});
-    public static final BitSet FOLLOW_DOT_in_genValue601 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
-    public static final BitSet FOLLOW_VALUE_in_genValue604 = new BitSet(new long[]{0x0000000000000F22L});
-    public static final BitSet FOLLOW_keyword_in_genValue608 = new BitSet(new long[]{0x0000000000000F22L});
-    public static final BitSet FOLLOW_compOpt_in_genValue614 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
-    public static final BitSet FOLLOW_VALUE_in_genValue617 = new BitSet(new long[]{0x0000000000000F02L});
-    public static final BitSet FOLLOW_keyword_in_genValue621 = new BitSet(new long[]{0x0000000000000F02L});
-    public static final BitSet FOLLOW_genValue_in_betValue633 = new BitSet(new long[]{0x0000000000000000L,0x00000000000C0000L});
-    public static final BitSet FOLLOW_and_in_betValue635 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
-    public static final BitSet FOLLOW_genValue_in_betValue637 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_genValue_in_inValue644 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_COMMA_in_inValue648 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
-    public static final BitSet FOLLOW_genValue_in_inValue650 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_and_in_logicalOp659 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_or_in_logicalOp661 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entity_in_keyword670 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_attr_in_keyword674 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_funct_in_keyword678 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_select_in_keyword682 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_and_in_keyword686 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_order_in_keyword690 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_by_in_keyword694 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_or_in_keyword698 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_in_in_keyword702 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_not_in_keyword706 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_like_in_keyword710 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_asc_in_keyword714 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_desc_in_keyword718 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_between_in_keyword722 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_where_in_keyword726 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_in_genValue593 = new BitSet(new long[]{0x0000000000001F22L});
+    public static final BitSet FOLLOW_keyword_in_genValue597 = new BitSet(new long[]{0x0000000000001F22L});
+    public static final BitSet FOLLOW_VALUE_in_genValue600 = new BitSet(new long[]{0x0000000000001F22L});
+    public static final BitSet FOLLOW_DOT_in_genValue604 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
+    public static final BitSet FOLLOW_VALUE_in_genValue607 = new BitSet(new long[]{0x0000000000000F22L});
+    public static final BitSet FOLLOW_keyword_in_genValue611 = new BitSet(new long[]{0x0000000000000F22L});
+    public static final BitSet FOLLOW_compOpt_in_genValue617 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
+    public static final BitSet FOLLOW_VALUE_in_genValue620 = new BitSet(new long[]{0x0000000000000F02L});
+    public static final BitSet FOLLOW_keyword_in_genValue624 = new BitSet(new long[]{0x0000000000000F02L});
+    public static final BitSet FOLLOW_genValue_in_betValue636 = new BitSet(new long[]{0x0000000000000000L,0x00000000000C0000L});
+    public static final BitSet FOLLOW_and_in_betValue638 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
+    public static final BitSet FOLLOW_genValue_in_betValue640 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_genValue_in_inValue647 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_COMMA_in_inValue651 = new BitSet(new long[]{0xFFFFFFFFFFFF9000L,0x000000FFFFFFFFFFL});
+    public static final BitSet FOLLOW_genValue_in_inValue653 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_and_in_logicalOp662 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_or_in_logicalOp664 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_entity0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_attr0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_funct0 = new BitSet(new long[]{0x0000000000000002L});
@@ -2610,13 +2621,28 @@ public class SqlParser extends Parser {
     public static final BitSet FOLLOW_set_in_in0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_not0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_like0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_not_in_notLike1107 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
-    public static final BitSet FOLLOW_like_in_notLike1109 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_like_in_genLike1117 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_notLike_in_genLike1121 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_not_in_notLike1045 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
+    public static final BitSet FOLLOW_like_in_notLike1047 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_like_in_genLike1055 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_notLike_in_genLike1059 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_asc0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_desc0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_between0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_where0 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_entity_in_keyword1112 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_attr_in_keyword1116 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_funct_in_keyword1120 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_select_in_keyword1124 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_and_in_keyword1128 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_order_in_keyword1132 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_by_in_keyword1136 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_or_in_keyword1140 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_in_in_keyword1144 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_not_in_keyword1148 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_like_in_keyword1152 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_asc_in_keyword1156 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_desc_in_keyword1160 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_between_in_keyword1164 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_where_in_keyword1168 = new BitSet(new long[]{0x0000000000000002L});
 
 }

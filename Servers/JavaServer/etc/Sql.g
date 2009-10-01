@@ -101,14 +101,12 @@ compOpt		:EQ
 		|LT EQ
 		|GT EQ
 		|LT GT;
-genValue	: (VALUE | keyword) (DOT (VALUE | keyword))* (compOpt (VALUE | keyword))* ;
+genValue	: (VALUE | keyword) VALUE* (DOT (VALUE | keyword))* (compOpt (VALUE | keyword))* ;
 //genValue	:dotValue
 //		|dotValue compOpt dotValue (AMP dotValue compOpt dotValue)*;
 betValue	:genValue and genValue;
 inValue		:genValue ( COMMA genValue )*;
 logicalOp	:and|or;
-
-keyword		: entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where;
 
 entity		:'ads' | 'config' | 'dataset' | 'release' | 'tier' | 'site' | 'block' | 'file' | 'primds' | 'procds' | 'run' | 'lumi' | 'dq' | 'ilumi' | 'phygrp' | 'group'| 'pset'| 'algo' | 'datatype' | 'mcdesc' | 'trigdesc' | 'branch';
 attr		:'createdate' | 'moddate' | 'starttime' | 'endtime' | 'createby' | 'modby' | 'name' | 'dataset' | 'version' | 'number' | 'startevnum' | 'endevnum' | 'numevents' | 'numfiles' | 'numlss' | 'totlumi' | 'store' | 'size' | 'release' | 'count' | 'status' | 'type' | 'id' | 'parent' | 'child' | 'tier' | 'def' | 'evnum' | 'era' | 'tag' | 'xsection' | 'hash' | 'content' | 'family'| 'exe' | 'annotation' | 'checksum' ;
@@ -127,9 +125,10 @@ genLike		: like | notLike;
 asc		:'asc' | 'ASC';
 desc		:'desc' | 'DESC';
 between		:'between' | 'BETWEEN';
-//VALUE		:('a' .. 'z' | '0' .. '9' | 'A' .. 'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' | '&' | '>' | '<' | '=' | '!')* ;
-VALUE		:('a' .. 'z' | '0' .. '9' | 'A' .. 'Z' | '/'|'-'|'_'|':'|'#'|'*'|'%' | '&') ('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' | '&')* ;
 where		:'where' | 'WHERE';
+//VALUE		:('a' .. 'z' | '0' .. '9' | 'A' .. 'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' | '&' | '>' | '<' | '=' | '!')* ;
+keyword		: entity | attr | funct | select | and | order | by | or | in | not | like | asc | desc | between | where;
+VALUE		:('a' .. 'z' | '0' .. '9' | 'A' .. 'Z' | '/'|'-'|'_'|':'|'#'|'*'|'%' | '&') ('a'..'z'|'A'..'Z'|'0'..'9'|'/'|'-'|'_'|':'|'#'|'*'|'%' | '&')* ;
 LB		: '(';
 RB		: ')';
 COMMA		:',';
