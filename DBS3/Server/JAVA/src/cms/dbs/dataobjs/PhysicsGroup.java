@@ -1,35 +1,37 @@
 /**
  * 
- $Revision: 1.2 $"
- $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
+ $Revision: $"
+ $Id: $"
  *
  * Data Object from table : PHYSICS_GROUPS
 */
 
 package cms.dbs.dataobjs;
 
-public class PhysicsGroup extends JSONObject {
+import org.json.JSONObject;
+
+public class PhysicsGroup extends JSONObject  {
 
 	public PhysicsGroup ( ) {
 
 	}
-
-        public PhysicsGroup ( int physicsGroupID, String physicsGroupName, String physicsGroupConvener )  {
+		
+        public PhysicsGroup ( int physicsGroupID, String physicsGroupName, String physicsGroupConvener ) throws Exception  {
 		
                 this.putOnce("PHYSICS_GROUP_ID", (Integer) physicsGroupID );
                 this.putOnce("PHYSICS_GROUP_NAME", (String) physicsGroupName );
                 this.putOnce("PHYSICS_GROUP_CONVENER", (String) physicsGroupConvener );
         }
 
-	int getPhysicsGroupID ( ) {
-		int physicsGroupID = null;
+	int getPhysicsGroupID ( )  throws Exception {
+		int physicsGroupID = 0;
                	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_ID"))) {
                        	physicsGroupID = (Integer) this.get("PHYSICS_GROUP_ID");
                	}
                 return physicsGroupID;
         }
 	
-	String getPhysicsGroupName ( ) {
+	String getPhysicsGroupName ( )  throws Exception {
 		String physicsGroupName = null;
                	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_NAME"))) {
                        	physicsGroupName = (String) this.get("PHYSICS_GROUP_NAME");
@@ -37,7 +39,7 @@ public class PhysicsGroup extends JSONObject {
                 return physicsGroupName;
         }
 	
-	String getPhysicsGroupConvener ( ) {
+	String getPhysicsGroupConvener ( )  throws Exception {
 		String physicsGroupConvener = null;
                	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_CONVENER"))) {
                        	physicsGroupConvener = (String) this.get("PHYSICS_GROUP_CONVENER");

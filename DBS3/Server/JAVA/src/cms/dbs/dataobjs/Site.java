@@ -1,34 +1,36 @@
 /**
  * 
- $Revision: 1.2 $"
- $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
+ $Revision: $"
+ $Id: $"
  *
  * Data Object from table : SITES
 */
 
 package cms.dbs.dataobjs;
 
-public class Site extends JSONObject {
+import org.json.JSONObject;
+
+public class Site extends JSONObject  {
 
 	public Site ( ) {
 
 	}
-
-        public Site ( int siteID, String siteName )  {
+		
+        public Site ( int siteID, String siteName ) throws Exception  {
 		
                 this.putOnce("SITE_ID", (Integer) siteID );
                 this.putOnce("SITE_NAME", (String) siteName );
         }
 
-	int getSiteID ( ) {
-		int siteID = null;
+	int getSiteID ( )  throws Exception {
+		int siteID = 0;
                	if (!JSONObject.NULL.equals(this.get("SITE_ID"))) {
                        	siteID = (Integer) this.get("SITE_ID");
                	}
                 return siteID;
         }
 	
-	String getSiteName ( ) {
+	String getSiteName ( )  throws Exception {
 		String siteName = null;
                	if (!JSONObject.NULL.equals(this.get("SITE_NAME"))) {
                        	siteName = (String) this.get("SITE_NAME");

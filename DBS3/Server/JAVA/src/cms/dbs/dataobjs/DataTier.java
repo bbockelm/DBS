@@ -1,20 +1,22 @@
 /**
  * 
- $Revision: 1.2 $"
- $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
+ $Revision: $"
+ $Id: $"
  *
  * Data Object from table : DATA_TIERS
 */
 
 package cms.dbs.dataobjs;
 
-public class DataTier extends JSONObject {
+import org.json.JSONObject;
+
+public class DataTier extends JSONObject  {
 
 	public DataTier ( ) {
 
 	}
-
-        public DataTier ( int dataTierID, String dataTierName, int creationDate, String createBy )  {
+		
+        public DataTier ( int dataTierID, String dataTierName, int creationDate, String createBy ) throws Exception  {
 		
                 this.putOnce("DATA_TIER_ID", (Integer) dataTierID );
                 this.putOnce("DATA_TIER_NAME", (String) dataTierName );
@@ -22,15 +24,15 @@ public class DataTier extends JSONObject {
                 this.putOnce("CREATE_BY", (String) createBy );
         }
 
-	int getDataTierID ( ) {
-		int dataTierID = null;
+	int getDataTierID ( )  throws Exception {
+		int dataTierID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATA_TIER_ID"))) {
                        	dataTierID = (Integer) this.get("DATA_TIER_ID");
                	}
                 return dataTierID;
         }
 	
-	String getDataTierName ( ) {
+	String getDataTierName ( )  throws Exception {
 		String dataTierName = null;
                	if (!JSONObject.NULL.equals(this.get("DATA_TIER_NAME"))) {
                        	dataTierName = (String) this.get("DATA_TIER_NAME");
@@ -38,15 +40,15 @@ public class DataTier extends JSONObject {
                 return dataTierName;
         }
 	
-	int getCreationDate ( ) {
-		int creationDate = null;
+	int getCreationDate ( )  throws Exception {
+		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
                        	creationDate = (Integer) this.get("CREATION_DATE");
                	}
                 return creationDate;
         }
 	
-	String getCreateBy ( ) {
+	String getCreateBy ( )  throws Exception {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {
                        	createBy = (String) this.get("CREATE_BY");

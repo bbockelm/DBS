@@ -1,20 +1,22 @@
 /**
  * 
- $Revision: 1.2 $"
- $Id: generate_dataobjs.py,v 1.2 2009/09/04 20:21:16 afaq Exp $"
+ $Revision: $"
+ $Id: $"
  *
  * Data Object from table : DBS_VERSIONS
 */
 
 package cms.dbs.dataobjs;
 
-public class DbsVersion extends JSONObject {
+import org.json.JSONObject;
+
+public class DbsVersion extends JSONObject  {
 
 	public DbsVersion ( ) {
 
 	}
-
-        public DbsVersion ( int dbsVersionID, String schemaVersion, String dbsReleaseVersion, String instanceName, String instanceType, int creationDate, int lastModificationDate )  {
+		
+        public DbsVersion ( int dbsVersionID, String schemaVersion, String dbsReleaseVersion, String instanceName, String instanceType, int creationDate, int lastModificationDate ) throws Exception  {
 		
                 this.putOnce("DBS_VERSION_ID", (Integer) dbsVersionID );
                 this.putOnce("SCHEMA_VERSION", (String) schemaVersion );
@@ -25,15 +27,15 @@ public class DbsVersion extends JSONObject {
                 this.putOnce("LAST_MODIFICATION_DATE", (Integer) lastModificationDate );
         }
 
-	int getDbsVersionID ( ) {
-		int dbsVersionID = null;
+	int getDbsVersionID ( )  throws Exception {
+		int dbsVersionID = 0;
                	if (!JSONObject.NULL.equals(this.get("DBS_VERSION_ID"))) {
                        	dbsVersionID = (Integer) this.get("DBS_VERSION_ID");
                	}
                 return dbsVersionID;
         }
 	
-	String getSchemaVersion ( ) {
+	String getSchemaVersion ( )  throws Exception {
 		String schemaVersion = null;
                	if (!JSONObject.NULL.equals(this.get("SCHEMA_VERSION"))) {
                        	schemaVersion = (String) this.get("SCHEMA_VERSION");
@@ -41,7 +43,7 @@ public class DbsVersion extends JSONObject {
                 return schemaVersion;
         }
 	
-	String getDbsReleaseVersion ( ) {
+	String getDbsReleaseVersion ( )  throws Exception {
 		String dbsReleaseVersion = null;
                	if (!JSONObject.NULL.equals(this.get("DBS_RELEASE_VERSION"))) {
                        	dbsReleaseVersion = (String) this.get("DBS_RELEASE_VERSION");
@@ -49,7 +51,7 @@ public class DbsVersion extends JSONObject {
                 return dbsReleaseVersion;
         }
 	
-	String getInstanceName ( ) {
+	String getInstanceName ( )  throws Exception {
 		String instanceName = null;
                	if (!JSONObject.NULL.equals(this.get("INSTANCE_NAME"))) {
                        	instanceName = (String) this.get("INSTANCE_NAME");
@@ -57,7 +59,7 @@ public class DbsVersion extends JSONObject {
                 return instanceName;
         }
 	
-	String getInstanceType ( ) {
+	String getInstanceType ( )  throws Exception {
 		String instanceType = null;
                	if (!JSONObject.NULL.equals(this.get("INSTANCE_TYPE"))) {
                        	instanceType = (String) this.get("INSTANCE_TYPE");
@@ -65,16 +67,16 @@ public class DbsVersion extends JSONObject {
                 return instanceType;
         }
 	
-	int getCreationDate ( ) {
-		int creationDate = null;
+	int getCreationDate ( )  throws Exception {
+		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
                        	creationDate = (Integer) this.get("CREATION_DATE");
                	}
                 return creationDate;
         }
 	
-	int getLastModificationDate ( ) {
-		int lastModificationDate = null;
+	int getLastModificationDate ( )  throws Exception {
+		int lastModificationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFICATION_DATE"))) {
                        	lastModificationDate = (Integer) this.get("LAST_MODIFICATION_DATE");
                	}
