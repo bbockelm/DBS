@@ -2,7 +2,7 @@
 #
 #
 export ANT_HOME=/opt/rocks/bin/ant
-export JAVA_HOME=/usr/java/jdk1.5.0_10/
+export JAVA_HOME=/usr/java/jdk1.6.0_13
 
 ret=0
 
