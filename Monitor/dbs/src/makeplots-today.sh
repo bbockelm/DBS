@@ -37,7 +37,8 @@ month="`date +%b`"
 day="`date +%d`"
 #day="17" #for testing purposes only
 year="`date +%Y`"
-midnight=`date +%s -d"$month $day 00:00:00 CEST $year"` #today midnight
+timezone="`date +%Z`"
+midnight=`date +%s -d"$month $day 00:00:00 $timezone $year"` #today midnight
 yesterday=`date +%Y-%m-%d -d@$(echo "$midnight - 86400" | bc -l)`
 echo "today: $today, midnight: $midnight, yesterday: $yesterday"
 #dayofyear="`data +%y%j`"
