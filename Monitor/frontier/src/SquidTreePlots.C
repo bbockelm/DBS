@@ -489,46 +489,28 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
       pad1->Print("duration2.png");
       //pduration.Close();   
       gPad->SetLogy(0);
-/*DOMAIN vs TIME*/
-   // Create Scatterplot "dvt"
-   // See http://root.cern.ch/root/html/examples/DynamicSlice.C.html
+
+/*TIME vs Domain*/
+
    TH2I *sdvt = new TH2I("dvt",
-                "Domain vs. Time",
-                numbins,begin,end,60,0,60); 
-
-   // Allow number of bins to change, see 
-   // http://root.cern.ch/root/html/TH1.html
-   //sdvt->SetBit(TH1::kCanRebin);
-
-   // Label X Axis
+                "Time vs. Domain",
+                80,0,80,numbins,begin,end);
+   sdvt->SetBit(TH2::kCanRebin);
    sdvt->GetXaxis()->CenterTitle();
-   sdvt->SetXTitle("Time of accesses (UTC)");
-   sdvt->GetYaxis()->CenterTitle();
-   sdvt->SetYTitle("Domain Name");
-   sdvt->GetYaxis()->SetTitleOffset(2.);
-   // Set X axis to display in time units
-   // See http://root.cern.ch/root/html/examples/timeonaxis.C.html
-   sdvt->GetXaxis()->SetTimeFormat(time_label);
-   sdvt->GetXaxis()->SetLabelSize(0.025);
-   sdvt->GetXaxis()->SetTimeDisplay(1);
+   sdvt->SetYTitle("Time of accesses (UTC)");
+   sdvt->GetXaxis()->CenterTitle();
+   sdvt->SetXTitle("Domain Name");
+   sdvt->GetXaxis()->SetTitleOffset(2.);
+   sdvt->GetYaxis()->SetTimeFormat(time_label);
    sdvt->GetYaxis()->SetLabelSize(0.025);
-
-   // Set axis divisions
-   // See http://root.cern.ch/root/html/TStyle.html#TStyle:SetNdivisions 
-   sdvt->GetXaxis()->SetNdivisions(707);
-
-      // Draw Scatterplot "dvt"
-      // Trim number of bins to match number of labels, see
-      // http://root.cern.ch/root/html/TH1.html
-      sdvt->LabelsDeflate("Y");
-      T->Draw("DomainName:Time>>dvt",intime);
-   
-
-      // Need Modified and Update to get pad drawn in PostScript file
+   sdvt->GetYaxis()->SetTimeDisplay(1);
+   sdvt->GetXaxis()->SetLabelSize(0.018);
+   sdvt->GetYaxis()->SetNdivisions(707);
+      T->Draw("Time:DomainName>>dvt",intime);
       pad1->Modified();
       pad1->Update();
       pad1->Print("dvt.png");
-      //pdvt.Close();
+
 /*SCHEMAOWNER vs TIME*/
    // Create Scatterplot "dvt"
    // See http://root.cern.ch/root/html/examples/DynamicSlice.C.html
@@ -551,7 +533,7 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    hapivt->GetXaxis()->SetTimeFormat(time_label);
    hapivt->GetXaxis()->SetLabelSize(0.025);
    hapivt->GetXaxis()->SetTimeDisplay(1);
-   hapivt->GetYaxis()->SetLabelSize(0.025);
+   hapivt->GetYaxis()->SetLabelSize(0.020);
 
    // Set axis divisions
    // See http://root.cern.ch/root/html/TStyle.html#TStyle:SetNdivisions 
@@ -575,7 +557,7 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    // See http://root.cern.ch/root/html/examples/DynamicSlice.C.html
    TH2I *hinstvt = new TH2I("instvt",
                 "Frontier Instance vs. Time",
-                numbins,begin,end,12,0,12); 
+                numbins,begin,end,8,0,8); 
 
    // Allow number of bins to change, see 
    // http://root.cern.ch/root/html/TH1.html
@@ -625,7 +607,7 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    hapivs->GetYaxis()->CenterTitle();
    hapivs->GetYaxis()->SetTitleOffset(3.);
    hapivs->GetXaxis()->SetLabelSize(0.025);
-   hapivs->GetYaxis()->SetLabelSize(0.025);
+   hapivs->GetYaxis()->SetLabelSize(0.020);
    gStyle->SetOptStat("euo");
    // Allow number of bins to change, see 
    // http://root.cern.ch/root/html/TH1.html
@@ -681,7 +663,7 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    // See http://root.cern.ch/root/html/examples/DynamicSlice.C.html
    TH2I *hdomvi = new TH2I("domvi",
                 "Frontier Instance vs. Domain",
-                40,0,40,60,0,60); 
+                80,0,80,8,0,8); 
 
    // Allow number of bins to change, see 
    hdomvi->SetBit(TH2::kCanRebin);
@@ -692,7 +674,7 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    hdomvi->SetYTitle("Instance");
    hdomvi->GetYaxis()->SetTitleOffset(2.);
    //hdomvi->GetXaxis()->SetTimeFormat(time_label);
-   hdomvi->GetXaxis()->SetLabelSize(0.025);
+   hdomvi->GetXaxis()->SetLabelSize(0.018);
    hdomvi->GetXaxis()->SetTitleOffset(1.0);
    //hdomvi->GetXaxis()->SetTimeDisplay(1);
    hdomvi->GetYaxis()->SetLabelSize(0.025);
@@ -711,7 +693,7 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    // See http://root.cern.ch/root/html/examples/hsum.C.html
    // and http://root.cern.ch/root/html/examples/hlabels1.C.html
    TH1I *hinstance = new TH1I("instance",
-                     "Accesses by Frontier instance",12,0,12);
+                     "Accesses by Frontier instance",8,0,8);
    hinstance->SetStats(1);
    hinstance->SetYTitle("Number of Requests");
    hinstance->GetXaxis()->CenterTitle();
@@ -745,14 +727,14 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    // and http://root.cern.ch/root/html/examples/hlabels1.C.html
    TH1I *hdomain = new TH1I("domain",
                    "Accesses by Domain",
-                   60,0,60);
+                   80,0,80);
    hdomain->SetStats(1);
    hdomain->GetXaxis()->CenterTitle();
    hdomain->SetXTitle("Domain Name");
    hdomain->GetYaxis()->CenterTitle();
    hdomain->SetYTitle("Number of Requests");
    hdomain->GetXaxis()->SetTitleOffset(2.);
-   hdomain->GetXaxis()->SetLabelSize(0.025);
+   hdomain->GetXaxis()->SetLabelSize(0.020);
    hdomain->GetYaxis()->SetLabelSize(0.025);
    // Allow number of bins to change, see
    // http://root.cern.ch/root/html/TH1.html
@@ -783,13 +765,13 @@ void SquidTreePlots(char *file, int begintime, int endtime, int timeperbin)
    // and http://root.cern.ch/root/html/examples/hlabels1.C.html
    TH1I *htable1 = new TH1I("table1",
                    "Accesses by Table (FrontierProd)",
-                   120,0,120);
+                   500,0,500);
    htable1->SetStats(1);
    htable1->GetXaxis()->CenterTitle();
    htable1->SetXTitle("Table Name");
    htable1->GetYaxis()->CenterTitle();
    htable1->SetYTitle("Number of Requests");
-   htable1->GetXaxis()->SetTitleOffset(2.);
+   htable1->GetXaxis()->SetTitleOffset(1.);
    htable1->GetXaxis()->SetLabelSize(0.010);
    htable1->GetYaxis()->SetLabelSize(0.025);
    // Allow number of bins to change, see
