@@ -18,16 +18,16 @@ public class FileLumi extends JSONObject  {
 		
         public FileLumi ( int fileLumiID, int runNum, int lumiSectionNum, int fileID ) throws Exception  {
 		
-                this.putOnce("FILE_LUMI_ID", (Integer) fileLumiID );
-                this.putOnce("RUN_NUM", (Integer) runNum );
-                this.putOnce("LUMI_SECTION_NUM", (Integer) lumiSectionNum );
-                this.putOnce("FILE_ID", (Integer) fileID );
+                this.putOnce("FILE_LUMI_ID", fileLumiID );
+                this.putOnce("RUN_NUM", runNum );
+                this.putOnce("LUMI_SECTION_NUM", lumiSectionNum );
+                this.putOnce("FILE_ID", fileID );
         }
 
 	int getFileLumiID ( )  throws Exception {
 		int fileLumiID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_LUMI_ID"))) {
-                       	fileLumiID = (Integer) this.get("FILE_LUMI_ID");
+                       	fileLumiID = this.getInt("FILE_LUMI_ID");
                	}
                 return fileLumiID;
         }
@@ -35,7 +35,7 @@ public class FileLumi extends JSONObject  {
 	int getRunNum ( )  throws Exception {
 		int runNum = 0;
                	if (!JSONObject.NULL.equals(this.get("RUN_NUM"))) {
-                       	runNum = (Integer) this.get("RUN_NUM");
+                       	runNum = this.getInt("RUN_NUM");
                	}
                 return runNum;
         }
@@ -43,7 +43,7 @@ public class FileLumi extends JSONObject  {
 	int getLumiSectionNum ( )  throws Exception {
 		int lumiSectionNum = 0;
                	if (!JSONObject.NULL.equals(this.get("LUMI_SECTION_NUM"))) {
-                       	lumiSectionNum = (Integer) this.get("LUMI_SECTION_NUM");
+                       	lumiSectionNum = this.getInt("LUMI_SECTION_NUM");
                	}
                 return lumiSectionNum;
         }
@@ -51,7 +51,7 @@ public class FileLumi extends JSONObject  {
 	int getFileID ( )  throws Exception {
 		int fileID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_ID"))) {
-                       	fileID = (Integer) this.get("FILE_ID");
+                       	fileID = this.getInt("FILE_ID");
                	}
                 return fileID;
         }

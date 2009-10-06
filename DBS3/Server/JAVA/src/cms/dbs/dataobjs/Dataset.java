@@ -18,28 +18,28 @@ public class Dataset extends JSONObject  {
 		
         public Dataset ( int datasetID, String dataPath, int isPathValid, int primaryDSID, int processedDSID, int dataTierID, int pathTypeID, int acquisitionEraID, int processingEraID, int physicsGroupID, float xtcrosssection, String globalTag, int creationDate, String createBy, int lastModificationDate, String lastModifiedBy ) throws Exception  {
 		
-                this.putOnce("DATASET_ID", (Integer) datasetID );
-                this.putOnce("DATA_PATH", (String) dataPath );
-                this.putOnce("IS_PATH_VALID", (Integer) isPathValid );
-                this.putOnce("PRIMARY_DS_ID", (Integer) primaryDSID );
-                this.putOnce("PROCESSED_DS_ID", (Integer) processedDSID );
-                this.putOnce("DATA_TIER_ID", (Integer) dataTierID );
-                this.putOnce("PATH_TYPE_ID", (Integer) pathTypeID );
-                this.putOnce("ACQUISITION_ERA_ID", (Integer) acquisitionEraID );
-                this.putOnce("PROCESSING_ERA_ID", (Integer) processingEraID );
-                this.putOnce("PHYSICS_GROUP_ID", (Integer) physicsGroupID );
-                this.putOnce("XTCROSSSECTION", (Float) xtcrosssection );
-                this.putOnce("GLOBAL_TAG", (String) globalTag );
-                this.putOnce("CREATION_DATE", (Integer) creationDate );
-                this.putOnce("CREATE_BY", (String) createBy );
-                this.putOnce("LAST_MODIFICATION_DATE", (Integer) lastModificationDate );
-                this.putOnce("LAST_MODIFIED_BY", (String) lastModifiedBy );
+                this.putOnce("DATASET_ID", datasetID );
+                this.putOnce("DATA_PATH", dataPath );
+                this.putOnce("IS_PATH_VALID", isPathValid );
+                this.putOnce("PRIMARY_DS_ID", primaryDSID );
+                this.putOnce("PROCESSED_DS_ID", processedDSID );
+                this.putOnce("DATA_TIER_ID", dataTierID );
+                this.putOnce("PATH_TYPE_ID", pathTypeID );
+                this.putOnce("ACQUISITION_ERA_ID", acquisitionEraID );
+                this.putOnce("PROCESSING_ERA_ID", processingEraID );
+                this.putOnce("PHYSICS_GROUP_ID", physicsGroupID );
+                this.putOnce("XTCROSSSECTION", xtcrosssection );
+                this.putOnce("GLOBAL_TAG", globalTag );
+                this.putOnce("CREATION_DATE", creationDate );
+                this.putOnce("CREATE_BY", createBy );
+                this.putOnce("LAST_MODIFICATION_DATE", lastModificationDate );
+                this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
         }
 
 	int getDatasetID ( )  throws Exception {
 		int datasetID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_ID"))) {
-                       	datasetID = (Integer) this.get("DATASET_ID");
+                       	datasetID = this.getInt("DATASET_ID");
                	}
                 return datasetID;
         }
@@ -47,7 +47,7 @@ public class Dataset extends JSONObject  {
 	String getDataPath ( )  throws Exception {
 		String dataPath = null;
                	if (!JSONObject.NULL.equals(this.get("DATA_PATH"))) {
-                       	dataPath = (String) this.get("DATA_PATH");
+                       	dataPath = this.getString("DATA_PATH");
                	}
                 return dataPath;
         }
@@ -55,7 +55,7 @@ public class Dataset extends JSONObject  {
 	int getIsPathValid ( )  throws Exception {
 		int isPathValid = 0;
                	if (!JSONObject.NULL.equals(this.get("IS_PATH_VALID"))) {
-                       	isPathValid = (Integer) this.get("IS_PATH_VALID");
+                       	isPathValid = this.getInt("IS_PATH_VALID");
                	}
                 return isPathValid;
         }
@@ -63,7 +63,7 @@ public class Dataset extends JSONObject  {
 	int getPrimaryDSID ( )  throws Exception {
 		int primaryDSID = 0;
                	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_ID"))) {
-                       	primaryDSID = (Integer) this.get("PRIMARY_DS_ID");
+                       	primaryDSID = this.getInt("PRIMARY_DS_ID");
                	}
                 return primaryDSID;
         }
@@ -71,7 +71,7 @@ public class Dataset extends JSONObject  {
 	int getProcessedDSID ( )  throws Exception {
 		int processedDSID = 0;
                	if (!JSONObject.NULL.equals(this.get("PROCESSED_DS_ID"))) {
-                       	processedDSID = (Integer) this.get("PROCESSED_DS_ID");
+                       	processedDSID = this.getInt("PROCESSED_DS_ID");
                	}
                 return processedDSID;
         }
@@ -79,7 +79,7 @@ public class Dataset extends JSONObject  {
 	int getDataTierID ( )  throws Exception {
 		int dataTierID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATA_TIER_ID"))) {
-                       	dataTierID = (Integer) this.get("DATA_TIER_ID");
+                       	dataTierID = this.getInt("DATA_TIER_ID");
                	}
                 return dataTierID;
         }
@@ -87,7 +87,7 @@ public class Dataset extends JSONObject  {
 	int getPathTypeID ( )  throws Exception {
 		int pathTypeID = 0;
                	if (!JSONObject.NULL.equals(this.get("PATH_TYPE_ID"))) {
-                       	pathTypeID = (Integer) this.get("PATH_TYPE_ID");
+                       	pathTypeID = this.getInt("PATH_TYPE_ID");
                	}
                 return pathTypeID;
         }
@@ -95,7 +95,7 @@ public class Dataset extends JSONObject  {
 	int getAcquisitionEraID ( )  throws Exception {
 		int acquisitionEraID = 0;
                	if (!JSONObject.NULL.equals(this.get("ACQUISITION_ERA_ID"))) {
-                       	acquisitionEraID = (Integer) this.get("ACQUISITION_ERA_ID");
+                       	acquisitionEraID = this.getInt("ACQUISITION_ERA_ID");
                	}
                 return acquisitionEraID;
         }
@@ -103,7 +103,7 @@ public class Dataset extends JSONObject  {
 	int getProcessingEraID ( )  throws Exception {
 		int processingEraID = 0;
                	if (!JSONObject.NULL.equals(this.get("PROCESSING_ERA_ID"))) {
-                       	processingEraID = (Integer) this.get("PROCESSING_ERA_ID");
+                       	processingEraID = this.getInt("PROCESSING_ERA_ID");
                	}
                 return processingEraID;
         }
@@ -111,7 +111,7 @@ public class Dataset extends JSONObject  {
 	int getPhysicsGroupID ( )  throws Exception {
 		int physicsGroupID = 0;
                	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_ID"))) {
-                       	physicsGroupID = (Integer) this.get("PHYSICS_GROUP_ID");
+                       	physicsGroupID = this.getInt("PHYSICS_GROUP_ID");
                	}
                 return physicsGroupID;
         }
@@ -119,7 +119,7 @@ public class Dataset extends JSONObject  {
 	float getXtcrosssection ( )  throws Exception {
 		float xtcrosssection = 0;
                	if (!JSONObject.NULL.equals(this.get("XTCROSSSECTION"))) {
-                       	xtcrosssection = (Float) this.get("XTCROSSSECTION");
+                       	xtcrosssection = this.getFloat("XTCROSSSECTION");
                	}
                 return xtcrosssection;
         }
@@ -127,7 +127,7 @@ public class Dataset extends JSONObject  {
 	String getGlobalTag ( )  throws Exception {
 		String globalTag = null;
                	if (!JSONObject.NULL.equals(this.get("GLOBAL_TAG"))) {
-                       	globalTag = (String) this.get("GLOBAL_TAG");
+                       	globalTag = this.getString("GLOBAL_TAG");
                	}
                 return globalTag;
         }
@@ -135,7 +135,7 @@ public class Dataset extends JSONObject  {
 	int getCreationDate ( )  throws Exception {
 		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
-                       	creationDate = (Integer) this.get("CREATION_DATE");
+                       	creationDate = this.getInt("CREATION_DATE");
                	}
                 return creationDate;
         }
@@ -143,7 +143,7 @@ public class Dataset extends JSONObject  {
 	String getCreateBy ( )  throws Exception {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {
-                       	createBy = (String) this.get("CREATE_BY");
+                       	createBy = this.getString("CREATE_BY");
                	}
                 return createBy;
         }
@@ -151,7 +151,7 @@ public class Dataset extends JSONObject  {
 	int getLastModificationDate ( )  throws Exception {
 		int lastModificationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFICATION_DATE"))) {
-                       	lastModificationDate = (Integer) this.get("LAST_MODIFICATION_DATE");
+                       	lastModificationDate = this.getInt("LAST_MODIFICATION_DATE");
                	}
                 return lastModificationDate;
         }
@@ -159,7 +159,7 @@ public class Dataset extends JSONObject  {
 	String getLastModifiedBy ( )  throws Exception {
 		String lastModifiedBy = null;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFIED_BY"))) {
-                       	lastModifiedBy = (String) this.get("LAST_MODIFIED_BY");
+                       	lastModifiedBy = this.getString("LAST_MODIFIED_BY");
                	}
                 return lastModifiedBy;
         }

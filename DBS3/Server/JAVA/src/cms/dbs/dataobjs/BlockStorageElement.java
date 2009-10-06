@@ -18,15 +18,15 @@ public class BlockStorageElement extends JSONObject  {
 		
         public BlockStorageElement ( int blockSeID, int seID, int blockID ) throws Exception  {
 		
-                this.putOnce("BLOCK_SE_ID", (Integer) blockSeID );
-                this.putOnce("SE_ID", (Integer) seID );
-                this.putOnce("BLOCK_ID", (Integer) blockID );
+                this.putOnce("BLOCK_SE_ID", blockSeID );
+                this.putOnce("SE_ID", seID );
+                this.putOnce("BLOCK_ID", blockID );
         }
 
 	int getBlockSeID ( )  throws Exception {
 		int blockSeID = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_SE_ID"))) {
-                       	blockSeID = (Integer) this.get("BLOCK_SE_ID");
+                       	blockSeID = this.getInt("BLOCK_SE_ID");
                	}
                 return blockSeID;
         }
@@ -34,7 +34,7 @@ public class BlockStorageElement extends JSONObject  {
 	int getSeID ( )  throws Exception {
 		int seID = 0;
                	if (!JSONObject.NULL.equals(this.get("SE_ID"))) {
-                       	seID = (Integer) this.get("SE_ID");
+                       	seID = this.getInt("SE_ID");
                	}
                 return seID;
         }
@@ -42,7 +42,7 @@ public class BlockStorageElement extends JSONObject  {
 	int getBlockID ( )  throws Exception {
 		int blockID = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_ID"))) {
-                       	blockID = (Integer) this.get("BLOCK_ID");
+                       	blockID = this.getInt("BLOCK_ID");
                	}
                 return blockID;
         }

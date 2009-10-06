@@ -18,15 +18,15 @@ public class BranchHashe extends JSONObject  {
 		
         public BranchHashe ( int branchHashID, String hash, String content ) throws Exception  {
 		
-                this.putOnce("BRANCH_HASH_ID", (Integer) branchHashID );
-                this.putOnce("HASH", (String) hash );
-                this.putOnce("CONTENT", (String) content );
+                this.putOnce("BRANCH_HASH_ID", branchHashID );
+                this.putOnce("HASH", hash );
+                this.putOnce("CONTENT", content );
         }
 
 	int getBranchHashID ( )  throws Exception {
 		int branchHashID = 0;
                	if (!JSONObject.NULL.equals(this.get("BRANCH_HASH_ID"))) {
-                       	branchHashID = (Integer) this.get("BRANCH_HASH_ID");
+                       	branchHashID = this.getInt("BRANCH_HASH_ID");
                	}
                 return branchHashID;
         }
@@ -34,7 +34,7 @@ public class BranchHashe extends JSONObject  {
 	String getHash ( )  throws Exception {
 		String hash = null;
                	if (!JSONObject.NULL.equals(this.get("HASH"))) {
-                       	hash = (String) this.get("HASH");
+                       	hash = this.getString("HASH");
                	}
                 return hash;
         }
@@ -42,7 +42,7 @@ public class BranchHashe extends JSONObject  {
 	String getContent ( )  throws Exception {
 		String content = null;
                	if (!JSONObject.NULL.equals(this.get("CONTENT"))) {
-                       	content = (String) this.get("CONTENT");
+                       	content = this.getString("CONTENT");
                	}
                 return content;
         }

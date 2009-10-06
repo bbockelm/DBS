@@ -18,15 +18,15 @@ public class AssociatedFile extends JSONObject  {
 		
         public AssociatedFile ( int assocatedFileID, int thisFileID, int assocatedFile ) throws Exception  {
 		
-                this.putOnce("ASSOCATED_FILE_ID", (Integer) assocatedFileID );
-                this.putOnce("THIS_FILE_ID", (Integer) thisFileID );
-                this.putOnce("ASSOCATED_FILE", (Integer) assocatedFile );
+                this.putOnce("ASSOCATED_FILE_ID", assocatedFileID );
+                this.putOnce("THIS_FILE_ID", thisFileID );
+                this.putOnce("ASSOCATED_FILE", assocatedFile );
         }
 
 	int getAssocatedFileID ( )  throws Exception {
 		int assocatedFileID = 0;
                	if (!JSONObject.NULL.equals(this.get("ASSOCATED_FILE_ID"))) {
-                       	assocatedFileID = (Integer) this.get("ASSOCATED_FILE_ID");
+                       	assocatedFileID = this.getInt("ASSOCATED_FILE_ID");
                	}
                 return assocatedFileID;
         }
@@ -34,7 +34,7 @@ public class AssociatedFile extends JSONObject  {
 	int getThisFileID ( )  throws Exception {
 		int thisFileID = 0;
                	if (!JSONObject.NULL.equals(this.get("THIS_FILE_ID"))) {
-                       	thisFileID = (Integer) this.get("THIS_FILE_ID");
+                       	thisFileID = this.getInt("THIS_FILE_ID");
                	}
                 return thisFileID;
         }
@@ -42,7 +42,7 @@ public class AssociatedFile extends JSONObject  {
 	int getAssocatedFile ( )  throws Exception {
 		int assocatedFile = 0;
                	if (!JSONObject.NULL.equals(this.get("ASSOCATED_FILE"))) {
-                       	assocatedFile = (Integer) this.get("ASSOCATED_FILE");
+                       	assocatedFile = this.getInt("ASSOCATED_FILE");
                	}
                 return assocatedFile;
         }

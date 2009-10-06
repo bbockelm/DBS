@@ -18,19 +18,19 @@ public class DatasetRun extends JSONObject  {
 		
         public DatasetRun ( int pathRunID, int datasetID, int runNumber, int complete, int lumiSectionCount, int creationDate, String createBy ) throws Exception  {
 		
-                this.putOnce("PATH_RUN_ID", (Integer) pathRunID );
-                this.putOnce("DATASET_ID", (Integer) datasetID );
-                this.putOnce("RUN_NUMBER", (Integer) runNumber );
-                this.putOnce("COMPLETE", (Integer) complete );
-                this.putOnce("LUMI_SECTION_COUNT", (Integer) lumiSectionCount );
-                this.putOnce("CREATION_DATE", (Integer) creationDate );
-                this.putOnce("CREATE_BY", (String) createBy );
+                this.putOnce("PATH_RUN_ID", pathRunID );
+                this.putOnce("DATASET_ID", datasetID );
+                this.putOnce("RUN_NUMBER", runNumber );
+                this.putOnce("COMPLETE", complete );
+                this.putOnce("LUMI_SECTION_COUNT", lumiSectionCount );
+                this.putOnce("CREATION_DATE", creationDate );
+                this.putOnce("CREATE_BY", createBy );
         }
 
 	int getPathRunID ( )  throws Exception {
 		int pathRunID = 0;
                	if (!JSONObject.NULL.equals(this.get("PATH_RUN_ID"))) {
-                       	pathRunID = (Integer) this.get("PATH_RUN_ID");
+                       	pathRunID = this.getInt("PATH_RUN_ID");
                	}
                 return pathRunID;
         }
@@ -38,7 +38,7 @@ public class DatasetRun extends JSONObject  {
 	int getDatasetID ( )  throws Exception {
 		int datasetID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_ID"))) {
-                       	datasetID = (Integer) this.get("DATASET_ID");
+                       	datasetID = this.getInt("DATASET_ID");
                	}
                 return datasetID;
         }
@@ -46,7 +46,7 @@ public class DatasetRun extends JSONObject  {
 	int getRunNumber ( )  throws Exception {
 		int runNumber = 0;
                	if (!JSONObject.NULL.equals(this.get("RUN_NUMBER"))) {
-                       	runNumber = (Integer) this.get("RUN_NUMBER");
+                       	runNumber = this.getInt("RUN_NUMBER");
                	}
                 return runNumber;
         }
@@ -54,7 +54,7 @@ public class DatasetRun extends JSONObject  {
 	int getComplete ( )  throws Exception {
 		int complete = 0;
                	if (!JSONObject.NULL.equals(this.get("COMPLETE"))) {
-                       	complete = (Integer) this.get("COMPLETE");
+                       	complete = this.getInt("COMPLETE");
                	}
                 return complete;
         }
@@ -62,7 +62,7 @@ public class DatasetRun extends JSONObject  {
 	int getLumiSectionCount ( )  throws Exception {
 		int lumiSectionCount = 0;
                	if (!JSONObject.NULL.equals(this.get("LUMI_SECTION_COUNT"))) {
-                       	lumiSectionCount = (Integer) this.get("LUMI_SECTION_COUNT");
+                       	lumiSectionCount = this.getInt("LUMI_SECTION_COUNT");
                	}
                 return lumiSectionCount;
         }
@@ -70,7 +70,7 @@ public class DatasetRun extends JSONObject  {
 	int getCreationDate ( )  throws Exception {
 		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
-                       	creationDate = (Integer) this.get("CREATION_DATE");
+                       	creationDate = this.getInt("CREATION_DATE");
                	}
                 return creationDate;
         }
@@ -78,7 +78,7 @@ public class DatasetRun extends JSONObject  {
 	String getCreateBy ( )  throws Exception {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {
-                       	createBy = (String) this.get("CREATE_BY");
+                       	createBy = this.getString("CREATE_BY");
                	}
                 return createBy;
         }

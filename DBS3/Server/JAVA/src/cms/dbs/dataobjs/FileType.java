@@ -18,14 +18,14 @@ public class FileType extends JSONObject  {
 		
         public FileType ( int fileTypeID, String fileType ) throws Exception  {
 		
-                this.putOnce("FILE_TYPE_ID", (Integer) fileTypeID );
-                this.putOnce("FILE_TYPE", (String) fileType );
+                this.putOnce("FILE_TYPE_ID", fileTypeID );
+                this.putOnce("FILE_TYPE", fileType );
         }
 
 	int getFileTypeID ( )  throws Exception {
 		int fileTypeID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_TYPE_ID"))) {
-                       	fileTypeID = (Integer) this.get("FILE_TYPE_ID");
+                       	fileTypeID = this.getInt("FILE_TYPE_ID");
                	}
                 return fileTypeID;
         }
@@ -33,7 +33,7 @@ public class FileType extends JSONObject  {
 	String getFileType ( )  throws Exception {
 		String fileType = null;
                	if (!JSONObject.NULL.equals(this.get("FILE_TYPE"))) {
-                       	fileType = (String) this.get("FILE_TYPE");
+                       	fileType = this.getString("FILE_TYPE");
                	}
                 return fileType;
         }

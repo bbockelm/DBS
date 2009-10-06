@@ -18,14 +18,14 @@ public class ApplicationExecutable extends JSONObject  {
 		
         public ApplicationExecutable ( int appExecID, String appName ) throws Exception  {
 		
-                this.putOnce("APP_EXEC_ID", (Integer) appExecID );
-                this.putOnce("APP_NAME", (String) appName );
+                this.putOnce("APP_EXEC_ID", appExecID );
+                this.putOnce("APP_NAME", appName );
         }
 
 	int getAppExecID ( )  throws Exception {
 		int appExecID = 0;
                	if (!JSONObject.NULL.equals(this.get("APP_EXEC_ID"))) {
-                       	appExecID = (Integer) this.get("APP_EXEC_ID");
+                       	appExecID = this.getInt("APP_EXEC_ID");
                	}
                 return appExecID;
         }
@@ -33,7 +33,7 @@ public class ApplicationExecutable extends JSONObject  {
 	String getAppName ( )  throws Exception {
 		String appName = null;
                	if (!JSONObject.NULL.equals(this.get("APP_NAME"))) {
-                       	appName = (String) this.get("APP_NAME");
+                       	appName = this.getString("APP_NAME");
                	}
                 return appName;
         }

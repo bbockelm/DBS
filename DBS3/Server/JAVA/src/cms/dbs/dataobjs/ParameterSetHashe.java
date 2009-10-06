@@ -18,15 +18,15 @@ public class ParameterSetHashe extends JSONObject  {
 		
         public ParameterSetHashe ( int parameterSetHashID, String hash, String name ) throws Exception  {
 		
-                this.putOnce("PARAMETER_SET_HASH_ID", (Integer) parameterSetHashID );
-                this.putOnce("HASH", (String) hash );
-                this.putOnce("NAME", (String) name );
+                this.putOnce("PARAMETER_SET_HASH_ID", parameterSetHashID );
+                this.putOnce("HASH", hash );
+                this.putOnce("NAME", name );
         }
 
 	int getParameterSetHashID ( )  throws Exception {
 		int parameterSetHashID = 0;
                	if (!JSONObject.NULL.equals(this.get("PARAMETER_SET_HASH_ID"))) {
-                       	parameterSetHashID = (Integer) this.get("PARAMETER_SET_HASH_ID");
+                       	parameterSetHashID = this.getInt("PARAMETER_SET_HASH_ID");
                	}
                 return parameterSetHashID;
         }
@@ -34,7 +34,7 @@ public class ParameterSetHashe extends JSONObject  {
 	String getHash ( )  throws Exception {
 		String hash = null;
                	if (!JSONObject.NULL.equals(this.get("HASH"))) {
-                       	hash = (String) this.get("HASH");
+                       	hash = this.getString("HASH");
                	}
                 return hash;
         }
@@ -42,7 +42,7 @@ public class ParameterSetHashe extends JSONObject  {
 	String getName ( )  throws Exception {
 		String name = null;
                	if (!JSONObject.NULL.equals(this.get("NAME"))) {
-                       	name = (String) this.get("NAME");
+                       	name = this.getString("NAME");
                	}
                 return name;
         }

@@ -18,14 +18,14 @@ public class Site extends JSONObject  {
 		
         public Site ( int siteID, String siteName ) throws Exception  {
 		
-                this.putOnce("SITE_ID", (Integer) siteID );
-                this.putOnce("SITE_NAME", (String) siteName );
+                this.putOnce("SITE_ID", siteID );
+                this.putOnce("SITE_NAME", siteName );
         }
 
 	int getSiteID ( )  throws Exception {
 		int siteID = 0;
                	if (!JSONObject.NULL.equals(this.get("SITE_ID"))) {
-                       	siteID = (Integer) this.get("SITE_ID");
+                       	siteID = this.getInt("SITE_ID");
                	}
                 return siteID;
         }
@@ -33,7 +33,7 @@ public class Site extends JSONObject  {
 	String getSiteName ( )  throws Exception {
 		String siteName = null;
                	if (!JSONObject.NULL.equals(this.get("SITE_NAME"))) {
-                       	siteName = (String) this.get("SITE_NAME");
+                       	siteName = this.getString("SITE_NAME");
                	}
                 return siteName;
         }

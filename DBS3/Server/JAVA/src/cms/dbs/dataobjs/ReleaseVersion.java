@@ -18,14 +18,14 @@ public class ReleaseVersion extends JSONObject  {
 		
         public ReleaseVersion ( int releaseVersionID, String version ) throws Exception  {
 		
-                this.putOnce("RELEASE_VERSION_ID", (Integer) releaseVersionID );
-                this.putOnce("VERSION", (String) version );
+                this.putOnce("RELEASE_VERSION_ID", releaseVersionID );
+                this.putOnce("VERSION", version );
         }
 
 	int getReleaseVersionID ( )  throws Exception {
 		int releaseVersionID = 0;
                	if (!JSONObject.NULL.equals(this.get("RELEASE_VERSION_ID"))) {
-                       	releaseVersionID = (Integer) this.get("RELEASE_VERSION_ID");
+                       	releaseVersionID = this.getInt("RELEASE_VERSION_ID");
                	}
                 return releaseVersionID;
         }
@@ -33,7 +33,7 @@ public class ReleaseVersion extends JSONObject  {
 	String getVersion ( )  throws Exception {
 		String version = null;
                	if (!JSONObject.NULL.equals(this.get("VERSION"))) {
-                       	version = (String) this.get("VERSION");
+                       	version = this.getString("VERSION");
                	}
                 return version;
         }

@@ -18,14 +18,14 @@ public class DatasetType extends JSONObject  {
 		
         public DatasetType ( int datasetTypeID, String datasetType ) throws Exception  {
 		
-                this.putOnce("DATASET_TYPE_ID", (Integer) datasetTypeID );
-                this.putOnce("DATASET_TYPE", (String) datasetType );
+                this.putOnce("DATASET_TYPE_ID", datasetTypeID );
+                this.putOnce("DATASET_TYPE", datasetType );
         }
 
 	int getDatasetTypeID ( )  throws Exception {
 		int datasetTypeID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE_ID"))) {
-                       	datasetTypeID = (Integer) this.get("DATASET_TYPE_ID");
+                       	datasetTypeID = this.getInt("DATASET_TYPE_ID");
                	}
                 return datasetTypeID;
         }
@@ -33,7 +33,7 @@ public class DatasetType extends JSONObject  {
 	String getDatasetType ( )  throws Exception {
 		String datasetType = null;
                	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE"))) {
-                       	datasetType = (String) this.get("DATASET_TYPE");
+                       	datasetType = this.getString("DATASET_TYPE");
                	}
                 return datasetType;
         }

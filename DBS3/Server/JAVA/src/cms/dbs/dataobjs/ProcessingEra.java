@@ -18,17 +18,17 @@ public class ProcessingEra extends JSONObject  {
 		
         public ProcessingEra ( int processingEraID, String processingVersion, int creationDate, String createBy, String description ) throws Exception  {
 		
-                this.putOnce("PROCESSING_ERA_ID", (Integer) processingEraID );
-                this.putOnce("PROCESSING_VERSION", (String) processingVersion );
-                this.putOnce("CREATION_DATE", (Integer) creationDate );
-                this.putOnce("CREATE_BY", (String) createBy );
-                this.putOnce("DESCRIPTION", (String) description );
+                this.putOnce("PROCESSING_ERA_ID", processingEraID );
+                this.putOnce("PROCESSING_VERSION", processingVersion );
+                this.putOnce("CREATION_DATE", creationDate );
+                this.putOnce("CREATE_BY", createBy );
+                this.putOnce("DESCRIPTION", description );
         }
 
 	int getProcessingEraID ( )  throws Exception {
 		int processingEraID = 0;
                	if (!JSONObject.NULL.equals(this.get("PROCESSING_ERA_ID"))) {
-                       	processingEraID = (Integer) this.get("PROCESSING_ERA_ID");
+                       	processingEraID = this.getInt("PROCESSING_ERA_ID");
                	}
                 return processingEraID;
         }
@@ -36,7 +36,7 @@ public class ProcessingEra extends JSONObject  {
 	String getProcessingVersion ( )  throws Exception {
 		String processingVersion = null;
                	if (!JSONObject.NULL.equals(this.get("PROCESSING_VERSION"))) {
-                       	processingVersion = (String) this.get("PROCESSING_VERSION");
+                       	processingVersion = this.getString("PROCESSING_VERSION");
                	}
                 return processingVersion;
         }
@@ -44,7 +44,7 @@ public class ProcessingEra extends JSONObject  {
 	int getCreationDate ( )  throws Exception {
 		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
-                       	creationDate = (Integer) this.get("CREATION_DATE");
+                       	creationDate = this.getInt("CREATION_DATE");
                	}
                 return creationDate;
         }
@@ -52,7 +52,7 @@ public class ProcessingEra extends JSONObject  {
 	String getCreateBy ( )  throws Exception {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {
-                       	createBy = (String) this.get("CREATE_BY");
+                       	createBy = this.getString("CREATE_BY");
                	}
                 return createBy;
         }
@@ -60,7 +60,7 @@ public class ProcessingEra extends JSONObject  {
 	String getDescription ( )  throws Exception {
 		String description = null;
                	if (!JSONObject.NULL.equals(this.get("DESCRIPTION"))) {
-                       	description = (String) this.get("DESCRIPTION");
+                       	description = this.getString("DESCRIPTION");
                	}
                 return description;
         }
