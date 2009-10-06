@@ -23,6 +23,18 @@ public class AssociatedFile extends JSONObject  {
                 this.putOnce("ASSOCATED_FILE", assocatedFile );
         }
 
+	public void setAssocatedFileID (int assocatedFileID) throws Exception {
+ 		this.put( "ASSOCATED_FILE_ID", assocatedFileID );
+	}
+	
+	public void setThisFileID (int thisFileID) throws Exception {
+ 		this.put( "THIS_FILE_ID", thisFileID );
+	}
+	
+	public void setAssocatedFile (int assocatedFile) throws Exception {
+ 		this.put( "ASSOCATED_FILE", assocatedFile );
+	}
+	
 	int getAssocatedFileID ( )  throws Exception {
 		int assocatedFileID = 0;
                	if (!JSONObject.NULL.equals(this.get("ASSOCATED_FILE_ID"))) {

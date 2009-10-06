@@ -23,6 +23,18 @@ public class PhysicsGroup extends JSONObject  {
                 this.putOnce("PHYSICS_GROUP_CONVENER", physicsGroupConvener );
         }
 
+	public void setPhysicsGroupID (int physicsGroupID) throws Exception {
+ 		this.put( "PHYSICS_GROUP_ID", physicsGroupID );
+	}
+	
+	public void setPhysicsGroupName (String physicsGroupName) throws Exception {
+ 		this.put( "PHYSICS_GROUP_NAME", physicsGroupName );
+	}
+	
+	public void setPhysicsGroupConvener (String physicsGroupConvener) throws Exception {
+ 		this.put( "PHYSICS_GROUP_CONVENER", physicsGroupConvener );
+	}
+	
 	int getPhysicsGroupID ( )  throws Exception {
 		int physicsGroupID = 0;
                	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_ID"))) {

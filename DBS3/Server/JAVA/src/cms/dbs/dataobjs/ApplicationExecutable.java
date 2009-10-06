@@ -22,6 +22,14 @@ public class ApplicationExecutable extends JSONObject  {
                 this.putOnce("APP_NAME", appName );
         }
 
+	public void setAppExecID (int appExecID) throws Exception {
+ 		this.put( "APP_EXEC_ID", appExecID );
+	}
+	
+	public void setAppName (String appName) throws Exception {
+ 		this.put( "APP_NAME", appName );
+	}
+	
 	int getAppExecID ( )  throws Exception {
 		int appExecID = 0;
                	if (!JSONObject.NULL.equals(this.get("APP_EXEC_ID"))) {

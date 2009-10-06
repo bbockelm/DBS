@@ -36,6 +36,70 @@ public class Dataset extends JSONObject  {
                 this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
         }
 
+	public void setDatasetID (int datasetID) throws Exception {
+ 		this.put( "DATASET_ID", datasetID );
+	}
+	
+	public void setDataPath (String dataPath) throws Exception {
+ 		this.put( "DATA_PATH", dataPath );
+	}
+	
+	public void setIsPathValid (int isPathValid) throws Exception {
+ 		this.put( "IS_PATH_VALID", isPathValid );
+	}
+	
+	public void setPrimaryDSID (int primaryDSID) throws Exception {
+ 		this.put( "PRIMARY_DS_ID", primaryDSID );
+	}
+	
+	public void setProcessedDSID (int processedDSID) throws Exception {
+ 		this.put( "PROCESSED_DS_ID", processedDSID );
+	}
+	
+	public void setDataTierID (int dataTierID) throws Exception {
+ 		this.put( "DATA_TIER_ID", dataTierID );
+	}
+	
+	public void setPathTypeID (int pathTypeID) throws Exception {
+ 		this.put( "PATH_TYPE_ID", pathTypeID );
+	}
+	
+	public void setAcquisitionEraID (int acquisitionEraID) throws Exception {
+ 		this.put( "ACQUISITION_ERA_ID", acquisitionEraID );
+	}
+	
+	public void setProcessingEraID (int processingEraID) throws Exception {
+ 		this.put( "PROCESSING_ERA_ID", processingEraID );
+	}
+	
+	public void setPhysicsGroupID (int physicsGroupID) throws Exception {
+ 		this.put( "PHYSICS_GROUP_ID", physicsGroupID );
+	}
+	
+	public void setXtcrosssection (float xtcrosssection) throws Exception {
+ 		this.put( "XTCROSSSECTION", xtcrosssection );
+	}
+	
+	public void setGlobalTag (String globalTag) throws Exception {
+ 		this.put( "GLOBAL_TAG", globalTag );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
+	public void setLastModificationDate (int lastModificationDate) throws Exception {
+ 		this.put( "LAST_MODIFICATION_DATE", lastModificationDate );
+	}
+	
+	public void setLastModifiedBy (String lastModifiedBy) throws Exception {
+ 		this.put( "LAST_MODIFIED_BY", lastModifiedBy );
+	}
+	
 	int getDatasetID ( )  throws Exception {
 		int datasetID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_ID"))) {
@@ -119,7 +183,8 @@ public class Dataset extends JSONObject  {
 	float getXtcrosssection ( )  throws Exception {
 		float xtcrosssection = 0;
                	if (!JSONObject.NULL.equals(this.get("XTCROSSSECTION"))) {
-                       	xtcrosssection = this.getFloat("XTCROSSSECTION");
+                       	//xtcrosssection = this.getFloat("XTCROSSSECTION");
+			System.out.println("DANG !!!!!!!!!!!!");
                	}
                 return xtcrosssection;
         }

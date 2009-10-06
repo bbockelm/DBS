@@ -25,6 +25,26 @@ public class ProcessingEra extends JSONObject  {
                 this.putOnce("DESCRIPTION", description );
         }
 
+	public void setProcessingEraID (int processingEraID) throws Exception {
+ 		this.put( "PROCESSING_ERA_ID", processingEraID );
+	}
+	
+	public void setProcessingVersion (String processingVersion) throws Exception {
+ 		this.put( "PROCESSING_VERSION", processingVersion );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
+	public void setDescription (String description) throws Exception {
+ 		this.put( "DESCRIPTION", description );
+	}
+	
 	int getProcessingEraID ( )  throws Exception {
 		int processingEraID = 0;
                	if (!JSONObject.NULL.equals(this.get("PROCESSING_ERA_ID"))) {

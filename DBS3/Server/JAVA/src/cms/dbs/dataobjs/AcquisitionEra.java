@@ -25,6 +25,26 @@ public class AcquisitionEra extends JSONObject  {
                 this.putOnce("DESCRIPTION", description );
         }
 
+	public void setAcquisitionEraID (int acquisitionEraID) throws Exception {
+ 		this.put( "ACQUISITION_ERA_ID", acquisitionEraID );
+	}
+	
+	public void setAcquisitionEraName (String acquisitionEraName) throws Exception {
+ 		this.put( "ACQUISITION_ERA_NAME", acquisitionEraName );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
+	public void setDescription (String description) throws Exception {
+ 		this.put( "DESCRIPTION", description );
+	}
+	
 	int getAcquisitionEraID ( )  throws Exception {
 		int acquisitionEraID = 0;
                	if (!JSONObject.NULL.equals(this.get("ACQUISITION_ERA_ID"))) {

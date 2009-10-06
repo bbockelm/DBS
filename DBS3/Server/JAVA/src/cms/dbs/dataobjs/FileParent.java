@@ -23,6 +23,18 @@ public class FileParent extends JSONObject  {
                 this.putOnce("PARENT_FILE_ID", parentFileID );
         }
 
+	public void setFileParentID (int fileParentID) throws Exception {
+ 		this.put( "FILE_PARENT_ID", fileParentID );
+	}
+	
+	public void setThisFileID (int thisFileID) throws Exception {
+ 		this.put( "THIS_FILE_ID", thisFileID );
+	}
+	
+	public void setParentFileID (int parentFileID) throws Exception {
+ 		this.put( "PARENT_FILE_ID", parentFileID );
+	}
+	
 	int getFileParentID ( )  throws Exception {
 		int fileParentID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_PARENT_ID"))) {

@@ -27,6 +27,34 @@ public class DatasetRun extends JSONObject  {
                 this.putOnce("CREATE_BY", createBy );
         }
 
+	public void setPathRunID (int pathRunID) throws Exception {
+ 		this.put( "PATH_RUN_ID", pathRunID );
+	}
+	
+	public void setDatasetID (int datasetID) throws Exception {
+ 		this.put( "DATASET_ID", datasetID );
+	}
+	
+	public void setRunNumber (int runNumber) throws Exception {
+ 		this.put( "RUN_NUMBER", runNumber );
+	}
+	
+	public void setComplete (int complete) throws Exception {
+ 		this.put( "COMPLETE", complete );
+	}
+	
+	public void setLumiSectionCount (int lumiSectionCount) throws Exception {
+ 		this.put( "LUMI_SECTION_COUNT", lumiSectionCount );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
 	int getPathRunID ( )  throws Exception {
 		int pathRunID = 0;
                	if (!JSONObject.NULL.equals(this.get("PATH_RUN_ID"))) {

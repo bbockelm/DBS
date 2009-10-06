@@ -22,6 +22,14 @@ public class Site extends JSONObject  {
                 this.putOnce("SITE_NAME", siteName );
         }
 
+	public void setSiteID (int siteID) throws Exception {
+ 		this.put( "SITE_ID", siteID );
+	}
+	
+	public void setSiteName (String siteName) throws Exception {
+ 		this.put( "SITE_NAME", siteName );
+	}
+	
 	int getSiteID ( )  throws Exception {
 		int siteID = 0;
                	if (!JSONObject.NULL.equals(this.get("SITE_ID"))) {

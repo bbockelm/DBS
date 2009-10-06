@@ -24,6 +24,22 @@ public class FileLumi extends JSONObject  {
                 this.putOnce("FILE_ID", fileID );
         }
 
+	public void setFileLumiID (int fileLumiID) throws Exception {
+ 		this.put( "FILE_LUMI_ID", fileLumiID );
+	}
+	
+	public void setRunNum (int runNum) throws Exception {
+ 		this.put( "RUN_NUM", runNum );
+	}
+	
+	public void setLumiSectionNum (int lumiSectionNum) throws Exception {
+ 		this.put( "LUMI_SECTION_NUM", lumiSectionNum );
+	}
+	
+	public void setFileID (int fileID) throws Exception {
+ 		this.put( "FILE_ID", fileID );
+	}
+	
 	int getFileLumiID ( )  throws Exception {
 		int fileLumiID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_LUMI_ID"))) {

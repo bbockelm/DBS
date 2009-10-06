@@ -27,6 +27,34 @@ public class OutputModuleConfig extends JSONObject  {
                 this.putOnce("CREATE_BY", createBy );
         }
 
+	public void setOutputModConfigID (int outputModConfigID) throws Exception {
+ 		this.put( "OUTPUT_MOD_CONFIG_ID", outputModConfigID );
+	}
+	
+	public void setAppExecID (int appExecID) throws Exception {
+ 		this.put( "APP_EXEC_ID", appExecID );
+	}
+	
+	public void setReleaseVersionID (int releaseVersionID) throws Exception {
+ 		this.put( "RELEASE_VERSION_ID", releaseVersionID );
+	}
+	
+	public void setParameterSetHashID (int parameterSetHashID) throws Exception {
+ 		this.put( "PARAMETER_SET_HASH_ID", parameterSetHashID );
+	}
+	
+	public void setOutputModuleLabel (String outputModuleLabel) throws Exception {
+ 		this.put( "OUTPUT_MODULE_LABEL", outputModuleLabel );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
 	int getOutputModConfigID ( )  throws Exception {
 		int outputModConfigID = 0;
                	if (!JSONObject.NULL.equals(this.get("OUTPUT_MOD_CONFIG_ID"))) {

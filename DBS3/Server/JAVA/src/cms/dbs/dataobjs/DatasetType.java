@@ -22,6 +22,14 @@ public class DatasetType extends JSONObject  {
                 this.putOnce("DATASET_TYPE", datasetType );
         }
 
+	public void setDatasetTypeID (int datasetTypeID) throws Exception {
+ 		this.put( "DATASET_TYPE_ID", datasetTypeID );
+	}
+	
+	public void setDatasetType (String datasetType) throws Exception {
+ 		this.put( "DATASET_TYPE", datasetType );
+	}
+	
 	int getDatasetTypeID ( )  throws Exception {
 		int datasetTypeID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE_ID"))) {

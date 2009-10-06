@@ -23,6 +23,18 @@ public class BlockParent extends JSONObject  {
                 this.putOnce("PARENT_BLOCK_ID", parentBlockID );
         }
 
+	public void setBlockParentID (int blockParentID) throws Exception {
+ 		this.put( "BLOCK_PARENT_ID", blockParentID );
+	}
+	
+	public void setThisBlockID (int thisBlockID) throws Exception {
+ 		this.put( "THIS_BLOCK_ID", thisBlockID );
+	}
+	
+	public void setParentBlockID (int parentBlockID) throws Exception {
+ 		this.put( "PARENT_BLOCK_ID", parentBlockID );
+	}
+	
 	int getBlockParentID ( )  throws Exception {
 		int blockParentID = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_PARENT_ID"))) {

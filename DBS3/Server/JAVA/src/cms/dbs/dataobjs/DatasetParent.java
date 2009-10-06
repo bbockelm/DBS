@@ -23,6 +23,18 @@ public class DatasetParent extends JSONObject  {
                 this.putOnce("PARENT_DATASET_ID", parentDatasetID );
         }
 
+	public void setDatasetParentID (int datasetParentID) throws Exception {
+ 		this.put( "DATASET_PARENT_ID", datasetParentID );
+	}
+	
+	public void setThisDatasetID (int thisDatasetID) throws Exception {
+ 		this.put( "THIS_DATASET_ID", thisDatasetID );
+	}
+	
+	public void setParentDatasetID (int parentDatasetID) throws Exception {
+ 		this.put( "PARENT_DATASET_ID", parentDatasetID );
+	}
+	
 	int getDatasetParentID ( )  throws Exception {
 		int datasetParentID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_PARENT_ID"))) {

@@ -22,6 +22,14 @@ public class StorageElement extends JSONObject  {
                 this.putOnce("SE_NAME", seName );
         }
 
+	public void setSeID (int seID) throws Exception {
+ 		this.put( "SE_ID", seID );
+	}
+	
+	public void setSeName (String seName) throws Exception {
+ 		this.put( "SE_NAME", seName );
+	}
+	
 	int getSeID ( )  throws Exception {
 		int seID = 0;
                	if (!JSONObject.NULL.equals(this.get("SE_ID"))) {

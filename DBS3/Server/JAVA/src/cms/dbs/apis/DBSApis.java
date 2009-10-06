@@ -1,5 +1,5 @@
 /***
- * $Id: DBSApis.java,v 1.4 2009/09/23 13:55:48 yuyi Exp $
+ * $Id: DBSApis.java,v 1.5 2009/09/23 19:17:05 yuyi Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
@@ -53,6 +53,13 @@ public class DBSApis {
     
     public static void main (String args[]){
 	try{
+
+		JSONObject jj=new JSONObject();
+		jj.put("abc", 1);
+		System.out.println(jj);
+		jj.put("abc", 2);
+		System.out.println(jj);
+
             DBSApis api = new DBSApis();
 	    PrimaryDataset cd = new PrimaryDataset(0, "%", null, 0, "");
 	    JSONArray result = (api.DBSApiFindPrimaryDatasets(cd)).getJSONArray("result");

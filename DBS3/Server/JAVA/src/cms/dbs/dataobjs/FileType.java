@@ -22,6 +22,14 @@ public class FileType extends JSONObject  {
                 this.putOnce("FILE_TYPE", fileType );
         }
 
+	public void setFileTypeID (int fileTypeID) throws Exception {
+ 		this.put( "FILE_TYPE_ID", fileTypeID );
+	}
+	
+	public void setFileType (String fileType) throws Exception {
+ 		this.put( "FILE_TYPE", fileType );
+	}
+	
 	int getFileTypeID ( )  throws Exception {
 		int fileTypeID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_TYPE_ID"))) {

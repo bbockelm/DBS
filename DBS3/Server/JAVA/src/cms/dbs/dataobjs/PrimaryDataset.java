@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.3 $"
- $Id: PrimaryDataset.java,v 1.3 2009/09/10 13:21:53 yuyi Exp $"
+ $Revision: 1.4 $"
+ $Id: PrimaryDataset.java,v 1.4 2009/09/21 15:10:38 yuyi Exp $"
  *
  * Data Object from table : PRIMARY_DATASETS
 */
@@ -25,6 +25,26 @@ public class PrimaryDataset extends JSONObject {
                 this.putOnce("PRIMARY_DS_TYPE_DO", pType );
                 this.putOnce("CREATION_DATE",  creationDate );
                 this.putOnce("CREATE_BY",  createBy );
+        }
+
+        public void setPrimaryDSID (int primaryDSID) throws Exception {
+                this.put( "PRIMARY_DS_ID", primaryDSID );
+        }
+
+        public void setPrimaryDSName (String primaryDSName) throws Exception {
+                this.put( "PRIMARY_DS_NAME", primaryDSName );
+        }
+
+        public void setPrimaryDSTypeID (int primaryDSTypeID) throws Exception {
+                this.put( "PRIMARY_DS_TYPE_ID", primaryDSTypeID );
+        }
+
+        public void setCreationDate (int creationDate) throws Exception {
+                this.put( "CREATION_DATE", creationDate );
+        }
+
+        public void setCreateBy (String createBy) throws Exception {
+                this.put( "CREATE_BY", createBy );
         }
 
 	int getPrimaryDSID ( ) throws Exception{

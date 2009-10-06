@@ -37,6 +37,74 @@ public class File extends JSONObject  {
                 this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
         }
 
+	public void setFileID (int fileID) throws Exception {
+ 		this.put( "FILE_ID", fileID );
+	}
+	
+	public void setLogicalFileName (String logicalFileName) throws Exception {
+ 		this.put( "LOGICAL_FILE_NAME", logicalFileName );
+	}
+	
+	public void setIsFileValid (int isFileValid) throws Exception {
+ 		this.put( "IS_FILE_VALID", isFileValid );
+	}
+	
+	public void setPathID (int pathID) throws Exception {
+ 		this.put( "PATH_ID", pathID );
+	}
+	
+	public void setBlockID (int blockID) throws Exception {
+ 		this.put( "BLOCK_ID", blockID );
+	}
+	
+	public void setFileTypeID (int fileTypeID) throws Exception {
+ 		this.put( "FILE_TYPE_ID", fileTypeID );
+	}
+	
+	public void setCheckSum (String checkSum) throws Exception {
+ 		this.put( "CHECK_SUM", checkSum );
+	}
+	
+	public void setEventCount (int eventCount) throws Exception {
+ 		this.put( "EVENT_COUNT", eventCount );
+	}
+	
+	public void setFileSize (int fileSize) throws Exception {
+ 		this.put( "FILE_SIZE", fileSize );
+	}
+	
+	public void setBranchHashID (int branchHashID) throws Exception {
+ 		this.put( "BRANCH_HASH_ID", branchHashID );
+	}
+	
+	public void setAdler32 (String adler32) throws Exception {
+ 		this.put( "ADLER32", adler32 );
+	}
+	
+	public void setMd5 (String md5) throws Exception {
+ 		this.put( "MD5", md5 );
+	}
+	
+	public void setAutoCrossSection (float autoCrossSection) throws Exception {
+ 		this.put( "AUTO_CROSS_SECTION", autoCrossSection );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
+	public void setLastModificationDate (int lastModificationDate) throws Exception {
+ 		this.put( "LAST_MODIFICATION_DATE", lastModificationDate );
+	}
+	
+	public void setLastModifiedBy (String lastModifiedBy) throws Exception {
+ 		this.put( "LAST_MODIFIED_BY", lastModifiedBy );
+	}
+	
 	int getFileID ( )  throws Exception {
 		int fileID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_ID"))) {
@@ -136,7 +204,8 @@ public class File extends JSONObject  {
 	float getAutoCrossSection ( )  throws Exception {
 		float autoCrossSection = 0;
                	if (!JSONObject.NULL.equals(this.get("AUTO_CROSS_SECTION"))) {
-                       	autoCrossSection = this.getFloat("AUTO_CROSS_SECTION");
+                       	//autoCrossSection = this.getFloat("AUTO_CROSS_SECTION");
+			System.out.println("DANG !!!!!!!!!!!!");
                	}
                 return autoCrossSection;
         }

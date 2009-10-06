@@ -22,6 +22,14 @@ public class ProcessedDataset extends JSONObject  {
                 this.putOnce("PROCESSED_DS_NAME", processedDSName );
         }
 
+	public void setProcessedDSID (int processedDSID) throws Exception {
+ 		this.put( "PROCESSED_DS_ID", processedDSID );
+	}
+	
+	public void setProcessedDSName (String processedDSName) throws Exception {
+ 		this.put( "PROCESSED_DS_NAME", processedDSName );
+	}
+	
 	int getProcessedDSID ( )  throws Exception {
 		int processedDSID = 0;
                	if (!JSONObject.NULL.equals(this.get("PROCESSED_DS_ID"))) {

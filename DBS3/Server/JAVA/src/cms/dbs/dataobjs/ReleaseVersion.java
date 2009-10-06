@@ -22,6 +22,14 @@ public class ReleaseVersion extends JSONObject  {
                 this.putOnce("VERSION", version );
         }
 
+	public void setReleaseVersionID (int releaseVersionID) throws Exception {
+ 		this.put( "RELEASE_VERSION_ID", releaseVersionID );
+	}
+	
+	public void setVersion (String version) throws Exception {
+ 		this.put( "VERSION", version );
+	}
+	
 	int getReleaseVersionID ( )  throws Exception {
 		int releaseVersionID = 0;
                	if (!JSONObject.NULL.equals(this.get("RELEASE_VERSION_ID"))) {

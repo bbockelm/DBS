@@ -27,6 +27,34 @@ public class DbsVersion extends JSONObject  {
                 this.putOnce("LAST_MODIFICATION_DATE", lastModificationDate );
         }
 
+	public void setDbsVersionID (int dbsVersionID) throws Exception {
+ 		this.put( "DBS_VERSION_ID", dbsVersionID );
+	}
+	
+	public void setSchemaVersion (String schemaVersion) throws Exception {
+ 		this.put( "SCHEMA_VERSION", schemaVersion );
+	}
+	
+	public void setDbsReleaseVersion (String dbsReleaseVersion) throws Exception {
+ 		this.put( "DBS_RELEASE_VERSION", dbsReleaseVersion );
+	}
+	
+	public void setInstanceName (String instanceName) throws Exception {
+ 		this.put( "INSTANCE_NAME", instanceName );
+	}
+	
+	public void setInstanceType (String instanceType) throws Exception {
+ 		this.put( "INSTANCE_TYPE", instanceType );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setLastModificationDate (int lastModificationDate) throws Exception {
+ 		this.put( "LAST_MODIFICATION_DATE", lastModificationDate );
+	}
+	
 	int getDbsVersionID ( )  throws Exception {
 		int dbsVersionID = 0;
                	if (!JSONObject.NULL.equals(this.get("DBS_VERSION_ID"))) {

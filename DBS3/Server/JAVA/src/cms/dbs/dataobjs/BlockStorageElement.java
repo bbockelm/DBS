@@ -23,6 +23,18 @@ public class BlockStorageElement extends JSONObject  {
                 this.putOnce("BLOCK_ID", blockID );
         }
 
+	public void setBlockSeID (int blockSeID) throws Exception {
+ 		this.put( "BLOCK_SE_ID", blockSeID );
+	}
+	
+	public void setSeID (int seID) throws Exception {
+ 		this.put( "SE_ID", seID );
+	}
+	
+	public void setBlockID (int blockID) throws Exception {
+ 		this.put( "BLOCK_ID", blockID );
+	}
+	
 	int getBlockSeID ( )  throws Exception {
 		int blockSeID = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_SE_ID"))) {

@@ -23,6 +23,18 @@ public class ParameterSetHashe extends JSONObject  {
                 this.putOnce("NAME", name );
         }
 
+	public void setParameterSetHashID (int parameterSetHashID) throws Exception {
+ 		this.put( "PARAMETER_SET_HASH_ID", parameterSetHashID );
+	}
+	
+	public void setHash (String hash) throws Exception {
+ 		this.put( "HASH", hash );
+	}
+	
+	public void setName (String name) throws Exception {
+ 		this.put( "NAME", name );
+	}
+	
 	int getParameterSetHashID ( )  throws Exception {
 		int parameterSetHashID = 0;
                	if (!JSONObject.NULL.equals(this.get("PARAMETER_SET_HASH_ID"))) {

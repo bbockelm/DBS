@@ -31,6 +31,50 @@ public class Block extends JSONObject  {
                 this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
         }
 
+	public void setBlockID (int blockID) throws Exception {
+ 		this.put( "BLOCK_ID", blockID );
+	}
+	
+	public void setBlockName (String blockName) throws Exception {
+ 		this.put( "BLOCK_NAME", blockName );
+	}
+	
+	public void setDatasetID (int datasetID) throws Exception {
+ 		this.put( "DATASET_ID", datasetID );
+	}
+	
+	public void setOpenForWriting (int openForWriting) throws Exception {
+ 		this.put( "OPEN_FOR_WRITING", openForWriting );
+	}
+	
+	public void setOriginSite (int originSite) throws Exception {
+ 		this.put( "ORIGIN_SITE", originSite );
+	}
+	
+	public void setBlockSize (int blockSize) throws Exception {
+ 		this.put( "BLOCK_SIZE", blockSize );
+	}
+	
+	public void setFileCount (int fileCount) throws Exception {
+ 		this.put( "FILE_COUNT", fileCount );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
+	public void setLastModificationDate (int lastModificationDate) throws Exception {
+ 		this.put( "LAST_MODIFICATION_DATE", lastModificationDate );
+	}
+	
+	public void setLastModifiedBy (String lastModifiedBy) throws Exception {
+ 		this.put( "LAST_MODIFIED_BY", lastModifiedBy );
+	}
+	
 	int getBlockID ( )  throws Exception {
 		int blockID = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_ID"))) {

@@ -23,6 +23,18 @@ public class BranchHashe extends JSONObject  {
                 this.putOnce("CONTENT", content );
         }
 
+	public void setBranchHashID (int branchHashID) throws Exception {
+ 		this.put( "BRANCH_HASH_ID", branchHashID );
+	}
+	
+	public void setHash (String hash) throws Exception {
+ 		this.put( "HASH", hash );
+	}
+	
+	public void setContent (String content) throws Exception {
+ 		this.put( "CONTENT", content );
+	}
+	
 	int getBranchHashID ( )  throws Exception {
 		int branchHashID = 0;
                	if (!JSONObject.NULL.equals(this.get("BRANCH_HASH_ID"))) {

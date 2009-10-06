@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.3 $"
- $Id: PrimaryDSType.java,v 1.3 2009/09/21 15:10:38 yuyi Exp $"
+ $Revision: 1.4 $"
+ $Id: PrimaryDSType.java,v 1.4 2009/09/22 19:06:14 yuyi Exp $"
  *
  * Data Object from table : PRIMARY_DS_TYPES
 */
@@ -22,6 +22,15 @@ public class PrimaryDSType extends JSONObject {
                 this.putOnce("PRIMARY_DS_TYPE_ID",  primaryDSTypeID );
                 this.putOnce("PRIMARY_DS_TYPE",  primaryDSType );
         }
+
+        public void setPrimaryDSTypeID (int primaryDSTypeID) throws Exception {
+                this.put( "PRIMARY_DS_TYPE_ID", primaryDSTypeID );
+        }
+
+        public void setPrimaryDSType (String primaryDSType) throws Exception {
+                this.put( "PRIMARY_DS_TYPE", primaryDSType );
+        }
+
 
 	public int getPrimaryDSTypeID ( ) throws Exception{
 		int primaryDSTypeID = 0;

@@ -24,6 +24,22 @@ public class DataTier extends JSONObject  {
                 this.putOnce("CREATE_BY", createBy );
         }
 
+	public void setDataTierID (int dataTierID) throws Exception {
+ 		this.put( "DATA_TIER_ID", dataTierID );
+	}
+	
+	public void setDataTierName (String dataTierName) throws Exception {
+ 		this.put( "DATA_TIER_NAME", dataTierName );
+	}
+	
+	public void setCreationDate (int creationDate) throws Exception {
+ 		this.put( "CREATION_DATE", creationDate );
+	}
+	
+	public void setCreateBy (String createBy) throws Exception {
+ 		this.put( "CREATE_BY", createBy );
+	}
+	
 	int getDataTierID ( )  throws Exception {
 		int dataTierID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATA_TIER_ID"))) {
