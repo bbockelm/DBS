@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.4 $"
- $Id: PrimaryDataset.java,v 1.4 2009/09/21 15:10:38 yuyi Exp $"
+ $Revision: 1.5 $"
+ $Id: PrimaryDataset.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : PRIMARY_DATASETS
 */
@@ -35,8 +35,8 @@ public class PrimaryDataset extends JSONObject {
                 this.put( "PRIMARY_DS_NAME", primaryDSName );
         }
 
-        public void setPrimaryDSTypeID (int primaryDSTypeID) throws Exception {
-                this.put( "PRIMARY_DS_TYPE_ID", primaryDSTypeID );
+        public void setPrimaryDSTypeDO (PrimaryDSType primaryDSType) throws Exception {
+                this.put( "PRIMARY_DS_TYPE_DO", primaryDSType );
         }
 
         public void setCreationDate (int creationDate) throws Exception {
@@ -86,5 +86,23 @@ public class PrimaryDataset extends JSONObject {
                	}
                 return createBy;
         }
+	public void setPrimaryDSName(String dsName) throws Exception{
+	    this.put("PRIMARY_DS_NAME", dsName);
+       }
+
+	public void setPrimaryDSTypeDO(PrimaryDSType type) throws Exception {
+	    this.put("PRIMARY_DS_TYPE_DO", type);
+	}
+
+	public void setCreationDate(int d) throws Exception{
+	    this.put("CREATION_DATE", d);
+	}	
 	
+	public void setCreateBy(String user) throws Exception {
+	    this.put("CREATE_BY", user);
+	}
+
+	public void setPrimaryDSID( int id) throws Exception {
+	    this.put("PRIMARY_DS_ID", id);
+	}
 }
