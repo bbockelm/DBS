@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.3 $"
+ $Id: Dataset.java,v 1.3 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : DATASETS
 */
@@ -16,18 +16,21 @@ public class Dataset extends JSONObject  {
 
 	}
 		
-        public Dataset ( int datasetID, String dataPath, int isPathValid, int primaryDSID, int processedDSID, int dataTierID, int pathTypeID, int acquisitionEraID, int processingEraID, int physicsGroupID, float xtcrosssection, String globalTag, int creationDate, String createBy, int lastModificationDate, String lastModifiedBy ) throws Exception  {
+        public Dataset ( int datasetID, String dataPath, int isPathValid, PrimaryDataset primaryDS, ProcessedDataset processedDS, 
+	DataTier dataTire, DatasetType datasetType, AcquisitionEra acquisitionEra, ProcessingEra processingEra, 
+	PhysicsGroup physicsGroup, double xtcrosssection, String globalTag, int creationDate, String createBy, 
+	int lastModificationDate, String lastModifiedBy ) throws Exception  {
 		
                 this.putOnce("DATASET_ID", datasetID );
                 this.putOnce("DATA_PATH", dataPath );
                 this.putOnce("IS_PATH_VALID", isPathValid );
-                this.putOnce("PRIMARY_DS_ID", primaryDSID );
-                this.putOnce("PROCESSED_DS_ID", processedDSID );
-                this.putOnce("DATA_TIER_ID", dataTierID );
-                this.putOnce("PATH_TYPE_ID", pathTypeID );
-                this.putOnce("ACQUISITION_ERA_ID", acquisitionEraID );
-                this.putOnce("PROCESSING_ERA_ID", processingEraID );
-                this.putOnce("PHYSICS_GROUP_ID", physicsGroupID );
+                this.putOnce("PRIMARY_DS_DO", primaryDS );
+                this.putOnce("PROCESSED_DS_DO", processedDS );
+                this.putOnce("DATA_TIER_DO", dataTier );
+                this.putOnce("DATASET_TYPE_DO", pathType );
+                this.putOnce("ACQUISITION_ERA_DO", acquisitionEra );
+                this.putOnce("PROCESSING_ERA_DO", processingEra );
+                this.putOnce("PHYSICS_GROUP_DO", physicsGroup );
                 this.putOnce("XTCROSSSECTION", xtcrosssection );
                 this.putOnce("GLOBAL_TAG", globalTag );
                 this.putOnce("CREATION_DATE", creationDate );
@@ -48,32 +51,32 @@ public class Dataset extends JSONObject  {
  		this.put( "IS_PATH_VALID", isPathValid );
 	}
 	
-	public void setPrimaryDSID (int primaryDSID) throws Exception {
- 		this.put( "PRIMARY_DS_ID", primaryDSID );
+	public void setPrimaryDSDO (PrimaryDataset primaryDS) throws Exception {
+ 		this.put( "PRIMARY_DS_DO", primaryDS );
 	}
 	
-	public void setProcessedDSID (int processedDSID) throws Exception {
- 		this.put( "PROCESSED_DS_ID", processedDSID );
+	public void setProcessedDSDO (ProcessedDataset processedDS) throws Exception {
+ 		this.put( "PROCESSED_DS_DO", processedDS );
 	}
 	
-	public void setDataTierID (int dataTierID) throws Exception {
- 		this.put( "DATA_TIER_ID", dataTierID );
+	public void setDataTierDO (DataTier dataTier) throws Exception {
+ 		this.put( "DATA_TIER_DO", dataTier );
 	}
 	
-	public void setPathTypeID (int pathTypeID) throws Exception {
- 		this.put( "PATH_TYPE_ID", pathTypeID );
+	public void setPathTypeID DatasetType pathType) throws Exception {
+ 		this.put( "PATH_TYPE_DO", pathType);
 	}
 	
-	public void setAcquisitionEraID (int acquisitionEraID) throws Exception {
- 		this.put( "ACQUISITION_ERA_ID", acquisitionEraID );
+	public void setAcquisitionEraDO (AcquisitionEra acquisitionEra) throws Exception {
+ 		this.put( "ACQUISITION_ERA_DO", acquisitionEra );
 	}
 	
-	public void setProcessingEraID (int processingEraID) throws Exception {
- 		this.put( "PROCESSING_ERA_ID", processingEraID );
+	public void setProcessingEraDO (ProcessingEra processingEra) throws Exception {
+ 		this.put( "PROCESSING_ERA_DO", processingEra);
 	}
 	
-	public void setPhysicsGroupID (int physicsGroupID) throws Exception {
- 		this.put( "PHYSICS_GROUP_ID", physicsGroupID );
+	public void setPhysicsGroupDO (PhysicsGroup physicsGroup) throws Exception {
+ 		this.put( "PHYSICS_GROUP_DO", physicsGroup );
 	}
 	
 	public void setXtcrosssection (float xtcrosssection) throws Exception {
@@ -124,67 +127,66 @@ public class Dataset extends JSONObject  {
                 return isPathValid;
         }
 	
-	int getPrimaryDSID ( )  throws Exception {
-		int primaryDSID = 0;
-               	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_ID"))) {
-                       	primaryDSID = this.getInt("PRIMARY_DS_ID");
+	PrimaryDataset getPrimaryDSDO ( )  throws Exception {
+		PrimaryDataset primaryDS = null;
+               	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_DO"))) {
+                       	primaryDS =(PrimaryDataset)this.getJSONObject("PRIMARY_DS_DO");
                	}
-                return primaryDSID;
+                return primaryDS;
         }
 	
-	int getProcessedDSID ( )  throws Exception {
-		int processedDSID = 0;
-               	if (!JSONObject.NULL.equals(this.get("PROCESSED_DS_ID"))) {
-                       	processedDSID = this.getInt("PROCESSED_DS_ID");
+	ProcessedDataset getProcessedDSDO ( )  throws Exception {
+		ProcessedDataset processedDS = null;
+               	if (!JSONObject.NULL.equals(this.get("PROCESSED_DS_DO"))) {
+                       	processedDS = (ProcessedDataset)this.getJSONObject("PROCESSED_DS_DO");
                	}
-                return processedDSID;
+                return processedDS;
         }
 	
-	int getDataTierID ( )  throws Exception {
-		int dataTierID = 0;
-               	if (!JSONObject.NULL.equals(this.get("DATA_TIER_ID"))) {
-                       	dataTierID = this.getInt("DATA_TIER_ID");
+	DataTier getDataTierID ( )  throws Exception {
+		DataTier dataTier = null;
+               	if (!JSONObject.NULL.equals(this.get("DATA_TIER_DO"))) {
+                       	dataTier = (DataTier)this.getJSONObject("DATA_TIER_DO");
                	}
-                return dataTierID;
+                return dataTier;
         }
 	
-	int getPathTypeID ( )  throws Exception {
-		int pathTypeID = 0;
-               	if (!JSONObject.NULL.equals(this.get("PATH_TYPE_ID"))) {
-                       	pathTypeID = this.getInt("PATH_TYPE_ID");
+	DatasetType getDatasetTypeDO ( )  throws Exception {
+		DatasetType pathType = null;
+               	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE_DO"))) {
+                       	pathType = this.getJSONObject("DATASET_TYPE_DO");
                	}
-                return pathTypeID;
+                return pathType;
         }
 	
-	int getAcquisitionEraID ( )  throws Exception {
-		int acquisitionEraID = 0;
-               	if (!JSONObject.NULL.equals(this.get("ACQUISITION_ERA_ID"))) {
-                       	acquisitionEraID = this.getInt("ACQUISITION_ERA_ID");
+	AcquisitionEra getAcquisitionEraDO ( )  throws Exception {
+		AcquisitionEra acquisitionEra = null;
+               	if (!JSONObject.NULL.equals(this.get("ACQUISITION_ERA_DO"))) {
+                       	acquisitionEra = (AcquisitionEra)this.getJSONObject("ACQUISITION_ERA_DO");
                	}
-                return acquisitionEraID;
+                return acquisitionEra;
         }
 	
-	int getProcessingEraID ( )  throws Exception {
-		int processingEraID = 0;
-               	if (!JSONObject.NULL.equals(this.get("PROCESSING_ERA_ID"))) {
-                       	processingEraID = this.getInt("PROCESSING_ERA_ID");
+	ProcessingEra getProcessingEraDO ( )  throws Exception {
+		ProcessingEra processingEraDO = null;
+               	if (!JSONObject.NULL.equals(this.get("PROCESSING_ERA_DO"))) {
+                       	processingEraID = this.getJSONObject("PROCESSING_ERA_DO");
                	}
-                return processingEraID;
+                return processingEra;
         }
 	
-	int getPhysicsGroupID ( )  throws Exception {
-		int physicsGroupID = 0;
-               	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_ID"))) {
-                       	physicsGroupID = this.getInt("PHYSICS_GROUP_ID");
+	PhysicsGroup getPhysicsGroupDO ( )  throws Exception {
+		PhysicsGroup physicsGroupDO = null;
+               	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_DO"))) {
+                       	physicsGroup = this.getInt("PHYSICS_GROUP_DO");
                	}
-                return physicsGroupID;
+                return physicsGroup;
         }
 	
-	float getXtcrosssection ( )  throws Exception {
-		float xtcrosssection = 0;
+	double getXtcrosssection ( )  throws Exception {
+		double xtcrosssection = 0;
                	if (!JSONObject.NULL.equals(this.get("XTCROSSSECTION"))) {
-                       	//xtcrosssection = this.getFloat("XTCROSSSECTION");
-			System.out.println("DANG !!!!!!!!!!!!");
+                       	xtcrosssection = this.getDouble("XTCROSSSECTION");
                	}
                 return xtcrosssection;
         }
