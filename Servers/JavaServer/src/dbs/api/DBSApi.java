@@ -1,6 +1,6 @@
 /**
- $Revision: 1.170 $"
- $Id: DBSApi.java,v 1.170 2009/09/10 19:25:09 afaq Exp $"
+ $Revision: 1.171 $"
+ $Id: DBSApi.java,v 1.171 2009/09/28 18:35:52 yuyi Exp $"
  *
 */
 
@@ -290,7 +290,8 @@ public class DBSApi {
 						get(table, "app_version", false),
 						get(table, "app_family_name", false),
 						get(table, "app_executable_name", false),
-						get(table, "ps_name", false)
+						get(table, "ps_name", false),
+						apiVersion
 						);
                         } else if (apiStr.equals("executeSummary")) {
                         	(new DBSApiViewsLogic(this.data)).executeSummary(conn, out, 
@@ -631,7 +632,7 @@ public class DBSApi {
 				(new DBSApiProcDSLogic(this.data)).updateProcDSStatus(conn, out,
 						get(table, "path", true),
 						get(table, "status", true),
-						dbsUser);
+						dbsUser, apiVersion);
 				
 			} else if (apiStr.equals("insertParentInFile")) {
 				(new DBSApiFileLogic(this.data)).insertParentInFile(conn, out,

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.89 $"
- $Id: DBSApiProcDSLogic.java,v 1.89 2009/09/28 18:35:52 yuyi Exp $"
+ $Revision: 1.90 $"
+ $Id: DBSApiProcDSLogic.java,v 1.90 2009/09/29 18:42:40 yuyi Exp $"
  *
  */
 
@@ -55,10 +55,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param patternPS a parameter passed in from the client that can contain wild card characters for parameter set name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patterns are invalid or the database connection is unavailable.
 	 */
-	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
-		listProcessedDatasets(conn, out, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS, false);
+	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, String apiVersion) throws Exception {
+		listProcessedDatasets(conn, out, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS, apiVersion, false);
 	}
-	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, boolean all) throws Exception {
+	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, String apiVersion, boolean all) throws Exception {
 		String prevDS = "";
 		/*String prevTier = "";
 		String prevExe = "";
@@ -98,18 +98,23 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				String exe = get(rs, "APP_EXECUTABLE_NAME");
 				String ver = get(rs, "APP_VERSION");
 				String pset = get(rs, "PS_HASH");
-
 				String path =  get(rs, "PATH");
-
+				String status = get(rs, "STATUS");
+				if(apiVersion.compareTo("DBS_2_0_9") < 0) {
+					if (status.equals("VALID-RO")) 
+						status = "RO";
+				}
+		
 				if( !prevDS.equals(procDSID) && ! first) {
 
 					out.write(((String) "</processed_dataset>\n"));
 				}
 				if( !prevDS.equals(procDSID) || first) {
+						
 					out.write(((String) "<processed_dataset id='" + get(rs, "ID") + 
 							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATASET_NAME") +
 							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATASET_NAME") +
-							"' status='" +  get(rs, "STATUS") +
+							"' status='" +  status +
 							"' acquisition_era='" +  get(rs, "ACQUISITION_ERA") +
 							"' global_tag='" +  get(rs, "GLOBAL_TAG") +
 							"' creation_date='" + getTime(rs, "CREATION_DATE") +
@@ -135,8 +140,6 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                                         out.write(((String) "\t<path dataset_path='"+path+"'/>\n"));
                                         pathVec.add(path);
                                 } 
-
-
 
 				if ( !isNull(tier) ) {
 					Vector tmpVec = parseTierVec(tier);
@@ -444,7 +447,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 	}
 
-	public String listProcDSStatus(Connection conn, Writer out, String procDSID) throws Exception {
+
+	private String listProcDSStatus(Connection conn, Writer out, String procDSID) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -801,10 +805,15 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void updateProcDSStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
+	public void updateProcDSStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser, String apiVersion) throws Exception {
+			
 		String procDSID = getProcessedDSID(conn, path, true);
 		if (!listProcDSStatus(conn, out, procDSID).equals(value)) {
 			checkProcDSStatus(conn, out, path, procDSID);
+                        if(apiVersion.compareTo("DBS_2_0_9") < 0) {
+                                if (value.equals("RO"))
+                                     value = "VALID-RO";
+                        }
 			updateName(conn, out, "ProcessedDataset", procDSID,
 					"Status", "ProcDSStatus", "Status", 
 					value, personApi.getUserID(conn, dbsUser));
