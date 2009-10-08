@@ -384,7 +384,9 @@ class DbsMigrateApi:
 		#dstInstanceName = "GLOBAL"
 		self.checkDatasetStatus(path)
 		self.checkInstances(srcInstanceName, dstInstanceName)
-		if not self.doesPathExist(self.apiDst, path):
+                # ONLY migrate if the dataset is NOT at the destination (NO SHOW of FORCE here !!!)
+                # I hate Read only datasets anyways - AA 10/08/2009
+                if not self.doesPathExistNoForce(self.apiDst, path):
 			if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
 				#One level Migration
 				self.migratePathBasic(path)
@@ -394,6 +396,10 @@ class DbsMigrateApi:
 					self.migratePathROBasic(path)
 					#Set dataset status as RO
 					self.setDatasetStatusAsRO(path)
+
+                # If dataset is already there, give up
+                else: raise DbsBadRequest (args = "Dataset already exists at destination, you cannot migrate it as a READ ONLY dataset", code = 1222)
+
 	
 
 	def migrateBlockRO(self, path, blockName):
