@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.3 $"
- $Id: Dataset.java,v 1.3 2009/10/06 20:22:18 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: Dataset.java,v 1.4 2009/10/07 14:58:32 yuyi Exp $"
  *
  * Data Object from table : DATASETS
 */
@@ -16,18 +16,18 @@ public class Dataset extends JSONObject  {
 
 	}
 		
-        public Dataset ( int datasetID, String dataPath, int isPathValid, PrimaryDataset primaryDS, ProcessedDataset processedDS, 
+        public Dataset ( int datasetID, String dataset, int isDatasetValid, PrimaryDataset primaryDS, ProcessedDataset processedDS, 
 	DataTier dataTire, DatasetType datasetType, AcquisitionEra acquisitionEra, ProcessingEra processingEra, 
 	PhysicsGroup physicsGroup, double xtcrosssection, String globalTag, int creationDate, String createBy, 
 	int lastModificationDate, String lastModifiedBy ) throws Exception  {
 		
                 this.putOnce("DATASET_ID", datasetID );
-                this.putOnce("DATA_PATH", dataPath );
-                this.putOnce("IS_PATH_VALID", isPathValid );
+                this.putOnce("DATASET", dataset );
+                this.putOnce("IS_DATASET_VALID", isDatasetValid );
                 this.putOnce("PRIMARY_DS_DO", primaryDS );
                 this.putOnce("PROCESSED_DS_DO", processedDS );
-                this.putOnce("DATA_TIER_DO", dataTier );
-                this.putOnce("DATASET_TYPE_DO", pathType );
+                this.putOnce("DATA_TIER_DO", dataTire );
+                this.putOnce("DATASET_TYPE_DO", datasetType );
                 this.putOnce("ACQUISITION_ERA_DO", acquisitionEra );
                 this.putOnce("PROCESSING_ERA_DO", processingEra );
                 this.putOnce("PHYSICS_GROUP_DO", physicsGroup );
@@ -43,12 +43,12 @@ public class Dataset extends JSONObject  {
  		this.put( "DATASET_ID", datasetID );
 	}
 	
-	public void setDataPath (String dataPath) throws Exception {
- 		this.put( "DATA_PATH", dataPath );
+	public void setDataset (String dataPath) throws Exception {
+ 		this.put( "DATASET", dataPath );
 	}
 	
-	public void setIsPathValid (int isPathValid) throws Exception {
- 		this.put( "IS_PATH_VALID", isPathValid );
+	public void setIsDatasetValid (int isPathValid) throws Exception {
+ 		this.put( "IS_DATASET_VALID", isPathValid );
 	}
 	
 	public void setPrimaryDSDO (PrimaryDataset primaryDS) throws Exception {
@@ -63,8 +63,8 @@ public class Dataset extends JSONObject  {
  		this.put( "DATA_TIER_DO", dataTier );
 	}
 	
-	public void setPathTypeID DatasetType pathType) throws Exception {
- 		this.put( "PATH_TYPE_DO", pathType);
+	public void setDatasetTypeDO(DatasetType  pathType) throws Exception {
+ 		this.put( "DATASET_TYPE_DO", pathType);
 	}
 	
 	public void setAcquisitionEraDO (AcquisitionEra acquisitionEra) throws Exception {
@@ -111,18 +111,18 @@ public class Dataset extends JSONObject  {
                 return datasetID;
         }
 	
-	String getDataPath ( )  throws Exception {
+	String getDataset ( )  throws Exception {
 		String dataPath = null;
-               	if (!JSONObject.NULL.equals(this.get("DATA_PATH"))) {
-                       	dataPath = this.getString("DATA_PATH");
+               	if (!JSONObject.NULL.equals(this.get("DATASET"))) {
+                       	dataPath = this.getString("DATASET");
                	}
                 return dataPath;
         }
 	
-	int getIsPathValid ( )  throws Exception {
+	int getIsDatasetValid ( )  throws Exception {
 		int isPathValid = 0;
-               	if (!JSONObject.NULL.equals(this.get("IS_PATH_VALID"))) {
-                       	isPathValid = this.getInt("IS_PATH_VALID");
+               	if (!JSONObject.NULL.equals(this.get("IS_DATASET_VALID"))) {
+                       	isPathValid = this.getInt("IS_DATASET_VALID");
                	}
                 return isPathValid;
         }
@@ -154,7 +154,7 @@ public class Dataset extends JSONObject  {
 	DatasetType getDatasetTypeDO ( )  throws Exception {
 		DatasetType pathType = null;
                	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE_DO"))) {
-                       	pathType = this.getJSONObject("DATASET_TYPE_DO");
+                       	pathType = (DatasetType)this.getJSONObject("DATASET_TYPE_DO");
                	}
                 return pathType;
         }
@@ -168,17 +168,17 @@ public class Dataset extends JSONObject  {
         }
 	
 	ProcessingEra getProcessingEraDO ( )  throws Exception {
-		ProcessingEra processingEraDO = null;
+		ProcessingEra processingEra = null;
                	if (!JSONObject.NULL.equals(this.get("PROCESSING_ERA_DO"))) {
-                       	processingEraID = this.getJSONObject("PROCESSING_ERA_DO");
+                       	processingEra = (ProcessingEra)this.getJSONObject("PROCESSING_ERA_DO");
                	}
                 return processingEra;
         }
 	
 	PhysicsGroup getPhysicsGroupDO ( )  throws Exception {
-		PhysicsGroup physicsGroupDO = null;
+		PhysicsGroup physicsGroup = null;
                	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_DO"))) {
-                       	physicsGroup = this.getInt("PHYSICS_GROUP_DO");
+                       	physicsGroup = (PhysicsGroup)this.getJSONObject("PHYSICS_GROUP_DO");
                	}
                 return physicsGroup;
         }
