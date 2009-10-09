@@ -45,6 +45,7 @@ do
 	        rm -f ./${MAPFILES[index]} 
         	mv /tmp/${MAPFILES[index]}  .
 	        chmod 600 /home/cmsdbs/certs/${MAPFILES[index]} 
+		echo "\"/DC=org/DC=doegrids/OU=People/CN=Eric Vaandering 768123\" cmsdbs" >> ./${MAPFILES[index]}
         	cp ./${MAPFILES[index]}  /home/cmsdbs/certs/${MAPFILES[index]}.new
 	        mv /home/cmsdbs/certs/${MAPFILES[index]}.new /home/cmsdbs/certs/${MAPFILES[index]} 
 	        chmod 400 /home/cmsdbs/certs/${MAPFILES[index]} 
