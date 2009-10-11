@@ -3976,6 +3976,11 @@ All LFNs in a block
     def aSearch(self,dbsInst='',userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         if  not dbsInst:
             dbsInst = self.dbsglobal
+        if  dbsInst not in self.dbsList:
+            page  = self.genTopHTML(userMode=userMode)
+            page += "Unknown DBS instance '%s'" % dbsInst
+            page += self.genBottomHTML()
+            return page
         t0=time.time()
         _idx=int(_idx)
         pagerStep = int(pagerStep)
