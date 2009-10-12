@@ -11,6 +11,7 @@ function footerMenuText(){
 //{label: "Pages", link: "_pages?userMode=user", title: "Data discovery world-wide pages"},
 {label: "Help", link: "_help?userMode=user", title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: "_contact?userMode=user", title: "Contact DBS support team"},
+{label: "TinyURL", link: "_tinyurl?url="+encodeURIComponent(location.href), title: "Create tiny URL to this web page"},
 {label: "View", id:"", link: "javascript:ChangeView()", title: "Define the data view", position: "right"}
 //{label: "View", id:"", link: "javascript:ChangeView()", title: "Define the data view", position: "right", css:"yuimenubaritem"}
 //{title: "Physicist view of DBS", link: "index?userMode=user", label: "Physicist", position: "right"},

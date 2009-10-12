@@ -1187,6 +1187,14 @@ class DDServer(DDLogger,Controller):
     genNavigatorMenuDict.exposed = True
 
     #################### ADMIN FORMS #######################
+    def _tinyurl(self, url, **kwargs):
+        page  = self.genTopHTML()
+        js    = "load('http://tinyurl.com/create.php?url='+'%s')" % url
+        page += """<script type="text/javascript">%s</script>""" % js
+        page += self.genBottomHTML()
+        return page
+    _tinyurl.exposed=True
+
     def _admin(self,**kwargs):
         page = self.genTopHTML()
         try:

@@ -13,6 +13,7 @@ function footerMenuText(){
 //    {label: "History", link: "_history?userMode=expert", title: "History: persistent history of user queries"},
 {label: "Help", link: "_help?userMode=expert", title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: "_contact?userMode=expert", title: "Contact DBS support team"},
+{label: "TinyURL", link: "_tinyurl?url="+encodeURIComponent(location.href), title: "Create tiny URL to this web page"},
 {label: "View", id:"", link: "javascript:ChangeView()", title: "Define the data view", position: "right"}
 //{title: "Physicist view of DBS", link: "index?userMode=user", label: "Physicist", position: "right"},
 //{title: "Production view of DBS, contains more detail for site admins and production operators.", link: "index?userMode=expert", label: "Production", position: "right"},

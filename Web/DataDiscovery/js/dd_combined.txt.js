@@ -18,6 +18,7 @@
 {label: "Tools", link: host+"_tools?userMode="+mode, title: "DBS user-friendly tools"},
 {label: "Help", link: host+"_help?userMode="+mode, title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: host+"_contact?userMode="+mode, title: "Contact DBS support team"},
+{label: "TinyURL", link: "_tinyurl?url="+encodeURIComponent(location.href), title: "Create tiny URL to this web page"},
 {label: "View", id:"", link: "javascript:ChangeView()", title: "Define the data view", position: "right"}
            ]
 }
