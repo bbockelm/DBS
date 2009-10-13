@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: ProcessedDatasetQO.java,v 1.1 2009/10/07 16:56:42 yuyi Exp $
  *
  * This is the class for processed dataset query objects.
  * @author Y. Guo
@@ -26,7 +26,7 @@ public class ProcessedDatasetQO extends  DBSSimpleQueryObject{
     //insert a processed dataset into DB
     public ProcessedDataset putProcessedDataset(Connection conn, ProcessedDataset cond) throws Exception{
 	String PName = cond.getProcessedDSName();
-	if(PName == null) return null
+	if(PName == null) return null;
 	String sql = "insert into " + schemaOwner + "PROCESSED_DATASETS(PROCESSED_DS_NAME, PROCESSED_DS_ID)"
 		    + "values(?,?)";
 	PreparedStatement ps = null;
@@ -57,7 +57,7 @@ public class ProcessedDatasetQO extends  DBSSimpleQueryObject{
         ResultSet rs = null;
         String sql = "SELECT P.PROCESSED_DS_ID, P.PROCESSED_DS_NAME FROM " +
             schemaOwner + "PROCESSED_DATASETS P " ;
-	if ((cond.getPrimaryDSName()).indexOf('_') != -1 || (cond.getPrimaryDSName()).indexOf('%') != -1)
+	if ((cond.getProcessedDSName()).indexOf('_') != -1 || (cond.getProcessedDSName()).indexOf('%') != -1)
 	    sql += " P.PRIMARY_DS_NAME like ?";
 	else  sql += " P.PRIMARY_DS_NAME = ?";
         ps = null;
@@ -65,13 +65,13 @@ public class ProcessedDatasetQO extends  DBSSimpleQueryObject{
         try{
             ps = DBManagement.getStatement(conn, sql);
             //prepare statement index starting with 1, but JSONArray index starting with 0.
-	    ps.setString(1, cond.getPrimaryDSName());
+	    ps.setString(1, cond.getProcessedDSName());
             //System.out.println(ps.toString());
             rs =  ps.executeQuery();
             while(rs.next()){
                 String name = rs.getString("PROCESSED_DS_NAME");
                 int pID = rs.getInt("PROCESSED_DS_ID");
-                this.result.put(new ProcessedDataset(pID, name);
+                this.result.put(new ProcessedDataset(pID, name));
             }
         }finally {
                 if (rs != null) rs.close();

@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: DataTierQO.java,v 1.1 2009/10/07 18:43:27 yuyi Exp $
  *
  * This is the class for data tier query objects.
  * @author Y. Guo
@@ -62,7 +62,7 @@ public class DataTierQO extends  DBSSimpleQueryObject{
         PreparedStatement ps = null;
         ResultSet rs = null;
         String sql = "SELECT P.DATA_TIER_ID, P.DATA_TIER_NAME, P.CREATION_DATE, P.CREATE_BY FROM " +
-            schemaOwner + "DATA_TIERS P " +
+            schemaOwner + "DATA_TIERS P " + " WHERE ";
 	if ((cond.getDataTierName()).indexOf('_') != -1 || (cond.getDataTierName()).indexOf('%') != -1)
 	    sql += " P.DATA_TIER_NAME like ?";
 	else  sql += " P.DATA_TIER_NAME = ?";
@@ -79,7 +79,7 @@ public class DataTierQO extends  DBSSimpleQueryObject{
                 int pID = rs.getInt("DATA_TIER_ID");
                 int dt = rs.getInt("CREATION_DATE");
                 String by = rs.getString("CREATE_BY");
-                this.result.put(new DataTier(PID, name,dt,by));
+                this.result.put(new DataTier(pID, name,dt,by));
             }
         }finally {
                 if (rs != null) rs.close();
@@ -87,3 +87,4 @@ public class DataTierQO extends  DBSSimpleQueryObject{
             }
             return this.result;
     }
+}
