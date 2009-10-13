@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.5 $"
+ $Id: PhysicsGroup.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : PHYSICS_GROUPS
 */
@@ -22,6 +22,12 @@ public class PhysicsGroup extends JSONObject  {
                 this.putOnce("PHYSICS_GROUP_NAME", physicsGroupName );
                 this.putOnce("PHYSICS_GROUP_CONVENER", physicsGroupConvener );
         }
+
+	public PhysicsGroup ( int physicsGroupID, String physicsGroupName) throws Exception  {
+
+	    this.putOnce("PHYSICS_GROUP_ID", physicsGroupID );
+	    this.putOnce("PHYSICS_GROUP_NAME", physicsGroupName );
+	}
 
 	public void setPhysicsGroupID (int physicsGroupID) throws Exception {
  		this.put( "PHYSICS_GROUP_ID", physicsGroupID );

@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.4 $"
- $Id: Dataset.java,v 1.4 2009/10/07 14:58:32 yuyi Exp $"
+ $Revision: 1.5 $"
+ $Id: Dataset.java,v 1.5 2009/10/08 20:05:14 yuyi Exp $"
  *
  * Data Object from table : DATASETS
 */
@@ -103,7 +103,7 @@ public class Dataset extends JSONObject  {
  		this.put( "LAST_MODIFIED_BY", lastModifiedBy );
 	}
 	
-	int getDatasetID ( )  throws Exception {
+	public int getDatasetID ( )  throws Exception {
 		int datasetID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_ID"))) {
                        	datasetID = this.getInt("DATASET_ID");
@@ -111,7 +111,7 @@ public class Dataset extends JSONObject  {
                 return datasetID;
         }
 	
-	String getDataset ( )  throws Exception {
+	public String getDataset ( )  throws Exception {
 		String dataPath = null;
                	if (!JSONObject.NULL.equals(this.get("DATASET"))) {
                        	dataPath = this.getString("DATASET");
@@ -119,15 +119,15 @@ public class Dataset extends JSONObject  {
                 return dataPath;
         }
 	
-	int getIsDatasetValid ( )  throws Exception {
-		int isPathValid = 0;
+	public int getIsDatasetValid ( )  throws Exception {
+		int isPathValid = -1;
                	if (!JSONObject.NULL.equals(this.get("IS_DATASET_VALID"))) {
                        	isPathValid = this.getInt("IS_DATASET_VALID");
                	}
                 return isPathValid;
         }
 	
-	PrimaryDataset getPrimaryDSDO ( )  throws Exception {
+	public PrimaryDataset getPrimaryDSDO ( )  throws Exception {
 		PrimaryDataset primaryDS = null;
                	if (!JSONObject.NULL.equals(this.get("PRIMARY_DS_DO"))) {
                        	primaryDS =(PrimaryDataset)this.getJSONObject("PRIMARY_DS_DO");
@@ -135,7 +135,7 @@ public class Dataset extends JSONObject  {
                 return primaryDS;
         }
 	
-	ProcessedDataset getProcessedDSDO ( )  throws Exception {
+	public ProcessedDataset getProcessedDSDO ( )  throws Exception {
 		ProcessedDataset processedDS = null;
                	if (!JSONObject.NULL.equals(this.get("PROCESSED_DS_DO"))) {
                        	processedDS = (ProcessedDataset)this.getJSONObject("PROCESSED_DS_DO");
@@ -143,7 +143,7 @@ public class Dataset extends JSONObject  {
                 return processedDS;
         }
 	
-	DataTier getDataTierID ( )  throws Exception {
+	public DataTier getDataTierDO ( )  throws Exception {
 		DataTier dataTier = null;
                	if (!JSONObject.NULL.equals(this.get("DATA_TIER_DO"))) {
                        	dataTier = (DataTier)this.getJSONObject("DATA_TIER_DO");
@@ -151,7 +151,7 @@ public class Dataset extends JSONObject  {
                 return dataTier;
         }
 	
-	DatasetType getDatasetTypeDO ( )  throws Exception {
+	public DatasetType getDatasetTypeDO ( )  throws Exception {
 		DatasetType pathType = null;
                	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE_DO"))) {
                        	pathType = (DatasetType)this.getJSONObject("DATASET_TYPE_DO");
@@ -159,7 +159,7 @@ public class Dataset extends JSONObject  {
                 return pathType;
         }
 	
-	AcquisitionEra getAcquisitionEraDO ( )  throws Exception {
+	public AcquisitionEra getAcquisitionEraDO ( )  throws Exception {
 		AcquisitionEra acquisitionEra = null;
                	if (!JSONObject.NULL.equals(this.get("ACQUISITION_ERA_DO"))) {
                        	acquisitionEra = (AcquisitionEra)this.getJSONObject("ACQUISITION_ERA_DO");
@@ -167,7 +167,7 @@ public class Dataset extends JSONObject  {
                 return acquisitionEra;
         }
 	
-	ProcessingEra getProcessingEraDO ( )  throws Exception {
+	public ProcessingEra getProcessingEraDO ( )  throws Exception {
 		ProcessingEra processingEra = null;
                	if (!JSONObject.NULL.equals(this.get("PROCESSING_ERA_DO"))) {
                        	processingEra = (ProcessingEra)this.getJSONObject("PROCESSING_ERA_DO");
@@ -175,7 +175,7 @@ public class Dataset extends JSONObject  {
                 return processingEra;
         }
 	
-	PhysicsGroup getPhysicsGroupDO ( )  throws Exception {
+	public PhysicsGroup getPhysicsGroupDO ( )  throws Exception {
 		PhysicsGroup physicsGroup = null;
                	if (!JSONObject.NULL.equals(this.get("PHYSICS_GROUP_DO"))) {
                        	physicsGroup = (PhysicsGroup)this.getJSONObject("PHYSICS_GROUP_DO");
@@ -183,7 +183,7 @@ public class Dataset extends JSONObject  {
                 return physicsGroup;
         }
 	
-	double getXtcrosssection ( )  throws Exception {
+	public double getXtcrosssection ( )  throws Exception {
 		double xtcrosssection = 0;
                	if (!JSONObject.NULL.equals(this.get("XTCROSSSECTION"))) {
                        	xtcrosssection = this.getDouble("XTCROSSSECTION");
@@ -191,7 +191,7 @@ public class Dataset extends JSONObject  {
                 return xtcrosssection;
         }
 	
-	String getGlobalTag ( )  throws Exception {
+	public String getGlobalTag ( )  throws Exception {
 		String globalTag = null;
                	if (!JSONObject.NULL.equals(this.get("GLOBAL_TAG"))) {
                        	globalTag = this.getString("GLOBAL_TAG");
@@ -199,7 +199,7 @@ public class Dataset extends JSONObject  {
                 return globalTag;
         }
 	
-	int getCreationDate ( )  throws Exception {
+	 public int getCreationDate ( )  throws Exception {
 		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
                        	creationDate = this.getInt("CREATION_DATE");
@@ -207,7 +207,7 @@ public class Dataset extends JSONObject  {
                 return creationDate;
         }
 	
-	String getCreateBy ( )  throws Exception {
+	 public String getCreateBy ( )  throws Exception {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {
                        	createBy = this.getString("CREATE_BY");
@@ -215,7 +215,7 @@ public class Dataset extends JSONObject  {
                 return createBy;
         }
 	
-	int getLastModificationDate ( )  throws Exception {
+	 public int getLastModificationDate ( )  throws Exception {
 		int lastModificationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFICATION_DATE"))) {
                        	lastModificationDate = this.getInt("LAST_MODIFICATION_DATE");
@@ -223,7 +223,7 @@ public class Dataset extends JSONObject  {
                 return lastModificationDate;
         }
 	
-	String getLastModifiedBy ( )  throws Exception {
+	 public String getLastModifiedBy ( )  throws Exception {
 		String lastModifiedBy = null;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFIED_BY"))) {
                        	lastModifiedBy = this.getString("LAST_MODIFIED_BY");

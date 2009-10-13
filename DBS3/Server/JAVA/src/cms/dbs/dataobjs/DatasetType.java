@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.3 $"
+ $Id: DatasetType.java,v 1.3 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : DATASET_TYPES
 */
@@ -30,7 +30,7 @@ public class DatasetType extends JSONObject  {
  		this.put( "DATASET_TYPE", datasetType );
 	}
 	
-	int getDatasetTypeID ( )  throws Exception {
+	public int getDatasetTypeID ( )  throws Exception {
 		int datasetTypeID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE_ID"))) {
                        	datasetTypeID = this.getInt("DATASET_TYPE_ID");
@@ -38,7 +38,7 @@ public class DatasetType extends JSONObject  {
                 return datasetTypeID;
         }
 	
-	String getDatasetType ( )  throws Exception {
+	public String getDatasetType ( )  throws Exception {
 		String datasetType = null;
                	if (!JSONObject.NULL.equals(this.get("DATASET_TYPE"))) {
                        	datasetType = this.getString("DATASET_TYPE");

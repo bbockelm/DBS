@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.5 $"
- $Id: PrimaryDataset.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: PrimaryDataset.java,v 1.6 2009/10/07 14:56:55 yuyi Exp $"
  *
  * Data Object from table : PRIMARY_DATASETS
 */
@@ -27,6 +27,13 @@ public class PrimaryDataset extends JSONObject {
                 this.putOnce("CREATE_BY",  createBy );
         }
 
+	public PrimaryDataset ( int primaryDSID, String primaryDSName) throws Exception  {
+
+                this.putOnce("PRIMARY_DS_ID", primaryDSID );
+                this.putOnce("PRIMARY_DS_NAME",  primaryDSName );
+        }
+
+
         public void setPrimaryDSID (int primaryDSID) throws Exception {
                 this.put( "PRIMARY_DS_ID", primaryDSID );
         }
@@ -38,16 +45,11 @@ public class PrimaryDataset extends JSONObject {
         public void setPrimaryDSTypeDO (PrimaryDSType primaryDSType) throws Exception {
                 this.put( "PRIMARY_DS_TYPE_DO", primaryDSType );
         }
-
-        public void setCreationDate (int creationDate) throws Exception {
-                this.put( "CREATION_DATE", creationDate );
-        }
-
         public void setCreateBy (String createBy) throws Exception {
                 this.put( "CREATE_BY", createBy );
         }
 
-	int getPrimaryDSID ( ) throws Exception{
+	public int getPrimaryDSID ( ) throws Exception{
 		int primaryDSID = 0;
                	if (!JSONObject.NULL.equals(this.getInt("PRIMARY_DS_ID"))) {
                        	primaryDSID = this.getInt("PRIMARY_DS_ID");
@@ -71,7 +73,7 @@ public class PrimaryDataset extends JSONObject {
                 return primaryDSType;
         }
 	
-	int getCreationDate ( ) throws Exception{
+	 public int getCreationDate ( ) throws Exception{
 		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.getInt("CREATION_DATE"))) {
                        	creationDate = this.getInt("CREATION_DATE");
@@ -86,23 +88,9 @@ public class PrimaryDataset extends JSONObject {
                	}
                 return createBy;
         }
-	public void setPrimaryDSName(String dsName) throws Exception{
-	    this.put("PRIMARY_DS_NAME", dsName);
-       }
-
-	public void setPrimaryDSTypeDO(PrimaryDSType type) throws Exception {
-	    this.put("PRIMARY_DS_TYPE_DO", type);
-	}
 
 	public void setCreationDate(int d) throws Exception{
 	    this.put("CREATION_DATE", d);
 	}	
 	
-	public void setCreateBy(String user) throws Exception {
-	    this.put("CREATE_BY", user);
-	}
-
-	public void setPrimaryDSID( int id) throws Exception {
-	    this.put("PRIMARY_DS_ID", id);
-	}
 }

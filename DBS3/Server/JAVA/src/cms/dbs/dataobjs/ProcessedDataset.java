@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.5 $"
+ $Id: ProcessedDataset.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : PROCESSED_DATASETS
 */
@@ -30,7 +30,7 @@ public class ProcessedDataset extends JSONObject  {
  		this.put( "PROCESSED_DS_NAME", processedDSName );
 	}
 	
-	int getProcessedDSID ( )  throws Exception {
+	public int getProcessedDSID ( )  throws Exception {
 		int processedDSID = 0;
                	if (!JSONObject.NULL.equals(this.get("PROCESSED_DS_ID"))) {
                        	processedDSID = this.getInt("PROCESSED_DS_ID");
@@ -38,7 +38,7 @@ public class ProcessedDataset extends JSONObject  {
                 return processedDSID;
         }
 	
-	String getProcessedDSName ( )  throws Exception {
+	public String getProcessedDSName ( )  throws Exception {
 		String processedDSName = null;
                	if (!JSONObject.NULL.equals(this.get("PROCESSED_DS_NAME"))) {
                        	processedDSName = this.getString("PROCESSED_DS_NAME");
