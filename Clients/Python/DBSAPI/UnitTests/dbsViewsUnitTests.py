@@ -41,8 +41,8 @@ def parseDBSoutput(data, exclude=None):
             tag = subnode.parentNode.tagName
             if  exclude:
                 if  exclude != tag:
-                    if  tag.lower().find('creationdate') != -1:
-                        data = timeformat(data)
+                    #if  tag.lower().find('creationdate') != -1:
+                    #    data = timeformat(data)
                     olist.append((tag, data))
             else:
                 olist.append((tag, data))
@@ -212,9 +212,9 @@ class testDBS(unittest.TestCase):
             for key, val in item[:-1]: # we take up-to-last element, see above
                 # moddate is not conerted by DBS code to DBS time format and
                 # returned as sec since epoch
-                if  key.upper().find('MODIFICATIONDATE') != -1:
-                    val = time.strftime("%Y-%m-%d %H:%M:%S CEST", 
-                                time.gmtime(int(val)+2*60*60))
+                #if  key.upper().find('MODIFICATIONDATE') != -1:
+                #    val = time.strftime("%Y-%m-%d %H:%M:%S CEST", 
+                #                time.gmtime(int(val)+2*60*60))
                 itemlist.append(val)
             dbs_summary.append(itemlist)
         self.assertEqual(dbs_query, dbs_summary)
