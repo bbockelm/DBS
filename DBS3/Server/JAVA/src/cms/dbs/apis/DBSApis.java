@@ -10,7 +10,13 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import cms.dbs.dataobjs.PrimaryDataset;
 import cms.dbs.dataobjs.PrimaryDSType;
+import cms.dbs.dataobjs.Dataset;
+import cms.dbs.dataobjs.ProcessedDataset;
+import cms.dbs.dataobjs.DataTier;
+import cms.dbs.dataobjs.DatasetType;
+import cms.dbs.dataobjs.PhysicsGroup;
 import cms.dbs.bizobjs.PrimaryDatasetBO;
+import cms.dbs.bizobjs.DatasetBO;
 import cms.dbs.commons.exceptions.DBSException;
 import cms.dbs.commons.utils.DBSSrvcConfig;
 import cms.dbs.commons.db.DBManagement;
@@ -36,6 +42,21 @@ public class DBSApis {
         if(conn != null) conn.close();
     }
 
+    public JSONObject DBSApiFindDatasets(Dataset cd) throws Exception{
+	JSONArray result = new JSONArray();
+	DatasetBO dBO = new DatasetBO();
+	result = dBO.getDatasets(conn, cd);
+	JSONObject retn = new JSONObject();
+        retn.putOnce("input", cd);
+        retn.putOnce("result", result);
+        return retn;
+    }
+
+    public int DBSApiInsertDataset(Dataset cd) throws Exception{
+        DatasetBO dBO = new DatasetBO();
+        return dBO.insertDataset(conn, cd);
+    }
+
     public JSONObject DBSApiFindPrimaryDatasets( PrimaryDataset cd) throws Exception{
 	JSONArray result = new JSONArray();
 	PrimaryDatasetBO pBO = new PrimaryDatasetBO();
@@ -46,20 +67,13 @@ public class DBSApis {
 	return retn;
     }
 
-    public void DBSApiInsertPrimaryDataset(PrimaryDataset cd) throws Exception{
+    public PrimaryDataset DBSApiInsertPrimaryDataset(PrimaryDataset cd) throws Exception{
 	PrimaryDatasetBO pBO = new PrimaryDatasetBO();
-	pBO.insertPrimaryDataset(conn, cd);
+	return pBO.insertPrimaryDataset(conn, cd);
     }//end DBSApiInsertPrimaryDataset
     
     public static void main (String args[]){
 	try{
-
-		JSONObject jj=new JSONObject();
-		jj.put("abc", 1);
-		System.out.println(jj);
-		jj.put("abc", 2);
-		System.out.println(jj);
-
             DBSApis api = new DBSApis();
 	    PrimaryDataset cd = new PrimaryDataset(0, "%", null, 0, "");
 	    JSONArray result = (api.DBSApiFindPrimaryDatasets(cd)).getJSONArray("result");
@@ -71,10 +85,23 @@ public class DBSApis {
             for(int i=0; i<result2.length();i++){
                  System.out.println(result2.optJSONObject(i));
             }
-	    System.out.println("***Insert new primary dataset TEST6 ***");
+	    //now serarch for dataset
+	    Dataset dataset = new Dataset(0, "/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW");
+	    JSONArray datasets = (api.DBSApiFindDatasets(dataset)).getJSONArray("result");
+	    for(int i=0; i<datasets.length();i++){
+		System.out.println(datasets.optJSONObject(i));
+	    }
+	    //now insert primary dataset, processed dataset anda dataset				    
+	    System.out.println("***Insert new primary dataset TEST3 ***");
 	    PrimaryDSType PT = new PrimaryDSType(0, "test");
-	    PrimaryDataset PD = new PrimaryDataset(0, "TEST6", PT, 0, "");
-	    api.DBSApiInsertPrimaryDataset(PD);
+	    PrimaryDataset PD = new PrimaryDataset(0, "TEST10-Primary", PT, 0, "");
+	    System.out.println((api.DBSApiInsertPrimaryDataset(PD)).toString());
+	    System.out.println("***Insert new dataset ***");
+	    ProcessedDataset processedDS = new  ProcessedDataset(0, "TEST6-ProcessedDS");
+	    Dataset ds = new Dataset(0, "/TEST10-Primary/TEST6-ProcessedDS/GEN-SIM-RAW", 1, PD, processedDS, new DataTier(0, "GEN-SIM-RAW"), 
+				new DatasetType(0, "PRODUCTION"), null,
+				null, new PhysicsGroup(6, "QCD"), 0.01, "Yuyi's Tag", 0, "");
+	    System.out.println(api.DBSApiInsertDataset(ds));
 	    //close the connection before you leave.
             api.closeConnection();
 	}
