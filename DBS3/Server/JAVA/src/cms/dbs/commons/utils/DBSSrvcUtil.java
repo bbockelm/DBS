@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $
- $Id: DBSSrvcUtil.java,v 1.1 2009/08/31 20:27:38 afaq Exp $
+ $Revision: 1.2 $
+ $Id: DBSSrvcUtil.java,v 1.2 2009/09/21 15:04:39 yuyi Exp $
  * Contains general utility static methods
 */
 
@@ -36,9 +36,9 @@ public class DBSSrvcUtil {
 	public DBSSrvcUtil(){}
 
 
-        public static String getTime() throws Exception{
+        public static long  getEpoch() throws Exception{
 
-                return Long.toString( (new Date()).getTime() / 1000 );
+                return  (new Date()).getTime() / 1000 ;
         }
 
 	public static boolean isNull(String pattern) {
