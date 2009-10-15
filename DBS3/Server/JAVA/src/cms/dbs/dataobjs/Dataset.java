@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.5 $"
- $Id: Dataset.java,v 1.5 2009/10/08 20:05:14 yuyi Exp $"
+ $Revision: 1.6 $"
+ $Id: Dataset.java,v 1.6 2009/10/13 15:37:31 yuyi Exp $"
  *
  * Data Object from table : DATASETS
 */
@@ -18,8 +18,8 @@ public class Dataset extends JSONObject  {
 		
         public Dataset ( int datasetID, String dataset, int isDatasetValid, PrimaryDataset primaryDS, ProcessedDataset processedDS, 
 	DataTier dataTire, DatasetType datasetType, AcquisitionEra acquisitionEra, ProcessingEra processingEra, 
-	PhysicsGroup physicsGroup, double xtcrosssection, String globalTag, int creationDate, String createBy, 
-	int lastModificationDate, String lastModifiedBy ) throws Exception  {
+	PhysicsGroup physicsGroup, double xtcrosssection, String globalTag, long creationDate, String createBy, 
+	long lastModificationDate, String lastModifiedBy ) throws Exception  {
 		
                 this.putOnce("DATASET_ID", datasetID );
                 this.putOnce("DATASET", dataset );
@@ -39,6 +39,32 @@ public class Dataset extends JSONObject  {
                 this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
         }
 
+	public Dataset ( int datasetID, String dataset, int isDatasetValid, PrimaryDataset primaryDS, ProcessedDataset processedDS,
+        DataTier dataTire, DatasetType datasetType, AcquisitionEra acquisitionEra, ProcessingEra processingEra,
+        PhysicsGroup physicsGroup, double xtcrosssection, String globalTag, long creationDate, String createBy
+        ) throws Exception  {
+
+                this.putOnce("DATASET_ID", datasetID );
+                this.putOnce("DATASET", dataset );
+                this.putOnce("IS_DATASET_VALID", isDatasetValid );
+                this.putOnce("PRIMARY_DS_DO", primaryDS );
+                this.putOnce("PROCESSED_DS_DO", processedDS );
+                this.putOnce("DATA_TIER_DO", dataTire );
+                this.putOnce("DATASET_TYPE_DO", datasetType );
+                this.putOnce("ACQUISITION_ERA_DO", acquisitionEra );
+                this.putOnce("PROCESSING_ERA_DO", processingEra );
+                this.putOnce("PHYSICS_GROUP_DO", physicsGroup );
+                this.putOnce("XTCROSSSECTION", xtcrosssection );
+                this.putOnce("GLOBAL_TAG", globalTag );
+                this.putOnce("CREATION_DATE", creationDate );
+                this.putOnce("CREATE_BY", createBy );
+        }
+
+	public Dataset ( int datasetID, String dataset) throws Exception  {
+	    this.putOnce("DATASET_ID", datasetID );
+	    this.putOnce("DATASET", dataset );
+	}	    
+       
 	public void setDatasetID (int datasetID) throws Exception {
  		this.put( "DATASET_ID", datasetID );
 	}
@@ -87,7 +113,7 @@ public class Dataset extends JSONObject  {
  		this.put( "GLOBAL_TAG", globalTag );
 	}
 	
-	public void setCreationDate (int creationDate) throws Exception {
+	public void setCreationDate (long creationDate) throws Exception {
  		this.put( "CREATION_DATE", creationDate );
 	}
 	
@@ -95,7 +121,7 @@ public class Dataset extends JSONObject  {
  		this.put( "CREATE_BY", createBy );
 	}
 	
-	public void setLastModificationDate (int lastModificationDate) throws Exception {
+	public void setLastModificationDate (long lastModificationDate) throws Exception {
  		this.put( "LAST_MODIFICATION_DATE", lastModificationDate );
 	}
 	
@@ -116,6 +142,7 @@ public class Dataset extends JSONObject  {
                	if (!JSONObject.NULL.equals(this.get("DATASET"))) {
                        	dataPath = this.getString("DATASET");
                	}
+		//System.out.println("dataset path: " + dataPath);
                 return dataPath;
         }
 	
@@ -199,10 +226,10 @@ public class Dataset extends JSONObject  {
                 return globalTag;
         }
 	
-	 public int getCreationDate ( )  throws Exception {
-		int creationDate = 0;
+	 public long getCreationDate ( )  throws Exception {
+		long creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
-                       	creationDate = this.getInt("CREATION_DATE");
+                       	creationDate = this.getLong("CREATION_DATE");
                	}
                 return creationDate;
         }
@@ -215,10 +242,10 @@ public class Dataset extends JSONObject  {
                 return createBy;
         }
 	
-	 public int getLastModificationDate ( )  throws Exception {
-		int lastModificationDate = 0;
+	 public long getLastModificationDate ( )  throws Exception {
+		 long lastModificationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFICATION_DATE"))) {
-                       	lastModificationDate = this.getInt("LAST_MODIFICATION_DATE");
+                       	lastModificationDate = this.getLong("LAST_MODIFICATION_DATE");
                	}
                 return lastModificationDate;
         }
