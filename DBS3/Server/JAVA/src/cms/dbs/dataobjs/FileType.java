@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.5 $"
+ $Id: FileType.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : FILE_TYPES
 */
@@ -30,7 +30,7 @@ public class FileType extends JSONObject  {
  		this.put( "FILE_TYPE", fileType );
 	}
 	
-	int getFileTypeID ( )  throws Exception {
+	public int getFileTypeID ( )  throws Exception {
 		int fileTypeID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_TYPE_ID"))) {
                        	fileTypeID = this.getInt("FILE_TYPE_ID");
@@ -38,7 +38,7 @@ public class FileType extends JSONObject  {
                 return fileTypeID;
         }
 	
-	String getFileType ( )  throws Exception {
+	public String getFileType ( )  throws Exception {
 		String fileType = null;
                	if (!JSONObject.NULL.equals(this.get("FILE_TYPE"))) {
                        	fileType = this.getString("FILE_TYPE");

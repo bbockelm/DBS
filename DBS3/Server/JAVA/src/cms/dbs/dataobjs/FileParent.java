@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.5 $"
+ $Id: FileParent.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : FILE_PARENTS
 */
@@ -35,7 +35,7 @@ public class FileParent extends JSONObject  {
  		this.put( "PARENT_FILE_ID", parentFileID );
 	}
 	
-	int getFileParentID ( )  throws Exception {
+	public int getFileParentID ( )  throws Exception {
 		int fileParentID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_PARENT_ID"))) {
                        	fileParentID = this.getInt("FILE_PARENT_ID");
@@ -43,7 +43,7 @@ public class FileParent extends JSONObject  {
                 return fileParentID;
         }
 	
-	int getThisFileID ( )  throws Exception {
+	public int getThisFileID ( )  throws Exception {
 		int thisFileID = 0;
                	if (!JSONObject.NULL.equals(this.get("THIS_FILE_ID"))) {
                        	thisFileID = this.getInt("THIS_FILE_ID");
@@ -51,7 +51,7 @@ public class FileParent extends JSONObject  {
                 return thisFileID;
         }
 	
-	int getParentFileID ( )  throws Exception {
+	public int getParentFileID ( )  throws Exception {
 		int parentFileID = 0;
                	if (!JSONObject.NULL.equals(this.get("PARENT_FILE_ID"))) {
                        	parentFileID = this.getInt("PARENT_FILE_ID");

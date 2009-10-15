@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.5 $"
+ $Id: Block.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : BLOCKS
 */
@@ -29,6 +29,12 @@ public class Block extends JSONObject  {
                 this.putOnce("CREATE_BY", createBy );
                 this.putOnce("LAST_MODIFICATION_DATE", lastModificationDate );
                 this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
+        }
+
+	public Block ( int blockID, String blockName) throws Exception  {
+
+                this.putOnce("BLOCK_ID", blockID );
+                this.putOnce("BLOCK_NAME", blockName );
         }
 
 	public void setBlockID (int blockID) throws Exception {
@@ -75,7 +81,7 @@ public class Block extends JSONObject  {
  		this.put( "LAST_MODIFIED_BY", lastModifiedBy );
 	}
 	
-	int getBlockID ( )  throws Exception {
+	public int getBlockID ( )  throws Exception {
 		int blockID = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_ID"))) {
                        	blockID = this.getInt("BLOCK_ID");
@@ -83,7 +89,7 @@ public class Block extends JSONObject  {
                 return blockID;
         }
 	
-	String getBlockName ( )  throws Exception {
+	public String getBlockName ( )  throws Exception {
 		String blockName = null;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_NAME"))) {
                        	blockName = this.getString("BLOCK_NAME");
@@ -91,7 +97,7 @@ public class Block extends JSONObject  {
                 return blockName;
         }
 	
-	int getDatasetID ( )  throws Exception {
+	public int getDatasetID ( )  throws Exception {
 		int datasetID = 0;
                	if (!JSONObject.NULL.equals(this.get("DATASET_ID"))) {
                        	datasetID = this.getInt("DATASET_ID");
@@ -99,7 +105,7 @@ public class Block extends JSONObject  {
                 return datasetID;
         }
 	
-	int getOpenForWriting ( )  throws Exception {
+	public int getOpenForWriting ( )  throws Exception {
 		int openForWriting = 0;
                	if (!JSONObject.NULL.equals(this.get("OPEN_FOR_WRITING"))) {
                        	openForWriting = this.getInt("OPEN_FOR_WRITING");
@@ -107,7 +113,7 @@ public class Block extends JSONObject  {
                 return openForWriting;
         }
 	
-	int getOriginSite ( )  throws Exception {
+	public int getOriginSite ( )  throws Exception {
 		int originSite = 0;
                	if (!JSONObject.NULL.equals(this.get("ORIGIN_SITE"))) {
                        	originSite = this.getInt("ORIGIN_SITE");
@@ -115,7 +121,7 @@ public class Block extends JSONObject  {
                 return originSite;
         }
 	
-	int getBlockSize ( )  throws Exception {
+	public int getBlockSize ( )  throws Exception {
 		int blockSize = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_SIZE"))) {
                        	blockSize = this.getInt("BLOCK_SIZE");
@@ -123,7 +129,7 @@ public class Block extends JSONObject  {
                 return blockSize;
         }
 	
-	int getFileCount ( )  throws Exception {
+	public int getFileCount ( )  throws Exception {
 		int fileCount = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_COUNT"))) {
                        	fileCount = this.getInt("FILE_COUNT");
@@ -131,7 +137,7 @@ public class Block extends JSONObject  {
                 return fileCount;
         }
 	
-	int getCreationDate ( )  throws Exception {
+	public int getCreationDate ( )  throws Exception {
 		int creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
                        	creationDate = this.getInt("CREATION_DATE");
@@ -139,7 +145,7 @@ public class Block extends JSONObject  {
                 return creationDate;
         }
 	
-	String getCreateBy ( )  throws Exception {
+	public String getCreateBy ( )  throws Exception {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {
                        	createBy = this.getString("CREATE_BY");
@@ -147,7 +153,7 @@ public class Block extends JSONObject  {
                 return createBy;
         }
 	
-	int getLastModificationDate ( )  throws Exception {
+	public int getLastModificationDate ( )  throws Exception {
 		int lastModificationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFICATION_DATE"))) {
                        	lastModificationDate = this.getInt("LAST_MODIFICATION_DATE");
@@ -155,7 +161,7 @@ public class Block extends JSONObject  {
                 return lastModificationDate;
         }
 	
-	String getLastModifiedBy ( )  throws Exception {
+	public String getLastModifiedBy ( )  throws Exception {
 		String lastModifiedBy = null;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFIED_BY"))) {
                        	lastModifiedBy = this.getString("LAST_MODIFIED_BY");
