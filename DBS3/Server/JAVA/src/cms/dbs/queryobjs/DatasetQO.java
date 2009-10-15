@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: DatasetQO.java,v 1.1 2009/10/13 16:05:30 yuyi Exp $
  *
  * This is the class for dataset query objects.
  * @author Y. Guo
@@ -30,14 +30,17 @@ public class DatasetQO extends  DBSSimpleQueryObject{
     }
     //insert a dataset into DB
     public int putDataset(Connection conn, Dataset cond) throws Exception{
+	//System.out.println(cond);
 	//Check for dataset path
 	String path = cond.getDataset();
 	if(path == null) throw new DBSException("Input Data Error", "Dataset is expected.");
 	//Check is_dataset_valid
 	int DSvalid = cond.getIsDatasetValid( );
         if(DSvalid == -1) throw new DBSException("Input Data Error", "Validation of dataset is expected."); 
-	//require primary dataset in the Dataset to be inserted into db 
+	//
+	//System.out.println("require primary dataset in the Dataset to be inserted into db.\n"); 
 	PrimaryDataset primaryDS = cond.getPrimaryDSDO();
+	//System.out.println(primaryDS);
 	if(primaryDS == null)throw new DBSException("Input Data Error", "Primary dataset is expected.");
 	if(primaryDS.getPrimaryDSID( ) == 0){
 	    String primaryDSName = primaryDS.getPrimaryDSName();
@@ -46,10 +49,19 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 	    if(primaryDSs.length() != 1)
 		throw new DBSException("Input Data Error", "Primarydataset name :" + primaryDSName 
 		+" is not found or more than one found in the db.");
-	    else 
+	    else{ 
+		//primaryDS = (PrimaryDataset)primaryDSs.getJSONObject(0);
+		//Do we really need to set everything?
 		primaryDS.setPrimaryDSID(((PrimaryDataset)primaryDSs.getJSONObject(0)).getPrimaryDSID());
+		primaryDS.setPrimaryDSName(((PrimaryDataset)primaryDSs.getJSONObject(0)).getPrimaryDSName());
+		primaryDS.setPrimaryDSTypeDO(((PrimaryDataset)primaryDSs.getJSONObject(0)).getPrimaryDSTypeDO());
+		primaryDS.setCreationDate(((PrimaryDataset)primaryDSs.getJSONObject(0)).getCreationDate());
+		primaryDS.setCreateBy(((PrimaryDataset)primaryDSs.getJSONObject(0)).getCreateBy());
+	    }
 	}
-	//check if the processed dataset already in the db, if not insert it
+        //System.out.println(cond);
+	//System.out.println(primaryDS);
+	//System.out.println("check if the processed dataset already in the db, if not insert it\n");
 	ProcessedDataset processedDS = cond.getProcessedDSDO();
 	if(processedDS == null) throw new DBSException("Input Data Error", "Processed dataset is expected.");
 	if(processedDS.getProcessedDSID() == 0){
@@ -59,15 +71,18 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 	    if(processedDSs.length() >1 )
 		throw new DBSException("Input Data Error", "More than one Processed dataset are found in the db with name: "
 		 + processedDSName);
-	    else if(processedDSs.length() == 1)
+	    else if(processedDSs.length() == 1){
 		processedDS.setProcessedDSID(((ProcessedDataset)processedDSs.getJSONObject(0)).getProcessedDSID());
+		//System.out.println("Processed DS: " + processedDS);
+	    }
 	    else{
 	    //not found in the db, now we insert it
 	     (new ProcessedDatasetQO()).putProcessedDataset(conn, processedDS);
-	     System.out.println("inserted processed DS: " + processedDS); 
+	     //System.out.println("inserted processed DS: " + processedDS); 
 	    }
 	}
-	//Check for data_tier
+	//
+	//System.out.println("Check for data_tier");
 	DataTier dataTier = cond.getDataTierDO();
         if(dataTier== null)throw new DBSException("Input Data Error", "Data Tier is expected.");
         if(dataTier.getDataTierID( ) == 0){
@@ -80,7 +95,7 @@ public class DatasetQO extends  DBSSimpleQueryObject{
             else
                 dataTier.setDataTierID(((DataTier)dataTiers.getJSONObject(0)).getDataTierID());
         }
-	System.out.println("list data tier: " + dataTier);
+	//System.out.println("list data tier: " + dataTier);
 	//last but not least, check for primary key
 	int datasetID = cond.getDatasetID ( );
 	if(datasetID == 0){
@@ -91,7 +106,30 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 		throw ex;
 	    }
 	}
+	//
+	//System.out.println("Check dataset Type");
+	DatasetType dataType = cond.getDatasetTypeDO();
+        if(dataType== null)throw new DBSException("Input Data Error", "Dataset type is expected.");
+        if(dataType.getDatasetTypeID( ) == 0){
+            String dataTypeName = dataType.getDatasetType();
+            if(dataTypeName == null)throw new DBSException("Input Data Error", "Dataset type is missing");
+            JSONArray dataTypes = (new DatasetTypeQO()).listDatasetTypes(conn,  dataType);
+            if(dataTypes.length() != 1)
+                throw new DBSException("Input Data Error", "Dataset type :" + dataTypeName
+                +" is not found or more than one found in the db.");
+            else
+                dataType.setDatasetTypeID(((DatasetType)dataTypes.getJSONObject(0)).getDatasetTypeID());
+        }
+        //System.out.println("list dataset Type: " + dataType);
+	//
+	//System.out.println("Check for creation_date and created_by. \n");
+	long createDate = cond.getCreationDate( );
+	String createdBy = cond.getCreateBy( );
+	if(createDate == 0)cond.setCreationDate(DBSSrvcUtil.getEpoch());
+        if(createdBy == null || createdBy=="")cond.setCreateBy("Someone created it");
+	 	
 	//Now we are ready to insert into the dataset
+	//System.out.println(cond);
 	insertTable(conn, cond, "DATASETS");
 	return (cond.getDatasetID());
    }
@@ -119,8 +157,8 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 	    datasetID =true;
 	}
         else if (cond.getDataset() != null){
-	    if ( (cond.getDataset()).indexOf('_') != -1 || (cond.getDataset()).indexOf('%') != -1) sql += "D.DATASE like ?";
-	    else sql += "D.DATASE = ?";
+	    if ( (cond.getDataset()).indexOf('_') != -1 || (cond.getDataset()).indexOf('%') != -1) sql += "D.DATASET like ?";
+	    else sql += "D.DATASET = ?";
 	}
         else throw  new DBSException("Input Data Error", "Dataset name or ID have to be provided. ");
 
@@ -131,7 +169,7 @@ public class DatasetQO extends  DBSSimpleQueryObject{
             //prepare statement index starting with 1, but JSONArray index starting with 0.
 	    if(datasetID)ps.setInt(1, cond.getDatasetID());
 	    else ps.setString(1, cond.getDataset());
-            System.out.println(ps.toString());
+            //System.out.println(ps.toString());
             rs =  ps.executeQuery();
             while(rs.next()){
                 String dataset = rs.getString("DATASET");

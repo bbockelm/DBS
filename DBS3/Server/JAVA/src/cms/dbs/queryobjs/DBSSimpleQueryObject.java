@@ -1,5 +1,5 @@
 /***
- * $Id: DBSSimpleQueryObject.java,v 1.3 2009/09/22 19:06:13 yuyi Exp $
+ * $Id: DBSSimpleQueryObject.java,v 1.4 2009/10/13 16:05:30 yuyi Exp $
  *
  * This is the super class for simple query objects. All other simple query object will inherent from this class.
  * The insert, update, select, delete and bulk insert funtions will needed to be implemented in the sub classes.
@@ -35,25 +35,42 @@ public class DBSSimpleQueryObject{
         }
     }
     public void insertTable(Connection conn, JSONObject cond, String tableName) throws Exception{
+	//System.out.println("insert Table \n");
+	//System.out.println(cond);
         String sql = "insert into " + schemaOwner + tableName + "(";
         ArrayList<String> list = new ArrayList<String>();
         Iterator it = cond.keys();
+	boolean first = true;
         while (it.hasNext()){
             String key = (String) it.next();
             if(key.endsWith("_DO")){
+		//System.out.println("***key:  " + key);
                 JSONObject ob = cond.getJSONObject(key);
+		//System.out.println(ob);
                 Iterator it2 = ob.keys();
                 while (it2.hasNext()){
                     String key2 = (String)it2.next();
+		    //System.out.println("***key2:  " + key2);
                     if(key2.endsWith("_ID")){
-                        sql += (key2 + ",");
-                        list.add((String)ob.get(key));
+			if(first){
+			     sql += key2 ;
+			     first = false;
+			}
+			else sql += (", " + key2 );
+                        list.add((ob.get(key2)).toString());
+			//System.out.println(list);
                     }
                 }
             }
             else{
-                sql += (key + ",");
-                list.add((String)cond.get(key));
+	        //System.out.println(key);
+                if(first){
+		    sql += key;
+		    first = false;
+		}
+		else sql += ("," + key);
+                list.add((cond.get(key)).toString());
+		//System.out.println(list);
             }
         }//end while
         sql += ") values(";
@@ -62,11 +79,12 @@ public class DBSSimpleQueryObject{
             else sql += "?";
         }
         sql += ")";
+	//System.out.println("*****sql: " + sql); 
         PreparedStatement ps = null;
         try{
             ps = DBManagement.getStatement(conn, sql);
-            for(int i=1; i<=list.size();i++){
-                ps.setString(i++, list.get(i-1));
+            for(int i=1; i<list.size()+1;i++){
+                ps.setString(i, list.get(i-1));
             }
             System.out.println(ps.toString());
             ps.execute();

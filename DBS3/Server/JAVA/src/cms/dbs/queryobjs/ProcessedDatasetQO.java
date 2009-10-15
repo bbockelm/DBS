@@ -1,5 +1,5 @@
 /***
- * $Id: ProcessedDatasetQO.java,v 1.1 2009/10/07 16:56:42 yuyi Exp $
+ * $Id: ProcessedDatasetQO.java,v 1.2 2009/10/13 16:05:30 yuyi Exp $
  *
  * This is the class for processed dataset query objects.
  * @author Y. Guo
@@ -29,6 +29,7 @@ public class ProcessedDatasetQO extends  DBSSimpleQueryObject{
 	if(PName == null) return null;
 	String sql = "insert into " + schemaOwner + "PROCESSED_DATASETS(PROCESSED_DS_NAME, PROCESSED_DS_ID)"
 		    + "values(?,?)";
+	//System.out.println(sql);
 	PreparedStatement ps = null;
         try{
 	    int PId = SequenceManager.getSequence(conn, "SEQ_PSDS");
@@ -36,6 +37,7 @@ public class ProcessedDatasetQO extends  DBSSimpleQueryObject{
 	    if(PName != null && !PName.equals("") && PName.indexOf('_') == -1 
 		&& PName.indexOf('%') == -1)ps.setString(1, PName);
 	    else throw new DBSException("Input Data Error", "Processed Dataset Name " + PName + "is invalid");
+	    //System.out.println(ps.toString());
 	    ps.setInt(2, PId);
 	    ps.execute();
 	    cond.setProcessedDSID(PId);
@@ -56,10 +58,11 @@ public class ProcessedDatasetQO extends  DBSSimpleQueryObject{
         PreparedStatement ps = null;
         ResultSet rs = null;
         String sql = "SELECT P.PROCESSED_DS_ID, P.PROCESSED_DS_NAME FROM " +
-            schemaOwner + "PROCESSED_DATASETS P " ;
+            schemaOwner + "PROCESSED_DATASETS P WHERE " ;
 	if ((cond.getProcessedDSName()).indexOf('_') != -1 || (cond.getProcessedDSName()).indexOf('%') != -1)
-	    sql += " P.PRIMARY_DS_NAME like ?";
-	else  sql += " P.PRIMARY_DS_NAME = ?";
+	    sql += " P.PROCESSED_DS_NAME like ?";
+	else  sql += " P.PROCESSED_DS_NAME = ?";
+	//System.out.println("*****" + sql + "\n");
         ps = null;
         rs = null;
         try{

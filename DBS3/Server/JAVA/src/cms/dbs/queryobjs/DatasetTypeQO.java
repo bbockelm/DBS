@@ -1,5 +1,5 @@
 /***
- * $Id: DatasetTypeQO.java,v 1.1 2009/10/07 19:10:46 yuyi Exp $
+ * $Id: DatasetTypeQO.java,v 1.2 2009/10/13 16:05:30 yuyi Exp $
  *
  * This is the class for dataset type query Object.
  * @author Y. Guo
@@ -56,7 +56,7 @@ public class DatasetTypeQO extends  DBSSimpleQueryObject{
         PreparedStatement ps = null;
         ResultSet rs = null;
         String sql = "SELECT P.DATASET_TYPE_ID, P.DATASET_TYPE FROM " +
-            schemaOwner + " DATASET_TYPES P " ;
+            schemaOwner + " DATASET_TYPES P  WHERE" ;
 	if ((cond.getDatasetType()).indexOf('_') != -1 || (cond.getDatasetType()).indexOf('%') != -1)
 	    sql += " P.DATASET_TYPE like ?";
 	else  sql += " P.DATASET_TYPE = ?";
