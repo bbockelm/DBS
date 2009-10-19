@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasetQO.java,v 1.5 2009/09/22 19:06:13 yuyi Exp $
+ * $Id: PrimaryDatasetQO.java,v 1.6 2009/09/23 19:17:05 yuyi Exp $
  *
  * This is the class for primary dataset query objects.
  * @author Y. Guo
@@ -25,9 +25,10 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
             super();
     }
     //insert a primary dataset into DB
-    public void putPrimaryDataset(Connection conn, PrimaryDataset cond1) throws Exception{
-	PrimaryDSType PType = cond1.getPrimaryDSTypeDO();
-	int PTId = (listPrimaryDSType(conn, PType.getPrimaryDSType())).getPrimaryDSTypeID();
+    public PrimaryDataset putPrimaryDataset(Connection conn, PrimaryDataset cond1) throws Exception{
+        //PrimaryDataset pd = null;
+	PrimaryDSType PType = listPrimaryDSType(conn, (cond1.getPrimaryDSTypeDO()).getPrimaryDSType());
+	int PTId = PType.getPrimaryDSTypeID();
 	String PName = cond1.getPrimaryDSName();
 	String sql = "insert into " + schemaOwner + "PRIMARY_DATASETS(PRIMARY_DS_NAME, PRIMARY_DS_TYPE_ID, PRIMARY_DS_ID)"
 		    + "values(?,?,?)";
@@ -41,6 +42,10 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
 	    ps.setInt(2, PTId);
 	    ps.setInt(3, PId);
 	    ps.execute();
+	    cond1.setPrimaryDSID(PId);
+	    cond1.setPrimaryDSTypeDO(PType);
+	    return cond1;
+	    //pd = new PrimaryDataset(PId, new PrimaryDSType( PTId, PType.getPrimaryDSType()), 
 	}catch (SQLException ex) {
 	    String exmsg = ex.getMessage();
 	    if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
@@ -48,7 +53,8 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
 	} finally {
 	    if (ps != null) ps.close();
 	}
-   } 
+	return null;
+   }
 
         //list only the primary dataset that satisfied the condition.
     public JSONArray listPrimaryDatasets(Connection conn, PrimaryDataset cond) throws Exception{
