@@ -1,5 +1,5 @@
 /***
- * $Id: DBSSimpleQueryObject.java,v 1.4 2009/10/13 16:05:30 yuyi Exp $
+ * $Id: DBSSimpleQueryObject.java,v 1.5 2009/10/15 12:39:11 yuyi Exp $
  *
  * This is the super class for simple query objects. All other simple query object will inherent from this class.
  * The insert, update, select, delete and bulk insert funtions will needed to be implemented in the sub classes.
@@ -34,6 +34,108 @@ public class DBSSimpleQueryObject{
             throw ex;
         }
     }
+
+    public JSONArray insertTableBatch(Connection conn, JSONArray cond, String tableName, String seqName, int seqSize) throws Exception{
+	int alen = cond.length();
+	int acc = 0;
+	for(int i =0; i<alen; i++){
+	    int id = 0;
+	    if(acc==0 || acc == seqSize){
+		id = SequenceManager.getSequence(conn, seqName);
+		acc=0;
+	    }
+	    JSONObject ob = cond.getJSONObject(i);
+            Iterator it = ob.keys();
+	    while (it.hasNext()){
+		String key = (String)it.next();
+		if(key.endsWith("_ID"))ob.put(key, id+acc); 
+	    }
+	    acc++;
+	}
+	insertTableBatch(conn, cond, tableName);
+	return cond;
+    }//end inserTableBatch
+
+    public void insertTableBatch(Connection conn, JSONArray cond, String tableName) throws Exception{
+	String sql = "insert into " + schemaOwner + tableName + "(";
+	JSONObject sample = cond.getJSONObject(0);
+	ArrayList<String> keyList = new ArrayList<String>();
+	Iterator it = sample.keys();
+	boolean first = true;
+	while (it.hasNext()){
+	    String key = (String) it.next();
+	    if(key.endsWith("_DO")){
+                //System.out.println("***key:  " + key);
+                JSONObject ob = sample.getJSONObject(key);
+                keyList.add(key);
+                //System.out.println(ob);
+                Iterator it2 = ob.keys();
+		while (it2.hasNext()){
+                    String key2 = (String)it2.next();
+                    //System.out.println("***key2:  " + key2);
+                    if(key2.endsWith("_ID")){
+                        if(first){
+                             sql += key2 ;
+                             first = false;
+                        }
+                        else sql += (", " + key2 );
+                    }
+		}//end while
+	    }
+	    else{
+		if(first){
+                    sql += key;
+                    first = false;
+		    keyList.add(key);
+                }
+                else sql += ("," + key);
+		keyList.add(key);
+            }
+	}//end while
+	sql += ") values(";
+        for(int i=0; i<keyList.size();i++){
+            if(i != 0) sql += ",?";
+            else sql += "?";
+        }
+        sql += ")";
+        System.out.println("*****sql: " + sql); 
+        PreparedStatement ps = null;
+        try{
+            ps = DBManagement.getStatement(conn, sql);
+	    for(int j=0; j<cond.length();j++){
+		JSONObject obj = cond.getJSONObject(j);
+		for(int i=1; i<keyList.size()+1;i++){
+		    String mykey = keyList.get(i-1);
+		    if(mykey.endsWith("_DO")){
+			//System.out.println("***mykey:  " + mykey);
+			JSONObject subob = obj.getJSONObject(mykey);
+			//System.out.println(subob);
+			Iterator it2 = subob.keys();
+			while (it2.hasNext()){
+			    String mykey2 = (String)it2.next();
+			    //System.out.println("***mykey2:  " + mykey2);
+			    if(mykey2.endsWith("_ID")){
+				ps.setString(i, subob.getString(mykey2));
+			    }
+			}
+		    }
+		    else{//if not endwith _DO
+			ps.setString(i, obj.getString(mykey));
+		    }
+		}
+		ps.addBatch();
+	    }
+            //System.out.println(ps.toString());
+            ps.execute();
+        }catch (SQLException ex) {
+            String exmsg = ex.getMessage();
+            if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+            else DBSSrvcUtil.writeLog( cond + " Already Exists");
+        } finally {
+            if (ps != null) ps.close();
+        }
+
+    }//end insertTableBatch
     public void insertTable(Connection conn, JSONObject cond, String tableName) throws Exception{
 	//System.out.println("insert Table \n");
 	//System.out.println(cond);
