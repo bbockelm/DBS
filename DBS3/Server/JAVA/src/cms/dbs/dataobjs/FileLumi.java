@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.5 $"
+ $Id: FileLumi.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : FILE_LUMIS
 */
@@ -9,6 +9,7 @@
 package cms.dbs.dataobjs;
 
 import org.json.JSONObject;
+import cms.dbs.dataobjs.File;
 
 public class FileLumi extends JSONObject  {
 
@@ -16,12 +17,12 @@ public class FileLumi extends JSONObject  {
 
 	}
 		
-        public FileLumi ( int fileLumiID, int runNum, int lumiSectionNum, int fileID ) throws Exception  {
+        public FileLumi ( int fileLumiID, int runNum, int lumiSectionNum, File fileDO ) throws Exception  {
 		
                 this.putOnce("FILE_LUMI_ID", fileLumiID );
                 this.putOnce("RUN_NUM", runNum );
                 this.putOnce("LUMI_SECTION_NUM", lumiSectionNum );
-                this.putOnce("FILE_ID", fileID );
+                this.putOnce("FILE_DO", fileDO );
         }
 
 	public void setFileLumiID (int fileLumiID) throws Exception {
@@ -36,11 +37,11 @@ public class FileLumi extends JSONObject  {
  		this.put( "LUMI_SECTION_NUM", lumiSectionNum );
 	}
 	
-	public void setFileID (int fileID) throws Exception {
- 		this.put( "FILE_ID", fileID );
+	public void setFileDO (int fileDO) throws Exception {
+ 		this.put( "FILE_DO", fileDO );
 	}
 	
-	int getFileLumiID ( )  throws Exception {
+	public int getFileLumiID ( )  throws Exception {
 		int fileLumiID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_LUMI_ID"))) {
                        	fileLumiID = this.getInt("FILE_LUMI_ID");
@@ -48,7 +49,7 @@ public class FileLumi extends JSONObject  {
                 return fileLumiID;
         }
 	
-	int getRunNum ( )  throws Exception {
+	public int getRunNum ( )  throws Exception {
 		int runNum = 0;
                	if (!JSONObject.NULL.equals(this.get("RUN_NUM"))) {
                        	runNum = this.getInt("RUN_NUM");
@@ -56,7 +57,7 @@ public class FileLumi extends JSONObject  {
                 return runNum;
         }
 	
-	int getLumiSectionNum ( )  throws Exception {
+	public int getLumiSectionNum ( )  throws Exception {
 		int lumiSectionNum = 0;
                	if (!JSONObject.NULL.equals(this.get("LUMI_SECTION_NUM"))) {
                        	lumiSectionNum = this.getInt("LUMI_SECTION_NUM");
@@ -64,12 +65,12 @@ public class FileLumi extends JSONObject  {
                 return lumiSectionNum;
         }
 	
-	int getFileID ( )  throws Exception {
-		int fileID = 0;
-               	if (!JSONObject.NULL.equals(this.get("FILE_ID"))) {
-                       	fileID = this.getInt("FILE_ID");
+	File getFileDO ( )  throws Exception {
+		File fileDO = null;
+               	if (!JSONObject.NULL.equals(this.get("FILE_DO"))) {
+                       	fileDO = (File)this.getJSONObject("FILE_DO");
                	}
-                return fileID;
+                return fileDO;
         }
 	
 }

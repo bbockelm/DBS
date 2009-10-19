@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: $"
- $Id: $"
+ $Revision: 1.5 $"
+ $Id: File.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
  *
  * Data Object from table : FILES
 */
@@ -9,6 +9,10 @@
 package cms.dbs.dataobjs;
 
 import org.json.JSONObject;
+import cms.dbs.dataobjs.Block;
+import cms.dbs.dataobjs.Dataset;
+import cms.dbs.dataobjs.FileType;
+import cms.dbs.dataobjs.BranchHash;
 
 public class File extends JSONObject  {
 
@@ -16,18 +20,20 @@ public class File extends JSONObject  {
 
 	}
 		
-        public File ( int fileID, String logicalFileName, int isFileValid, int pathID, int blockID, int fileTypeID, String checkSum, int eventCount, int fileSize, int branchHashID, String adler32, String md5, float autoCrossSection, int creationDate, String createBy, int lastModificationDate, String lastModifiedBy ) throws Exception  {
+        public File ( int fileID, String logicalFileName, int isFileValid, Dataset datasetDO, Block blockDO, 
+	FileType fileTypeDO, String checkSum, int eventCount, int fileSize, BranchHash branchHashDO, String adler32, String md5, 
+	double autoCrossSection, long creationDate, String createBy, long lastModificationDate, String lastModifiedBy ) throws Exception  {
 		
                 this.putOnce("FILE_ID", fileID );
                 this.putOnce("LOGICAL_FILE_NAME", logicalFileName );
                 this.putOnce("IS_FILE_VALID", isFileValid );
-                this.putOnce("PATH_ID", pathID );
-                this.putOnce("BLOCK_ID", blockID );
-                this.putOnce("FILE_TYPE_ID", fileTypeID );
+                this.putOnce("DATASET_DO", datasetDO );
+                this.putOnce("BLOCK_DO", blockDO );
+                this.putOnce("FILE_TYPE_DO", fileTypeDO );
                 this.putOnce("CHECK_SUM", checkSum );
                 this.putOnce("EVENT_COUNT", eventCount );
                 this.putOnce("FILE_SIZE", fileSize );
-                this.putOnce("BRANCH_HASH_ID", branchHashID );
+                this.putOnce("BRANCH_HASH_DO", branchHashDO );
                 this.putOnce("ADLER32", adler32 );
                 this.putOnce("MD5", md5 );
                 this.putOnce("AUTO_CROSS_SECTION", autoCrossSection );
@@ -35,6 +41,11 @@ public class File extends JSONObject  {
                 this.putOnce("CREATE_BY", createBy );
                 this.putOnce("LAST_MODIFICATION_DATE", lastModificationDate );
                 this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
+        }
+
+	public File ( int fileID, String logicalFileName ) throws Exception  {       
+                this.putOnce("FILE_ID", fileID );
+                this.putOnce("LOGICAL_FILE_NAME", logicalFileName );
         }
 
 	public void setFileID (int fileID) throws Exception {
@@ -49,16 +60,16 @@ public class File extends JSONObject  {
  		this.put( "IS_FILE_VALID", isFileValid );
 	}
 	
-	public void setPathID (int pathID) throws Exception {
- 		this.put( "PATH_ID", pathID );
+	public void setDatasetDO (Dataset datasetDO) throws Exception {
+ 		this.put( "DATASET_DO", datasetDO );
 	}
 	
-	public void setBlockID (int blockID) throws Exception {
- 		this.put( "BLOCK_ID", blockID );
+	public void setBlockDO (Block blockDO) throws Exception {
+ 		this.put( "BLOCK_DO", blockDO );
 	}
 	
-	public void setFileTypeID (int fileTypeID) throws Exception {
- 		this.put( "FILE_TYPE_ID", fileTypeID );
+	public void setFileTypeDO (FileType fileTypeDO) throws Exception {
+ 		this.put( "FILE_TYPE_DO", fileTypeDO );
 	}
 	
 	public void setCheckSum (String checkSum) throws Exception {
@@ -73,8 +84,8 @@ public class File extends JSONObject  {
  		this.put( "FILE_SIZE", fileSize );
 	}
 	
-	public void setBranchHashID (int branchHashID) throws Exception {
- 		this.put( "BRANCH_HASH_ID", branchHashID );
+	public void setBranchHashDO (int branchHashDO) throws Exception {
+ 		this.put( "BRANCH_HASH_DO", branchHashDO );
 	}
 	
 	public void setAdler32 (String adler32) throws Exception {
@@ -85,11 +96,11 @@ public class File extends JSONObject  {
  		this.put( "MD5", md5 );
 	}
 	
-	public void setAutoCrossSection (float autoCrossSection) throws Exception {
+	public void setAutoCrossSection (double autoCrossSection) throws Exception {
  		this.put( "AUTO_CROSS_SECTION", autoCrossSection );
 	}
 	
-	public void setCreationDate (int creationDate) throws Exception {
+	public void setCreationDate (long creationDate) throws Exception {
  		this.put( "CREATION_DATE", creationDate );
 	}
 	
@@ -97,7 +108,7 @@ public class File extends JSONObject  {
  		this.put( "CREATE_BY", createBy );
 	}
 	
-	public void setLastModificationDate (int lastModificationDate) throws Exception {
+	public void setLastModificationDate (long lastModificationDate) throws Exception {
  		this.put( "LAST_MODIFICATION_DATE", lastModificationDate );
 	}
 	
@@ -105,7 +116,7 @@ public class File extends JSONObject  {
  		this.put( "LAST_MODIFIED_BY", lastModifiedBy );
 	}
 	
-	int getFileID ( )  throws Exception {
+	public int getFileID ( )  throws Exception {
 		int fileID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_ID"))) {
                        	fileID = this.getInt("FILE_ID");
@@ -113,7 +124,7 @@ public class File extends JSONObject  {
                 return fileID;
         }
 	
-	String getLogicalFileName ( )  throws Exception {
+	public String getLogicalFileName ( )  throws Exception {
 		String logicalFileName = null;
                	if (!JSONObject.NULL.equals(this.get("LOGICAL_FILE_NAME"))) {
                        	logicalFileName = this.getString("LOGICAL_FILE_NAME");
@@ -121,39 +132,39 @@ public class File extends JSONObject  {
                 return logicalFileName;
         }
 	
-	int getIsFileValid ( )  throws Exception {
-		int isFileValid = 0;
+	public int getIsFileValid ( )  throws Exception {
+		int isFileValid = -1;
                	if (!JSONObject.NULL.equals(this.get("IS_FILE_VALID"))) {
                        	isFileValid = this.getInt("IS_FILE_VALID");
                	}
                 return isFileValid;
         }
 	
-	int getPathID ( )  throws Exception {
-		int pathID = 0;
-               	if (!JSONObject.NULL.equals(this.get("PATH_ID"))) {
-                       	pathID = this.getInt("PATH_ID");
+	public Dataset getDatasetDO ( )  throws Exception {
+		Dataset datasetDO = null;
+               	if (!JSONObject.NULL.equals(this.get("DATA_DO"))) {
+                       	datasetDO = (Dataset)this.getJSONObject("DATASET_DO");
                	}
-                return pathID;
+                return datasetDO;
         }
 	
-	int getBlockID ( )  throws Exception {
-		int blockID = 0;
-               	if (!JSONObject.NULL.equals(this.get("BLOCK_ID"))) {
-                       	blockID = this.getInt("BLOCK_ID");
+	public Block getBlockDO ( )  throws Exception {
+		Block block = null;
+               	if (!JSONObject.NULL.equals(this.get("BLOCK_DO"))) {
+                       	block = (Block)this.getJSONObject("BLOCK_DO");
                	}
-                return blockID;
+                return block;
         }
 	
-	int getFileTypeID ( )  throws Exception {
-		int fileTypeID = 0;
-               	if (!JSONObject.NULL.equals(this.get("FILE_TYPE_ID"))) {
-                       	fileTypeID = this.getInt("FILE_TYPE_ID");
+	public FileType getFileTypeDO ( )  throws Exception {
+		FileType fileType = null;
+               	if (!JSONObject.NULL.equals(this.get("FILE_TYPE_DO"))) {
+                       	fileType = (FileType)this.getJSONObject("FILE_TYPE_DO");
                	}
-                return fileTypeID;
+                return fileType;
         }
 	
-	String getCheckSum ( )  throws Exception {
+	public String getCheckSum ( )  throws Exception {
 		String checkSum = null;
                	if (!JSONObject.NULL.equals(this.get("CHECK_SUM"))) {
                        	checkSum = this.getString("CHECK_SUM");
@@ -161,31 +172,31 @@ public class File extends JSONObject  {
                 return checkSum;
         }
 	
-	int getEventCount ( )  throws Exception {
-		int eventCount = 0;
+	public int getEventCount ( )  throws Exception {
+		int eventCount = -1;
                	if (!JSONObject.NULL.equals(this.get("EVENT_COUNT"))) {
                        	eventCount = this.getInt("EVENT_COUNT");
                	}
                 return eventCount;
         }
 	
-	int getFileSize ( )  throws Exception {
-		int fileSize = 0;
+	public int getFileSize ( )  throws Exception {
+		int fileSize = -1;
                	if (!JSONObject.NULL.equals(this.get("FILE_SIZE"))) {
                        	fileSize = this.getInt("FILE_SIZE");
                	}
                 return fileSize;
         }
 	
-	int getBranchHashID ( )  throws Exception {
-		int branchHashID = 0;
-               	if (!JSONObject.NULL.equals(this.get("BRANCH_HASH_ID"))) {
-                       	branchHashID = this.getInt("BRANCH_HASH_ID");
+	public BranchHash getBranchHashDO ( )  throws Exception {
+		 BranchHash branchHash = null;
+               	if (!JSONObject.NULL.equals(this.get("BRANCH_HASH_DO"))) {
+                       	branchHash = (BranchHash)this.getJSONObject("BRANCH_HASH_DO");
                	}
-                return branchHashID;
+                return branchHash;
         }
 	
-	String getAdler32 ( )  throws Exception {
+	public String getAdler32 ( )  throws Exception {
 		String adler32 = null;
                	if (!JSONObject.NULL.equals(this.get("ADLER32"))) {
                        	adler32 = this.getString("ADLER32");
@@ -193,7 +204,7 @@ public class File extends JSONObject  {
                 return adler32;
         }
 	
-	String getMd5 ( )  throws Exception {
+	public String getMd5 ( )  throws Exception {
 		String md5 = null;
                	if (!JSONObject.NULL.equals(this.get("MD5"))) {
                        	md5 = this.getString("MD5");
@@ -201,24 +212,24 @@ public class File extends JSONObject  {
                 return md5;
         }
 	
-	float getAutoCrossSection ( )  throws Exception {
-		float autoCrossSection = 0;
+	public double getAutoCrossSection ( )  throws Exception {
+		double autoCrossSection = 0;
                	if (!JSONObject.NULL.equals(this.get("AUTO_CROSS_SECTION"))) {
-                       	//autoCrossSection = this.getFloat("AUTO_CROSS_SECTION");
+                       	autoCrossSection = this.getDouble("AUTO_CROSS_SECTION");
 			System.out.println("DANG !!!!!!!!!!!!");
                	}
                 return autoCrossSection;
         }
 	
-	int getCreationDate ( )  throws Exception {
-		int creationDate = 0;
+	public long getCreationDate ( )  throws Exception {
+		long creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
-                       	creationDate = this.getInt("CREATION_DATE");
+                       	creationDate = this.getLong("CREATION_DATE");
                	}
                 return creationDate;
         }
 	
-	String getCreateBy ( )  throws Exception {
+	public String getCreateBy ( )  throws Exception {
 		String createBy = null;
                	if (!JSONObject.NULL.equals(this.get("CREATE_BY"))) {
                        	createBy = this.getString("CREATE_BY");
@@ -226,15 +237,15 @@ public class File extends JSONObject  {
                 return createBy;
         }
 	
-	int getLastModificationDate ( )  throws Exception {
-		int lastModificationDate = 0;
+	public long getLastModificationDate ( )  throws Exception {
+		long lastModificationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFICATION_DATE"))) {
-                       	lastModificationDate = this.getInt("LAST_MODIFICATION_DATE");
+                       	lastModificationDate = this.getLong("LAST_MODIFICATION_DATE");
                	}
                 return lastModificationDate;
         }
 	
-	String getLastModifiedBy ( )  throws Exception {
+	public String getLastModifiedBy ( )  throws Exception {
 		String lastModifiedBy = null;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFIED_BY"))) {
                        	lastModifiedBy = this.getString("LAST_MODIFIED_BY");

@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.5 $"
- $Id: FileParent.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: FileParent.java,v 1.6 2009/10/15 13:00:52 yuyi Exp $"
  *
  * Data Object from table : FILE_PARENTS
 */
@@ -9,6 +9,7 @@
 package cms.dbs.dataobjs;
 
 import org.json.JSONObject;
+import cms.dbs.dataobjs.File;
 
 public class FileParent extends JSONObject  {
 
@@ -16,25 +17,24 @@ public class FileParent extends JSONObject  {
 
 	}
 		
-        public FileParent ( int fileParentID, int thisFileID, int parentFileID ) throws Exception  {
+        public FileParent ( int fileParentID, File child, File parent ) throws Exception  {
 		
                 this.putOnce("FILE_PARENT_ID", fileParentID );
-                this.putOnce("THIS_FILE_ID", thisFileID );
-                this.putOnce("PARENT_FILE_ID", parentFileID );
+                this.putOnce("THIS_FILE_DO", child );
+                this.putOnce("PARENT_FILE_DO", parent);
         }
+
 
 	public void setFileParentID (int fileParentID) throws Exception {
  		this.put( "FILE_PARENT_ID", fileParentID );
 	}
 	
-	public void setThisFileID (int thisFileID) throws Exception {
- 		this.put( "THIS_FILE_ID", thisFileID );
+	public void setThisFileDO (File thisFileDO) throws Exception {
+ 		this.put( "THIS_FILE_DO", thisFileDO );
 	}
-	
-	public void setParentFileID (int parentFileID) throws Exception {
- 		this.put( "PARENT_FILE_ID", parentFileID );
+	public void setParentFileDO (File parentFileDO) throws Exception {
+ 		this.put( "PARENT_FILE_DO", parentFileDO );
 	}
-	
 	public int getFileParentID ( )  throws Exception {
 		int fileParentID = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_PARENT_ID"))) {
@@ -43,20 +43,20 @@ public class FileParent extends JSONObject  {
                 return fileParentID;
         }
 	
-	public int getThisFileID ( )  throws Exception {
-		int thisFileID = 0;
-               	if (!JSONObject.NULL.equals(this.get("THIS_FILE_ID"))) {
-                       	thisFileID = this.getInt("THIS_FILE_ID");
+	public File getThisFileDO ( )  throws Exception {
+		File thisFileDO = null;
+               	if (!JSONObject.NULL.equals(this.get("THIS_FILE_DO"))) {
+                       	thisFileDO = (File)this.getJSONObject("THIS_FILE_DO");
                	}
-                return thisFileID;
+                return thisFileDO;
         }
 	
-	public int getParentFileID ( )  throws Exception {
-		int parentFileID = 0;
-               	if (!JSONObject.NULL.equals(this.get("PARENT_FILE_ID"))) {
-                       	parentFileID = this.getInt("PARENT_FILE_ID");
+	public File getParentFileDO ( )  throws Exception {
+		File parentFileDO = null;
+               	if (!JSONObject.NULL.equals(this.get("PARENT_FILE_DO"))) {
+                       	parentFileDO = (File)this.getJSONObject("PARENT_FILE_DO");
                	}
-                return parentFileID;
+                return parentFileDO;
         }
 	
 }

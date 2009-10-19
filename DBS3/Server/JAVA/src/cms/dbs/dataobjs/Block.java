@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.5 $"
- $Id: Block.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: Block.java,v 1.6 2009/10/15 13:00:52 yuyi Exp $"
  *
  * Data Object from table : BLOCKS
 */
@@ -9,6 +9,8 @@
 package cms.dbs.dataobjs;
 
 import org.json.JSONObject;
+import cms.dbs.dataobjs.Dataset;
+import cms.dbs.dataobjs.Site;
 
 public class Block extends JSONObject  {
 
@@ -16,13 +18,13 @@ public class Block extends JSONObject  {
 
 	}
 		
-        public Block ( int blockID, String blockName, int datasetID, int openForWriting, int originSite, int blockSize, int fileCount, int creationDate, String createBy, int lastModificationDate, String lastModifiedBy ) throws Exception  {
+        public Block ( int blockID, String blockName, Dataset datasetDO, int openForWriting, Site originSiteDO, int blockSize, int fileCount, int creationDate, String createBy, int lastModificationDate, String lastModifiedBy ) throws Exception  {
 		
                 this.putOnce("BLOCK_ID", blockID );
                 this.putOnce("BLOCK_NAME", blockName );
-                this.putOnce("DATASET_ID", datasetID );
+                this.putOnce("DATASET_DO", datasetDO );
                 this.putOnce("OPEN_FOR_WRITING", openForWriting );
-                this.putOnce("ORIGIN_SITE", originSite );
+                this.putOnce("ORIGIN_SITE_DO", originSiteDO );
                 this.putOnce("BLOCK_SIZE", blockSize );
                 this.putOnce("FILE_COUNT", fileCount );
                 this.putOnce("CREATION_DATE", creationDate );
@@ -45,16 +47,16 @@ public class Block extends JSONObject  {
  		this.put( "BLOCK_NAME", blockName );
 	}
 	
-	public void setDatasetID (int datasetID) throws Exception {
- 		this.put( "DATASET_ID", datasetID );
+	public void setDatasetID (Dataset datasetDO) throws Exception {
+ 		this.put( "DATASET_DO", datasetDO );
 	}
 	
 	public void setOpenForWriting (int openForWriting) throws Exception {
  		this.put( "OPEN_FOR_WRITING", openForWriting );
 	}
 	
-	public void setOriginSite (int originSite) throws Exception {
- 		this.put( "ORIGIN_SITE", originSite );
+	public void setOriginSite (Site originSite) throws Exception {
+ 		this.put( "ORIGIN_SITE_DO", originSite );
 	}
 	
 	public void setBlockSize (int blockSize) throws Exception {
@@ -97,12 +99,12 @@ public class Block extends JSONObject  {
                 return blockName;
         }
 	
-	public int getDatasetID ( )  throws Exception {
-		int datasetID = 0;
-               	if (!JSONObject.NULL.equals(this.get("DATASET_ID"))) {
-                       	datasetID = this.getInt("DATASET_ID");
+	public Dataset getDatasetDO ( )  throws Exception {
+		Dataset datasetDO = null;
+               	if (!JSONObject.NULL.equals(this.get("DATASET_DO"))) {
+                       	datasetDO = (Dataset)this.getJSONObject("DATASET_DO");
                	}
-                return datasetID;
+                return datasetDO;
         }
 	
 	public int getOpenForWriting ( )  throws Exception {
@@ -113,10 +115,10 @@ public class Block extends JSONObject  {
                 return openForWriting;
         }
 	
-	public int getOriginSite ( )  throws Exception {
-		int originSite = 0;
-               	if (!JSONObject.NULL.equals(this.get("ORIGIN_SITE"))) {
-                       	originSite = this.getInt("ORIGIN_SITE");
+	public Site getOriginSiteDO ( )  throws Exception {
+		Site originSite = null;
+               	if (!JSONObject.NULL.equals(this.get("ORIGIN_SITE_DO"))) {
+                       	originSite = (Site)this.getJSONObject("ORIGIN_SITE_DO");
                	}
                 return originSite;
         }
@@ -170,3 +172,4 @@ public class Block extends JSONObject  {
         }
 	
 }
+
