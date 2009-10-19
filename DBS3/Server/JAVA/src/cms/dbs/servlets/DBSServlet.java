@@ -1,5 +1,5 @@
 /****
- * $Id: DBSServlet.java,v 1.3 2009/09/21 15:22:20 yuyi Exp $
+ * $Id: DBSServlet.java,v 1.4 2009/10/16 21:18:43 afaq Exp $
  *
  ****/
 package cms.dbs.servlets;
@@ -33,6 +33,8 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Context;
 
+//The APIs
+import cms.dbs.apis.DBSPrimaryDatasets;
 
 /*
 need to be updated for DBS3
@@ -84,8 +86,8 @@ public class DBSServlet extends Application {
        				}
 	       		}
 
-		        // Defines only one route  
-        		router.attachDefault(HelloWorldResource.class);
+		        // Define route to PrimaryDatasets
+        		router.attachDefault(DBSPrimaryDatasets.class);
 
 			System.out.println("DBS READY");
 
