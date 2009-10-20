@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasets.java,v 1.1 2009/10/19 18:38:52 afaq Exp $
+ * $Id: PrimaryDatasets.java,v 1.2 2009/10/20 15:32:46 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -22,9 +22,14 @@ import cms.dbs.apis.DBSApis;
 
 public class PrimaryDatasets extends Resource {
 
+    String primaryDatasetName;
+
     public PrimaryDatasets(Context context, Request request, Response response) {
 	
         super(context, request, response);
+
+	this.primaryDatasetName = (String)request.getAttributes().get("PRIMARY_DS_NAME");
+
 
          // Allow modifications of this resource via POST/PUT/DELETE requests.  
          setModifiable(true);
@@ -52,12 +57,20 @@ public class PrimaryDatasets extends Resource {
                         jj.toString(), MediaType.TEXT_PLAIN);
 		**/
 
+
                 DBSApis api = new DBSApis();
                 PrimaryDataset cd = new PrimaryDataset();
 
+		if (this.primaryDatasetName != null) {
+			cd.setPrimaryDSName( this.primaryDatasetName );
+		}
+		else {
+			cd.setPrimaryDSName("%");
+		}
+
 		//FIXME: 
 		//AA-For testing purpose list ALL primary datasets
-		cd.setPrimaryDSName("%");
+		//cd.setPrimaryDSName("%");
                 JSONObject retn = api.DBSApiFindPrimaryDatasets(cd);
 
                 representation = new StringRepresentation(

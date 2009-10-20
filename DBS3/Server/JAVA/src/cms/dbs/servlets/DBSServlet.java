@@ -1,106 +1,81 @@
-/****
- * $Id: DBSServlet.java,v 1.5 2009/10/19 18:28:45 afaq Exp $
+/*i*
+ * $Id: DBSServlet.java,v 1.6 2009/10/19 18:40:17 afaq Exp $
  *
- ****/
+ **/
 package cms.dbs.servlets;
-
-import java.io.CharArrayWriter;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Properties;
-import java.sql.Connection;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletConfig;
-import org.json.JSONObject;
-import org.json.JSONArray;
-
-import cms.dbs.commons.db.DBManagement;
-import cms.dbs.commons.exceptions.DBSException;
-import cms.dbs.commons.utils.DBSSrvcConfig;
-import cms.dbs.commons.utils.DBSSrvcUtil;
 
 //Adding REST interface
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.Router;
+
 import org.restlet.Context;
 
+import cms.dbs.commons.utils.DBSSrvcConfig;
+
 //The APIs
+import cms.dbs.apis.PingDBS;
 import cms.dbs.apis.PrimaryDatasets;
 
-/*
-need to be updated for DBS3
-
-import dbs.api.DBSApi;
-import dbs.util.DBSUtil;
-*/
-
 /**
-* A Servlet that inherits from <code>javax.servlet.http.HttpServlet</code>. This is the gateway for invoking DBS API. 
-* All remote requets pass through this servlet. This class simple implements doPost and doGet method and involes the 
-* DBS api that handles the rest.
-* Tomcat will call DBSServlet and the init will be invoked with the correct config file
-* automatically. The servlet config is described in etc/web.xml.
+* servlet config is described in etc/web.xml.
 */
 
 public class DBSServlet extends Application {
-//public class DBSServlet extends HttpServlet{
-//	public void init(ServletConfig config) throws ServletException {
-
-
     /** 
      * Creates a root Restlet that will receive all incoming calls. 
+
+	THIS is called ONLY ONCE
+
      */
     @Override
     public Restlet createRoot() {
-        // Create a router Restlet that routes each call to a  
-        // new instance of HelloWorldResource.
-
-        Context ctx = getContext();
-
-        Router router = new Router(getContext());
+        	// Create a router Restlet that routes each call to a  
+        	Router router = new Router(getContext());
 
     		try {
-       			System.out.println("---------------------------------------------------------------\n");
-       			System.out.println("DBS making database connection");
-       			Connection conn = DBManagement.getDBConnManInstance().getConnection();
-       			try {
-       				if (conn != null) {
-					System.out.println("DBS database connection made successfully");
-					System.out.println("---------------------------------------------------------------\n");
-       				} else {
-      					throw new Exception("Database connection could not be established");
-       				}
-       			} finally {
-       				if (conn != null)  {
-       					conn.clearWarnings();
-       					conn.close();
-       				}
-	       		}
 
+			/**
+			// AA - failed attempts to get to serverlet context !
+			System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        		//ServletContextAdapter srvltContextAdapter = new ServletContextAdapter(this, getContext());
+        		//ServletContextAdapter srvltContext = new ServletContextAdapter(this, getContext());
+        		//ServletContext srvltContext = srvltContextAdapter.getServletContext();
+			ServletContext srvltContext = (ServletContext) 
+					getContext().getAttributes().get("org.restlet.ext.servlet.ServletContext");
+        		String configFilePath = srvltContext.getRealPath("META-INF/context.xml");
+	
+        		System.out.println("configFilePath: "+configFilePath);
+			System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+        		Context ctx = getContext();
+
+			Series<Parameter> params= ctx.getParameters();
+			System.out.println("params::::::"+params.toString());
+			Set<String> param_names = params.getNames();
+			Iterator iterator = param_names.iterator();
+			while( iterator.hasNext() ){
+				System.out.println( iterator.next() );
+			}
+
+			*/
+
+			// AA- For now I am hard coding servlet context
+			String configFilePath ="/home/anzar/devDBS3/DBS/DBS3/Server/JAVA/etc/context.xml";
+			DBSSrvcConfig dbsconfig = DBSSrvcConfig.getInstance(configFilePath);
+
+			// Define a Default page for DBS, just a PING at the moment, we can return server status information
+			router.attachDefault(PingDBS.class);
 		        // Define route to PrimaryDatasets
-        		router.attachDefault(PrimaryDatasets.class);
+        		router.attach("/PrimaryDatasets/", PrimaryDatasets.class);
+		        // Define route to PrimaryDatasets, with name specified (in this case its going to same class
+        		router.attach("/PrimaryDatasets/{PRIMARY_DS_NAME}", PrimaryDatasets.class);
 
 			System.out.println("DBS READY");
 
-/*                } catch(DBSException dbse) {
-                        System.out.println("DBS Failed to initialize: "+dbse.getMessage());
-                        System.out.println("Exception Details: "+dbse.getDetail());
-                        dbse.printStackTrace();
-                        throw new ServletException(dbse);
-*/
     		} catch(Exception e) {
 			System.out.println("DBS Failed to initialize: "+e.getMessage());
 			e.printStackTrace();
-			//throw new ServletException(e);
     		}
         return router;
 	}
