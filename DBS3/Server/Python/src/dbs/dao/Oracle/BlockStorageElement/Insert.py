@@ -1,14 +1,20 @@
-# DAO Object for BlockStorageElement table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for BlockStorageElements table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO BLOCK_STORAGE_ELEMENTS(BLOCK_SE_ID, SE_ID, BLOCK_ID) VALUES (:blockseid, :seid, :blockid);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, block_storage_elementsObj ):
+            self.sql = """INSERT INTO %sBLOCK_STORAGE_ELEMENTS ( BLOCK_SE_ID, SE_ID, BLOCK_ID) VALUES (:blockseid, :seid, :blockid) % (self.owner) ;"""
+
+    def getBinds_delme( self, block_storage_elementsObj ):
             binds = {}
             if type(block_storage_elementsObj) == type ('object'):
             	binds = {
@@ -28,7 +34,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, block_storage_elementsObj ):
-            binds = self.getBinds(block_storage_elementsObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, block_storage_elementsObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( block_storage_elementsObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

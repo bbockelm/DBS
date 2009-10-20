@@ -1,14 +1,20 @@
-# DAO Object for FileOutputMod_config table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for FileOutputMod_configs table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO FILE_OUTPUT_MOD_CONFIGS(FILE_OUTPUT_CONFIG_ID, FILE_ID, OUTPUT_MOD_CONFIG_ID) VALUES (:fileoutputconfigid, :fileid, :outputmodconfigid);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, file_output_mod_configsObj ):
+            self.sql = """INSERT INTO %sFILE_OUTPUT_MOD_CONFIGS ( FILE_OUTPUT_CONFIG_ID, FILE_ID, OUTPUT_MOD_CONFIG_ID) VALUES (:fileoutputconfigid, :fileid, :outputmodconfigid) % (self.owner) ;"""
+
+    def getBinds_delme( self, file_output_mod_configsObj ):
             binds = {}
             if type(file_output_mod_configsObj) == type ('object'):
             	binds = {
@@ -28,7 +34,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, file_output_mod_configsObj ):
-            binds = self.getBinds(file_output_mod_configsObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, file_output_mod_configsObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( file_output_mod_configsObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

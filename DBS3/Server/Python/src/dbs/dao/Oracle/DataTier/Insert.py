@@ -1,14 +1,20 @@
-# DAO Object for DataTier table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for DataTiers table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO DATA_TIERS(DATA_TIER_ID, DATA_TIER_NAME, CREATION_DATE, CREATE_BY) VALUES (:datatierid, :datatiername, :creationdate, :createby);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, data_tiersObj ):
+            self.sql = """INSERT INTO %sDATA_TIERS ( DATA_TIER_ID, DATA_TIER_NAME, CREATION_DATE, CREATE_BY) VALUES (:datatierid, :datatiername, :creationdate, :createby) % (self.owner) ;"""
+
+    def getBinds_delme( self, data_tiersObj ):
             binds = {}
             if type(data_tiersObj) == type ('object'):
             	binds = {
@@ -30,7 +36,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, data_tiersObj ):
-            binds = self.getBinds(data_tiersObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, data_tiersObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( data_tiersObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

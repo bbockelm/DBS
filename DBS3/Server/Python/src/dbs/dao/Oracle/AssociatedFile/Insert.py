@@ -1,14 +1,20 @@
-# DAO Object for AssociatedFile table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for AssociatedFiles table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO ASSOCIATED_FILES(ASSOCATED_FILE_ID, THIS_FILE_ID, ASSOCATED_FILE) VALUES (:assocatedfileid, :thisfileid, :assocatedfile);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, associated_filesObj ):
+            self.sql = """INSERT INTO %sASSOCIATED_FILES ( ASSOCATED_FILE_ID, THIS_FILE_ID, ASSOCATED_FILE) VALUES (:assocatedfileid, :thisfileid, :assocatedfile) % (self.owner) ;"""
+
+    def getBinds_delme( self, associated_filesObj ):
             binds = {}
             if type(associated_filesObj) == type ('object'):
             	binds = {
@@ -28,7 +34,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, associated_filesObj ):
-            binds = self.getBinds(associated_filesObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, associated_filesObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( associated_filesObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

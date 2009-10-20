@@ -1,14 +1,20 @@
-# DAO Object for ApplicationExecutable table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for ApplicationExecutables table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO APPLICATION_EXECUTABLES(APP_EXEC_ID, APP_NAME) VALUES (:appexecid, :appname);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, application_executablesObj ):
+            self.sql = """INSERT INTO %sAPPLICATION_EXECUTABLES ( APP_EXEC_ID, APP_NAME) VALUES (:appexecid, :appname) % (self.owner) ;"""
+
+    def getBinds_delme( self, application_executablesObj ):
             binds = {}
             if type(application_executablesObj) == type ('object'):
             	binds = {
@@ -26,7 +32,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, application_executablesObj ):
-            binds = self.getBinds(application_executablesObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, application_executablesObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( application_executablesObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

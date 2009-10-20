@@ -1,14 +1,20 @@
-# DAO Object for StorageElement table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for StorageElements table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO STORAGE_ELEMENTS(SE_ID, SE_NAME) VALUES (:seid, :sename);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, storage_elementsObj ):
+            self.sql = """INSERT INTO %sSTORAGE_ELEMENTS ( SE_ID, SE_NAME) VALUES (:seid, :sename) % (self.owner) ;"""
+
+    def getBinds_delme( self, storage_elementsObj ):
             binds = {}
             if type(storage_elementsObj) == type ('object'):
             	binds = {
@@ -26,7 +32,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, storage_elementsObj ):
-            binds = self.getBinds(storage_elementsObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, storage_elementsObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( storage_elementsObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

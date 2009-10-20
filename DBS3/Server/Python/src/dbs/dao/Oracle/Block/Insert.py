@@ -1,14 +1,20 @@
-# DAO Object for Block table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for Blocks table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO BLOCKS(BLOCK_ID, BLOCK_NAME, DATASET_ID, OPEN_FOR_WRITING, ORIGIN_SITE, BLOCK_SIZE, FILE_COUNT, CREATION_DATE, CREATE_BY, LAST_MODIFICATION_DATE, LAST_MODIFIED_BY) VALUES (:blockid, :blockname, :datasetid, :openforwriting, :originsite, :blocksize, :filecount, :creationdate, :createby, :lastmodificationdate, :lastmodifiedby);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, blocksObj ):
+            self.sql = """INSERT INTO %sBLOCKS ( BLOCK_ID, BLOCK_NAME, DATASET_ID, OPEN_FOR_WRITING, ORIGIN_SITE, BLOCK_SIZE, FILE_COUNT, CREATION_DATE, CREATE_BY, LAST_MODIFICATION_DATE, LAST_MODIFIED_BY) VALUES (:blockid, :blockname, :datasetid, :openforwriting, :originsite, :blocksize, :filecount, :creationdate, :createby, :lastmodificationdate, :lastmodifiedby) % (self.owner) ;"""
+
+    def getBinds_delme( self, blocksObj ):
             binds = {}
             if type(blocksObj) == type ('object'):
             	binds = {
@@ -44,7 +50,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, blocksObj ):
-            binds = self.getBinds(blocksObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, blocksObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( blocksObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

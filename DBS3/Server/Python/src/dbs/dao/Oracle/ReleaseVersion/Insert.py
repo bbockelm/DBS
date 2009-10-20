@@ -1,14 +1,20 @@
-# DAO Object for ReleaseVersion table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for ReleaseVersions table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO RELEASE_VERSIONS(RELEASE_VERSION_ID, VERSION) VALUES (:releaseversionid, :version);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, release_versionsObj ):
+            self.sql = """INSERT INTO %sRELEASE_VERSIONS ( RELEASE_VERSION_ID, VERSION) VALUES (:releaseversionid, :version) % (self.owner) ;"""
+
+    def getBinds_delme( self, release_versionsObj ):
             binds = {}
             if type(release_versionsObj) == type ('object'):
             	binds = {
@@ -26,7 +32,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, release_versionsObj ):
-            binds = self.getBinds(release_versionsObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, release_versionsObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( release_versionsObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

@@ -1,14 +1,20 @@
-# DAO Object for File table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for Files table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO FILES(FILE_ID, LOGICAL_FILE_NAME, IS_FILE_VALID, DATASET_ID, BLOCK_ID, FILE_TYPE_ID, CHECK_SUM, EVENT_COUNT, FILE_SIZE, BRANCH_HASH_ID, ADLER32, MD5, AUTO_CROSS_SECTION, CREATION_DATE, CREATE_BY, LAST_MODIFICATION_DATE, LAST_MODIFIED_BY) VALUES (:fileid, :logicalfilename, :isfilevalid, :datasetid, :blockid, :filetypeid, :checksum, :eventcount, :filesize, :branchhashid, :adler32, :md5, :autocrosssection, :creationdate, :createby, :lastmodificationdate, :lastmodifiedby);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, filesObj ):
+            self.sql = """INSERT INTO %sFILES ( FILE_ID, LOGICAL_FILE_NAME, IS_FILE_VALID, DATASET_ID, BLOCK_ID, FILE_TYPE_ID, CHECK_SUM, EVENT_COUNT, FILE_SIZE, BRANCH_HASH_ID, ADLER32, MD5, AUTO_CROSS_SECTION, CREATION_DATE, CREATE_BY, LAST_MODIFICATION_DATE, LAST_MODIFIED_BY) VALUES (:fileid, :logicalfilename, :isfilevalid, :datasetid, :blockid, :filetypeid, :checksum, :eventcount, :filesize, :branchhashid, :adler32, :md5, :autocrosssection, :creationdate, :createby, :lastmodificationdate, :lastmodifiedby) % (self.owner) ;"""
+
+    def getBinds_delme( self, filesObj ):
             binds = {}
             if type(filesObj) == type ('object'):
             	binds = {
@@ -56,7 +62,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, filesObj ):
-            binds = self.getBinds(filesObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, filesObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( filesObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+

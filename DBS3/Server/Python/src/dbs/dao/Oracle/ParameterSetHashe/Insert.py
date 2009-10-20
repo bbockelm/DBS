@@ -1,14 +1,20 @@
-# DAO Object for ParameterSetHashe table
-# $Revision: 1.1 $
-# $Id: generate_dao.py,v 1.1 2009/10/07 20:14:33 afaq Exp $
+#!/usr/bin/env python
+""" DAO Object for ParameterSetHashes table """ 
+
+__revision__ = "$Revision: $"
+__version__  = "$Id: $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    sql = """INSERT INTO PARAMETER_SET_HASHES(PARAMETER_SET_HASH_ID, HASH, NAME) VALUES (:parametersethashid, :hash, :name);"""
+    def __init__(self, logger, dbi):
+            DBFormatter.__init__(self, logger, dbi)
+            self.owner = "%s." % self.dbi.engine.url.username
 
-    def getBinds( self, parameter_set_hashesObj ):
+            self.sql = """INSERT INTO %sPARAMETER_SET_HASHES ( PARAMETER_SET_HASH_ID, HASH, NAME) VALUES (:parametersethashid, :hash, :name) % (self.owner) ;"""
+
+    def getBinds_delme( self, parameter_set_hashesObj ):
             binds = {}
             if type(parameter_set_hashesObj) == type ('object'):
             	binds = {
@@ -28,7 +34,9 @@ class Insert(DBFormatter):
                return binds
 
 
-    def execute( self, parameter_set_hashesObj ):
-            binds = self.getBinds(parameter_set_hashesObj )
-            result = self.dbi.processData(self.sql, binds, conn = conn, transaction = transaction)
+    def execute( self, parameter_set_hashesObj, conn=None, transaction=False ):
+            ##binds = self.getBinds( parameter_set_hashesObj )
+            result = self.dbi.processData(self.sql, binds, conn, transaction)
             return
+
+
