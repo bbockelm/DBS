@@ -1,5 +1,5 @@
 /***
- * $Id: DBSApis.java,v 1.5 2009/09/23 19:17:05 yuyi Exp $
+ * $Id: DBSApis.java,v 1.7 2009/10/14 20:09:37 yuyi Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
@@ -14,12 +14,18 @@ import cms.dbs.dataobjs.Dataset;
 import cms.dbs.dataobjs.ProcessedDataset;
 import cms.dbs.dataobjs.DataTier;
 import cms.dbs.dataobjs.DatasetType;
+import cms.dbs.dataobjs.File;
 import cms.dbs.dataobjs.PhysicsGroup;
 import cms.dbs.bizobjs.PrimaryDatasetBO;
 import cms.dbs.bizobjs.DatasetBO;
+import cms.dbs.bizobjs.FileBO;
+import cms.dbs.bizobjs.BlockBO;
 import cms.dbs.commons.exceptions.DBSException;
 import cms.dbs.commons.utils.DBSSrvcConfig;
 import cms.dbs.commons.db.DBManagement;
+
+
+
 
 public class DBSApis {
     private Connection conn = null;
@@ -40,6 +46,51 @@ public class DBSApis {
 
     private void closeConnection() throws Exception{
         if(conn != null) conn.close();
+    }
+    
+    public JSONObject DBSApiFindFiles(File file) throws Exception{
+        JSONArray result = new JSONArray();
+        FileBO fBO = new FileBO();
+        result = fBO.getFiles(conn, file);
+        JSONObject retn = new JSONObject();
+        retn.putOnce("input", file);
+        retn.putOnce("result", result);
+        return retn;
+    }
+
+    public JSONObject DBSApiFindFiles(JSONArray files) throws Exception{
+        JSONArray result = new JSONArray();
+        FileBO fBO = new FileBO();
+        result = fBO.getFiles(conn, files);
+        JSONObject retn = new JSONObject();
+        retn.putOnce("input", files);
+        retn.putOnce("result", result);
+        return retn;
+    }
+
+    public void DBSApiInsertFile(File f, JSONArray fps, JSONArray fls) throws Exception{
+	FileBO fBO = new FileBO();	
+	fBO.insertFile(conn, f, fps,fls);
+    }
+
+    public JSONObject DBSApiFindLumi4File(File file) throws Exception{
+        JSONArray result = new JSONArray();
+        FileBO fBO = new FileBO();
+        result = fBO.getFileLumis(conn, file);
+        JSONObject retn = new JSONObject();
+        retn.putOnce("input", file);
+        retn.putOnce("result", result);
+        return retn;
+    }	
+
+    public JSONObject DBSApiFindParents4File(File file) throws Exception{
+        JSONArray result = new JSONArray();
+        FileBO fBO = new FileBO();
+        result = fBO.getFileParents(conn, file);
+        JSONObject retn = new JSONObject();
+        retn.putOnce("input", file);
+        retn.putOnce("result", result);
+        return retn;
     }
 
     public JSONObject DBSApiFindDatasets(Dataset cd) throws Exception{
@@ -92,6 +143,7 @@ public class DBSApis {
 		System.out.println(datasets.optJSONObject(i));
 	    }
 	    //now insert primary dataset, processed dataset anda dataset				    
+	    /*
 	    System.out.println("***Insert new primary dataset TEST3 ***");
 	    PrimaryDSType PT = new PrimaryDSType(0, "test");
 	    PrimaryDataset PD = new PrimaryDataset(0, "TEST10-Primary", PT, 0, "");
@@ -102,6 +154,12 @@ public class DBSApis {
 				new DatasetType(0, "PRODUCTION"), null,
 				null, new PhysicsGroup(6, "QCD"), 0.01, "Yuyi's Tag", 0, "");
 	    System.out.println(api.DBSApiInsertDataset(ds));
+	    */
+	    //test list File APIs
+            String LFN = "/store/mc/Summer09/TTbar/GEN-SIM-RAW/%.root";
+	    File file = new File(0, LFN);
+            System.out.println("*****List Files ******\n");
+	    System.out.println(api.DBSApiFindFiles(file));
 	    //close the connection before you leave.
             api.closeConnection();
 	}

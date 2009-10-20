@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: FileBO.java,v 1.1 2009/10/20 16:28:52 yuyi Exp $
  *
  * This is the class for File business objects.
  * @author Y. Guo  Oct-20-09
@@ -34,6 +34,12 @@ public class FileBO extends DBSBusinessObject{
 	FileQO file = new  FileQO();
 	return file.listFiles(conn, cond);
 	
+    }
+
+    public JSONArray getFiles(Connection conn, JSONArray cond) throws Exception{
+        FileQO file = new  FileQO();
+        return file.listFiles(conn, cond);
+        
     }
 
     public void insertFile(Connection conn, File cond, JSONArray fps, JSONArray fls) throws Exception{

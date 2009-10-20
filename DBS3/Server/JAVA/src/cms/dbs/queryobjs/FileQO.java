@@ -1,5 +1,5 @@
 /***
- * $Id: FileQO.java,v 1.1 2009/10/19 15:05:17 yuyi Exp $
+ * $Id: FileQO.java,v 1.2 2009/10/20 16:32:08 yuyi Exp $
  *
  * This is the class for File query objects.
  * @author Y. Guo
@@ -131,9 +131,9 @@ public class FileQO extends  DBSSimpleQueryObject{
 		     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
 		     + " B.BLOCK_NAME, D.DATASET , FT.FILE_TYPE"
                      + " FROM " + schemaOwner + "FILES F "
-		     + " JOIN " + schemaOwner + "FILE_TYPES FT ON  FT.FILE_TYPE_ID = F.FILE_TYPE_ID_ID "
+		     + " JOIN " + schemaOwner + "FILE_TYPES FT ON  FT.FILE_TYPE_ID = F.FILE_TYPE_ID "
                      + " JOIN " + schemaOwner + "DATASETS D ON  D.DATASET_ID = F.DATASET_ID "
-		     + " JOIN " + schemaOwner + "BLOCK B ON B.BLOCK_ID = F.BLOCK_ID"
+		     + " JOIN " + schemaOwner + "BLOCKS B ON B.BLOCK_ID = F.BLOCK_ID"
                      + " WHERE ";
 	if(cond.getFileID() != 0){ 
 	    sql += "F.FILE_ID = ? ";
