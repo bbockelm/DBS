@@ -150,6 +150,8 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
 #if $cmsNames.has_key($site)
 #set cmsName=$cmsNames[$site]
 #end if
+#else
+#set cmsName='<a href="https://savannah.cern.ch/support/?func=additem&group=cmscompinfrasup&assigned_to=2980&category_id=108">No SE found</a>'
 #end if
 
 #set val=$siteDict[$site]
