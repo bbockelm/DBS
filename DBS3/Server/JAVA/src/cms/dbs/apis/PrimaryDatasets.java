@@ -1,5 +1,5 @@
 /***
- * $Id: $
+ * $Id: PrimaryDatasets.java,v 1.1 2009/10/19 18:38:52 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -33,29 +33,40 @@ public class PrimaryDatasets extends Resource {
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
-
-    //GET  http://.../DBSPrimaryDatasets/
+    //GET  http://.../PrimaryDatasets/
     /** 
      * Returns a full representation for a given variant. 
      */
+
     @Override
     public Representation represent(Variant variant) throws ResourceException {
 
         Representation representation = null;
-        try{
+
+        try {
+		/**	
+		JSONObject jj=new JSONObject();
+                jj.put("abc", 1);
+
+                representation = new StringRepresentation(
+                        jj.toString(), MediaType.TEXT_PLAIN);
+		**/
+
                 DBSApis api = new DBSApis();
-		
                 PrimaryDataset cd = new PrimaryDataset();
+
 		//FIXME: 
 		//AA-For testing purpose list ALL primary datasets
 		cd.setPrimaryDSName("%");
                 JSONObject retn = api.DBSApiFindPrimaryDatasets(cd);
 
                 representation = new StringRepresentation(
-                        retn.toString(), MediaType.TEXT_PLAIN);
+                        retn.toString(), MediaType.TEXT_PLAIN); 
 
-        } catch(Exception ex){
-            System.out.println("Exception raised :" + ex.getMessage() + ". " );
+        } catch(Exception ex) {
+		System.out.println("Exception raised :" + ex.getMessage() );
+		//throw new ResourceException(ex.getMessage());
+		throw new ResourceException(100);
         }
 
         return representation;
