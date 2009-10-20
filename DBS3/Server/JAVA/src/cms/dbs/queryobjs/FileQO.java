@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: FileQO.java,v 1.1 2009/10/19 15:05:17 yuyi Exp $
  *
  * This is the class for File query objects.
  * @author Y. Guo
@@ -175,6 +175,188 @@ public class FileQO extends  DBSSimpleQueryObject{
                 
 		this.result.put(new File(fileId, lfn, isValid,  ds, bk, ftype, cksum, ecnt, fsize, bh, 
                                 adl, md, xcr, cDate, cBy, lDate, lBy));
+	    }
+        }finally {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            }
+            return this.result;
+    }
+    public JSONArray listFiles(Connection conn, JSONArray cond) throws Exception{
+        this.result = new JSONArray();
+        int condSize = 0;
+        condSize = cond.length();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT F.FILE_ID, F.LOGICAL_FILE_NAME LFN, F.IS_FILE_VALID, F.DATASET_ID, F.BLOCK_ID, F.FILE_TYPE_ID, "
+                     +"  F.CHECK_SUM, F.EVENT_COUNT, F.FILE_SIZE,  F.BRANCH_HASH_ID, F.ADLER32, F.MD5, F.AUTO_CROSS_SECTION,"
+                     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
+                     + " B.BLOCK_NAME, D.DATASET , FT.FILE_TYPE"
+                     + " FROM " + schemaOwner + "FILES F "
+                     + " JOIN " + schemaOwner + "FILE_TYPES FT ON  FT.FILE_TYPE_ID = F.FILE_TYPE_ID_ID "
+                     + " JOIN " + schemaOwner + "DATASETS D ON  D.DATASET_ID = F.DATASET_ID "
+                     + " JOIN " + schemaOwner + "BLOCK B ON B.BLOCK_ID = F.BLOCK_ID"
+                     + " WHERE ";
+            
+        for (int i=0; i<condSize; i++){
+            File f = (File)cond.getJSONObject(i);
+            if (i==0){
+                if ( (f.getLogicalFileName()).indexOf('%') != -1)
+                sql += " F.LOGICAL_FILE_NAME like ?";
+                else  sql += " F.LOGICAL_FILE_NAME = ?";
+            }
+            else{
+                if ( (f.getLogicalFileName()).indexOf('%') != -1)
+                sql +=  " or  F.LOGICAL_FILE_NAME like ?";
+                else sql +=  "or  F.LOGICAL_FILE_NAME  = ?";
+            }
+        }
+        ps = null;
+        rs = null;
+        try{
+            ps = DBManagement.getStatement(conn, sql);
+            //prepare statement index starting with 1, but JSONArray index starting with 0.
+            for (int i=1; i<=condSize; i++){
+                File f = (File)cond.getJSONObject(i-1);
+                ps.setString(i, f.getLogicalFileName());
+            }
+            //System.out.println(ps.toString());
+            rs =  ps.executeQuery();
+            while(rs.next()){
+		String lfn = rs.getString("LFN");
+                int fileId = rs.getInt("FILE_ID");
+                int isValid = rs.getInt("IS_FILE_VALID");
+                Dataset ds = new Dataset(rs.getInt("DATASET_ID"), rs.getString("DATASET"));
+                Block bk = new Block(rs.getInt("BLOCK_ID"), rs.getString("BLOCK_NAME"));
+                FileType ftype = new FileType(rs.getInt("FILE_TYPE_ID"), rs.getString("FILE_TYPE"));
+                String cksum = rs.getString("CHECK_SUM");
+                int ecnt = rs.getInt("EVENT_COUNT");
+                int fsize =  rs.getInt("FILE_SIZE");
+                BranchHash bh = new BranchHash (rs.getInt("BRANCH_HASH_ID"));
+                double xcr = rs.getDouble("AUTO_CROSS_SECTION");
+                String adl = rs.getString("ADLER32");
+                String md = rs.getString("MD5");
+                long cDate = rs.getLong("CREATION_DATE");
+                String cBy =  rs.getString("CREATE_BY");
+                long lDate = rs.getLong("LAST_MODIFICATION_DATE");
+                String lBy = rs.getString("LAST_MODIFIED_BY");
+
+                this.result.put(new File(fileId, lfn, isValid,  ds, bk, ftype, cksum, ecnt, fsize, bh,
+                                adl, md, xcr, cDate, cBy, lDate, lBy));	
+	    }
+        }finally {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            }
+            return this.result;
+    }
+    //list only the bared Files that do not contain Block DOs, dataset DOs and so on.
+    public JSONArray listBaredFiles(Connection conn, File cond) throws Exception{
+        this.result = new JSONArray();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        boolean fileID = false;
+        String sql = "SELECT F.FILE_ID, F.LOGICAL_FILE_NAME LFN, F.IS_FILE_VALID, F.DATASET_ID, F.BLOCK_ID, F.FILE_TYPE_ID, "
+		     +"  F.CHECK_SUM, F.EVENT_COUNT, F.FILE_SIZE,  F.BRANCH_HASH_ID, F.ADLER32, F.MD5, F.AUTO_CROSS_SECTION,"
+		     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
+                     + " FROM " + schemaOwner + "FILES F "
+                     + " WHERE ";
+	if(cond.getFileID() != 0){ 
+	    sql += "F.FILE_ID = ? ";
+	    fileID =true;
+	}
+        else if (cond.getLogicalFileName() != null || cond.getLogicalFileName() != ""){
+	    if (  (cond.getLogicalFileName()).indexOf('%') != -1) sql += " F.LOGICAL_FILE_NAME like ?";
+	    else sql += " F.LOGICAL_FILE_NAME = ?";
+	}
+        else throw  new DBSException("Input Data Error", "File name (LFN) or ID have to be provided. ");
+
+        ps = null;
+        rs = null;
+        try{
+            ps = DBManagement.getStatement(conn, sql);
+            //prepare statement index starting with 1, but JSONArray index starting with 0.
+	    if(fileID)ps.setInt(1, cond.getFileID());
+	    else ps.setString(1, cond.getLogicalFileName());
+            //System.out.println(ps.toString());
+            rs =  ps.executeQuery();
+            while(rs.next()){
+                String lfn = rs.getString("LFN");
+                int fileId = rs.getInt("FILE_ID");
+		int isValid = rs.getInt("IS_FILE_VALID");
+		String cksum = rs.getString("CHECK_SUM");
+		int ecnt = rs.getInt("EVENT_COUNT");
+		int fsize =  rs.getInt("FILE_SIZE");
+		double xcr = rs.getDouble("AUTO_CROSS_SECTION");
+		String adl = rs.getString("ADLER32");
+		String md = rs.getString("MD5");
+		long cDate = rs.getLong("CREATION_DATE");
+		String cBy =  rs.getString("CREATE_BY");
+		long lDate = rs.getLong("LAST_MODIFICATION_DATE");
+		String lBy = rs.getString("LAST_MODIFIED_BY");
+                
+		this.result.put(new File(fileId, lfn, isValid, cksum, ecnt, fsize,
+                                adl, md, xcr, cDate, cBy, lDate, lBy));
+	    }
+        }finally {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            }
+            return this.result;
+    }
+    public JSONArray listBaredFiles(Connection conn, JSONArray cond) throws Exception{
+        this.result = new JSONArray();
+        int condSize = 0;
+        condSize = cond.length();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT F.FILE_ID, F.LOGICAL_FILE_NAME LFN, F.IS_FILE_VALID, F.DATASET_ID, F.BLOCK_ID, F.FILE_TYPE_ID, "
+                     +"  F.CHECK_SUM, F.EVENT_COUNT, F.FILE_SIZE,  F.BRANCH_HASH_ID, F.ADLER32, F.MD5, F.AUTO_CROSS_SECTION,"
+                     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
+                     + " FROM " + schemaOwner + "FILES F "
+                     + " WHERE ";
+            
+        for (int i=0; i<condSize; i++){
+            File f = (File)cond.getJSONObject(i);
+            if (i==0){
+                if ( (f.getLogicalFileName()).indexOf('%') != -1)
+                sql += " F.LOGICAL_FILE_NAME like ?";
+                else  sql += " F.LOGICAL_FILE_NAME = ?";
+            }
+            else{
+                if ( (f.getLogicalFileName()).indexOf('%') != -1)
+                sql +=  " or  F.LOGICAL_FILE_NAME like ?";
+                else sql +=  "or  F.LOGICAL_FILE_NAME  = ?";
+            }
+        }
+        ps = null;
+        rs = null;
+        try{
+            ps = DBManagement.getStatement(conn, sql);
+            //prepare statement index starting with 1, but JSONArray index starting with 0.
+            for (int i=1; i<=condSize; i++){
+                File f = (File)cond.getJSONObject(i-1);
+                ps.setString(i, f.getLogicalFileName());
+            }
+            //System.out.println(ps.toString());
+            rs =  ps.executeQuery();
+            while(rs.next()){
+		String lfn = rs.getString("LFN");
+                int fileId = rs.getInt("FILE_ID");
+                int isValid = rs.getInt("IS_FILE_VALID");
+                String cksum = rs.getString("CHECK_SUM");
+                int ecnt = rs.getInt("EVENT_COUNT");
+                int fsize =  rs.getInt("FILE_SIZE");
+                double xcr = rs.getDouble("AUTO_CROSS_SECTION");
+                String adl = rs.getString("ADLER32");
+                String md = rs.getString("MD5");
+                long cDate = rs.getLong("CREATION_DATE");
+                String cBy =  rs.getString("CREATE_BY");
+                long lDate = rs.getLong("LAST_MODIFICATION_DATE");
+                String lBy = rs.getString("LAST_MODIFIED_BY");
+
+                this.result.put(new File(fileId, lfn, isValid, cksum, ecnt, fsize,
+                                adl, md, xcr, cDate, cBy, lDate, lBy));	
 	    }
         }finally {
                 if (rs != null) rs.close();

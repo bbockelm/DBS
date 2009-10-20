@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.5 $"
- $Id: File.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: File.java,v 1.6 2009/10/19 14:59:42 yuyi Exp $"
  *
  * Data Object from table : FILES
 */
@@ -42,6 +42,27 @@ public class File extends JSONObject  {
                 this.putOnce("LAST_MODIFICATION_DATE", lastModificationDate );
                 this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
         }
+
+        public File ( int fileID, String logicalFileName, int isFileValid, 
+	String checkSum, int eventCount, int fileSize, String adler32, String md5, 
+	double autoCrossSection, long creationDate, String createBy, long lastModificationDate, String lastModifiedBy ) throws Exception  {
+		
+                this.putOnce("FILE_ID", fileID );
+                this.putOnce("LOGICAL_FILE_NAME", logicalFileName );
+                this.putOnce("IS_FILE_VALID", isFileValid );
+                this.putOnce("CHECK_SUM", checkSum );
+                this.putOnce("EVENT_COUNT", eventCount );
+                this.putOnce("FILE_SIZE", fileSize );
+                this.putOnce("ADLER32", adler32 );
+                this.putOnce("MD5", md5 );
+                this.putOnce("AUTO_CROSS_SECTION", autoCrossSection );
+                this.putOnce("CREATION_DATE", creationDate );
+                this.putOnce("CREATE_BY", createBy );
+                this.putOnce("LAST_MODIFICATION_DATE", lastModificationDate );
+                this.putOnce("LAST_MODIFIED_BY", lastModifiedBy );
+        }
+
+
 
 	public File ( int fileID, String logicalFileName ) throws Exception  {       
                 this.putOnce("FILE_ID", fileID );

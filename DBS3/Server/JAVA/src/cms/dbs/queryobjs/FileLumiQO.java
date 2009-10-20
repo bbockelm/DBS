@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: FileLumiQO.java,v 1.1 2009/10/19 15:05:16 yuyi Exp $
  *
  * This is the class for file Lumi query Object.
  * @author Y. Guo
@@ -17,6 +17,7 @@ import cms.dbs.commons.db.SequenceManager;
 import cms.dbs.commons.exceptions.DBSException;
 import cms.dbs.commons.utils.DBSSrvcUtil;
 import cms.dbs.dataobjs.File;
+import cms.dbs.dataobjs.FileLumi;
 
 public class FileLumiQO extends  DBSSimpleQueryObject{
 
@@ -32,18 +33,19 @@ public class FileLumiQO extends  DBSSimpleQueryObject{
    }
 
         //list run # and lumi sections # when knowing the file
-	/* We will implement iot later.
-    public JSONArray listLumiByFile(Connection conn, File file) throws Exception{
-        this.result = new JSONArray();
+    public JSONArray listFileLumis(Connection conn, File file) throws Exception{
+        JSONArray myResult = new JSONArray();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String sql = "SELECT FP.FILE_PARENT_ID FP_ID, FP.THIS_FILE_ID CHILD_ID, FP.PARENT_FILE_ID PARENT_ID, "
-	    + "F1.LOGICAL_FILE_NAME CHILD_LFN, F2.LOGICAL_FILE_NAME PARENT_LFN FROM " +
-            schemaOwner + "FILE_PARENTS FP"
-	    +" JOIN " +  schemaOwner +"FILES F1 on F1.FILE_ID=FP.THIS_FILE_ID " 
-	    +" JOIN " +  schemaOwner +"FILES F2 on F2.FILE_ID=FP.PARENT_FILE_ID "
-	    +" WHERE F1.LOGICAL_FILE_NAME " ;
-	if ((child.getLogicalFileName()).indexOf('_') != -1 || (child.getLogicalFileName()).indexOf('%') != -1)
+        String sql = " SELECT FL.FILE_LUMI_ID, FL.RUN_NUM, FL.LUMI_SECTION_NUM, FL.FILE_ID, "
+	    +" F.LOGICAL_FILE_NAME LFN, F.IS_FILE_VALID, F.DATASET_ID, F.BLOCK_ID, F.FILE_TYPE_ID, "
+	    + " F.CHECK_SUM, F.EVENT_COUNT, F.FILE_SIZE,  F.BRANCH_HASH_ID, F.ADLER32, F.MD5, F.AUTO_CROSS_SECTION,"
+	    + " F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
+	    + "FROM " +
+            schemaOwner + "FILE_LUMIS FL"
+	    +" JOIN " +  schemaOwner +"FILES F on F.FILE_ID=FL.FILE_ID " 
+	    +" WHERE F.LOGICAL_FILE_NAME " ;
+	if ((file.getLogicalFileName()).indexOf('%') != -1)
 	    sql += " like ?";
 	else  sql += "  = ?";
         ps = null;
@@ -51,22 +53,21 @@ public class FileLumiQO extends  DBSSimpleQueryObject{
         try{
             ps = DBManagement.getStatement(conn, sql);
             //prepare statement index starting with 1, but JSONArray index starting with 0.
-	    ps.setString(1, child.getLogicalFileName());
+	    ps.setString(1, file.getLogicalFileName());
             //System.out.println(ps.toString());
             rs =  ps.executeQuery();
             while(rs.next()){
-		int fpID = re.getInt("FP_ID");
-		int childID = rs.getInt("CHILD_ID");
-		int parentID = rs.getInt("PARENT_ID");
-                String childLFN = rs.getString("CHILD_LFN");
-		String parentLFN = rs.getString("PARENT_LFN");
-                this.result.put(new FileParent(FP_ID, new File(CHILD_ID, CHILD_LFN), new File(PARENT_ID, PARENT_LFN)));
+		int flID = rs.getInt("FILE_LUMI_ID");
+		int fID = rs.getInt("FILE_ID");
+                String fLFN = rs.getString("LOGICAL_FILE_NAME");
+		int run = rs.getInt("RUN_NUM");
+		int lSec = rs.getInt("LUMI_SECTION_NUM");
+		myResult.put(new FileLumi(flID, run, lSec, new File(fID, fLFN)));
             }
         }finally {
                 if (rs != null) rs.close();
                 if (ps != null) ps.close();
             }
-            return this.result;
+            return myResult;
     }
-    */
 }

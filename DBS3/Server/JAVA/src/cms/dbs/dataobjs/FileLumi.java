@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.5 $"
- $Id: FileLumi.java,v 1.5 2009/10/06 20:22:18 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: FileLumi.java,v 1.6 2009/10/19 14:59:42 yuyi Exp $"
  *
  * Data Object from table : FILE_LUMIS
 */
@@ -37,7 +37,7 @@ public class FileLumi extends JSONObject  {
  		this.put( "LUMI_SECTION_NUM", lumiSectionNum );
 	}
 	
-	public void setFileDO (int fileDO) throws Exception {
+	public void setFileDO (File fileDO) throws Exception {
  		this.put( "FILE_DO", fileDO );
 	}
 	
