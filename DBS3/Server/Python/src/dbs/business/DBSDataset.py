@@ -3,12 +3,12 @@
 This module provides business object class to interact with Dataset. 
 """
 
-__revision__ = "$Id: $"
-__version__ = "$Revision: $"
+__revision__ = "$Id: DBSDataset.py,v 1.1 2009/10/21 21:15:17 afaq Exp $"
+__version__ = "$Revision: 1.1 $"
 
 from WMCore.DAOFactory import DAOFactory
 
-class DBSPrimaryDataset:
+class DBSDataset:
     """
     Dataset business object class
     """
