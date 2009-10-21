@@ -76,14 +76,21 @@ class testDBS(unittest.TestCase):
         """
         set up DAS core module
         """
-        self.url = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+        self.url = "http://vocmsvm05.cern.ch:8880/cms_dbs_int_global_writer/servlet/DBSServlet"
+        self.url = "http://vocmsvm05.cern.ch:8880/CMS_DBS/servlet/DBSServlet"
         self.ver = 'DBS_2_0_6'
-#        self.url = os.environ['DBS_TEST_URL']
-#        self.ver = os.environ['DBS_TEST_VER']
-        self.url = api.url()
-        self.ver = api.version()        
+	
+        #self.url = os.environ['DBS_TEST_URL']
+        #self.ver = os.environ['DBS_TEST_VER']
         self.params = {'apiversion':self.ver,
                        'api':'executeSummary','begin':'0','end':'1'}
+
+    def test_no_executeSummary(self): 
+        params = dict(self.params)
+        params['query'] = 'find dataset where dataset like *CRUZET4*'
+        result = call(self.url, params)
+        expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<exception message=' ____________ API Invoked executeSummary____________\nInvalid API'  code ='1018' detail ='The api executeSummary provided by the client is not valid'/>\n\n<stack_trace>\n</stack_trace>\n</dbs>\n"""
+        self.assertRaises(Exception, expect, result)
 
     def test_unboundquery_executeSummary(self): 
         params = dict(self.params)
@@ -103,11 +110,7 @@ class testDBS(unittest.TestCase):
         expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<exception message=' ____________ API Invoked executeSummary____________\nInvalid API'  code ='4000' detail ='Too wide range for summary view'/>\n\n<stack_trace>\n</stack_trace>\n</dbs>\n" != "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<exception message=' ____________ API Invoked executeSummary____________\nUnexpected execution exception'  code ='4000' detail ='Too wide range for summary view'/>\n\n<stack_trace>\n</stack_trace>\n</dbs>\n"""
         self.assertRaises(Exception, expect, result)
 
-    def test_executeSummary_nodata(self): 
-        """In this case executeSummary will construct inproper query like
-        SELECT * FROM DatasetSummary WHERE Path IN ()  ORDER BY Path DESC
-        where no parameters will be send to (). MySQL will complain about ) ORDER BY Path DESC
-        while ORACLE will say ORA-00936: missing expression"""
+    def test_executeSummary_noparams(self): 
         params = dict(self.params)
         params['query'] = 'find dataset where dataset like *CRUZET4*'
         result = call(self.url, params)
@@ -129,6 +132,7 @@ class testDBS(unittest.TestCase):
         params['query'] = query
         params['api'] = 'executeQuery'
         result = call(self.url, params, check=True)
+
         dbs_query = []
         for item in parseDBSoutput(result):
             for key, val in item:
@@ -210,6 +214,8 @@ class testDBS(unittest.TestCase):
         for item in parseDBSoutput(result, exclude='run'):
             itemlist = []
             for key, val in item[:-1]: # we take up-to-last element, see above
+		## From DBS_2_0_9 moddate IS in unix-time format so we do not need this conversion
+		## AA -- 10/09/2009
                 # moddate is not conerted by DBS code to DBS time format and
                 # returned as sec since epoch
                 #if  key.upper().find('MODIFICATIONDATE') != -1:
@@ -364,6 +370,7 @@ class testDBS(unittest.TestCase):
         params['query'] = query
         params['api'] = 'executeQuery'
         result = call(self.url, params, check=True)
+
         dbs_query = []
         for item in parseDBSoutput(result):
             itemlist = []
@@ -372,10 +379,12 @@ class testDBS(unittest.TestCase):
             dbs_query.append(itemlist)
 
         # call executeSummary
-        query ="find dataset where " + cond
+        query ="find dataset where " + "dataset like * order by dataset asc"
+        ###########query ="find dataset where dataset like *CRUZET4*"
         params['query'] = query
         params['api'] = 'executeSummary'
         params['sortKey'] = 'Path'
+        #params['sortOrder'] = 'desc'
         params['sortOrder'] = 'desc'
         result = call(self.url, params, check=True)
         dbs_summary = []
@@ -384,7 +393,8 @@ class testDBS(unittest.TestCase):
             for key, val in item[:4]: # we take first 4 elements see above
                 itemlist.append(val)
             dbs_summary.append(itemlist)
-        self.assertEqual(dbs_query, dbs_summary)
+        self.assertEqual(str(dbs_query), str(dbs_summary))
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(testDBS))
