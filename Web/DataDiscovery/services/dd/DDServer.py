@@ -768,13 +768,13 @@ class DDServer(DDLogger,Controller):
                page+= str(t)
             elif userMode=="dbsExpert":
                page+="""<hr class="dbs" />"""
-               nameSpace = {'userMode':userMode,'ddList':self.ddUrls,'dbsdd':self.dbsdd}
-               page+= templateRemoteDD(searchList=[nameSpace]).respond()
+#               nameSpace = {'userMode':userMode,'ddList':self.ddUrls,'dbsdd':self.dbsdd}
+#               page+= templateRemoteDD(searchList=[nameSpace]).respond()
                # Walk through all registered DD services and exchange update SOAP msg's
-               nsets = self.helper.nDatasets(dbsInst)
-               for url in self.ddUrls:
-                   if url!=self.dbsdd:
-                      self.sendSOAP(url,"wsUpdateSiteInfo",{'url':self.dbsdd,'reply':self.dbsdd,'nsets':nsets})
+#               nsets = self.helper.nDatasets(dbsInst)
+#               for url in self.ddUrls:
+#                   if url!=self.dbsdd:
+#                      self.sendSOAP(url,"wsUpdateSiteInfo",{'url':self.dbsdd,'reply':self.dbsdd,'nsets':nsets})
             page+= self.genBottomHTML()
             return page
         except:
