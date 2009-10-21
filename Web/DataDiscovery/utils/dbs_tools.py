@@ -16,7 +16,7 @@ except:
     # prior requires elementtree
     import elementtree.ElementTree as ET
 
-from   utils.DDUtil     import findInString, genkey, natsort24
+from   utils.DDUtil     import findInString, genkey, natsort24, timeGMT
 
 # DBS imports
 from   RS.Wrapper import RegService
@@ -119,6 +119,10 @@ def dbsparser(data, tag="results"):
             for j in i:
                 item = []
                 for k in j.getchildren():
+                    if  k.tag.lower().find('date') != -1:
+                        res = timeGMT(k.text)
+                    else:
+                        res = k.text
                     item.append(k.text)
                     if  not tList.count(k.tag):
                         tList.append(k.tag)
