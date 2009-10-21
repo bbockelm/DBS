@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasets.java,v 1.2 2009/10/20 15:32:46 afaq Exp $
+ * $Id: PrimaryDatasets.java,v 1.3 2009/10/20 16:40:55 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -18,6 +18,8 @@ import org.restlet.resource.Variant;
 import org.json.JSONObject;
 
 import cms.dbs.dataobjs.PrimaryDataset;
+import cms.dbs.dataobjs.PrimaryDSType;
+
 import cms.dbs.apis.DBSApis;
 
 public class PrimaryDatasets extends Resource {
@@ -30,7 +32,6 @@ public class PrimaryDatasets extends Resource {
 
 	this.primaryDatasetName = (String)request.getAttributes().get("PRIMARY_DS_NAME");
 
-
          // Allow modifications of this resource via POST/PUT/DELETE requests.  
          setModifiable(true);
 
@@ -39,6 +40,7 @@ public class PrimaryDatasets extends Resource {
     }
 
     //GET  http://.../PrimaryDatasets/
+    //GET  http://.../PrimaryDatasets/{PRIMARY_DS_NAME}
     /** 
      * Returns a full representation for a given variant. 
      */
@@ -49,15 +51,6 @@ public class PrimaryDatasets extends Resource {
         Representation representation = null;
 
         try {
-		/**	
-		JSONObject jj=new JSONObject();
-                jj.put("abc", 1);
-
-                representation = new StringRepresentation(
-                        jj.toString(), MediaType.TEXT_PLAIN);
-		**/
-
-
                 DBSApis api = new DBSApis();
                 PrimaryDataset cd = new PrimaryDataset();
 
@@ -68,9 +61,6 @@ public class PrimaryDatasets extends Resource {
 			cd.setPrimaryDSName("%");
 		}
 
-		//FIXME: 
-		//AA-For testing purpose list ALL primary datasets
-		//cd.setPrimaryDSName("%");
                 JSONObject retn = api.DBSApiFindPrimaryDatasets(cd);
 
                 representation = new StringRepresentation(
@@ -85,4 +75,39 @@ public class PrimaryDatasets extends Resource {
         return representation;
     }
 
+    //AA -- POST
+    /** 
+     * Handle POST requests: create a new item. (insert primrat datasets)
+     */
+    @Override
+    public void acceptRepresentation(Representation entity)
+            throws ResourceException {
+
+        try{
+		//Seems like you can only read ONCE from the entity (is it a stream?)
+                JSONObject json_req = new JSONObject(entity.getText());
+		//System.out.println("json_req:::"+json_req);
+		//Incoming object has BOTH type and name of Primary dataset, 
+		//{"PRIMARY_DS_TYPE":"test","PRIMARY_DS_NAME":"TEST9"}
+           	PrimaryDSType PT = new PrimaryDSType(0, json_req.getString("PRIMARY_DS_TYPE"));
+
+		/*  We should put some checks in here
+		String primaryDSName = null;
+                if (!JSONObject.NULL.equals(json_req.getString("PRIMARY_DS_NAME"))) {
+                        primaryDSName =  json_req.getString("PRIMARY_DS_NAME");
+                }*/
+            	PrimaryDataset PD = new PrimaryDataset(0, json_req.getString("PRIMARY_DS_NAME"), PT, 0, "");
+
+		DBSApis api = new DBSApis();	
+            	api.DBSApiInsertPrimaryDataset((PrimaryDataset)PD);
+
+        } catch(Exception ex){
+            	System.out.println("Exception raised :" + ex.getMessage() + ". " );
+        }
+
+    }
+
+
 }
+
+
