@@ -79,6 +79,8 @@ class testDBS(unittest.TestCase):
         self.url = "http://vocmsvm05.cern.ch:8880/cms_dbs_int_global_writer/servlet/DBSServlet"
         self.url = "http://vocmsvm05.cern.ch:8880/CMS_DBS/servlet/DBSServlet"
         self.ver = 'DBS_2_0_6'
+	self.url = api.url() 	 
+	self.ver = api.version()
 	
         #self.url = os.environ['DBS_TEST_URL']
         #self.ver = os.environ['DBS_TEST_VER']
