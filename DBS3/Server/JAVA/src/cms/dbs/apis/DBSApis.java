@@ -1,11 +1,11 @@
 /***
- * $Id: DBSApis.java,v 1.7 2009/10/14 20:09:37 yuyi Exp $
+ * $Id: DBSApis.java,v 1.8 2009/10/20 19:54:51 yuyi Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
 package cms.dbs.apis;
 
-import java.sql.Connection;
+import java.sql.*;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import cms.dbs.dataobjs.PrimaryDataset;
@@ -15,7 +15,11 @@ import cms.dbs.dataobjs.ProcessedDataset;
 import cms.dbs.dataobjs.DataTier;
 import cms.dbs.dataobjs.DatasetType;
 import cms.dbs.dataobjs.File;
+import cms.dbs.dataobjs.FileLumi;
+import cms.dbs.dataobjs.FileParent;
 import cms.dbs.dataobjs.PhysicsGroup;
+import cms.dbs.dataobjs.Block;
+import cms.dbs.dataobjs.FileType;
 import cms.dbs.bizobjs.PrimaryDatasetBO;
 import cms.dbs.bizobjs.DatasetBO;
 import cms.dbs.bizobjs.FileBO;
@@ -32,6 +36,7 @@ public class DBSApis {
     
     public DBSApis() throws Exception{
 	conn = getConnection();
+	conn.setAutoCommit(false);  
     }
 
     private Connection getConnection() throws Exception{
@@ -47,7 +52,17 @@ public class DBSApis {
     private void closeConnection() throws Exception{
         if(conn != null) conn.close();
     }
-    
+
+    public JSONObject DBSApiFindBlocks(Block bk) throws Exception{
+        JSONArray result = new JSONArray();
+        BlockBO bkBO = new BlockBO();
+        result = bkBO.getBlocks(conn, bk);
+        JSONObject retn = new JSONObject();
+        retn.putOnce("input", bk);
+        retn.putOnce("result", result);
+        return retn;
+    }
+  
     public JSONObject DBSApiFindFiles(File file) throws Exception{
         JSONArray result = new JSONArray();
         FileBO fBO = new FileBO();
@@ -126,42 +141,74 @@ public class DBSApis {
     public static void main (String args[]){
 	try{
             DBSApis api = new DBSApis();
-	    PrimaryDataset cd = new PrimaryDataset(0, "%", null, 0, "");
-	    JSONArray result = (api.DBSApiFindPrimaryDatasets(cd)).getJSONArray("result");
-	    for(int i=0; i<result.length();i++){
-		 System.out.println(result.optJSONObject(i));
-	    }
-            PrimaryDataset cd2 = new PrimaryDataset(0, "Cosm%", null, 0, "");
+	    //
+	    System.out.println("\n ***Test DBSApiFindPrimaryDatasets API ***");
+            PrimaryDataset cd2 = new PrimaryDataset(0, "TES%", null, 0, "");
             JSONArray result2 = (api.DBSApiFindPrimaryDatasets(cd2)).getJSONArray("result");
             for(int i=0; i<result2.length();i++){
                  System.out.println(result2.optJSONObject(i));
             }
-	    //now serarch for dataset
+	    //
+	    System.out.println("\n ***Test DBSApiFindDatasets API ***");
 	    Dataset dataset = new Dataset(0, "/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW");
 	    JSONArray datasets = (api.DBSApiFindDatasets(dataset)).getJSONArray("result");
 	    for(int i=0; i<datasets.length();i++){
 		System.out.println(datasets.optJSONObject(i));
 	    }
-	    //now insert primary dataset, processed dataset anda dataset				    
-	    /*
-	    System.out.println("***Insert new primary dataset TEST3 ***");
+	    // 
+	    System.out.println("\n ***Test Insert primary dataset API ***");
 	    PrimaryDSType PT = new PrimaryDSType(0, "test");
-	    PrimaryDataset PD = new PrimaryDataset(0, "TEST10-Primary", PT, 0, "");
+	    PrimaryDataset PD = new PrimaryDataset(0, "Primary-Yuyi4", PT, 0, "");
 	    System.out.println((api.DBSApiInsertPrimaryDataset(PD)).toString());
-	    System.out.println("***Insert new dataset ***");
-	    ProcessedDataset processedDS = new  ProcessedDataset(0, "TEST6-ProcessedDS");
-	    Dataset ds = new Dataset(0, "/TEST10-Primary/TEST6-ProcessedDS/GEN-SIM-RAW", 1, PD, processedDS, new DataTier(0, "GEN-SIM-RAW"), 
+	    //
+	    System.out.println("\n ***Test Insert dataset API ***");
+	    ProcessedDataset processedDS = new  ProcessedDataset(0, "ProcessedDS-Yuyi4");
+	    Dataset ds = new Dataset(0, "/TEST10-Primary/ProcessedDS-Yuyi4/GEN-SIM-RAW", 1, PD, processedDS, new DataTier(0, "GEN-SIM-RAW"), 
 				new DatasetType(0, "PRODUCTION"), null,
 				null, new PhysicsGroup(6, "QCD"), 0.01, "Yuyi's Tag", 0, "");
 	    System.out.println(api.DBSApiInsertDataset(ds));
-	    */
-	    //test list File APIs
-            String LFN = "/store/mc/Summer09/TTbar/GEN-SIM-RAW/%.root";
+	    //
+	    System.out.println("\n *** Test list Block API ***");
+	    Block bk = new Block(0, "/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW#d%");
+	    System.out.println(api.DBSApiFindBlocks(bk));
+	    //
+	    System.out.println("\n *** Test list Files API ***");
+            String LFN = "/store/mc/Summer09/TTbar/GEN-SIM-RAW/MC_31X_V3-v1/0025/60%.root";
 	    File file = new File(0, LFN);
-            System.out.println("*****List Files ******\n");
-	    System.out.println(api.DBSApiFindFiles(file));
+            System.out.println(api.DBSApiFindFiles(file));
+	    //
+	    System.out.println("\n *** Test List Array of Files API ***");
+	    JSONArray files = new JSONArray();
+	    files.put(new File(0,"/store/mc/Summer09/TTbar/GEN-SIM-RAW/MC_31X_V3-v1/0025/6C405563-6988-DE11-A300-003048C56E54.root"));
+	    files.put(new File(0,"/store/mc/Summer09/TTbar/GEN-SIM-RAW/MC_31X_V3-v1/0025/DC63A151-AA88-DE11-B146-00163691DD05.root"));
+	    System.out.println(api.DBSApiFindFiles(files));
+	    //
+	    System.out.println("\n *** Test Insert File API ***");
+	    File f1 = new File(0, "Yuyi-Test-17.root", 1, new Dataset(0, "/TTbar/YUYI-TEST6/GEN-SIM-RAW"), 
+			    new Block(0, "/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW#f99b4c09-a68f-4e73-8f4c-560c1fa922fc"),
+			    new FileType(1, "EDM"), "THis is a Check sum", 100, 134, null, "this is asler32", "this is MD5",
+			    0.23 ,0, "", 0, "");
+	    //System.out.println("*** File to be inserted *******\n");
+	    //System.out.println(f1);
+	    JSONArray fls = new JSONArray();
+	    for (int i=1; i<101; i++){
+		//fls.put(new FileLumi(0, 111, i, new File(0, "Yuyi-Test-11.root")));
+		fls.put(new FileLumi(0, 171, i, f1));
+	    }
+	    JSONArray fps = new JSONArray();
+	    fps.put(new FileParent(0, f1, 
+	    new File(0, "/store/mc/Summer09/TTbar/GEN-SIM-RAW/MC_31X_V3-v1/0025/6C405563-6988-DE11-A300-003048C56E54.root"))); 
+	    api.DBSApiInsertFile(f1, fps, fls);
+	    System.out.println("\n *** Done test Insert File API ***");
+	    //
+	    System.out.println("\n *** Test findLumi4File API ***");
+	    System.out.println(api.DBSApiFindLumi4File(f1));
+	    //
+	    System.out.println("\n *** Test findParents4File API ***");
+	    System.out.println(api.DBSApiFindParents4File(f1));
 	    //close the connection before you leave.
-            api.closeConnection();
+	    api.closeConnection();
+
 	}
 	catch (DBSException ex){
 	    System.out.println("DBSException raised :" + ex.getMessage() + ". " + ex.getDetail());
