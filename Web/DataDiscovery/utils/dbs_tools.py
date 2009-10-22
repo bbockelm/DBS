@@ -119,10 +119,11 @@ def dbsparser(data, tag="results"):
             for j in i:
                 item = []
                 for k in j.getchildren():
-                    if  k.tag.lower().find('date') != -1:
-                        res = timeGMT(k.text)
-                    else:
-                        res = k.text
+#                    if  k.tag.lower().find('date') != -1:
+#                        res = timeGMT(k.text)
+#                    else:
+#                        res = k.text
+                    res = k.text
                     item.append(res)
                     if  not tList.count(k.tag):
                         tList.append(k.tag)
