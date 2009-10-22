@@ -1,6 +1,8 @@
 package dbs.search.qb;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.Vector;
 import java.util.List;
 import java.util.Iterator;
@@ -15,6 +17,14 @@ import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.Edge;
 
 public class QueryBuilder {
+        private class SortKwsByWeight implements Comparator<String> {
+                // probably very slow, but lists should be short
+                public int compare(String s1, String s2) {
+                        int w1 = Integer.parseInt(u.getWeightFromVertex(u.getVertex(s1)));
+                        int w2 = Integer.parseInt(u.getWeightFromVertex(u.getVertex(s2)));
+                        return (w1>w2 ? -1 : (w1==w2 ? 0 : 1));
+                }
+        }
 	int MAX_ITERATION = 999;
 	KeyMap km;
 	//RelationMap rm = new RelationMap();
@@ -120,7 +130,6 @@ public class QueryBuilder {
 		if(isInListRelaxed(kws, "file") && !isInList(kws, "file.status")) {
 			invalidFile = true;
 			allKws = addUniqueInList(allKws, "FileStatus");
-
 		}
 		if(isInListRelaxed(kws, "file") && isInListRelaxed(kws, "run")) {
 			//System.out.println("They are same ----------------------------------->");
@@ -667,8 +676,9 @@ public class QueryBuilder {
                         }
 		}
 		if(allKws.size() > 0) {
-			 allKws = makeCompleteListOfVertexs(allKws);
-	 		 allKws = sortVertexs(allKws);
+                        Collections.sort(allKws, new SortKwsByWeight());
+			allKws = makeCompleteListOfVertexs(allKws);
+	 		allKws = sortVertexs(allKws);
 		}
 		int len = allKws.size();
 		/*for(int i = 0 ; i != len ; ++i ) {

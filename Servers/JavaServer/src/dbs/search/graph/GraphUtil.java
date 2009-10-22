@@ -59,6 +59,9 @@ public class GraphUtil{
 	public String getMappedFromVertex(Vertex v){
 		return (String) v.getUserDatum("mapped");
 	}
+	public String getWeightFromVertex(Vertex v){
+	        return (String) v.getUserDatum("weight");
+        }
 
 	public String getMappedRealName(String userName){
 		return getRealFromVertex(getMappedVertex(userName));
