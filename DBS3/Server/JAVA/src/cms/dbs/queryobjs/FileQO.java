@@ -1,5 +1,5 @@
 /***
- * $Id: FileQO.java,v 1.2 2009/10/20 16:32:08 yuyi Exp $
+ * $Id: FileQO.java,v 1.3 2009/10/20 19:57:35 yuyi Exp $
  *
  * This is the class for File query objects.
  * @author Y. Guo
@@ -59,7 +59,6 @@ public class FileQO extends  DBSSimpleQueryObject{
 	    }
 	}
         //System.out.println(cond);
-	//System.out.println("check if the Block already in the db, if not insert it\n");
 	Block bk  = cond.getBlockDO();
 	if(bk == null) throw new DBSException("Input Data Error", "Block is expected.");
 	if(bk.getBlockID() == 0){
@@ -110,6 +109,7 @@ public class FileQO extends  DBSSimpleQueryObject{
 	//System.out.println("Check for creation_date and created_by. \n");
 	long createDate = cond.getCreationDate( );
 	String createdBy = cond.getCreateBy( );
+	//System.out.println("****File**** " + cond);
 	if(createDate == 0)cond.setCreationDate(DBSSrvcUtil.getEpoch());
         if(createdBy == null || createdBy=="")cond.setCreateBy("WeNeed2FindWhoDidIt");
 	 	
@@ -193,9 +193,9 @@ public class FileQO extends  DBSSimpleQueryObject{
                      + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
                      + " B.BLOCK_NAME, D.DATASET , FT.FILE_TYPE"
                      + " FROM " + schemaOwner + "FILES F "
-                     + " JOIN " + schemaOwner + "FILE_TYPES FT ON  FT.FILE_TYPE_ID = F.FILE_TYPE_ID_ID "
+                     + " JOIN " + schemaOwner + "FILE_TYPES FT ON  FT.FILE_TYPE_ID = F.FILE_TYPE_ID "
                      + " JOIN " + schemaOwner + "DATASETS D ON  D.DATASET_ID = F.DATASET_ID "
-                     + " JOIN " + schemaOwner + "BLOCK B ON B.BLOCK_ID = F.BLOCK_ID"
+                     + " JOIN " + schemaOwner + "BLOCKS B ON B.BLOCK_ID = F.BLOCK_ID"
                      + " WHERE ";
             
         for (int i=0; i<condSize; i++){
@@ -258,7 +258,7 @@ public class FileQO extends  DBSSimpleQueryObject{
         boolean fileID = false;
         String sql = "SELECT F.FILE_ID, F.LOGICAL_FILE_NAME LFN, F.IS_FILE_VALID, F.DATASET_ID, F.BLOCK_ID, F.FILE_TYPE_ID, "
 		     +"  F.CHECK_SUM, F.EVENT_COUNT, F.FILE_SIZE,  F.BRANCH_HASH_ID, F.ADLER32, F.MD5, F.AUTO_CROSS_SECTION,"
-		     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
+		     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY "
                      + " FROM " + schemaOwner + "FILES F "
                      + " WHERE ";
 	if(cond.getFileID() != 0){ 
@@ -312,7 +312,7 @@ public class FileQO extends  DBSSimpleQueryObject{
         ResultSet rs = null;
         String sql = "SELECT F.FILE_ID, F.LOGICAL_FILE_NAME LFN, F.IS_FILE_VALID, F.DATASET_ID, F.BLOCK_ID, F.FILE_TYPE_ID, "
                      +"  F.CHECK_SUM, F.EVENT_COUNT, F.FILE_SIZE,  F.BRANCH_HASH_ID, F.ADLER32, F.MD5, F.AUTO_CROSS_SECTION,"
-                     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
+                     + "  F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY "
                      + " FROM " + schemaOwner + "FILES F "
                      + " WHERE ";
             

@@ -1,5 +1,5 @@
 /***
- * $Id: FileBO.java,v 1.1 2009/10/20 16:28:52 yuyi Exp $
+ * $Id: FileBO.java,v 1.2 2009/10/20 19:55:58 yuyi Exp $
  *
  * This is the class for File business objects.
  * @author Y. Guo  Oct-20-09
@@ -46,16 +46,21 @@ public class FileBO extends DBSBusinessObject{
 	FileQO fileQO = new  FileQO();
 	fileQO.putFile(conn, cond);
 	FileParentQO fileParentQO = new FileParentQO(); 
+	//
 	JSONArray p  = new JSONArray();
 	for (int i =0; i<fps.length(); i++){
 	    p.put(((FileParent)(fps.getJSONObject(i))).getParentFileDO());
 	}
+	//System.out.println("\n **** list bared file ****");
 	JSONArray ps = fileQO.listBaredFiles(conn, p);
 	if((ps.length() == 0) || (ps.length() != fps.length()))throw new DBSException("Input data error", "No parent file found as  "+ fps);
+	//System.out.println("\nInsert Parantages");
 	for (int i =0; i<fps.length(); i++){
 	    fps.put(i, new FileParent(0, cond, (File)ps.getJSONObject(i)));
 	}
 	fileParentQO.putFileParentBatch(conn, fps);
+	
+	//System.out.println("\nInsert Lumi");
 	FileLumiQO flQO = new FileLumiQO();
 	for(int i=0; i<fls.length();i++){
 	    ((FileLumi)fls.getJSONObject(i)).setFileDO(cond);

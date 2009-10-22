@@ -1,11 +1,12 @@
 /***
- * $Id:$
+ * $Id: FileParentQO.java,v 1.1 2009/10/19 15:05:17 yuyi Exp $
  *
  * This is the class for file parent query Object.
  * @author Y. Guo
  ***/
 package cms.dbs.queryobjs;
 
+import java.util.Iterator;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -29,8 +30,43 @@ public class FileParentQO extends  DBSSimpleQueryObject{
     public void putFileParentBatch(Connection conn, JSONArray cond) throws Exception{
        int seqSize = 120; //this decided by the schema
        String seqName = "SEQ_FP";
-        String tableName = "FILE_PARENTS";
-       this.insertTableBatch(conn, cond, tableName, seqName, seqSize);						    
+       String tableName = "FILE_PARENTS";
+       int alen = cond.length();
+        int acc = 0;
+        for(int i =0; i<alen; i++){
+            int id = 0;
+            if(acc==0 || acc == seqSize){
+                id = SequenceManager.getSequence(conn, seqName);
+                acc=0;
+            }
+            JSONObject ob = cond.getJSONObject(i);
+            Iterator it = ob.keys();
+            while (it.hasNext()){
+                String key = (String)it.next();
+                if(key.endsWith("_ID"))ob.put(key, id+acc);
+            }
+            acc++;
+        }
+       String sql = "insert into "+ schemaOwner + tableName +"(THIS_FILE_ID, PARENT_FILE_ID,FILE_PARENT_ID) values(?,?,?)";
+       PreparedStatement ps = null;
+       try{
+            ps = DBManagement.getStatement(conn, sql);
+	    for(int j=0; j<cond.length();j++){
+                FileParent fp = (FileParent)cond.getJSONObject(j);
+		ps.setLong(1, fp.getThisFileDO().getFileID());
+		ps.setLong(2, fp.getParentFileDO().getFileID());
+		ps.setLong(3, fp.getFileParentID());
+		ps.addBatch();
+	    }
+	    //System.out.println(ps.toString());
+            ps.executeBatch();
+	}catch (SQLException ex) {
+            String exmsg = ex.getMessage();
+            if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+            else DBSSrvcUtil.writeLog( cond + " Already Exists");
+        } finally {
+            if (ps != null) ps.close();
+        }		
    }
 
         //list parent files when knowing the child

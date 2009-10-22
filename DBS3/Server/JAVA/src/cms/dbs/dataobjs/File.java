@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.6 $"
- $Id: File.java,v 1.6 2009/10/19 14:59:42 yuyi Exp $"
+ $Revision: 1.7 $"
+ $Id: File.java,v 1.7 2009/10/20 16:30:29 yuyi Exp $"
  *
  * Data Object from table : FILES
 */
@@ -163,7 +163,7 @@ public class File extends JSONObject  {
 	
 	public Dataset getDatasetDO ( )  throws Exception {
 		Dataset datasetDO = null;
-               	if (!JSONObject.NULL.equals(this.get("DATA_DO"))) {
+               	if (!JSONObject.NULL.equals(this.get("DATASET_DO"))) {
                        	datasetDO = (Dataset)this.getJSONObject("DATASET_DO");
                	}
                 return datasetDO;

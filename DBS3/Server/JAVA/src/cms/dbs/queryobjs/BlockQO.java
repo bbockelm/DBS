@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: BlockQO.java,v 1.1 2009/10/19 15:05:17 yuyi Exp $
  *
  * This is the class for Block query objects.
  * @author Y. Guo
@@ -120,7 +120,7 @@ public class BlockQO extends  DBSSimpleQueryObject{
 */
     //list only the Blocks that satisfied the condition.
     public JSONArray listBlocks(Connection conn, Block cond) throws Exception{
-        this.result = new JSONArray();
+        JSONArray myResult = new JSONArray();
         PreparedStatement ps = null;
         ResultSet rs = null;
         boolean blockID = false;
@@ -129,7 +129,7 @@ public class BlockQO extends  DBSSimpleQueryObject{
 		     + " SI.SITE_NAME, DS.DATASET "
                      + " FROM " + schemaOwner + "BLOCKS B " 
                      + " JOIN " + schemaOwner + "DATASETS DS ON  DS.DATASET_ID = B.DATASET_ID "
-		     + " JOIN " + schemaOwner + "SITE SI on SI.SITE_ID = B.ORIGIN_SITE"
+		     + " LEFT OUTER JOIN " + schemaOwner + "SITES SI on SI.SITE_ID = B.ORIGIN_SITE"
                      + " WHERE ";
 	if(cond.getBlockID() != 0){ 
 	    sql += "B.BLOCK_ID = ? ";
@@ -154,21 +154,26 @@ public class BlockQO extends  DBSSimpleQueryObject{
                 String bkName = rs.getString("BLOCK_NAME");
                 int bkID = rs.getInt("BLOCK_ID");
 		int open = rs.getInt("OPEN_FOR_WRITING");
+		//System.out.println("\n***Original site id: " + rs.getInt("ORIGIN_SITE"));
+		//System.out.println("\n***Original site Name: " + rs.getString("SITE_NAME"));
 		Site org = new Site(rs.getInt("ORIGIN_SITE"), rs.getString("SITE_NAME"));
-		int blockSite = rs.getInt("BLOCK_SIZE");
-		int fileCnt =  rs.getInt(".FILE_COUNT");
-		int cDate = rs.getInt("CREATION_DATE");
+		//System.out.println("\n***Block size: " + rs.getLong("BLOCK_SIZE"));
+		long blockSite = rs.getLong("BLOCK_SIZE");
+		//System.out.println("\n***FILE_COUNT " + rs.getLong("FILE_COUNT"));
+		long fileCnt =  rs.getLong("FILE_COUNT");
+		long cDate = rs.getLong("CREATION_DATE");
 		String cBy =  rs.getString("CREATE_BY");
-		int lDate = rs.getInt("LAST_MODIFICATION_DATE");
+		long lDate = rs.getLong("LAST_MODIFICATION_DATE");
 		String lBy = rs.getString("LAST_MODIFIED_BY");
 		Dataset ds = new Dataset( rs.getInt("DATASET_ID"), rs.getString("DATASET"));
-		this.result.put(new Block(bkID, bkName, ds, open, org, blockSite, fileCnt, cDate, cBy, lDate, lBy ));	
+		myResult.put(new Block(bkID, bkName, ds, open, org, blockSite, fileCnt, cDate, cBy, lDate, lBy ));	
 	    }
         }finally {
                 if (rs != null) rs.close();
                 if (ps != null) ps.close();
             }
-            return this.result;
+	    //System.out.println(myResult);
+            return myResult;
     }
 
 }

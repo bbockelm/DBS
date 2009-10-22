@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.6 $"
- $Id: Block.java,v 1.6 2009/10/15 13:00:52 yuyi Exp $"
+ $Revision: 1.7 $"
+ $Id: Block.java,v 1.7 2009/10/19 14:59:42 yuyi Exp $"
  *
  * Data Object from table : BLOCKS
 */
@@ -18,7 +18,8 @@ public class Block extends JSONObject  {
 
 	}
 		
-        public Block ( int blockID, String blockName, Dataset datasetDO, int openForWriting, Site originSiteDO, int blockSize, int fileCount, int creationDate, String createBy, int lastModificationDate, String lastModifiedBy ) throws Exception  {
+        public Block ( int blockID, String blockName, Dataset datasetDO, int openForWriting, Site originSiteDO, long blockSize, long
+	fileCount, long creationDate, String createBy, long lastModificationDate, String lastModifiedBy ) throws Exception  {
 		
                 this.putOnce("BLOCK_ID", blockID );
                 this.putOnce("BLOCK_NAME", blockName );
@@ -123,26 +124,26 @@ public class Block extends JSONObject  {
                 return originSite;
         }
 	
-	public int getBlockSize ( )  throws Exception {
-		int blockSize = 0;
+	public long getBlockSize ( )  throws Exception {
+		long blockSize = 0;
                	if (!JSONObject.NULL.equals(this.get("BLOCK_SIZE"))) {
-                       	blockSize = this.getInt("BLOCK_SIZE");
+                       	blockSize = this.getLong("BLOCK_SIZE");
                	}
                 return blockSize;
         }
 	
-	public int getFileCount ( )  throws Exception {
-		int fileCount = 0;
+	public long getFileCount ( )  throws Exception {
+		long fileCount = 0;
                	if (!JSONObject.NULL.equals(this.get("FILE_COUNT"))) {
-                       	fileCount = this.getInt("FILE_COUNT");
+                       	fileCount = this.getLong("FILE_COUNT");
                	}
                 return fileCount;
         }
 	
-	public int getCreationDate ( )  throws Exception {
-		int creationDate = 0;
+	public long getCreationDate ( )  throws Exception {
+		long creationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("CREATION_DATE"))) {
-                       	creationDate = this.getInt("CREATION_DATE");
+                       	creationDate = this.getLong("CREATION_DATE");
                	}
                 return creationDate;
         }
@@ -155,10 +156,10 @@ public class Block extends JSONObject  {
                 return createBy;
         }
 	
-	public int getLastModificationDate ( )  throws Exception {
-		int lastModificationDate = 0;
+	public long getLastModificationDate ( )  throws Exception {
+		long lastModificationDate = 0;
                	if (!JSONObject.NULL.equals(this.get("LAST_MODIFICATION_DATE"))) {
-                       	lastModificationDate = this.getInt("LAST_MODIFICATION_DATE");
+                       	lastModificationDate = this.getLong("LAST_MODIFICATION_DATE");
                	}
                 return lastModificationDate;
         }

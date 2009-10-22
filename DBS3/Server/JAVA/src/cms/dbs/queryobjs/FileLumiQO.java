@@ -1,5 +1,5 @@
 /***
- * $Id: FileLumiQO.java,v 1.1 2009/10/19 15:05:16 yuyi Exp $
+ * $Id: FileLumiQO.java,v 1.2 2009/10/20 16:32:11 yuyi Exp $
  *
  * This is the class for file Lumi query Object.
  * @author Y. Guo
@@ -40,7 +40,7 @@ public class FileLumiQO extends  DBSSimpleQueryObject{
         String sql = " SELECT FL.FILE_LUMI_ID, FL.RUN_NUM, FL.LUMI_SECTION_NUM, FL.FILE_ID, "
 	    +" F.LOGICAL_FILE_NAME LFN, F.IS_FILE_VALID, F.DATASET_ID, F.BLOCK_ID, F.FILE_TYPE_ID, "
 	    + " F.CHECK_SUM, F.EVENT_COUNT, F.FILE_SIZE,  F.BRANCH_HASH_ID, F.ADLER32, F.MD5, F.AUTO_CROSS_SECTION,"
-	    + " F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY, "
+	    + " F.CREATION_DATE, F.CREATE_BY, F.LAST_MODIFICATION_DATE, F.LAST_MODIFIED_BY "
 	    + "FROM " +
             schemaOwner + "FILE_LUMIS FL"
 	    +" JOIN " +  schemaOwner +"FILES F on F.FILE_ID=FL.FILE_ID " 
@@ -59,7 +59,7 @@ public class FileLumiQO extends  DBSSimpleQueryObject{
             while(rs.next()){
 		int flID = rs.getInt("FILE_LUMI_ID");
 		int fID = rs.getInt("FILE_ID");
-                String fLFN = rs.getString("LOGICAL_FILE_NAME");
+                String fLFN = rs.getString("LFN");
 		int run = rs.getInt("RUN_NUM");
 		int lSec = rs.getInt("LUMI_SECTION_NUM");
 		myResult.put(new FileLumi(flID, run, lSec, new File(fID, fLFN)));

@@ -1,5 +1,5 @@
 /***
- * $Id: DBSSimpleQueryObject.java,v 1.5 2009/10/15 12:39:11 yuyi Exp $
+ * $Id: DBSSimpleQueryObject.java,v 1.6 2009/10/19 15:05:17 yuyi Exp $
  *
  * This is the super class for simple query objects. All other simple query object will inherent from this class.
  * The insert, update, select, delete and bulk insert funtions will needed to be implemented in the sub classes.
@@ -38,17 +38,21 @@ public class DBSSimpleQueryObject{
     public JSONArray insertTableBatch(Connection conn, JSONArray cond, String tableName, String seqName, int seqSize) throws Exception{
 	int alen = cond.length();
 	int acc = 0;
+	int id = 0;
 	for(int i =0; i<alen; i++){
-	    int id = 0;
 	    if(acc==0 || acc == seqSize){
 		id = SequenceManager.getSequence(conn, seqName);
+		//System.out.println("SeqName: " + seqName + " id: " + id);
 		acc=0;
 	    }
 	    JSONObject ob = cond.getJSONObject(i);
             Iterator it = ob.keys();
 	    while (it.hasNext()){
 		String key = (String)it.next();
-		if(key.endsWith("_ID"))ob.put(key, id+acc); 
+		if(key.endsWith("_ID")){
+		    ob.put(key, id+acc);
+		    //System.out.println("\n Key : " + key + " id: " + (id+acc));
+		}
 	    }
 	    acc++;
 	}
@@ -57,6 +61,7 @@ public class DBSSimpleQueryObject{
     }//end inserTableBatch
 
     public void insertTableBatch(Connection conn, JSONArray cond, String tableName) throws Exception{
+        //System.out.println("*** Insert tabel Batch ****\n");
 	String sql = "insert into " + schemaOwner + tableName + "(";
 	JSONObject sample = cond.getJSONObject(0);
 	ArrayList<String> keyList = new ArrayList<String>();
@@ -98,7 +103,7 @@ public class DBSSimpleQueryObject{
             else sql += "?";
         }
         sql += ")";
-        System.out.println("*****sql: " + sql); 
+        //System.out.println("*****sql: " + sql); 
         PreparedStatement ps = null;
         try{
             ps = DBManagement.getStatement(conn, sql);
@@ -126,7 +131,7 @@ public class DBSSimpleQueryObject{
 		ps.addBatch();
 	    }
             //System.out.println(ps.toString());
-            ps.execute();
+            ps.executeBatch();
         }catch (SQLException ex) {
             String exmsg = ex.getMessage();
             if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
@@ -137,7 +142,7 @@ public class DBSSimpleQueryObject{
 
     }//end insertTableBatch
     public void insertTable(Connection conn, JSONObject cond, String tableName) throws Exception{
-	//System.out.println("insert Table \n");
+	//System.out.println("**** Insert Single row in a Table **** \n");
 	//System.out.println(cond);
         String sql = "insert into " + schemaOwner + tableName + "(";
         ArrayList<String> list = new ArrayList<String>();
@@ -188,7 +193,7 @@ public class DBSSimpleQueryObject{
             for(int i=1; i<list.size()+1;i++){
                 ps.setString(i, list.get(i-1));
             }
-            System.out.println(ps.toString());
+            //System.out.println(ps.toString());
             ps.execute();
         }catch (SQLException ex) {
             String exmsg = ex.getMessage();
@@ -197,6 +202,7 @@ public class DBSSimpleQueryObject{
         } finally {
             if (ps != null) ps.close();
         }
+	//System.out.println("\n*** Done insert single row ***");
     }//end insertTable
     
     public String getSchemaOwner(){
