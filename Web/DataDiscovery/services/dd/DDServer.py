@@ -3709,10 +3709,13 @@ All LFNs in a block
                 if elem==item[0]:
                    firstElem=elem
                 if (cDateIdx!=-1 and jdx==cDateIdx) or (mDateIdx!=-1 and jdx==mDateIdx):
-                   if xml:
-                      elem=timeGMT(long(elem))
-                   else:
-                      elem=timeGMTshort(long(elem))
+                   try:
+                       if xml:
+                          elem=timeGMT(long(elem))
+                       else:
+                          elem=timeGMTshort(long(elem))
+                   except:
+                      pass
                 elif  sizeIdx!=-1 and jdx==sizeIdx:
                    elem=colorSizeHTMLFormat(elem)
                 if cByIdx!=-1 and jdx==cByIdx:
@@ -4131,8 +4134,11 @@ All LFNs in a block
             if  details:
                 try: 
                     output = findOutput(userInput)
-                    method=getattr(self,output+'Summary')
-                    page+=method(**kDict)
+                    if  output.find(',') != -1: # composed keys
+                        page+=self.aSearchSummary(**kDict)
+                    else:
+                        method=getattr(self,output+'Summary')
+                        page+=method(**kDict)
                 except:
                     traceback.print_exc()
                     pass
@@ -4168,10 +4174,13 @@ All LFNs in a block
     aSearch.exposed=True
 
     def summaryQuery(self, dbsInst, userInput, fromRow, limit, sortKey="", sortOrder=""):
-        try:
-            return self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
-        except:
+        if  userInput.find(',') != -1: # compound keys, not a summary view
             return self.dbsmgr.exe(dbsInst, userInput, fromRow, fromRow+limit)
+        try:
+            result = self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
+        except:
+            result = self.dbsmgr.exe(dbsInst, userInput, fromRow, fromRow+limit)
+        return result
 #            if  self.verbose:
 #                traceback.print_exc()
 #            self.writeLog(getExcept())
