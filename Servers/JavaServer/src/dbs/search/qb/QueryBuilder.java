@@ -154,7 +154,7 @@ public class QueryBuilder {
 			){
 		    query = "SELECT \n\t";
                 }*/
-
+		String previousKey = "";
 		for (int i =0 ; i!= kws.size(); ++i) {
 			++iter;	checkMax(iter);
 			String aKw = (String)kws.get(i);
@@ -180,7 +180,10 @@ public class QueryBuilder {
 				// otherwise files with same size gets eliminated from selection (file.size is just an example)
 				String uniqueKey = realName+"."+u.getDefaultFromVertex(u.getVertex(realName));
 				String uqAsKeyword = uniqueKey.replace('.', '_');
-				query += uniqueKey + " AS c_" + uqAsKeyword + " ,";
+				if ( ! previousKey.equals(uqAsKeyword) ) {
+					previousKey = uqAsKeyword;
+					query += uniqueKey + " AS c_" + uqAsKeyword + " ,";
+				}
 
 				String tmpKw = km.getMappedValue(keyword, true);
 				query +=  tmpKw + " AS " + asKeyword ;
