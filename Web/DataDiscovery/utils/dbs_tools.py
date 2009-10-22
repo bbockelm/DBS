@@ -123,7 +123,7 @@ def dbsparser(data, tag="results"):
                         res = timeGMT(k.text)
                     else:
                         res = k.text
-                    item.append(k.text)
+                    item.append(res)
                     if  not tList.count(k.tag):
                         tList.append(k.tag)
                 oList.append(item)
