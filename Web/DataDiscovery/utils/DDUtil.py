@@ -223,7 +223,8 @@ def timeGMT(iTime):
         try:
             return convertDBS2DDTime(iTime)
         except:
-            return "Unknown time format, iTime=%s"%iTime
+            return iTime
+#            return "Unknown time format, iTime=%s"%iTime
 
 def timeGMTshort(iTime):
     try:
