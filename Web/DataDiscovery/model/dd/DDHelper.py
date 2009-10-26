@@ -53,13 +53,17 @@ class DDHelper(DDLogger):
 
     def getBlocksInfo(self, dbsInst, dataset):
         # (name,long(blkSize),long(nFiles),long(nEvts),status,cBy,cDate,mBy,mDate,[se])
-        query = 'find site where dataset = %s' % dataset
-        sites = self.queryDBS(dbsInst, query)
-        query = 'find block.name, block.size, block.numfiles, block.numevents, block.status, block.createby, block.createdate, block.modby, block.moddate where dataset = %s' % dataset
+        query = 'find block.name, block.size, block.numfiles, block.numevents, block.status, block.createby, block.createdate, block.modby, block.moddate, site where dataset = %s' % dataset
         res   = self.queryDBS(dbsInst, query)
         olist = []
         for item in res:
-            blk, blksize, nfiles, nevts, status, cby, cdate, mby, mdate = item
+            blk, blksize, nfiles, nevts, status, cby, cdate, mby, mdate, site = item
+            sites = [site]
+            if  olist:
+                last = olist[-1]
+                if  blk == last[0]:
+                    sites += last[-1]
+                    olist.remove(last)
             olist.append((blk, blksize, nfiles, nevts, status, cby, cdate, mby, mdate, sites))
         return olist
 
