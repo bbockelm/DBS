@@ -1451,13 +1451,117 @@ if __name__ == "__main__":
                 'https://vocms02.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
 		]
 
+
+    url_list_73=[
+
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_03_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_04_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_05_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_06_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_07_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_08_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_10_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_caf_analysis_01_writer/servlet/DBSServlet',
+
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_global_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_01_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_01_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_02_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_03_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_04_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_05_writer/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_06_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_07_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_08_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_09_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_prod_local_10_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_ph_analysis_01_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_ph_analysis_02_admin/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_caf_analysis_01_admin/servlet/DBSServlet',
+
+                'http://vocms73.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_01/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_02/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_03/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_04/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_05/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_06/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_07/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_08/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_09/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_prod_local_10/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet',
+                'http://vocms73.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet',
+                'https://vocms73.cern.ch:8443/cms_dbs_caf_analysis_01_writer/servlet/DBSServlet',
+        ]
+
+    url_list_74=[
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_03_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_04_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_05_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_06_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_07_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_08_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_10_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_caf_analysis_01_writer/servlet/DBSServlet',
+
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_global_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_01_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_01_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_02_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_03_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_04_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_05_writer/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_06_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_07_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_08_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_09_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_prod_local_10_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_ph_analysis_01_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_ph_analysis_02_admin/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_caf_analysis_01_admin/servlet/DBSServlet',
+
+                'http://vocms74.cern.ch/cms_dbs_prod_global/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_01/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_02/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_03/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_04/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_05/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_06/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_07/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_08/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_09/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_prod_local_10/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet',
+                'http://vocms74.cern.ch/cms_dbs_ph_analysis_01/servlet/DBSServlet',
+                'https://vocms74.cern.ch:8443/cms_dbs_caf_analysis_01_writer/servlet/DBSServlet',
+        ]
+
+
+
     url_list=[]
     url_list.extend(url_list_alias)
     #url_list.extend(url_list_30)
     #url_list.extend(url_list_31)
-    url_list.extend(url_list_t0_alias)
+    #url_list.extend(url_list_t0_alias)
     #url_list.extend(url_list_t0_02)
     #url_list.extend(url_list_t0_05)
+    #url_list.extend(url_list_73)
+    #url_list.extend(url_list_74)
 
     args['mode']='POST'
     args['version']='DBS_2_0_8'
