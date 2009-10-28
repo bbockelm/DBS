@@ -1,5 +1,5 @@
 /*i*
- * $Id: DBSServlet.java,v 1.6 2009/10/19 18:40:17 afaq Exp $
+ * $Id: DBSServlet.java,v 1.7 2009/10/20 16:40:55 afaq Exp $
  *
  **/
 package cms.dbs.servlets;
@@ -16,6 +16,7 @@ import cms.dbs.commons.utils.DBSSrvcConfig;
 //The APIs
 import cms.dbs.apis.PingDBS;
 import cms.dbs.apis.PrimaryDatasets;
+import cms.dbs.apis.Datasets;
 
 /**
 * servlet config is described in etc/web.xml.
@@ -70,6 +71,9 @@ public class DBSServlet extends Application {
         		router.attach("/PrimaryDatasets/", PrimaryDatasets.class);
 		        // Define route to PrimaryDatasets, with name specified (in this case its going to same class
         		router.attach("/PrimaryDatasets/{PRIMARY_DS_NAME}", PrimaryDatasets.class);
+
+			// Define route to Datasets
+			router.attach("/Datasets/", Datasets.class);
 
 			System.out.println("DBS READY");
 

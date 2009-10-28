@@ -1,5 +1,5 @@
 /***
- * $Id: Datasets.java,v 1.1 2009/10/26 11:04:55 afaq Exp $
+ * $Id: Datasets.java,v 1.2 2009/10/26 11:33:21 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -18,6 +18,15 @@ import org.restlet.resource.Variant;
 import org.json.JSONObject;
 
 import cms.dbs.dataobjs.Dataset;
+import cms.dbs.dataobjs.PrimaryDataset;
+import cms.dbs.dataobjs.PrimaryDSType;
+import cms.dbs.dataobjs.Dataset;
+import cms.dbs.dataobjs.ProcessedDataset;
+import cms.dbs.dataobjs.DataTier;
+import cms.dbs.dataobjs.DatasetType;
+import cms.dbs.dataobjs.AcquisitionEra;
+import cms.dbs.dataobjs.ProcessingEra;
+import cms.dbs.dataobjs.PhysicsGroup;
 
 import cms.dbs.apis.DBSApis;
 
@@ -54,6 +63,8 @@ public class Datasets extends Resource {
         try {
                 DBSApis api = new DBSApis();
                 Dataset cd = new Dataset();
+		//FIXME: WE SHOULD NOT ahve to setDATASET_ID = 0 here
+		cd.setDatasetID(0);
 
 		if (this.dataset != null) {
 			cd.setDataset( this.dataset );
@@ -76,22 +87,6 @@ public class Datasets extends Resource {
         return representation;
     }
 
-
-
-
-
-
-	    ProcessedDataset processedDS = new  ProcessedDataset(0, "ProcessedDS-Yuyi4");
-            Dataset ds = new Dataset(0, "/TEST10-Primary/ProcessedDS-Yuyi4/GEN-SIM-RAW", 1, PD, processedDS, new DataTier(0, "GEN-SIM-RAW"),
-                        new DatasetType(0, "PRODUCTION"), null, null, new PhysicsGroup(6, "QCD"), 0.01, "Yuyi's Tag", 0, "");
-            System.out.println(api.DBSApiInsertDataset(ds));
-
-
-
-
-
-
-
     //AA -- POST
     /** 
      * Handle POST requests: create a new item. (insert primrat datasets)
@@ -110,10 +105,29 @@ public class Datasets extends Resource {
                         primaryDSName =  json_req.getString("PRIMARY_DS_NAME");
                 }*/
 
-		//FIXME: An ugly contraption od Dataset object, we should have something cleaner for better error handlingg !!!
-		Dataset ds = new Dataset(0, json_req.getString("DATASET"), 1, PD, new ProcessedDataset(0, json_req.getString("PROCESSSED_DATASED_NAME")), new DataTier(0, json_req.getString("DATA_TIER")), new DatasetType(0, json_req.getString("DATASET_TYPE"), null, null, new PhysicsGroup(0, json_req.getString("PHYSICS_GROUP"), json_req.getString("???", json_req.getString("????"), 0, json_req.getString("????") );
+		PrimaryDSType PT = new PrimaryDSType(0, json_req.getString("PRIMARY_DS_TYPE"));
+		PrimaryDataset PD = new PrimaryDataset(0, json_req.getString("PRIMARY_DS_NAME"), PT, 0, "");
+		ProcessedDataset PROC = new ProcessedDataset(0, json_req.getString("PROCESSSED_DATASED_NAME"));
+		DataTier DT = new DataTier(0, json_req.getString("DATA_TIER"));
+		DatasetType DST = new DatasetType(0, json_req.getString("DATASET_TYPE"));				
+		PhysicsGroup PG = new PhysicsGroup(0, json_req.getString("PHYSICS_GROUP"));
+		AcquisitionEra AQ = new AcquisitionEra(0, json_req.getString("ACQUISITION_ERA_NAME"), 0, "", "");
+		ProcessingEra PE = new ProcessingEra(0, json_req.getString("PROCESSING_VERSION"), 0, "", "");
+
+		Dataset DS = new Dataset();
+		DS.setDataset(json_req.getString("DATASET"));
+		DS.setPrimaryDSDO(PD);
+		DS.setProcessedDSDO(PROC);
+		DS.setDataTierDO(DT);
+		DS.setDatasetTypeDO(DST);
+		DS.setPhysicsGroupDO(PG);
+		DS.setAcquisitionEraDO(AQ);
+		DS.setProcessingEraDO(PE);
+		DS.setXtcrosssection((float)json_req.getDouble("XTCROSSSECTION"));
+		DS.setGlobalTag(json_req.getString("GLOBAL_TAG"));
 		
 		DBSApis api = new DBSApis();	
+
             	api.DBSApiInsertDataset(DS);
 
         } catch(Exception ex){
@@ -121,7 +135,6 @@ public class Datasets extends Resource {
         }
 
     }
-
 
 }
 
