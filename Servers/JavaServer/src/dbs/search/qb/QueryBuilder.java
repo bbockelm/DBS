@@ -1521,8 +1521,11 @@ public class QueryBuilder {
 		return false;
 	}
 	private boolean isInListRelaxed(ArrayList keyWords, String aKw) {
+                if (isInList(keyWords, aKw)) {
+                        return true;
+                }
 		for(Object kw: keyWords) {
-			if( ((String)kw).indexOf(aKw) != -1 ) return true;
+			if( ((String)kw).indexOf(aKw+".") != -1 ) return true;
 		}
 		return false;
 	}
