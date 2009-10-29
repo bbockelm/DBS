@@ -670,6 +670,12 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--query", action="store", type="string", dest="query",
            help="Search query used to perform data serach, create ADS Definitions etc ")
 
+      self.add_option("--begin", action="store", type="string", dest="begin", default="",
+           help="Used to specify the begin of the paginated query (you can ask few items from the result)")
+
+      self.add_option("--end", action="store", type="string", dest="end", default="",
+           help="Used to specify the end of the paginated query (you can ask few items from the result) ")
+
       self.add_option("--xml", action="store_true", dest="xml",
            help="If specified XML from DBS Server will be printed (in general used for debugging) ")
 
@@ -1938,7 +1944,7 @@ class ApiDispatcher:
 	
         self.progress.start()
 	if dbsAvailable: 
-		data=self.getApi().executeQuery(userInput, type=qu)
+		data=self.getApi().executeQuery(query=userInput, type=qu, begin=self.optdict.get('begin'), end=self.optdict.get('end'))
 		self.apiversion=self.getApi().getApiVersion()
 	else : 
 
@@ -1948,7 +1954,8 @@ class ApiDispatcher:
 			self.apiversion=dbsver
 		else:
 			self.apiversion='DBS_2_0_5'
-		params = {'apiversion': self.apiversion ,'api':'executeQuery'}
+		params = {'apiversion': self.apiversion ,'api':'executeQuery', 
+					'begin' : self.optdict.get('begin'), 'end' : self.optdict.get('end')}
 		params = dict(params)
 		params['query']=userInput
 		params['type']=qu
