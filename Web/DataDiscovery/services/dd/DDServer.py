@@ -3685,9 +3685,9 @@ All LFNs in a block
         func     = lambda x: [i.lower() for i in x]
         ttList   = func(titleList)
         for idx in xrange(0,len(ttList)):
-            item = ttList[idx]
+            item = ttList[idx].lower()
             if item.find('date')!=-1:
-               if item.find('createdate') != -1: cDateIdx=idx 
+               if item.find('creat') != -1: cDateIdx=idx 
                if item.find('mod')!=-1: mDateIdx=idx 
             if item.find('size')!=-1: sizeIdx=idx
             if item.find('createdby')!=-1: cByIdx=idx
