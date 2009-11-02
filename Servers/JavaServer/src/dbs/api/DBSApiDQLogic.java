@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApiDQLogic.java,v 1.24 2009/03/24 16:41:10 afaq Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiDQLogic.java,v 1.25 2009/03/24 16:52:15 afaq Exp $"
  *
  */
 
@@ -37,6 +37,19 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		personApi = new DBSApiPersonLogic(data);
 	}
 
+        private java.util.ArrayList getAllDatasetParentsFromID(Connection conn, String procDSID) throws Exception {
+
+			java.util.ArrayList allParents = new java.util.ArrayList();
+                        java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDsFromID(conn, procDSID);
+			for (Object parent : dsParents) {
+				if (!parent.equals(procDSID)) {
+					allParents.add(parent);
+					allParents.addAll(getAllDatasetParentsFromID(conn, (String)parent));
+				}
+			}
+			return allParents;
+        }
+
 
         //Updates value of a FLAG
         public void updateDQIntFlag(Connection conn, Writer out, String procDSID, String runID, String lumiID,
@@ -51,8 +64,10 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
                 if (isNull(rowID)) {
                         //lets try to get parent's flag ID if one exists
-                        //returns parents and also ID of passed dataset
-                        java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDsFromID(conn, procDSID);
+                        //returns parents ID of passed dataset is added here
+                        //java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDsFromID(conn, procDSID);
+                        java.util.ArrayList dsParents=getAllDatasetParentsFromID(conn, procDSID);
+			dsParents.add(procDSID);
                         for (Object pprocDSID : dsParents) {
                                 //Check to see if a parent DQ flag exists
                                 String prowID =  getDQIntFlagID(conn, (String)pprocDSID, runID, lumiID, flag, "", false);
@@ -108,8 +123,10 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 		if (isNull(rowID)) {
 			//lets try to get parent's flag ID if one exists
-                        //returns parents and also ID of passed dataset
-                        java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDsFromID(conn, procDSID);
+                        //returns parents and also ID of passed dataset is added here
+                        //java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDsFromID(conn, procDSID);
+			java.util.ArrayList dsParents=getAllDatasetParentsFromID(conn, procDSID);
+			dsParents.add(procDSID);
                         for (Object pprocDSID : dsParents) {
 				//Check to see if a parent DQ flag exists
 				String prowID =  getDQFlagID(conn, (String)pprocDSID, runID, lumiID, flag, "", false);
@@ -406,8 +423,11 @@ public class DBSApiDQLogic extends DBSApiLogic {
 			while (rs.next() ) {
 				dsFound=true;		
 				String path=get(rs, "PATH");
+				String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+				dsParents.addAll(getAllDatasetParentsFromID(conn, procDSID));
+				dsParents.add(procDSID);
 				//returns parents and also ID of passed dataset
-				dsParents.addAll((new DBSApiProcDSLogic(data)).listDatasetParentIDs(conn, path));
+				//dsParents.addAll((new DBSApiProcDSLogic(data)).listDatasetParentIDs(conn, path));
 			}
 			if (!dsFound) throw new DBSException("Unavailable data", "1008", "No such dataset found" );
 			removeDuplicate(dsParents);
@@ -468,7 +488,11 @@ public class DBSApiDQLogic extends DBSApiLogic {
         public void listRunLumiDQ(Connection conn, Writer out, String path, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
 
 		//returns parents and also ID of passed dataset
-		java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDs(conn, path);
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);	
+		//java.util.ArrayList dsParents=(new DBSApiProcDSLogic(this.data)).listDatasetParentIDs(conn, path);
+		java.util.ArrayList dsParents=getAllDatasetParentsFromID(conn, procDSID);	
+		dsParents.add(procDSID);
+
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
 
