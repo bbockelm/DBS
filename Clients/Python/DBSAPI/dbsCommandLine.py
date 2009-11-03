@@ -719,8 +719,8 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--noheader", action="store_true", default=False, dest="noheader",
            help="If provided, tool will NOT display the header information in the result of query (Useful for scripted quries)")
 
-      #self.add_option("--production", action="store", type="string", dest="production", default="no",
-      #          help="When added to --query, displays ALL datasets regardles of their validity and aviability status")
+      self.add_option("--production", action="store_true", dest="production", default=False,
+                help="When added to --query, displays ALL datasets regardles of their validity and aviability status")
 
       ## Always keep this as the last option in the list
       self.add_option("-c","--command", action="store", type="string", default="notspecified", dest="command",
@@ -1946,23 +1946,19 @@ class ApiDispatcher:
                qu="query"
 	
         self.progress.start()
-
-	# Need to verify this behavior- before uncommenting, what production role exactly means
-        #print userInput
-        #qry=userInput.split("where")
-        #print len(qry)
-        #if len(qry) > 1 : 
-        #        print qry[0]
-	#	if qry[0].find("dataset") != -1 and self.optdict.get('production') == "no" :
-	#		userInput += " and dataset.status=VALID"
+	if userInput.find("dataset") != -1 and not self.optdict.get('production') :
+		if userInput.strip()=="find dataset" :
+			userInput += " where dataset.status like VALID* "
+		elif len(userInput.split()) == 2:
+			if userInput.split()[1].strip()=="dataset":
+				userInput += " where dataset.status like VALID* "
+		else:
+			userInput += " and dataset.status like VALID* "
 	#print userInput
-
-
 	if dbsAvailable: 
 		data=self.getApi().executeQuery(query=userInput, type=qu, begin=self.optdict.get('begin'), end=self.optdict.get('end'))
 		self.apiversion=self.getApi().getApiVersion()
 	else : 
-
 		dbsver = self.getDBSversion()
 		
 		if  not dbsver or dbsver >= 'DBS_2_0_6':
