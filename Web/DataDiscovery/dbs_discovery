@@ -36,7 +36,7 @@ mkdir -p $DDHOME/rss
 RETVAL=$?
 
 port=`cat $DDHOME/DBSDD.conf | grep -i "port=" | tail -1 | sed "s/PORT=//g"`
-pid=`ps auxw | grep DDServer | grep -v grep | awk '{print $2}'`
+pid=`ps auxwwww | grep DDServer | grep -v grep | awk '{print $2}'`
 base=dbs_discovery
 
 case "$1" in

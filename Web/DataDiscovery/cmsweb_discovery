@@ -15,7 +15,7 @@ RETVAL=$?
 #port=`cat CherryServer3.conf | grep port | awk '{print $3}'`
 port=`cat DBSDD.conf | grep -i "port=" | tail -1 | sed "s/PORT=//g"`
 url=`cat DBSDD.conf  | grep -i "^URL=" | tail -1 | sed "s/URL=//g"`
-pid=`ps auxw | grep cmsWeb | grep DDServer | grep -v grep | grep ${port} | awk '{print $2}'`
+pid=`ps auxwwwww | grep cmsWeb | grep DDServer | grep -v grep | grep ${port} | awk '{print $2}'`
 base=cmsweb_discovery
 cmd="cmsWeb --base-url=${url} --port=${port} --default-page /DDServer"
 
