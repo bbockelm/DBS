@@ -123,6 +123,11 @@ Return to non-admin <a href="javascript:reload(0)">page</a>.
 #set sites  = item[13]
 #set fSize  = item[14]
 #set nFiles = item[15]
+#for idx in range(0,len($sites))
+#if  not $sites[$idx]
+#set $sites[$idx]=""
+#end if
+#end for
 #if run!=$_run_
 #set tstyle="border-width: 1px 1px 0px 0px; border-style:solid dotted; border-color:gray;padding:2px;"
 #if $rowColor=="#FFFADC"
