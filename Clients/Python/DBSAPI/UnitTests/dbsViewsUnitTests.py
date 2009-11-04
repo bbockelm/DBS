@@ -114,7 +114,8 @@ class testDBS(unittest.TestCase):
 
     def test_executeSummary_noparams(self): 
         params = dict(self.params)
-        params['query'] = 'find dataset where dataset like *CRUZET4*'
+#        params['query'] = 'find dataset where dataset like *CRUZET4*'
+        params['query'] = 'find dataset where dataset like *KKKKKK*'
         result = call(self.url, params)
 #        expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<summary_view>\n<exception>\njava.sql.SQLException: ORA-00936: missing expression\n\n</exception>\n</summary_view>\n<SUCCESS/>\n</dbs>\n"""
         expect = """<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n<summary_view>\n</summary_view>\n<results>\n</results>\n<SUCCESS/>\n</dbs>\n"""
