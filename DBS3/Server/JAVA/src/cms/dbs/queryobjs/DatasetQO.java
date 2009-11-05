@@ -1,5 +1,5 @@
 /***
- * $Id: DatasetQO.java,v 1.1 2009/10/13 16:05:30 yuyi Exp $
+ * $Id: DatasetQO.java,v 1.2 2009/10/15 12:39:11 yuyi Exp $
  *
  * This is the class for dataset query objects.
  * @author Y. Guo
@@ -54,9 +54,9 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 		//Do we really need to set everything?
 		primaryDS.setPrimaryDSID(((PrimaryDataset)primaryDSs.getJSONObject(0)).getPrimaryDSID());
 		primaryDS.setPrimaryDSName(((PrimaryDataset)primaryDSs.getJSONObject(0)).getPrimaryDSName());
-		primaryDS.setPrimaryDSTypeDO(((PrimaryDataset)primaryDSs.getJSONObject(0)).getPrimaryDSTypeDO());
-		primaryDS.setCreationDate(((PrimaryDataset)primaryDSs.getJSONObject(0)).getCreationDate());
-		primaryDS.setCreateBy(((PrimaryDataset)primaryDSs.getJSONObject(0)).getCreateBy());
+		//primaryDS.setPrimaryDSTypeDO(((PrimaryDataset)primaryDSs.getJSONObject(0)).getPrimaryDSTypeDO());
+		//primaryDS.setCreationDate(((PrimaryDataset)primaryDSs.getJSONObject(0)).getCreationDate());
+		//primaryDS.setCreateBy(((PrimaryDataset)primaryDSs.getJSONObject(0)).getCreateBy());
 	    }
 	}
         //System.out.println(cond);
@@ -141,6 +141,8 @@ public class DatasetQO extends  DBSSimpleQueryObject{
         ResultSet rs = null;
         boolean datasetID = false;
 
+System.out.println("I am here...");
+
         String sql = "SELECT D.DATASET_ID, D.DATASET, D.IS_DATASET_VALID,D.PRIMARY_DS_ID, D.PROCESSED_DS_ID, D.DATA_TIER_ID, "
 		     +" D.DATASET_TYPE_ID, D.ACQUISITION_ERA_ID, D.PROCESSING_ERA_ID, D.PHYSICS_GROUP_ID, D.XTCROSSSECTION, D.GLOBAL_TAG,"
 		     + "  D.CREATION_DATE, D.CREATE_BY, D.LAST_MODIFICATION_DATE,D.LAST_MODIFIED_BY,  PR.PRIMARY_DS_NAME, "
@@ -157,7 +159,7 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 	    datasetID =true;
 	}
         else if (cond.getDataset() != null){
-	    if ( (cond.getDataset()).indexOf('_') != -1 || (cond.getDataset()).indexOf('%') != -1) sql += "D.DATASET like ?";
+	    if (  (cond.getDataset()).indexOf('%') != -1) sql += "D.DATASET like ?";
 	    else sql += "D.DATASET = ?";
 	}
         else throw  new DBSException("Input Data Error", "Dataset name or ID have to be provided. ");
@@ -169,7 +171,7 @@ public class DatasetQO extends  DBSSimpleQueryObject{
             //prepare statement index starting with 1, but JSONArray index starting with 0.
 	    if(datasetID)ps.setInt(1, cond.getDatasetID());
 	    else ps.setString(1, cond.getDataset());
-            //System.out.println(ps.toString());
+            System.out.println(ps.toString());
             rs =  ps.executeQuery();
             while(rs.next()){
                 String dataset = rs.getString("DATASET");
@@ -191,7 +193,9 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 	        String processedDSName = rs.getString("PROCESSED_DS_NAME");
 		String phGrpName = rs.getString("PHYSICS_GROUP_NAME");
 		String datasetType = rs.getString("DATASET_TYPE");	
-                
+            
+		System.out.println("DATSET: "+ dataset );
+    
 		this.result.put(new Dataset(setID, dataset, isDatasetValid, new PrimaryDataset(primaryDSID, primaryDSName ), 
                                 new ProcessedDataset(processedDSID, processedDSName), new DataTier(dataTierID, dataTiername),
 				new DatasetType(datasetTypeID, datasetType), null, null, new PhysicsGroup(phygrpID, phGrpName),

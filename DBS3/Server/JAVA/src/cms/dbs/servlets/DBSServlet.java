@@ -1,5 +1,5 @@
 /*i*
- * $Id: DBSServlet.java,v 1.7 2009/10/20 16:40:55 afaq Exp $
+ * $Id: DBSServlet.java,v 1.8 2009/10/28 10:58:20 afaq Exp $
  *
  **/
 package cms.dbs.servlets;
@@ -70,10 +70,13 @@ public class DBSServlet extends Application {
 		        // Define route to PrimaryDatasets
         		router.attach("/PrimaryDatasets/", PrimaryDatasets.class);
 		        // Define route to PrimaryDatasets, with name specified (in this case its going to same class
-        		router.attach("/PrimaryDatasets/{PRIMARY_DS_NAME}", PrimaryDatasets.class);
+        		router.attach("/PrimaryDatasets/{PRIMARY_DATASET_NAME}", PrimaryDatasets.class);
 
 			// Define route to Datasets
 			router.attach("/Datasets/", Datasets.class);
+			router.attach("/Datasets/{PRIMARY_DATASET_NAME}", Datasets.class);
+			router.attach("/Datasets/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}", Datasets.class);
+			router.attach("/Datasets/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}/{DATA_TIER}", Datasets.class);
 
 			System.out.println("DBS READY");
 

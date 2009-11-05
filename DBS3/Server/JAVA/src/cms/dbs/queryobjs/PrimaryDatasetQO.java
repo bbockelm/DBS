@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasetQO.java,v 1.6 2009/09/23 19:17:05 yuyi Exp $
+ * $Id: PrimaryDatasetQO.java,v 1.7 2009/10/19 18:24:42 yuyi Exp $
  *
  * This is the class for primary dataset query objects.
  * @author Y. Guo
@@ -36,7 +36,8 @@ public class PrimaryDatasetQO extends  DBSSimpleQueryObject{
         try{
 	    int PId = SequenceManager.getSequence(conn, "seq_PDS");
 	    ps = DBManagement.getStatement(conn, sql);
-	    if(PName != null && !PName.equals("") && PName.indexOf('_') == -1 
+	    if(PName != null && !PName.equals("") 
+			//&& PName.indexOf('_') == -1 
 		&& PName.indexOf('%') == -1)ps.setString(1, PName);
 	    else throw new DBSException("Input Data Error", "Primary Dataset Name " + PName + "is invalid");
 	    ps.setInt(2, PTId);
