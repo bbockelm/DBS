@@ -3,10 +3,10 @@
 <graph edgedefault="directed" name="DBSSchema">
 	<node id="Person" 			user="person" 		real="Person"	 			default="DistinguishedName"	weight="3"/>
 	<node id="PhysicsGroup" 		user="phygrp,group" 	real="PhysicsGroup"	        	default="PhysicsGroupName"	weight="7"/>
-	<node id="PrimaryDataset" 		user="primds" 		real="PrimaryDataset"			default="Name"	weight="8"/>
+	<node id="PrimaryDataset" 		user="primds" 		real="PrimaryDataset"			default="Name"	weight="10"/>
 	<node id="ProcessedDataset" 		user="procds" 		real="ProcessedDataset" 		default="Name"	weight="9"/>
 	<node id="Runs" 			user="run" 		real="Runs" 				default="RunNumber"	weight="5"/>
-	<node id="Files" 			user="file" 		real="Files" 				default="LogicalFileName"	weight="10"/>
+	<node id="Files" 			user="file" 		real="Files" 				default="LogicalFileName"	weight="6"/>
 	<node id="DataTier"	 		user="tier, procds.tier, dataset.tier, file.tier" 		real="DataTier" 			default="Name"	weight="5"/>
 	<node id="LumiSection" 			user="lumi" 		real="LumiSection" 			default="LumiSectionNumber"	weight="5"/>
 	<node id="AlgorithmConfig" 		user="algo" 		real="AlgorithmConfig" 			default="ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID"	weight="4"/>
@@ -19,11 +19,11 @@
 	<node id="FileChildage" 		user="file.child"	real="FileChildage" 			default="ThisFile,ItsParent"    mapped="Files.LogicalFileName"	weight="3"/>
 	<node id="FileRunLumi" 			user="frl" 		real="FileRunLumi" 			default="Fileid,Lumi,Run"	weight="6"/>
         <node id="FileAlgo" 			user="file.release" 	real="FileAlgo" 			default="Fileid,Algorithm"      mapped="AppVersion.Version"	weight="6"/>
-	<node id="FileStatus" 			user="file.status" 	real="FileStatus" 			default="Status"	weight="6"/>
-	<node id="FileType" 			user="file.type" 	real="FileType" 			default="Type"	weight="6"/>
-	<node id="FileValidStatus" 		user="file.vstatus" 	real="FileValidStatus" 			default="Status"	weight="6"/>
+	<node id="FileStatus" 			user="file.status" 	real="FileStatus" 			default="Status"	weight="7"/>
+	<node id="FileType" 			user="file.type" 	real="FileType" 			default="Type"	weight="7"/>
+	<node id="FileValidStatus" 		user="file.vstatus" 	real="FileValidStatus" 			default="Status"	weight="7"/>
 	<node id="FileTriggerTag" 		user="ftrigger" 	real="FileTriggerTag" 			default="Fileid,TriggerTag"	weight="6"/>
-	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"	weight="5"/>
+	<node id="ProcDSRuns" 			user="pdrun" 		real="ProcDSRuns" 			default="Dataset,Run"	weight="7"/>
 	<node id="ProcDSTier" 			user="DEPRICATED_procds.tier,DEPRICATED_dataset.tier" 	real="ProcDSTier" 			default="Dataset,DataTier"	weight="5"/>
 	<node id="ProcDSParent" 		user="procds.parent, dataset.parent"	real="ProcDSParent" 	default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"	weight="2"/>
 	<node id="ProcDSChild" 			user="procds.child, dataset.child"	real="ProcDSChild" 	default="ThisDataset,ItsParent" mapped="ProcessedDataset.Name"	weight="2"/>
@@ -37,7 +37,7 @@
 	<node id="AnalysisDSDef" 		user="ads.def" 		real="AnalysisDSDef" 			default="Name"	weight="4"/>
 	<node id="SEBlock" 			user="seblock" 		real="SEBlock" 				default="SEID,BlockID"	weight="1"/>
 	<node id="StorageElement" 		user="site" 		real="StorageElement" 			default="SEName"	weight="1"/>
-	<node id="Block" 			user="block,dataset"	real="Block" 				default="Name"	weight="9"/>
+	<node id="Block" 			user="block,dataset"	real="Block" 				default="Name"	weight="8"/>
 	<node id="ProcDSStatus" 		user="procds.status,dataset.status" 	real="ProcDSStatus" 	default="Status"	weight="6"/>
 	<node id="PrimaryDSType" 		user="datatype" 	real="PrimaryDSType" 			default="Type"	weight="5"/>
 	<node id="QualityValues" 		user="qlty" 		real="QualityValues" 			default="Value"	weight="5"/>

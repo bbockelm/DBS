@@ -142,16 +142,23 @@ public class QueryBuilder {
 				|| aKw.endsWith("count") 
 				|| aKw.startsWith("min")
 				|| aKw.startsWith("max")
-				|| aKw.startsWith("avg"))
+				|| aKw.startsWith("avg")) {
 				countPresent = true;
-			if(aKw.startsWith("sum")) sumPresent = true;
+				if (aKw.indexOf("file.status") != -1) invalidFile = false;
+			}
+			if(aKw.startsWith("sum")) {
+			        sumPresent = true;
+				if (aKw.indexOf("file.status") != -1) invalidFile = false;
+		        }
 		}
 		
 		if(sumPresent || countPresent) sumQuery += selectStr;
 		String query = "SELECT DISTINCT \n\t";
-                // If requested CLOB data, such as QueryableParameterSet.Content
-                // we should not either converted it to string data type
 
+                // Can't do distinct with CLOB; queries with CLOB and fns will be wrong...
+                if (isInList(kws, "config.content")){
+		    query = "SELECT \n\t";
+                }
 		//WE Do need DISTINCT (but we need to build the query in a very different way)
                 /**if (isInList(kws, "config.content") 
 			|| isInList(kws, "sum(file.size)") 
@@ -216,8 +223,8 @@ public class QueryBuilder {
 				int noOfTokens = st.countTokens();
 				String entity = st.nextToken();
 				String realName = u.getMappedRealName(entity);
+				allKws = addUniqueInList(allKws, realName);
 				if(noOfTokens == 1) {
-					allKws = addUniqueInList(allKws, realName);
 					String defaultStr = u.getDefaultFromVertex(u.getVertex(realName));
 					if(defaultStr.indexOf(",") != -1)  throw new Exception("Cannot use " + functToUse + "(" + entity + ")");
 					query += realName + "." + defaultStr + " AS " + functToUse + "_SUB_" + realName;
@@ -233,13 +240,23 @@ public class QueryBuilder {
 						if(st2.countTokens() != 1) throw new Exception("Cannot use " + functToUse + "(" + keyword + ")");
 						tmpKw = realVal + "." + st2.nextToken();
 					} else {
-						allKws = addUniqueInList(allKws, realName);
 						tmpKw = km.getMappedValue(keyword, true);
 					}
 
 					String asKeyword = keyword.replace('.', '_');
 					if(!sumQuery.equals(selectStr)) sumQuery += ",\n\t";
 					sumQuery += functToUse + "(DISTINCT " + functToUse + "_SUB_" + asKeyword + ") AS " + functToUse + "_" + asKeyword + " ";
+
+				        //dsr copied from AA-09/11/09--add the UQ of the table as DISTINCT select
+				        // otherwise files with same size gets eliminated from selection (file.size is just an example)
+				        // Only really needed for count and avg...
+				        String uniqueKey = realName+"."+u.getDefaultFromVertex(u.getVertex(realName));
+				        String uqAsKeyword = uniqueKey.replace('.', '_');
+				        if ( ! previousKey.equals(uqAsKeyword) ) {
+					        previousKey = uqAsKeyword;
+					        query += uniqueKey + " AS c_" + uqAsKeyword + " ,";
+				        }
+
 					query +=  tmpKw + " AS " + functToUse + "_SUB_" + asKeyword ;
 				} else throw new Exception("Cannot use " + functToUse + "(" + keyword + ")");
 
