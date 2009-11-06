@@ -1,5 +1,5 @@
 /***
- * $Id: $
+ * $Id: Blocks.java,v 1.1 2009/11/06 22:34:57 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -37,8 +37,9 @@ public class Blocks extends Resource {
 
         this.primary= (String)request.getAttributes().get("PRIMARY_DATASET_NAME");
         this.proc= (String)request.getAttributes().get("PROCESSED_DATASET_NAME");
-	String tier_guid = (String)request.getAttributes().get("DATA_TIER_GUID");
-	this.blockName = "/"+this.primary+"/"+this.proc+"/"+tier_guid;
+	String tier_guid = (String)request.getAttributes().get("DATA_TIER_GUID"); //gives on tier
+	String guid = request.getResourceRef().toString().split("#")[1];
+	this.blockName = "/"+this.primary+"/"+this.proc+"/"+tier_guid+"#"+guid;
 
 	System.out.println("this.blockName:::"+this.blockName);
 	
