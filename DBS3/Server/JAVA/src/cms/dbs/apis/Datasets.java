@@ -1,5 +1,5 @@
 /***
- * $Id: Datasets.java,v 1.3 2009/10/28 10:58:20 afaq Exp $
+ * $Id: Datasets.java,v 1.4 2009/11/05 19:44:31 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -31,6 +31,8 @@ import cms.dbs.dataobjs.PhysicsGroup;
 import cms.dbs.apis.DBSApis;
 
 import cms.dbs.commons.exceptions.DBSException;
+import org.restlet.data.Status;
+
 
 public class Datasets extends Resource {
 
@@ -43,7 +45,6 @@ public class Datasets extends Resource {
 	
         super(context, request, response);
 
-	
 	this.primary= (String)request.getAttributes().get("PRIMARY_DATASET_NAME");
 	this.proc= (String)request.getAttributes().get("PROCESSED_DATASET_NAME");
 	this.tier= (String)request.getAttributes().get("DATA_TIER");
@@ -55,6 +56,9 @@ public class Datasets extends Resource {
 
         // This resource has only one type of representation.  
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+
+//response.setEntity("TEST", MediaType.TEXT_PLAIN);
+
     }
 
     //GET  http://.../Datasets/
@@ -150,8 +154,11 @@ public class Datasets extends Resource {
 
         }catch (DBSException ex){
             System.out.println("DBSException raised :" + ex.getMessage() + ". " + ex.getDetail());
+		throw new ResourceException(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage() + ". " + ex.getDetail() );
+	    //response.setEntity(ex.getMessage() + ". " + ex.getDetail(), MediaType.TEXT_PLAIN);
         } catch(Exception ex){
             	System.out.println("Exception raised :" + ex );
+		throw new ResourceException(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage() );
         }
         
 

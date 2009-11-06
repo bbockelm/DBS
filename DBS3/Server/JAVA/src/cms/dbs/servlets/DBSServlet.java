@@ -1,5 +1,5 @@
 /*i*
- * $Id: DBSServlet.java,v 1.8 2009/10/28 10:58:20 afaq Exp $
+ * $Id: DBSServlet.java,v 1.9 2009/11/05 19:44:31 afaq Exp $
  *
  **/
 package cms.dbs.servlets;
@@ -17,6 +17,7 @@ import cms.dbs.commons.utils.DBSSrvcConfig;
 import cms.dbs.apis.PingDBS;
 import cms.dbs.apis.PrimaryDatasets;
 import cms.dbs.apis.Datasets;
+import cms.dbs.apis.Blocks;
 
 /**
 * servlet config is described in etc/web.xml.
@@ -77,6 +78,12 @@ public class DBSServlet extends Application {
 			router.attach("/Datasets/{PRIMARY_DATASET_NAME}", Datasets.class);
 			router.attach("/Datasets/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}", Datasets.class);
 			router.attach("/Datasets/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}/{DATA_TIER}", Datasets.class);
+
+			// Define route to Blocks
+			//WE may not need all the block so this route may not be required anyways
+			router.attach("/Blocks/", Blocks.class);
+			//DATA_TIER_GUID in this case will contain DATA_TIER#GUID part of Block name
+			router.attach("/Blocks/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}/{DATA_TIER_GUID}", Blocks.class);
 
 			System.out.println("DBS READY");
 

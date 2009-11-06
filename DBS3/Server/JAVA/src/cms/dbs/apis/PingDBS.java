@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasets.java,v 1.2 2009/10/20 15:32:46 afaq Exp $
+ * $Id: PingDBS.java,v 1.1 2009/10/20 16:40:55 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -16,6 +16,9 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;  
  
 import org.json.JSONObject;
+
+import cms.dbs.commons.exceptions.DBSException;
+import org.restlet.data.Status;
 
 /** 
  * Resource which has only one representation. 

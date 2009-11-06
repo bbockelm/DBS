@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasets.java,v 1.5 2009/11/05 19:44:31 afaq Exp $
+ * $Id: $
  * DBS Server side APIs .
  ***/
 
@@ -17,22 +17,49 @@ import org.restlet.resource.Variant;
 
 import org.json.JSONObject;
 
-import cms.dbs.dataobjs.PrimaryDataset;
-import cms.dbs.dataobjs.PrimaryDSType;
-
 import cms.dbs.apis.DBSApis;
 import cms.dbs.commons.exceptions.DBSException;
 import org.restlet.data.Status;
 
-public class PrimaryDatasets extends Resource {
+import cms.dbs.dataobjs.Block;
 
-    String primaryDatasetName;
+public class Blocks extends Resource {
 
-    public PrimaryDatasets(Context context, Request request, Response response) {
+    String blockName;
+    String dataset;
+    String primary;
+    String proc;
+    String tier;
+
+    public Blocks(Context context, Request request, Response response) {
 	
         super(context, request, response);
 
-	this.primaryDatasetName = (String)request.getAttributes().get("PRIMARY_DATASET_NAME");
+        this.primary= (String)request.getAttributes().get("PRIMARY_DATASET_NAME");
+        this.proc= (String)request.getAttributes().get("PROCESSED_DATASET_NAME");
+	String tier_guid = (String)request.getAttributes().get("DATA_TIER_GUID");
+	this.blockName = "/"+this.primary+"/"+this.proc+"/"+tier_guid;
+
+	System.out.println("this.blockName:::"+this.blockName);
+	
+	System.out.println("getResourceRef():::::"+request.getResourceRef());
+	System.out.println("getRootRef:::::"+request.getRootRef());
+	System.out.println("getMethod:::::"+request.getMethod());
+
+/*
+ 	System.out.prinln("Resource URI  : " + request.getReference() + '\n' + "Root URI      : "  
+             + request.getRootRef() + '\n' + "Routed part   : "  
+             + request.getReference().getBaseRef() + '\n' + "Remaining part: "  
+             + request.getReference().getRemainingPart()
+		);
+
+*/
+
+	//String[] tier_guid = ((String)request.getAttributes().get("DATA_TIER_GUID")).split("#");
+        //this.tier=tier_guid[0];
+        //this.dataset = "/"+this.primary+"/"+this.proc+"/"+this.tier;
+	//this.blockName = this.dataset + "#" + tier_guid[1];
+        //FIXME: We should check if comple path is provided here or NOT
 
          // Allow modifications of this resource via POST/PUT/DELETE requests.  
          setModifiable(true);
@@ -41,8 +68,7 @@ public class PrimaryDatasets extends Resource {
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
-    //GET  http://.../PrimaryDatasets/
-    //GET  http://.../PrimaryDatasets/{PRIMARY_DS_NAME}
+    //GET  http://.../Blocks/
     /** 
      * Returns a full representation for a given variant. 
      */
@@ -52,18 +78,22 @@ public class PrimaryDatasets extends Resource {
 
         Representation representation = null;
 
+
+
         try {
                 DBSApis api = new DBSApis();
-                PrimaryDataset cd = new PrimaryDataset();
+		Block bk = new Block();	
+		//FIXME: we should have to do following
+		bk.setBlockID(0);
 
-		if (this.primaryDatasetName != null) {
-			cd.setPrimaryDSName( this.primaryDatasetName );
+		if (this.blockName!= null) {
+			bk.setBlockName ( this.blockName ) ;
 		}
 		else {
-			cd.setPrimaryDSName("%");
+			throw new DBSException ("Incorrect parameter", "Cannot list all block, please specify a parameter");
 		}
 
-                JSONObject retn = api.DBSApiFindPrimaryDatasets(cd);
+                JSONObject retn = api.DBSApiFindBlocks(bk);
 
                 representation = new StringRepresentation(
                         retn.toString(), MediaType.TEXT_PLAIN); 
@@ -77,11 +107,14 @@ public class PrimaryDatasets extends Resource {
         return representation;
     }
 
+
+
     //AA -- POST
     /** 
      * Handle POST requests: create a new item. (insert primrat datasets)
      */
-    @Override
+
+/*    @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
 
@@ -93,28 +126,17 @@ public class PrimaryDatasets extends Resource {
 		//{"PRIMARY_DS_TYPE":"test","PRIMARY_DS_NAME":"TEST9"}
            	PrimaryDSType PT = new PrimaryDSType(0, json_req.getString("PRIMARY_DS_TYPE"));
 
-		/*  We should put some checks in here
-		String primaryDSName = null;
-                if (!JSONObject.NULL.equals(json_req.getString("PRIMARY_DS_NAME"))) {
-                        primaryDSName =  json_req.getString("PRIMARY_DS_NAME");
-                }*/
             	PrimaryDataset PD = new PrimaryDataset(0, json_req.getString("PRIMARY_DS_NAME"), PT, 0, "");
 
 		DBSApis api = new DBSApis();	
             	api.DBSApiInsertPrimaryDataset((PrimaryDataset)PD);
 
-        }catch (DBSException ex){
-            System.out.println("DBSException raised :" + ex.getMessage() + ". " + ex.getDetail());
-                throw new ResourceException(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage() + ". " + ex.getDetail() );
-            //response.setEntity(ex.getMessage() + ". " + ex.getDetail(), MediaType.TEXT_PLAIN);
         } catch(Exception ex){
-                System.out.println("Exception raised :" + ex );
-                throw new ResourceException(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage() );
+            	System.out.println("Exception raised :" + ex.getMessage() + ". " );
         }
 
-
     }
-
+*/
 
 }
 
