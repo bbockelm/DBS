@@ -1362,6 +1362,7 @@ public class QueryBuilder {
 
 		try {
 			ArrayList sqlObj = (new DBSApiDQLogic(null)).listRunsForRunLumiDQ(null, dsQueryForDQ.toString(), tmpBindValues, dqVal);
+			//System.out.println("Not from here....");
 			if(sqlObj.size() == 2) {
 				dqQuery = (String)sqlObj.get(0);
 				Vector bindVals = (Vector)sqlObj.get(1);
@@ -1372,6 +1373,7 @@ public class QueryBuilder {
 				}
 			}
 		} catch (Exception ex) {
+			System.out.println("\n\nEXXXXXX:::::"+ex.toString());
 			bindValues.add((String) "-1");
 			return (" IN ( \n ?  )");
 		}

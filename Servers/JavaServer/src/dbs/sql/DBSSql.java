@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.228 $"
- $Id: DBSSql.java,v 1.228 2009/09/01 16:19:07 afaq Exp $"
+ $Revision: 1.229 $"
+ $Id: DBSSql.java,v 1.229 2009/09/28 18:37:41 yuyi Exp $"
  *
  */
 package dbs.sql;
@@ -679,8 +679,6 @@ public class DBSSql {
 		//System.out.println("key_vals.length::"+key_vals.length);
      		for (int i=0; i!= key_vals.length; ++i) {
 			String[] key_val = key_vals[i].split("=");
-
-			System.out.println("key_:"+key_val[0]);
 
 			if (key_val[0].equals("Dataset")) {
 				//System.out.println("DATASET KEY FOUND and MUST BE IGNORED");
