@@ -1,5 +1,5 @@
 /*i*
- * $Id: DBSServlet.java,v 1.10 2009/11/06 22:34:57 afaq Exp $
+ * $Id: DBSServlet.java,v 1.11 2009/11/09 21:15:13 afaq Exp $
  *
  **/
 package cms.dbs.servlets;
@@ -18,6 +18,7 @@ import cms.dbs.apis.PingDBS;
 import cms.dbs.apis.PrimaryDatasets;
 import cms.dbs.apis.Datasets;
 import cms.dbs.apis.Blocks;
+import cms.dbs.apis.Files;
 
 /**
 * servlet config is described in etc/web.xml.
@@ -79,7 +80,7 @@ public class DBSServlet extends Application {
 			router.attach("/blocks", Blocks.class);
 
 			// Define route to Files
-			//router.attach("/files", Files.class);
+			router.attach("/files", Files.class);
 
 
 			/** Already obsoltete scheme
