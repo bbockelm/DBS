@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $
- $Id: DBSSrvcUtil.java,v 1.2 2009/09/21 15:04:39 yuyi Exp $
+ $Revision: 1.3 $
+ $Id: DBSSrvcUtil.java,v 1.3 2009/10/15 12:35:09 yuyi Exp $
  * Contains general utility static methods
 */
 
@@ -30,6 +30,7 @@ import cms.dbs.commons.exceptions.DBSException;
 import java.security.*;
 import java.math.*;
 
+import java.util.HashMap;
 
 public class DBSSrvcUtil {
 
@@ -79,4 +80,25 @@ public class DBSSrvcUtil {
 		return String.valueOf(new BigInteger(1,m.digest()).toString(16));
       		//System.out.println("MD5: "+new BigInteger(1,m.digest()).toString(16));
    	}
+
+	//A simple method that splits the URL parameters into a HashMap
+	//http://........./DBSServlet/blocks?block=/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW#f99b4c09-a68f-4e73-8f4c-560c1fa922fc:xyz=test
+	//returned as { block=/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW#f99b4c09-a68f-4e73-8f4c-560c1fa922fc, xyz=test }
+        public static java.util.HashMap getUrlParams(String req) {
+                java.util.HashMap hm = new java.util.HashMap();
+		if ( req.indexOf("?") != -1 ) {
+			String[] urlParams = req.split("\\?");
+			if (urlParams.length > 0 ) {
+				String input=urlParams[1].replace('?', ' ');
+                        	String[] key_vals = input.split(":");
+                        	for (int i = 0; i < key_vals.length; i++) {
+                                	String[] key_val=key_vals[i].split("=");
+                                	hm.put(key_val[0], key_val[1]);
+                        	}
+			}
+		}
+
+                return hm;
+        }
+
 }

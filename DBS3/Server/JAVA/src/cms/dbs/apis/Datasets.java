@@ -1,5 +1,5 @@
 /***
- * $Id: Datasets.java,v 1.4 2009/11/05 19:44:31 afaq Exp $
+ * $Id: Datasets.java,v 1.5 2009/11/06 22:34:57 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -33,23 +33,21 @@ import cms.dbs.apis.DBSApis;
 import cms.dbs.commons.exceptions.DBSException;
 import org.restlet.data.Status;
 
+import cms.dbs.commons.utils.DBSSrvcUtil;
 
 public class Datasets extends Resource {
 
     String dataset;
-    String primary;
-    String proc;
-    String tier;
 
     public Datasets(Context context, Request request, Response response) {
 	
         super(context, request, response);
 
-	this.primary= (String)request.getAttributes().get("PRIMARY_DATASET_NAME");
-	this.proc= (String)request.getAttributes().get("PROCESSED_DATASET_NAME");
-	this.tier= (String)request.getAttributes().get("DATA_TIER");
+        String req=(String) request.getResourceRef().toString();
+        java.util.HashMap kvalues = DBSSrvcUtil.getUrlParams(req);
+        this.dataset = (String)kvalues.get("dataset");
+
 	//FIXME: We should check if comple path is provided here or NOT
-	this.dataset = "/"+this.primary+"/"+this.proc+"/"+this.tier;
 
          // Allow modifications of this resource via POST/PUT/DELETE requests.  
          setModifiable(true);
@@ -61,10 +59,8 @@ public class Datasets extends Resource {
 
     }
 
-    //GET  http://.../Datasets/
-    //--NOT YET :: GET  http://.../Datasets/{PRIMARY_DATASET_NAME}
-    //--NOT YET :: GET  http://.../Datasets/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}
-    //GET  http://.../Datasets/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}/{DATA_TIER}
+    //GET  http://.../datasets
+    //GET  http://.../datasets?dataset=/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}/{DATA_TIER}
     /** 
      * Returns a full representation for a given variant. 
      */

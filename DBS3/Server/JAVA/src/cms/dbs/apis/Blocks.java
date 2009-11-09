@@ -1,5 +1,5 @@
 /***
- * $Id: Blocks.java,v 1.1 2009/11/06 22:34:57 afaq Exp $
+ * $Id: Blocks.java,v 1.2 2009/11/06 22:39:51 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -23,44 +23,21 @@ import org.restlet.data.Status;
 
 import cms.dbs.dataobjs.Block;
 
+import cms.dbs.commons.utils.DBSSrvcUtil;
+
 public class Blocks extends Resource {
 
     String blockName;
-    String dataset;
-    String primary;
-    String proc;
-    String tier;
 
     public Blocks(Context context, Request request, Response response) {
-	
+
         super(context, request, response);
 
-        this.primary= (String)request.getAttributes().get("PRIMARY_DATASET_NAME");
-        this.proc= (String)request.getAttributes().get("PROCESSED_DATASET_NAME");
-	String tier_guid = (String)request.getAttributes().get("DATA_TIER_GUID"); //gives on tier
-	String guid = request.getResourceRef().toString().split("#")[1];
-	this.blockName = "/"+this.primary+"/"+this.proc+"/"+tier_guid+"#"+guid;
+        String req=(String) request.getResourceRef().toString();
+        java.util.HashMap kvalues = DBSSrvcUtil.getUrlParams(req);	
+	this.blockName = (String)kvalues.get("block");
 
-	System.out.println("this.blockName:::"+this.blockName);
-	
-	System.out.println("getResourceRef():::::"+request.getResourceRef());
-	System.out.println("getRootRef:::::"+request.getRootRef());
-	System.out.println("getMethod:::::"+request.getMethod());
-
-/*
- 	System.out.prinln("Resource URI  : " + request.getReference() + '\n' + "Root URI      : "  
-             + request.getRootRef() + '\n' + "Routed part   : "  
-             + request.getReference().getBaseRef() + '\n' + "Remaining part: "  
-             + request.getReference().getRemainingPart()
-		);
-
-*/
-
-	//String[] tier_guid = ((String)request.getAttributes().get("DATA_TIER_GUID")).split("#");
-        //this.tier=tier_guid[0];
-        //this.dataset = "/"+this.primary+"/"+this.proc+"/"+this.tier;
-	//this.blockName = this.dataset + "#" + tier_guid[1];
-        //FIXME: We should check if comple path is provided here or NOT
+        //FIXME: We should check if complete path is provided here or NOT
 
          // Allow modifications of this resource via POST/PUT/DELETE requests.  
          setModifiable(true);
@@ -78,8 +55,6 @@ public class Blocks extends Resource {
     public Representation represent(Variant variant) throws ResourceException {
 
         Representation representation = null;
-
-
 
         try {
                 DBSApis api = new DBSApis();

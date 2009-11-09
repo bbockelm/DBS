@@ -1,5 +1,5 @@
 /*i*
- * $Id: DBSServlet.java,v 1.9 2009/11/05 19:44:31 afaq Exp $
+ * $Id: DBSServlet.java,v 1.10 2009/11/06 22:34:57 afaq Exp $
  *
  **/
 package cms.dbs.servlets;
@@ -68,6 +68,21 @@ public class DBSServlet extends Application {
 
 			// Define a Default page for DBS, just a PING at the moment, we can return server status information
 			router.attachDefault(PingDBS.class);
+
+			// Define route to PrimaryDatasets
+			router.attach("/primarydatasets", PrimaryDatasets.class);
+
+			// Define route to Datasets
+			router.attach("/datasets", Datasets.class);
+			
+			// Define route to Blocks
+			router.attach("/blocks", Blocks.class);
+
+			// Define route to Files
+			//router.attach("/files", Files.class);
+
+
+			/** Already obsoltete scheme
 		        // Define route to PrimaryDatasets
         		router.attach("/PrimaryDatasets/", PrimaryDatasets.class);
 		        // Define route to PrimaryDatasets, with name specified (in this case its going to same class
@@ -84,7 +99,7 @@ public class DBSServlet extends Application {
 			router.attach("/Blocks/", Blocks.class);
 			//DATA_TIER_GUID in this case will contain DATA_TIER#GUID part of Block name
 			router.attach("/Blocks/{PRIMARY_DATASET_NAME}/{PROCESSED_DATASET_NAME}/{DATA_TIER_GUID}", Blocks.class);
-
+			**/
 			System.out.println("DBS READY");
 
     		} catch(Exception e) {

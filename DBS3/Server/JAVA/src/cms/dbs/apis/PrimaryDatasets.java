@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasets.java,v 1.5 2009/11/05 19:44:31 afaq Exp $
+ * $Id: PrimaryDatasets.java,v 1.6 2009/11/06 22:34:57 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -24,6 +24,8 @@ import cms.dbs.apis.DBSApis;
 import cms.dbs.commons.exceptions.DBSException;
 import org.restlet.data.Status;
 
+import cms.dbs.commons.utils.DBSSrvcUtil;
+
 public class PrimaryDatasets extends Resource {
 
     String primaryDatasetName;
@@ -32,7 +34,9 @@ public class PrimaryDatasets extends Resource {
 	
         super(context, request, response);
 
-	this.primaryDatasetName = (String)request.getAttributes().get("PRIMARY_DATASET_NAME");
+	String req=(String) request.getResourceRef().toString();
+	java.util.HashMap kvalues = DBSSrvcUtil.getUrlParams(req);
+	this.primaryDatasetName = (String)kvalues.get("primarydataset");
 
          // Allow modifications of this resource via POST/PUT/DELETE requests.  
          setModifiable(true);
@@ -41,8 +45,8 @@ public class PrimaryDatasets extends Resource {
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
-    //GET  http://.../PrimaryDatasets/
-    //GET  http://.../PrimaryDatasets/{PRIMARY_DS_NAME}
+    //GET  http://.../primarydatasets/
+    //GET  http://.../primarydatasets?primarydataset={PRIMARY_DS_NAME}
     /** 
      * Returns a full representation for a given variant. 
      */
