@@ -1,5 +1,5 @@
 /***
- * $Id: Datasets.java,v 1.6 2009/11/09 21:15:13 afaq Exp $
+ * $Id: Files.java,v 1.1 2009/11/09 21:54:14 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -16,8 +16,14 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import cms.dbs.dataobjs.File;
+import cms.dbs.dataobjs.Dataset;
+import cms.dbs.dataobjs.Block;
+import cms.dbs.dataobjs.FileLumi;
+import cms.dbs.dataobjs.FileParent;
+import cms.dbs.dataobjs.FileType;
 
 import cms.dbs.apis.DBSApis;
 
@@ -96,6 +102,74 @@ public class Files extends Resource {
         return representation;
     }
 
+
+
+    //AA -- POST
+    /** 
+     * Handle POST requests: create a new item. (insert primrat datasets)
+     */
+    @Override
+    public void acceptRepresentation(Representation entity)
+            throws ResourceException {
+
+        try{
+
+		DBSApis api = new DBSApis();
+
+                //Seems like you can only read ONCE from the entity (is it a stream?)
+                JSONObject json_req = new JSONObject(entity.getText());
+                System.out.println("json_req:::"+json_req);
+                /*  We should put some checks in here
+                String primaryDSName = null;
+                if (!JSONObject.NULL.equals(json_req.getString("PRIMARY_DS_NAME"))) {
+                        primaryDSName =  json_req.getString("PRIMARY_DS_NAME");
+                }*/
+
+            	//
+		JSONArray inputFiles = json_req.getJSONArray("files");
+		for(int i=0; i != inputFiles.length(); ++i ) {
+			JSONObject inFile = inputFiles.optJSONObject(i);
+			System.out.println("File Name: "+inFile.getString("LOGICAL_FILE_NAME"));
+			File currfile =  new File (0, inFile.getString("LOGICAL_FILE_NAME"), inFile.getInt("IS_FILE_VALID"), new Dataset(0, inFile.getString("DATASET")),
+						new Block(0, inFile.getString("BLOCK")), new FileType(1, "EDM"), inFile.getString("CHECK_SUM"), inFile.getInt("EVENT_COUNT"),
+						  inFile.getInt("FILE_SIZE"), null, inFile.getString("ADLER32"), inFile.getString("MD5"), inFile.getDouble("AUTO_CROSS_SECTION") 
+							,0, "", 0, "");
+
+			//Lets treat the Lumi Sections for this file
+			JSONArray inFileLumis = inFile.getJSONArray("FILE_LUMI_LIST");
+			//New array to hold lumi sections for this file (currfile)
+			JSONArray fls = new JSONArray();
+			for(int j=0; j != inFileLumis.length(); ++j ) {
+				JSONObject inlumi = inFileLumis.optJSONObject(j);
+				System.out.println("		Lumi: " + inlumi.getString("LUMI_SECTION_NUM"));
+				fls.put(new FileLumi(0, inlumi.getInt("RUN_NUM"), inlumi.getInt("LUMI_SECTION_NUM"), currfile)); 
+			}
+
+			//Now lets do similar with the parents
+			JSONArray inFileParents = inFile.getJSONArray("FILE_PARENT_LIST");
+			//New array to hold parents for this file (currfile)
+			JSONArray fps = new JSONArray();
+			for(int k=0; k != inFileParents.length(); ++k ) {
+				JSONObject inParent = inFileParents.optJSONObject(k);
+				System.out.println("            Parent: " + inParent.getString("FILE_PARENT_LFN"));
+				fps.put(new FileParent(0, currfile, new File (0, inParent.getString("FILE_PARENT_LFN"))));
+			}
+
+			api.DBSApiInsertFile(currfile, fps, fls);
+		}
+		
+
+        }catch (DBSException ex){
+            System.out.println("DBSException raised :" + ex.getMessage() + ". " + ex.getDetail());
+                throw new ResourceException(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage() + ". " + ex.getDetail() );
+            //response.setEntity(ex.getMessage() + ". " + ex.getDetail(), MediaType.TEXT_PLAIN);
+
+        } catch(Exception ex){
+                System.out.println("Exception raised :" + ex );
+                throw new ResourceException(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage() );
+        }
+
+    }
 
 }
 
