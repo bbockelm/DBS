@@ -1,5 +1,5 @@
 /***
- * $Id: DBSApis.java,v 1.8 2009/10/20 19:54:51 yuyi Exp $
+ * $Id: DBSApis.java,v 1.9 2009/10/22 15:25:51 yuyi Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
@@ -63,6 +63,11 @@ public class DBSApis {
         return retn;
     }
   
+    public PrimaryDataset DBSApiInsertBlock(Block cd) throws Exception{
+        BlockBO bkBO = new BlockBO();
+        return bkBO.insertBlock(conn, cd);
+    }
+
     public JSONObject DBSApiFindFiles(File file) throws Exception{
         JSONArray result = new JSONArray();
         FileBO fBO = new FileBO();
