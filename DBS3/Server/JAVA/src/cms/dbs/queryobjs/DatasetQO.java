@@ -1,5 +1,5 @@
 /***
- * $Id: DatasetQO.java,v 1.2 2009/10/15 12:39:11 yuyi Exp $
+ * $Id: DatasetQO.java,v 1.3 2009/11/05 19:44:31 afaq Exp $
  *
  * This is the class for dataset query objects.
  * @author Y. Guo
@@ -145,13 +145,15 @@ System.out.println("I am here...");
 
         String sql = "SELECT D.DATASET_ID, D.DATASET, D.IS_DATASET_VALID,D.PRIMARY_DS_ID, D.PROCESSED_DS_ID, D.DATA_TIER_ID, "
 		     +" D.DATASET_TYPE_ID, D.ACQUISITION_ERA_ID, D.PROCESSING_ERA_ID, D.PHYSICS_GROUP_ID, D.XTCROSSSECTION, D.GLOBAL_TAG,"
-		     + "  D.CREATION_DATE, D.CREATE_BY, D.LAST_MODIFICATION_DATE,D.LAST_MODIFIED_BY,  PR.PRIMARY_DS_NAME, "
-		     + "  DT.DATA_TIER_NAME, PS.PROCESSED_DS_NAME, PH.PHYSICS_GROUP_NAME, DP.DATASET_TYPE"
+		     + "  D.CREATION_DATE, D.CREATE_BY, D.LAST_MODIFICATION_DATE,D.LAST_MODIFIED_BY,"  
+		     //+ "  PR.PRIMARY_DS_NAME, "
+		     //+ "  DT.DATA_TIER_NAME, PS.PROCESSED_DS_NAME, "
+		     + " PH.PHYSICS_GROUP_NAME, DP.DATASET_TYPE"
                      + " FROM " + schemaOwner + "DATASETS D " 
-                     + " JOIN " + schemaOwner + "PRIMARY_DATASETS PR ON  PR.PRIMARY_DS_ID = D.PRIMARY_DS_ID "
-		     + " JOIN " + schemaOwner + "DATA_TIERS DT ON DT.DATA_TIER_ID = D.DATA_TIER_ID"
-		     + " JOIN " + schemaOwner + "PROCESSED_DATASETS PS ON PS.PROCESSED_DS_ID = D.PROCESSED_DS_ID "	  
-		     + " JOIN " + schemaOwner + "PHYSICS_GROUPS PH ON PH.PHYSICS_GROUP_ID = D.PHYSICS_GROUP_ID"
+                     //+ " JOIN " + schemaOwner + "PRIMARY_DATASETS PR ON  PR.PRIMARY_DS_ID = D.PRIMARY_DS_ID "
+		     //+ " JOIN " + schemaOwner + "DATA_TIERS DT ON DT.DATA_TIER_ID = D.DATA_TIER_ID"
+		     //+ " JOIN " + schemaOwner + "PROCESSED_DATASETS PS ON PS.PROCESSED_DS_ID = D.PROCESSED_DS_ID "	  
+		     + " LEFT OUT JOIN " + schemaOwner + "PHYSICS_GROUPS PH ON PH.PHYSICS_GROUP_ID = D.PHYSICS_GROUP_ID"
 		     + " JOIN " + schemaOwner + "DATASET_TYPES DP on DP.DATASET_TYPE_ID = D.DATASET_TYPE_ID"
                      + " WHERE ";
 	if(cond.getDatasetID() != 0){ 
@@ -188,18 +190,17 @@ System.out.println("I am here...");
 		String cBy =  rs.getString("CREATE_BY");
 		int lDate = rs.getInt("LAST_MODIFICATION_DATE");
 		String lBy = rs.getString("LAST_MODIFIED_BY");
-		String primaryDSName = rs.getString("PRIMARY_DS_NAME");
-                String dataTiername = rs.getString("DATA_TIER_NAME");
-	        String processedDSName = rs.getString("PROCESSED_DS_NAME");
+		//String primaryDSName = rs.getString("PRIMARY_DS_NAME");
+                //String dataTiername = rs.getString("DATA_TIER_NAME");
+	        //String processedDSName = rs.getString("PROCESSED_DS_NAME");
 		String phGrpName = rs.getString("PHYSICS_GROUP_NAME");
-		String datasetType = rs.getString("DATASET_TYPE");	
-            
+		String datasetType = rs.getString("DATASET_TYPE");
 		System.out.println("DATSET: "+ dataset );
-    
-		this.result.put(new Dataset(setID, dataset, isDatasetValid, new PrimaryDataset(primaryDSID, primaryDSName ), 
-                                new ProcessedDataset(processedDSID, processedDSName), new DataTier(dataTierID, dataTiername),
-				new DatasetType(datasetTypeID, datasetType), null, null, new PhysicsGroup(phygrpID, phGrpName),
-			        xtcr, gTag, cDate, cBy, lDate, lBy));	
+		this.result.put(new Dataset(setID, dataset, isDatasetValid, new PrimaryDataset(primaryDSID,
+		"primaryDSName" ), new ProcessedDataset(processedDSID, "processedDSName"), 
+		 new DataTier(dataTierID, "dataTiername"),
+		 new DatasetType(datasetTypeID, datasetType), null, null, new PhysicsGroup(phygrpID, phGrpName),
+	         xtcr, gTag, cDate, cBy, lDate, lBy));	
 	    }
         }finally {
                 if (rs != null) rs.close();
