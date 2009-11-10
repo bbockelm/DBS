@@ -1,5 +1,5 @@
 /***
- * $Id: BlockQO.java,v 1.1 2009/10/19 15:05:17 yuyi Exp $
+ * $Id: BlockQO.java,v 1.2 2009/10/22 15:30:42 yuyi Exp $
  *
  * This is the class for Block query objects.
  * @author Y. Guo
@@ -32,22 +32,19 @@ public class BlockQO extends  DBSSimpleQueryObject{
             super();
     }
     //insert a Block into DB. Will do it later.
-    /*
-    public int putFile(Connection conn, File cond) throws Exception{
+    
+    public int putBlock(Connection conn, Block cond) throws Exception{
 	//System.out.println(cond);
-	//Check for LFN
-	String LFN = cond.getLogicalFileName ( );
-	if(LFN == null || LFN=="") throw new DBSException("Input Data Error", "LogicalFileName is expected.");
-	//Check is_file_valid
-	int fileValid = cond.getIsFileValid( );
-        if(fileValid == -1) throw new DBSException("Input Data Error", "Validation of File is expected.");
+	//Check for existence of dataset and get dataset ID
+	String block = cond.getBlockName ( );
+	if(block == null || block == "") throw new DBSException("Input Data Error", "block name is expected.");
 	//Check if Datset already in db
 	Dataset ds = cond.getDatasetDO();
 	//System.out.println(ds);
-	if(ds == null)throw new DBSException("Input Data Error", "Dataset is expected.");
+	if(ds == null) throw new DBSException("Input Data Error", "Dataset is expected.");
 	if(ds.getDatasetID( ) == 0){
 	    String dsName = ds.getDataset();
-	    if(dsName == null || dsName="")throw new DBSException("Input Data Error", "Dataset name is missing");
+	    if(dsName == null || dsName=="")throw new DBSException("Input Data Error", "Dataset name is missing");
 	    JSONArray dss = (new DatasetQO()).listDatasets(conn,  ds);
 	    if(dss.length() != 1)
 		throw new DBSException("Input Data Error", "dataset name :" + dsName 
@@ -57,67 +54,17 @@ public class BlockQO extends  DBSSimpleQueryObject{
 		//ds.setDataset(((Dataset)dss.getJSONObject(0)).getDataset());
 	    }
 	}
-        //System.out.println(cond);
-	//System.out.println("check if the Block already in the db, if not insert it\n");
-	Block bk  = cond.getBlockDO();
-	if(bk == null) throw new DBSException("Input Data Error", "Block is expected.");
-	if(bk.getBlockID() == 0){
-	    String bkName = bk.getBlockName();
-	    if(bkName == null || bkName == "")throw new DBSException("Input Data Error", "Block name is missing");
-	    JSONArray bks = (new BlockQO()).listBlocks(conn,  bk);
-	    if(bks.length() != 1 )
-		throw new DBSException("Input Data Error", "More than one or no Blocks  are found in the db with name: "
-		 + bkName);
-	    else {
-		bk.setBlockID(((Block)bks.getJSONObject(0)).getBlockID());
-		//System.out.println("Block : " + bk);
-	    }
-	}
-	//
-	//System.out.println("Check for file_type");
-	FileType ft = cond.getFileTypeDO();
-        if(ft == null)throw new DBSException("Input Data Error", "File type is expected.");
-        if(ft.getFileTypeID( ) == 0){
-            String ftName = dataTier.getFileType();
-            if(ftName == null || ftName == "")throw new DBSException("Input Data Error", "File type is missing");
-            JSONArray fts = (new FileTypeQO()).listFileType(conn,  ft);
-            if(fts.length() != 1)
-                throw new DBSException("Input Data Error", "File type :" + ftName
-                +" is not found or more than one found in the db.");
-            else
-                ft.setFileTypeID(((FileType)fts.getJSONObject(0)).getFileTypeID());
-        }
-	//System.out.println("File type: " + ft);
-	//check for Primary key
-	int fileID = cond.getFileID ( );
-	if(fileID == 0){
-	    try{
-		fileID = SequenceManager.getSequence(conn, "SEQ_FL");
-		cond. setFileID(FileID);
-	    }catch (SQLException ex) {
-		throw ex;
-	    }
-	}
-	//
-	//System.out.println("Check for check-sum");
-	String cs = cond.getCheckSum();
-        if(cs == null || cs == "")throw new DBSException("Input Data Error", "File check-sum is expected.");
-	//check for event_count
-	if (cond.getEventCount() == -1) throw new DBSException("Input Data Error", "File event count is expected.");
-	//check for file size
-	if(cond.getFileSize() == -1) throw new DBSException("Input Data Error", "File size is expected.");
-	//System.out.println("Check for creation_date and created_by. \n");
+
 	long createDate = cond.getCreationDate( );
 	String createdBy = cond.getCreateBy( );
-	if(createDate == 0)cond.setCreationDate(DBSSrvcUtil.getEpoch());
+	if(createDate == 0)cond.setCreationDate((int)DBSSrvcUtil.getEpoch());
         if(createdBy == null || createdBy=="")cond.setCreateBy("WeNeed2FindWhoDidIt");
 	 	
 	//Now we are ready to insert into the dataset
 	//System.out.println(cond);
-	insertTable(conn, cond, "FILES");
-	return (cond.getFileID());
+	insertTable(conn, cond, "BLOCKS");
+	return (cond.getBlockID());
    }
-*/
     //list only the Blocks that satisfied the condition.
     public JSONArray listBlocks(Connection conn, Block cond) throws Exception{
         JSONArray myResult = new JSONArray();
