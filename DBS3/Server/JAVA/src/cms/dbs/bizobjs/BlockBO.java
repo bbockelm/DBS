@@ -1,5 +1,5 @@
 /***
- * $Id:$
+ * $Id: BlockBO.java,v 1.1 2009/10/20 16:28:52 yuyi Exp $
  *
  * This is the class for Block business objects.
  * @author Y. Guo  Oct-20-09
@@ -26,12 +26,11 @@ public class BlockBO extends DBSBusinessObject{
 	return bk.listBlocks(conn, cond);
 	
     }
-/**
+
    public void insertBlock(Connection conn, Block cond) throws Exception{
 	BlockQO bk = new BlockQO();
 	bk.putBlock(conn, cond);
 	conn.commit(); 
    }
-**/   
 
 }
