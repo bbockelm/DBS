@@ -1,5 +1,5 @@
 /***
- * $Id$
+ * $Id: DatasetBO.java,v 1.1 2009/10/15 12:33:44 yuyi Exp $
  *
  * This is the class for dataset business objects.
  * @author Y. Guo  Oct-13-09
@@ -17,6 +17,7 @@ import cms.dbs.dataobjs.PrimaryDSType;
 import cms.dbs.queryobjs.PrimaryDatasetQO;
 import cms.dbs.dataobjs.Dataset;
 import cms.dbs.queryobjs.DatasetQO;
+import cms.dbs.commons.utils.DBSSrvcUtil;
 
 public class DatasetBO extends DBSBusinessObject{
     
@@ -30,11 +31,16 @@ public class DatasetBO extends DBSBusinessObject{
 	
     }
 
-   public int insertDataset(Connection conn, Dataset cond) throws Exception{
+   public void insertDataset(Connection conn, Dataset cond) throws Exception{
 	DatasetQO dataset = new  DatasetQO();
-	int id = dataset.putDataset(conn, cond);
+	try {
+		dataset.putDataset(conn, cond);
+	  }catch (SQLException ex) {
+            String exmsg = ex.getMessage();
+            if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+            else DBSSrvcUtil.writeLog( cond + " Already Exists");
+        }
 	conn.commit(); 
-	return id;
    }
 
 }

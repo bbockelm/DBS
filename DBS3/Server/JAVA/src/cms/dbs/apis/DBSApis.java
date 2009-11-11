@@ -1,5 +1,5 @@
 /***
- * $Id: DBSApis.java,v 1.11 2009/11/10 20:15:40 afaq Exp $
+ * $Id: DBSApis.java,v 1.12 2009/11/11 21:22:16 afaq Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
@@ -125,7 +125,8 @@ public class DBSApis {
 
     public int DBSApiInsertDataset(Dataset cd) throws Exception{
         DatasetBO dBO = new DatasetBO();
-        return dBO.insertDataset(conn, cd);
+        dBO.insertDataset(conn, cd);
+	return 1;
     }
 
     public JSONObject DBSApiFindPrimaryDatasets( PrimaryDataset cd) throws Exception{

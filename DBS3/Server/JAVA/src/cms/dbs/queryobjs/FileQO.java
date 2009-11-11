@@ -1,5 +1,5 @@
 /***
- * $Id: FileQO.java,v 1.4 2009/10/22 15:30:42 yuyi Exp $
+ * $Id: FileQO.java,v 1.5 2009/11/11 21:22:17 afaq Exp $
  *
  * This is the class for File query objects.
  * @author Y. Guo
@@ -34,7 +34,7 @@ public class FileQO extends  DBSSimpleQueryObject{
             super();
     }
     //insert a dataset into DB
-    public int putFile(Connection conn, File cond) throws Exception{
+    public void putFile(Connection conn, File cond) throws Exception{
 	//System.out.println(cond);
 	//Check for LFN
 	String LFN = cond.getLogicalFileName ( );
@@ -116,7 +116,6 @@ public class FileQO extends  DBSSimpleQueryObject{
 	//Now we are ready to insert into the dataset
 	System.out.println("Ready to insert file :" + cond);
 	insertTable(conn, cond, "FILES");
-	return (cond.getFileID());
    }
 
     //list only the Files that satisfied the condition.

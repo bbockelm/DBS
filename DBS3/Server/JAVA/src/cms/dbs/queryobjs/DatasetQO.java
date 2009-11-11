@@ -1,5 +1,5 @@
 /***
- * $Id: DatasetQO.java,v 1.3 2009/11/05 19:44:31 afaq Exp $
+ * $Id: DatasetQO.java,v 1.4 2009/11/10 18:17:55 yuyi Exp $
  *
  * This is the class for dataset query objects.
  * @author Y. Guo
@@ -29,7 +29,7 @@ public class DatasetQO extends  DBSSimpleQueryObject{
             super();
     }
     //insert a dataset into DB
-    public int putDataset(Connection conn, Dataset cond) throws Exception{
+    public void putDataset(Connection conn, Dataset cond) throws Exception{
 	//System.out.println(cond);
 	//Check for dataset path
 	String path = cond.getDataset();
@@ -131,7 +131,6 @@ public class DatasetQO extends  DBSSimpleQueryObject{
 	//Now we are ready to insert into the dataset
 	//System.out.println(cond);
 	insertTable(conn, cond, "DATASETS");
-	return (cond.getDatasetID());
    }
 
     //list only the dataset that satisfied the condition.
@@ -153,7 +152,7 @@ System.out.println("I am here...");
                      //+ " JOIN " + schemaOwner + "PRIMARY_DATASETS PR ON  PR.PRIMARY_DS_ID = D.PRIMARY_DS_ID "
 		     //+ " JOIN " + schemaOwner + "DATA_TIERS DT ON DT.DATA_TIER_ID = D.DATA_TIER_ID"
 		     //+ " JOIN " + schemaOwner + "PROCESSED_DATASETS PS ON PS.PROCESSED_DS_ID = D.PROCESSED_DS_ID "	  
-		     + " LEFT OUT JOIN " + schemaOwner + "PHYSICS_GROUPS PH ON PH.PHYSICS_GROUP_ID = D.PHYSICS_GROUP_ID"
+		     + " LEFT OUTER JOIN " + schemaOwner + "PHYSICS_GROUPS PH ON PH.PHYSICS_GROUP_ID = D.PHYSICS_GROUP_ID"
 		     + " JOIN " + schemaOwner + "DATASET_TYPES DP on DP.DATASET_TYPE_ID = D.DATASET_TYPE_ID"
                      + " WHERE ";
 	if(cond.getDatasetID() != 0){ 

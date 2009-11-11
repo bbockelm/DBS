@@ -1,5 +1,5 @@
 /***
- * $Id: BlockBO.java,v 1.1 2009/10/20 16:28:52 yuyi Exp $
+ * $Id: BlockBO.java,v 1.2 2009/11/10 19:59:26 afaq Exp $
  *
  * This is the class for Block business objects.
  * @author Y. Guo  Oct-20-09
@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import cms.dbs.dataobjs.Block;
 import cms.dbs.queryobjs.BlockQO;
+import cms.dbs.commons.utils.DBSSrvcUtil;
 
 public class BlockBO extends DBSBusinessObject{
     
@@ -29,8 +30,14 @@ public class BlockBO extends DBSBusinessObject{
 
    public void insertBlock(Connection conn, Block cond) throws Exception{
 	BlockQO bk = new BlockQO();
-	bk.putBlock(conn, cond);
-	conn.commit(); 
+	try {
+		bk.putBlock(conn, cond);
+	}catch (SQLException ex) { 
+            String exmsg = ex.getMessage();
+            if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+            else DBSSrvcUtil.writeLog( cond + " Already Exists");
+        }	 
+	conn.commit();
    }
 
 }

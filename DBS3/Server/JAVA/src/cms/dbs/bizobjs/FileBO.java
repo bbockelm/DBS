@@ -1,5 +1,5 @@
 /***
- * $Id: FileBO.java,v 1.3 2009/10/22 15:27:06 yuyi Exp $
+ * $Id: FileBO.java,v 1.4 2009/11/11 21:22:17 afaq Exp $
  *
  * This is the class for File business objects.
  * @author Y. Guo  Oct-20-09
@@ -23,6 +23,7 @@ import cms.dbs.queryobjs.FileLumiQO;
 import cms.dbs.queryobjs.FileQO;
 import cms.dbs.queryobjs.BlockQO;
 import cms.dbs.queryobjs.FileParentQO;
+import cms.dbs.commons.utils.DBSSrvcUtil;
 
 public class FileBO extends DBSBusinessObject{
     
@@ -44,7 +45,22 @@ public class FileBO extends DBSBusinessObject{
 
     public void insertFile(Connection conn, File cond, JSONArray fps, JSONArray fls) throws Exception{
 	FileQO fileQO = new  FileQO();
-	fileQO.putFile(conn, cond);
+	try {
+		fileQO.putFile(conn, cond);
+        
+	}catch (SQLException ex) {
+        	String exmsg = ex.getMessage();
+            	if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+            	else {
+			System.out.println("Reset file ID and re-fetch File from database");
+			//Reset file ID and re-fetch File from database
+			cond.setFileID(0);
+			JSONArray allfiles = fileQO.listFiles(conn, cond);
+			if(allfiles.length() != 1 ) throw new DBSException("Input Data Error", "One file should have been found in database:"+cond);
+			cond.setFileID(((File)allfiles.getJSONObject(0)).getFileID());
+		}
+        }
+
 	FileParentQO fileParentQO = new FileParentQO(); 
 	//
 
