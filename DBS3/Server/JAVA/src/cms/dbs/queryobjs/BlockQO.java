@@ -1,5 +1,5 @@
 /***
- * $Id: BlockQO.java,v 1.2 2009/10/22 15:30:42 yuyi Exp $
+ * $Id: BlockQO.java,v 1.3 2009/11/10 20:15:40 afaq Exp $
  *
  * This is the class for Block query objects.
  * @author Y. Guo
@@ -33,13 +33,16 @@ public class BlockQO extends  DBSSimpleQueryObject{
     }
     //insert a Block into DB. Will do it later.
     
-    public int putBlock(Connection conn, Block cond) throws Exception{
+    public void putBlock(Connection conn, Block cond) throws Exception{
 	//System.out.println(cond);
 	//Check for existence of dataset and get dataset ID
 	String block = cond.getBlockName ( );
 	if(block == null || block == "") throw new DBSException("Input Data Error", "block name is expected.");
+	String[] get_path = block.split("#");
+	String path=get_path[0];
+	System.out.println("PATH:::::::::"+path);
 	//Check if Datset already in db
-	Dataset ds = cond.getDatasetDO();
+	Dataset ds = new Dataset(0, path);
 	//System.out.println(ds);
 	if(ds == null) throw new DBSException("Input Data Error", "Dataset is expected.");
 	if(ds.getDatasetID( ) == 0){
@@ -55,15 +58,28 @@ public class BlockQO extends  DBSSimpleQueryObject{
 	    }
 	}
 
-	long createDate = cond.getCreationDate( );
-	String createdBy = cond.getCreateBy( );
-	if(createDate == 0)cond.setCreationDate((int)DBSSrvcUtil.getEpoch());
+	//Set this dataset as the dataset for this block
+	cond.setDatasetID(ds);
+
+	//check for Primary key
+        int blockID = cond.getBlockID ( );
+        if(blockID == 0){
+            try{
+                blockID = SequenceManager.getSequence(conn, "SEQ_BK");
+                cond. setBlockID(blockID);
+            }catch (SQLException ex) {
+                throw ex;
+            }
+        }
+ 
+        long createDate = cond.getCreationDate( );
+        String createdBy = cond.getCreateBy( );
+        if(createDate == 0) cond.setCreationDate((int)DBSSrvcUtil.getEpoch());
         if(createdBy == null || createdBy=="")cond.setCreateBy("WeNeed2FindWhoDidIt");
-	 	
+	
 	//Now we are ready to insert into the dataset
 	//System.out.println(cond);
 	insertTable(conn, cond, "BLOCKS");
-	return (cond.getBlockID());
    }
     //list only the Blocks that satisfied the condition.
     public JSONArray listBlocks(Connection conn, Block cond) throws Exception{

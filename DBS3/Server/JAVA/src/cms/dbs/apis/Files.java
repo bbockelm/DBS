@@ -1,5 +1,5 @@
 /***
- * $Id: Files.java,v 1.1 2009/11/09 21:54:14 afaq Exp $
+ * $Id: Files.java,v 1.2 2009/11/10 19:47:59 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -118,7 +118,7 @@ public class Files extends Resource {
 
                 //Seems like you can only read ONCE from the entity (is it a stream?)
                 JSONObject json_req = new JSONObject(entity.getText());
-                System.out.println("json_req:::"+json_req);
+                //System.out.println("json_req:::"+json_req);
                 /*  We should put some checks in here
                 String primaryDSName = null;
                 if (!JSONObject.NULL.equals(json_req.getString("PRIMARY_DS_NAME"))) {

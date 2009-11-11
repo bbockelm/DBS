@@ -1,5 +1,5 @@
 /***
- * $Id: Blocks.java,v 1.2 2009/11/06 22:39:51 afaq Exp $
+ * $Id: Blocks.java,v 1.3 2009/11/09 21:15:12 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -83,14 +83,12 @@ public class Blocks extends Resource {
         return representation;
     }
 
-
-
     //AA -- POST
     /** 
      * Handle POST requests: create a new item. (insert primrat datasets)
      */
 
-/*    @Override
+    @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
 
@@ -98,22 +96,17 @@ public class Blocks extends Resource {
 		//Seems like you can only read ONCE from the entity (is it a stream?)
                 JSONObject json_req = new JSONObject(entity.getText());
 		System.out.println("json_req:::"+json_req);
-		//Incoming object has BOTH type and name of Primary dataset, 
-		//{"PRIMARY_DS_TYPE":"test","PRIMARY_DS_NAME":"TEST9"}
-           	PrimaryDSType PT = new PrimaryDSType(0, json_req.getString("PRIMARY_DS_TYPE"));
 
-            	PrimaryDataset PD = new PrimaryDataset(0, json_req.getString("PRIMARY_DS_NAME"), PT, 0, "");
+		Block bki = new Block(0, json_req.getString("BLOCK_NAME"));
+                bki.setCreateBy("web-client");
+                bki.setCreationDate(0);
 
 		DBSApis api = new DBSApis();	
-            	api.DBSApiInsertPrimaryDataset((PrimaryDataset)PD);
+            	api.DBSApiInsertBlock(bki);
 
         } catch(Exception ex){
             	System.out.println("Exception raised :" + ex.getMessage() + ". " );
         }
-
     }
-*/
-
 }
-
 

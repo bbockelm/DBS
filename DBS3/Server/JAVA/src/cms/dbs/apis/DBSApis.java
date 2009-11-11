@@ -1,5 +1,5 @@
 /***
- * $Id: DBSApis.java,v 1.10 2009/11/10 19:58:13 afaq Exp $
+ * $Id: DBSApis.java,v 1.11 2009/11/10 20:15:40 afaq Exp $
  * DBS Server side APIs .
  * @author Y. Guo
  ***/
@@ -173,6 +173,11 @@ public class DBSApis {
 				null, new PhysicsGroup(6, "QCD"), 0.01, "Yuyi's Tag", 0, "");
 	    System.out.println(api.DBSApiInsertDataset(ds));
 	    //
+	    System.out.println("\n *** Test Insert Block API ***");
+	    Block bki = new Block(0, "/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW#f99b4c09-a68f-4e73-8f4c-560c1fa922fc");
+	    api.DBSApiInsertBlock(bki);
+	    
+	    //
 	    System.out.println("\n *** Test list Block API ***");
 	    Block bk = new Block(0, "/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW#d%");
 	    System.out.println(api.DBSApiFindBlocks(bk));
@@ -187,7 +192,7 @@ public class DBSApis {
 	    files.put(new File(0,"/store/mc/Summer09/TTbar/GEN-SIM-RAW/MC_31X_V3-v1/0025/6C405563-6988-DE11-A300-003048C56E54.root"));
 	    files.put(new File(0,"/store/mc/Summer09/TTbar/GEN-SIM-RAW/MC_31X_V3-v1/0025/DC63A151-AA88-DE11-B146-00163691DD05.root"));
 	    System.out.println(api.DBSApiFindFiles(files));
-	    //
+	    	    //
 	    System.out.println("\n *** Test Insert File API ***");
 	    File f1 = new File(0, "Yuyi-Test-17.root", 1, new Dataset(0, "/TTbar/YUYI-TEST6/GEN-SIM-RAW"), 
 			    new Block(0, "/TTbar/Summer09-MC_31X_V3-v1/GEN-SIM-RAW#f99b4c09-a68f-4e73-8f4c-560c1fa922fc"),

@@ -1,5 +1,5 @@
 /***
- * $Id: DBSSimpleQueryObject.java,v 1.7 2009/10/22 15:30:42 yuyi Exp $
+ * $Id: DBSSimpleQueryObject.java,v 1.8 2009/11/05 19:44:31 afaq Exp $
  *
  * This is the super class for simple query objects. All other simple query object will inherent from this class.
  * The insert, update, select, delete and bulk insert funtions will needed to be implemented in the sub classes.
@@ -130,7 +130,7 @@ public class DBSSimpleQueryObject{
 		}
 		ps.addBatch();
 	    }
-            //System.out.println(ps.toString());
+            System.out.println(ps.toString());
             ps.executeBatch();
         }catch (SQLException ex) {
             String exmsg = ex.getMessage();
@@ -197,8 +197,10 @@ public class DBSSimpleQueryObject{
             ps.execute();
         }catch (SQLException ex) {
             String exmsg = ex.getMessage();
-            if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
-            else DBSSrvcUtil.writeLog( cond + " Already Exists");
+		System.out.println("SQLException:::::"+exmsg);
+		throw ex;
+            //if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+            //else DBSSrvcUtil.writeLog( cond + " Already Exists");
         } finally {
             if (ps != null) ps.close();
         }

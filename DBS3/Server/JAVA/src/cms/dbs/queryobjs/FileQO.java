@@ -1,5 +1,5 @@
 /***
- * $Id: FileQO.java,v 1.3 2009/10/20 19:57:35 yuyi Exp $
+ * $Id: FileQO.java,v 1.4 2009/10/22 15:30:42 yuyi Exp $
  *
  * This is the class for File query objects.
  * @author Y. Guo
@@ -70,11 +70,11 @@ public class FileQO extends  DBSSimpleQueryObject{
 		 + bkName);
 	    else {
 		bk.setBlockID(((Block)bks.getJSONObject(0)).getBlockID());
-		//System.out.println("Block : " + bk);
+		System.out.println("Block : " + bk);
 	    }
 	}
 	//
-	//System.out.println("Check for file_type");
+	System.out.println("Check for file_type");
 	FileType ft = cond.getFileTypeDO();
         if(ft == null)throw new DBSException("Input Data Error", "File type is expected.");
         if(ft.getFileTypeID( ) == 0){
@@ -87,7 +87,7 @@ public class FileQO extends  DBSSimpleQueryObject{
             else
                 ft.setFileTypeID(((FileType)fts.getJSONObject(0)).getFileTypeID());
         }
-	//System.out.println("File type: " + ft);
+	System.out.println("File type: " + ft);
 	//check for Primary key
 	int fileID = cond.getFileID ( );
 	if(fileID == 0){
@@ -99,14 +99,14 @@ public class FileQO extends  DBSSimpleQueryObject{
 	    }
 	}
 	//
-	//System.out.println("Check for check-sum");
+	System.out.println("Check for check-sum");
 	String cs = cond.getCheckSum();
         if(cs == null || cs == "")throw new DBSException("Input Data Error", "File check-sum is expected.");
 	//check for event_count
 	if (cond.getEventCount() == -1) throw new DBSException("Input Data Error", "File event count is expected.");
 	//check for file size
 	if(cond.getFileSize() == -1) throw new DBSException("Input Data Error", "File size is expected.");
-	//System.out.println("Check for creation_date and created_by. \n");
+	System.out.println("Check for creation_date and created_by. \n");
 	long createDate = cond.getCreationDate( );
 	String createdBy = cond.getCreateBy( );
 	//System.out.println("****File**** " + cond);
@@ -114,7 +114,7 @@ public class FileQO extends  DBSSimpleQueryObject{
         if(createdBy == null || createdBy=="")cond.setCreateBy("WeNeed2FindWhoDidIt");
 	 	
 	//Now we are ready to insert into the dataset
-	//System.out.println(cond);
+	System.out.println("Ready to insert file :" + cond);
 	insertTable(conn, cond, "FILES");
 	return (cond.getFileID());
    }
