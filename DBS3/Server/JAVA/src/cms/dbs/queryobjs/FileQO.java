@@ -1,5 +1,5 @@
 /***
- * $Id: FileQO.java,v 1.5 2009/11/11 21:22:17 afaq Exp $
+ * $Id: FileQO.java,v 1.6 2009/11/11 22:52:37 afaq Exp $
  *
  * This is the class for File query objects.
  * @author Y. Guo
@@ -70,7 +70,7 @@ public class FileQO extends  DBSSimpleQueryObject{
 		 + bkName);
 	    else {
 		bk.setBlockID(((Block)bks.getJSONObject(0)).getBlockID());
-		System.out.println("Block : " + bk);
+		//System.out.println("Block : " + bk);
 	    }
 	}
 	//
@@ -138,11 +138,26 @@ public class FileQO extends  DBSSimpleQueryObject{
 	    sql += "F.FILE_ID = ? ";
 	    fileID =true;
 	}
-        else if (cond.getLogicalFileName() != null || cond.getLogicalFileName() != ""){
-	    if (  (cond.getLogicalFileName()).indexOf('%') != -1) sql += " F.LOGICAL_FILE_NAME like ?";
-	    else sql += " F.LOGICAL_FILE_NAME = ?";
+
+        else if ( cond.has("LOGICAL_FILE_NAME")) { 
+		if (cond.getLogicalFileName() != null || cond.getLogicalFileName() != ""){
+	    		if (  (cond.getLogicalFileName()).indexOf('%') != -1) sql += " F.LOGICAL_FILE_NAME like ?";
+	    		else sql += " F.LOGICAL_FILE_NAME = ?";
+		}
 	}
-        else throw  new DBSException("Input Data Error", "File name (LFN) or ID have to be provided. ");
+	else if ( cond.has("DATASET_DO")) { 
+		if( cond.getDatasetDO().getDataset() != null || cond.getDatasetDO().getDataset() != "") {
+            		if (  (cond.getDatasetDO().getDataset() ).indexOf('%') != -1) sql += " D.DATASET like ?";
+            		else sql += " D.DATASET = ?";
+        	}
+	}
+	else if (  cond.has("BLOCK_DO")) {
+		if ( cond.getBlockDO().getBlockName() != null || cond.getBlockDO().getBlockName() != "") {
+			if (  (cond.getBlockDO().getBlockName()).indexOf('%') != -1) sql += " B.BLOCK_NAME like ?";
+			else sql += " B.BLOCK_NAME = ?";
+		}
+	}
+        else throw  new DBSException("Input Data Error", "File name (LFN) or ID , or BLOCK Name, or DATASET have to be provided. ");
 
         ps = null;
         rs = null;
@@ -150,7 +165,10 @@ public class FileQO extends  DBSSimpleQueryObject{
             ps = DBManagement.getStatement(conn, sql);
             //prepare statement index starting with 1, but JSONArray index starting with 0.
 	    if(fileID)ps.setInt(1, cond.getFileID());
-	    else ps.setString(1, cond.getLogicalFileName());
+	    else if ( cond.has("LOGICAL_FILE_NAME")) ps.setString(1, cond.getLogicalFileName());
+	    else if ( cond.has("DATASET_DO")) ps.setString(1, cond.getDatasetDO().getDataset());
+	    else if ( cond.has("BLOCK_DO")) ps.setString(1, cond.getBlockDO().getBlockName());
+	    //else ps.setString(1, cond.getLogicalFileName());
             //System.out.println(ps.toString());
             rs =  ps.executeQuery();
             while(rs.next()){
@@ -201,9 +219,9 @@ public class FileQO extends  DBSSimpleQueryObject{
             File f = (File)cond.getJSONObject(i);
             if (i==0){
                 if ( (f.getLogicalFileName()).indexOf('%') != -1)
-                sql += " F.LOGICAL_FILE_NAME like ?";
-                else  sql += " F.LOGICAL_FILE_NAME = ?";
-            }
+                	sql += " F.LOGICAL_FILE_NAME like ?";
+                	else  sql += " F.LOGICAL_FILE_NAME = ?";
+		}
             else{
                 if ( (f.getLogicalFileName()).indexOf('%') != -1)
                 sql +=  " or  F.LOGICAL_FILE_NAME like ?";

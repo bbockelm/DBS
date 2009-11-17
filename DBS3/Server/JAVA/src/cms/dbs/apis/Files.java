@@ -1,5 +1,5 @@
 /***
- * $Id: Files.java,v 1.2 2009/11/10 19:47:59 afaq Exp $
+ * $Id: Files.java,v 1.3 2009/11/11 21:22:16 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -79,13 +79,16 @@ public class Files extends Resource {
                 File cd = new File();
 		//FIXME: WE SHOULD NOT have to set FILE_ID = 0 here
 		cd.setFileID(0);
-
 		if (this.lfn!= null) {
 			cd.setLogicalFileName( this.lfn );
-		}
+		} else if ( this.block != null ) {
+			cd.setBlockDO(new Block(0, this.block ));
+		} else if ( this.dataset != null ) {
+			cd.setDatasetDO(new Dataset(0, this.dataset));
+		}  
 		else {
-			cd.setLogicalFileName("%");
 			//THROW and exception here, want to list all files, thats crazy !
+			throw new DBSException("Input Data Error", "You must specify eith an lfn, block or dataset to list files");
 		}
 
                 JSONObject retn = api.DBSApiFindFiles(cd);
