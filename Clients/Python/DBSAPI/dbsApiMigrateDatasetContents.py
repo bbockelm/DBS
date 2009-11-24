@@ -17,14 +17,15 @@ from dbsLogger import *
 from dbsUtil import *
 from dbsApi import DbsApi
 
-def makeAPI(url, version):
+def makeAPI(url, version = None):
                 #args = {}
                 #args['url'] = url
                 args = {}
                 if url.startswith('http'):
                         args['url']     = url
                         args['mode']    = 'POST'
-                        args['version'] = version
+                        if version:
+                            args['version'] = version
 
                 return DbsApi(args)
 
