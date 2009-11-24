@@ -2,7 +2,7 @@
 """
 This module provides DataTier.GetID data access object.
 """
-__revision__ = "$Id: GetID.py,v 1.1 2009/10/28 09:51:50 akhukhun Exp $"
+__revision__ = "$Id: GetID.py,v 1.1 2009/10/30 16:48:53 akhukhun Exp $"
 __version__ = "$Revision: 1.1 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -11,12 +11,12 @@ class GetID(DBFormatter):
     """
     DataTier GetID DAO class.
     """
-    def __init__(self, logger, dbi):
+    def __init__(self, logger, dbi, owner):
         """
         Add schema owner and sql.
         """
         DBFormatter.__init__(self, logger, dbi)
-        self.owner = "%s." % self.dbi.engine.url.username
+        self.owner = "%s." % owner
         self.sql = \
 """
 SELECT DT.DATA_TIER_ID, DT.DATA_TIER_NAME
