@@ -66,6 +66,7 @@ class DbsApi(DbsConfig):
 
     if not self.configDict.has_key('version'):
        self.configDict['version'] = self.setApiVersion()
+
  
     if self.configDict.has_key('retry'):
        Args['retry'] = self.configDict['retry']
@@ -549,11 +550,11 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
-  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", noParentsReadOnly = False, pruneBranches = False):
+  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", srcVersion = None, dstVersion = None, noParentsReadOnly = False, pruneBranches = False):
      try:
        #Calling the Implementation function
        from dbsApiMigrateDatasetContents import dbsApiImplMigrateDatasetContents
-       return  dbsApiImplMigrateDatasetContents(self, srcURL, dstURL, path, block_name, noParentsReadOnly , pruneBranches )
+       return  dbsApiImplMigrateDatasetContents(self, srcURL, dstURL, path, block_name, srcVersion, dstVersion, noParentsReadOnly , pruneBranches )
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
