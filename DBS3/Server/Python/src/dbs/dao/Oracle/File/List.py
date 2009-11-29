@@ -2,15 +2,8 @@
 """
 This module provides File.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.5 2009/11/24 10:58:13 akhukhun Exp $"
-__version__ = "$Revision: 1.5 $"
-
-def op(pattern):
-    """ returns 'like' if pattern includes '%' and '=' otherwise"""
-    if pattern.find("%") == -1:
-        return '='
-    else:
-        return 'like'
+__revision__ = "$Id: List.py,v 1.7 2009/11/29 11:24:17 akhukhun Exp $"
+__version__ = "$Revision: 1.7 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 class List(DBFormatter):
@@ -70,17 +63,18 @@ JOIN %sBLOCKS B ON B.BLOCK_ID = F.BLOCK_ID
         """	
         sql = self.sql
         binds = {}
+            
         if not block == "":
             sql += "WHERE B.BLOCK_NAME = :block"
             binds.update({"block":block})
             if not lfn == "":
-                sql += " AND F.LOGICAL_FILE_NAME %s :lfn" % op(lfn)
+                sql += " AND F.LOGICAL_FILE_NAME %s :lfn" % ("=","like")["%" in lfn]
                 binds.update({"lfn":lfn})
         elif not dataset == "": 
             sql += "WHERE D.DATASET = :dataset"
             binds.update({"dataset":dataset})
             if not lfn == "":
-                sql += " AND F.LOGICAL_FILE_NAME %s :lfn" % op(lfn)
+                sql += " AND F.LOGICAL_FILE_NAME %s :lfn" % ("=","like")["%" in lfn]
                 binds.update({"lfn":lfn})
         elif not lfn == "":
             sql += "WHERE F.LOGICAL_FILE_NAME = :lfn" 
@@ -90,4 +84,3 @@ JOIN %sBLOCKS B ON B.BLOCK_ID = F.BLOCK_ID
         
         result = self.dbi.processData(sql, binds, conn, transaction)
         return self.formatDict(result)
-        #return [dict(r) for r in result[0].fetchall()]
