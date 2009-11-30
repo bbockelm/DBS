@@ -2,10 +2,11 @@
 """
 This module provides Dataset.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.10 2009/11/29 11:24:17 akhukhun Exp $"
-__version__ = "$Revision: 1.10 $"
+__revision__ = "$Id: List.py,v 1.11 2009/11/29 18:49:40 akhukhun Exp $"
+__version__ = "$Revision: 1.11 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
+
 class List(DBFormatter):
     """
     Dataset List DAO class.
