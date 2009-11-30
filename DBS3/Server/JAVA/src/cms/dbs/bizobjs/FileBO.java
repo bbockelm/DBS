@@ -1,5 +1,5 @@
 /***
- * $Id: FileBO.java,v 1.4 2009/11/11 21:22:17 afaq Exp $
+ * $Id: FileBO.java,v 1.5 2009/11/11 22:52:37 afaq Exp $
  *
  * This is the class for File business objects.
  * @author Y. Guo  Oct-20-09
@@ -52,7 +52,7 @@ public class FileBO extends DBSBusinessObject{
         	String exmsg = ex.getMessage();
             	if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
             	else {
-			System.out.println("Reset file ID and re-fetch File from database");
+			//System.out.println("Reset file ID and re-fetch File from database");
 			//Reset file ID and re-fetch File from database
 			cond.setFileID(0);
 			JSONArray allfiles = fileQO.listFiles(conn, cond);
@@ -64,18 +64,18 @@ public class FileBO extends DBSBusinessObject{
 	FileParentQO fileParentQO = new FileParentQO(); 
 	//
 
-	System.out.println("Here we go....");	
+	//System.out.println("Here we go....");	
 	//Only if there are parents of this file 
 	if (fps.length() > 0 ) {
 		JSONArray p  = new JSONArray();
 		for (int i =0; i<fps.length(); i++){
-			System.out.println("I am NOT here.................");
+			//System.out.println("I am NOT here.................");
 	    		p.put(((FileParent)(fps.getJSONObject(i))).getParentFileDO());
 		}
 
-		System.out.println("\n **** list bared file ****");
+		//System.out.println("\n **** list bared file ****");
 		JSONArray ps = fileQO.listBaredFiles(conn, p);
-		System.out.println("\n **** list bared file again !****");
+		//System.out.println("\n **** list bared file again !****");
 		if((ps.length() == 0) || (ps.length() != fps.length()))
 			throw new DBSException("Input data error", "No parent file found as  "+ fps);
 		//System.out.println("\nInsert Parantages");
@@ -87,7 +87,7 @@ public class FileBO extends DBSBusinessObject{
 
 	 //Only if there are lumi sections for this file
 	if (fls.length() > 0 ) {
-		System.out.println("\nInsert Lumi");
+		//System.out.println("\nInsert Lumi");
 		FileLumiQO flQO = new FileLumiQO();
 		for(int i=0; i<fls.length();i++){
 	    		((FileLumi)fls.getJSONObject(i)).setFileDO(cond);

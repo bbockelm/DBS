@@ -1,5 +1,5 @@
 /***
- * $Id: Files.java,v 1.3 2009/11/11 21:22:16 afaq Exp $
+ * $Id: Files.java,v 1.4 2009/11/17 21:51:35 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -132,7 +132,7 @@ public class Files extends Resource {
 		JSONArray inputFiles = json_req.getJSONArray("files");
 		for(int i=0; i != inputFiles.length(); ++i ) {
 			JSONObject inFile = inputFiles.optJSONObject(i);
-			System.out.println("File Name: "+inFile.getString("LOGICAL_FILE_NAME"));
+			//System.out.println("File Name: "+inFile.getString("LOGICAL_FILE_NAME"));
 			File currfile =  new File (0, inFile.getString("LOGICAL_FILE_NAME"), inFile.getInt("IS_FILE_VALID"), new Dataset(0, inFile.getString("DATASET")),
 						new Block(0, inFile.getString("BLOCK")), new FileType(1, "EDM"), inFile.getString("CHECK_SUM"), inFile.getInt("EVENT_COUNT"),
 						  inFile.getInt("FILE_SIZE"), null, inFile.getString("ADLER32"), inFile.getString("MD5"), inFile.getDouble("AUTO_CROSS_SECTION") 

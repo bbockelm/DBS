@@ -1,5 +1,5 @@
 /***
- * $Id: BlockQO.java,v 1.3 2009/11/10 20:15:40 afaq Exp $
+ * $Id: BlockQO.java,v 1.4 2009/11/11 21:22:17 afaq Exp $
  *
  * This is the class for Block query objects.
  * @author Y. Guo
@@ -40,7 +40,7 @@ public class BlockQO extends  DBSSimpleQueryObject{
 	if(block == null || block == "") throw new DBSException("Input Data Error", "block name is expected.");
 	String[] get_path = block.split("#");
 	String path=get_path[0];
-	System.out.println("PATH:::::::::"+path);
+	//System.out.println("PATH:::::::::"+path);
 	//Check if Datset already in db
 	Dataset ds = new Dataset(0, path);
 	//System.out.println(ds);

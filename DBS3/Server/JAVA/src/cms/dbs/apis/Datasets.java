@@ -1,5 +1,5 @@
 /***
- * $Id: Datasets.java,v 1.5 2009/11/06 22:34:57 afaq Exp $
+ * $Id: Datasets.java,v 1.6 2009/11/09 21:15:13 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -124,7 +124,7 @@ public class Datasets extends Resource {
 		AcquisitionEra AQ = new AcquisitionEra(0, json_req.getString("ACQUISITION_ERA_NAME"), 0, "", "");
 		ProcessingEra PE = new ProcessingEra(0, json_req.getString("PROCESSING_VERSION"), 0, "", "");
 
-		System.out.println("ProcessingEra:" + PE.toString());
+		//System.out.println("ProcessingEra:" + PE.toString());
 
 		Dataset DS = new Dataset();
 		DS.setDatasetID(0);

@@ -1,5 +1,5 @@
 /***
- * $Id: DBSSimpleQueryObject.java,v 1.8 2009/11/05 19:44:31 afaq Exp $
+ * $Id: DBSSimpleQueryObject.java,v 1.9 2009/11/11 21:22:17 afaq Exp $
  *
  * This is the super class for simple query objects. All other simple query object will inherent from this class.
  * The insert, update, select, delete and bulk insert funtions will needed to be implemented in the sub classes.
@@ -130,7 +130,7 @@ public class DBSSimpleQueryObject{
 		}
 		ps.addBatch();
 	    }
-            System.out.println(ps.toString());
+            //System.out.println(ps.toString());
             ps.executeBatch();
         }catch (SQLException ex) {
             String exmsg = ex.getMessage();
@@ -193,7 +193,7 @@ public class DBSSimpleQueryObject{
             for(int i=1; i<list.size()+1;i++){
                 ps.setString(i, list.get(i-1));
             }
-            System.out.println(ps.toString());
+            //System.out.println(ps.toString());
             ps.execute();
         }catch (SQLException ex) {
             String exmsg = ex.getMessage();

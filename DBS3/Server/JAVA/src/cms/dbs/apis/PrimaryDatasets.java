@@ -1,5 +1,5 @@
 /***
- * $Id: PrimaryDatasets.java,v 1.6 2009/11/06 22:34:57 afaq Exp $
+ * $Id: PrimaryDatasets.java,v 1.7 2009/11/09 21:15:13 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -92,7 +92,7 @@ public class PrimaryDatasets extends Resource {
         try{
 		//Seems like you can only read ONCE from the entity (is it a stream?)
                 JSONObject json_req = new JSONObject(entity.getText());
-		System.out.println("json_req:::"+json_req);
+		//System.out.println("json_req:::"+json_req);
 		//Incoming object has BOTH type and name of Primary dataset, 
 		//{"PRIMARY_DS_TYPE":"test","PRIMARY_DS_NAME":"TEST9"}
            	PrimaryDSType PT = new PrimaryDSType(0, json_req.getString("PRIMARY_DS_TYPE"));

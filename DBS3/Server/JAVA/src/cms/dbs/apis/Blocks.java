@@ -1,5 +1,5 @@
 /***
- * $Id: Blocks.java,v 1.3 2009/11/09 21:15:12 afaq Exp $
+ * $Id: Blocks.java,v 1.4 2009/11/11 21:22:16 afaq Exp $
  * DBS Server side APIs .
  ***/
 
@@ -95,7 +95,7 @@ public class Blocks extends Resource {
         try{
 		//Seems like you can only read ONCE from the entity (is it a stream?)
                 JSONObject json_req = new JSONObject(entity.getText());
-		System.out.println("json_req:::"+json_req);
+		//System.out.println("json_req:::"+json_req);
 
 		Block bki = new Block(0, json_req.getString("BLOCK_NAME"));
                 bki.setCreateBy("web-client");

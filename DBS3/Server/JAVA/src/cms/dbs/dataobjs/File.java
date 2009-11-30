@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.7 $"
- $Id: File.java,v 1.7 2009/10/20 16:30:29 yuyi Exp $"
+ $Revision: 1.8 $"
+ $Id: File.java,v 1.8 2009/10/22 15:29:08 yuyi Exp $"
  *
  * Data Object from table : FILES
 */
@@ -237,7 +237,6 @@ public class File extends JSONObject  {
 		double autoCrossSection = 0;
                	if (!JSONObject.NULL.equals(this.get("AUTO_CROSS_SECTION"))) {
                        	autoCrossSection = this.getDouble("AUTO_CROSS_SECTION");
-			System.out.println("DANG !!!!!!!!!!!!");
                	}
                 return autoCrossSection;
         }

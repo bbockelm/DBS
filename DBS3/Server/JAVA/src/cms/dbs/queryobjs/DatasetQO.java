@@ -1,5 +1,5 @@
 /***
- * $Id: DatasetQO.java,v 1.4 2009/11/10 18:17:55 yuyi Exp $
+ * $Id: DatasetQO.java,v 1.5 2009/11/11 22:52:37 afaq Exp $
  *
  * This is the class for dataset query objects.
  * @author Y. Guo
@@ -140,7 +140,7 @@ public class DatasetQO extends  DBSSimpleQueryObject{
         ResultSet rs = null;
         boolean datasetID = false;
 
-System.out.println("I am here...");
+//System.out.println("I am here...");
 
         String sql = "SELECT D.DATASET_ID, D.DATASET, D.IS_DATASET_VALID,D.PRIMARY_DS_ID, D.PROCESSED_DS_ID, D.DATA_TIER_ID, "
 		     +" D.DATASET_TYPE_ID, D.ACQUISITION_ERA_ID, D.PROCESSING_ERA_ID, D.PHYSICS_GROUP_ID, D.XTCROSSSECTION, D.GLOBAL_TAG,"
@@ -172,7 +172,7 @@ System.out.println("I am here...");
             //prepare statement index starting with 1, but JSONArray index starting with 0.
 	    if(datasetID)ps.setInt(1, cond.getDatasetID());
 	    else ps.setString(1, cond.getDataset());
-            System.out.println(ps.toString());
+            //System.out.println(ps.toString());
             rs =  ps.executeQuery();
             while(rs.next()){
                 String dataset = rs.getString("DATASET");
@@ -194,7 +194,7 @@ System.out.println("I am here...");
 	        //String processedDSName = rs.getString("PROCESSED_DS_NAME");
 		String phGrpName = rs.getString("PHYSICS_GROUP_NAME");
 		String datasetType = rs.getString("DATASET_TYPE");
-		System.out.println("DATSET: "+ dataset );
+		//System.out.println("DATSET: "+ dataset );
 		this.result.put(new Dataset(setID, dataset, isDatasetValid, new PrimaryDataset(primaryDSID,
 		"primaryDSName" ), new ProcessedDataset(processedDSID, "processedDSName"), 
 		 new DataTier(dataTierID, "dataTiername"),
