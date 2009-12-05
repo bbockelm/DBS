@@ -65,14 +65,16 @@ public class Wrapper {
                                 kws.add(orderby);
                             }
                         }
-                        // check if there is no ordering, if so use first selected
+                        // check if there is no ordering, if so use first acceptable selected
                         // keyword
-                        String firstSelName = (String)kws.get(0);
                         if (okws.size()==0 ) {
-                            if (firstSelName.indexOf("(")==-1 && firstSelName.indexOf(".count")==-1) {
+                            for (Object o: kws) {
+                                String firstSelName = (String)o;
+                                if (firstSelName.indexOf("(")==-1 && firstSelName.indexOf(".count")==-1 && firstSelName.indexOf("config.content")==-1) {
 //                                System.out.println("Adding default ordering " +firstSelName);
-                                okws.add(firstSelName);
-                                orderingkw="desc";
+                                    okws.add(firstSelName);
+                                    orderingkw="desc";
+                                }
                             }
                         }
 
