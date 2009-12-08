@@ -2,8 +2,8 @@
 """
 This module provides File.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.9 2009/11/30 09:53:44 akhukhun Exp $"
-__version__ = "$Revision: 1.9 $"
+__revision__ = "$Id: List.py,v 1.11 2009/12/07 15:47:38 akhukhun Exp $"
+__version__ = "$Revision: 1.11 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 import cx_Oracle
@@ -66,6 +66,8 @@ JOIN %sBLOCKS B ON B.BLOCK_ID = F.BLOCK_ID
         
         cursor = conn.connection.cursor()
         cursor.execute(sql, binds)
+	#print sql
+	#print binds
         keys = [d[0] for d in cursor.description]
 
         result = []
@@ -77,4 +79,6 @@ JOIN %sBLOCKS B ON B.BLOCK_ID = F.BLOCK_ID
                 rapp(dict(zip(keys, r)))
 
         cursor.close()
-        return {"result":result}
+	#print result
+	return result
+        #return {"result":result}
