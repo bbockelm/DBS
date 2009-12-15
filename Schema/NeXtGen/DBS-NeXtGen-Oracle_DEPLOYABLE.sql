@@ -2979,6 +2979,7 @@ INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', (select (sysd
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('PRODUCTION', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('DEPRECATED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID-RO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('DELETED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
