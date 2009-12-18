@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 """ DBS utility class """
 
-__revision__ = "$Revision:$"
-__version__  = "$Id: $ "
+__revision__ = "$Revision: 1.1 $"
+__version__  = "$Id: dbsUtils.py,v 1.1 2009/12/16 20:12:23 yuyi Exp $ "
 
 from time import time
 
 class dbsUtils:
     """dbsUtils class provides time, client names, etc functions."""
 
-    def __init__(self, logger):
+    def __init__(self):
 	pass
 
     def getTime(self):
