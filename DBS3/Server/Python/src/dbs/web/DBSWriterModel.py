@@ -3,8 +3,8 @@
 DBS Rest Model module
 """
 
-__revision__ = "$Id: DBSWriterModel.py,v 1.6 2009/12/17 23:13:53 afaq Exp $"
-__version__ = "$Revision: 1.6 $"
+__revision__ = "$Id: DBSWriterModel.py,v 1.7 2009/12/21 21:27:20 afaq Exp $"
+__version__ = "$Revision: 1.7 $"
 
 import re
 import cjson
@@ -48,7 +48,10 @@ class DBSWriterModel(DBSReaderModel):
         	self.dbsPrimaryDataset.insertPrimaryDataset(indata)
 		
 	except Exception, ex:
-       		raise Exception ("DBS Server Exception: %s \n. Exception trace: \n %s " % (ex, traceback.format_exc()) ) 
+		response.status = 400
+		#response.reason="DBS Server Exception: %s \n. Exception trace: \n %s " % (ex, traceback.format_exc())
+		return {"Exception" : "DBS Server Exception: %s \n. Exception trace: \n %s " % (ex, traceback.format_exc())}
+       		#raise Exception ("DBS Server Exception: %s \n. Exception trace: \n %s " % (ex, traceback.format_exc()) ) 
 
 
     def insertOutputConfig(self):
