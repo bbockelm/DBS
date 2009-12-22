@@ -3,8 +3,8 @@
 This module provides business object class to interact with Dataset. 
 """
 
-__revision__ = "$Id: DBSDataset.py,v 1.10 2009/11/30 09:52:31 akhukhun Exp $"
-__version__ = "$Revision: 1.10 $"
+__revision__ = "$Id: DBSDataset.py,v 1.11 2009/12/16 12:04:41 akhukhun Exp $"
+__version__ = "$Revision: 1.11 $"
 
 from WMCore.DAOFactory import DAOFactory
 
@@ -39,10 +39,7 @@ class DBSDataset:
         lists all datasets if dataset parameter is not given.
         The parameter can include % character. 
         """
-        conn = self.dbi.connection()
-        result = self.datasetlist.execute(dataset=dataset, conn=conn)
-        conn.close()
-        return result
+        return self.datasetlist.execute(dataset=dataset)
     
     
     def insertDataset(self, businput):
