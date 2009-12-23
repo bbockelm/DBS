@@ -2,8 +2,8 @@
 """
 This module provides PrimaryDSType.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.1.1.1 2009/10/22 15:33:53 akhukhun Exp $"
-__version__ = "$Revision: 1.1.1.1 $"
+__revision__ = "$Id: List.py,v 1.4 2009/10/27 17:24:48 akhukhun Exp $"
+__version__ = "$Revision: 1.4 $"
 
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -11,7 +11,7 @@ class List(DBFormatter):
     """
     PrimaryDSType List DAO class.
     """
-    def __init__(self, logger, dbi):
+    def __init__(self, logger, dbi, owner):
         """
         Add schema owner and sql.
         """
