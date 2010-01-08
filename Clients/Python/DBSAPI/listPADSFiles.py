@@ -60,7 +60,7 @@ def makeQuery(userquery, retriveList=[]):
     tmpq+=" where "+qparts[1]
     return tmpq
 	
-def listPADSFiles(userquery, dbsapi):
+def listPADSFiles(userquery, dbsapi, retriveList=[]):
 	
       rowlist=[]
       outlist=[]
@@ -151,7 +151,7 @@ def listPADSFiles(userquery, dbsapi):
 				    
       query = getDBSMARTQuery(userquery, dbsapi)
       query=makeQuery(query, retriveList) 
-      data=api.executeQuery(query)
+      data=dbsapi.executeQuery(query)
 #print data
       xml.sax.parseString (data, fileXMLHandler ())
 
