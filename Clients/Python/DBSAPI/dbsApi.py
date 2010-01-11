@@ -632,6 +632,17 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def updateProcDSDesc(self, dataset, desc):
+     try:
+       #Calling the Implementation function
+       from dbsApiUpdateProcDSDesc import dbsApiImplUpdateProcDSDesc
+       return  dbsApiImplUpdateProcDSDesc(self, dataset, desc)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+		
   def updateProcDSXtCrossSection(self, dataset, xSection):
      try:
        #Calling the Implementation function
