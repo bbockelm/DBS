@@ -4488,6 +4488,7 @@ if __name__ == "__main__":
     print "Using CherryPy:",cherrypy.__version__
     port=opts.port
     cherrypy.config.update({'server.socket_port': port,
+                            'server.socket_host': '0.0.0.0',
                             'server.thread_pool': 20,
                             'environment': 'production',
                             'log.screen':True,
