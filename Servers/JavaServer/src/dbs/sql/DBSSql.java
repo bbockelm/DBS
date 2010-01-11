@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.229 $"
- $Id: DBSSql.java,v 1.229 2009/09/28 18:37:41 yuyi Exp $"
+ $Revision: 1.230 $"
+ $Id: DBSSql.java,v 1.230 2009/11/06 01:20:40 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -123,6 +123,7 @@ public class DBSSql {
 		return ps;
 	}
 
+	
 	 public static PreparedStatement updateProcDSXtCrossSection(Connection conn, String procDSID, String xSection, String lmbUserID) throws SQLException {
                 String sql = "UPDATE " +  owner()+"ProcessedDataset \n" +
 			"SET XtCrossSection = ?, \n" +

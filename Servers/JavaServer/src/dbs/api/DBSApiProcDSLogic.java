@@ -1,6 +1,6 @@
 /**
- $Revision: 1.90 $"
- $Id: DBSApiProcDSLogic.java,v 1.90 2009/09/29 18:42:40 yuyi Exp $"
+ $Revision: 1.91 $"
+ $Id: DBSApiProcDSLogic.java,v 1.91 2009/10/08 21:25:36 afaq Exp $"
  *
  */
 
@@ -893,6 +893,20 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 	}
 
+	/**
+        public void updateProcDSDesc(Connection conn, Writer out, String path, String desc, Hashtable dbsUser) throws Exception {
+                PreparedStatement ps = null;
+                try {
+
+		String procDSID = getProcessedDSID(conn, path, true);
+
+                        ps =  DBSSql.updateProcDSDesc(conn, procDSID, desc, personApi.getUserID(conn, dbsUser));
+                        pushQuery(ps);
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+        }**/
 
         public void updateProcDSXtCrossSection(Connection conn, Writer out, String path, String xSection, Hashtable dbsUser) throws Exception {
                 PreparedStatement ps = null;

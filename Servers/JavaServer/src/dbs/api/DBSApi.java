@@ -1,6 +1,6 @@
 /**
- $Revision: 1.171 $"
- $Id: DBSApi.java,v 1.171 2009/09/28 18:35:52 yuyi Exp $"
+ $Revision: 1.172 $"
+ $Id: DBSApi.java,v 1.172 2009/10/08 21:25:36 afaq Exp $"
  *
 */
 
@@ -518,13 +518,13 @@ public class DBSApi {
 			} else if (apiStr.equals("insertProcessedDataset")) {
 				(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out,  DBSApiParser.parsePD(getXml(table)), dbsUser, apiVersion);
 
-                        } else if (apiStr.equals("updateProcDSDesc")) {
-                                (new DBSApiProcDSLogic(this.data)).updateProcDSDesc(conn, out, get(table, "path", true),
-													 get(table, "description", true), 
-														dbsUser);
 			} else if (apiStr.equals("updateProcDSXtCrossSection")) {
                                 (new DBSApiProcDSLogic(this.data)).updateProcDSXtCrossSection(conn, out, get(table, "path", true),
                                                                                                          get(table, "xSection", true),
+                                                                                                                dbsUser);
+			} else if (apiStr.equals("updateProcDSDesc")) {
+                                (new DBSApiProcDSLogic(this.data)).updateProcDSDesc(conn, out, get(table, "path", true),
+                                                                                                         get(table, "desc", true),
                                                                                                                 dbsUser);
 			} else if (apiStr.equals("createAnalysisDatasetDefinition")) {
 				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetDefinition(conn, out,  DBSApiParser.parse(getXml(table), 
