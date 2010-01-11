@@ -2,8 +2,8 @@
 """
 This module provides ProcessingEra.GetID data access object.
 """
-__revision__ = "$Id: GetID.py,v 1.2 2009/11/24 10:58:15 akhukhun Exp $"
-__version__ = "$Revision: 1.2 $"
+__revision__ = "$Id: GetID.py,v 1.3 2009/12/22 21:52:26 afaq Exp $"
+__version__ = "$Revision: 1.3 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -21,7 +21,7 @@ class GetID(DBFormatter):
 	"""
 	SELECT PE.PROCESSING_ERA_ID, PE.PROCESSING_VERSION
 	FROM %sPROCESSING_ERAS PE
-	WHERE PE.PROCESSING_VERSION = :processing_version" 
+	WHERE PE.PROCESSING_VERSION = :processing_version 
 	""" % (self.owner)
 
     def execute(self, name, conn = None, transaction = False):
