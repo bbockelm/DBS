@@ -93,7 +93,7 @@ public class DBSApiExecuteQuery {
                                             String etag = "</" + name + ">";
                                             String res  = "";
 
-					    if(name.equals("config.content")) res =  StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )));
+					    if(name.equals("config.content") || name.equals("config.annotation") ) res =  StringEscapeUtils.escapeXml(((String) get(rs, colNames[i] )));
 						else res = ((String) get(rs, colNames[i] ));
 
 					/** 
