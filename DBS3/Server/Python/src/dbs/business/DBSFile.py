@@ -3,8 +3,8 @@
 This module provides business object class to interact with File. 
 """
 
-__revision__ = "$Id: DBSFile.py,v 1.15 2010/01/05 22:34:31 afaq Exp $"
-__version__ = "$Revision: 1.15 $"
+__revision__ = "$Id: DBSFile.py,v 1.16 2010/01/07 17:30:42 afaq Exp $"
+__version__ = "$Revision: 1.16 $"
 
 from WMCore.DAOFactory import DAOFactory
 from sqlalchemy import exceptions
@@ -66,7 +66,7 @@ class DBSFile:
 	"""
 	conn = self.dbi.connection()
 	tran = conn.begin()
-
+ 
 	try:
 	    # AA- 01/06/2010 -- we have to do this file-by-file, there is no real good way to do this complex operation otherwise 
 	    files2insert = []
