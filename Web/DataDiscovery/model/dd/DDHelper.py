@@ -388,7 +388,7 @@ class DDHelper(DDLogger):
         res = self.queryDBS(dbsInst, query)
         selist = [se for se in res]
 
-        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) where dataset = %s' % dataset
+        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) where dataset = %s and dataset.status like VALID*' % dataset
         if  cond:
             query += cond
         query += ' order by run.number'
