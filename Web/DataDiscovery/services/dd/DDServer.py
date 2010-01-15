@@ -1035,19 +1035,24 @@ class DDServer(DDLogger,Controller):
             return str(t)
     tool_cli.exposed=True
     def dbssql(self):
-        return serve_file(os.path.join(os.getcwd(),'tools/dbssql'),content_type='text/plain')
+        return serve_file(os.path.join(os.environ['DDHOME'],'tools/dbssql'),\
+                content_type='text/plain')
     dbssql.exposed=True
     def tool_du(self):
-        return serve_file(os.path.join(os.getcwd(),'tools/cms-dbs-du'),content_type='text/plain')
+        return serve_file(os.path.join(os.environ['DDHOME'],'tools/cms-dbs-du'),\
+                content_type='text/plain')
     tool_du.exposed=True
     def tool_ls(self):
-        return serve_file(os.path.join(os.getcwd(),'tools/cms-dbs-ls'),content_type='text/plain')
+        return serve_file(os.path.join(os.environ['DDHOME'],'tools/cms-dbs-ls'),\
+                content_type='text/plain')
     tool_ls.exposed=True
     def tool_stat(self):
-        return serve_file(os.path.join(os.getcwd(),'tools/cms-dbs-stat'),content_type='text/plain')
+        return serve_file(os.path.join(os.environ['DDHOME'],'tools/cms-dbs-stat'),\
+                content_type='text/plain')
     tool_stat.exposed=True
     def tool_pfn(self):
-        return serve_file(os.path.join(os.getcwd(),'tools/find-pfn'),content_type='text/plain')
+        return serve_file(os.path.join(os.environ['DDHOME'],'tools/find-pfn'),\
+                content_type='text/plain')
     tool_pfn.exposed=True
 
     ################## END OF init methods
@@ -4383,6 +4388,7 @@ All LFNs in a block
             print msg
 
     def setConfig(self,base=""):
+        dd_home = os.environ['DDHOME']
         # used thread_pool, queue_size parameters to tune up server performance
         # see discussion on http://amix.dk/blog/viewEntry/119
         cherrypy.server.thread_pool = 30
@@ -4395,7 +4401,7 @@ All LFNs in a block
                                ('Authorization','Basic')
                    ]
                                
-        conf = {'/'         : {'tools.staticdir.root': os.getcwd(),
+        conf = {'/'         : {'tools.staticdir.root': dd_home,
                                'tools.response_headers.on':True,
                                'tools.etags.on':True,
                                'tools.etags.autotags':True,
@@ -4408,7 +4414,7 @@ All LFNs in a block
                 '/images'   : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
                                'tools.staticdir.on':True,
-                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.root': dd_home,
                                'tools.staticdir.dir':'images',
                                'tools.response_headers.on':True,
                                'tools.response_headers.headers':httpHeader
@@ -4421,7 +4427,7 @@ All LFNs in a block
                 '/css'      : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
                                'tools.staticdir.on':True,
-                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.root': dd_home,
                                'tools.staticdir.dir':'css',
                                'tools.response_headers.on':True,
                                'tools.response_headers.headers':httpHeader
@@ -4452,7 +4458,7 @@ All LFNs in a block
                 '/yui'      : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
                                'tools.staticdir.on':True,
-                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.root': dd_home,
                                'tools.staticdir.dir':'yui',
                                'tools.staticdir.content_types':{'js':'text/javascript'},
                                'tools.response_headers.on':True,
@@ -4461,7 +4467,7 @@ All LFNs in a block
                 '/YUI'      : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
                                'tools.staticdir.on':True,
-                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.root': dd_home,
                                'tools.staticdir.dir':'YUI',
                                'tools.response_headers.headers':httpHeader
                               },
