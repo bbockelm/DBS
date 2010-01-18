@@ -74,6 +74,7 @@ public class Wrapper {
 //                                System.out.println("Adding default ordering " +firstSelName);
                                     okws.add(firstSelName);
                                     orderingkw="desc";
+                                    break;
                                 }
                             }
                         }
