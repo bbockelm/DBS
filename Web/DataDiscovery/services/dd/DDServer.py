@@ -1999,6 +1999,7 @@ class DDServer(DDLogger,Controller):
             page  = self.genTopHTML(userMode=userMode)
             page += "<p>You requested more then 100 runs. Such query takes too much"
             page += " time in DBS to proceed. Please re-evaluate your request.</p>"
+            page += "<p>minRun=%s, maxRun=%s</p>" % (minRun, maxRun)
             page += self.genBottomHTML()
             return page
         _idx=int(_idx)
@@ -2679,9 +2680,9 @@ All LFNs in a block
                primD=kwargs['primD']
         rMin,rMax=self.helper.getRunsForPrimary(dbsInst,primD,primType)
         style="width:200px"
-        page+="""<input id="kw_minRun_holder" name="minRun" value="%s" size="6" />"""%rMin
+        page+="""<input id="kw_minRun_holder" name="minRun" value="%s" size="20" />"""%rMin
         page+="--"
-        page+="""<input id="kw_maxRun_holder" name="maxRun" value="%s" size="6" />"""%rMax
+        page+="""<input id="kw_maxRun_holder" name="maxRun" value="%s" size="20" />"""%rMax
         page+="</response></ajax-response>"
         if self.verbose==2:
            self.writeLog(page)

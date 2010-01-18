@@ -680,11 +680,15 @@ MCDescription:      %s
             cond += " and datatype = %s" % primType
         if  cond:
             query += ' where '+ cond[4:] # removes first and
-        res = self.queryDBS(dbsInst, query)
-        result = [int(run) for run in res]
-        result.sort()
-        rmin = result[0]
-        rmax = result[-1]
+        query_min = query.replace("find run", "find min(run)")
+        query_max = query.replace("find run", "find max(run)")
+        rmin = self.queryDBS(dbsInst, query_min)[0]
+        rmax = self.queryDBS(dbsInst, query_max)[0]
+#        res = self.queryDBS(dbsInst, query)
+#        result = [int(run) for run in res]
+#        result.sort()
+#        rmin = result[0]
+#        rmax = result[-1]
         return rmin, rmax
 
     def getNRuns(self, dbsInst, minRun, maxRun):
