@@ -114,7 +114,7 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 	try:
 	    return listPADSFiles(analysisDataset, self)
 	except DbsException, dbsex:
-	    if str(ex).find("not found in DBS MART") != -1:
+	    if str(dbsex).find("not found in DBS MART") != -1:
 		pass
 	    else:
 		raise
