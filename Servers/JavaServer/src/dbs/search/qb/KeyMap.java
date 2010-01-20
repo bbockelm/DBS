@@ -11,14 +11,14 @@ public class KeyMap {
 		map.put("file.numevents", "Files.NumberOfEvents");
 		map.put("file.createdate", "Files.CreationDate");
 		map.put("file.moddate", "Files.LastModificationDate");
-		map.put("file.createby", "Files.CreatedBy");
-		map.put("file.modby", "Files.LastModifiedBy");
+//		map.put("file.createby", "Files.CreatedBy");
+//		map.put("file.modby", "Files.LastModifiedBy");
 		
 		map.put("tier.moddate", "DataTier.LastModificationDate");
 		map.put("tier.createdate", "DataTier.CreationDate");
 		map.put("tier.name", "DataTier.Name");
-		map.put("tier.createby", "DataTier.CreatedBy");
-		map.put("tier.modby", "DataTier.LastModifiedBy");
+//		map.put("tier.createby", "DataTier.CreatedBy");
+//		map.put("tier.modby", "DataTier.LastModifiedBy");
 
 		map.put("procds.name", "ProcessedDataset.Name");
 		map.put("procds.id", "ProcessedDataset.ID");
@@ -27,8 +27,8 @@ public class KeyMap {
 		map.put("procds.moddate", "ProcessedDataset.LastModificationDate");
 		map.put("procds.era", "ProcessedDataset.AquisitionEra");
 		map.put("procds.tag", "ProcessedDataset.GlobalTag");
-		map.put("procds.createby", "ProcessedDataset.CreatedBy");
-		map.put("procds.modby", "ProcessedDataset.LastModifiedBy");
+//		map.put("procds.createby", "ProcessedDataset.CreatedBy");
+//		map.put("procds.modby", "ProcessedDataset.LastModifiedBy");
 		
 		map.put("dataset.name", "ProcessedDataset.Name");
 		map.put("dataset.id", "ProcessedDataset.ID");
@@ -37,8 +37,8 @@ public class KeyMap {
 		map.put("dataset.moddate", "ProcessedDataset.LastModificationDate");
 		map.put("dataset.era", "ProcessedDataset.AquisitionEra");
 		map.put("dataset.tag", "ProcessedDataset.GlobalTag");
-		map.put("dataset.createby", "ProcessedDataset.CreatedBy");
-		map.put("dataset.modby", "ProcessedDataset.LastModifiedBy");
+//		map.put("dataset.createby", "ProcessedDataset.CreatedBy");
+//		map.put("dataset.modby", "ProcessedDataset.LastModifiedBy");
 		map.put("dataset.parent", "Block.Path"); // is this right?? (comment added by dsr, 2010-01-18)
 
 		map.put("primds.name", "PrimaryDataset.Name");
@@ -46,8 +46,8 @@ public class KeyMap {
 		map.put("primds.id", "PrimaryDataset.ID");
 		map.put("primds.createdate", "PrimaryDataset.CreationDate");
 		map.put("primds.moddate", "PrimaryDataset.LastModificationDate");
-		map.put("primds.createby", "PrimaryDataset.CreatedBy");
-		map.put("primds.modby", "PrimaryDataset.LastModifiedBy");
+//		map.put("primds.createby", "PrimaryDataset.CreatedBy");
+//		map.put("primds.modby", "PrimaryDataset.LastModifiedBy");
 		
 		map.put("block.name", "Block.Name");
 		map.put("block.id", "Block.ID");
@@ -58,8 +58,8 @@ public class KeyMap {
 		map.put("block.status", "Block.OpenForWriting");
 		map.put("block.createdate", "Block.CreationDate");
 		map.put("block.moddate", "Block.LastModificationDate");
-		map.put("block.createby", "Block.CreatedBy");
-		map.put("block.modby", "Block.LastModifiedBy");
+//		map.put("block.createby", "Block.CreatedBy");
+//		map.put("block.modby", "Block.LastModifiedBy");
 		
 		map.put("run.number", "Runs.RunNumber");
 		map.put("run.id", "Runs.ID");
@@ -71,8 +71,8 @@ public class KeyMap {
 		map.put("run.endtime", "Runs.EndOfRun");
 		map.put("run.createdate", "Runs.CreationDate");
 		map.put("run.moddate", "Runs.LastModificationDate");
-		map.put("run.createby", "Runs.CreatedBy");
-		map.put("run.modby", "Runs.LastModifiedBy");
+//		map.put("run.createby", "Runs.CreatedBy");
+//		map.put("run.modby", "Runs.LastModifiedBy");
 		
 		map.put("lumi.startevnum", "LumiSection.StartEventNumber");
 		map.put("lumi.id", "LumiSection.ID");
@@ -82,15 +82,15 @@ public class KeyMap {
 		map.put("lumi.endtime", "LumiSection.LumiEndTime");
 		map.put("lumi.createdate", "LumiSection.CreationDate");
 		map.put("lumi.moddate", "LumiSection.LastModificationDate");
-		map.put("lumi.createby", "LumiSection.CreatedBy");
-		map.put("lumi.modby", "LumiSection.LastModifiedBy");
+//		map.put("lumi.createby", "LumiSection.CreatedBy");
+//		map.put("lumi.modby", "LumiSection.LastModifiedBy");
 		
 		map.put("branch.name", "Branch.Name");
 		map.put("branch.id", "Branch.ID");
 		map.put("branch.createdate", "Branch.CreationDate");
 		map.put("branch.moddate", "Branch.LastModificationDate");
-		map.put("branch.createby", "Branch.CreatedBy");
-		map.put("branch.modby", "Branch.LastModifiedBy");
+//		map.put("branch.createby", "Branch.CreatedBy");
+//		map.put("branch.modby", "Branch.LastModifiedBy");
 		
 		map.put("ads.name", "AnalysisDataset.Name");
 		map.put("ads.id", "AnalysisDataset.ID");
@@ -100,8 +100,8 @@ public class KeyMap {
 		map.put("ads.procds", "AnalysisDataset.ProcessedDS");
 		map.put("ads.createdate", "AnalysisDataset.CreationDate");
 		map.put("ads.moddate", "AnalysisDataset.LastModificationDate");
-		map.put("ads.createby", "AnalysisDataset.CreatedBy");
-		map.put("ads.modby", "AnalysisDataset.LastModifiedBy");
+//		map.put("ads.createby", "AnalysisDataset.CreatedBy");
+//		map.put("ads.modby", "AnalysisDataset.LastModifiedBy");
 	
 		map.put("phygrp.name", "PhysicsGroup.PhysicsGroupName");
 		map.put("phygrp.id", "PhysicsGroup.ID");
@@ -111,8 +111,8 @@ public class KeyMap {
 		map.put("group.id", "PhysicsGroup.ID");
 		map.put("group.createdate", "PhysicsGroup.CreationDate");
 		map.put("group.moddate", "PhysicsGroup.LastModificationDate");
-		map.put("group.createby", "PhysicsGroup.CreatedBy");
-		map.put("group.modby", "PhysicsGroup.LastModifiedBy");
+//		map.put("group.createby", "PhysicsGroup.CreatedBy");
+//		map.put("group.modby", "PhysicsGroup.LastModifiedBy");
 
 		map.put("algo.id", "AlgorithmConfig.ID");
 		map.put("algo.version", "AppVersion.Version");
@@ -120,15 +120,15 @@ public class KeyMap {
 		map.put("algo.exe", "AppExecutable.ExecutableName");
 		map.put("algo.createdate", "AlgorithmConfig.CreationDate");
 		map.put("algo.moddate", "AlgorithmConfig.LastModificationDate");
-		map.put("algo.createby", "AlgorithmConfig.CreatedBy");
-		map.put("algo.modby", "AlgorithmConfig.LastModifiedBy");
+//		map.put("algo.createby", "AlgorithmConfig.CreatedBy");
+//		map.put("algo.modby", "AlgorithmConfig.LastModifiedBy");
 
 		map.put("datatype.id", "PrimaryDSType.ID");
 		map.put("datatype.type", "PrimaryDSType.Type");
 		map.put("datatype.createdate", "PrimaryDSType.CreationDate");
 		map.put("datatype.moddate", "PrimaryDSType.LastModificationDate");
-		map.put("datatype.createby", "PrimaryDSType.CreatedBy");
-		map.put("datatype.modby", "PrimaryDSType.LastModifiedBy");
+//		map.put("datatype.createby", "PrimaryDSType.CreatedBy");
+//		map.put("datatype.modby", "PrimaryDSType.LastModifiedBy");
 
 		map.put("mcdesc.id", "MCDescription.ID");
 		map.put("mcdesc.name", "MCDescription.MCChannelDescription");
@@ -136,15 +136,15 @@ public class KeyMap {
 		map.put("mcdesc.parent", "MCDescription.MCDecayChain");
 		map.put("mcdesc.createdate", "MCDescription.CreationDate");
 		map.put("mcdesc.moddate", "MCDescription.LastModificationDate");
-		map.put("mcdesc.createby", "MCDescription.CreatedBy");
-		map.put("mcdesc.modby", "MCDescription.LastModifiedBy");
+//		map.put("mcdesc.createby", "MCDescription.CreatedBy");
+//		map.put("mcdesc.modby", "MCDescription.LastModifiedBy");
 
 		map.put("trigdesc.id", "TriggerPathDescription.ID");
 		map.put("trigdesc.name", "TriggerPathDescription.TriggerPathDescription");
 		map.put("trigdesc.createdate", "TriggerPathDescription.CreationDate");
 		map.put("trigdesc.moddate", "TriggerPathDescription.LastModificationDate");
-		map.put("trigdesc.createby", "TriggerPathDescription.CreatedBy");
-		map.put("trigdesc.modby", "TriggerPathDescription.LastModifiedBy");
+//		map.put("trigdesc.createby", "TriggerPathDescription.CreatedBy");
+//		map.put("trigdesc.modby", "TriggerPathDescription.LastModifiedBy");
 
 		map.put("config.id", "QueryableParameterSet.ID");
 		map.put("config.name", "QueryableParameterSet.Name");
@@ -155,8 +155,8 @@ public class KeyMap {
 		map.put("config.content", "QueryableParameterSet.Content");
 		map.put("config.createdate", "QueryableParameterSet.CreationDate");
 		map.put("config.moddate", "QueryableParameterSet.LastModificationDate");
-		map.put("config.createby", "QueryableParameterSet.CreatedBy");
-		map.put("config.modby", "QueryableParameterSet.LastModifiedBy");
+//		map.put("config.createby", "QueryableParameterSet.CreatedBy");
+//		map.put("config.modby", "QueryableParameterSet.LastModifiedBy");
 
 		map.put("site.name", "StorageElement.SEName");
 		map.put("dq", "Runs");
@@ -175,4 +175,3 @@ public class KeyMap {
 	}
 
 }
-
