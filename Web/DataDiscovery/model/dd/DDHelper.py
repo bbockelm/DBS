@@ -373,14 +373,14 @@ class DDHelper(DDLogger):
             cond += " and run >= %s" % minRun
         if  maxRun and maxRun != "*":
             cond += " and run <= %s" % maxRun
+        cond += " and dataset.status like VALID*"
 
         if  count:
-            query = 'find run, dataset where dataset = %s' % dataset
+            query = 'find count(run), min(run), max(run) where dataset = %s' % dataset
             if  cond:
                 query += cond
-            res = [int(run) for run, path in self.queryDBS(dbsInst, query)]
-            res.sort()
-            return len(res), res[0], res[-1]
+            res = self.queryDBS(dbsInst, query)[0]
+            return int(res[0]), int(res[1]), int(res[2])
     
         query = 'find site where dataset = %s' % dataset
         if  cond:
@@ -388,7 +388,7 @@ class DDHelper(DDLogger):
         res = self.queryDBS(dbsInst, query)
         selist = [se for se in res]
 
-        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) where dataset = %s and dataset.status like VALID*' % dataset
+        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) where dataset = %s' % dataset
         if  cond:
             query += cond
         query += ' order by run.number'
