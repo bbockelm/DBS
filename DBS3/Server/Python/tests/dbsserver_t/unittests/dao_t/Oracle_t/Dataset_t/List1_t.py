@@ -2,8 +2,8 @@
 dao  unittests
 """
 
-__revision__ = "$Id: DBSReaderModel.py,v 1.8 2009/12/27 13:39:17 akhukhun Exp $"
-__version__ = "$Revision: 1.8 $"
+__revision__ = "$Id: List1_t.py,v 1.1 2010/01/01 19:54:40 akhukhun Exp $"
+__version__ = "$Revision: 1.1 $"
 
 import os
 import unittest
@@ -28,8 +28,8 @@ class List_t(unittest.TestCase):
         dao.execute()
         dao.execute(dataset="*")
         dao.execute(parent_dataset='*')
-        dao.execute(version='%')
-        dao.execute(hash='%')
+        dao.execute(release_version='%')
+        dao.execute(pset_hash='%')
         dao.execute(app_name='%')
         dao.execute(output_module_label='%')
         result = dao.execute("ThisDoesNotExist")
