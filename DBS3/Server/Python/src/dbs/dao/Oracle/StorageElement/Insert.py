@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """ DAO Object for StorageElements table """ 
 
-__revision__ = "$Revision: $"
-__version__  = "$Id: $ "
+__revision__ = "$Revision: 1.2 $"
+__version__  = "$Id: Insert.py,v 1.2 2009/10/20 02:19:23 afaq Exp $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -10,9 +10,9 @@ class Insert(DBFormatter):
 
     def __init__(self, logger, dbi):
             DBFormatter.__init__(self, logger, dbi)
-            self.owner = "%s." % self.dbi.engine.url.username
+	    self.owner = "%s." % owner
 
-            self.sql = """INSERT INTO %sSTORAGE_ELEMENTS ( SE_ID, SE_NAME) VALUES (:seid, :sename) % (self.owner) ;"""
+            self.sql = """INSERT INTO %sSTORAGE_ELEMENTS ( SE_ID, SE_NAME) VALUES (:seid, :sename)""" % (self.owner)
 
     def getBinds_delme( self, storage_elementsObj ):
             binds = {}
