@@ -2,8 +2,8 @@
 business unittests
 """
 
-__revision__ = "$Id: DBSReaderModel.py,v 1.8 2009/12/27 13:39:17 akhukhun Exp $"
-__version__ = "$Revision: 1.8 $"
+__revision__ = "$Id: DBSFile_t.py,v 1.1 2010/01/01 19:54:37 akhukhun Exp $"
+__version__ = "$Revision: 1.1 $"
 
 import os
 import unittest
@@ -24,19 +24,19 @@ class DBSFile_t(unittest.TestCase):
         dbi = DBFactory(self.logger, dburl).connect()
         bo = DBSFile(self.logger, dbi, dbowner)
 
-        result = bo.listFiles('%')
+        result = bo.listFiles('NoSuchFile%')
         self.assertTrue(type(result) == list)
         self.assertEqual(len(result), 0)
         
-        result = bo.listFiles(dataset='%')
+        result = bo.listFiles(dataset='NoSuchDataset%')
         self.assertTrue(type(result) == list)
         self.assertEqual(len(result), 0)
         
-        result = bo.listFiles(block_name='%')
+        result = bo.listFiles(block_name='NoSuchBlock%')
         self.assertTrue(type(result) == list)
         self.assertEqual(len(result), 0)
         
-        result = bo.listFiles(logical_file_name='%')
+        result = bo.listFiles(logical_file_name='NoSuchLFN%')
         self.assertTrue(type(result) == list)
         self.assertEqual(len(result), 0)
         
