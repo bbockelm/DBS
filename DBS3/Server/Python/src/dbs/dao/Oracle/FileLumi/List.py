@@ -2,8 +2,8 @@
 """
 This module provides FileLumi.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.8 2009/12/27 13:41:25 akhukhun Exp $"
-__version__ = "$Revision: 1.8 $"
+__revision__ = "$Id: List.py,v 1.1 2010/01/01 18:58:34 akhukhun Exp $"
+__version__ = "$Revision: 1.1 $"
 
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -17,7 +17,7 @@ class List(DBFormatter):
         Add schema owner and sql.
         """
         DBFormatter.__init__(self, logger, dbi)
-        self.owner = ("", "%s." % owner)[bool(owner)]
+        self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else ""
         self.sql = \
 """
 SELECT FL.FILE_LUMI_ID, FL.RUN_NUM, FL.LUMI_SECTION_NUM,

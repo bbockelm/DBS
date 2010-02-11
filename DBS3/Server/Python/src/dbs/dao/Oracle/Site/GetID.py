@@ -2,8 +2,8 @@
 """
 This module provides Site.GetID data access object.
 """
-__revision__ = "$Id: GetID.py,v 1.3 2009/11/24 10:58:13 akhukhun Exp $"
-__version__ = "$Revision: 1.3 $"
+__revision__ = "$Id: GetID.py,v 1.4 2010/01/12 22:55:35 afaq Exp $"
+__version__ = "$Revision: 1.4 $"
 
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -16,7 +16,7 @@ class GetID(DBFormatter):
         Add schema owner and sql.
         """
         DBFormatter.__init__(self, logger, dbi)
-        self.owner = "%s." % owner
+        self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else ""
         self.sql = \
 """
 SELECT S.SITE_ID, S.SITE_NAME

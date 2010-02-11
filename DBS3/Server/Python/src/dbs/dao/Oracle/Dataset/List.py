@@ -2,8 +2,8 @@
 """
 This module provides Dataset.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.15 2009/12/27 13:40:31 akhukhun Exp $"
-__version__ = "$Revision: 1.15 $"
+__revision__ = "$Id: List.py,v 1.16 2010/01/01 18:56:21 akhukhun Exp $"
+__version__ = "$Revision: 1.16 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -19,7 +19,7 @@ class List(DBFormatter):
         We might need to pass these parameters from outside later
         """
         DBFormatter.__init__(self, logger, dbi)
-        self.owner = ("", "%s." % owner)[bool(owner)]
+	self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else ""
         self.sql = \
 """
 SELECT D.DATASET_ID, D.DATASET, D.IS_DATASET_VALID, 

@@ -2,8 +2,8 @@
 """
 This module provides ApplicationExecutable.GetID data access object.
 """
-__revision__ = "$Id: $"
-__version__ = "$Revision: $"
+__revision__ = "$Id: GetID.py,v 1.1 2009/12/21 21:05:38 afaq Exp $"
+__version__ = "$Revision: 1.1 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 class GetID(DBFormatter):
@@ -15,7 +15,7 @@ class GetID(DBFormatter):
         Add schema owner and sql.
         """
         DBFormatter.__init__(self, logger, dbi)
-        self.owner = "%s." % owner
+        self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else ""
         self.sql = \
 	"""
 	SELECT A.APP_EXEC_ID
