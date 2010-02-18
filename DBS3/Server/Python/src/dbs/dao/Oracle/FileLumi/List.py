@@ -2,8 +2,8 @@
 """
 This module provides FileLumi.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.1 2010/01/01 18:58:34 akhukhun Exp $"
-__version__ = "$Revision: 1.1 $"
+__revision__ = "$Id: List.py,v 1.2 2010/02/11 18:03:26 afaq Exp $"
+__version__ = "$Revision: 1.2 $"
 
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -44,9 +44,9 @@ JOIN %sBLOCKS B ON B.BLOCK_ID = F.BLOCK_ID
             binds = {'block_name': block_name}
         else:
             raise Exception("Either logocal_file_name or block_name must be provided.")
-            
-        cursor = conn.connection.cursor()
-        cursor.execute(sql, binds)
-        result = self.formatCursor(cursor)
+        
+	cursors = self.dbi.processData(sql, binds, conn, transaction=False, returnCursor=True)
+	assert len(cursors) == 1, "file lumi does not exist"
+        result = self.formatCursor(cursors[0])
         conn.close()
         return result
