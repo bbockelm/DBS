@@ -526,8 +526,7 @@ def assertRun(test, runIn1, runIn2):
 
 def assertFile(test, fileIn1, fileIn2):
 	test.assertEqual(fileIn1['Checksum'], fileIn2['Checksum'])
-	if fileIn1.has_key('Adler32'):
-	    test.assertEqual(fileIn1['Adler32'], fileIn2['Adler32'])
+	test.assertEqual(fileIn1['Adler32'], fileIn2['Adler32'])
 	test.assertEqual(fileIn1['Md5'], fileIn2['Md5'])
 	test.assertEqual(fileIn1['LogicalFileName'], fileIn2['LogicalFileName'])
 	test.assertEqual(fileIn1['NumberOfEvents'], fileIn2['NumberOfEvents'])

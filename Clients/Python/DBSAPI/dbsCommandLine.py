@@ -1955,10 +1955,7 @@ class ApiDispatcher:
 			if userInput.split()[1].strip()=="dataset":
 				userInput += " where dataset.status like VALID* "
 		else:
-			if userInput.find("order") != -1 :
-				userInput = userInput.replace("order", " and dataset.status like VALID* order ")	
-			else:
-				userInput += " and dataset.status like VALID* "
+			userInput += " and dataset.status like VALID* "
 	#print userInput
 	if dbsAvailable: 
 		data=self.getApi().executeQuery(query=userInput, type=qu, begin=self.optdict.get('begin'), end=self.optdict.get('end'))

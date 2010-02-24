@@ -34,7 +34,7 @@ try:
 	optManager  = DbsOptionParser()
 	(opts,args) = optManager.getOpt()
 	args = {}
-	args['url']=dstURL
+	args['url']='http://cmssrv17.fnal.gov:8989/DBS_1_0_5_STABLE/servlet/DBSServlet' 
 	args['mode']='POST'
 	api = DbsApi(args)
       
@@ -54,10 +54,10 @@ print "Done"
 args = {}
 args['url'] = srcURL 
 args['mode']='POST'
-args['version']='DBS_2_0_9'
+args['version']='DBS_2_0_5'
 srcApi = DbsApi(args)
 args['url'] = dstURL 
-args['version']='DBS_2_0_9'
+args['version']='DBS_2_0_6'
 dstApi = DbsApi(args)
 pathTokens = path.split("/")
 primName = pathTokens[1]

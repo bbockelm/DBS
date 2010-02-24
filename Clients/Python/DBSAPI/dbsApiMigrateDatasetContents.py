@@ -17,21 +17,19 @@ from dbsLogger import *
 from dbsUtil import *
 from dbsApi import DbsApi
 
-def makeAPI(url, version = None):
+def makeAPI(url):
                 #args = {}
                 #args['url'] = url
                 args = {}
                 if url.startswith('http'):
-                        args['url']     = url
-                        args['mode']    = 'POST'
-                        if version:
-                            args['version'] = version
+                        args['url'] = url
+                        args['mode'] = 'POST'
 
                 return DbsApi(args)
 
 
 
-def dbsApiImplMigrateDatasetContents(self, srcURL, dstURL, path, block_name="", srcVersion = None, dstVersion = None, noParentsReadOnly = False, pruneBranches = False):
+def dbsApiImplMigrateDatasetContents(self, srcURL, dstURL, path, block_name="", noParentsReadOnly = False, pruneBranches = False):
     """
     
 Migrate API Instructions
@@ -176,28 +174,28 @@ Scenarios
 Examples
 
         Migrates the dataset and the specified block with parents
-        api.migrateDatasetContents('http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'
-                                        'https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet'
-                                        '/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO',
-                                        '/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58')
+        api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+                                        "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
+                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
+                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58")
 
         Migrates all the blocks in the dataset with parents
-        api.migrateDatasetContents('http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'
-                                        'https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet'
-                                        '/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO',)
+        api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+                                        "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
+                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",)
 
         Migrates the dataset and the specified block without parents
-        api.migrateDatasetContents('http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'
-                                        'https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet'
-                                        '/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO',
-                                        '/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58',
+        api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+                                        "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
+                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
+                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58",
                                          noParentsReadOnly=True)
 
 
         Migrates all the blocks in the dataset without the parents
-        api.migrateDatasetContents('http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'
-                                        'https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet'
-                                        '/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO',
+        api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+                                        "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
+                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
                                          noParentsReadOnly=True)
 
 
@@ -212,8 +210,8 @@ Examples
     try:
        # Invoke Server.
        path = get_path(path)
-       apiSrc = makeAPI(srcURL, srcVersion)
-       apiDst = makeAPI(dstURL, dstVersion)
+       apiSrc = makeAPI(srcURL)
+       apiDst = makeAPI(dstURL)
 
        #transfer = DbsMigrateApi(apiSrc, apiDst, False, pruneBranches)
        transfer = DbsMigrateApi(apiSrc, apiDst, True, pruneBranches)

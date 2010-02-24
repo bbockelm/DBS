@@ -21,11 +21,8 @@ find run,lumi,file where dataset  like  %Online%
 find file.release   where  dataset=/CalPrivateGlobal-default/Online/RAW
 find primds where primds.name like %test%
 find procds, procds.createdate
-find procds, procds.createdate order by procds.createdate
 find primds
 find procds.createby, run.modby
-# find procds.createby, run.modby order by run.modby
-# find procds.createby, run.modby order by procds.createby
 find file, procds.createby where  file.modby like %sekhri% and dataset = /CalPrivateGlobal-default/Online/RAW
 find file where file.modby like %sekhri%
 #find procds.parent,procds.name,file,file.parent  where procds.parent like %
@@ -174,4 +171,3 @@ find max(run.starttime)
 find primds, primds.createby where primds.createby = *Sekhri*
 find file where file.createby = null
 find block where site = null
-find config.content
