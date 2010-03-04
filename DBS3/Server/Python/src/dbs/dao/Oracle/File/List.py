@@ -2,8 +2,8 @@
 """
 This module provides File.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.18 2010/02/18 19:56:50 yuyi Exp $"
-__version__ = "$Revision: 1.18 $"
+__revision__ = "$Id: List.py,v 1.19 2010/03/02 17:28:05 yuyi Exp $"
+__version__ = "$Revision: 1.19 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -46,7 +46,7 @@ JOIN %sBLOCKS B ON B.BLOCK_ID = F.BLOCK_ID
         block_name: /a/b/c#d
         logical_file_name: string
         """	
-        if conn:
+        if not conn:
             raise Exception("No Connection to DB for listFile API.\n")
         sql = self.sql 
         binds = {}
