@@ -2,8 +2,8 @@
 """
 This module provides Dataset.UpdateStatus data access object.
 """
-__revision__ = "$Id: $"
-__version__ = "$Revision: $"
+__revision__ = "$Id: UpdateStatus.py,v 1.1 2010/03/04 17:59:18 afaq Exp $"
+__version__ = "$Revision: 1.1 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -25,6 +25,6 @@ class UpdateStatus(DBFormatter):
         """
         for a given file
         """	
-	binds = { "dataset" : dataset , "is_dataset_valid" : is_file_valid }
+	binds = { "dataset" : dataset , "is_dataset_valid" : is_dataset_valid }
         result = self.dbi.processData(self.sql, binds, conn, transaction)
     
