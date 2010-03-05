@@ -2,8 +2,8 @@
 """
 This module provides PhysicsGroup.GetID data access object.
 """
-__revision__ = "$Id: GetID.py,v 1.2 2009/11/24 10:58:13 akhukhun Exp $"
-__version__ = "$Revision: 1.2 $"
+__revision__ = "$Id: GetID.py,v 1.3 2010/02/11 18:03:27 afaq Exp $"
+__version__ = "$Revision: 1.3 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -23,10 +23,12 @@ SELECT PG.PHYSICS_GROUP_ID, PG.PHYSICS_GROUP_NAME
 FROM %sPHYSICS_GROUPS PG 
 """ % (self.owner)
 
-    def execute(self, name, conn = None, transaction = False):
+    def execute(self, conn, name, transaction = False):
         """
         returns id for a given physics group name
         """
+	if not conn:
+	    raise Exception("dbs/dao/Oracle/PhysicsGroup/GetID expects db connection from up layer.")
         sql = self.sql
         sql += "WHERE PG.PHYSICS_GROUP_NAME = :physicsgroup" 
         binds = {"physicsgroup":name}
