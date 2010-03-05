@@ -3,8 +3,8 @@
 This module provides Dataset.GetID data access object.
 Light dao object to get the id for a give /primds/procds/tier
 """
-__revision__ = "$Id: GetID.py,v 1.5 2009/12/22 21:52:26 afaq Exp $"
-__version__ = "$Revision: 1.5 $"
+__revision__ = "$Id: GetID.py,v 1.6 2010/02/11 18:03:24 afaq Exp $"
+__version__ = "$Revision: 1.6 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 class GetID(DBFormatter):
@@ -24,10 +24,12 @@ FROM %sDATASETS D
 """ % ( self.owner )
         
 	
-    def execute(self, name, conn = None, transaction = False):
+    def execute(self, conn, name, transaction = False):
         """
         returns id for a given dataset = /primds/procds/tier
         """	
+	if not conn:
+	    raise Exception("dbs/dao/Oracle/Dataset/GetID expects db connection from up layer.")
         sql = self.sql
         sql += "WHERE D.DATASET = :dataset"
         binds = {"dataset":name}
