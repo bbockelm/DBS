@@ -2,8 +2,8 @@
 """
 This module provides File.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.19 2010/03/02 17:28:05 yuyi Exp $"
-__version__ = "$Revision: 1.19 $"
+__revision__ = "$Id: List.py,v 1.20 2010/03/04 20:51:23 yuyi Exp $"
+__version__ = "$Revision: 1.20 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -47,7 +47,7 @@ JOIN %sBLOCKS B ON B.BLOCK_ID = F.BLOCK_ID
         logical_file_name: string
         """	
         if not conn:
-            raise Exception("No Connection to DB for listFile API.\n")
+            raise Exception("dbs/dao/Oracle/File/List expects db connection from up layer.")
         sql = self.sql 
         binds = {}
         op = ("=","like")["%" in logical_file_name]
