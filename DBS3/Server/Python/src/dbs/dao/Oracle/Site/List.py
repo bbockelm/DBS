@@ -2,8 +2,8 @@
 """
 This module provides PrimaryDSType.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.2 2010/01/12 22:55:36 afaq Exp $"
-__version__ = "$Revision: 1.2 $"
+__revision__ = "$Id: List.py,v 1.3 2010/02/11 18:03:29 afaq Exp $"
+__version__ = "$Revision: 1.3 $"
 
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -23,10 +23,12 @@ SELECT S.SITE_ID, S.SITE_NAME
 FROM %sSITES S 
 """ % (self.owner)
 
-    def execute(self, pattern = "", conn = None, transaction = False):
+    def execute(self, conn, pattern = "", transaction = False):
         """
         Lists all sites types if pattern is not provided.
         """
+	if not conn:
+	    raise Exception("dbs/dao/Oracle/Site/List expects db connection from up layer.")
         sql = self.sql
         if pattern == "":
             result = self.dbi.processData(sql, conn=conn, transaction=transaction)
