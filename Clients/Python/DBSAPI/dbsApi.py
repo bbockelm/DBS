@@ -560,6 +560,18 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+	
+  def dbsMigrateBlock(self, srcURL, dstURL, block_name="", srcVersion = None, dstVersion = None):
+     try:
+       #Calling the Implementation function
+       from dbsApiMigrateBlock import dbsApiImplMigrateBlock
+       return  dbsApiImplMigrateBlock(self, srcURL, dstURL, block_name, srcVersion, dstVersion )
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
   def insertPrimaryDataset(self, dataset):
      try:
        #Calling the Implementation function
