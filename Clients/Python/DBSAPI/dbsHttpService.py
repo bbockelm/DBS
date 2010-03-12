@@ -133,7 +133,7 @@ class DbsHttpService:
 	    self.UserID = Args['userID']
 	    self.retry_att = 0
             if Args.has_key('retry'):
-               self.retry = Args['retry']
+               self.retry = int(Args['retry'])
             else:
                self.retry = None
 
@@ -175,7 +175,7 @@ class DbsHttpService:
    # All looks OK, still doesn't gurantee proxy's validity etc.
    return key, proxy
    
-  def _call(self, args, typ, repeat = 3, delay = 2 ):
+  def _call(self, args, typ, repeat = 0, delay = 2 ):
 	  if self.retry and not self.retry_att:
             self.retry_att=1
             repeat=self.retry
@@ -185,7 +185,7 @@ class DbsHttpService:
 	  except DbsConnectionError ,  ex:
 		  ret = self.callAgain(args, typ, repeat, delay)
 		  if ret in ("EXP"):
-			exmsg ="Failed to connect in 03 Attempts\n"
+			exmsg ="Failed to connect in %s retry attempt(s)\n" % self.retry
 			exmsg+=str(ex)
 			raise DbsConnectionError(args=exmsg, code=5999)
 		  else:
@@ -193,16 +193,16 @@ class DbsHttpService:
 	  except DbsDatabaseError, ex:
                   ret = self.callAgain(args, typ, repeat, delay)
                   if ret in ("EXP"):
-                        exmsg ="Failed to connect in 03 Attempts\n"
+                        exmsg ="Failed to connect in %s retry attempt(s)\n" % self.retry
                         exmsg+=str(ex)
                         raise DbsConnectionError(args=exmsg, code=5999)
                   else:
                         return ret
 		  
   def callAgain(self, args, typ, repeat, delay):
-	  print "I will retry in %s seconds" % delay
 
 	  if(repeat!=0):
+		  print "I will retry in %s seconds" % delay
 		  self.Host = self.ipList[repeat % len(self.ipList)]
 		  repeat -= 1
 		  time.sleep(delay)
