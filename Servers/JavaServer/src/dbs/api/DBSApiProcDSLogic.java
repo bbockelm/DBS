@@ -1,6 +1,6 @@
 /**
- $Revision: 1.91 $"
- $Id: DBSApiProcDSLogic.java,v 1.91 2009/10/08 21:25:36 afaq Exp $"
+ $Revision: 1.92 $"
+ $Id: DBSApiProcDSLogic.java,v 1.92 2010/01/11 17:04:20 afaq Exp $"
  *
  */
 
@@ -569,13 +569,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                 }
 
 
-
 		//Fetch the Processed Datatset ID that was just inseted or fetched , to be used for subsequent insert of other tables.
-		//FIXME this might use processed datatset with primary datatset combination instead of just proDSName
-		//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
-		if(algoVector.size() > 0 || parentVector.size() > 0) 
-			//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
-			if(isNull(procDSID)) procDSID = getProcessedDSID(conn, path, true);
+		if(isNull(procDSID)) procDSID = getProcessedDSID(conn, path, true);
 		
 		checkProcDSStatus(conn, out, path, procDSID);
 		//Insert ProcAlgoMap table by fetching application ID. 
