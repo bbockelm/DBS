@@ -2,8 +2,8 @@
 """
 This module provides Dataset.UpdateType data access object.
 """
-__revision__ = "$Id: $"
-__version__ = "$Revision: 1.4 $"
+__revision__ = "$Id: UpdateType.py,v 1.1 2010/03/18 14:39:59 afaq Exp $"
+__version__ = "$Revision: 1.1 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -19,7 +19,8 @@ class UpdateType(DBFormatter):
         """
         DBFormatter.__init__(self, logger, dbi)
 	self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else ""
-        self.sql = """UPDATE %sDATASETS SET DATASET_TYPE_ID = ( select DATASET_TYPE_ID from DATASET_TYPES where DATASET_TYPE=:dataset_type ) where DATASET = :dataset""" %  self.owner 
+        self.sql = """UPDATE %sDATASETS SET DATASET_TYPE_ID = ( select DATASET_TYPE_ID from %sDATASET_TYPES where
+	DATASET_TYPE=:dataset_type ) where DATASET = :dataset""" %  ((self.owner,)*2) 
         
     def execute ( self, conn, dataset, dataset_type, transaction=False ):
         """
