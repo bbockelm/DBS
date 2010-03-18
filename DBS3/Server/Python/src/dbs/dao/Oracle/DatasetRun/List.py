@@ -2,8 +2,8 @@
 """
 This module provides DatasetRun.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.3 2010/03/05 16:51:49 yuyi Exp $"
-__version__ = "$Revision: 1.3 $"
+__revision__ = "$Id: List.py,v 1.4 2010/03/18 16:28:56 afaq Exp $"
+__version__ = "$Revision: 1.4 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -40,7 +40,7 @@ class List(DBFormatter):
 		else:
 			sql += " where FL.RUN_NUM <= :max_run"
 		binds["max_run"] = maxRun
-
+	print sql, binds
 	cursors = self.dbi.processData(sql, binds, conn, transaction=trans, returnCursor=True)
 	result = self.formatCursor(cursors[0])
         return result
