@@ -1,6 +1,6 @@
 # 
-# $Revision: 1.34 $"
-# $Id: dbsClient.py,v 1.34 2010/03/18 19:49:18 afaq Exp $"
+# $Revision: 1.35 $"
+# $Id: dbsClient.py,v 1.35 2010/03/18 20:20:42 afaq Exp $"
 # @author anzar
 #
 import os, sys, socket
@@ -435,6 +435,17 @@ class DbsApi:
 	    * complete : 1/0 mark it complete
 	    """
 	    return self.callServer("/runs?dataset=%s&run_number=%s&complete=%s" %(dataset, run_number, complete), params={}, callmethod='PUT')
+	
+	def listDataTypes(self, dataset=""):
+	    """
+	    API to list data types
+	    """
+
+	    url_param=""
+	    if dataset:
+		url_param+="?dataset=%s" %dataset
+	    
+	    return self.callServer("/datatypes%s" %url_param)
 	    
 if __name__ == "__main__":
 	# DBS Service URL
