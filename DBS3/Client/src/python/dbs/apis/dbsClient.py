@@ -1,6 +1,6 @@
 # 
-# $Revision: 1.35 $"
-# $Id: dbsClient.py,v 1.35 2010/03/18 20:20:42 afaq Exp $"
+# $Revision: 1.36 $"
+# $Id: dbsClient.py,v 1.36 2010/03/19 15:06:46 afaq Exp $"
 # @author anzar
 #
 import os, sys, socket
@@ -259,7 +259,7 @@ class DbsApi:
 		    
 		return self.callServer("/blocks?%s" %url_param)
 
-        def listFiles(self, lfn="", dataset="", block="", release_version="", pset_hash="", app_name="", output_module_label="", minrun="", maxrun=""):
+        def listFiles(self, lfn="", dataset="", block="", release_version="", pset_hash="", app_name="", output_module_label="", minrun="", maxrun="", origin_site=""):
                 """
                 * API to list A file in DBS 
                 * lfn : lfn of file
@@ -271,6 +271,7 @@ class DbsApi:
 		* output_module_label
 		* minrun/maxrun : if you want to look for a run range use these 
 				  Use minrun=maxrun for a specific run, say for runNumber 2000 use minrun=2000, maxrun=2000
+		* origin_site : site where file was created
                 """
 
 		add_to_url=""
@@ -311,6 +312,10 @@ class DbsApi:
 		if maxrun:
 		    if amp: add_to_url += "&"
 		    add_to_url += "maxrun=%s" %maxrun
+		    amp=True
+		if origin_site:
+		    if amp: add_to_url += "&"
+		    add_to_url += "origin_site=%s" %origin_site
 		    amp=True
 		if add_to_url:
 		    return self.callServer("/files?%s" % add_to_url )
