@@ -2,8 +2,8 @@
 dao unittests
 """
 
-__revision__ = "$Id: DBSReaderModel.py,v 1.8 2009/12/27 13:39:17 akhukhun Exp $"
-__version__ = "$Revision: 1.8 $"
+__revision__ = "$Id: List_t.py,v 1.1 2010/01/01 19:54:39 akhukhun Exp $"
+__version__ = "$Revision: 1.1 $"
 
 import os
 import unittest
@@ -19,15 +19,15 @@ class List_t(unittest.TestCase):
         self.logger = logging.getLogger("dbs test logger")
         self.dbowner = os.environ["DBS_TEST_DBOWNER_READER"]
         self.dbi = DBFactory(self.logger, dburl).connect()
-        self.assertTrue(self.dbi.engine.dialect.name == "oracle", \
-                        "Database must be oracle" )
                         
     def test01(self):
         """dao.Oracle.DatasetParent.List: Basic"""
+	conn = self.dbi.connection()
         dao = DatasetParentList(self.logger, self.dbi, self.dbowner)
-        result = dao.execute(dataset='*')
+        result = dao.execute(conn, dataset='*')
         self.assertTrue(type(result) == list)
         self.assertEqual(len(result), 0)
+	conn.close()
         
 if __name__ == "__main__":
     SUITE = unittest.TestLoader().loadTestsFromTestCase(List_t)
