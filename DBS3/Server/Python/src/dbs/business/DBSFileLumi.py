@@ -3,8 +3,8 @@
 This module provides business object class to interact with FileLumi. 
 """
 
-__revision__ = "$Id: DBSFileLumi.py,v 1.3 2010/03/08 23:12:34 afaq Exp $"
-__version__ = "$Revision: 1.3 $"
+__revision__ = "$Id: DBSFileLumi.py,v 1.4 2010/03/25 16:37:59 afaq Exp $"
+__version__ = "$Revision: 1.4 $"
 
 from WMCore.DAOFactory import DAOFactory
 
@@ -28,7 +28,13 @@ class DBSFileLumi:
         optional parameter: logical_file_name, block_name
         returns: logical_file_name, file_lumi_id, run_num, lumi_section_num
         """
-	conn=self.dbi.connection()
-        result=self.filelumilist.execute(conn, logical_file_name, block_name)
-	conn.close()
-	return result
+	try:
+	    conn=self.dbi.connection()
+	    result=self.filelumilist.execute(conn, logical_file_name, block_name)
+	    conn.close()
+	    return result
+        except Exception, ex:
+	    raise ex
+	finally:
+	    conn.close()
+    
