@@ -365,6 +365,8 @@ class DDHelper(DDLogger):
         if dataset.lower() == "any": dataset = "*"
         if not dataset: dataset = "*"
         cond = ""
+        if  dataset and dataset != '*':
+            cond += " and dataset = %s" % dataset
         if  primD and primD != "*":
             cond += " and primds = %s" % primD
         if  primType and primType != "*":
@@ -376,21 +378,50 @@ class DDHelper(DDLogger):
         cond += " and dataset.status like VALID*"
 
         if  count:
-            query = 'find count(run), min(run), max(run) where dataset = %s' % dataset
+#            if  dataset and dataset != '*':
+#                query = 'find count(run), min(run), max(run) where dataset = %s' % dataset
+#                if  cond:
+#                    query += cond
+#                res = self.queryDBS(dbsInst, query)[0]
+#                return int(res[0]), int(res[1]), int(res[2])
+#            elif minRun and maxRun and minRun != '*' and maxRun != '*':
+#                query = 'find count(dataset) where run>=%s and run<=%s' % (minRun, maxRun)
+#                res = self.queryDBS(dbsInst, query)[0]
+#                return nRuns, minRun, maxRun
+#            else:
+            query = 'find count(run)'
             if  cond:
-                query += cond
-            res = self.queryDBS(dbsInst, query)[0]
-            return int(res[0]), int(res[1]), int(res[2])
+                query += ' where ' + cond[4:]
+            res = self.queryDBS(dbsInst, query)
+            counter = int(res[0])
+            query = 'find run, dataset '
+            if  cond:
+                query += ' where ' + cond[4:]
+            res = self.queryDBS(dbsInst, query)
+            min = 99999999999999
+            max = 0
+            for run, dataset in res:
+                run = int(run)
+                if  run > max:
+                    max = run
+                if  run < min:
+                    min = run
+            return counter, min, max
+                
     
-        query = 'find site where dataset = %s' % dataset
+#        query = 'find site where dataset = %s' % dataset
+        query = 'find site'
         if  cond:
-            query += cond
+#            query += cond
+            query += ' where ' + cond[4:]
         res = self.queryDBS(dbsInst, query)
         selist = [se for se in res]
 
-        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) where dataset = %s' % dataset
+#        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) where dataset = %s' % dataset
+        query  = 'find datatype, dataset, run.number, run.numevents, run.numlss, run.totlumi, run.store, run.starttime, run.endtime, run.createby, run.createdate, run.modby, run.moddate, count(file), sum(file.size), sum(file.numevents) '
         if  cond:
-            query += cond
+#            query += cond
+            query += ' where ' + cond[4:]
         query += ' order by run.number'
         res = self.queryDBS(dbsInst, query, fromRow, limit)
         oList = []
@@ -414,19 +445,7 @@ class DDHelper(DDLogger):
             cBy   = parseCreatedBy(cBy)
             mBy   = parseCreatedBy(mBy)
 
-            # http://savannah.cern.ch/bugs/?55304
-#            if  not nEvts or nEvts == "0":
-#                nEvts = fNevts
             nEvts = fNevts
-
-#            query = 'find datatype, site where dataset = %s and run = %s' % (path, run)
-#            result= self.queryDBS(dbsInst, query)
-            # I make assumption that datatype will not change for dataset/run
-#            dsType = ""
-#            selist = []
-#            for dsType, site in result:
-#                selist.append(site)
-#            selist = [site for dsType, site in result]
 
             oList.append( [run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path,selist,fSize,nFiles] )
         runDBInfoDict = {}
