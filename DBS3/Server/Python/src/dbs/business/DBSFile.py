@@ -3,8 +3,8 @@
 This module provides business object class to interact with File. 
 """
 
-__revision__ = "$Id: DBSFile.py,v 1.35 2010/03/19 14:18:01 yuyi Exp $"
-__version__ = "$Revision: 1.35 $"
+__revision__ = "$Id: DBSFile.py,v 1.36 2010/03/25 17:06:00 afaq Exp $"
+__version__ = "$Revision: 1.36 $"
 
 from WMCore.DAOFactory import DAOFactory
 from sqlalchemy import exceptions
@@ -167,8 +167,8 @@ class DBSFile:
 	    block_info = self.blocklist.execute(conn, block_name=firstfile["block"], transaction=tran)
 	    assert len(block_info)==1
 	    block_info=block_info[0]
-	    assert block_info["block_id"]
-	    assert block_info["open_for_writing"]==1
+	    assert block_info["block_id"] 
+	    assert block_info["open_for_writing"]==1 
 	    block_id = block_info["block_id"]
 	    
 	    file_type_id = self.ftypeid.execute( conn, firstfile.get("file_type", "EDM"), transaction=tran)
