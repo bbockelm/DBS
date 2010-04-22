@@ -3,8 +3,8 @@
 DBS Rest Model module
 """
 
-__revision__ = "$Id: DBSWriterModel.py,v 1.33 2010/04/16 19:26:02 afaq Exp $"
-__version__ = "$Revision: 1.33 $"
+__revision__ = "$Id: DBSWriterModel.py,v 1.34 2010/04/21 21:48:01 afaq Exp $"
+__version__ = "$Revision: 1.34 $"
 
 import re
 import cjson
@@ -181,7 +181,6 @@ class DBSWriterModel(DBSReaderModel):
 	
 	    body = request.body.read()
 	    indata = cjson.decode(body)
-
 	    # Proper validation needed
 	    vblock = re.match(r"(/[\w\d_-]+/[\w\d_-]+/[\w\d_-]+)#([\w\d_-]+)$", 
                       indata["block_name"])
