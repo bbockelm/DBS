@@ -1,6 +1,6 @@
 # 
-# $Revision: 1.41 $"
-# $Id: dbsClient.py,v 1.41 2010/04/19 15:39:58 afaq Exp $"
+# $Revision: 1.42 $"
+# $Id: dbsClient.py,v 1.42 2010/04/20 20:06:13 afaq Exp $"
 # @author anzar
 #
 import os, sys, socket
@@ -504,6 +504,11 @@ class DbsApi:
 	   parts=block_name.split('#')
 	   block_name=parts[0]+urllib.quote_plus('#')+parts[1]
 	   return self.callServer("/blockchildren?block_name=%s" %block_name)
+
+	def migrateStart(self, inp):
+	    """ initialize without service name"""
+	    return self.callServer("/MIGRATE/start", params=inp, callmethod='POST') 
+
 
 if __name__ == "__main__":
 	# DBS Service URL
