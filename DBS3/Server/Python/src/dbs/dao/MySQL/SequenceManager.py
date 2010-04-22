@@ -3,8 +3,8 @@
 This module manages sequences.
 """
 
-__revision__ = "$Id: SequenceManager.py,v 1.5 2010/03/09 16:38:03 afaq Exp $"
-__version__ = "$Revision: 1.5 $"
+__revision__ = "$Id: SequenceManager.py,v 1.6 2010/04/16 19:48:42 yuyi Exp $"
+__version__ = "$Revision: 1.6 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -36,4 +36,7 @@ class  SequenceManager(DBFormatter):
 	    self.dbi.processData(tunlock, [], conn, transaction)
 	    return newSeq
 	except:
+	    #FIXME
+	    tunlock = "unlock tables"
+	    self.dbi.processData(tunlock, [], conn, transaction)
 	    raise
