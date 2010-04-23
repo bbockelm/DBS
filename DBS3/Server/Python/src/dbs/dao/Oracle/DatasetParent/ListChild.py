@@ -2,8 +2,8 @@
 """
 This module provides DatasetParent.ListChild data access object.
 """
-__revision__ = "$Id: ListChild.py,v 1.1 2010/04/20 20:08:11 afaq Exp $"
-__version__ = "$Revision: 1.1 $"
+__revision__ = "$Id: ListChild.py,v 1.2 2010/04/23 16:39:20 afaq Exp $"
+__version__ = "$Revision: 1.2 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -34,8 +34,6 @@ JOIN %sDATASETS D ON  D.DATASET_ID = DC.PARENT_DATASET_ID
         sql = self.sql
         sql += "WHERE D.DATASET = :dataset"
         binds = {"dataset":dataset}
-	print sql
-	print binds
 	cursors = self.dbi.processData(sql, binds, conn, transaction, returnCursor=True)
 	assert len(cursors) == 1, "Dataset parent does not exist"
         result = self.formatCursor(cursors[0])
