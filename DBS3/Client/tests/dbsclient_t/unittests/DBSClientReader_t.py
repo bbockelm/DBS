@@ -2,8 +2,8 @@
 web unittests
 """
 
-__revision__ = "$Id: DBSClientReader_t.py,v 1.15 2010/03/19 19:39:57 afaq Exp $"
-__version__ = "$Revision: 1.15 $"
+__revision__ = "$Id: DBSClientReader_t.py,v 1.16 2010/04/23 16:50:39 afaq Exp $"
+__version__ = "$Revision: 1.16 $"
 
 import os
 import json
@@ -355,7 +355,7 @@ class DBSClientReader_t(unittest.TestCase):
 	"""list file parents"""
 	print api.listFileParents(lfn=testparams['files'][0])
 	
-    def test00(self):
+    def test76(self):
 	"""list file children"""
 	api.listFileChildren(lfn=testparams['parent_files'][0])
 
