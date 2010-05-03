@@ -733,8 +733,10 @@ MCDescription:      %s
             aList.append(aDict)
         return aList
 
-    def getBlocksFromSite(self, dbsInst, site):
+    def getBlocksFromSite(self, dbsInst, site, datasetPath=None):
         query = "find block.name where site=%s" % site
+        if  datasetPath:
+            query += " and dataset=%s" % datasetPath
         res = self.queryDBS(dbsInst, query)
         return res
 
