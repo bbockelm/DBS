@@ -1,6 +1,9 @@
-#! /usr/local/bin/python
+#!/usr/bin/env python
 import os
 import sys
+
+__revision__ = "$Id: $"
+__version__ = "$Revision: $"
 
 try:
     fw = open('testResultGT1500.txt', 'w')
