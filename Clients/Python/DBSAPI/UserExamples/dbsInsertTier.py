@@ -16,25 +16,38 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
 
 try:
-    """
-    api.insertTier ('HCAL')
-    api.insertTier ('GEN-SIM')
-    api.insertTier ('GEN-SIM-DIGI')
-    api.insertTier ('GEN-SIM-RAW')
-    api.insertTier ('GEN-SIM-DIGI-RAW')
-    api.insertTier ('GEN-SIM-DIGI-HLTDEBUG')
-    api.insertTier ('GEN-SIM-RAW-HLTDEBUG')
-    api.insertTier ('GEN-SIM-DIGI-RAW-HLTDEBUG')
-    api.insertTier ('GEN-SIM-RECO')
-    api.insertTier ('GEN-SIM-RAW-RECO')
-    api.insertTier ('GEN-SIM-DIGI-HLTDEBUG-RECO')
-    api.insertTier ('GEN-SIM-RAW-HLTDEBUG-RECO')
-    api.insertTier ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO')
-    api.insertTier ('GEN-SIM-DIGI-RECO')
-    """
-    api.insertTier ('GEN-SIM-DIGI-RECO')
-    api.insertTier ('GEN-SIM-DIGI-RAW-HLTDEBUG')
 
+    url_list=[
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_03_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_04_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_05_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_06_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_07_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_08_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_10_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_01_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_ph_analysis_02_writer/servlet/DBSServlet',
+                'https://cmsdbsprod.cern.ch:8443/cms_dbs_caf_analysis_01_writer/servlet/DBSServlet',
+		'https://cmst0dbs.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
+		'https://cmst0dbs.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
+	]
+
+    args={}	
+    args['mode']='POST'
+    args['version']='DBS_2_0_8'
+    args['level']='DBSINFO'
+    
+    for aurl in url_list:
+	args['url']=aurl
+	print aurl
+	api = DbsApi(args)
+	api.insertTier ('DQM')
+	api.insertTier ('GEN-SIM-RAWDEBUG')
+	
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):
