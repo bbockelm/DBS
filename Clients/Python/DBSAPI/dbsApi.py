@@ -568,6 +568,19 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  #------------------------------------------------------------
+  def insertRunInPD(self, dataset, run):
+    try:
+	#Calling the Implementation function
+	from dbsApiInsertRunInPD import dbsApiImplInsertRunInPD
+	return  dbsApiImplInsertRunInPD(self, dataset, run)
+    except Exception, ex:
+	if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+	    raise ex
+	else:
+	    raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+							     
   #------------------------------------------------------------
 	    # DBS UPDATE APIS
   #------------------------------------------------------------
