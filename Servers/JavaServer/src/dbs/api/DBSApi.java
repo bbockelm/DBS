@@ -1,6 +1,6 @@
 /**
- $Revision: 1.173 $"
- $Id: DBSApi.java,v 1.173 2010/01/11 17:04:20 afaq Exp $"
+ $Revision: 1.174 $"
+ $Id: DBSApi.java,v 1.174 2010/05/19 14:29:07 afaq Exp $"
  *
 */
 
@@ -313,10 +313,14 @@ public class DBSApi {
 						get(table, "path", true)
 						);
 			} else if (apiStr.equals("listPathParents")) {
-				(new DBSApiBlockLogic(this.data)).listPathParents(conn, out, 
-						get(table, "path", true)
+				(new DBSApiBlockLogic(this.data)).listPathProvenance(conn, out,
+						get(table, "path", true), "parent"
 						);
-
+				//(new DBSApiBlockLogic(this.data)).listPathParents(conn, out, 
+				//		get(table, "path", true)
+				//		);
+			//} else if (apiStr.equals("listPathProvenance"))
+				
 			} else if (apiStr.equals("listDatasetPaths")) {
 				(new DBSApiProcDSLogic(this.data)).listDatasetPaths(conn, out);
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.76 $"
- $Id: DBSApiBlockLogic.java,v 1.76 2009/07/20 16:35:37 afaq Exp $"
+ $Revision: 1.77 $"
+ $Id: DBSApiBlockLogic.java,v 1.77 2010/05/19 14:29:07 afaq Exp $"
  *
  */
 
@@ -844,6 +844,38 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				dbsUser);
 	}
 
+
+	public void listPathProvenance(Connection conn, Writer out, String path, String parentOrChild) throws Exception {
+	    PreparedStatement ps = null;
+	    ResultSet rs =  null;
+	    
+	    try {
+		ps = DBSSql.listPathProvenance(conn, path, parentOrChild);
+		pushQuery(ps);
+		rs =  ps.executeQuery();
+		while(rs.next()) {
+			if (parentOrChild.equals("parent")) {
+			    out.write(((String) "<processed_dataset_parent path='" + get(rs, "PATH").replaceFirst("-unmerged", "") + 
+					"' physics_group_name='" +
+					"' physics_group_convener='" +
+					"' creation_date='" +
+					"' created_by='" +
+					"' last_modification_date='" +
+					"' last_modified_by='" +
+					"'/>\n"));
+			}
+			else {
+			    out.write(((String) "<dataset_child='" + get(rs, "PATH") + "'/>\n"));
+			}
+		}
+	    } finally {
+		if (rs != null) rs.close();
+		if (ps != null) ps.close();
+	    }
+	}
+
+
+	
 	public void listPathParents(Connection conn, Writer out, String path) throws Exception {
 		listPathParents(conn, out, path, false);
 	}
