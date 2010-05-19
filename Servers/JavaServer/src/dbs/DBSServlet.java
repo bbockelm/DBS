@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.48 $"
- $Id: DBSServlet.java,v 1.48 2009/09/29 17:57:16 afaq Exp $"
+ $Revision: 1.49 $"
+ $Id: DBSServlet.java,v 1.49 2010/05/19 14:29:07 afaq Exp $"
 
  */
 package dbs;
@@ -234,7 +234,7 @@ public class DBSServlet extends HttpServlet{
 			//api = new DBSApi();
 
 			//response.addHeader("ETag", getETag(request) );
-			response.addHeader("Cache-Control", "max-age=200" );
+			//response.addHeader("Cache-Control", "max-age=200" );
 			//response.addHeader("Expires", Long.toString( (new Date()).getTime() / 1000 + 1000 ) )  ;
 
 			api.call(out, getTable(request), userDN);
