@@ -1,6 +1,6 @@
 /**
- $Revision: 1.172 $"
- $Id: DBSApi.java,v 1.172 2009/10/08 21:25:36 afaq Exp $"
+ $Revision: 1.173 $"
+ $Id: DBSApi.java,v 1.173 2010/01/11 17:04:20 afaq Exp $"
  *
 */
 
@@ -342,7 +342,8 @@ public class DBSApi {
 						get(table, "path", false),
 						get(table, "block_name", false),
 						get(table, "storage_element_name", false),
-						get(table, "user_type", false)
+						get(table, "user_type", false),
+						get(table, "nosite", false)
 						);
                         } else if (apiStr.equals("listBlockProvenance")) {
                                 (new DBSApiBlockLogic(this.data)).listBlockProvenance(conn, out,

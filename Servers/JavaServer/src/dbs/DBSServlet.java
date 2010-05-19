@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.47 $"
- $Id: DBSServlet.java,v 1.47 2009/02/09 20:39:39 sekhri Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSServlet.java,v 1.48 2009/09/29 17:57:16 afaq Exp $"
 
  */
 package dbs;
@@ -18,6 +18,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletConfig;
+
+import java.security.MessageDigest;
+import java.math.BigInteger;
+import java.util.Date;
 
 import dbs.api.DBSApi;
 import dbs.util.DBSUtil;
@@ -228,6 +232,11 @@ public class DBSServlet extends HttpServlet{
 			//out = response.getWriter();
 		
 			//api = new DBSApi();
+
+			//response.addHeader("ETag", getETag(request) );
+			response.addHeader("Cache-Control", "max-age=200" );
+			//response.addHeader("Expires", Long.toString( (new Date()).getTime() / 1000 + 1000 ) )  ;
+
 			api.call(out, getTable(request), userDN);
 
 		} catch(Exception e) {
@@ -244,12 +253,36 @@ public class DBSServlet extends HttpServlet{
 		}
 	}
 
+
+	
+
 	/**
 	 * Simply calls the doPoset method
 	 * {@inheritDoc}
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		doPost(request, response);
+	}
+
+	private String getETag(HttpServletRequest request) throws Exception {
+		String inKeys="";
+ 		StringBuffer sb = new StringBuffer('0');
+		Enumeration e = request.getParameterNames();
+		while (e.hasMoreElements()) {
+			inKeys+=(String)e.nextElement();
+		}
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+		
+			byte[] bytes = inKeys.getBytes();
+			byte[] messageDigest = md.digest(bytes);
+			BigInteger number = new BigInteger(1, messageDigest);
+ 			// prepend a zero to get a "proper" MD5 hash value
+ 			sb.append(number.toString(16));
+		} catch (java.security.NoSuchAlgorithmException ex) {
+ 			throw new Exception("MD5 cryptographic algorithm is not available.", ex);
+ 		}
+ 		return sb.toString();
 	}
 
 	/**

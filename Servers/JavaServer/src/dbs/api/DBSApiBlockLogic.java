@@ -1,6 +1,6 @@
 /**
- $Revision: 1.75 $"
- $Id: DBSApiBlockLogic.java,v 1.75 2009/06/18 19:45:22 afaq Exp $"
+ $Revision: 1.76 $"
+ $Id: DBSApiBlockLogic.java,v 1.76 2009/07/20 16:35:37 afaq Exp $"
  *
  */
 
@@ -51,9 +51,12 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable  or processed dataset is not found.
 	 */
 	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName) throws Exception {
-		listBlocks(conn, out, path, patternBlockName, patternSEName, "NORMAL");
+		listBlocks(conn, out, path, patternBlockName, patternSEName, "NORMAL", "False");
 	}
-	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName, String userType) throws Exception {
+	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName, String userType, String nosite) throws Exception {
+	    
+		if (isNull(nosite)) nosite="False";
+	
 		boolean first = true; 
 		String prevBlock = "";
 		PreparedStatement ps = null;
@@ -66,8 +69,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				patternPath = path;
 			}
 			ps =  DBSSql.listBlocks(conn, procDSID, getBlockPattern(patternBlockName), 
-									getPattern(patternSEName, "storage_element_name"), this.data.instanceName);
+									getPattern(patternSEName, "storage_element_name"), this.data.instanceName, nosite);
 			pushQuery(ps);
+			System.out.println("************************listBlocks*********************" + ps );
 			rs =  ps.executeQuery();
 			//System.out.println("userType " + userType);
 			if(isNull(userType)) userType = "NORMAL";
@@ -90,11 +94,11 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'>\n"));
 				}
-
-                               if (this.data.instanceName.equals("GLOBAL")) {
+			       if (nosite.equals("False")) {	
+				    if (this.data.instanceName.equals("GLOBAL")) {
                                        String se = get(rs, "STORAGE_ELEMENT_NAME");
                                        if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' />\n"));
-                               } else {
+				    } else {
 					String role = get(rs, "ROLES");
 					//System.out.println("Role is " + role);
 					if(!isNull(role)) {
@@ -104,7 +108,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 							if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' role='" + role + "'/>\n"));
 						}
 					}
-				}
+				    }
+			        }
 				prevBlock = blockID;
 				first = false;
 			}
