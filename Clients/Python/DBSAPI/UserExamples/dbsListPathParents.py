@@ -36,7 +36,9 @@ try:
 	'/Bd2PiKp/CMSSW_1_6_7-CSA07-3206/GEN-SIM-DIGI-RAW',
 	'/Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO',
 	'/Bd2PiKp/CMSSW_1_4_6-CSA07-2921/GEN-SIM']
-  #paths=['/Bd2PiKp/CMSSW_1_6_7-CSA07-1193556527/RECO']
+  paths=['/w1j_1600ptw3200_alpgen-alpgen/CMSSW_1_6_7-CSA07-3960/GEN-SIM-DIGI-RAW']
+  paths=['/MinimumBias/BeamCommissioning09-May8thReReco-v3/RECO']
+  paths=['/MinimumBias/BeamCommissioning09-v1/RAW']
   print "Processed Datasets:"
   for aPath in paths:
 	print aPath

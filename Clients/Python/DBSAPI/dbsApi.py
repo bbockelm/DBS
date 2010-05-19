@@ -151,6 +151,20 @@ class DbsApi(DbsConfig):
 		raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   #------------------------------------------------------------
 		# DBS - QL APIs
+
+  #------------------------------------------------------------
+
+  def executeQuery(self, query, begin="", end="", type="exe", case=True):
+     try:
+       #Calling the Implementation function
+       from dbsApiExecuteQuery import dbsApiImplExecuteQuery
+       return dbsApiImplExecuteQuery(self, query, begin, end, type, case)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+		
   #------------------------------------------------------------
   def countQuery(self, query, case=True):
      try:
@@ -253,12 +267,12 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   #------------------------------------------------------------
-  def listBlocks(self, dataset=None, block_name="*", storage_element_name="*"):
+  def listBlocks(self, dataset=None, block_name="*", storage_element_name="*", nosite=False):
      try:
        #Calling the Implementation function
        from dbsApiListBlocks import dbsApiImplListBlocks
        #print self.configDict
-       return  dbsApiImplListBlocks(self, dataset, block_name, storage_element_name, self.configDict['clienttype'])
+       return  dbsApiImplListBlocks(self, dataset, block_name, storage_element_name, self.configDict['clienttype'], nosite=nosite)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
@@ -704,21 +718,21 @@ class DbsApi(DbsConfig):
 
     try:
         #Calling the Implementation function
-        from dbsMigrateiNewApi import DbsMigrateApi
+        from dbsMigrateApi import DbsMigrateApi
         migrateapi = DbsMigrateApi(srcURL, dstURL)
-        return migrateapi.dbsMigrateDataset(path)
+        return migrateapi.migrateDataset(path)
     except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
             raise ex
         else:
             raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   #------------------------------------------------------------
-  def migrateDataset(self, srcURL, dstURL, path):
+  def dbsMigrateDataset(self, srcURL, dstURL, path):
     try:
         #Calling the Implementation function
-        from dbsMigrateiNewApi import DbsMigrateApi
+        from dbsMigrateApi import DbsMigrateApi
         migrateapi = DbsMigrateApi(srcURL, dstURL)
-        return migrateapi.dbsMigrateDataset(path)
+        return migrateapi.migrateDataset(path)
     except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
             raise ex
@@ -728,9 +742,9 @@ class DbsApi(DbsConfig):
   def dbsMigrateBlock(self, srcURL, dstURL, block_name="", srcVersion = None, dstVersion = None):
     try:
         #Calling the Implementation function
-        from dbsMigrateiNewApi import DbsMigrateApi
+        from dbsMigrateApi import DbsMigrateApi
         migrateapi = DbsMigrateApi(srcURL, dstURL)
-        return migrateapi.dbsMigrateBlock(block_name)
+        return migrateapi.migrateBlock(block_name)
     except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
             raise ex
