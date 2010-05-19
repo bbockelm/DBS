@@ -405,7 +405,7 @@ lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
 
 f.write("\n***********************insertLumiSection API tests***************************")
 
-
+"""
 apiObj = DbsUnitTestApi(api.updateLumiSection, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************updateLumiSection API tests***************************")
@@ -433,7 +433,7 @@ apiObj.run(lumi, excep = True)
 
 
 f.write("\n***********************updateLumiSection API tests***************************")
-
+"""
 
 f.write("\n\n***********************insertProcessedDataset API tests***************************")
 tierList = [tierName1, tierName2]
@@ -554,7 +554,9 @@ f.write("\n***********************insertProcessedDataset API tests**************
 
 path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['Name']) + "/" + str(proc1['TierList'][0])+ "-"+str(proc1['TierList'][1])
 
+
 f.write("\n***********************insertProcessedDataset API tests***************************")
+"""
 apiObj = DbsUnitTestApi(api.insertParentInPD, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertParentInPD API tests***************************")
@@ -590,6 +592,7 @@ apiObj.run(proc1, algo, excep = True)
 
 f.write("\n***********************insertAlgoInPD API tests***************************")
 
+"""
 
 apiObj = DbsUnitTestApi(api.insertRunInPD, f)
 apiObj.setVerboseLevel(opts.verbose)
@@ -755,7 +758,7 @@ apiObj.run("DO/ESNOTEXIST", "VALID", excep = True)
 apiObj.run(lfn1, "VA;LID", excep = True)
 apiObj.run(lfn1, "VA/LID", excep = True)
 
-
+"""
 f.write("\n\n***********************updateFileStatus API tests***************************")
 
 apiObj = DbsUnitTestApi(api.updateFileMetaData, f)
@@ -772,7 +775,7 @@ apiObj.run(lfn1, "INVA/LID", excep = True)
 
 
 f.write("\n\n***********************updateFileMetaData API tests***************************")
-
+"""
 
 adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
 		ProcessedDatasetPath=path,
@@ -847,7 +850,7 @@ adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
 #apiObj.run(ads1, 'Should_not_exists' , excep = True)
 
 #f.write("\n***********************createAnalysisDataset API tests***************************")
-
+"""
 if isGlobal != "GLOBAL":
 	apiObj = DbsUnitTestApi(api.addReplicaToBlock, f)
 	apiObj.setVerboseLevel(opts.verbose)
@@ -879,7 +882,7 @@ if isGlobal != "GLOBAL":
 	apiObj.run("abcd;edf", "ANTHING", excep = True)
 	apiObj.run("/does/no", "MySE1", excep = True)
 	f.write("\n\n***********************renameSE API tests***************************")
-
+"""
 
 apiObj = DbsUnitTestApi(api.closeBlock, f)
 apiObj.setVerboseLevel(opts.verbose)
@@ -892,6 +895,7 @@ apiObj.run("/does/no/exit#1234",  excep = True)
 
 f.write("\n\n***********************closeBlock API tests***************************")
 
+"""
 apiObj = DbsUnitTestApi(api.insertFileProcQuality, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n**********************insertFileProcQuality API tests***************************")
@@ -906,7 +910,7 @@ fileQualityObj = DbsFileProcessingQuality(
 apiObj.run(fileQualityObj, excep = False)
 
 f.write("\n\n**********************insertFileProcQuality API tests***************************")
-
+"""
 
 # Store ONE path that could be used by next LIST test cases
 pathfile=open('pathfile', 'w')

@@ -200,7 +200,7 @@ apiObj.run(".nowaythiswillexist" + path ,excep = True)
 apiObj.run(path ,"a", excep = False)
 f.write("\n\n***********************listLFNs API tests***************************")
 
-
+"""
 apiObj = DbsUnitTestApi(api.listAnalysisDatasetDefinition,f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listAnalysisDatasetDefinition API tests***************************")
@@ -221,7 +221,7 @@ apiObj.run("*","/this/will/notexist",excep = True)
 #apiObj.run("ahs def", path,excep = True)
 #apiObj.run("ahs*", path,"", excep = True)
 f.write("\n\n***********************listAnalysisDataset API tests***************************")
-
+"""
 
 apiObj = DbsUnitTestApi(api.listDatasetParents,f)
 apiObj.setVerboseLevel(opts.verbose)
