@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.231 $"
- $Id: DBSSql.java,v 1.231 2010/01/11 17:04:21 afaq Exp $"
+ $Revision: 1.232 $"
+ $Id: DBSSql.java,v 1.232 2010/05/19 14:29:07 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2524,18 +2524,6 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
                         "b.Name as NAME, \n" +
 			"b.Path as PATH, \n" +
-			/*
-                        "concat( \n" +
-                                "concat( \n" +
-                                        "concat( \n" +
-                                                "concat( \n" +
-                                                        "concat('/', primds.Name \n" +
-                                                        "),'/' \n" +
-                                                "),procds.Name \n" +
-                                        "),'/' \n" +
-                                "), dt.Name \n" +
-                        ") as PATH, \n" +
-			*/
                         "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
                         "b.BlockSize as BLOCKSIZE, \n" +
                         "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
@@ -2553,16 +2541,7 @@ public class DBSSql {
                         sql += "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
                         "FROM "+owner()+"Block b \n";
-
-			/*
-                        "JOIN "+owner()+"ProcessedDataset procds \n" +
-                                "ON b.Dataset = procds.ID \n" +
-                        "JOIN "+owner()+"PrimaryDataset primds \n" +
-                                "ON primds.id = procds.PrimaryDataset \n" +
-                        "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
-                                "ON dt.id = procds.datatier \n" +
-			*/
-
+			
                         if (isGlobal.equals("LOCAL")) {
                                 sql += "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
                                                 "ON seb.BlockID = b.ID \n"+
@@ -2590,8 +2569,38 @@ public class DBSSql {
                 return ps;
         }
 
+        public static PreparedStatement listPathProvenance(Connection conn, String path, String parentOrChild) throws SQLException {
+		String joinStr = null;
+		String whereStr = null;
 
+                if (parentOrChild.equals("parent")) {
+                        joinStr = "ON bp.ItsParent = b.ID \n";
+                        whereStr = "WHERE bp.ThisBlock IN \n"+
+					"(SELECT blk.ID FROM \n"+
+					owner()+"Block blk\n"+
+					"where blk.Path=?)";
+                } else {
+                        joinStr = "ON bp.ThisBlock = b.ID \n";
+                        whereStr = "WHERE bp.ItsParent IN \n"+
+                                        "(SELECT blk.ID FROM \n"+
+                                        owner()+"Block blk\n"+
+                                        "where blk.Path=?)";
+                }
 
+		String sql = "SELECT DISTINCT b.Path as PATH \n" +
+				"FROM "+owner()+"Block b \n" +
+				"LEFT OUTER JOIN "+owner()+"BlockParent bp \n";
+		sql += joinStr;
+		sql += whereStr;
+                //sql += "ORDER BY b.Name DESC";
+
+                int columnIndx = 1;
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(columnIndx++, path);
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName, String seName, String isGlobal, String nosite) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
