@@ -1,6 +1,6 @@
 /**
- $Revision: 1.77 $"
- $Id: DBSApiBlockLogic.java,v 1.77 2010/05/19 14:29:07 afaq Exp $"
+ $Revision: 1.78 $"
+ $Id: DBSApiBlockLogic.java,v 1.78 2010/05/19 18:46:31 afaq Exp $"
  *
  */
 
@@ -71,7 +71,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			ps =  DBSSql.listBlocks(conn, procDSID, getBlockPattern(patternBlockName), 
 									getPattern(patternSEName, "storage_element_name"), this.data.instanceName, nosite);
 			pushQuery(ps);
-			System.out.println("************************listBlocks*********************" + ps );
 			rs =  ps.executeQuery();
 			//System.out.println("userType " + userType);
 			if(isNull(userType)) userType = "NORMAL";
