@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.22 $"
- $Id: DBSConfig.java,v 1.22 2008/07/31 19:45:44 sekhri Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSConfig.java,v 1.23 2010/05/24 14:59:01 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -143,7 +143,7 @@ public class DBSConfig {
                        if ( name.equals("SupportedSchemaVersion") ) {
                           supportedSchemaVersion = (String)atribs.get("schemaversion");
                        }
-		       if ( name.equals("Register") ) {
+		       /*if ( name.equals("Register") ) {
                           //regServiceURL = (String)atribs.get("service");
                           alias = (String)atribs.get("alias");
                           critical = (String)atribs.get("critical");
@@ -151,7 +151,7 @@ public class DBSConfig {
 			  adminEmail = (String)atribs.get("admin_email");
 			  adminName = (String)atribs.get("admin_name");
 			  adminDN = (String)atribs.get("admin_dn");
-                       }
+                       }*/
 		//	if ( name.equals("Cfgindex") ) {
                 //          cfgServiceURL = (String)atribs.get("service");
                 //       }
@@ -233,9 +233,9 @@ public class DBSConfig {
 
 
 
-		    if (adminDN == null ) {
-                      throw new DBSException("Configuration Error", "1056", "Admin DN not found in Config File");
-                    }
+		    //if (adminDN == null ) {
+                     // throw new DBSException("Configuration Error", "1056", "Admin DN not found in Config File");
+                    //}
 
                     if (supportedClientVersions == null ) {
                       throw new DBSException("Configuration Error", "1057", "Supported CLIENT_VERSIONS not found in Config File");
