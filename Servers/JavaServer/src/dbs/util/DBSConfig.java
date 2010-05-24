@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.21 $"
- $Id: DBSConfig.java,v 1.21 2008/07/25 20:28:11 sekhri Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSConfig.java,v 1.22 2008/07/31 19:45:44 sekhri Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -33,8 +33,8 @@ public class DBSConfig {
         private String dbUserPasswd;
         private String dbDriver;
         private String dbURL;
-        private String regServiceURL;
-        private String cfgServiceURL;
+        //private String regServiceURL;
+        //private String cfgServiceURL;
         private String siteServiceURL;
         private String hostcert;
         private String certpass;
@@ -144,7 +144,7 @@ public class DBSConfig {
                           supportedSchemaVersion = (String)atribs.get("schemaversion");
                        }
 		       if ( name.equals("Register") ) {
-                          regServiceURL = (String)atribs.get("service");
+                          //regServiceURL = (String)atribs.get("service");
                           alias = (String)atribs.get("alias");
                           critical = (String)atribs.get("critical");
                           phyLocation = (String)atribs.get("phy_location");
@@ -152,9 +152,9 @@ public class DBSConfig {
 			  adminName = (String)atribs.get("admin_name");
 			  adminDN = (String)atribs.get("admin_dn");
                        }
-			if ( name.equals("Cfgindex") ) {
-                          cfgServiceURL = (String)atribs.get("service");
-                       }
+		//	if ( name.equals("Cfgindex") ) {
+                //          cfgServiceURL = (String)atribs.get("service");
+                //       }
 		       if ( name.equals("Sitedb") ) {
                           siteServiceURL = (String)atribs.get("service");
                        }
@@ -214,12 +214,12 @@ public class DBSConfig {
                     if (supportedSchemaVersion == null ) {
                       throw new DBSException("Configuration Error", "1056", "Database SCHEMA_VERSION not found in Config File");
                     }
-		    if (regServiceURL == null ) {
-                      throw new DBSException("Configuration Error", "1056", "Registration Service URL not found in Config File");
-                    }
-		    if (cfgServiceURL == null ) {
-                      throw new DBSException("Configuration Error", "1056", "Config Index  Service URL not found in Config File");
-                    }
+		    //if (regServiceURL == null ) {
+                    //  throw new DBSException("Configuration Error", "1056", "Registration Service URL not found in Config File");
+                    //}
+		    //if (cfgServiceURL == null ) {
+                    //  throw new DBSException("Configuration Error", "1056", "Config Index  Service URL not found in Config File");
+                    //}
 		    if (siteServiceURL == null ) {
                       throw new DBSException("Configuration Error", "1056", "Site DB  Service URL not found in Config File");
                     }
@@ -250,8 +250,8 @@ public class DBSConfig {
                     DBSUtil.writeLog("dbDriver: "+dbDriver);
                     DBSUtil.writeLog("dbURL: "+dbURL);
                     DBSUtil.writeLog("supportedSchemaVersion: "+supportedSchemaVersion);
-                    DBSUtil.writeLog("regServiceURL: "+regServiceURL);
-                    DBSUtil.writeLog("cfgServiceURL: "+cfgServiceURL);
+                    //DBSUtil.writeLog("regServiceURL: "+regServiceURL);
+                    //DBSUtil.writeLog("cfgServiceURL: "+cfgServiceURL);
                     DBSUtil.writeLog("siteServiceURL: "+siteServiceURL);
                     DBSUtil.writeLog("hostcert: "+hostcert);
                     DBSUtil.writeLog("alias: "+alias);
@@ -302,12 +302,12 @@ public class DBSConfig {
             return supportedSchemaVersion;
         }
 
-	public String getRegServiceURL() {
-            return regServiceURL;
-        }
-	public String getCfgServiceURL() {
-            return cfgServiceURL;
-        }
+	//public String getRegServiceURL() {
+        //    return regServiceURL;
+        //}
+	//public String getCfgServiceURL() {
+        //    return cfgServiceURL;
+        //}
 	public String getSiteServiceURL() {
             return siteServiceURL;
         }

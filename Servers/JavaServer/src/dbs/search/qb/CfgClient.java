@@ -21,7 +21,8 @@ public class CfgClient {
 	public CfgClient() throws Exception{
 		DBSConfig dbsConfig = DBSConfig.getInstance();
 		hu = new HttpUtil(dbsConfig.getHostcert(), dbsConfig.getCertpass());
-		this.url = dbsConfig.getCfgServiceURL();
+		//this.url = dbsConfig.getCfgServiceURL();
+		this.url = "NOT USED";//dbsConfig.getCfgServiceURL();
 		dwApi = new DbsWebApi(url);
 		u = new Util();
 		//dbsConfig = DBSConfig.getInstance();
