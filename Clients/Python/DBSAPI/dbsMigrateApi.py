@@ -3,7 +3,6 @@ import os
 from dbsException import *
 from dbsApiException import *
 from dbsOptions import DbsOptionParser
-from dbsLogger import *
 from dbsUtil import *
 
 from dbsApi import DbsApi

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Revision: 1.3 $"
-# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+# Id: $"
 #
 # DBS API class. Interfacing to Server using http/https or local
 #
@@ -24,10 +24,7 @@ from dbsConfig import DbsConfig
 import urlparse
 import urllib2
 
-import logging
 import inspect
-
-from dbsLogger import *
 
 from dbsUtil import *
 
@@ -97,16 +94,6 @@ class DbsApi(DbsConfig):
 	    self._server = DbsExecService(self.dbshome(), self.javahome(), self.version(), Args)
     else :
             self._server = DbsHttpService(self.url(), self.version(), Args)
-
-    # Set up logging
-
-    if not self.configDict.has_key('level'):
-	self.configDict['level'] = "ERROR"
-    if not self.configDict.has_key('log'):
-        self.configDict['log'] = "STDOUT"
-
-    DbsLogger(self.loglevel(), self.log()) 
-    #logging.log(DBSDEBUG, "DBS Api initialized")
 
     # Set the default Client Type to NORMAL
     if not self.configDict.has_key('clienttype'):

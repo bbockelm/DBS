@@ -31,10 +31,6 @@ except:
 
 import urlparse
 
-import logging
-from dbsLogger import *
-
-
 http_responses = {
     100: ('Continue', 'Request received, please continue'),
     101: ('Switching Protocols',
@@ -249,8 +245,6 @@ class DbsHttpService:
 		key, cert = self.getKeyCert()
 		self.conn = httplib.HTTPSConnection(self.Host, int(self.Port), key, cert)
 
-       #####logging.log(DBSINFO, self.conto)	
- 
        params = urllib.urlencode(args)
 
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", 
@@ -260,8 +254,6 @@ class DbsHttpService:
           result = self.conn.request(typ, request_string, params, headers)  
        else:
           result = self.conn.request(typ, request_string, {}, headers )
-
-       #####logging.log(DBSINFO, request_string)
 
        response = self.conn.getresponse() 
 
@@ -285,7 +277,6 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       #####logging.log(DBSDEBUG, data)
 
     except sslerror, ex:
 	msg  = "HTTPS Error, Unable to make API call"
@@ -357,12 +348,10 @@ class DbsHttpService:
                 warn  = "\n DBS Raised a warning message"
                 warn += "\n Waring Message: " + attrs['message']
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
-                #####logging.log(DBSWARNING, warn)
 
 	     if name =='info':
                 info = "\n DBS Info Message: %s " %attrs['message']
 		info += "\n Detail: %s " %attrs['detail']+"\n"
-                #####logging.log(DBSINFO, info)
 		
 #      print data
       tokenToSearch = 'took too long to execute'

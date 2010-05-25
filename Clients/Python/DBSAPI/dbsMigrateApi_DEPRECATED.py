@@ -7,7 +7,6 @@ import os
 from dbsException import *
 from dbsApiException import *
 from dbsOptions import DbsOptionParser
-from dbsLogger import *
 
 class DbsMigrateApi:
 	
@@ -88,7 +87,6 @@ class DbsMigrateApi:
 
 	def doesPathExist(self, api, path):
 		if (self.force):
-			##logging.log(DBSWARNING, "The dataset path " + path + " will not be checked for existance in the destination DBS.\n If you want to enforce the checking of path existance before transefrring, use force=False option in this API")
 			return False
 		return self.doesPathExistNoForce(api, path)
 		"""
@@ -101,7 +99,6 @@ class DbsMigrateApi:
 			return False;
 		else:
 			#print "Path Found "
-			##logging.log(DBSWARNING, "The dataset path " + path + " already exists in the destination DBS and will NOT be transferred. If you want to  remove the existance check before transferring, use force=True option in this API")
 			return True;
 		"""	
 	

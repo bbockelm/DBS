@@ -11,10 +11,7 @@ from dbsException import DbsException
 from dbsApiException import *
 from xml.sax import SAXParseException
 
-import logging
 import inspect
-
-from dbsLogger import *
 
 from dbsUtil import *
 
@@ -62,7 +59,6 @@ def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_nam
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    ##logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     path = get_path(dataset)
@@ -72,7 +68,6 @@ def dbsApiImplListBlocks(self, dataset=None, block_name="*", storage_element_nam
 		    'user_type' : userType, 
 		    "nosite" : str(nosite) 
 		    }, 'GET')
-    ##logging.log(DBSDEBUG, data)
 
 
     # Parse the resulting xml output.

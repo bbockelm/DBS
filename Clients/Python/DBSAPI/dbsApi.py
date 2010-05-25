@@ -24,10 +24,7 @@ from dbsConfig import DbsConfig
 import urlparse
 import urllib2
 
-import logging
 import inspect
-
-from dbsLogger import *
 
 from dbsUtil import *
 
@@ -83,13 +80,7 @@ class DbsApi(DbsConfig):
 	    self._server = DbsExecService(self.dbshome(), self.javahome(), self.version(), Args)
     else :
             self._server = DbsHttpService(self.url(), self.version(), Args)
-    # Set up logging
-    if not self.configDict.has_key('level'):
-	self.configDict['level'] = "ERROR"
-    if not self.configDict.has_key('log'):
-        self.configDict['log'] = "STDOUT"
 
-    DbsLogger(self.loglevel(), self.log()) 
     # Set the default Client Type to NORMAL
     if not self.configDict.has_key('clienttype'):
 	self.configDict['clienttype'] = "NORMAL"
