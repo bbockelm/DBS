@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.21 $"
- $Id: DBSUtil.java,v 1.21 2009/06/25 14:38:33 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSUtil.java,v 1.20 2008/11/20 17:35:40 sekhri Exp $"
  *
 */
 
@@ -303,8 +303,8 @@ public class DBSUtil {
 	}
 	
 	public void addRegistration(String url){
-		System.out.println("NOT Trying to register with registration service, there is no such service!......");
-		/* try {
+		System.out.println("Trying to register ......");
+		try {
 			DBSConfig dbsConfig = DBSConfig.getInstance();
 			String alias = dbsConfig.getAlias();
 			if(isNull(alias)) alias = url;
@@ -334,7 +334,7 @@ public class DBSUtil {
 			e.printStackTrace();
 			return;
 		}
-		System.out.println("Registration DONE successfully");*/
+		System.out.println("Registration DONE successfully");
 	}
 
 }
