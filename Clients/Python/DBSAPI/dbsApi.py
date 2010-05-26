@@ -24,15 +24,15 @@ from dbsConfig import DbsConfig
 import urlparse
 import urllib2
 
-import logging
+##import logging
 import inspect
 
-from dbsLogger import *
+##from dbsLogger import **
 
 from dbsUtil import *
 
 #DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
-__version__ = "$Name:  $"
+__version__ = "$Name: DBS_2_0_9_patch_7 $"
 
 def makeAPI(url):
 		#args = {}
@@ -105,7 +105,9 @@ class DbsApi(DbsConfig):
     if not self.configDict.has_key('log'):
         self.configDict['log'] = "STDOUT"
 
-    DbsLogger(self.loglevel(), self.log()) 
+    # DBS Logger is turned off, we do not use it, there is no point in settng up the logger
+    # -- AA : 05/26/2010
+    #DbsLogger(self.loglevel(), self.log()) 
     #logging.log(DBSDEBUG, "DBS Api initialized")
 
     # Set the default Client Type to NORMAL

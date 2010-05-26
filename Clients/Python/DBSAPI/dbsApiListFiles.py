@@ -15,10 +15,10 @@ from dbsException import DbsException
 from dbsApiException import *
 from xml.sax import SAXParseException
 
-import logging
+##import logging
 import inspect
 
-from dbsLogger import *
+##from dbsLogger import **
 
 from dbsUtil import *
 

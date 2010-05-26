@@ -12,8 +12,8 @@ from xml.sax import SAXParseException
 
 import os, re, string, xml.sax, xml.sax.handler, random
 from xml.sax.saxutils import escape
-import logging
-from dbsLogger import *
+##import logging
+##from dbsLogger import **
 
 
 class DbsExecService:

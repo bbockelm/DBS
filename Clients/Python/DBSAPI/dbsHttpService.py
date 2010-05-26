@@ -31,8 +31,8 @@ except:
 
 import urlparse
 
-import logging
-from dbsLogger import *
+##import logging
+##from dbsLogger import **
 
 
 http_responses = {

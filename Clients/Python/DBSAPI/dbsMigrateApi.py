@@ -7,7 +7,7 @@ import os
 from dbsException import *
 from dbsApiException import *
 from dbsOptions import DbsOptionParser
-from dbsLogger import *
+##from dbsLogger import **
 
 class DbsMigrateApi:
 	

@@ -16,12 +16,13 @@ try:
   (opts,args) = optManager.getOpt()
 
   args={}
-  #args['url']='http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet' 
-  #args['version']='DBS_1_0_4'
-  #args['mode']='POST'
-  #api = DbsApi(args)
+  args['url']='http://cmssrv49.fnal.gov:8989/DBSTEST/servlet/DBSServlet' 
+  args['version']='DBS_2_0_9'
+  args['mode']='POST'
+  args['level']='INFO'
+  api = DbsApi(args)
 
-  api = DbsApi(opts.__dict__)
+  #api = DbsApi(opts.__dict__)
 
   # List all parameter sets
   print ""

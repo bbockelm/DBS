@@ -11,10 +11,10 @@ from dbsApiException import *
 from DBSAPI.dbsFileProcessingQuality import DbsFileProcessingQuality
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 
-import logging
+##import logging
 import inspect
 
-from dbsLogger import *
+##from dbsLogger import **
 
 from dbsUtil import *
 
