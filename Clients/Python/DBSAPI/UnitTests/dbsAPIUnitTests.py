@@ -825,19 +825,16 @@ class Test_insertLumiSectionAPI(unittest.TestCase):
 #        self.assertRaises(DbsApiException,api.insertLumiSection,lumi6)
 #        self.assertRaises(DbsApiException,api.insertLumiSection,lumi7)
         
-class Test_updateLumiSectionAPI(unittest.TestCase):
-    def test_updateLumiSectionAPI(self):
-        print "updateLumiSectionAPI"
-        try:
-            api.updateLumiSection(lumi8)
-            api.updateLumiSection(lumi9)
-        except DbsApiException:
-            self.fail("Expected no Error")
-#            self.fail('Unexpected exception thrown:', )
-#        else:
-#			self.fail('ExpectedException not thrown')
-        self.assertRaises(DbsApiException,api.updateLumiSection,lumi10)
-        self.assertRaises(DbsApiException,api.updateLumiSection,lumi11)
+#class Test_updateLumiSectionAPI(unittest.TestCase):
+#    def test_updateLumiSectionAPI(self):
+#        print "updateLumiSectionAPI"
+#        try:
+#            api.updateLumiSection(lumi8)
+#            api.updateLumiSection(lumi9)
+#        except DbsApiException:
+#            self.fail("Expected no Error")
+#        self.assertRaises(DbsApiException,api.updateLumiSection,lumi10)
+#        self.assertRaises(DbsApiException,api.updateLumiSection,lumi11)
         
 class Test_insertProcessedDatasetAPI(unittest.TestCase):
     def test_insertProcessedDataset(self):
@@ -897,20 +894,17 @@ class Test_insertAlgoInPDAPI(unittest.TestCase):
         self.assertRaises(DbsApiException,api.insertAlgoInPD,"/Does/Not/Exist",algo1)
         self.assertRaises(DbsApiException,api.insertAlgoInPD,proc1,algo18)
 
-class Test_insertRunInPDAPI(unittest.TestCase):
-    def test_insertRunInPD(self):
-        print "insertRunInPD"
-        try:
-            api.insertRunInPD(proc1,runNumber2)
-        except DbsApiException:
-            self.fail("Expected no Error")
-#            self.fail('Unexpected exception thrown:', )
-#        else:
-#			self.fail('ExpectedException not thrown')
-        self.assertRaises(DbsApiException,api.insertRunInPD,proc1,runNumber3)
-        self.assertRaises(DbsApiException,api.insertRunInPD,"/Does/Not/Exist",runNumber1)
-        self.assertRaises(DbsApiException,api.insertRunInPD,proc1,"123456")
-        self.assertRaises(DbsApiException,api.insertRunInPD,proc1,"123a456")
+#class Test_insertRunInPDAPI(unittest.TestCase):
+#    def test_insertRunInPD(self):
+#        print "insertRunInPD"
+#        try:
+#            api.insertRunInPD(proc1,runNumber2)
+#        except DbsApiException:
+#            self.fail("Expected no Error")
+#        self.assertRaises(DbsApiException,api.insertRunInPD,proc1,runNumber3)
+#        self.assertRaises(DbsApiException,api.insertRunInPD,"/Does/Not/Exist",runNumber1)
+#        self.assertRaises(DbsApiException,api.insertRunInPD,proc1,"123456")
+#        self.assertRaises(DbsApiException,api.insertRunInPD,proc1,"123a456")
         
 class Test_updateProcDSStatusAPI(unittest.TestCase):
     def test_updateProcDSStatus(self):
@@ -994,22 +988,19 @@ class Test_updateFileStatusAPI(unittest.TestCase):
         self.assertRaises(DbsApiException,api.updateFileStatus,lfn1,"VA;LID")
         self.assertRaises(DbsApiException,api.updateFileStatus,lfn1,"VA/LID")
 
-class Test_updateFileMetaDataAPI(unittest.TestCase):
-    def test_updateFileMetaData(self):
-        print "updateFileMetaData"
-        try:
-            api.updateFileMetaData(lfn1,"VALID")
-        except DbsApiException:
-            self.fail("Expected no Error")
-#            self.fail('Unexpected exception thrown:', )
-#        else:
-#			self.fail('ExpectedException not thrown')
-        self.assertRaises(DbsApiException,api.updateFileMetaData,lfn1,"")
-        self.assertRaises(DbsApiException,api.updateFileMetaData,"DOESNOTEXIST","abcd")
-        self.assertRaises(DbsApiException,api.updateFileMetaData,"DO;ESNOTEXIST","abcd")
-        self.assertRaises(DbsApiException,api.updateFileMetaData,"DO/ESNOTEXIST","abcd")
-        self.assertRaises(DbsApiException,api.updateFileMetaData,lfn1,"INVA;LID")
-        self.assertRaises(DbsApiException,api.updateFileMetaData,lfn1,"INVA/LID")
+#class Test_updateFileMetaDataAPI(unittest.TestCase):
+#    def test_updateFileMetaData(self):
+#        print "updateFileMetaData"
+#        try:
+#            api.updateFileMetaData(lfn1,"VALID")
+#        except DbsApiException:
+#            self.fail("Expected no Error")
+#        self.assertRaises(DbsApiException,api.updateFileMetaData,lfn1,"")
+#        self.assertRaises(DbsApiException,api.updateFileMetaData,"DOESNOTEXIST","abcd")
+#        self.assertRaises(DbsApiException,api.updateFileMetaData,"DO;ESNOTEXIST","abcd")
+#        self.assertRaises(DbsApiException,api.updateFileMetaData,"DO/ESNOTEXIST","abcd")
+#        self.assertRaises(DbsApiException,api.updateFileMetaData,lfn1,"INVA;LID")
+#        self.assertRaises(DbsApiException,api.updateFileMetaData,lfn1,"INVA/LID")
         
 class Test_closeBlockAPI(unittest.TestCase):
     def test_closeBlock(self):
@@ -1025,51 +1016,45 @@ class Test_closeBlockAPI(unittest.TestCase):
         self.assertRaises(DbsApiException,api.closeBlock,"abcd;edf")
         self.assertRaises(DbsApiException,api.closeBlock,"/does/no/exit#1234")
 
-class Test_insertFileProcQualityAPI(unittest.TestCase):
-    def test_insertFileProcQuality(self):
-        print "insertFileProcQuality"
-        try:
-            api.insertFileProcQuality(fileQualityObj)
-        except DbsApiException:
-            self.fail("Expected no Error")
-#            self.fail('Unexpected exception thrown:', )
-#        else:
-#			self.fail('ExpectedException not thrown')
-      
+#class Test_insertFileProcQualityAPI(unittest.TestCase):
+#    def test_insertFileProcQuality(self):
+#        print "insertFileProcQuality"
+#        try:
+#            api.insertFileProcQuality(fileQualityObj)
+#        except DbsApiException:
+#            self.fail("Expected no Error")
+#      
 ###########
 ## MYSQL ##
 ###########
-class Test_addReplicaToBlockAPI(unittest.TestCase):
-    def test_addReplicaToBlock(self):
-        if isGlobal != "GLOBAL":
-            print "addReplicaToBlock"
-            try:
-                api.addReplicaToBlock(block1,"MySE1")
-                api.addReplicaToBlock(block1,"MySE2")
-            except DbsApiException:
-                self.fail("Expected no Error")
-#                self.fail('Unexpected exception thrown:', )
-#            else:
-#				self.fail('ExpectedException not thrown')
-            self.assertRaises(DbsApiException,api.addReplicaToBlock,block1,"My;SE")
-            self.assertRaises(DbsApiException,api.addReplicaToBlock,"/does/not/eist#1234","MySE1")
-        else: pass
+#class Test_addReplicaToBlockAPI(unittest.TestCase):
+#    def test_addReplicaToBlock(self):
+#        if isGlobal != "GLOBAL":
+#            print "addReplicaToBlock"
+#            try:
+#                api.addReplicaToBlock(block1,"MySE1")
+#                api.addReplicaToBlock(block1,"MySE2")
+#            except DbsApiException:
+#                self.fail("Expected no Error")
+#            self.assertRaises(DbsApiException,api.addReplicaToBlock,block1,"My;SE")
+#            self.assertRaises(DbsApiException,api.addReplicaToBlock,"/does/not/eist#1234","MySE1")
+#        else: pass
 
-class Test_deleteReplicaFromBlockAPI(unittest.TestCase):
-    def test_deleteReplicaFromBlock(self):
-        if isGlobal != "GLOBAL":
-            print "deleteReplicaFromBlock"
-            try:
-                api.deleteReplicaFromBlock(block1, "MySE1")
-            except DbsApiException:
-                self.fail("Expected no Error")
-#                self.fail('Unexpected exception thrown:', )
-#            else:
-#				self.fail('ExpectedException not thrown')
-            self.assertRaises(DbsApiException,api.deleteReplicaFromBlock,block1,"My;SE")
-            self.assertRaises(DbsApiException,api.deleteReplicaFromBlock,block1, "DOESNOTEXIST")
-            self.assertRaises(DbsApiException,api.deleteReplicaFromBlock,"/does/not/eist#1234","MySE1")
-        else: pass
+#class Test_deleteReplicaFromBlockAPI(unittest.TestCase):
+#    def test_deleteReplicaFromBlock(self):
+#        if isGlobal != "GLOBAL":
+#            print "deleteReplicaFromBlock"
+#            try:
+#                api.deleteReplicaFromBlock(block1, "MySE1")
+#            except DbsApiException:
+#                self.fail("Expected no Error")
+##                self.fail('Unexpected exception thrown:', )
+##            else:
+##				self.fail('ExpectedException not thrown')
+#            self.assertRaises(DbsApiException,api.deleteReplicaFromBlock,block1,"My;SE")
+#            self.assertRaises(DbsApiException,api.deleteReplicaFromBlock,block1, "DOESNOTEXIST")
+#            self.assertRaises(DbsApiException,api.deleteReplicaFromBlock,"/does/not/eist#1234","MySE1")
+#        else: pass
             
 class Test_renameSEAPI(unittest.TestCase):
     def test_renameSE(self):
@@ -1262,28 +1247,28 @@ class Test_listLFNsAPI(unittest.TestCase):
             self.fail("Expected no Error")
         self.assertRaises(DbsApiException,api.listLFNs,".nowaythiswillexist"+path)
         
-class Test_listAnalysisDatasetDefinitionAPI(unittest.TestCase):
-    def test_listAnalysisDatasetDefinition(self):
-        print "listAnalysisDatasetDefinition"
-        try:
-            api.listAnalysisDatasetDefinition()
-            api.listAnalysisDatasetDefinition("*")
-        except:
-            self.fail("Expected no Error")
-        self.assertRaises(DbsApiException,api.listAnalysisDatasetDefinition,"this;xist")
-        self.assertRaises(TypeError,api.listAnalysisDatasetDefinition,"ahsdef","")
+#class Test_listAnalysisDatasetDefinitionAPI(unittest.TestCase):
+#    def test_listAnalysisDatasetDefinition(self):
+#        print "listAnalysisDatasetDefinition"
+#        try:
+#            api.listAnalysisDatasetDefinition()
+#            api.listAnalysisDatasetDefinition("*")
+#        except:
+#            self.fail("Expected no Error")
+#        self.assertRaises(DbsApiException,api.listAnalysisDatasetDefinition,"this;xist")
+#        self.assertRaises(TypeError,api.listAnalysisDatasetDefinition,"ahsdef","")
 
-class Test_listAnalysisDatasetAPI(unittest.TestCase):
-    def test_listAnalysisDataset(self):
-        print "listAnalysisDataset"
-        try:
-            api.listAnalysisDataset()
-            api.listAnalysisDataset("*")
-#            api.listAnalysisDataset("*",path)
-        except:
-            self.fail("Expected no Error")
-
-        self.assertRaises(DbsApiException,api.listAnalysisDataset,"*","/this/will/notexist")
+#class Test_listAnalysisDatasetAPI(unittest.TestCase):
+#    def test_listAnalysisDataset(self):
+#        print "listAnalysisDataset"
+#        try:
+#            api.listAnalysisDataset()
+#            api.listAnalysisDataset("*")
+##            api.listAnalysisDataset("*",path)
+#        except:
+#            self.fail("Expected no Error")
+#
+#        self.assertRaises(DbsApiException,api.listAnalysisDataset,"*","/this/will/notexist")
 #        self.assertRaises(DbsApiException,api.listAnalysisDataset,"ahs def", path)
 #        self.assertRaises(DbsApiException,api.listAnalysisDataset,"ahs*",path,"")
         
@@ -1323,20 +1308,20 @@ def suite():
     suite.addTest(unittest.makeSuite(Test_insertRunAPI))
     suite.addTest(unittest.makeSuite(Test_updateRunAPI))
     suite.addTest(unittest.makeSuite(Test_insertLumiSectionAPI))
-    suite.addTest(unittest.makeSuite(Test_updateLumiSectionAPI))
+#suite.addTest(unittest.makeSuite(Test_updateLumiSectionAPI))
     suite.addTest(unittest.makeSuite(Test_insertProcessedDatasetAPI))
-    suite.addTest(unittest.makeSuite(Test_insertParentInPDAPI))
-    suite.addTest(unittest.makeSuite(Test_insertAlgoInPDAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertParentInPDAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertAlgoInPDAPI))
     suite.addTest(unittest.makeSuite(Test_insertRunInPDAPI))
-    suite.addTest(unittest.makeSuite(Test_updateProcDSStatusAPI))
+#    suite.addTest(unittest.makeSuite(Test_updateProcDSStatusAPI))
     suite.addTest(unittest.makeSuite(Test_insertBlockAPI))
     suite.addTest(unittest.makeSuite(Test_insertFilesAPI))
     suite.addTest(unittest.makeSuite(Test_updateFileStatusAPI))
-    suite.addTest(unittest.makeSuite(Test_updateFileMetaDataAPI))
+#    suite.addTest(unittest.makeSuite(Test_updateFileMetaDataAPI))
     suite.addTest(unittest.makeSuite(Test_closeBlockAPI))
-    suite.addTest(unittest.makeSuite(Test_insertFileProcQualityAPI))
-    suite.addTest(unittest.makeSuite(Test_addReplicaToBlockAPI))
-    suite.addTest(unittest.makeSuite(Test_deleteReplicaFromBlockAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertFileProcQualityAPI))
+#    suite.addTest(unittest.makeSuite(Test_addReplicaToBlockAPI))
+#    suite.addTest(unittest.makeSuite(Test_deleteReplicaFromBlockAPI))
     suite.addTest(unittest.makeSuite(Test_renameSEAPI)) 
     suite.addTest(unittest.makeSuite(Test_listPrimaryDatasetsAPI))
     suite.addTest(unittest.makeSuite(Test_listAlgorithmsAPI))
@@ -1350,8 +1335,8 @@ def suite():
     suite.addTest(unittest.makeSuite(Test_listFileAlgorithmsAPI))
     suite.addTest(unittest.makeSuite(Test_listFileLumisAPI))
     suite.addTest(unittest.makeSuite(Test_listLFNsAPI))
-    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetDefinitionAPI))
-    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetAPI))
+#    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetDefinitionAPI))
+#    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetAPI))
     suite.addTest(unittest.makeSuite(Test_listDatasetParentsAPI))
     
     suite.addTest(unittest.makeSuite(Test_listDatasetContents))
@@ -1365,20 +1350,20 @@ if __name__ == '__main__':
     suite.addTest(unittest.makeSuite(Test_insertRunAPI))
     suite.addTest(unittest.makeSuite(Test_updateRunAPI))
     suite.addTest(unittest.makeSuite(Test_insertLumiSectionAPI))
-    suite.addTest(unittest.makeSuite(Test_updateLumiSectionAPI))
+#    suite.addTest(unittest.makeSuite(Test_updateLumiSectionAPI))
     suite.addTest(unittest.makeSuite(Test_insertProcessedDatasetAPI))
     suite.addTest(unittest.makeSuite(Test_insertParentInPDAPI))
-    suite.addTest(unittest.makeSuite(Test_insertAlgoInPDAPI))
-    suite.addTest(unittest.makeSuite(Test_insertRunInPDAPI))
-    suite.addTest(unittest.makeSuite(Test_updateProcDSStatusAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertAlgoInPDAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertRunInPDAPI))
+#    suite.addTest(unittest.makeSuite(Test_updateProcDSStatusAPI))
     suite.addTest(unittest.makeSuite(Test_insertBlockAPI))
     suite.addTest(unittest.makeSuite(Test_insertFilesAPI))
     suite.addTest(unittest.makeSuite(Test_updateFileStatusAPI))
-    suite.addTest(unittest.makeSuite(Test_updateFileMetaDataAPI))
+#    suite.addTest(unittest.makeSuite(Test_updateFileMetaDataAPI))
     suite.addTest(unittest.makeSuite(Test_closeBlockAPI))
-    suite.addTest(unittest.makeSuite(Test_insertFileProcQualityAPI))
-    suite.addTest(unittest.makeSuite(Test_addReplicaToBlockAPI))
-    suite.addTest(unittest.makeSuite(Test_deleteReplicaFromBlockAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertFileProcQualityAPI))
+#    suite.addTest(unittest.makeSuite(Test_addReplicaToBlockAPI))
+#    suite.addTest(unittest.makeSuite(Test_deleteReplicaFromBlockAPI))
     suite.addTest(unittest.makeSuite(Test_renameSEAPI))
     suite.addTest(unittest.makeSuite(Test_listPrimaryDatasetsAPI))
     suite.addTest(unittest.makeSuite(Test_listAlgorithmsAPI))
@@ -1392,8 +1377,8 @@ if __name__ == '__main__':
     suite.addTest(unittest.makeSuite(Test_listFileAlgorithmsAPI))
     suite.addTest(unittest.makeSuite(Test_listFileLumisAPI))
     suite.addTest(unittest.makeSuite(Test_listLFNsAPI))
-    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetDefinitionAPI))
-    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetAPI))
+#    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetDefinitionAPI))
+#    suite.addTest(unittest.makeSuite(Test_listAnalysisDatasetAPI))
     suite.addTest(unittest.makeSuite(Test_listDatasetParentsAPI))
     
     suite.addTest(unittest.makeSuite(Test_listDatasetContents))
