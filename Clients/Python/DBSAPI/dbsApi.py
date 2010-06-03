@@ -1009,32 +1009,32 @@ if __name__ == "__main__":
                 'https://cmst0dbs.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
     		]
     #cmst0dbs2
-    url_list_t0_30=[
-	        'https://vocms30.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
-		'https://vocms30.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
-		'http://vocms30.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
-		'http://vocms30.cern.ch/cms_dbs_int_tier0/servlet/DBSServlet',
-		'https://vocms30.cern.ch:8443/cms_dbs_prod_tier0_admin/servlet/DBSServlet',
-	        'https://vocms30.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
+    url_list_t0_95=[
+	        'https://vocms95.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
+		'https://vocms95.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
+		'http://vocms95.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
+		'http://vocms95.cern.ch/cms_dbs_int_tier0/servlet/DBSServlet',
+		'https://vocms95.cern.ch:8443/cms_dbs_prod_tier0_admin/servlet/DBSServlet',
+	        'https://vocms95.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
                 ]
     #cmst0dbs1
-    url_list_t0_31=[
-                'https://vocms31.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
-	        'https://vocms31.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
-		'http://vocms31.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
-		'http://vocms31.cern.ch/cms_dbs_int_tier0/servlet/DBSServlet',
-		'https://vocms31.cern.ch:8443/cms_dbs_prod_tier0_admin/servlet/DBSServlet',
-		'https://vocms31.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
+    url_list_t0_96=[
+                'https://vocms96.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
+	        'https://vocms96.cern.ch:8443/cms_dbs_int_tier0_writer/servlet/DBSServlet',
+		'http://vocms96.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
+		'http://vocms96.cern.ch/cms_dbs_int_tier0/servlet/DBSServlet',
+		'https://vocms96.cern.ch:8443/cms_dbs_prod_tier0_admin/servlet/DBSServlet',
+		'https://vocms96.cern.ch:8443/cms_dbs_int_tier0_admin/servlet/DBSServlet',
 		]		    
  
 
     url_list=[]
     url_list.extend(url_list_alias)
-    #url_list.extend(url_list_73)
-    #url_list.extend(url_list_74)
-    #url_list.extend(url_list_t0_alias)
-    #url_list.extend(url_list_30)
-    #url_list.extend(url_list_31)
+    url_list.extend(url_list_73)
+    url_list.extend(url_list_74)
+    url_list.extend(url_list_t0_alias)
+    url_list.extend(url_list_t0_95)
+    url_list.extend(url_list_t0_96)
 
     args['mode']='POST'
     args['version']='DBS_2_0_8'
