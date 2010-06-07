@@ -26,7 +26,7 @@ case "$1" in
           kill -9 ${pid}
         fi
 	echo $"Restart DDServer..."
-        ${cmd}
+        ${cmd} --log-level 1000
 	;;
  restart)
 	echo $"Checking for existing cmsWeb app running data discovery..."
