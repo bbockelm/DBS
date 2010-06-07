@@ -63,7 +63,7 @@ class DDConfig:
     return cachelist
   def cachelimit(self):
     if not self.configDict.has_key('cachelimit'):
-       return []
+       return 0
     return self.configDict['cachelimit']
   def adminUrl(self):
     if not self.configDict.has_key('admin_url'):
