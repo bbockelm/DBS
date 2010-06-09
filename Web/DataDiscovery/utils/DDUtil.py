@@ -853,7 +853,7 @@ class DDLogger:
             f.close()
       except:
          msg="Not enough permissions to create a DDServer log file in '%s'"%self.dir
-         raise msg
+         raise Exception(msg)
       hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'midnight', 1, 7 )
       formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
       hdlr.setFormatter( formatter )
