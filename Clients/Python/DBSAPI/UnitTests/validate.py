@@ -882,7 +882,7 @@ class Test_009(unittest.TestCase):
 				self.assertEqual(2, runInDBS['NumberOfLumiSections'])
 				runInDBS['NumberOfLumiSections'] = runObj['NumberOfLumiSections']
 				assertRun(self, runObj, runInDBS)
-
+"""
 class Test_010(unittest.TestCase):
         def test_01_QIM(self):
 		if isMYSQL=='MYSQL':
@@ -933,7 +933,7 @@ class Test_010(unittest.TestCase):
 						print "Unable to Add/Retrieve QIM Values, insertRunLumiDQ/listRunLumiDQ APIs failed"
 	                                	self.assertEqual(1, 2)
 
-
+"""
 class Test_011(unittest.TestCase):
 	def test_01_procQuality(self):
 		return True
