@@ -864,21 +864,21 @@ class Test_insertProcessedDatasetAPI(unittest.TestCase):
         self.assertRaises(DbsApiException,api.insertProcessedDataset,proc16)
         self.assertRaises(DbsApiException,api.insertProcessedDataset,proc17)
         
-class Test_insertParentInPDAPI(unittest.TestCase):
-    def test_insertParentInPD(self):
-        print "insertParentInPD"
-        try:
-            api.insertParentInPD(proc1,proc2)
-        except DbsApiException:
-            self.fail("Expected no Error")
+#class Test_insertParentInPDAPI(unittest.TestCase):
+#    def test_insertParentInPD(self):
+#        print "insertParentInPD"
+#        try:
+#            api.insertParentInPD(proc1,proc2)
+#        except DbsApiException:
+#            self.fail("Expected no Error")
 #            self.fail('Unexpected exception thrown:', )
 #        else:
 #			self.fail('ExpectedException not thrown')
-        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "")
-        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "/Does/Not/Exist")
-        self.assertRaises(DbsApiException,api.insertParentInPD,"/Does/Not/Exist",proc3)
-        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "sjhd lk")
-        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "abd;def")
+#        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "")
+#        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "/Does/Not/Exist")
+#        self.assertRaises(DbsApiException,api.insertParentInPD,"/Does/Not/Exist",proc3)
+#        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "sjhd lk")
+#        self.assertRaises(DbsApiException,api.insertParentInPD,proc1, "abd;def")
         
 class Test_insertAlgoInPDAPI(unittest.TestCase):
     def test_insertAlgoInPD(self):
@@ -1322,7 +1322,7 @@ def suite():
 #    suite.addTest(unittest.makeSuite(Test_insertFileProcQualityAPI))
 #    suite.addTest(unittest.makeSuite(Test_addReplicaToBlockAPI))
 #    suite.addTest(unittest.makeSuite(Test_deleteReplicaFromBlockAPI))
-    suite.addTest(unittest.makeSuite(Test_renameSEAPI)) 
+#    suite.addTest(unittest.makeSuite(Test_renameSEAPI)) 
     suite.addTest(unittest.makeSuite(Test_listPrimaryDatasetsAPI))
     suite.addTest(unittest.makeSuite(Test_listAlgorithmsAPI))
     suite.addTest(unittest.makeSuite(Test_listProcessedDatasetsAPI))
@@ -1352,7 +1352,7 @@ if __name__ == '__main__':
     suite.addTest(unittest.makeSuite(Test_insertLumiSectionAPI))
 #    suite.addTest(unittest.makeSuite(Test_updateLumiSectionAPI))
     suite.addTest(unittest.makeSuite(Test_insertProcessedDatasetAPI))
-    suite.addTest(unittest.makeSuite(Test_insertParentInPDAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertParentInPDAPI))
 #    suite.addTest(unittest.makeSuite(Test_insertAlgoInPDAPI))
 #    suite.addTest(unittest.makeSuite(Test_insertRunInPDAPI))
 #    suite.addTest(unittest.makeSuite(Test_updateProcDSStatusAPI))
@@ -1364,7 +1364,7 @@ if __name__ == '__main__':
 #    suite.addTest(unittest.makeSuite(Test_insertFileProcQualityAPI))
 #    suite.addTest(unittest.makeSuite(Test_addReplicaToBlockAPI))
 #    suite.addTest(unittest.makeSuite(Test_deleteReplicaFromBlockAPI))
-    suite.addTest(unittest.makeSuite(Test_renameSEAPI))
+#    suite.addTest(unittest.makeSuite(Test_renameSEAPI))
     suite.addTest(unittest.makeSuite(Test_listPrimaryDatasetsAPI))
     suite.addTest(unittest.makeSuite(Test_listAlgorithmsAPI))
     suite.addTest(unittest.makeSuite(Test_listProcessedDatasetsAPI))
