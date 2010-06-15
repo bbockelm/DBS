@@ -1226,8 +1226,11 @@ class DDServer(DDLogger,Controller):
             dbsInst = kwargs['dbsInst']
         except:
             dbsInst = 'cms_dbs_prod_global'
+	dbslist = list(self.dbsList)
+	dbslist.remove(dbsInst)
+	dbslist = [dbsInst] + dbslist
         page+= "<div><b>You have unsufficient privileges to administrate datasets. Please contact cms-dbs-support [at] cern [dot] ch with this request.</b></div><br/><br/>"
-        nameSpace = { 'dbsInst':dbsInst, 'userMode':'expert', 'user': self.getUserFromCookie() }
+        nameSpace = {'host':self.dbsdd, 'dbsInst':dbsInst, 'dbslist':dbslist, 'userMode':'expert', 'user': self.getUserFromCookie() }
         t = templateAdministrateForm(searchList=[nameSpace]).respond()
         page+= str(t)
         page+= self.genBottomHTML()
