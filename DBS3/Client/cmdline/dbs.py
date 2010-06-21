@@ -1,6 +1,6 @@
 # dbs cmdline tool 
-# $Revision: $"
-# $Id: $"
+# $Revision: 1.1 $"
+# $Id: dbs.py,v 1.1 2010/06/16 21:07:33 afaq Exp $"
 # @author anzar
 #
 import os, sys, socket
@@ -43,7 +43,7 @@ class DbsApi:
 		res=""
 		try:
 			calling=self.url+urlplus
-			
+			print calling	
 			proxies = {}
 			if self.proxy not in (None, ""):
 				proxies = { 'http': self.proxy }
@@ -189,7 +189,7 @@ if __name__ == "__main__":
 	if url=="":
 	    print "No url provide, use --help for more information"
 	    sys.exit(0)
-	if len(params) > 1 and verb == "":
+	if verb == "":
 	    print "No verb provided, use --help for more information"
 	    sys.exit(0)
 	dbsapi = DbsApi(url=url)	
