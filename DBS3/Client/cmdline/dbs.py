@@ -1,6 +1,6 @@
 # dbs cmdline tool 
-# $Revision: 1.1 $"
-# $Id: dbs.py,v 1.1 2010/06/16 21:07:33 afaq Exp $"
+# $Revision: 1.2 $"
+# $Id: dbs.py,v 1.2 2010/06/21 17:38:53 afaq Exp $"
 # @author anzar
 #
 import os, sys, socket
@@ -43,7 +43,7 @@ class DbsApi:
 		res=""
 		try:
 			calling=self.url+urlplus
-			print calling	
+			#print calling	
 			proxies = {}
 			if self.proxy not in (None, ""):
 				proxies = { 'http': self.proxy }
@@ -59,26 +59,28 @@ class DbsApi:
 				req.get_method = lambda: callmethod
 				data = self.opener.open(req)
 			res = data.read()
+
+			json_ret=json.loads(res)
+			self.parseForException(json_ret)
+			return json_ret
+
 		except urllib2.HTTPError, httperror:
 			self.parseForException(json.loads(httperror.read()))
 			
-			#HTTPError(req.get_full_url(), code, msg, hdrs, fp)
 		except urllib2.URLError, urlerror:
 			raise urlerror
 		
-		#FIXME: We will always return JSON from DBS, even from POST, PUT, DELETE APIs, make life easy here
-		json_ret=json.loads(res)
-		self.parseForException(json_ret)
-		return json_ret
+		except Exception, ex:
+			raise ex
 		
 	def parseForException(self, data):
 	    """
 	    An internal method, should not be used by clients
 	    """
+	    
 	    if type(data)==type("abc"):
 		data=json.loads(data)
             if type(data) == type({}) and data.has_key('exception'):
-		#print "Service Raised an exception: "+data['exception']
 		raise Exception("DBS Server raised an exception: %s" %data['message'])
 	    return data
 
@@ -193,5 +195,7 @@ if __name__ == "__main__":
 	    print "No verb provided, use --help for more information"
 	    sys.exit(0)
 	dbsapi = DbsApi(url=url)	
-	prety_print_json(dbsapi.callServer("/%s%s" %(verb,make_url_params(params)), callmethod='GET' ))
-	
+	try:
+	    prety_print_json(dbsapi.callServer("/%s%s" %(verb,make_url_params(params)), callmethod='GET' ))
+	except Exception, ex:
+	    print ex
