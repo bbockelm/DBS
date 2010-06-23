@@ -2,7 +2,7 @@
 """
 This module provides FileBuffer.DeleteDuplicates data access object.
 """
-__revision__ = "$Id: DeleteDuplicates.py,v 1.1 2010/05/25 21:01:55 afaq Exp $"
+__revision__ = "$Id: DeleteDuplicates.py,v 1.1 2010/05/27 19:37:25 afaq Exp $"
 __version__ = "$Revision: 1.1 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -26,7 +26,7 @@ class DeleteDuplicates(DBFormatter):
 	simple execute
         """	
         if not conn:
-            raise Exception("dbs/dao/Oracle/FileBuffer/DeleteFiles expects db connection from up layer.")
+            raise Exception("dbs/dao/Oracle/FileBuffer/DeleteFiles expects db connection from upper layer.")
 	print self.sql
         self.dbi.processData(self.sql, lfn, conn, transaction)
 

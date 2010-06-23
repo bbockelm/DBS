@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """ DAO Object for DBS_VERSIONS Table """ 
 
-__revision__ = "$Revision: $"
-__version__  = "$Id: $ "
+__revision__ = "$Revision: 1.1 $"
+__version__  = "$Id: DBSStatus.py,v 1.1 2010/06/14 15:12:06 afaq Exp $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 from sqlalchemy import exceptions
@@ -18,7 +18,7 @@ class DBSStatus(DBFormatter):
 	
     def execute(self, conn, transaction = False):
 	if not conn:
-	    raise Exception("dbs/dao/Oracle/ComponentStatus/DBSStatus expects db connection from up layer.")
+	    raise Exception("dbs/dao/Oracle/ComponentStatus/DBSStatus expects db connection from upper layer.")
 	binds={}
 	result = self.dbi.processData(self.sql, binds, conn, transaction)
         return self.formatDict(result)

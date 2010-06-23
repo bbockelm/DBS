@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """ DAO Object for DbsVersions table """ 
 
-__revision__ = "$Revision: 1.4 $"
-__version__  = "$Id: Insert.py,v 1.4 2010/02/11 18:03:25 afaq Exp $ "
+__revision__ = "$Revision: 1.5 $"
+__version__  = "$Id: Insert.py,v 1.5 2010/03/05 17:06:06 yuyi Exp $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -44,7 +44,7 @@ class Insert(DBFormatter):
 
     def execute( self, conn, dbs_versionsObj, transaction=False ):
         if not conn:
-	    raise Exception("dbs/dao/Oracle/DbsVersion/Insert expects db connection from up layer.")
+	    raise Exception("dbs/dao/Oracle/DbsVersion/Insert expects db connection from upper layer.")
 	result = self.dbi.processData(self.sql, binds, conn, transaction)
 	return
 

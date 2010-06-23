@@ -2,8 +2,8 @@
 """
 This module provides Block.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.20 2010/05/24 19:12:02 yuyi Exp $"
-__version__ = "$Revision: 1.20 $"
+__revision__ = "$Id: List.py,v 1.21 2010/05/27 21:24:39 afaq Exp $"
+__version__ = "$Revision: 1.21 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 from WMCore.Database.MySQLCore import  MySQLInterface
@@ -34,7 +34,7 @@ JOIN %sDATASETS DS ON DS.DATASET_ID = B.DATASET_ID
 	block: /a/b/c#d
 	"""	
 	if not conn:
-	    raise Exception("dbs/dao/Oarcle/Block/List expects db connection from up layer.")
+	    raise Exception("dbs/dao/Oarcle/Block/List expects db connection from upper layer.")
 	sql1 = self.sql1
 	binds = {}
 	if logical_file_name and logical_file_name != "%":

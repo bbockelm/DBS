@@ -2,8 +2,8 @@
 """
 This module provides AcquisitionEra.GetID data access object.
 """
-__revision__ = "$Id: GetID.py,v 1.6 2010/03/05 14:57:52 yuyi Exp $"
-__version__ = "$Revision: 1.6 $"
+__revision__ = "$Id: GetID.py,v 1.7 2010/03/15 14:09:30 yuyi Exp $"
+__version__ = "$Revision: 1.7 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -29,7 +29,7 @@ class GetID(DBFormatter):
         returns id for a given acquisition_era
         """
 	if not conn:
-	    raise Exception("dbs/dao/Oracle/AcquisitionEra/GetID expects db conntion from up layer.")
+	    raise Exception("dbs/dao/Oracle/AcquisitionEra/GetID expects db conntion from upper layer.")
         binds = {"acquisition_era_name":name}
         result = self.dbi.processData(self.sql, binds, conn, transaction)
         plist = self.formatDict(result)

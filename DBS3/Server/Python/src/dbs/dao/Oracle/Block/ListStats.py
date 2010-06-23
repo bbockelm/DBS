@@ -3,8 +3,8 @@
 This module provides Block.ListStats data access object.
 Block parameters based on current conditions at DBS, are listed by this DAO
 """
-__revision__ = "$Id: ListStats.py,v 1.4 2010/03/05 15:32:53 yuyi Exp $"
-__version__ = "$Revision: 1.4 $"
+__revision__ = "$Id: ListStats.py,v 1.5 2010/05/25 21:01:53 afaq Exp $"
+__version__ = "$Revision: 1.5 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -30,7 +30,7 @@ class ListStats(DBFormatter):
         returns id for a given block = /primds/procds/tier#block
         """	
 	if not conn:
-	    raise Exception("dbs/dao/Oracle/Block/ListStatus expects db connection from up layer.")
+	    raise Exception("dbs/dao/Oracle/Block/ListStatus expects db connection from upper layer.")
         binds = {"block_id": block_id}
         result = self.dbi.processData(self.sql, binds, conn, transaction)
         plist = self.formatDict(result)

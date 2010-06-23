@@ -2,8 +2,8 @@
 """
 This module provides Site.ListBlockSite data access object.
 """
-__revision__ = "$Id: ListBlockSite.py,v 1.1 2010/04/21 19:50:02 afaq Exp $"
-__version__ = "$Revision: 1.1 $"
+__revision__ = "$Id: ListBlockSite.py,v 1.2 2010/06/04 19:56:49 afaq Exp $"
+__version__ = "$Revision: 1.2 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -29,7 +29,7 @@ class ListBlockSite(DBFormatter):
         """
 
 	if not conn:
-		raise Exception("dbs/dao/Oracle/Site/ListBlockSite expects db connection from up layer.")
+		raise Exception("dbs/dao/Oracle/Site/ListBlockSite expects db connection from upper layer.")
 	sql = self.sql
 
 	binds={ "block_name" : block_name }
