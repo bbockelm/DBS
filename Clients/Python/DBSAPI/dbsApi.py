@@ -870,6 +870,7 @@ class DbsApi(DbsConfig):
 from dbsException import *
 from dbsApiException import *
 from dbsOptions import DbsOptionParser
+import time
 
 if __name__ == "__main__":
 
@@ -1061,6 +1062,7 @@ if __name__ == "__main__":
     url_list.extend(url_list_t0_95)
     url_list.extend(url_list_t0_96)
 
+    
     args['mode']='POST'
     args['version']='DBS_2_0_8'
     args['level']='DBSINFO'
@@ -1070,11 +1072,13 @@ if __name__ == "__main__":
        args['url']=aurl
        print aurl
        api = DbsApi(args) 
+       t1=time.time()   
        serverInfo = api.getServerInfo()
+       t2=time.time()   
        print api.getServerUrl()
        print "Server Version : ", serverInfo['ServerVersion']
        print "Schema Version : ", serverInfo['SchemaVersion']
-
+       print "Time taken by call : %s seconds" %(t2-t1)
       #print api.listSubSystems()
       #print api.listDQVersions()
 
