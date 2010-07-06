@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.232 $"
- $Id: DBSSql.java,v 1.232 2010/05/19 14:29:07 afaq Exp $"
+ $Revision: 1.233 $"
+ $Id: DBSSql.java,v 1.233 2010/05/19 15:27:03 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1850,7 +1850,6 @@ public class DBSSql {
 				"ON perlm.id = pd.LastModifiedBy \n";
 			if(pattern.indexOf('%') == -1) sql += "WHERE pd.Name = ?\n";
 			else sql += "WHERE pd.Name like ?\n";
-			//else sql += "WHERE pd.Name like :abc\n";
 			sql += "ORDER BY pd.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, pattern);
@@ -1914,41 +1913,54 @@ public class DBSSql {
 			"LEFT OUTER JOIN "+owner()+"Block blk \n" +
 				"ON blk.Dataset = procds.id \n";
 
-
 		boolean useAnd = false;
 		sql += "WHERE \n";
 		if(!patternPrim.equals("%")) {
-			sql += " primds.Name like ? \n";
+			String op="like";
+			if(patternPrim.indexOf('%') == -1) op="=";
+			sql += " primds.Name "+op+" ? \n";
 			useAnd = true;
 		}
 		if(!patternDT.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "dt.Name=?  \n";
+			String op="like";
+			if(patternDT.indexOf('%') == -1) op="=";
+			sql += "dt.Name "+op+" ?  \n";
 			useAnd = true;
 		}
 		if(!patternProc.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "procds.name like ? \n";
+			String op="like";
+			if(patternProc.indexOf('%') == -1) op="=";
+			sql += "procds.name "+op+" ? \n";
 			useAnd = true;
 		}
 		if(!patternVer.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "av.Version like ? \n";
+			String op="like";
+			if(patternVer.indexOf('%') == -1) op="=";
+			sql += "av.Version "+op+" ? \n";
 			useAnd = true;
 		}
 		if(!patternFam.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "af.FamilyName like ? \n";
+			String op="like";
+			if(patternFam.indexOf('%') == -1) op="=";
+			sql += "af.FamilyName "+op+" ? \n";
 			useAnd = true;
 		}
 		if(!patternExe.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "ae.ExecutableName like ? \n";
+			String op="like";
+			if(patternExe.indexOf('%') == -1) op="=";
+			sql += "ae.ExecutableName "+op+" ? \n";
 			useAnd = true;
 		}
 		if(!patternPS.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "ps.Name like ? \n";
+			String op="like";
+			if(patternPS.indexOf('%') == -1) op="=";
+			sql += "ps.Name "+op+" ? \n";
 			useAnd = true;
 		}
 
@@ -2071,34 +2083,6 @@ public class DBSSql {
                 return ps;
 	}
 
-        /*public static PreparedStatement listPathParent(Connection conn, String path) throws SQLException {
-                String sql = "SELECT DISTINCT \n"+
-                "concat( \n" +
-                                "concat( \n" +
-                                        "concat( \n" +
-                                                "concat( \n" +
-                                                        "concat('/', primds.Name \n" +
-                                                        "),'/' \n" +
-                                                "),procds.Name \n" +
-                                        "),'/' \n" +
-                                "), dt.Name \n" +
-                ") as PATH \n" +
-		"FROM "+owner()+"ProcessedDataset procds \n" +
-		"JOIN "+owner()+"ProcDSParent procdsparent \n" +
-                       "ON procdsparent.ItsParent = procds.ID \n" +
-                "JOIN "+owner()+"PrimaryDataset primds \n" +
-                       "ON primds.id = procds.PrimaryDataset \n" +
-                "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
-                       "ON dt.id = procds.datatier \n" +
-		"WHERE procdsparent.ThisDataset = ?";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-	        ps.setString(1, path);
-        	DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-
-        }*/
-
-
 
         public static String listPathParentOld() throws SQLException {
 		String sql = "\tSELECT DISTINCT b.id \n" +
@@ -2110,30 +2094,6 @@ public class DBSSql {
 			"\tJOIN "+owner()+"Block bl \n" +
 			"\tON bl.Dataset = dp.ThisDataset \n" +
 			 "\tWHERE bl.Path = ?\n";
-		/*
-		String sql = "\tSELECT DISTINCT b.id \n" +
-			"\tFROM "+owner()+"Block b \n" +
-			"\tJOIN "+owner()+"ProcessedDataset procds \n" +
-				"\t\ton b.Dataset = procds.ID \n" +
-			"\tJOIN "+owner()+"ProcDSParent dp \n" +
-				"\t\tON dp.ItsParent = procds.ID \n" +
-			 "\tWHERE dp.ThisDataset IN ( \n" + 
-				"\t\tSELECT bl.Dataset FROM " + owner() +"Block bl WHERE bl.Path = ?\n" +
-				"\t) \n";
-		*/
-                /*String sql = "\tSELECT fl.Block \n" +
-                                "\tFROM " + owner() + "Files fl \n" +
-                                "\tWHERE fl.ID in ( \n" +
-                                        "\t\tSELECT fp.ItsParent    \n" +
-                                        "\t\tFROM  " + owner() + "FileParentage fp \n" +
-                                        "\t\tWHERE fp.ThisFile in ( \n" +
-                                                "\t\t\tSELECT f.ID from " + owner() + "Files f  \n" +
-                                                "\t\t\tWHERE f.Block in ( \n" +
-                                                        "\t\t\t\tSELECT bl.ID FROM " + owner() + "Block   bl WHERE bl.Path = ? \n" +
-                                                ") \n" +
-                                        ") \n" +
-                                ") \n";*/
-
                 return sql;
         }
 
@@ -2314,15 +2274,19 @@ public class DBSSql {
 			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n";
 
-		/*if(patternVer == null) patternVer = "%";
-		if(patternFam == null) patternFam = "%";
-		if(patternExe == null) patternExe = "%";
-		if(patternPS == null) patternPS = "%";*/
-		
-		sql += "WHERE av.Version like ? \n" +
-			"and af.FamilyName like ? \n" +
-			"and ae.ExecutableName like ? \n" +
-			"and ps.Hash like ? \n" +
+		String opv="like";
+		if(patternVer.indexOf('%') == -1) opv="=";
+		String opf="like";
+		if(patternFam.indexOf('%') == -1) opf="=";
+		String ope="like";
+		if(patternExe.indexOf('%') == -1) ope="=";
+		String ops="like";
+		if(patternPS.indexOf('%') == -1) ops="=";
+
+		sql += "WHERE av.Version "+opv+" ? \n" +
+			"and af.FamilyName "+opf+" ? \n" +
+			"and ae.ExecutableName "+ope+" ? \n" +
+			"and ps.Hash "+ops+" ? \n" +
 			"ORDER BY af.FamilyName, ae.ExecutableName, av.Version, ps.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -2505,20 +2469,21 @@ public class DBSSql {
         public static PreparedStatement listBlockProvenance(Connection conn, String blockName, String parentOrChild, String isGlobal) throws SQLException {
 		String joinStr = null;
 		String whereStr = null;
-
+		String op="like";
+		if (blockName.indexOf("%") == -1 ) op="=";
                 if (parentOrChild.equals("PARENT")) {
 
                         joinStr = "ON bp.ItsParent = b.ID \n";
                         whereStr = "WHERE bp.ThisBlock = \n"+
 					"(SELECT blk.ID FROM \n"+
 					owner()+"Block blk\n"+
-					"where blk.Name like ?)";
+					"where blk.Name "+op+" ?)";
                 } else {
                         joinStr = "ON bp.ThisBlock = b.ID \n";
                         whereStr = "WHERE bp.ItsParent = \n"+
                                         "(SELECT blk.ID FROM \n"+
                                         owner()+"Block blk\n"+
-                                        "where blk.Name like ?)";
+                                        "where blk.Name "+op+" ?)";
                 }
 
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
@@ -2623,13 +2588,6 @@ public class DBSSql {
 			sql += "percb.DistinguishedName as CREATED_BY, \n" +
 				"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 				"FROM "+owner()+"Block b \n";
-			/*
-                        "JOIN "+owner()+"ProcessedDataset procds \n" +
-				"ON b.Dataset = procds.ID \n";
-                        "JOIN "+owner()+"PrimaryDataset primds \n" +
-                                "ON primds.id = procds.PrimaryDataset \n" +
-                        "LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
-                                "ON dt.id = procds.datatier \n" +*/
 			if (nosite.equals("False")) {
 			    if (isGlobal.equals("LOCAL")) {
 				sql += "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
@@ -2660,14 +2618,18 @@ public class DBSSql {
 
 		if(!blockName.equals("%")) {
 			if(useAnd) sql += " AND ";
-			sql += "b.Name like ? \n";
+			String op="like";
+			if(blockName.indexOf('%') == -1) op="=";
+			sql += "b.Name "+ op +" ? \n";
 			useAnd = true;
 		}
 		if (nosite.equals("False")) {
 		    if(!seName.equals("%")) {
 			if(useAnd) sql += " AND ";
-			if (isGlobal.equals("LOCAL")) sql += "se.SEName like ? \n";
-			if (isGlobal.equals("GLOBAL")) sql += "blkreplica.se_name like ? \n";
+			String op="like";
+			if (nosite.indexOf('%') == -1) op="="; 
+			if (isGlobal.equals("LOCAL")) sql += "se.SEName "+ op +" ? \n";
+			if (isGlobal.equals("GLOBAL")) sql += "blkreplica.se_name "+ op +" ? \n";
 		    }
 		}
 		
@@ -2675,7 +2637,6 @@ public class DBSSql {
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
-		//if(!DBSUtil.isNull(patternPath)) ps.setString(columnIndx++, patternPath);
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
@@ -2725,8 +2686,10 @@ public class DBSSql {
 				"ON perlm.id = se.LastModifiedBy \n";
 
 		if(!seName.equals("%")){
+			 String op="like";
+			 if (seName.indexOf("%")==-1) op="=";
 			 sql += "WHERE \n" +
-			 	"se.SEName like ? \n";
+			 	"se.SEName "+op+" ? \n";
 		}
 		sql +=	"ORDER BY se.SEName DESC";
                 int columnIndx = 1;
@@ -2736,104 +2699,8 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-	/*
-        public static PreparedStatement listFiles(Connection conn, String procDSID, String path, String runID, boolean listInvalidFiles) throws SQLException {
 
-                String sql = "SELECT DISTINCT f.ID as ID, \n " +
-                        "f.LogicalFileName as LFN, \n" +
-                        "f.Checksum as CHECKSUM, \n" +
-                        "f.FileSize as FILESIZE, \n" +
-                        "f.FileBranch as FILE_BRANCH, \n" +
-                        "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
-                        "f.CreationDate as CREATION_DATE, \n" +
-                        "f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-                        "f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
-                        "vst.Status as VALIDATION_STATUS, \n" +
-                        "st.Status as STATUS, \n" +
-                        "ty.Type as TYPE, \n" +
-                        "b.Name as BLOCK_NAME, \n"+
-                        "percb.DistinguishedName as CREATED_BY, \n" +
-                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM Files f \n" ;
-			if (!DBSUtil.isNull(runID)) {
-                        	sql += "JOIN FileRunLumi fr \n" +
-                                		"ON fr.Fileid = f.id \n" +
-                        		"JOIN Runs r \n" +
-                                		"ON r.ID = fr.Run \n";
-			}
-                        sql += "LEFT OUTER JOIN "+owner()+"Block b \n" +
-                                "ON b.id = f.Block \n "+
-                        "LEFT OUTER JOIN "+owner()+"FileType ty \n" +
-                                "ON ty.id = f.FileType \n" +
-                        "LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
-                                "ON st.id = f.FileStatus \n" +
-                        "LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
-                                "ON vst.id = f.ValidationStatus \n" +
-                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
-                                "ON percb.id = f.CreatedBy \n" +
-                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-                                "ON perlm.id = f.LastModifiedBy \n";
-                sql += "WHERE b.Path = ? \n" ;
-                sql += "AND f.Dataset = ? \n";
-		if (!DBSUtil.isNull(runID)) sql += "AND fr.Run = ? \n";
-		if (!listInvalidFiles)	sql +=  "AND st.Status <> 'INVALID' \n";
-		sql += "ORDER BY f.LogicalFileName DESC";
 
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-
-                int columnIndx=1;
-
-                ps.setString(columnIndx++, path);
-                ps.setString(columnIndx++, procDSID);
-		if (!DBSUtil.isNull(runID)) ps.setString(columnIndx++, runID);
-
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-
-	}
-
-	public static PreparedStatement listFiles(Connection conn, String lfn) throws SQLException {
-
-                String sql = "SELECT DISTINCT f.ID as ID, \n " +
-                        "f.LogicalFileName as LFN, \n" +
-                        "f.Checksum as CHECKSUM, \n" +
-                        "f.FileSize as FILESIZE, \n" +
-                        "f.FileBranch as FILE_BRANCH, \n" +
-                        "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
-                        "f.CreationDate as CREATION_DATE, \n" +
-                        "f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-                        "f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
-                        "vst.Status as VALIDATION_STATUS, \n" +
-                        "st.Status as STATUS, \n" +
-                        "ty.Type as TYPE, \n" +
-                        "b.Name as BLOCK_NAME, \n"+
-                        "b.ID as BLOCK_ID, \n"+
-                        "percb.DistinguishedName as CREATED_BY, \n" +
-                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM Files f \n" +
-                        "LEFT OUTER JOIN "+owner()+"Block b \n" +
-                                "ON b.id = f.Block \n "+
-                        "LEFT OUTER JOIN "+owner()+"FileType ty \n" +
-                                "ON ty.id = f.FileType \n" +
-                        "LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
-                                "ON st.id = f.FileStatus \n" +
-                        "LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
-                                "ON vst.id = f.ValidationStatus \n" +
-                        "LEFT OUTER JOIN "+owner()+"Person percb \n" +
-                                "ON percb.id = f.CreatedBy \n" +
-                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-                                "ON perlm.id = f.LastModifiedBy \n";
-                sql += "WHERE f.LogicalFileName = ?\n" ;
-
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-                ps.setString(columnIndx++, lfn);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-
-	}*/
-
-	
 	public static PreparedStatement listFiles(Connection conn, String lfn) throws SQLException {
  		String sql = "SELECT f.ID as ID, \n " +
 			"b.ID as BLOCK_ID \n"+
@@ -2894,98 +2761,6 @@ public class DBSSql {
 		return ps;
 	}
 
-/*
-	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN, boolean listInvalidFiles) throws SQLException {
-		String joinStrAna = "";
-		if(!DBSUtil.isNull(aDSID)) {
-			joinStrAna = "JOIN AnalysisDSFileLumi adfl \n" +
-				"ON adfl.fileid = f.ID \n";
-		}
-		String joinStrTier = "";
-		for(int i = 0 ; i != tierIDList.size(); ++i) {
-			String index = String.valueOf(i);
-			joinStrTier += "LEFT OUTER JOIN "+owner()+"FileTier fdt" + index + "\n" +
-				"ON fdt" + index + ".Fileid = f.id \n";
-		}
-
-
-		//System.out.println("Block ID is "+blockID);
-		String sql = "SELECT DISTINCT f.ID as ID, \n " +
-			"f.LogicalFileName as LFN, \n" +
-			"f.Checksum as CHECKSUM, \n" +
-			"f.FileSize as FILESIZE, \n" +
-                        "f.FileBranch as FILE_BRANCH, \n" +
-			"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
-			"f.CreationDate as CREATION_DATE, \n" +
-			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-			"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
-			"vst.Status as VALIDATION_STATUS, \n" +
-			"st.Status as STATUS, \n" +
-			"ty.Type as TYPE, \n" +
-			"b.Name as BLOCK_NAME, \n"+ 
-    			//"b.ID as BLOCK_ID, \n"+ 
-			//"dt.Name as DATA_TIER, \n"+ 
-			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM Files f \n" +
-			"LEFT OUTER JOIN "+owner()+"Block b \n" +
-				"ON b.id = f.Block \n "+  
-			//"LEFT OUTER JOIN "+owner()+"FileTier fdt \n" +
-			//	"ON fdt.Fileid = f.id \n" +
-			joinStrTier +
-			joinStrAna +
-			//"LEFT OUTER JOIN "+owner()+"DataTier dt \n" +
-			//	"ON dt.id = fdt.DataTier " +
-			"LEFT OUTER JOIN "+owner()+"FileType ty \n" +
-				"ON ty.id = f.FileType \n" +
-			"LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
-				"ON st.id = f.FileStatus \n" +
-			"LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
-				"ON vst.id = f.ValidationStatus \n" +
-			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
-				"ON percb.id = f.CreatedBy \n" +
-			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-				"ON perlm.id = f.LastModifiedBy \n";
-		sql += "WHERE f.LogicalFileName like ? \n" ;
-		if(!DBSUtil.isNull(procDSID)) sql += "AND f.Dataset = ? \n";
-		if(!DBSUtil.isNull(blockID)) sql += "AND f.Block = ? \n";
-		for(int i = 0 ; i != tierIDList.size(); ++i) sql += "AND fdt" + String.valueOf(i) + ".DataTier = ?\n\t";
-
-		*/
-		/*if(!DBSUtil.isNull(tierID)){
-			sql += "AND fdt.DataTier = ? \n";
-		}*/
-/*		if(!DBSUtil.isNull(aDSID)) {
-			sql += "AND adfl.AnalysisDataset = ? \n";
-		}
-
-		if (!listInvalidFiles)	sql +=  "AND st.Status <> 'INVALID' \n";
-		//sql +=	"AND st.Status <> 'INVALID' \n" +
-		sql +=	"ORDER BY f.LogicalFileName DESC";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                
-                int columnIndx=1;
-  
-		ps.setString(columnIndx++, patternLFN);
-		if(!DBSUtil.isNull(procDSID)){
-			ps.setString(columnIndx++, procDSID);
-		}
-		if(!DBSUtil.isNull(blockID)){
-			ps.setString(columnIndx++, blockID);
-		}
-*/
-		/*if(!DBSUtil.isNull(tierID)){
-			ps.setString(columnIndx++, tierID);
-		}*/
-/*		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
-		if(!DBSUtil.isNull(aDSID)) {
-			ps.setString(columnIndx++, aDSID);
-		}
-		
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
-	}
-*/
 	public static PreparedStatement listFiles(Connection conn, 
 			String procDSID, 
 			String path, 
@@ -3058,7 +2833,6 @@ public class DBSSql {
 		if(!DBSUtil.isNull(patternLFN))  {
                         if(patternLFN.indexOf('%') == -1) sql += "f.LogicalFileName = ? \n";
                         else sql += "f.LogicalFileName like ? \n";
-			//sql += "f.LogicalFileName like ? \n" ;
 			useAnd = true;
 		}
 		if(!DBSUtil.isNull(procDSID) && DBSUtil.isNull(path)) {
