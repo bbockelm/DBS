@@ -92,7 +92,7 @@ import org.apache.catalina.valves.Constants;
  *
  * @author Craig R. McClanahan
  * @author Jason Brittain
- * @version $Revision: 466608 $ $Date: 2006-10-21 18:10:15 -0500 (Sat, 21 Oct 2006) $
+ * @version $Revision: 1.1 $ $Date: 2007/12/11 16:07:21 $
  */
 
 public class GridAccessLogValve
@@ -554,9 +554,10 @@ public class GridAccessLogValve
             result.append(" - ");
 
             value = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
-            //value = request.getRemoteUser();
-            if (value == null)
-                result.append("- ");
+	    if (value == null)
+		value = (String) request.getHeader("UserID");
+	    if (value == null)
+		result.append("- ");
             else {
                 result.append("\"");
                 result.append(value);
