@@ -1,6 +1,6 @@
 /**
- $Revision: 1.174 $"
- $Id: DBSApi.java,v 1.174 2010/05/19 14:29:07 afaq Exp $"
+ $Revision: 1.175 $"
+ $Id: DBSApi.java,v 1.175 2010/05/19 18:46:31 afaq Exp $"
  *
 */
 
@@ -446,12 +446,12 @@ public class DBSApi {
 									get(table, "version", false),
 									get(table, "xml", false)
 									);
-                        } else if (apiStr.equals("listRowsInTable")) {
+                        /*} else if (apiStr.equals("listRowsInTable")) {
 				(new DBSApiLogic(this.data)).listRowsInTable(conn, out,
      									get(table, "table_name", true),
      									get(table, "from", false),
      									get(table, "rows", false)
-			    						);
+			    						); */
                         } else if (apiStr.equals("insertPrimaryDataset")) {
 				(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out,
 						DBSApiParser.parse( getXml(table), "primary_dataset") , 
