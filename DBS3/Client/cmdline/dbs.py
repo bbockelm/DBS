@@ -1,6 +1,6 @@
 # dbs cmdline tool 
-# $Revision: 1.2 $"
-# $Id: dbs.py,v 1.2 2010/06/21 17:38:53 afaq Exp $"
+# $Revision: 1.3 $"
+# $Id: dbs.py,v 1.3 2010/06/21 18:01:01 afaq Exp $"
 # @author anzar
 #
 import os, sys, socket
@@ -169,7 +169,7 @@ def prety_print_json(injson):
     
 if __name__ == "__main__":
 	#get the cmdline options
-	options, remainder = getopt.gnu_getopt(sys.argv[1:], 'huvp', ['help','url=', 'verb=','params='])
+	options, remainder = getopt.gnu_getopt(sys.argv[1:], 'huvp?', ['help','url=', 'verb=','params='])
 	params={}
 	verb=""
 	url=""
@@ -178,8 +178,9 @@ if __name__ == "__main__":
 	    help(sys.argv[0])
 	    sys.exit(0)	
 	for opt, arg in options:
-	    if opt in ('-h', '--help'):
+	    if opt in ('-h', '--help', '-?'):
 		help(sys.argv[0])	
+		sys.exit(0)
 	    elif opt in ('--verb'):
 		verb=validate_verb(arg)
 	    elif opt in ('--params'):
@@ -187,9 +188,10 @@ if __name__ == "__main__":
 	    elif opt in ('--url'):
 		url=arg
 	    else :
-		help(sys.argv[0])	    
+		help(sys.argv[0])
+		sys.exit(0)    
 	if url=="":
-	    print "No url provide, use --help for more information"
+	    print "No url provided, use --help for more information"
 	    sys.exit(0)
 	if verb == "":
 	    print "No verb provided, use --help for more information"
