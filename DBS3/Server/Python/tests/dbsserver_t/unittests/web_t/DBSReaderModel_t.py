@@ -2,8 +2,8 @@
 web unittests
 """
 
-__revision__ = "$Id: DBSReaderModel_t.py,v 1.17 2010/04/23 19:55:52 afaq Exp $"
-__version__ = "$Revision: 1.17 $"
+__revision__ = "$Id: DBSReaderModel_t.py,v 1.18 2010/06/03 16:08:50 yuyi Exp $"
+__version__ = "$Revision: 1.18 $"
 
 import os, sys, imp
 import json
@@ -524,6 +524,20 @@ class DBSReaderModel_t(unittest.TestCase):
     def test83(self):
 	print'\n Test83 test for listRun: basic' 
 	api.list('runs', minrun=0, maxrun=testparams['run_num'])
+
+    def test84(self):
+        print'\n Test83 test for listRun: basic'
+        api.list('runs', minrun=0, maxrun=testparams['run_num'], logical_file_name=testparams['files'][0])
+
+    def test85(self):
+        print'\n Test83 test for listRun: basic'
+        api.list('runs', block_name=testparams['block'])
+
+    def test86(self):
+        print'\n Test83 test for listRun: basic'
+        api.list('runs', dataset_name=testparams['dataset'])
+
+
  	
     def test87(self):
         """list dataset parents"""
