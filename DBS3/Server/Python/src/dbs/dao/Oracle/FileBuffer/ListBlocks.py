@@ -2,8 +2,8 @@
 """
 This module provides File.List data access object.
 """
-__revision__ = "$Id: ListBlocks.py,v 1.1 2010/05/25 21:01:55 afaq Exp $"
-__version__ = "$Revision: 1.1 $"
+__revision__ = "$Id: ListBlocks.py,v 1.2 2010/06/23 21:21:23 afaq Exp $"
+__version__ = "$Revision: 1.2 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -18,7 +18,7 @@ class ListBlocks(DBFormatter):
         """
         DBFormatter.__init__(self, logger, dbi)
 	self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else "" 
-        self.sql = """SELECT DISTINCT BLOCK_ID from %sFILE_BUFFER""" % self.owner
+        self.sql = """SELECT DISTINCT BLOCK_ID from %sFILE_BUFFERS""" % self.owner
 
     def execute(self, conn, transaction=False):
 

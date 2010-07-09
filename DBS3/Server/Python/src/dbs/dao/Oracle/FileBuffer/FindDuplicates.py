@@ -2,8 +2,8 @@
 """
 This module provides FileBuffer.FindDuplicates data access object.
 """
-__revision__ = "$Id: FindDuplicates.py,v 1.1 2010/05/27 19:37:25 afaq Exp $"
-__version__ = "$Revision: 1.1 $"
+__revision__ = "$Id: FindDuplicates.py,v 1.2 2010/06/23 21:21:23 afaq Exp $"
+__version__ = "$Revision: 1.2 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -18,7 +18,7 @@ class FindDuplicates(DBFormatter):
         """
         DBFormatter.__init__(self, logger, dbi)
 	self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else "" 
-        self.sql = """SELECT FLBUF.LFN FROM %sFILE_BUFFER FLBUF JOIN %sFILES FL ON FL.LOGICAL_FILE_NAME=FLBUF.LFN""" % (2*(self.owner,))
+        self.sql = """SELECT FLBUF.LOGICAL_FILE_NAME FROM %sFILE_BUFFERS FLBUF JOIN %sFILES FL ON FL.LOGICAL_FILE_NAME=FLBUF.LOGICAL_FILE_NAME""" % (2*(self.owner,))
 
     def execute(self, conn, transaction=False):
 
