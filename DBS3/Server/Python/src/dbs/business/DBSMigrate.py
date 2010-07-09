@@ -3,8 +3,8 @@
 This module provides dataset migration business object class. 
 """
 
-__revision__ = "$Id: DBSMigrate.py,v 1.5 2010/06/28 16:09:04 afaq Exp $"
-__version__ = "$Revision: 1.5 $"
+__revision__ = "$Id: DBSMigrate.py,v 1.6 2010/06/29 19:29:49 afaq Exp $"
+__version__ = "$Revision: 1.6 $"
 
 from WMCore.DAOFactory import DAOFactory
 
@@ -194,7 +194,7 @@ class DBSMigrate:
 	    for iter in reversed(range(len(ordered_list))):
 		if len(ordered_list[iter]) > 0:
 		    daoinput = [ {"migration_block_id" : self.sm.increment(conn, "SEQ_MB", tran), "migration_request_id" : request["migration_request_id"], \
-				"migration_block" : blk, "migration_order" : iter, "migration_status" : "PENDING", "creation_date": dbsUtils().getTime(), \
+				"migration_block_name" : blk, "migration_order" : iter, "migration_status" : "PENDING", "creation_date": dbsUtils().getTime(), \
 				"last_modification_date" : dbsUtils().getTime(), "create_by" : dbsUtils().getCreateBy() , \
 				"last_modified_by" : dbsUtils().getCreateBy() } \
 						for blk in ordered_list[iter] ]  
