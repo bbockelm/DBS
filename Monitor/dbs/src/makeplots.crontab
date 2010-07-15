@@ -1,6 +1,0 @@
-1 * * * * echo "********`date` Executing makeplots" >> /data/dbs_logs/makeplots-today.log 2>&1 &
-5 * * * * /data/dbs_logs/src/makeplots-today.sh >> /data/dbs_logs/makeplots-today.log 2>&1 &
-10 0 * * * /data/dbs_logs/src/makeplots-yesterday.sh >> /data/dbs_logs/makeplots-yesterday.log 2>&1
-&
-30 0 * * * /data/dbs_logs/src/makeplots-monthtodate.sh >> /data/dbs_logs/makeplots-monthtodate.log 2
->&1 &
