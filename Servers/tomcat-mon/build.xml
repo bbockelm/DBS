@@ -1,13 +1,13 @@
 <project name="dbs" default="compile">
 	<property name="sourcedir" value="${basedir}/org"/>
-	<property name="targetdir" value="${basedir}/bin/"/>
+	<property name="targetdir" value="${basedir}/bin"/>
 	<property name="targetlibdir" value="${basedir}/lib"/>
 	<!--
-	<property name="librarydir2" value="${env.CATALINA_HOME}/common/lib"/>
-	<property name="librarydir" value="${env.CATALINA_HOME}/server/lib"/>
+	<property name="librarydir2" value="${CATALINA_HOME}/common/lib"/>
+	<property name="librarydir" value="${CATALINA_HOME}/server/lib"/>
 	-->
-        <property name="librarydir2" value="/home/anzar/devFRONTIER/TOMCAT/apache-tomcat-5.5.15/common/lib"/>
-        <property name="librarydir" value="/home/anzar/devFRONTIER/TOMCAT/apache-tomcat-5.5.15/server/lib"/>
+        <property name="librarydir2" value="/uscms/home/anzar/dag_home/TOMCATCMSSRV49/apache-tomcat-5.5.15/common/lib"/>
+        <property name="librarydir" value="/uscms/home/anzar/dag_home/TOMCATCMSSRV49/apache-tomcat-5.5.15/server/lib"/>
 
 	<property name="app.name" value="GridAccessLogValve"/>
 	<property environment="env"/>
@@ -29,23 +29,25 @@
 	<target name="clean">
 		<delete dir="${targetdir}"/>
 		<mkdir dir="${targetdir}"/>
-
+		<delete dir="${targetlibdir}"/>
+		<mkdir dir="${targetlibdir}"/>
+		
 	</target>
 	<target name="compile" depends="clean, copy-resources">
 		<javac srcdir="${sourcedir}" destdir="${targetdir}" classpathref="libraries"/>
 	</target>
 	<target name="copy-resources">
-		<copy todir="${targetdir}">
+		<!--copy todir="${targetdir}">
 			<fileset dir="${sourcedir}">
 				<exclude name="**/*.java"/>
 			</fileset>
-		</copy>
+		</copy-->
 
 	</target>
 	<target name="dist" depends="compile" description="Create binary distribution">
 		<jar jarfile="${basedir}/${app.name}.war" basedir="${basedir}/bin"/>
 	</target>
 	<target name="jar" depends="compile" description="Create binary distribution">
-		<jar jarfile="${basedir}/lib/${app.name}.jar" basedir="${basedir}/bin/WEB-INF/classes"/>
+		<jar jarfile="${basedir}/lib/${app.name}.jar" basedir="${basedir}/bin"/>
 	</target>
 </project>
