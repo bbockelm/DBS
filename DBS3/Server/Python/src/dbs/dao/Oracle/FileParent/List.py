@@ -2,8 +2,8 @@
 """
 This module provides FileParent.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.6 2010/03/25 16:37:59 afaq Exp $"
-__version__ = "$Revision: 1.6 $"
+__revision__ = "$Id: List.py,v 1.7 2010/06/23 21:21:24 afaq Exp $"
+__version__ = "$Revision: 1.7 $"
 
 
 from WMCore.Database.DBFormatter import DBFormatter
@@ -38,5 +38,7 @@ JOIN %sFILES F ON  F.FILE_ID = FP.THIS_FILE_ID
         sql += "WHERE F.LOGICAL_FILE_NAME = :logical_file_name"
         binds = {"logical_file_name":logical_file_name}
 	cursors = self.dbi.processData(sql, binds, conn, transaction=transaction, returnCursor=True)
+	if len(cursors) != 1:
+	    raise Exception("File Parents does not exist.")
         result = self.formatCursor(cursors[0])
         return result
