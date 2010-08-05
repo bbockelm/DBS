@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.233 $"
- $Id: DBSSql.java,v 1.233 2010/05/19 15:27:03 afaq Exp $"
+ $Revision: 1.234 $"
+ $Id: DBSSql.java,v 1.234 2010/07/06 16:55:20 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -20,7 +20,7 @@ import dbs.util.DBSUtil;
 import db.DBManagement;
 import java.util.Date;
 import dbs.util.DBSConfig;
-
+import dbs.DBSConstants;
 
 
 /**
@@ -52,7 +52,7 @@ public class DBSSql {
 
 		String sql = "SELECT SchemaVersion, InstanceName, InstanceType FROM "+owner()+"SchemaVersion";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
 	public static PreparedStatement getQuery(Connection conn, String query, List<String> bindValues, List<Integer> bindIntValues) throws SQLException {
@@ -61,7 +61,7 @@ public class DBSSql {
 		int columnIndx = 1;
 		for(String s: bindValues) ps.setString(columnIndx++, s);
 		for(Integer i: bindIntValues) ps.setInt(columnIndx++, i.intValue());
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
 
@@ -72,7 +72,7 @@ public class DBSSql {
                 int columnIndx = 1;
                 for(String s: bindValues) ps.setString(columnIndx++, s);
                 for(Integer i: bindIntValues) ps.setInt(columnIndx++, i.intValue());
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -87,7 +87,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, value);
 		ps.setString(columnIndx++, lmbUserID);
 		ps.setString(columnIndx++, ID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -103,7 +103,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, lmbUserID);
 		ps.setString(columnIndx++, value1);
 		ps.setString(columnIndx++, value2Old);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -119,7 +119,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, valueTo);
 		ps.setString(columnIndx++, lmbUserID);
 		ps.setString(columnIndx++, valueFrom);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -134,7 +134,7 @@ public class DBSSql {
                 ps.setString(columnIndx++, xSection);
                 ps.setString(columnIndx++, lmbUserID);
                 ps.setString(columnIndx++, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -148,7 +148,7 @@ public class DBSSql {
                 ps.setString(columnIndx++, desc);
                 ps.setString(columnIndx++, lmbUserID);
                 ps.setString(columnIndx++, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -162,7 +162,7 @@ public class DBSSql {
                 ps.setString(columnIndx++, xSection);
                 ps.setString(columnIndx++, lmbUserID);
                 ps.setString(columnIndx++, fileID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -200,7 +200,7 @@ public class DBSSql {
         if(path !="") sql += " where path=?"; 			    
 	PreparedStatement ps = DBManagement.getStatement(conn, sql);
 	if (path != "")ps.setString(1, path);
-	DBSUtil.writeLog("\n\n" + ps + "\n\n");
+	if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 	return ps;
      }
        	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
@@ -256,7 +256,7 @@ public class DBSSql {
 
                         ps.addBatch();
                 }
-                DBSUtil.writeLog("\n" + ps + "\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n" + ps + "\n");
 
                 return ps;
         }
@@ -291,7 +291,7 @@ public class DBSSql {
                         ps.addBatch();
                 }
 
-                DBSUtil.writeLog("\n" + ps + "\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n" + ps + "\n");
 
                 return ps;
         }
@@ -329,7 +329,7 @@ public class DBSSql {
 
                         ps.addBatch();
                 }
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
                 return ps;
         }
@@ -348,7 +348,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, rowID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -365,7 +365,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, rowID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -385,7 +385,7 @@ public class DBSSql {
                 ps.setString(columnIndx++, valueID);
                 ps.setString(columnIndx++, lmbUserID);
                 ps.setString(columnIndx++, rowID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -405,7 +405,7 @@ public class DBSSql {
                 ps.setString(columnIndx++, value);
                 ps.setString(columnIndx++, lmbUserID);
                 ps.setString(columnIndx++, rowID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -462,7 +462,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, dqVersion);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	
 	}
@@ -473,7 +473,7 @@ public class DBSSql {
 				" Parent as PARENT \n" +
 				" FROM "+owner()+"SubSystem \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
 	}
@@ -639,7 +639,7 @@ public class DBSSql {
 		for (int j=0; j != bindCnt; ++j)
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
 	}
@@ -869,7 +869,7 @@ public class DBSSql {
                 int columnIndx = 1;
                 for (int i=0; i != bindvals.size(); ++i)
                         ps.setString(columnIndx++, (String)bindvals.elementAt(i) );
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 */
 		return toReturn;
 	}
@@ -894,7 +894,7 @@ public class DBSSql {
                 if (!DBSUtil.isNull(lumiID)) ps.setString(columnIndx++, lumiID);
                 if (!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
         }
@@ -920,7 +920,7 @@ public class DBSSql {
                 if (!DBSUtil.isNull(lumiID)) ps.setString(columnIndx++, lumiID);
 		if (!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
         }
@@ -931,7 +931,7 @@ public class DBSSql {
 	{
 		String sql = "SELECT Version as DQ_VERSION, VersionTimeStamp as TIME_STAMP from "+owner()+"QualityVersion";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1002,7 +1002,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, runID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 
                 return ps;
         }               
@@ -1025,7 +1025,7 @@ public class DBSSql {
                         ps.setString(columnIndx++, (String)aRun);
                 }
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		System.out.println("\n" + ps + "\n");
                 return ps;
         }
@@ -1046,7 +1046,7 @@ public class DBSSql {
 			ps.setString(columnIndx++, (String)aRun);
 		}
 
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;	
 	}
 
@@ -1059,7 +1059,7 @@ public class DBSSql {
                 int columnIndx = 1;
 	 	ps.setString(columnIndx++, lumiCount);
 	 	ps.setString(columnIndx++, runID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
                 return ps;
         }
@@ -1074,7 +1074,7 @@ public class DBSSql {
                 int columnIndx = 1;
 	 	ps.setString(columnIndx++, runID);
 	 	ps.setString(columnIndx++, runID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
                 return ps;
         }
@@ -1101,7 +1101,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, lmbUserID);
 		ps.setString(columnIndx++, runNumber);
 		ps.setString(columnIndx++, lumiNumber);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
 		return ps;
         }
@@ -1127,7 +1127,7 @@ public class DBSSql {
 		
 		ps.setString(columnIndx++, lmbUserID);
 		ps.setString(columnIndx++, runNumber);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
 		return ps;
         }
@@ -1362,7 +1362,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatementScrollable(conn, sql);
 		int columnIndx = 1;
                 ps.setString(columnIndx++, adsID);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 	
@@ -1374,7 +1374,7 @@ public class DBSSql {
                         "ORDER by ads.Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, adsName);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -1386,7 +1386,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, adsName);
                 ps.setString(2, version);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 //return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
                 return ps;
         }
@@ -1399,7 +1399,7 @@ public class DBSSql {
 			"ORDER by Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, adsName);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 //return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
                 return ps;
         }
@@ -1512,7 +1512,7 @@ public class DBSSql {
 			ps.setString(columnIndx++, tmp[1]);
 		}
 		//System.out.println("The SQL query is " + ps);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1528,7 +1528,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, blockID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 
 	}
@@ -1553,7 +1553,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, numberOfFiles);
 		ps.setString(columnIndx++, numberOfEvents);
 		ps.setString(columnIndx++, blockID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1566,7 +1566,7 @@ public class DBSSql {
                 int columnIndx = 1;
                 ps.setString(columnIndx++, lmbUserID);
                 ps.setString(columnIndx++, blockID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -1580,7 +1580,7 @@ public class DBSSql {
 		int columnIndx = 1;
 		ps.setString(columnIndx++, lmbUserID);
 		ps.setString(columnIndx++, blockID);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
 
@@ -1595,7 +1595,7 @@ public class DBSSql {
 		int columnIndx = 1;
 		ps.setString(columnIndx++, value1);
 		ps.setString(columnIndx++, value2);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1607,7 +1607,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		ps.setString(columnIndx++, value);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1621,7 +1621,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1653,7 +1653,7 @@ public class DBSSql {
                 	ps.setString(columnIndx++, blockName);
 		}
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1689,7 +1689,7 @@ public class DBSSql {
                 ps.setString(columnIndx++, processedDSID);
                 for(int i = 0 ; i != seVector.size(); ++i) ps.setString(columnIndx++, (String)seVector.get(i));
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -1704,7 +1704,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, blockName);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -1714,7 +1714,7 @@ public class DBSSql {
                 String sql = "SELECT Name as DATATIERORDER \n" +
                                 "FROM "+owner()+"DataTier";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -1724,7 +1724,7 @@ public class DBSSql {
                 String sql = "SELECT DataTierOrder as DATATIERORDER \n" +
                                 "FROM "+owner()+"DataTierOrder";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }*/
 		
@@ -1749,7 +1749,7 @@ public class DBSSql {
                         ps.setString(2, to);
 
                 }
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
               return ps;
         }
 
@@ -1763,7 +1763,7 @@ public class DBSSql {
                            "WHERE ls.RunNumber = ? \n";
               PreparedStatement ps = DBManagement.getStatement(conn, sql);
               ps.setString(1, runNumber);
-              DBSUtil.writeLog("\n\n" + ps + "\n\n");
+              if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
               return ps;
         }
 
@@ -1780,7 +1780,7 @@ public class DBSSql {
 			"WHERE pdsr.Dataset = ?";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, procDSID);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1790,7 +1790,7 @@ public class DBSSql {
 			"FROM "+owner()+"Person p\n" +
 			"ORDER BY p.DistinguishedName DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 
 	}
@@ -1807,7 +1807,7 @@ public class DBSSql {
 			"JOIN "+owner()+"DataTier dt \n" +
 				"ON dt.id = procds.datatier \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1853,7 +1853,7 @@ public class DBSSql {
 			sql += "ORDER BY pd.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, pattern);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1979,7 +1979,7 @@ public class DBSSql {
 		if(!patternFam.equals("%")) ps.setString(columnIndx++, patternFam);
 		if(!patternExe.equals("%")) ps.setString(columnIndx++, patternExe);
 		if(!patternPS.equals("%")) ps.setString(columnIndx++, patternPS);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -1991,7 +1991,7 @@ public class DBSSql {
 			"FROM "+owner()+"Block blk \n" +
 			"ORDER BY blk.Path DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2005,7 +2005,7 @@ public class DBSSql {
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
@@ -2023,7 +2023,7 @@ public class DBSSql {
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, lfn);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -2049,7 +2049,7 @@ public class DBSSql {
         				"Files.LogicalFileName = ?";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, lfn);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -2064,7 +2064,7 @@ public class DBSSql {
                                 "WHERE FP.ThisFile = ?";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, fileID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -2079,7 +2079,7 @@ public class DBSSql {
                                 		"WHERE FP.ThisFile = ?)";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, fileID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
@@ -2127,7 +2127,7 @@ public class DBSSql {
 
                 ps.setString(columnIndex++, procDSID);
                 if (!DBSUtil.isNull(runID)) ps.setString(columnIndex++, runID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
@@ -2166,7 +2166,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if (!DBSUtil.isNull(lfn)) ps.setString(columnIndex++, lfn);
 		if (!DBSUtil.isNull(path)) ps.setString(columnIndex++, path);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
 	}
@@ -2220,7 +2220,7 @@ public class DBSSql {
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(procDSID)) ps.setString(1, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2241,7 +2241,7 @@ public class DBSSql {
 			"JOIN "+owner()+"QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2294,7 +2294,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, patternFam);
 		ps.setString(columnIndx++, patternExe);
 		ps.setString(columnIndx++, patternPS);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2333,7 +2333,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2364,7 +2364,7 @@ public class DBSSql {
 		sql +=	"ORDER BY run.RunNumber DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2375,7 +2375,7 @@ public class DBSSql {
 			"FROM "+owner()+"DataTier dt \n" +
 			"ORDER BY dt.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	
@@ -2384,7 +2384,7 @@ public class DBSSql {
 			"fs.Status as STATUS \n" +
 			"FROM "+owner()+"FileStatus fs \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2393,7 +2393,7 @@ public class DBSSql {
 			"ft.Type as TYPE \n" +
 			"FROM "+owner()+"FileType ft \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2402,7 +2402,7 @@ public class DBSSql {
 			"fs.Status as STATUS \n" +
 			"FROM "+owner()+"FileValidStatus fs \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2427,7 +2427,7 @@ public class DBSSql {
 		sql +=	"ORDER BY dt.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	
@@ -2443,7 +2443,7 @@ public class DBSSql {
 		}
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, procDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2462,7 +2462,7 @@ public class DBSSql {
 			"b.Name = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, blockName);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
 
@@ -2530,7 +2530,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(columnIndx++, blockName);
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -2563,7 +2563,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(columnIndx++, path);
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -2640,7 +2640,7 @@ public class DBSSql {
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2652,7 +2652,7 @@ public class DBSSql {
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(columnIndx++, procDSID);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2667,7 +2667,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(columnIndx++, path);
 		if(!DBSUtil.isNull(blockName)) ps.setString(columnIndx++, blockName);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2696,7 +2696,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2711,7 +2711,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		ps.setString(columnIndx++, lfn);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2722,7 +2722,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, lfn);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
@@ -2757,7 +2757,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, procDSID);
 		if(!patternMetaData.equals("%")) ps.setString(columnIndx++, patternMetaData);
 		
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2887,7 +2887,7 @@ public class DBSSql {
 		if(!DBSUtil.isNull(runID)) ps.setString(columnIndx++, runID);
 		if(!DBSUtil.isNull(path)) ps.setString(columnIndx++, path);
 		
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2959,7 +2959,7 @@ public class DBSSql {
 		if(!DBSUtil.isNull(fileID)) {
 			ps.setString(1, fileID);
 		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -2974,7 +2974,7 @@ public class DBSSql {
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, blockID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3003,7 +3003,7 @@ public class DBSSql {
 		if(fileID != null) {
 			ps.setString(1, fileID);
 		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3029,7 +3029,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, branchID);
                 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -3054,7 +3054,7 @@ public class DBSSql {
                 if(fileID != null) {
                         ps.setString(1, fileID);
                 }
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -3097,7 +3097,7 @@ public class DBSSql {
                 if(fileID != null) {
                         ps.setString(1, fileID);
                 }
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -3137,7 +3137,7 @@ public class DBSSql {
 		if(fileID != null) {
 			ps.setString(1, fileID);
 		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3172,7 +3172,7 @@ public class DBSSql {
 		if(fileID != null) {
 			ps.setString(1, fileID);
 		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3203,7 +3203,7 @@ public class DBSSql {
                 int columnIndx = 1;
                 ps.setString(columnIndx++, fileID);
                 ps.setString(columnIndx++, aDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -3235,7 +3235,7 @@ public class DBSSql {
 		int columnIndx = 1;
                 ps.setString(columnIndx++, fileID);
 		ps.setString(columnIndx++, aDSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -3304,7 +3304,7 @@ public class DBSSql {
  		 ps.setString(columnIndx++, fileID);
  		 ps.setString(columnIndx++, aDSID);
  		 ps.setString(columnIndx++, fileID);
- 		 DBSUtil.writeLog("\n\n" + ps + "\n\n");
+ 		 if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
  		 return ps;
 
 
@@ -3322,8 +3322,8 @@ public class DBSSql {
                         "run.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM "+owner()+"Runs run \n" +
-                        "JOIN "+owner()+"FileRunLumi fl \n" +
+                        "FROM "+owner()+"FileRunLumi fl \n" +
+                        "JOIN "+owner()+"Runs run \n" +
                                 "ON run.ID = fl.Run \n" +
                         "LEFT OUTER JOIN "+owner()+"Person percb \n" +
                                 "ON percb.id = run.CreatedBy \n" +
@@ -3336,7 +3336,9 @@ public class DBSSql {
                 if(fileID != null) {
                         ps.setString(1, fileID);
                 }
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
 
@@ -3364,7 +3366,7 @@ public class DBSSql {
 
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, patternName);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3387,7 +3389,7 @@ public class DBSSql {
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, patternName);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
@@ -3423,7 +3425,7 @@ public class DBSSql {
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, comADSID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
@@ -3496,7 +3498,7 @@ public class DBSSql {
 		if (! DBSUtil.isNull(version)){
 			ps.setString(columnIndx++, version);
 		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
@@ -3506,7 +3508,7 @@ public class DBSSql {
 			"WHERE " + key + " = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, value);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		//return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
 		return ps;
 	}
@@ -3530,7 +3532,7 @@ public class DBSSql {
                 int columnIndx = 1;
 		if(!DBSUtil.isNull(value1)) ps.setString(columnIndx++, value1);
 		if(!DBSUtil.isNull(value2)) ps.setString(columnIndx++, value2);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3543,7 +3545,7 @@ public class DBSSql {
                 int columnIndx = 1;
 		ps.setString(columnIndx++, value1);
 		ps.setString(columnIndx++, value2);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	
@@ -3558,7 +3560,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, value1);
 		ps.setString(columnIndx++, value2);
 		ps.setString(columnIndx++, value3);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3580,7 +3582,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, prim);
 		ps.setString(columnIndx++, proc);
 		ps.setString(columnIndx++, tier);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3606,7 +3608,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, fam);
 		ps.setString(columnIndx++, exe);
 		ps.setString(columnIndx++, psHash);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3653,7 +3655,7 @@ public class DBSSql {
                	if (! DBSUtil.isNull(aDSID)) ps.setString(columnIndx++, aDSID);
                	if (! DBSUtil.isNull(run)) ps.setString(columnIndx++, run);
 
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -3686,7 +3688,7 @@ public class DBSSql {
                         ps.addBatch(); 
 		}
 
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
                 return ps;
 	}
@@ -3698,7 +3700,7 @@ public class DBSSql {
                         int columnIndx = 1;
                         for (int i=0; i != bindvals.size(); ++i)
                                 ps.setString(columnIndx++, (String)bindvals.get(i) );
-                        DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                        if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 			return ps;
 	}
 
@@ -3745,7 +3747,7 @@ public class DBSSql {
 				//}
 			}
 		}
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 
 	}

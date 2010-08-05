@@ -1,6 +1,6 @@
 /**
- $Revision: 1.176 $"
- $Id: DBSApi.java,v 1.176 2010/07/08 14:11:49 afaq Exp $"
+ $Revision: 1.177 $"
+ $Id: DBSApi.java,v 1.177 2010/08/05 21:11:22 afaq Exp $"
  *
 */
 
@@ -165,7 +165,7 @@ public class DBSApi {
 		String dbsSchemaVersion="";
 		try {
 			String sql = "select SchemaVersion from SchemaVersion";
-			DBSUtil.writeLog(sql);
+			if (DBSConstants.DEBUG) DBSUtil.writeLog(sql);
 			ResultSet rs =  DBSSql.getSchemaVersion(conn).executeQuery();
 			if(rs.next()) {
 				dbsSchemaVersion = rs.getString("SchemaVersion");
