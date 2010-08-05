@@ -1,6 +1,6 @@
 /**
- $Revision: 1.53 $"
- $Id: DBSApiAnaDSLogic.java,v 1.53 2009/02/18 16:04:31 afaq Exp $"
+ $Revision: 1.54 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.54 2009/11/03 21:25:01 afaq Exp $"
  *
  */
 
@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.ArrayList;
 import org.apache.commons.lang.StringEscapeUtils;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the Analysis datasets APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -53,7 +54,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listAnalysisDatasetDefinition(conn, getPattern(patternName, "pattern_analysis_dataset_definition_name"));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ID") +
@@ -82,7 +83,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		try {
                      	ps = DBSSql.listAnalysisDataset(conn, adsName, adsVersion , procDSID);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
 			//This must return A Version, or the latest version
                         if (rs.next()) {
@@ -121,7 +122,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				Vector temp = new Vector();
                 		try {
                         		ps = DBSSql.listFiles(conn, null, null, null, aDSID, null, temp, null, attributes);
-					pushQuery(ps);
+					if (DBSConstants.DEBUG) pushQuery(ps);
                         		rs =  ps.executeQuery();
                         		while(rs.next()) {
 						out.write( (String)   "\ncms.PSet(filename=cms.string("+ get(rs, "LFN") +"),\n" +
@@ -172,7 +173,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
  			 procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
  		 try {
  			 ps = DBSSql.listAnalysisDataset(conn, getPattern(patternName, "analysis_dataset_name_pattern"), version, procDSID);
-			 pushQuery(ps);
+			 if (DBSConstants.DEBUG) pushQuery(ps);
  			 rs =  ps.executeQuery();
  			 while(rs.next()) {
 				 String adsName = get(rs, "ANALYSIS_DATASET_NAME");
@@ -234,7 +235,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                                                 cbUserID,
                                                 lmbUserID,
                                                 creationDate);
-				pushQuery(ps);
+				if (DBSConstants.DEBUG) pushQuery(ps);
                                 ps.execute();
                         } finally {
                                 if (ps != null) ps.close();
@@ -298,7 +299,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		ResultSet rs1 = null;
                 try {
                         ps = DBSSql.listCompADS(conn, getPattern(patternName, "pattern_comp_ads"));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
 				String comAdsID = get(rs, "ID");
@@ -376,7 +377,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                                 		personApi.getUserID(conn, dbsUser),
                                 		getTime(table, "creation_date", false)
 						);
-				pushQuery(ps);
+				if (DBSConstants.DEBUG) pushQuery(ps);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -434,7 +435,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listAnalysisDatasetDefinition(conn, analysisDatasetDefinitionName);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
 			if (rs.next()) {
 				anaDSDefID = get(rs, "ID");
@@ -472,7 +473,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                                                                 true),
                                                         desc,
                                                         cbUserID, lmbUserID, creationDate);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			ps.execute();
 		} finally {
 			if (ps != null) ps.close();
@@ -521,7 +522,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listAnalysisDatasetDefinition(conn, analysisDatasetDefinitionName);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 
 			if(rs.next()) {
@@ -591,7 +592,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 			ps = DBSSql.getQueryScrollable(conn, finalQuery, bindValues, bindIntValues);
 			
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
 
 			//if( isNull((aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false))) ) {
@@ -710,7 +711,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                         		try {
 		                                ps = DBSSql.getInsertSQLBatch (conn, "AnalysisDSFileLumi", keys, values);
 						System.out.println("BATCH QUERY:\n"+ps);
-		                                pushQuery(ps);
+		                                if (DBSConstants.DEBUG) pushQuery(ps);
                 		                ps.executeBatch();
 		                        } finally {
                 		                if (ps != null) ps.close();
@@ -739,7 +740,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                 ResultSet rs = null;
                 try {
                         ps =  DBSSql.getADSVersionID(conn, analysisDatasetName, version);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         if(!rs.next()) {
                                 if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
@@ -765,7 +766,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
     		ResultSet rs = null;
     		try {
 			ps =  DBSSql.getADSID(conn, analysisDatasetName);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 	    			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
@@ -790,7 +791,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
     		try {
 			//ps = DBSSql.listAnalysisDataset(conn, analysisDatasetName, "", "");
 			ps =  DBSSql.getADSVersion(conn, analysisDatasetName);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 	    			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);

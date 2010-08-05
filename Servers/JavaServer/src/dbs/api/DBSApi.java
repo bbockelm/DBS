@@ -1,6 +1,6 @@
 /**
- $Revision: 1.175 $"
- $Id: DBSApi.java,v 1.175 2010/05/19 18:46:31 afaq Exp $"
+ $Revision: 1.176 $"
+ $Id: DBSApi.java,v 1.176 2010/07/08 14:11:49 afaq Exp $"
  *
 */
 
@@ -30,7 +30,7 @@ import dbs.util.DBSConfig;
 import dbs.api.parser.DBSApiParser;
 import dbs.search.qb.help.Help;
 import org.apache.commons.lang.StringEscapeUtils;
-
+import dbs.DBSConstants;
 /**
  * This class encapsulate <code>dbs.api.DBSApiLogic</code> , handles database connection management,handle XML parsing for the input provided by the clients, checks the match between schema and api version and handles exceptions. This class works as the higher level dispatcher for DBS API. All the DBS API calls are invoked vias a public method call. The interface of this class is this call method which can take a hashtable of key value pairs. It invokes the API call depending upon the value of the api key in the hashtable. The reason for having this higher level class is to separate the lovel level business logic from database connection management and xml parsing.<br>
 * Most of the insert API calls requires an xml input that needs to be parsed and converted into a hastable that can be further passed down to <code>dbs.api.DBSApiLogic</code> class. Here are the sample XML input required by various insert APIs <br> <br><code>

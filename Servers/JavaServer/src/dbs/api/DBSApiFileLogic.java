@@ -1,6 +1,6 @@
 /**
- $Revision: 1.137 $"
- $Id: DBSApiFileLogic.java,v 1.137 2009/06/18 19:45:22 afaq Exp $"
+ $Revision: 1.138 $"
+ $Id: DBSApiFileLogic.java,v 1.138 2009/08/26 21:18:50 afaq Exp $"
  *
  */
 
@@ -18,6 +18,7 @@ import codec.Base64;
 import dbs.DBSException;
 import java.sql.SQLException;
 import db.DBManagement;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the File APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -125,7 +126,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		try {
 			//ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn, listInvalidFiles);
 			ps = DBSSql.listFiles(conn, procDSID, path, runID, aDSID, blockID, tierIDList, patternlfn, attributes);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 
@@ -249,7 +250,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ArrayList fileParentDS = new ArrayList();
                 try {
                         ps = DBSSql.listFileParentDatasets(conn, lfn);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
 				fileParentDS.add(get(rs, "ID"));
@@ -269,7 +270,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ArrayList fileParentDS = new ArrayList();
                 try {
                         ps = DBSSql.listFileDataset(conn, lfn);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 result = get(rs, "PATH");
@@ -320,7 +321,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	
 		try {
 			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles, detail);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 		
 			//Shunting the code that tests for migration codition, we seems not to need that !
@@ -410,7 +411,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listFileTrigs(conn, getFileID(conn, lfn, true));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_trigger_tag id='" + get(rs, "ID") +
@@ -445,7 +446,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFileAlgorithms(conn, getFileID(conn, lfn, true), detail);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_algorithm id='" + get(rs, "ID") + 
@@ -477,7 +478,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listBranch(conn, branchId, detail);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_branch id='" + get(rs, "ID") +
@@ -503,7 +504,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFileBranchID(conn, lfn);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			
 			if (rs.next()) branchID = get(rs, "FILE_BRANCH");
@@ -540,7 +541,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFileLumis(conn, getFileID(conn, lfn, true), detail);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_lumi_section id='" +  get(rs, "ID") +
@@ -568,7 +569,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listADSFileLumisExcluded(conn, aDSID, getFileID(conn, lfn, true));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_lumi_section_excluded id='" +  get(rs, "ID") +
@@ -596,7 +597,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listADSFileLumis(conn, aDSID, getFileID(conn, lfn, true));
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_lumi_section id='" +  get(rs, "ID") +
@@ -625,7 +626,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listFileRuns(conn, getFileID(conn, lfn, true));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_run id='" +  get(rs, "ID") +
@@ -655,7 +656,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listADSFileRuns(conn, aDSID, getFileID(conn, lfn, true));
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 out.write(((String) "<file_run id='" +  get(rs, "ID") +
@@ -688,7 +689,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
  		 String prevLFN = "";
  		 try {
  			 ps = DBSSql.listLFNs(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true) ,  getPattern(patternMetaData, "pattern_meta_data"));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
  			 rs =  ps.executeQuery();
  			 while(rs.next()) {
  				 String lfn = get(rs, "LFN");
@@ -766,7 +767,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						contentBase64,
                                                 get(branchInfo, "description"),
                                                 cbUserID, lmbUserID, creationDate);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         ps.execute();
 		} catch (SQLException ex) {
 			String exmsg = ex.getMessage();
@@ -842,7 +843,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
                         ps =  DBSSql.listBlockInfo(conn, getBlockPattern(blockName));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         if (rs.next()) {
                                 blockID = get(rs, "ID");
@@ -990,7 +991,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					    get(file, "auto_cross_section", false),
                                             cbUserID, lmbUserID, creationDate);
 
-					pushQuery(ps);
+					if (DBSConstants.DEBUG) pushQuery(ps);
                                 	ps.execute();
 					newFileInserted = true;
 				} catch (SQLException ex) {
@@ -1211,7 +1212,7 @@ return DBManagement.getConnection( config.getDbDriver(),
 		java.util.ArrayList  blockIDList = new java.util.ArrayList();
                 try {
                         ps = DBSSql.listFileParentBlocks(conn, fileID);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 String blkID = get(rs, "ID");
@@ -1317,7 +1318,7 @@ return DBManagement.getConnection( config.getDbDriver(),
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listFiles(conn, lfn);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         if(rs.next()) blockID = get(rs, "BLOCK_ID");
                         else throw new DBSException("Unavailable data", "1011", "No such Files : LogicalFileName : " + lfn );
@@ -1454,7 +1455,7 @@ return DBManagement.getConnection( config.getDbDriver(),
 			try {
 				//Get all the parents
 				ps = DBSSql.listFileProvenence(conn, inFileID, true, true);
-				pushQuery(ps);
+				if (DBSConstants.DEBUG) pushQuery(ps);
 				rs =  ps.executeQuery();
 				while(rs.next()) {
 					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
@@ -1472,7 +1473,7 @@ return DBManagement.getConnection( config.getDbDriver(),
 			try {
 				//Get all the childern
 				ps = DBSSql.listFileProvenence(conn, inFileID, false, true);
-				pushQuery(ps);
+				if (DBSConstants.DEBUG) pushQuery(ps);
 				rs =  ps.executeQuery();
 				while(rs.next()) {
 					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
@@ -1531,7 +1532,7 @@ return DBManagement.getConnection( config.getDbDriver(),
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listFiles(conn, lfn);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) (new DBSApiBlockLogic(this.data)).updateBlock(conn, out, get(rs, "BLOCK_ID"), lmbUserID);
 			else throw new DBSException("Unavailable data", "1011", "No such Files : LogicalFileName : " + lfn );
@@ -1573,7 +1574,7 @@ return DBManagement.getConnection( config.getDbDriver(),
                 String fileID = getFileID(conn, lfn, true);
 
                         ps =  DBSSql.updateFileAutoCrossSection(conn, fileID, xSection, personApi.getUserID(conn, dbsUser));
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();

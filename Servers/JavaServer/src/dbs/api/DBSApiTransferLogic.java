@@ -1,6 +1,6 @@
 /**
- $Revision: 1.59 $"
- $Id: DBSApiTransferLogic.java,v 1.59 2009/10/08 21:25:36 afaq Exp $"
+ $Revision: 1.60 $"
+ $Id: DBSApiTransferLogic.java,v 1.60 2010/05/19 14:29:07 afaq Exp $"
  *
  */
 
@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the transfer APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.

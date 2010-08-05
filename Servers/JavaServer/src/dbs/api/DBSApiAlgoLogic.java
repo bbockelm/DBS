@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiAlgoLogic.java,v 1.21 2009/06/10 16:46:06 sekhri Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApiAlgoLogic.java,v 1.23 2009/06/18 19:45:22 afaq Exp $"
  *
  */
 
@@ -14,6 +14,7 @@ import java.util.Hashtable;
 import dbs.sql.DBSSql;
 import codec.Base64;
 import dbs.DBSException;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the algorithm APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -55,7 +56,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.listAlgorithms(conn, patternVer, patternFam, patternExe, patternPS);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String ann = get(rs, "PS_ANNOTATION");
@@ -99,7 +100,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.listAlgorithms(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String ann = get(rs, "PS_ANNOTATION");
@@ -182,7 +183,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 					getID(conn, "AppFamily", "FamilyName", family, true), 
 					getID(conn, "QueryableParameterSet", "Hash", psHash, true), 
 					cbUserID, userID, creationDate);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			ps.execute();
 		} catch (SQLException ex) {
 			String exmsg = ex.getMessage();
@@ -236,7 +237,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
                                                 //FIXME We are allowing every thing in content, need to fix it
 						contentBase64, 
 						cbUserID, userID, creationDate);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			ps.execute();
 		} catch (SQLException ex) {
 			String exmsg = ex.getMessage();
@@ -272,7 +273,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psHash);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if (excep) throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psHash);

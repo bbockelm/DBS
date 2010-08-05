@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiLumiLogic.java,v 1.1 2008/03/07 23:06:50 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiLumiLogic.java,v 1.2 2008/05/30 16:40:04 sekhri Exp $"
  *
  */
 
@@ -14,6 +14,7 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
 import java.sql.SQLException;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the Primary dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -43,7 +44,7 @@ public class DBSApiLumiLogic extends DBSApiLogic {
 		try {
 			
 			ps = DBSSql.getIntegratedLuminosity(conn, procDSID, "", run, runRange, tag);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			Double sumInstantLumi = 0.0;
 			Double sumInstantLumiErr = 0.0;

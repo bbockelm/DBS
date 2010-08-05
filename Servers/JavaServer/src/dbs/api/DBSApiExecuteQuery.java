@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import db.QueryExecutor;
 import dbs.util.DBSUtil;
 import dbs.search.qb.DateUtil;
+import dbs.DBSConstants;
 
 /**
  * This class implements a singlethreaded version of <code>DatabaseQuerier</code> by

@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the RecycleBin APIs.  
@@ -33,7 +34,7 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 	    ResultSet rs =  null;
 	    try{
 		ps = DBSSql.listRecycleBin(conn,path);
-		pushQuery(ps);
+		if (DBSConstants.DEBUG) pushQuery(ps);
 		rs=ps.executeQuery();
 		while(rs.next()) {
 		    out.write(((String) "<recycle_bin path='" + get(rs, "path")+
@@ -67,7 +68,7 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 				cbUserID,
 				cbUserID,
 				creationDate);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			ps.execute();
                 } finally {
 			if (ps != null) ps.close();
@@ -79,7 +80,7 @@ public class DBSApiRecycleBin extends DBSApiLogic {
 		PreparedStatement ps = null;
 		try {
 			ps = DBSSql.deleteMap(conn, "RecycleBin", "Path", "BlockName", path, blockName);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			ps.execute();
                 } finally {
 			if (ps != null) ps.close();

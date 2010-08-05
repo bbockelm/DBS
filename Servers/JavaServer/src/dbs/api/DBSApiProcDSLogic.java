@@ -1,6 +1,6 @@
 /**
- $Revision: 1.92 $"
- $Id: DBSApiProcDSLogic.java,v 1.92 2010/01/11 17:04:20 afaq Exp $"
+ $Revision: 1.93 $"
+ $Id: DBSApiProcDSLogic.java,v 1.93 2010/03/12 16:44:28 afaq Exp $"
  *
  */
 
@@ -19,6 +19,7 @@ import dbs.DBSConstants;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the Processed dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -89,7 +90,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getPattern(patternExe, "app_executable_name"), 
 					getPattern(patternPS, "ps_hash"),
 					all);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String procDSID = get(rs, "ID");
@@ -201,7 +202,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listDatasetPaths(conn);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset path='" + get(rs, "PATH") + "'/>\n"));
@@ -218,7 +219,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps = DBSSql.listProcessedDatasets(conn);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
 				String path = "/"+get(rs, "PRIMARY_DATASET_NAME")
@@ -240,7 +241,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                 String procDSID = getProcessedDSID(conn, path, true);
                 try {
                         ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 parentsVec.add((String)get(rs, "ID"));
@@ -260,7 +261,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                 ArrayList parentsVec =  new ArrayList();
                 try {
                         ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
                                 parentsVec.add((String)get(rs, "ID"));
@@ -303,7 +304,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		/*
 		try {
 			ps = DBSSql.listDatasetProvenence(conn, procDSID, true);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset_parent id='" + get(rs, "ID") + 
@@ -324,7 +325,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	
 		try {
                         ps = DBSSql.listDatasetADSParent(conn, procDSID);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			//Should be one
 			while(rs.next()) {
@@ -342,7 +343,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listDatasetProvenence(conn, getProcessedDSID(conn, path, true), false);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) 
 				throw new DBSException("Dataset cannot be Orphaned", "1090", "This dataset " 
@@ -370,7 +371,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.listRuns(conn, getProcessedDSID(conn, path, true));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<run id='" + get(rs, "ID") +
@@ -400,7 +401,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.listDatasetSummary(conn, getProcessedDSID(conn, path, true));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset path='" + path +
@@ -430,7 +431,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.listTiers(conn, getProcessedDSID(conn, path, true));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<data_tier id='" + get(rs, "ID") +
@@ -453,7 +454,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps =  DBSSql.listProcDSStatus(conn, procDSID);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(rs.next()) {
 				return get(rs, "STATUS");
@@ -558,7 +559,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					lmbUserID,
 					creationDate,
 					description);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			ps.execute();
 		} catch (SQLException ex) {
 			String exmsg = ex.getMessage();
@@ -748,7 +749,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                 ResultSet rs =  null;
                 try {
                         ps =  DBSSql.listProcDSRunStatus(conn, procDSID, runID);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
 				out.write(((String) "<run_status run_number='"+get(rs, "RUN")+"'"+
@@ -833,7 +834,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			String procDSID = getProcessedDSID(conn, path, true);
 			//Get all the Blocks from this dataset
 			ps =  DBSSql.listBlocks(conn, procDSID);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				blockPresent = true;
@@ -864,7 +865,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		try {
 			//Get all the Blocks of this dataset from the recycle bin
 			ps =  DBSSql.listBlockContentsInRecycleBin(conn, path, "");
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				blockPresent = true;
@@ -896,7 +897,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String procDSID = getProcessedDSID(conn, path, true);
 
                         ps =  DBSSql.updateProcDSDesc(conn, procDSID, desc, personApi.getUserID(conn, dbsUser));
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();
@@ -910,7 +911,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String procDSID = getProcessedDSID(conn, path, true);
 
                         ps =  DBSSql.updateProcDSXtCrossSection(conn, procDSID, xSection, personApi.getUserID(conn, dbsUser));
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         ps.execute();
                 } finally {
                         if (ps != null) ps.close();
@@ -958,7 +959,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		ResultSet rs = null;
 		try {
 			ps = DBSSql.getProcessedDSID(conn, prim, proc, tier);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if (excep) throw new DBSException("Unavailable data", "1008", "No such processed dataset /" + prim + "/" +proc + "/" +tier);
@@ -983,7 +984,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		try{
 		    String procDSID = getProcessedDSID(conn, path, true);
 		    ps =  DBSSql.updateProcDSDesc(conn, procDSID, value, personApi.getUserID(conn, dbsUser));
-		    pushQuery(ps);
+		    if (DBSConstants.DEBUG) pushQuery(ps);
 		    ps.execute();
 		}finally {
 		    if (ps != null) ps.close();

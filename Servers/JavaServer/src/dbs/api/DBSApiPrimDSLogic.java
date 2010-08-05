@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApiPrimDSLogic.java,v 1.26 2009/01/05 20:08:17 yuyi Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.27 2009/01/05 20:26:26 yuyi Exp $"
  *
  */
 
@@ -14,6 +14,7 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
 import java.sql.SQLException;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the Primary dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -48,7 +49,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			ps = DBSSql.listPrimaryDatasets(conn, getPattern(pattern, "primary_dataset_name_pattern"));
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<primary_dataset id='" + get(rs, "ID") +
@@ -136,7 +137,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 					end_date,
 					getID(conn, "PrimaryDSType", "Type", type, true), 
 					cbUserID, lmbUserID, creationDate);
-				pushQuery(ps);
+				if (DBSConstants.DEBUG) pushQuery(ps);
 				ps.execute();
 			} catch (SQLException ex) {
 				//System.out.println("Exception: "+ex.getMessage());

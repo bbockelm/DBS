@@ -1,6 +1,6 @@
 /**
- $Revision: 1.14 $"
- $Id: DBSApiPersonLogic.java,v 1.14 2009/06/10 16:46:06 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApiPersonLogic.java,v 1.16 2009/06/18 19:45:22 afaq Exp $"
  *
  */
 
@@ -14,7 +14,7 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
 import java.sql.SQLException;
-
+import dbs.DBSConstants;
 
 
 /**
@@ -63,7 +63,7 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 		try {
 			//FIXME it is not important to store whoi created this person 
 			ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
-			pushQuery(ps);
+			if (DBSConstants.DEBUG) pushQuery(ps);
 			ps.execute();
 		} catch (SQLException ex) {
 			String exmsg = ex.getMessage();

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiProcQuality.java,v 1.2 2008/12/03 20:09:28 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiProcQuality.java,v 1.3 2008/12/03 20:44:31 afaq Exp $"
  *
  */
 
@@ -18,6 +18,7 @@ import java.util.Vector;
 import java.util.Date;
 import dbs.data.DBSDataCache;
 import java.util.ArrayList;
+import dbs.DBSConstants;
 
 /**
 * A class that has the core business logic of all the Primary dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -62,7 +63,7 @@ public class DBSApiProcQuality extends DBSApiLogic {
 			ps = DBSSql.insertFileProcQuality(conn, fileID, childDatasetID, 
 								processingStatusID, failedEventCount, failedEventList, desc,
 								cbUserID, lmbUserID, creationDate);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         ps.execute();
 
                 } finally {
@@ -81,7 +82,7 @@ public class DBSApiProcQuality extends DBSApiLogic {
 		ResultSet rs = null;
                 try {
                         ps = DBSSql.listFileProcQuality(conn, lfn, path);
-                        pushQuery(ps);
+                        if (DBSConstants.DEBUG) pushQuery(ps);
                         rs = ps.executeQuery();
 			ArrayList alreadyThere = new ArrayList();
                         while(rs.next()) {

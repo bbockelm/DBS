@@ -1,6 +1,6 @@
 /**
- $Revision: 1.7 $
- $Id: DBSApiViewsLogic.java,v 1.7 2009/06/11 15:34:33 valya Exp $
+ $Revision: 1.8 $
+ $Id: DBSApiViewsLogic.java,v 1.8 2009/07/30 15:55:09 afaq Exp $
  Author: Valentin Kuznetsov
  **/
 
@@ -22,6 +22,7 @@ import dbs.DBSConstants;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import dbs.DBSConstants;
 
 public class DBSApiViewsLogic extends DBSApiLogic {
     DBSApiData data = null;
@@ -75,11 +76,11 @@ public class DBSApiViewsLogic extends DBSApiLogic {
         PreparedStatement ps = null;
         ResultSet rs =  null;
 //        ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
-//        pushQuery(ps);
+//        if (DBSConstants.DEBUG) pushQuery(ps);
 //        rs =  ps.executeQuery();
         try {
             ps = getViewQuery(conn, viewName, key, cond, sortKey, sortOrder);
-            pushQuery(ps);
+            if (DBSConstants.DEBUG) pushQuery(ps);
             rs =  ps.executeQuery();
         } catch(Exception e) {
             out.write( ((String)"<summary_view>\n"));
