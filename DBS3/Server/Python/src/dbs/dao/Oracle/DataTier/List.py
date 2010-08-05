@@ -2,8 +2,8 @@
 """
 This module provides DataTier.List data access object.
 """
-__revision__ = "$Id: List.py,v 1.2 2010/05/25 21:01:54 afaq Exp $"
-__version__ = "$Revision: 1.2 $"
+__revision__ = "$Id: List.py,v 1.3 2010/06/23 21:21:20 afaq Exp $"
+__version__ = "$Revision: 1.3 $"
 
 from WMCore.Database.DBFormatter import DBFormatter
 
@@ -19,7 +19,7 @@ class List(DBFormatter):
         self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else ""
         self.sql = \
 """
-SELECT DT.DATA_TIER_ID, DT.DATA_TIER_NAME
+SELECT DT.DATA_TIER_ID, DT.DATA_TIER_NAME, DT.CREATE_DATE, DT.CREATE_BY  
 FROM %sDATA_TIERS DT 
 """ % (self.owner)
 
