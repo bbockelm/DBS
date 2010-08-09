@@ -3030,6 +3030,8 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAW-HLTDEBUG-RECO', (
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-DIGI-RAW-HLTDEBUG-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('DQM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RAWDEBUG', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN-SIM-RECODEBUG', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 
 INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVTDEBUGHLT', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW-RECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
