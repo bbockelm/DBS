@@ -1,5 +1,5 @@
 /**
- $Revision: 1.121 $"
+ $Revision: 1.1 $"
  *
  */
 
@@ -31,7 +31,6 @@ public class Validate {
 	//private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)#([^/]+)|%";
 	private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)/([^/]+)#([^/]+)|%";
 	//private static String VALID_BLOCK_LIST_DBS1 = "^/([^/]+)/([^/]+)#([^/]+)|%";
-		
 	public Validate() {}
 
        

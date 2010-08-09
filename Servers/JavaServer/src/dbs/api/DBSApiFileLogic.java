@@ -1,6 +1,6 @@
 /**
- $Revision: 1.138 $"
- $Id: DBSApiFileLogic.java,v 1.138 2009/08/26 21:18:50 afaq Exp $"
+ $Revision: 1.139 $"
+ $Id: DBSApiFileLogic.java,v 1.139 2010/08/05 21:11:22 afaq Exp $"
  *
  */
 
@@ -41,37 +41,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	private boolean contains(ArrayList attributes, String param) {
 		return DBSUtil.contains(attributes, param);
 	}
-	/*public void listFiles(Connection conn, 
-			Writer out, 
-			String path, 
-			String primary, 
-			String proc, 
-			String dataTierList, 
-			String aDSName, 
-			String blockName, 
-			String patternLFN, 
-			String runNumber,
-			ArrayList attributes,
-			String clientVersion
-			) throws Exception {
-		listFiles(conn, out, path,primary, proc, dataTierList, aDSName, blockName, patternLFN, runNumber, attributes, clientVersion, "True", "True");
-	}
-
-	public void listFiles(Connection conn, 
-			Writer out, 
-			String path, 
-			String primary, 
-			String proc, 
-			String dataTierList, 
-			String aDSName, 
-			String blockName, 
-			String patternLFN, 
-			String runNumber,
-			ArrayList attributes,
-			String clientVersion,
-			String detail,
-			String otherDetail
-			) throws Exception {*/
 
 	public void listFiles(Connection conn, 
 			Writer out, 
@@ -118,9 +87,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//At least until everyone switches to DBS_1_0_9 and CRAB stop using BLOCK infor from listFiles()
 		attributes.add("retrive_block");
 
-		//if old client then send empty xml
-		boolean oldClients = false;
-		if(clientVersion.compareTo("DBS_1_0_9") < 0) oldClients = true;
+
+		//Prepared statements in advance to save time in each call
+		PreparedStatement lumips = DBSSql.listFileLumisStmt(conn, allOtherDetails);
+		PreparedStatement algops = DBSSql.listFileAlgorithmsStmt(conn, allOtherDetails);
+		PreparedStatement parentps = DBSSql.listFileProvenenceStmt(conn, true, listInvalidFiles, allOtherDetails);
+		PreparedStatement childps = DBSSql.listFileProvenenceStmt(conn, false, listInvalidFiles, allOtherDetails);
+
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
@@ -142,62 +115,36 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") + "'";
 					if (!DBSUtil.isNull(get(rs, "AUTO_CROSS_SECTION"))) toSend += " auto_cross_section='" + get(rs, "AUTO_CROSS_SECTION") + "'";
 				
-					if(oldClients) {
-						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + 	"' status='" + get(rs, "STATUS") + "'";
-						else toSend += " validation_status='' status=''";
-
-
-						if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
-						else toSend += " type=''";
-
-						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME") + "'";
-						else toSend += " block_name=''";
-
-						if(DBSUtil.contains(attributes, "retrive_date")) toSend += " creation_date='" + getTime(rs, "CREATION_DATE") +	"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") + "'";
-						else toSend += " creation_date='0' last_modification_date='0'" ;
-
-						if(DBSUtil.contains(attributes, "retrive_person")) toSend += " created_by='" + get(rs, "CREATED_BY") +	 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") + "'";
-						else toSend += " created_by='' last_modified_by=''";
-
-
-					} else {
-						if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + "' status='" + get(rs, "STATUS") + "'";
-						if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
-						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME") + "'";
-						if(DBSUtil.contains(attributes, "retrive_date")) toSend += " creation_date='" + getTime(rs, "CREATION_DATE") +	"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") + "'";
-						if(DBSUtil.contains(attributes, "retrive_person")) toSend += " created_by='" + get(rs, "CREATED_BY") +
-							 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY")  + "'";
-					}
+					if(DBSUtil.contains(attributes, "retrive_status")) toSend += " validation_status='" + get(rs, "VALIDATION_STATUS") + "' status='" + get(rs, "STATUS") + "'";
+					if(DBSUtil.contains(attributes, "retrive_type")) toSend += " type='" + get(rs, "TYPE") + "'";
+					if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME") + "'";
+					if(DBSUtil.contains(attributes, "retrive_date")) toSend += " creation_date='" + getTime(rs, "CREATION_DATE") +	"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") + "'";
+					if(DBSUtil.contains(attributes, "retrive_person")) toSend += " created_by='" + get(rs, "CREATED_BY") + "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY")  + "'";
 					toSend += ">\n";
 				out.write(toSend);
 				this.data.localFile = new Hashtable();
 				this.data.localFile.put(lfn, fileID);
 				boolean otherDetailsOfParent = allOtherDetails;
 				if(DBSUtil.contains(attributes, "retrive_parent_block")) otherDetailsOfParent = true;
-				if(oldClients && detail.equals("True")) {
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent, isMigrate);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
-					listFileAlgorithms(conn, out, lfn, allOtherDetails);
-					listFileLumis(conn, out, lfn, allOtherDetails);
+				if( detail.equals("True")) {	
+					listFileAlgorithmsFASTER(conn, out, algops, lfn, allOtherDetails);
+					listFileLumisFASTER(conn, out, lumips, lfn);
+					listFileProvenenceFASTER(conn, out, parentps, childps, lfn, true, listInvalidFiles,otherDetailsOfParent, isMigrate);//Parents
+					listFileProvenenceFASTER(conn, out, childps, childps, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
+					//listFileProvenence(conn, out, lfn, true, listInvalidFiles,otherDetailsOfParent, isMigrate);//Parents
+					//listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
+					//listFileAlgorithms(conn, out, lfn, allOtherDetails);
+					//listFileLumis(conn, out, lfn, allOtherDetails);
 					//listFileRuns(conn, out, lfn);
 					listBranch(conn, out, get(rs, "FILE_BRANCH"), allOtherDetails);
-
-				}else if( detail.equals("True")) {	
-					listFileProvenence(conn, out, lfn, true, listInvalidFiles,otherDetailsOfParent, isMigrate);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
-					listFileAlgorithms(conn, out, lfn, allOtherDetails);
-					listFileLumis(conn, out, lfn, allOtherDetails);
-					//listFileRuns(conn, out, lfn);
-					listBranch(conn, out, get(rs, "FILE_BRANCH"), allOtherDetails);
-
-					
 				} else {	
-					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent, isMigrate);//Parents
-					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
-					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn, allOtherDetails);
+					if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenenceFASTER(conn, out, parentps, childps, lfn, true, listInvalidFiles,otherDetailsOfParent, isMigrate); //listFileProvenence(conn, out, lfn, true, listInvalidFiles, otherDetailsOfParent, isMigrate);//Parents
+					if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenenceFASTER(conn, out, childps, childps, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//listFileProvenence(conn, out, lfn, false, listInvalidFiles, otherDetailsOfParent, isMigrate);//Children
+					if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithmsFASTER(conn, out, algops, lfn, allOtherDetails); //listFileAlgorithms(conn, out, lfn, allOtherDetails);
 					if(DBSUtil.contains(attributes, "retrive_lumi")) {
 									if (!isNull(aDSID) ) listADSFileLumis(conn, out, aDSID, lfn);
-									else listFileLumis(conn, out, lfn, allOtherDetails);
+									//else listFileLumis(conn, out, lfn, allOtherDetails);
+									else listFileLumisFASTER(conn, out, lumips, lfn);
 					}
 					if(DBSUtil.contains(attributes, "retrive_lumi_excluded")) {
 									if (!isNull(aDSID) ) listADSFileLumisExcluded(conn, out, aDSID, lfn);
@@ -215,6 +162,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		} finally { 
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
+			if (lumips != null) lumips.close();
+			if (algops != null) algops.close();
+			if (parentps!= null) parentps.close();
+			if (childps != null) childps.close();
 		}
 
 	}
@@ -406,6 +357,107 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 }
 
 
+	 public void listFileProvenenceFASTER(Connection conn, Writer out, PreparedStatement pps, PreparedStatement cps, String lfn, boolean parentOrChild, boolean listInvalidFiles, boolean detail, Boolean isMigrate) throws Exception {
+		ResultSet rs =  null;
+
+		ArrayList parents=new ArrayList();
+		ArrayList parentdatasets=new ArrayList();
+	
+		//Make sure same file cannot be added here
+		parents.add(lfn);
+
+		// We list parents of a file
+		// If its a normal file (i.e. the parent file) than add it to out going list of parents
+		// If its a unmerged file
+		//		:Make sure that its parent is a Merged file, add as it is, if its an unmerged file, find its child that should be an merged file
+		// THIS SUCKS BIG TIME -AA,VS : 03/17/2009
+	
+		try {
+			pps.setString(1, getFileID(conn, lfn, true));
+			if (DBSConstants.DEBUG) pushQuery(pps);
+			rs =  pps.executeQuery();
+		
+			//Shunting the code that tests for migration codition, we seems not to need that !
+			isMigrate=false;
+
+			String tag = "";
+			if(parentOrChild) tag = "file_parent";
+			else tag = "file_child";
+
+			boolean flag=true;
+			while(rs.next()) {
+				String plfn = get(rs, "LFN");
+				if ( isMigrate ) {
+
+					if (flag) {
+						String filedataset=listFileDataset(conn, lfn); 
+						parentdatasets=(new DBSApiBlockLogic(this.data)).listPathParentIDs(conn, out, filedataset); 
+						flag=false;
+					}
+					//TREAT parent files only
+					if (plfn.indexOf("unmerged") != -1 && parentOrChild) {
+							ResultSet tmpRSpp= null;
+							try {
+								pps.setString(1, getFileID(conn, plfn, true));
+								tmpRSpp=pps.executeQuery();
+								while(tmpRSpp.next()) {
+									String ppfile=get(tmpRSpp, "LFN");
+									if (ppfile.indexOf("unmerged") != -1)	{
+										ResultSet tmpRSppc=null;
+										try {		
+											cps.setString(1, getFileID(conn, ppfile, true));
+											tmpRSppc=cps.executeQuery();
+											ArrayList ppcVec=new ArrayList();
+											while(tmpRSppc.next()) {
+												String	ppclfn=get(tmpRSppc, "LFN");
+												if (ppclfn.indexOf("unmerged") != -1) continue;
+												else {
+													ppcVec.add(ppclfn);
+													if (!parents.contains(ppclfn)) {
+														String pds = get(tmpRSppc, "DATASET");
+														if (parentdatasets.contains(pds)){
+															writeFileParentXML(out, tmpRSppc, tag);
+															parents.add(ppclfn);
+														}
+													}
+												}
+											}//while(tmpRSppc.next())
+											if ( ppcVec.size() <= 0 )
+                                                                    					new DBSException("Missing data", "1005",
+                                                                              					"Expected to find a corresponding merged file for "+ppfile);
+										} finally {if (tmpRSppc != null) tmpRSppc.close();}
+									}
+									else {
+										if (!parents.contains(ppfile)) { 
+											String pds = get(tmpRSpp, "DATASET");
+											if (parentdatasets.contains(pds)){
+												parents.add(ppfile); 
+												writeFileParentXML(out, tmpRSpp, tag);
+											}
+										} 
+									}
+								}//while(tmpRSpp.next())
+							} finally {if (tmpRSpp != null) tmpRSpp.close();}
+					} // if (parentOrChild==true) && (plfn.indexOf("unmerged") != -1)
+					else if (!parents.contains(plfn) && plfn.indexOf("unmerged") == -1 ) {
+						//String pds = get(rs, "DATASET");
+						//if (parentdatasets.contains(pds)){
+                                        		parents.add(plfn);
+                                        		writeFileParentXML(out, rs, tag);
+						//}
+                                        }
+				}//if ( isMigrate == true )
+				else if (!parents.contains(plfn)) {
+						parents.add(plfn);
+						writeFileParentXML(out, rs, tag);
+				}// if (!parents.contains(plfn))
+			}//While
+		} finally { 
+			if (rs != null) rs.close();
+		}
+	 }
+
+
          public void listFileTrigs(Connection conn, Writer out, String lfn) throws Exception {
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
@@ -466,6 +518,36 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	 }
+
+
+
+         public void listFileAlgorithmsFASTER(Connection conn, Writer out, PreparedStatement ps, String lfn, boolean detail) throws Exception {
+		String fileID = getFileID(conn, lfn, true);
+		ps.setString(1, fileID);
+                ResultSet rs =  null;
+                try {
+                        if (DBSConstants.DEBUG) pushQuery(ps);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                out.write(((String) "<file_algorithm id='" + get(rs, "ID") +
+                                        "' app_version='" + get(rs, "APP_VERSION") +
+                                        "' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
+                                        "' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
+                                        "' ps_name='" + getNoExcep(rs, "PS_NAME") +
+                                        "' ps_hash='" + get(rs, "PS_HASH") +
+                                        "' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + getNoExcep(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
+                                        "'/>\n"));
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+			ps.clearParameters();
+
+                }
+         }
+
 
         public void listBranch(Connection conn, Writer out, String branchId) throws Exception {
 		listBranch(conn, out, branchId, true);
@@ -563,6 +645,37 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	 }
+
+
+	//AA- added this method to reuse prepared statement, instead of creating this obejct over and over again
+	public void listFileLumisFASTER(Connection conn, Writer out, PreparedStatement ps, String lfn) throws Exception {
+		String fileID = getFileID(conn, lfn, true);
+                ps.setString(1, fileID);
+		ResultSet rs =  null;
+		try {
+			if (DBSConstants.DEBUG) pushQuery(ps);
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<file_lumi_section id='" +  get(rs, "ID") +
+                                        "' lumi_section_number='" + get(rs, "LUMI_SECTION_NUMBER") +
+                                        "' run_number='" + get(rs, "RUN_NUMBER") +
+                                        "' start_event_number='" + get(rs, "START_EVENT_NUMBER") +
+                                        "' end_event_number='" + get(rs, "END_EVENT_NUMBER") +
+                                        "' lumi_start_time='" + get(rs, "LUMI_START_TIME") +
+                                        "' lumi_end_time='" + get(rs, "LUMI_END_TIME") +
+                                        "' creation_date='" + getNoExcep(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + getNoExcep(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + getNoExcep(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + getNoExcep(rs, "LAST_MODIFIED_BY") +
+                                        "'/>\n"));
+                                }
+		} finally {
+			if (rs != null) rs.close();
+			ps.clearParameters();
+
+		}
+	}
+
 
 	public void listADSFileLumisExcluded(Connection conn, Writer out, String aDSID, String lfn) throws Exception {
 		PreparedStatement ps = null;
@@ -925,12 +1038,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         Hashtable file = (Hashtable)files.get(i);
 
                         String fileID = "";
+			//Using get from APILogic, so that it can call checkWord on lfn, else all other places can use DBSUtil.get
                         String lfn = get(file, "lfn", true);
-                        String fileStatus = get(file, "file_status", false).toUpperCase();
+                        String fileStatus = DBSUtil.get(file, "file_status").toUpperCase();
 
-                        String type = get(file, "type", true).toUpperCase();
+                        String type = DBSUtil.get(file, "type").toUpperCase();
 
-                        String valStatus = get(file, "validation_status", false).toUpperCase();
+                        String valStatus = DBSUtil.get(file, "validation_status").toUpperCase();
                         cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
 			//AA conn.commit();
                         creationDate = getTime(file, "creation_date", false);
@@ -966,7 +1080,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 }
 				//AAconn.commit();
 
-                                thisBranchHash = get(file, "branch_hash", false);
+                                thisBranchHash = DBSUtil.get(file, "branch_hash");
                                 if (! thisBranchHash.equals(lastBranchHash) ) {
                                         branchID = getID(conn, "BranchHash", "Hash", thisBranchHash, false);
                                         lastBranchHash = thisBranchHash;
@@ -978,17 +1092,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                             procDSID,
                                             blockID,
                                             lfn,
-                                            get(file, "checksum", false),
-                                            get(file, "adler32", false),
-                                            get(file, "md5", false),
-                                            get(file, "number_of_events", false),
-                                            get(file, "size", false),
+                                            DBSUtil.get(file, "checksum"),
+                                            DBSUtil.get(file, "adler32"),
+                                            DBSUtil.get(file, "md5"),
+                                            DBSUtil.get(file, "number_of_events"),
+                                            DBSUtil.get(file, "size"),
                                             statusID,
                                             typeID,
                                             valStatusID,
-                                            get(file, "queryable_meta_data", false),
+                                            DBSUtil.get(file, "queryable_meta_data"),
                                             branchID,
-					    get(file, "auto_cross_section", false),
+					    DBSUtil.get(file, "auto_cross_section"),
                                             cbUserID, lmbUserID, creationDate);
 
 					if (DBSConstants.DEBUG) pushQuery(ps);
@@ -1016,11 +1130,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				valueVec.clear();
 				for (int j = 0; j < algoVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)algoVector.get(j);
-                                        String psHash = get(hashTable, "ps_hash", false);
+                                        String psHash = DBSUtil.get(hashTable, "ps_hash");
                                         if (isNull (psHash) ) psHash =  "NO_PSET_HASH";
-					valueVec.add((new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"),
-                                                                        get(hashTable, "app_family_name"),
-                                                                        get(hashTable, "app_executable_name"),
+					valueVec.add((new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, DBSUtil.get(hashTable, "app_version"),
+                                                                        DBSUtil.get(hashTable, "app_family_name"),
+                                                                        DBSUtil.get(hashTable, "app_executable_name"),
                                                                         psHash,
                                                                         true));
 				}
@@ -1063,10 +1177,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				Vector tmpRunVector = new Vector();
                                 for (int j = 0; j < lumiVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)lumiVector.get(j);
-                                        String thisRunN = get(hashTable, "run_number", true);
+                                        String thisRunN = DBSUtil.get(hashTable, "run_number");
                                         runID = getID(conn, "Runs", "RunNumber",  thisRunN, true);
 					//conn.commit();
-                                        String lsNumber = get(hashTable, "lumi_section_number", false);
+                                        String lsNumber = DBSUtil.get(hashTable, "lumi_section_number");
 
                                         if ( !isNull(lsNumber) ) {
 						insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
@@ -1118,14 +1232,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         //insert File-Trigger-Tag Map now.
                                         insertMap(conn, out,  "FileTriggerTag", "Fileid", "TriggerTag", "NumberOfEvents",
                                                         fileID,
-                                                        get(hashTable, "trigger_tag"),
-                                                        get(hashTable, "number_of_events"),
+                                                        DBSUtil.get(hashTable, "trigger_tag"),
+                                                        DBSUtil.get(hashTable, "number_of_events"),
                                                         cbUserID, lmbUserID, creationDate, true);
                                 }
 				//AA conn.commit();
 
                                 //Insert the file association   
-                                String fileAssoc = get(file, "file_assoc", false);
+                                String fileAssoc = DBSUtil.get(file, "file_assoc");
                                 if (! isNull(fileAssoc)) {
                                         insertMap(conn, out, "FileAssoc", "ThisFile", "ItsAssoc",
                                                                 fileID,
@@ -1395,13 +1509,13 @@ return DBManagement.getConnection( config.getDbDriver(),
 		//}
 		insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 				getFileID(conn, get(table, "lfn", true), true), 
-				(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(algo, "app_version"), 
-						get(algo, "app_family_name"), 
-						get(algo, "app_executable_name"),
-						get(algo, "ps_hash"), 
+				(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, DBSUtil.get(algo, "app_version"), 
+						DBSUtil.get(algo, "app_family_name"), 
+						DBSUtil.get(algo, "app_executable_name"),
+						DBSUtil.get(algo, "ps_hash"), 
 						//psHash,
 						true), 
-				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
+				personApi.getUserID(conn, DBSUtil.get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}
@@ -1427,7 +1541,7 @@ return DBManagement.getConnection( config.getDbDriver(),
 		insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
 				getFileID(conn, get(table, "lfn", true), true), 
 				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
-				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
+				personApi.getUserID(conn, DBSUtil.get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}

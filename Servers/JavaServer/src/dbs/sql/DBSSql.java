@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.234 $"
- $Id: DBSSql.java,v 1.234 2010/07/06 16:55:20 afaq Exp $"
+ $Revision: 1.235 $"
+ $Id: DBSSql.java,v 1.235 2010/08/05 21:11:22 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2963,6 +2963,68 @@ public class DBSSql {
 		return ps;
 	}
 
+
+
+	public static PreparedStatement listFileProvenenceStmt(Connection conn, boolean parentOrChild, boolean listInvalidFiles, boolean detail) throws SQLException {
+		//parentOrChild if true means we need to get the parents of the file 
+		//parentOrChild if false means we need to get the childern of the file
+		String joinStr = "";
+		String whereStr = "";
+		if (parentOrChild) {
+			joinStr = "ON fp.ItsParent = f.ID \n";
+			whereStr = "WHERE fp.ThisFile = ? \n";
+		} else {
+			joinStr = "ON fp.ThisFile = f.ID \n";
+			whereStr = "WHERE fp.ItsParent = ? \n";
+		}
+			
+		String sql = "SELECT DISTINCT f.ID as ID, \n " +
+			"f.LogicalFileName as LFN, \n" +
+				"f.Dataset as DATASET \n" ;
+		
+			if(detail) sql += ",f.Checksum as CHECKSUM, \n" +
+				"f.FileSize as FILESIZE, \n" +
+				"f.Adler32 as ADLER32, \n" +
+				"f.MD5 as MD5, \n" +
+				"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
+				"f.CreationDate as CREATION_DATE, \n" +
+				"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+				"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+				"f.ValidationStatus as VALIDATION_STATUS, \n" +
+				"f.AutoCrossSection as AUTO_CROSS_SECTION, \n" +
+				"st.Status as STATUS, \n" +
+				"ty.Type as TYPE, \n" +
+                        	"b.Name as BLOCK_NAME, \n"+ 
+				"percb.DistinguishedName as CREATED_BY, \n" +
+				"perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+			
+			sql += "FROM "+owner()+"Files f \n" +
+				"JOIN "+owner()+"FileParentage fp \n" +
+					joinStr +
+				"LEFT OUTER JOIN "+owner()+"FileStatus st \n" +
+					"ON st.id = f.FileStatus \n";
+			
+			if(detail) sql += "LEFT OUTER JOIN "+owner()+"Block b \n" +
+				"ON b.id = f.Block \n "+  
+				"LEFT OUTER JOIN "+owner()+"FileType ty \n" +
+					"ON ty.id = f.FileType \n" +
+                	        //"LEFT OUTER JOIN "+owner()+"FileValidStatus vst \n" +
+                        	//        "ON vst.id = f.ValidationStatus \n" +
+				"LEFT OUTER JOIN "+owner()+"Person percb \n" +
+					"ON percb.id = f.CreatedBy \n" +
+				"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+					"ON perlm.id = f.LastModifiedBy \n";
+	
+		sql += whereStr;
+		if (!listInvalidFiles)	sql +=  " AND st.Status <> 'INVALID' \n";
+		sql +=	"ORDER BY f.LogicalFileName DESC";
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+
 	public static PreparedStatement listFilesChildern(Connection conn, String blockID) throws SQLException {
 			
 		String sql = "SELECT DISTINCT f.ID as ID \n " +
@@ -3141,6 +3203,43 @@ public class DBSSql {
 		return ps;
 	}
 
+
+
+        public static PreparedStatement listFileAlgorithmsStmt(Connection conn, boolean detail) throws SQLException {
+                String sql = "SELECT DISTINCT algo.id as ID, \n" +
+                        "av.Version as APP_VERSION, \n" +
+                        "af.FamilyName as APP_FAMILY_NAME, \n" +
+                        "ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
+                        "ps.Hash as PS_HASH \n";
+                if(detail) sql += ",ps.Name as PS_NAME, \n" +
+                        "algo.CreationDate as CREATION_DATE, \n" +
+                        "algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+                sql +=  "FROM "+owner()+"AlgorithmConfig algo \n" +
+                        "JOIN "+owner()+"FileAlgo fa \n" +
+                                "ON fa.Algorithm = algo.id \n" +
+                        "JOIN "+owner()+"AppVersion av \n" +
+                                "ON av.id = algo.ApplicationVersion \n" +
+                        "JOIN "+owner()+"AppFamily af \n" +
+                                "ON af.id = algo.ApplicationFamily \n" +
+                        "JOIN "+owner()+"AppExecutable ae \n" +
+                                "ON ae.id = algo.ExecutableName \n" +
+                        "JOIN "+owner()+"QueryableParameterSet ps \n" +
+                                "ON ps.id = algo.ParameterSetID \n";
+                if(detail) sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+                                "ON percb.id = algo.CreatedBy \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+                                "ON perlm.id = algo.LastModifiedBy \n";
+                sql += "WHERE fa.Fileid = ? \n";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
+
+
 	public static PreparedStatement listFileLumis(Connection conn, String fileID) throws SQLException {
 		return listFileLumis(conn, fileID, true);
 	}
@@ -3175,6 +3274,46 @@ public class DBSSql {
                 if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+
+     public static PreparedStatement listFileLumisStmt(Connection conn, boolean detail) throws SQLException {
+	String sql = "SELECT DISTINCT lumi.id as ID, \n" +
+		"lumi.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
+                        "r.RunNumber as RUN_NUMBER, \n" +
+                        "lumi.StartEventNumber as START_EVENT_NUMBER, \n" +
+                        "lumi.EndEventNumber as END_EVENT_NUMBER, \n" +
+                        "lumi.LumiStartTime as LUMI_START_TIME, \n" +
+                        "lumi.LumiEndTime as LUMI_END_TIME \n";
+                if(detail) sql += ",lumi.CreationDate as CREATION_DATE, \n" +
+                        "lumi.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n";
+                sql +=  "FROM "+owner()+"LumiSection lumi \n" +
+                        "JOIN "+owner()+"FileRunLumi fl \n" +
+                                "ON fl.Lumi = lumi.id \n" +
+                        "JOIN "+owner()+"Runs r \n" +
+                                "ON r.ID = fl.Run \n";
+                if(detail) sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+                                "ON percb.id = lumi.CreatedBy \n" +
+                        "LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+                                "ON perlm.id = lumi.LastModifiedBy \n";
+                sql += "WHERE fl.Fileid = ? \n";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 
         public static PreparedStatement listADSFileLumis(Connection conn, String aDSID, String fileID) throws SQLException {
                 String sql = "SELECT DISTINCT lumi.id as ID, \n" +
