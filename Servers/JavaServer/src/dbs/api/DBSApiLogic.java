@@ -1,6 +1,6 @@
 /**
- $Revision: 1.173 $"
- $Id: DBSApiLogic.java,v 1.173 2009/09/10 19:33:51 afaq Exp $"
+ $Revision: 1.174 $"
+ $Id: DBSApiLogic.java,v 1.174 2010/08/05 21:11:22 afaq Exp $"
  *
  */
 
@@ -770,6 +770,68 @@ public class DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	}
+
+
+	protected void insertMapExecute(Connection conn, PreparedStatement ps, java.util.ArrayList values) throws Exception {
+		try {
+			ps.clearParameters();
+			int columnIndx = 1;
+                	for (int j = 0; j < values.size(); ++j) ps.setString(columnIndx++, (String)values.get(j));
+			if (DBSConstants.DEBUG) pushQuery(ps);
+			ps.execute();
+		} catch (SQLException ex) {
+			String exmsg = ex.getMessage();
+			if(!exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+			//else its ignored --duplicates	
+		}
+	}
+
+
+
+        protected void insertMapBatchExecute(Connection conn, PreparedStatement ps, String mapTo,
+                        java.util.ArrayList values, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+
+                for (int j = 0; j < values.size(); ++j) {
+                        int columnIndx = 1;
+                        String value=(String)values.get(j);
+
+                        ps.setString(columnIndx++, mapTo);
+                        ps.setString(columnIndx++, value);
+
+                        ps.setString(columnIndx++, cbUserID);
+                        ps.setString(columnIndx++, lmbUserID);
+                        ps.setString(columnIndx++, cDate);
+
+                        ps.addBatch();
+                }
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n" + ps + "\n");
+		try {
+			ps.executeBatch();
+		} catch (SQLException ex) {	
+			String exmsg = ex.getMessage();
+			if ( !exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+			//else its ignored --duplicates
+		}
+        }
+
+        protected void insertGeneralBatchExecute(Connection conn, PreparedStatement ps, int keys_size, java.util.ArrayList values) throws SQLException {
+                for ( int j = 0; j < values.size(); j += keys_size ) {
+                        int columnIndx = 1;
+                        for (int k = 0; k != keys_size; ++k) {
+                                ps.setString(columnIndx++, (String)values.get(j+k));
+                        }
+                        ps.addBatch(); 
+                }
+                if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		try {
+			if (DBSConstants.DEBUG) pushQuery(ps);
+			ps.executeBatch();
+		} catch (SQLException ex) {
+			 String exmsg = ex.getMessage();
+			 if ( !exmsg.startsWith("Duplicate entry") && !exmsg.startsWith("ORA-00001: unique constraint") ) throw ex;
+			 //else its ignored --duplicates
+		}
+        }
 
         protected void insertMapBatch(Connection conn, Writer out, String tableName, String key1, String key2,
 			String mapTo, java.util.ArrayList values, String cbUserID, String lmbUserID, String creationDate) throws Exception {

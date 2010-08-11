@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.235 $"
- $Id: DBSSql.java,v 1.235 2010/08/05 21:11:22 afaq Exp $"
+ $Revision: 1.236 $"
+ $Id: DBSSql.java,v 1.236 2010/08/09 19:34:42 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -211,6 +211,24 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, tableName, table);
 	}
+
+     	public static PreparedStatement getInsertMapStmt(Connection conn, String tableName, java.util.ArrayList keys ) throws SQLException {
+		String sqlKeys = "  ";
+		String sqlValues = "  ";
+		String sql = "INSERT INTO " + owner()+tableName + " ( ";
+		java.util.Iterator it=keys.iterator();
+		while(it.hasNext()) {
+          		sqlKeys += "\t" + (String)it.next() + ",\n";
+			sqlValues += "\t?,\n";
+		}
+		sql += sqlKeys.substring(0, sqlKeys.length() - 2) +
+                        "\n ) VALUES ( \n" +
+                        sqlValues.substring(0, sqlValues.length() - 2) +
+                        "\n)\n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 	
 	public static PreparedStatement insertMap(Connection conn, String tableName, String key1, String key2, String value1, String value2, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
@@ -232,6 +250,7 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, tableName, table);
 	}
+
 
         public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String mapTo,
                         java.util.ArrayList values, String cbUserID, String lmbUserID, String cDate) throws SQLException {

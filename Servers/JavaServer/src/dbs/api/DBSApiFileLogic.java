@@ -1,6 +1,6 @@
 /**
- $Revision: 1.139 $"
- $Id: DBSApiFileLogic.java,v 1.139 2010/08/05 21:11:22 afaq Exp $"
+ $Revision: 1.140 $"
+ $Id: DBSApiFileLogic.java,v 1.140 2010/08/09 19:34:42 afaq Exp $"
  *
  */
 
@@ -1034,6 +1034,50 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		Vector runstoUpdate = new Vector();
 
 
+		//Collect all the prepared statements upfront, this saves a TON of time
+		//keys common to most all prepared statements
+		java.util.ArrayList commonkeys = new java.util.ArrayList();
+		commonkeys.add("CreatedBy");
+		commonkeys.add("LastModifiedBy");
+		commonkeys.add("CreationDate");
+		java.util.ArrayList keysl = new java.util.ArrayList();
+		//Insert MAP Dataset-Run
+		keysl.add("Dataset");
+		keysl.add("Run");
+		keysl.addAll(commonkeys);
+		PreparedStatement dsRunMapPS = DBSSql.getInsertMapStmt(conn, "ProcDSRuns", keysl ); 
+		//Insert File-Algo map
+		keysl.clear();
+		keysl.add("Fileid");
+		keysl.add("Algorithm");
+		keysl.addAll(commonkeys);
+		PreparedStatement filealgops = DBSSql.getInsertMapStmt(conn, "FileAlgo", keysl );
+		//Insert File parent Map
+		keysl.clear();
+		keysl.add("ThisFile");
+		keysl.add("ItsParent");
+		keysl.addAll(commonkeys);
+		PreparedStatement fileparentps = DBSSql.getInsertMapStmt(conn, "FileParentage", keysl );
+		//Insert File child map
+		keysl.clear();
+		keysl.add("ItsParent");
+		keysl.add("ThisFile");
+		keysl.addAll(commonkeys);
+		PreparedStatement filechildps = DBSSql.getInsertMapStmt(conn, "FileParentage", keysl );
+		//Insert file run lumi map
+		keysl.clear();
+		keysl.add("Fileid");
+                keysl.add("Lumi");
+		keysl.add("Run");
+		keysl.addAll(commonkeys);
+		//Insert only run-file map (no lumi)
+		PreparedStatement filerunlumips = DBSSql.getInsertMapStmt(conn, "FileRunLumi", keysl );
+		keysl.clear();
+		keysl.add("Fileid");
+		keysl.add("Run");
+		keysl.addAll(commonkeys);
+		PreparedStatement filelumirunonlyps = DBSSql.getInsertMapStmt(conn, "FileRunLumi", keysl );
+
                 for (int i = 0; i < files.size() ; ++i) {
                         Hashtable file = (Hashtable)files.get(i);
 
@@ -1116,8 +1160,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				}finally {
                                 	if (ps != null) ps.close();
 				}
-				//AAconn.commit();
-                                //if(isNull(fileID)) fileID = getFileID(conn, lfn);
+
+
                                 //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
                                 //FileID is needed if any of the other table information is provided i.e the vector size is > 0
                                 //if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0 || childVector.size() > 0 )
@@ -1138,7 +1182,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                                         psHash,
                                                                         true));
 				}
-				insertMapBatch(conn, out, "FileAlgo", "Fileid", "Algorithm", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+
+				insertMapBatchExecute(conn, filealgops, fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				//insertMapBatch(conn, out, "FileAlgo", "Fileid", "Algorithm", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 				//AAconn.commit();
                                 //Insert FileTier table by fetching data tier ID
 				valueVec.clear();
@@ -1148,7 +1194,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					valueVec.clear();
 					for (int j = 0; j < parentVector.size(); ++j) 
 						valueVec.add(getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true));
-					insertMapBatch(conn, out, "FileParentage", "ThisFile", "ItsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+					insertMapBatchExecute(conn, fileparentps, fileID, valueVec, cbUserID, lmbUserID, creationDate);
+					//insertMapBatch(conn, out, "FileParentage", "ThisFile", "ItsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 				}
 				//AAconn.commit();
 				
@@ -1156,7 +1203,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				valueVec.clear();
 				for (int j = 0; j < childVector.size(); ++j)
 					valueVec.add(getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true));
-				insertMapBatch(conn, out, "FileParentage", "ItsParent", "ThisFile", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				insertMapBatchExecute(conn, filechildps, fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				//insertMapBatch(conn, out, "FileParentage", "ItsParent", "ThisFile", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 				//AAconn.commit();
 
 //----------------------------Lumi/Run mapping 				
@@ -1164,16 +1212,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				valueVec.clear();
 				String runID = null;
 
-				ArrayList lumiOnlyValueVec = new ArrayList();
+				ArrayList runOnlyValueVec = new ArrayList();
 				
-                		java.util.ArrayList keys = new java.util.ArrayList();
+                		//java.util.ArrayList keys = new java.util.ArrayList();
 				//AA- NEVER change this ORDER
-		                keys.add("Fileid");
-                		keys.add("Lumi");
-		                keys.add("Run");
-                		keys.add("CreationDate");
-		                keys.add("CreatedBy");
-		                keys.add("LastModifiedBy");
+		                //keys.add("Fileid");
+                		//keys.add("Lumi");
+		                //keys.add("Run");
+                		//keys.add("CreationDate");
+		                //keys.add("CreatedBy");
+		                //keys.add("LastModifiedBy");
 				Vector tmpRunVector = new Vector();
                                 for (int j = 0; j < lumiVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)lumiVector.get(j);
@@ -1198,31 +1246,34 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 					} else {
 						//No Lumi
-						lumiOnlyValueVec.add(fileID);
-						lumiOnlyValueVec.add(runID);
-						lumiOnlyValueVec.add(creationDate);
-		                                lumiOnlyValueVec.add(cbUserID);
-                		                lumiOnlyValueVec.add(lmbUserID);
+						runOnlyValueVec.add(fileID);
+						runOnlyValueVec.add(runID);
+						runOnlyValueVec.add(creationDate);
+		                                runOnlyValueVec.add(cbUserID);
+                		                runOnlyValueVec.add(lmbUserID);
 
 						if (!tmpRunVector.contains(runID)) tmpRunVector.add(runID);
 					}
-					//AA conn.commit();
+
 					// Insert ProcDS-Run Map, if its already not there
-					insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
-							procDSID, runID,
-							cbUserID, lmbUserID, creationDate, true);
-					//AA conn.commit();//Release lock on Run Table
-
-
+					ArrayList tmpvals = new ArrayList();
+					tmpvals.add(procDSID);
+					tmpvals.add(runID);
+					tmpvals.add(cbUserID);
+					tmpvals.add(lmbUserID);
+					tmpvals.add(creationDate);
+					insertMapExecute(conn, dsRunMapPS, tmpvals);
+					//insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+					//		procDSID, runID,
+					//		cbUserID, lmbUserID, creationDate, true);
 				}
 				conn.commit();
-				if(tmpRunVector.size() > 0) lockRunRows(conn, out, tmpRunVector);
-				insertGeneralBatch(conn, out, "FileRunLumi", keys, valueVec);
-				//conn.commit();
-				insertGeneralBatch(conn, out, "FileRunLumi", keys, lumiOnlyValueVec);
-				conn.commit();
-
-
+				if(tmpRunVector.size() > 0) lockRunRows(conn, out, tmpRunVector); //locked here, and unlocked at the end of this block, commit()
+				insertGeneralBatchExecute(conn, filerunlumips, 6, valueVec);
+				//insertGeneralBatch(conn, out, "FileRunLumi", keys, valueVec);
+				insertGeneralBatchExecute(conn, filelumirunonlyps, 5, runOnlyValueVec);
+				//insertGeneralBatch(conn, out, "FileRunLumi", keys, runOnlyValueVec);
+				conn.commit(); //unlock
 
 //----------------------------Lumi/Run mapping done				
 
@@ -1255,6 +1306,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         //if ( i%10 == 0) 
 				conn.commit(); //For Every 10 files commit the changes
                 }//For loop
+
+
+		if (dsRunMapPS != null) dsRunMapPS.close();
+		if (filealgops != null) filealgops.close();
+		if (fileparentps != null) fileparentps.close();
+		if (filechildps != null) filechildps.close();
+		if (filerunlumips != null) filerunlumips.close();
+		if (filelumirunonlyps != null) filelumirunonlyps.close();
 
 
                 //Update Block numberOfFiles and Size
