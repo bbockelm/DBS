@@ -16,8 +16,8 @@ class DbsBase(dict):
        	    """
 	    Validate a DBS Data Object dictionary
 	    """
-	    return 
             objName = self.__class__.__name__
+	    return
             # Gets the dictionay from the validationTable
             valTable = ValidationTable[objName]
             for key in self.keys():
