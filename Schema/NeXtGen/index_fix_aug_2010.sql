@@ -28,3 +28,4 @@ CREATE INDEX ix_PD_PhysicsGroup ON ProcessedDataset(PhysicsGroup);
 CREATE INDEX ix_PD_PrimaryDataset ON ProcessedDataset(PrimaryDataset);
 CREATE INDEX ix_PD_Status ON ProcessedDataset(Status);
 CREATE INDEX ix_PP_ItsParent ON ProcDSParent(ItsParent); 
+CREATE INDEX  IX_BLK_DATASET ON BLOCK(DATASET);
