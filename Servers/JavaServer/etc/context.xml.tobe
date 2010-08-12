@@ -26,7 +26,7 @@
 
 	<SchemaOwner schemaowner="__MYSQL__"/> <!-- Possible vales are schema_owner, EMPTY STRING and __MYSQL__ /-->
 	<SupportedSchemaVersion schemaversion="DBS_1_1_6" />
-	<SupportedClientVersions clientversions="DBS_2_0_7, DBS_2_0_8, DBS_2_0_9, DBS_2_1_0" />
+	<SupportedClientVersions clientversions="DBS_2_0_8, DBS_2_0_9, DBS_2_1_0, DBS_2_1_1" />
 	<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
 </Context>
 								
