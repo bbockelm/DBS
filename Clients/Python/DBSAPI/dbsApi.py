@@ -236,11 +236,11 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   #------------------------------------------------------------
-  def listRuns(self, dataset):
+  def listRuns(self, dataset="", block=""):
      try:
        #Calling the Implementation function
        from dbsApiListRuns import dbsApiImplListRuns
-       return  dbsApiImplListRuns(self, dataset)
+       return  dbsApiImplListRuns(self, dataset, block)
      except Exception, ex:
         if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
                 raise ex
