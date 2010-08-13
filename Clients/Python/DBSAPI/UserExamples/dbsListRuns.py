@@ -19,9 +19,12 @@ try:
   print ""
   print "RUNS...."
   rlist=[]
-  for run in api.listRuns("/Cosmics/Commissioning08-MW32_v1/RAW"):
+  #for run in api.listRuns(dataset="/Cosmics/Commissioning08-MW32_v1/RAW"):
+  #for run in api.listRuns(dataset="/MinimumBias/Commissioning10-v4/RAW"):
+  for run in api.listRuns(block="/MinimumBias/Commissioning10-v4/RAW#06a63d9b-d9a9-4af8-89fa-268a9ac9760d"):
+     print run
      #print "  %s" % run['RunNumber']
-     rlist.append(run['RunNumber'])
+     #rlist.append(run['RunNumber'])
      
   rlist.sort()
   for r in rlist:
