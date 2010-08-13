@@ -1,6 +1,6 @@
 /**
- $Revision: 1.94 $"
- $Id: DBSApiProcDSLogic.java,v 1.94 2010/08/05 21:11:22 afaq Exp $"
+ $Revision: 1.95 $"
+ $Id: DBSApiProcDSLogic.java,v 1.95 2010/08/13 16:31:28 afaq Exp $"
  *
  */
 
@@ -366,11 +366,16 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
-	public void listRuns(Connection conn, Writer out, String path) throws Exception {
+	public void listRuns(Connection conn, Writer out, String path, String block) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		String datasetid=getProcessedDSID(conn, path, false);
+		String blockid=getID(conn, "Block", "Name", block, false);
+		if (DBSUtil.isNull(datasetid) && DBSUtil.isNull(blockid)) {
+			throw new DBSException("Unavailable data", "1008", "No such dataset: "+path+ " OR block: "+block+" in DBS");
+                }
 		try {
-			ps = DBSSql.listRuns(conn, getProcessedDSID(conn, path, true));
+			ps = DBSSql.listRuns(conn, getProcessedDSID(conn, path, false), getID(conn, "Block", "Name", block, false) );
 			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();
 			while(rs.next()) {

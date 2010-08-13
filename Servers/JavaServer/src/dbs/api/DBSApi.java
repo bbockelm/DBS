@@ -1,6 +1,6 @@
 /**
- $Revision: 1.178 $"
- $Id: DBSApi.java,v 1.178 2010/08/05 21:16:13 afaq Exp $"
+ $Revision: 1.179 $"
+ $Id: DBSApi.java,v 1.179 2010/08/13 16:31:28 afaq Exp $"
  *
 */
 
@@ -338,7 +338,7 @@ public class DBSApi {
 				(new DBSApiProcDSLogic(this.data)).listDatasetSummary(conn, out, get(table, "path", true));
 				
 			} else if (apiStr.equals("listRuns")) {
-				(new DBSApiProcDSLogic(this.data)).listRuns(conn, out, get(table, "path", true));
+				(new DBSApiProcDSLogic(this.data)).listRuns(conn, out, get(table, "path", false), get(table, "block", false) );
 				
 			} else if (apiStr.equals("listTiers")) {
 				(new DBSApiProcDSLogic(this.data)).listTiers(conn, out, get(table, "path", true));

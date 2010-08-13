@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.237 $"
- $Id: DBSSql.java,v 1.237 2010/08/11 21:01:53 afaq Exp $"
+ $Revision: 1.238 $"
+ $Id: DBSSql.java,v 1.238 2010/08/13 16:31:28 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2356,7 +2356,49 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listRuns(Connection conn, String procDSID) throws SQLException {
+
+
+	public static PreparedStatement listRuns(Connection conn, String datasetid, String blockid) throws SQLException {
+
+		String param="";
+		String sql = "SELECT DISTINCT run.ID as ID, \n " +
+			"run.RunNumber as RUN_NUMBER, \n" +
+                        "run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "run.NumberOfLumiSections as NUMBER_OF_LUMI_SECTIONS, \n" +
+                        "run.TotalLuminosity as TOTAL_LUMINOSITY, \n" +
+                        "run.StoreNumber as STRORE_NUMBER, \n" +
+                        "run.StartOfRun as START_OF_RUN, \n" +
+                        "run.EndOfRun as END_OF_RUN, \n" +
+                        "run.CreationDate as CREATION_DATE, \n" +
+                        "run.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM "+owner()+"Runs run \n" +
+			"JOIN "+owner()+"FileRunLumi flr ON run.ID=flr.Run \n" +
+			"JOIN "+owner()+"Files fl ON flr.Fileid=fl.ID \n" +
+			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
+				"ON percb.id = run.CreatedBy \n" +
+			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+				"ON perlm.id = run.LastModifiedBy \n" +
+			"WHERE ";
+	        if (!DBSUtil.isNull(datasetid)) {
+                       	sql+=" fl.Dataset=?";
+			param=datasetid;
+               	}
+               	else if (!DBSUtil.isNull(blockid)) { 
+                       	sql+=" fl.Block=?";
+			param=blockid; 
+               	} 
+		else {throw new SQLException("Invalid parameters : datasetid OR blockid should be provided");}
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, param);
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}	
+
+
+	public static PreparedStatement listRunsDEPRECATED(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT DISTINCT run.ID as ID, \n " +
 			"run.RunNumber as RUN_NUMBER, \n" +
 			"run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
@@ -3741,11 +3783,11 @@ public class DBSSql {
 		else {throw new SQLException("Invalid parameters : datasetid OR blockid should be provided");}
 
 		String sql = "SELECT \n " +
-			"(select count(distinct flr.Lumi)  from FileRunLumi flr, Files fl where flr.Fileid=fl.ID and "+condition+") AS LUMI_COUNT, \n " +
-			"(select count(distinct fl.ID) from Files fl where "+condition+") AS FILE_COUNT, \n " +
-			"(select sum(NumberOfEvents) from Files fl where "+condition+") AS EVENT_COUNT, \n " +
-			"(select sum(fl.FileSize) from Files fl where "+condition+") AS TOTAL_SIZE, \n" +
-			"(select count(distinct ID) from Block where "+blk_condition+ ") AS BLOCK_COUNT";
+			"(select count(distinct flr.Lumi)  from "+owner()+"FileRunLumi flr, "+owner()+"Files fl where flr.Fileid=fl.ID and "+condition+") AS LUMI_COUNT, \n " +
+			"(select count(distinct fl.ID) from "+owner()+"Files fl where "+condition+") AS FILE_COUNT, \n " +
+			"(select sum(NumberOfEvents) from "+owner()+"Files fl where "+condition+") AS EVENT_COUNT, \n " +
+			"(select sum(fl.FileSize) from "+owner()+"Files fl where "+condition+") AS TOTAL_SIZE, \n" +
+			"(select count(distinct ID) from "+owner()+"Block where "+blk_condition+ ") AS BLOCK_COUNT";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		ps.setString(columnIndx++, param);
