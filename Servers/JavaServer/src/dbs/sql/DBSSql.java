@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.236 $"
- $Id: DBSSql.java,v 1.236 2010/08/09 19:34:42 afaq Exp $"
+ $Revision: 1.237 $"
+ $Id: DBSSql.java,v 1.237 2010/08/11 21:01:53 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3719,6 +3719,41 @@ public class DBSSql {
 		ps.setString(columnIndx++, value2);
 		ps.setString(columnIndx++, value3);
                 if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+
+	public static PreparedStatement getSummary(Connection conn, String datasetid, String blockid) throws SQLException {
+		/**Dataset takes presedence over block here, only one of the is supposed to be passed*/
+		String condition="";
+		String blk_condition="";
+		String param="";
+		if (!DBSUtil.isNull(datasetid)) { 
+			condition="fl.Dataset=?"; 
+			param=datasetid; 
+			blk_condition="Dataset=?";
+		}
+		else if (!DBSUtil.isNull(blockid)) { 
+			condition="fl.Block=?"; 
+			param=blockid; 
+			blk_condition="ID=?";
+		}
+		else {throw new SQLException("Invalid parameters : datasetid OR blockid should be provided");}
+
+		String sql = "SELECT \n " +
+			"(select count(distinct flr.Lumi)  from FileRunLumi flr, Files fl where flr.Fileid=fl.ID and "+condition+") AS LUMI_COUNT, \n " +
+			"(select count(distinct fl.ID) from Files fl where "+condition+") AS FILE_COUNT, \n " +
+			"(select sum(NumberOfEvents) from Files fl where "+condition+") AS EVENT_COUNT, \n " +
+			"(select sum(fl.FileSize) from Files fl where "+condition+") AS TOTAL_SIZE, \n" +
+			"(select count(distinct ID) from Block where "+blk_condition+ ") AS BLOCK_COUNT";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, param);
+		ps.setString(columnIndx++, param);
+		ps.setString(columnIndx++, param);
+		ps.setString(columnIndx++, param);
+		ps.setString(columnIndx++, param);
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 

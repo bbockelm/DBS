@@ -1,6 +1,6 @@
 /**
- $Revision: 1.93 $"
- $Id: DBSApiProcDSLogic.java,v 1.93 2010/03/12 16:44:28 afaq Exp $"
+ $Revision: 1.94 $"
+ $Id: DBSApiProcDSLogic.java,v 1.94 2010/08/05 21:11:22 afaq Exp $"
  *
  */
 
@@ -395,7 +395,31 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 	}
 
-	
+	public void getSummary(Connection conn, Writer out, String path, String block) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = DBSSql.getSummary(conn, getProcessedDSID(conn, path, false), getID(conn, "Block", "Name", block, false) );
+			if (DBSConstants.DEBUG) pushQuery(ps);
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<summary "+
+					"  path='" + isNull(path) +
+					"' block='" + isNull(block) +
+					"' number_of_events='" + get(rs, "EVENT_COUNT") +
+					"' number_of_files='" + get(rs, "FILE_COUNT") +
+					"' number_of_blocks='" + get(rs, "BLOCK_COUNT") +
+					"' number_of_lumis='" + get(rs, "LUMI_COUNT") +
+					"' total_size='" + get(rs, "TOTAL_SIZE") +
+					"'/>\n"));
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
+
+	/** listDatasetSummary is HEREBY deprecated in favor of getSummary --AA 08/14/2010*/
 	public void listDatasetSummary(Connection conn, Writer out, String path) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
