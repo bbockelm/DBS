@@ -415,6 +415,18 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   #------------------------------------------------------------
+  def getSummary(self, dataset="", block=""):
+     try:
+       #Calling the Implementation function
+       from dbsApiGetSummary import dbsApiImplGetSummary
+       return  dbsApiImplGetSummary(self, dataset, block)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+  #------------------------------------------------------------
+
   def listDatasetSummary(self, path):
      try:
        #Calling the Implementation function
