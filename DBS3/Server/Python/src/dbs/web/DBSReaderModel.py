@@ -3,8 +3,8 @@
 DBS Reader Rest Model module
 """
 
-__revision__ = "$Id: DBSReaderModel.py,v 1.48 2010/08/09 11:07:17 akhukhun Exp $"
-__version__ = "$Revision: 1.48 $"
+__revision__ = "$Id: DBSReaderModel.py,v 1.49 2010/08/12 19:50:52 afaq Exp $"
+__version__ = "$Revision: 1.49 $"
 
 import cjson
 import inspect
@@ -33,7 +33,7 @@ import cjson
 
 from cherrypy import server
 
-__server__version__ = "$Name:  $"
+__server__version__ = "$Name: DBS_3_S5_0_pre1 $"
 
 class DBSReaderModel(RESTModel):
     """
@@ -286,7 +286,8 @@ class DBSReaderModel(RESTModel):
         """
         return self.dbsDataset.listDatasetChildren(dataset)
     
-    def listOutputConfigs(self, dataset="", logical_file_name="", release_version="", pset_hash="", app_name="", output_module_label=""):
+    def listOutputConfigs(self, dataset="", logical_file_name="", release_version="", pset_hash="", app_name="",
+    output_module_label="", block_id=0):
         """
         Example url's: <br />
         http://dbs3/outputconfigurations <br />
@@ -301,7 +302,8 @@ class DBSReaderModel(RESTModel):
 	pset_hash = pset_hash.replace("*", "%")
 	app_name = app_name.replace("*", "%")
 	output_module_label = output_module_label.replace("*", "%")
-	return self.dbsOutputConfig.listOutputConfigs(dataset, logical_file_name, release_version, pset_hash, app_name, output_module_label)
+	return self.dbsOutputConfig.listOutputConfigs(dataset, logical_file_name, release_version, pset_hash, app_name,
+	output_module_label, block_id)
     
     def listFileParents(self, logical_file_name):
         """
