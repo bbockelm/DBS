@@ -1312,7 +1312,7 @@ def suite():
     suite.addTest(unittest.makeSuite(Test_insertProcessedDatasetAPI))
 #    suite.addTest(unittest.makeSuite(Test_insertParentInPDAPI))
 #    suite.addTest(unittest.makeSuite(Test_insertAlgoInPDAPI))
-    suite.addTest(unittest.makeSuite(Test_insertRunInPDAPI))
+#    suite.addTest(unittest.makeSuite(Test_insertRunInPDAPI))
 #    suite.addTest(unittest.makeSuite(Test_updateProcDSStatusAPI))
     suite.addTest(unittest.makeSuite(Test_insertBlockAPI))
     suite.addTest(unittest.makeSuite(Test_insertFilesAPI))

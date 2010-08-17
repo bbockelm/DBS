@@ -1082,7 +1082,7 @@ def suite():
     suite.addTest(unittest.makeSuite(Test_007))
     suite.addTest(unittest.makeSuite(Test_008))
     suite.addTest(unittest.makeSuite(Test_009))
-    suite.addTest(unittest.makeSuite(Test_010))
+    #suite.addTest(unittest.makeSuite(Test_010))
     suite.addTest(unittest.makeSuite(Test_011))
     suite.addTest(unittest.makeSuite(Test_012))
     suite.addTest(unittest.makeSuite(Test_013))
