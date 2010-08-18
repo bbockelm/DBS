@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 """ DAO Object for PrimaryDSTypes table """ 
 
-__revision__ = "$Revision: 1.5 $"
-__version__  = "$Id: Insert.py,v 1.5 2010/03/05 19:31:45 yuyi Exp $ "
+__revision__ = "$Revision: 1.6 $"
+__version__  = "$Id: Insert.py,v 1.6 2010/06/23 21:21:25 afaq Exp $ "
 
 from WMCore.Database.DBFormatter import DBFormatter
 
 class Insert(DBFormatter):
 
-    def __init__(self, logger, dbi):
+    def __init__(self, logger, dbi, owner):
             DBFormatter.__init__(self, logger, dbi)
 	    self.owner = "%s." % owner if not owner in ("", "__MYSQL__") else ""
 	    
