@@ -3,8 +3,8 @@
 Very simple dbs3 client:
 """
 
-__revision__ = "$Id: DBS3SimpleClient.py,v 1.8 2009/11/29 11:37:54 akhukhun Exp $"
-__version__ = "$Revision: 1.8 $"
+__revision__ = "$Id: dbs.py,v 1.5 2010/08/09 18:20:38 akhukhun Exp $"
+__version__ = "$Revision: 1.5 $"
 
 import json
 import os, sys, socket
@@ -49,7 +49,6 @@ class DBSCLI:
 		
 	except Exception, ex:
 	    raise ex
-
     
 def pretty_print_json(injson):
     """
@@ -59,32 +58,35 @@ def pretty_print_json(injson):
 
 
 if __name__ == "__main__":
-
     URL = os.getenv('DBS_READER_URL', "http://localhost:8585/DBS")
     for opt in sys.argv:
 	if opt.startswith('--url=http'):
 	    URL = opt.split('=')[1]
+    try:
+	CLI = DBSCLI(URL)
+	calls = CLI.callServer('help')
 
-    CLI = DBSCLI(URL)
-    calls = CLI.callServer('help')
-    
-    if len(sys.argv) <=1 or sys.argv[1] not in calls:
-	print "\nUsage: dbs <call> --param1=<param1> --param2=<param2> ..."
-	print "server supports the following api calls:" 
-	for c in calls: print ' ', c
-	print "For more information on a specific api, do : dbs <call> --help \n"
+	if len(sys.argv) <=1 or sys.argv[1] not in calls:
+	    print "\nUsage: dbs <call> --param1=<param1> --param2=<param2> ..."
+	    print "server supports the following api calls:" 
+	    for c in calls: print ' ', c
+	    print "For more information on a specific api, do : dbs <call> --help \n"
+	else: 
+	    call = sys.argv[1]
+	    info = CLI.callServer('help/%s' % call)
+	    parser = OptionParser(usage=info['doc'])
+	    parser.add_option("--url", dest='url')
+	    for p in info['params']:
+		parser.add_option("--%s"%p, dest=p)
+	    opts, args = parser.parse_args()
+	    assert len(args)==1, "Only one positional argument(api call) can be provided"
+	    optdict = opts.__dict__
+	    #clean the dictionary from empty parameters and keys
+	    options = dict((k, optdict[k]) for k in optdict if optdict[k] and not k=='url') 
+	    result = CLI.callServer(call, options)
+	    pretty_print_json(result)
 
-    else: 
-	call = sys.argv[1]
-	info = CLI.callServer('help/%s' % call)
-	parser = OptionParser(usage=info['doc'])
-	parser.add_option("--url", dest='url')
-	for p in info['params']:
-	    parser.add_option("--%s"%p, dest=p)
-	opts, args = parser.parse_args()
-	assert len(args)==1, "Only one positional argument(api call) can be provided"
-	optdict = opts.__dict__
-	#clean the dictionary from empty parameters and keys
-	options = dict((k, optdict[k]) for k in optdict if optdict[k] and not k=='url') 
-	result = CLI.callServer(call, options)
-	pretty_print_json(result)
+    except urllib2.URLError, urlerror:
+	print "Unable to connect to specified URL ($DBS_READER_URL or --url= ) : %s " %URL
+
+
