@@ -124,7 +124,8 @@ class DDServer(DDLogger,Controller):
 
         # data service managers
         self.auth     = DDAuthentication()
-        self.dbsmgr   = DBSManager(self.ddConfig.rs(), self.ddConfig.memcache(),
+        self.dbsmgr   = DBSManager(self.ddConfig.dbsVer(),
+                                   self.ddConfig.rs(), self.ddConfig.memcache(),
                                    self.ddConfig.cachelimit(), verbose)
         self.sdb      = SiteDBManager(verbose)
         self.phedex   = PhedexManager(self.sdb, verbose)
