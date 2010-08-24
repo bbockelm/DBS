@@ -1,6 +1,6 @@
 /**
- $Revision: 1.140 $"
- $Id: DBSApiFileLogic.java,v 1.140 2010/08/09 19:34:42 afaq Exp $"
+ $Revision: 1.141 $"
+ $Id: DBSApiFileLogic.java,v 1.141 2010/08/11 21:01:53 afaq Exp $"
  *
  */
 
@@ -1238,9 +1238,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						valueVec.add(fileID);
 						valueVec.add(lumiID);
 						valueVec.add(runID);
-						valueVec.add(creationDate);
 		                                valueVec.add(cbUserID);
                 		                valueVec.add(lmbUserID);
+						valueVec.add(creationDate);
 
 						if (!tmpRunVector.contains(runID)) tmpRunVector.add(runID);
 
@@ -1248,9 +1248,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						//No Lumi
 						runOnlyValueVec.add(fileID);
 						runOnlyValueVec.add(runID);
-						runOnlyValueVec.add(creationDate);
 		                                runOnlyValueVec.add(cbUserID);
                 		                runOnlyValueVec.add(lmbUserID);
+						runOnlyValueVec.add(creationDate);
 
 						if (!tmpRunVector.contains(runID)) tmpRunVector.add(runID);
 					}
