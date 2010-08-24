@@ -1,3 +1,0 @@
-#/bin/sh
-export CLIENTHOME=$PWD
-export PYTHONPATH=$CLIENTHOME/PythonAPI/lib:$CLIENTHOME/PythonAPI/:$PYTHONPATH
