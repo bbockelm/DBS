@@ -2,8 +2,8 @@
 """
 DBS migration service engine
 """
-__revision__ = "$Id: DBSMigrationEngine.py,v 1.17 2010/08/31 18:27:35 yuyi Exp $"
-__version__ = "$Revision: 1.17 $"
+__revision__ = "$Id: DBSMigrationEngine.py,v 1.18 2010/09/14 14:49:55 yuyi Exp $"
+__version__ = "$Revision: 1.18 $"
 
 import threading
 import logging
@@ -136,7 +136,7 @@ class DBSMigrationEngine(BaseWorkerThread) :
         self.psetHashin     = daofactory(classname='ParameterSetHashe.Insert')
         self.appin          = daofactory(classname='ApplicationExecutable.Insert')
         self.dcin           = daofactory(classname='DatasetOutputMod_config.Insert')
-
+        self.phygrpin       = daofactory(classname='PhysicsGroup.Insert')
 
         # Report that service has started
         #self.insertStatus("STARTED")
