@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.238 $"
- $Id: DBSSql.java,v 1.238 2010/08/13 16:31:28 afaq Exp $"
+ $Revision: 1.239 $"
+ $Id: DBSSql.java,v 1.239 2010/08/13 19:55:15 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -3787,7 +3787,7 @@ public class DBSSql {
 			"(select count(distinct fl.ID) from "+owner()+"Files fl where "+condition+") AS FILE_COUNT, \n " +
 			"(select sum(NumberOfEvents) from "+owner()+"Files fl where "+condition+") AS EVENT_COUNT, \n " +
 			"(select sum(fl.FileSize) from "+owner()+"Files fl where "+condition+") AS TOTAL_SIZE, \n" +
-			"(select count(distinct ID) from "+owner()+"Block where "+blk_condition+ ") AS BLOCK_COUNT";
+			"(select count(distinct ID) from "+owner()+"Block where "+blk_condition+ ") AS BLOCK_COUNT  FROM DUAL";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		ps.setString(columnIndx++, param);
@@ -3796,6 +3796,9 @@ public class DBSSql {
 		ps.setString(columnIndx++, param);
 		ps.setString(columnIndx++, param);
 		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		
+		System.out.println("\n\n" + ps + "\n\n");
+		
 		return ps;
 	}
 
