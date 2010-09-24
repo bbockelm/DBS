@@ -1,6 +1,6 @@
 /**
- $Revision: 1.79 $"
- $Id: DBSApiBlockLogic.java,v 1.79 2010/05/19 21:25:26 afaq Exp $"
+ $Revision: 1.80 $"
+ $Id: DBSApiBlockLogic.java,v 1.80 2010/08/05 21:11:22 afaq Exp $"
  *
  */
 
@@ -55,7 +55,81 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName) throws Exception {
 		listBlocks(conn, out, path, patternBlockName, patternSEName, "NORMAL", "False");
 	}
+
+
 	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName, String userType, String nosite) throws Exception {
+	    
+		if (isNull(nosite)) nosite="False";
+	
+		boolean first = true; 
+		String prevBlock = "";
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		
+		String blockPath =  null;
+		//if block name is provided and it does not contain wild-card
+		//else if path is provided
+		//use the path in the query -- this is the most common query
+		//for other conditions, it SUCKS
+		String blockName = getBlockPattern(patternBlockName);
+		if ( (!isNull(blockName)) && blockName.indexOf('%') == -1 ) {
+		    blockPath = blockName.split("#")[0];
+		} else if (!isNull(path)) {
+		    blockPath = path;
+		}
+		
+		try {
+			ps =  DBSSql.listBlocks(conn, blockPath, blockName, getPattern(patternSEName, "storage_element_name"), this.data.instanceName, nosite);
+			if (DBSConstants.DEBUG) pushQuery(ps);
+			rs =  ps.executeQuery();
+			//System.out.println("userType " + userType);
+			if(isNull(userType)) userType = "NORMAL";
+			while(rs.next()) {
+				String blockID = get(rs, "ID");
+				if( !prevBlock.equals(blockID) && ! first) {
+					out.write(((String) "</block>\n")); 
+				}
+				if( !prevBlock.equals(blockID) || first) {
+					out.write(((String) "<block id='" + get(rs, "ID") +
+						"' path='" + get(rs, "PATH") +
+						"' name='" + get(rs, "NAME") +
+						"' size='" + get(rs, "BLOCKSIZE") +
+						"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
+						"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+						"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+						"' creation_date='" + getTime(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+						"'>\n"));
+				}
+			       if (nosite.equals("False")) {	
+				    if (this.data.instanceName.equals("GLOBAL")) {
+                                       String se = get(rs, "STORAGE_ELEMENT_NAME");
+                                       if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' />\n"));
+				    } else {
+					String role = get(rs, "ROLES");
+					//System.out.println("Role is " + role);
+					if(!isNull(role)) {
+						if(role.equals("Y") || userType.equals("SUPER")) {
+							String se = get(rs, "STORAGE_ELEMENT_NAME");
+							//System.out.println("SE name is " + se);
+							if(!isNull(se)) out.write(((String) "\t<storage_element storage_element_name='" + se +"' role='" + role + "'/>\n"));
+						}
+					}
+				    }
+			        }
+				prevBlock = blockID;
+				first = false;
+			}
+			if (!first) out.write(((String) "</block>\n"));
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
+	
+	public void listBlocksDEPRECATED(Connection conn, Writer out, String path, String patternBlockName, String patternSEName, String userType, String nosite) throws Exception {
 	    
 		if (isNull(nosite)) nosite="False";
 	
@@ -70,7 +144,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 				patternPath = path;
 			}
-			ps =  DBSSql.listBlocks(conn, procDSID, getBlockPattern(patternBlockName), 
+			ps =  DBSSql.listBlocksDEPRECATED(conn, procDSID, getBlockPattern(patternBlockName), 
 									getPattern(patternSEName, "storage_element_name"), this.data.instanceName, nosite);
 			if (DBSConstants.DEBUG) pushQuery(ps);
 			rs =  ps.executeQuery();

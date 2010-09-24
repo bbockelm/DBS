@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.239 $"
- $Id: DBSSql.java,v 1.239 2010/08/13 19:55:15 afaq Exp $"
+ $Revision: 1.240 $"
+ $Id: DBSSql.java,v 1.240 2010/09/20 20:11:27 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2628,7 +2628,87 @@ public class DBSSql {
                 return ps;
         }
 
-	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName, String seName, String isGlobal, String nosite) throws SQLException {
+
+	public static PreparedStatement listBlocks(Connection conn, String path, String blockName, String seName, String isGlobal, String nosite) throws SQLException {
+		String sql = "SELECT DISTINCT b.ID as ID, \n " +
+			"b.Name as NAME, \n" +
+			"b.Path as PATH, \n" +
+			"b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+			"b.BlockSize as BLOCKSIZE, \n" +
+			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
+			"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
+			"b.CreationDate as CREATION_DATE, \n" +
+			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n";
+			if (nosite.equals("False")) {
+			    if (isGlobal.equals("LOCAL")) {
+				sql += "se.SEName as STORAGE_ELEMENT_NAME, \n" +
+					" seb.Roles as ROLES, \n";
+			    } else if (isGlobal.equals("GLOBAL")) {
+				sql += "blkreplica.se_name as STORAGE_ELEMENT_NAME, \n";
+			    }
+			}
+			sql += "percb.DistinguishedName as CREATED_BY, \n" +
+				"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+				"FROM "+owner()+"Block b \n";
+			if (nosite.equals("False")) {
+			    if (isGlobal.equals("LOCAL")) {
+				sql += "LEFT OUTER JOIN "+owner()+"SEBlock seb \n" +
+						" ON seb.BlockID = b.ID \n"+
+					"LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
+						" ON se.ID = seb.SEID \n" ;
+			    } else if (isGlobal.equals("GLOBAL")) {
+				 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replicai3 blkreplica \n" +
+						" ON blkreplica.block_name = b.Name \n";
+				 if (!DBSUtil.isNull(path)) {
+				     sql += " AND blkreplica.DATASET_NAME = ? ";
+				 }
+			    }
+			}
+			sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
+					"ON percb.id = b.CreatedBy \n" +
+				"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
+					"ON perlm.id = b.LastModifiedBy \n";
+		boolean useAnd = false;
+		
+		if(!DBSUtil.isNull(path)) {
+			sql += "WHERE b.PATH = ? \n";
+			useAnd = true;
+		} else if(!seName.equals("%") || !blockName.equals("%") ){//Assumming seName will never be null
+			 sql += "WHERE \n";
+		}
+
+		if(!blockName.equals("%")) {
+			if(useAnd) sql += " AND ";
+			String op="like";
+			if(blockName.indexOf('%') == -1) op="=";
+			sql += "b.Name "+ op +" ? \n";
+			useAnd = true;
+		}
+		if (nosite.equals("False")) {
+		    if(!seName.equals("%")) {
+			if(useAnd) sql += " AND ";
+			String op="like";
+			if (seName.indexOf('%') == -1) op="="; 
+			if (isGlobal.equals("LOCAL")) sql += "se.SEName "+ op +" ? \n";
+			if (isGlobal.equals("GLOBAL")) sql += "blkreplica.se_name "+ op +" ? \n";
+		    }
+		}
+		sql +=	"ORDER BY b.Name DESC";
+                int columnIndx = 1;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if(!DBSUtil.isNull(path)) { 
+		    //twice
+		    ps.setString(columnIndx++, path);
+		    ps.setString(columnIndx++, path);
+		}
+		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
+		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
+		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	
+	public static PreparedStatement listBlocksDEPRECATED(Connection conn, String procDSID, String blockName, String seName, String isGlobal, String nosite) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
 			"b.Path as PATH, \n" +
@@ -2660,12 +2740,10 @@ public class DBSSql {
 						"ON blkreplica.block_name = b.Name \n";
 			    }
 			}
-
 			sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
 					"ON percb.id = b.CreatedBy \n" +
 				"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
 					"ON perlm.id = b.LastModifiedBy \n";
-
 		boolean useAnd = false;
 		if(!DBSUtil.isNull(procDSID)) {
 			sql += "WHERE \n";
@@ -2693,14 +2771,12 @@ public class DBSSql {
 			if (isGlobal.equals("GLOBAL")) sql += "blkreplica.se_name "+ op +" ? \n";
 		    }
 		}
-		
 		sql +=	"ORDER BY b.Name DESC";
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
-		
 		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
