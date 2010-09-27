@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.242 $"
- $Id: DBSSql.java,v 1.242 2010/09/27 08:37:52 afaq Exp $"
+ $Revision: 1.243 $"
+ $Id: DBSSql.java,v 1.243 2010/09/27 09:59:52 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2590,7 +2590,7 @@ public class DBSSql {
 
                 int columnIndx = 1;
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(columnIndx++, blockPath);
+		if (isGlobal.equals("GLOBAL")) ps.setString(columnIndx++, blockPath);
                 ps.setString(columnIndx++, blockName);
 
                 if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
