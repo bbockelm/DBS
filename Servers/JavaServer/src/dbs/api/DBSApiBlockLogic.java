@@ -1,6 +1,6 @@
 /**
- $Revision: 1.82 $"
- $Id: DBSApiBlockLogic.java,v 1.82 2010/09/27 11:20:07 afaq Exp $"
+ $Revision: 1.83 $"
+ $Id: DBSApiBlockLogic.java,v 1.83 2010/09/27 14:00:50 afaq Exp $"
  *
  */
 
@@ -77,7 +77,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		} else if (!isNull(path)) {
 		    blockPath = path;
 		    //this call just validates the dataset and its verify that it exists
-		    (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true)
+		    (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 		}
 		
 		try {
