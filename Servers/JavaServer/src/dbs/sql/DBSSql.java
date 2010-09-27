@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.241 $"
- $Id: DBSSql.java,v 1.241 2010/09/24 16:47:32 afaq Exp $"
+ $Revision: 1.242 $"
+ $Id: DBSSql.java,v 1.242 2010/09/27 08:37:52 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2699,8 +2699,8 @@ public class DBSSql {
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(path)) { 
-		    //twice -- if nosite=False
-		    if (nosite.equals("False")) ps.setString(columnIndx++, path);
+		    //twice -- if nosite=False, on global
+		    if (nosite.equals("False") && isGlobal.equals("GLOBAL") ) ps.setString(columnIndx++, path);
 		    ps.setString(columnIndx++, path);
 		}
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
