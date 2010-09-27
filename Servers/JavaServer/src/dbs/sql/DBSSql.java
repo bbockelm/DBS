@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.243 $"
- $Id: DBSSql.java,v 1.243 2010/09/27 09:59:52 afaq Exp $"
+ $Revision: 1.244 $"
+ $Id: DBSSql.java,v 1.244 2010/09/27 10:09:25 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2574,7 +2574,7 @@ public class DBSSql {
                                         "LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
 	                                        "ON se.ID = seb.SEID \n" ;
                         } else if (isGlobal.equals("GLOBAL")) {
-                                 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica3 blkreplica \n" +
+                                 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica blkreplica \n" +
                                                 "ON blkreplica.block_name = b.Name \n";
 						sql += " AND blkreplica.DATASET_NAME = ? ";
                         }
@@ -2659,7 +2659,7 @@ public class DBSSql {
 					"LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
 						" ON se.ID = seb.SEID \n" ;
 			    } else if (isGlobal.equals("GLOBAL")) {
-				 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica3 blkreplica \n" +
+				 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica blkreplica \n" +
 						" ON blkreplica.block_name = b.Name \n";
 				 if (!DBSUtil.isNull(path)) {
 				     sql += " AND blkreplica.DATASET_NAME = ? ";

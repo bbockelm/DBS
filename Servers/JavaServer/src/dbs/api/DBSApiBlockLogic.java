@@ -1,6 +1,6 @@
 /**
- $Revision: 1.81 $"
- $Id: DBSApiBlockLogic.java,v 1.81 2010/09/24 16:47:31 afaq Exp $"
+ $Revision: 1.82 $"
+ $Id: DBSApiBlockLogic.java,v 1.82 2010/09/27 11:20:07 afaq Exp $"
  *
  */
 
@@ -76,8 +76,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		    blockPath = blockName.split("#")[0];
 		} else if (!isNull(path)) {
 		    blockPath = path;
-		     blockPath = getPattern(blockPath, "path");
-		     if ( blockPath.indexOf('%') != -1 ) throw new DBSException("Validation Failure", "1009", "Dataset cannot contain wild cards for this API");
+		    //this call just validates the dataset and its verify that it exists
+		    (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true)
 		}
 		
 		try {
