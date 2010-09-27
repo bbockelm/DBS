@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.240 $"
- $Id: DBSSql.java,v 1.240 2010/09/20 20:11:27 afaq Exp $"
+ $Revision: 1.241 $"
+ $Id: DBSSql.java,v 1.241 2010/09/24 16:47:32 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -2528,12 +2528,12 @@ public class DBSSql {
         }
 
         public static PreparedStatement listBlockProvenance(Connection conn, String blockName, String parentOrChild, String isGlobal) throws SQLException {
+		String blockPath = blockName.split("#")[0];
 		String joinStr = null;
 		String whereStr = null;
 		String op="like";
 		if (blockName.indexOf("%") == -1 ) op="=";
                 if (parentOrChild.equals("PARENT")) {
-
                         joinStr = "ON bp.ItsParent = b.ID \n";
                         whereStr = "WHERE bp.ThisBlock = \n"+
 					"(SELECT blk.ID FROM \n"+
@@ -2574,8 +2574,9 @@ public class DBSSql {
                                         "LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
 	                                        "ON se.ID = seb.SEID \n" ;
                         } else if (isGlobal.equals("GLOBAL")) {
-                                 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica blkreplica \n" +
+                                 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica3 blkreplica \n" +
                                                 "ON blkreplica.block_name = b.Name \n";
+						sql += " AND blkreplica.DATASET_NAME = ? ";
                         }
 
                         sql += "LEFT OUTER JOIN "+owner()+"Person percb \n" +
@@ -2589,6 +2590,7 @@ public class DBSSql {
 
                 int columnIndx = 1;
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(columnIndx++, blockPath);
                 ps.setString(columnIndx++, blockName);
 
                 if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -2657,7 +2659,7 @@ public class DBSSql {
 					"LEFT OUTER JOIN "+owner()+"StorageElement se \n" +
 						" ON se.ID = seb.SEID \n" ;
 			    } else if (isGlobal.equals("GLOBAL")) {
-				 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replicai3 blkreplica \n" +
+				 sql += "LEFT OUTER JOIN cms_transfermgmt.v_dbs_block_replica3 blkreplica \n" +
 						" ON blkreplica.block_name = b.Name \n";
 				 if (!DBSUtil.isNull(path)) {
 				     sql += " AND blkreplica.DATASET_NAME = ? ";
@@ -2697,13 +2699,14 @@ public class DBSSql {
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(path)) { 
-		    //twice
-		    ps.setString(columnIndx++, path);
+		    //twice -- if nosite=False
+		    if (nosite.equals("False")) ps.setString(columnIndx++, path);
 		    ps.setString(columnIndx++, path);
 		}
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		if (DBSConstants.DEBUG) DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		//System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
