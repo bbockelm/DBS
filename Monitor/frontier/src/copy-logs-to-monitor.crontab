@@ -1,1 +1,0 @@
-5 * * * * cd /home/dbfrontier/local/etc; ./copy-logs-to-monitor.sh >>copy-logs-to-monitor.log 2>&1
