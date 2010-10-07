@@ -7,7 +7,7 @@
 #
 
 # system modules
-import os, sys, string, stat, re, types
+import os, sys, string, re, types
 from utils.DDExceptions import *
 
 class DDConfig:
@@ -27,11 +27,6 @@ class DDConfig:
     self.configFile=uFileName
     if not os.path.isfile(uFileName):
        raise DDException(args="The '%s' config file does not exists"%uFileName)
-    mode = os.stat(uFileName)[stat.ST_MODE]
-    if mode!=33152:
-       # mode is not -rw-------
-       print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
-       os.chmod(uFileName,0600)
     iList=['engine','user','password','verbose','dbname','url','iface','rs','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary','memcache','cachelimit']
     self.configDict={}
     for read in open(uFileName).readlines():
