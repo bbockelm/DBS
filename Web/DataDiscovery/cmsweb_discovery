@@ -16,6 +16,9 @@ RETVAL=$?
 port=`cat DBSDD.conf | grep -i "port=" | tail -1 | sed "s/PORT=//g"`
 url=`cat DBSDD.conf  | grep -i "^URL=" | tail -1 | sed "s/URL=//g"`
 pidfile=`cat DBSDD.conf | grep -i "pidfile=" | tail -1 | sed "s/PIDFILE=//g"`
+if  [ -z $pidfile ]; then
+    pidfile='pid.txt'
+fi
 pid=`ps auxwwwww | grep cmsWeb | grep DDServer | grep -v grep | grep ${port} | awk '{print $2}'`
 base=cmsweb_discovery
 cmd="cmsWeb --base-url=${url} --port=${port} --default-page /DDServer --pid-file $pidfile"
