@@ -118,9 +118,6 @@ class DDServer(DDLogger,Controller):
                 printExcept()
             pass
         self.ddConfig  = DDConfig()
-        DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDServer",verbose)
-        setSQLAlchemyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
-        setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
 
         # data service managers
         self.auth     = DDAuthentication()
