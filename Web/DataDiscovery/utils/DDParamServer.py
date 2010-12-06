@@ -17,10 +17,9 @@ import httplib, urllib, inspect, urllib2
 from   utils.DDUtil   import *
 from   utils.DDConfig import *
 
-class DDParamServer(DDLogger): 
+class DDParamServer(): 
     def __init__(self,server,verbose=0):
         self.ddConfig   = DDConfig()
-        DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDParamServer",verbose)
         self.verbose = verbose
         self.secure  = 0
         if server.find("https://")!=-1:

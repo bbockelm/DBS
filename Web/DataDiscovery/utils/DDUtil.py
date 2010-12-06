@@ -825,56 +825,11 @@ class DDLogger:
   """
      DDLogger class
   """
-  def __init__(self,dir='/tmp',name="Logger",verbose=0):
+  def __init__(self, verbose=0):
       """
          Logger constructor. 
-         @type  name: string
-         @param name: name of the logger, default "Logger"
-         @type  verbose: boolean or int
-         @param : level of verbosity 
-         @rtype : none
-         @return: none
       """
-      if verbose==1:
-         self.logLevel = logging.INFO
-      elif verbose==2:
-         self.logLevel = logging.DEBUG
-      else:
-         self.logLevel = logging.NOTSET
-      self.name = name
-      self.dir = dir
-      self.logName = os.path.join(dir,'DDServer.log') 
-      try:
-         if not os.path.isdir(self.dir):
-            os.mkdirs(self.dir)
-         # check if we can create log file over there
-         if not os.path.isfile(self.logName):
-            f=open(self.logName,'a')
-            f.close()
-      except:
-         msg="Not enough permissions to create a DDServer log file in '%s'"%self.dir
-         raise Exception(msg)
-      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'midnight', 1, 7 )
-      formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
-      hdlr.setFormatter( formatter )
-      self.loggerHandler=hdlr
-      self.setLogger()
-
-  def setLevel(self,level):
-      self.verbose=level
-      if level==1:
-         self.logLevel = logging.INFO
-      elif level==2:
-         self.logLevel = logging.DEBUG
-      else:
-         self.logLevel = logging.NOTSET
-      self.setLogger()
-
-  def getHandler(self):
-      return self.loggerHandler
-
-  def getLogLevel(self):
-      return self.logLevel
+      self.verbose = verbose
 
   def writeLog(self,msg):
       """
@@ -886,19 +841,6 @@ class DDLogger:
       """
       if  self.verbose:
           print msg
-
-  def setLogger(self):
-      """
-         Set logger settings, style, format, verbosity.
-         @type  self: class object
-         @param self: none 
-         @rtype : none
-         @return: none
-      """
-      # Set up the logger with a suitable format
-      self.logger = logging.getLogger(self.name)
-      self.logger.setLevel(self.logLevel)
-      self.logger.addHandler(self.loggerHandler)
 
 def setSQLAlchemyLogger(hdlr,logLevel):
     # set up logging for SQLAlchemy

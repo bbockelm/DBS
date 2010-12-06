@@ -4,7 +4,7 @@
 
 import time
 import traceback
-from   utils.DDUtil import singleList, DDLogger, parseCreatedBy, timeGMT
+from   utils.DDUtil import singleList, parseCreatedBy, timeGMT
 from   utils.DDUtil import sizeFormat, addToDict, convertDBS2DDTime, where_cond
 try:
     # Python 2.5
@@ -13,7 +13,7 @@ except:
     # prior requires elementtree
     import elementtree.ElementTree as ET
 
-class DDHelper(DDLogger): 
+class DDHelper(): 
     """
       Helper class to retrieve DBS information
     """
@@ -21,7 +21,6 @@ class DDHelper(DDLogger):
         """
            DDHelper constructor
         """
-        DDLogger.__init__(self, ddconfig.loggerDir(), "DDHelper", verbose)
         self.dbsmgr      = dbsmgr
         self.verbose     = verbose
 

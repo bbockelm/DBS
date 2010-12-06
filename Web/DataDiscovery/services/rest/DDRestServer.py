@@ -21,11 +21,6 @@ class DDRestServer(DDLogger,Controller):
         self.name="DDRestServer"
         if context:
             Controller.__init__ (self, context, __file__)
-            DDLogger.__init__(self,self.ddConfig.loggerDir(),self.name,verbose)
-            setSQLAlchemyLogger(super(DDRestServer,self).getHandler(),
-                                super(DDRestServer,self).getLogLevel())
-            setCherryPyLogger(  super(DDRestServer,self).getHandler(),
-                                super(DDRestServer,self).getLogLevel())
         rest_service = Service()
         rest_service.rest = RestService()
         self.rest = rest_service.rest

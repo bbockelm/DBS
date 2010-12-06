@@ -68,7 +68,7 @@ except:
 # webtools framework
 from utils.webtools_modules import *
 
-class DDServer(DDLogger,Controller): 
+class DDServer(Controller): 
     """
        DBS Data discovery server class.
        It uses CherryPy web application framework 
@@ -186,7 +186,7 @@ class DDServer(DDLogger,Controller):
                print "Read from config"
         except:
             if self.verbose:
-               self.writeLog(getExcept())
+               traceback.print_exc()
             raise traceback.format_exc()
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
@@ -235,7 +235,6 @@ class DDServer(DDLogger,Controller):
            self.ddServices[self.dbsdd]={}
         totTime = time.time()-t0
         print "+++ DDServer started in %s sec" % totTime
-        self.writeLog("DDServer init %s sec" % totTime)
 
     def readyToRun(self):
         opts=self.context.CmdLineArgs().opts
@@ -303,11 +302,11 @@ class DDServer(DDLogger,Controller):
         # get request data and produce an ElementTree that we can work with.
         request = cherrypy.request
         if self.verbose==2:
-           self.writeLog(printDict(request.__dict__))
+           print request.__dict__
         
         response = cherrypy.response
         if self.verbose==2:
-           self.writeLog(printDict(response.__dict__))
+           print response.__dict__
         if request.headers.has_key('Content-Length'):
            clen = int(request.headers.get('Content-Length'))
         else:
@@ -347,9 +346,9 @@ class DDServer(DDLogger,Controller):
         return page
 
     def parseWSInput(self,**kwargs):
-        self.writeLog("Input params="+repr(kwargs))
+        print "Input params="+repr(kwargs)
         xml_body=kwargs['xml_body']
-        self.writeLog("%s %s"%(type(xml_body),repr(xml_body)))
+        print "%s %s"%(type(xml_body),repr(xml_body))
         xmlItems=xml_body.getchildren()
         xmlDict={}
         for item in xmlItems:
@@ -368,7 +367,7 @@ class DDServer(DDLogger,Controller):
         nsets = self.helper.nDatasets(dbsInst)
         msg="""<NumberOfDatasets><int>%s</int></NumberOfDatasets>"""%nsets
         page=self.soapMsg(msg)
-        self.writeLog(page)
+        print page
         return page
     wsGetNDatasets.exposed=True
 
@@ -392,7 +391,7 @@ class DDServer(DDLogger,Controller):
       </Dataset>
         """%(key,prdDate,cBy,nblks,blkSize,nFiles,nEvts)
         page=self.soapMsg(msg)
-        self.writeLog(page)
+        print page
         return page
     wsGetDatasetSummary.exposed=True
 
@@ -586,7 +585,7 @@ class DDServer(DDLogger,Controller):
             userName = decryptCookie (cookie["dn"].value, self.securityApi)
         except:
             if self.verbose:
-               self.writeLog(getExcept())
+               traceback.print_exc()
             pass
         return userName
 
@@ -861,7 +860,7 @@ class DDServer(DDLogger,Controller):
             page=str(t)
             pass
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     rssGenerator.exposed=True
 
@@ -1094,7 +1093,7 @@ class DDServer(DDLogger,Controller):
            t = templateUserNav(searchList=[nameSearch]).respond()
         page+= str(t)
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     genEmptyUserNavigator.exposed=True 
     
@@ -1118,7 +1117,7 @@ class DDServer(DDLogger,Controller):
         if  int(ajax)==1:
             page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     genUserNavigator.exposed=True 
 
@@ -1185,7 +1184,7 @@ class DDServer(DDLogger,Controller):
             pass
         page+=endAjaxMsg
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     genNavigatorMenuDict.exposed = True
 
@@ -1643,7 +1642,7 @@ class DDServer(DDLogger,Controller):
            self.setContentType('xml')
            return input
         if self.verbose:
-           self.writeLog(input)
+           print input
         xmlOutput=input.replace("<","&lt;").replace(">","&gt;").replace("\n","<br/>")
         page+="<p>The following DBS-Mart XML file has been created:</p>"
         page+="""<div class="yellow_box">%s</div>"""%xmlOutput
@@ -1863,7 +1862,7 @@ class DDServer(DDLogger,Controller):
             page+=str(t)
         page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getBlocksInfo.exposed = True 
 
@@ -1985,7 +1984,7 @@ class DDServer(DDLogger,Controller):
         else:
            page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getRuns.exposed = True 
 
@@ -2102,7 +2101,7 @@ class DDServer(DDLogger,Controller):
         else:
            page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getRunsFromRange.exposed = True 
 
@@ -2150,7 +2149,7 @@ class DDServer(DDLogger,Controller):
             page+="</select>\n"
         except:
             if self.verbose:
-               self.writeLog(getExcept())
+               traceback.print_exc()
             printExcept()
             pass
         page+="</response></ajax-response>"
@@ -2196,8 +2195,6 @@ All LFNs in a block
                 page+="""<option value="%s">%s</option>\n"""%(lName,lName)
             page+="</select>\n"
         except:
-            if self.verbose:
-               self.writeLog(getExcept())
             printExcept()
             pass
         page+="</response></ajax-response>"
@@ -2346,8 +2343,6 @@ All LFNs in a block
             try:
                 lfnList=self.helper.getLFNsFromSite(dbsInst,site,datasetPath,run)
             except:
-                if self.verbose:
-                   self.writeLog(getExcept())
                 printExcept()
                 page+="No LFNs found for site '%s'\n"%site
                 pass
@@ -2511,7 +2506,7 @@ All LFNs in a block
         else:
            page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getFileBlocks.exposed=True
 
@@ -2542,7 +2537,7 @@ All LFNs in a block
         page+= str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getBlocksFromSite.exposed=True
 
@@ -2570,7 +2565,7 @@ All LFNs in a block
         page+="</response></ajax-response>"
         print page
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getBlocksFromDataset.exposed=True
 
@@ -2591,7 +2586,7 @@ All LFNs in a block
             page+="</response>\n"
         page+="</ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getAllPrimaryDatasets.exposed=True
 
@@ -2624,7 +2619,7 @@ All LFNs in a block
         page+="</response>\n"
         page+="</ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getPrimaryDatasets.exposed=True
 
@@ -2641,7 +2636,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getBranches.exposed=True
 
@@ -2662,7 +2657,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getGroups.exposed=True
 
@@ -2686,7 +2681,7 @@ All LFNs in a block
         page+="""<input id="kw_maxRun_holder" name="maxRun" value="%s" size="20" />"""%rMax
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getRunRange.exposed=True
 
@@ -2708,7 +2703,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getSites.exposed=True
 
@@ -2729,7 +2724,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getTiers.exposed=True
 
@@ -2766,7 +2761,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getTriggerLines.exposed=True
 
@@ -2790,7 +2785,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getSoftwareReleases.exposed=True
 
@@ -2813,7 +2808,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getPrimaryDSTypes.exposed=True
 
@@ -2839,8 +2834,6 @@ All LFNs in a block
             t = templateProvenance(searchList=[nameSpace]).respond()
             page+= str(t)
         except:
-            if self.verbose:
-               self.writeLog(getExcept())
             printExcept()
             page="No provenance information found at this time"
         return page
@@ -2861,7 +2854,7 @@ All LFNs in a block
         else:
             page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getDatasetProvenance.exposed=True
 
@@ -2883,7 +2876,7 @@ All LFNs in a block
         page+= str(t)
         page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getDatasetChildren.exposed=True
         
@@ -2962,8 +2955,6 @@ All LFNs in a block
            res=DD_INSTANCE.insert().execute(dbsinstance=dbsInst)
            dbsid=res.last_inserted_ids()[0]
         except:
-           if self.verbose:
-              self.writeLog(getExcept())
            printExcept()
            c = DD_USER.select(and_(DD_INSTANCE.c.dbsinstance==dbsInst)).execute()
            r = c.fetchone()
@@ -3016,10 +3007,7 @@ All LFNs in a block
                         order_by=[desc(DD_HISTORY.c.history_date),desc(DD_HISTORY.c.history_time)]).execute()
             cList=c.fetchall()
         except:
-            if self.verbose:
-               self.writeLog(getExcept())
-            if not self.quiet:
-               printExcept()
+            printExcept()
             pass
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
@@ -3038,7 +3026,7 @@ All LFNs in a block
             page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     historySearch.exposed=True
 
@@ -3055,10 +3043,7 @@ All LFNs in a block
                         order_by=[desc(DD_HISTORY.c.history_date),desc(DD_HISTORY.c.history_time)]).execute()
             cList=c.fetchall()
         except:
-            if self.verbose:
-               self.writeLog(getExcept())
-            if not self.quiet:
-               printExcept()
+            printExcept()
             pass
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
@@ -3077,7 +3062,7 @@ All LFNs in a block
             page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getHistory.exposed=True
 
@@ -3090,8 +3075,6 @@ All LFNs in a block
         try:
             self.storeHistory(dbsInst,userId,actionString,alias)
         except:
-            if self.verbose:
-               self.writeLog(getExcept())
             printExcept()
             pass
         # AJAX wants response as "text/xml" type
@@ -3108,7 +3091,7 @@ All LFNs in a block
 #        page+= str(t)
 #        page+="</response></ajax-response>"
 #        if self.verbose==2:
-#           self.writeLog(page)
+#           print page
 #        return page
     history.exposed=True
 
@@ -3155,7 +3138,7 @@ All LFNs in a block
         else:
            page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getAppConfigs.exposed=True
 
@@ -3207,7 +3190,7 @@ All LFNs in a block
         page+= msg
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     checkUser.exposed=True
 
@@ -3227,7 +3210,7 @@ All LFNs in a block
 
         page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getDataDescription.exposed=True
 
@@ -3250,8 +3233,6 @@ All LFNs in a block
                 t = templateTable(searchList=[nameSpace]).respond()
                 p=str(t)
             except:
-                if self.verbose:
-                   self.writeLog(getExcept())
                 printExcept()
                 p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
         else:
@@ -3264,7 +3245,7 @@ All LFNs in a block
            page+=p
            page+=self.genBottomHTML()
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
 
     def getLFN_Branches(self,dbsInst,lfn,ajax=0,userMode='user',**kwargs):
@@ -3293,7 +3274,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getFloatBox.exposed=True
 
@@ -3322,7 +3303,7 @@ All LFNs in a block
         if int(ajax):
            page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getRss.exposed=True
 
@@ -3339,7 +3320,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     makeLine.exposed=True
 
@@ -3352,7 +3333,7 @@ All LFNs in a block
         page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     makeSelect.exposed=True
 
@@ -3414,8 +3395,6 @@ All LFNs in a block
             c=sel.execute()
             cList=c.fetchall()
         except:
-            if self.verbose:
-               self.writeLog(getExcept())
             printExcept()
             pass
         page=""
@@ -3429,7 +3408,7 @@ All LFNs in a block
         page="""<ajax-response><response type="object" id="treeViewInfo">
 %s</response></ajax-response>"""%self.genTreeElement(parent,node)
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     addTreeElement.exposed=True
 
@@ -3467,7 +3446,7 @@ All LFNs in a block
             page+="Phedex information is not available at this time"
             pass
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     phedexStatus.exposed=True 
 
@@ -3502,7 +3481,7 @@ All LFNs in a block
                page+="</response>\n"
         page+="</ajax-response>"
         if self.verbose==2:
-           self.writeLog(page)
+           print page
         return page
     getRunDBInfo.exposed=True 
 
@@ -3528,7 +3507,7 @@ All LFNs in a block
             page+="</response>"
             page+="</ajax-response>"
         if  self.verbose==2:
-            self.writeLog(page)
+            print page
         return page
     getIntegratedLumi.exposed=True
 
@@ -3580,7 +3559,7 @@ All LFNs in a block
             page+="</response>"
             page+="</ajax-response>"
         if  self.verbose==2:
-            self.writeLog(page)
+            print page
 #        print page
         return page
     getDQInfo.exposed=True
@@ -4188,39 +4167,24 @@ All LFNs in a block
         except:
             result = self.dbsmgr.exe(dbsInst, userInput, fromRow, fromRow+limit)
         return result
-#            if  self.verbose:
-#                traceback.print_exc()
-#            self.writeLog(getExcept())
-#            time.sleep(2)
-#            try:
-#                return self._summaryQuery(dbsInst, userInput, fromRow, limit, sortKey, sortOrder)
-#            except:
-#                traceback.print_exc()
-#                self.writeLog(getExcept())
-#                raise
 
     def _summaryQuery(self, dbsInst, userInput, fromRow, limit, sortKey="", sortOrder=""):
         if  (not limit and not fromRow) or limit==-1:
             limit=""
             fromRow=""
         res = self.dbsmgr.summary(dbsInst, userInput, fromRow, fromRow+limit, sortKey, sortOrder)
-#        res = self.dbsmgr.exe(dbsInst, userInput, fromRow, fromRow+limit)
         return res
 
     def exeQuery(self, dbsInst, userInput, fromRow, limit):
         try:
             return self._exeQuery(dbsInst, userInput, fromRow, limit)
         except:
-            if  self.verbose:
-                traceback.print_exc()
-            self.writeLog(getExcept())
+            traceback.print_exc()
             time.sleep(2)
             try:
                 return self._exeQuery(dbsInst, userInput, fromRow, limit)
             except:
-                if  self.verbose:
-                    traceback.print_exc()
-                self.writeLog(getExcept())
+                traceback.print_exc()
                 raise
 
     def _exeQuery(self, dbsInst, userInput, fromRow, limit):
@@ -4243,18 +4207,14 @@ All LFNs in a block
         try:
             return self._countQuery(dbsInst, userInput)
         except:
-            if  self.verbose:
-                traceback.print_exc()
-            self.writeLog(dbsInst)
-            self.writeLog(userInput)
-            self.writeLog(getExcept())
+            traceback.print_exc()
+            print "dbsInst", dbsInst
+            print "userInput", userInput
             time.sleep(2)
             try:
                 return self._countQuery(dbsInst, userInput)
             except:
-                if  self.verbose:
-                    traceback.print_exc()
-                self.writeLog(getExcept())
+                traceback.print_exc()
                 raise
 
     def _countQuery(self, dbsInst, userInput):
@@ -4383,10 +4343,8 @@ All LFNs in a block
                      ]
         msg="+++ CherryPy serer configuration:"
         print msg
-        self.writeLog(msg)
         for var in serverVars:
             msg="    %s: %s" % (var, getattr(cherrypy.server,var))
-            self.writeLog(msg)
             print msg
 
     def setConfig(self,base=""):

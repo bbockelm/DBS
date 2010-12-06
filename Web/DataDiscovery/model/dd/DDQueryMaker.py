@@ -33,7 +33,7 @@ from QueryBuilder.Schema import Schema
 #    pass
 import __builtin__
 
-class DDQueryMaker(DDLogger): 
+class DDQueryMaker(): 
   """
       DDQueryMaker class
   """
@@ -55,7 +55,6 @@ class DDQueryMaker(DDLogger):
       self.verbose     = verbose
       self.html        = 0
       self.ddrules     = DDRules(self.verbose)
-      DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDQueryMaker",self.verbose)
       self.dbManager   = dbManager
       self.initDBS(self.dbsInstance)
 
@@ -70,9 +69,6 @@ class DDQueryMaker(DDLogger):
              msg+= dbs+"\n"
          raise msg
       self.dbsInstance = dbsInst
-#      self.writeLog("DBS Instnace: %s"%dbsInst)
-#      con = self.connectToDB(dbsInst,iface)
-#      self.closeConnection(con)
 
   def closeConnection(self,con):
       # if SQLAlchemy uses pool for engine, then it should correctly handle all connections
@@ -118,7 +114,7 @@ class DDQueryMaker(DDLogger):
       except:
           msg=getExcept()
           res=[msg]
-          self.writeLog(msg)
+          print msg
           pass
       return res
 
@@ -231,7 +227,6 @@ class DDQueryMaker(DDLogger):
           return query
       except:
           msg=getExcept()
-          self.writeLog(msg)
           traceback.print_exc()
           raise "Fail in DDQueryMaker::makeJoinQuery"+traceback.format_exc()
 
@@ -303,7 +298,6 @@ class DDQueryMaker(DDLogger):
           return query
       except:
           msg=getExcept()
-          self.writeLog(msg)
           traceback.print_exc()
           raise "Fail in DDQueryMaker::makeQuery"+traceback.format_exc()
       
@@ -391,7 +385,6 @@ class DDQueryMaker(DDLogger):
             raise "Unknown operator",op
       except:
          msg=getExcept()
-         self.writeLog(msg)
          traceback.print_exc()
          raise "Fail to build query for '%s', '%s', '%s', case='%s'"%(str(sel),tc,val,case)
 
@@ -482,8 +475,6 @@ class DDQueryMaker(DDLogger):
           print msg
           print sel.__dict__
           traceback.print_exc()
-          msg+=getExcept()
-          self.writeLog(msg)
           raise "Fail in countSel"
       self.closeConnection(con)
       return res
@@ -634,8 +625,6 @@ class DDQueryMaker(DDLogger):
           msg+="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
-          msg+=getExcept()
-          self.writeLog(msg)
           raise "Fail in executeDBSQuery"
       oList=[]
       tList=[]
@@ -668,8 +657,6 @@ class DDQueryMaker(DDLogger):
           msg+=str(result)
           print msg
           traceback.print_exc()
-          msg+=getExcept()
-          self.writeLog(msg)
           raise "Fail in executeDBSCountQuery"
       # end of number of results
       self.closeConnection(con)
@@ -684,8 +671,6 @@ class DDQueryMaker(DDLogger):
           msg+="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
-          msg+=getExcept()
-          self.writeLog(msg)
           raise "Fail in executeSingleQuery"
       oList=[]
       tList=[]
@@ -736,8 +721,6 @@ class DDQueryMaker(DDLogger):
           msg+="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
-          msg+=getExcept()
-          self.writeLog(msg)
           raise "Fail in executeQueryFromView"
       oList=[]
       tList=[]
@@ -828,8 +811,6 @@ class DDQueryMaker(DDLogger):
           msg+="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
-          msg+=getExcept()
-          self.writeLog(msg)
           raise "Fail in executeQueryFromTable"
       oList=[]
       tList=[]
@@ -869,8 +850,6 @@ class DDQueryMaker(DDLogger):
           msg+="\n### Query:\n"+str(sel)
           print msg
           traceback.print_exc()
-          msg+=getExcept()
-          self.writeLog(msg)
           raise "Fail in getSummary"
       oList=[]
       for item in result:
