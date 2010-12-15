@@ -128,7 +128,7 @@ class DDServer(Controller):
         self.phedex   = PhedexManager(self.sdb, verbose)
         self.sitecfg  = SiteConfigManager(self.sdb, verbose)
 
-        self.phedexServer= DDParamServer(server="cmsweb.cern.ch",verbose=verbose)
+        self.phedexServer= DDParamServer(server="https://cmsweb.cern.ch",verbose=verbose)
         self.PhedexURL="https://cmsweb.cern.ch/phedex/prod/Request::Create"
         self.dbsglobal = self.ddConfig.dbsprimary()
 #        self.dbsglobal = DBSGLOBAL
@@ -1988,13 +1988,18 @@ class DDServer(Controller):
         return page
     getRuns.exposed = True 
 
-    def getRunsFromRange(self,dbsInst,primD,primType,minRun,maxRun,userMode="user",_idx=0,ajax=0,pagerStep=RES_PER_PAGE,**kwargs): 
+    def getRunsFromRange(self,dbsInst,dataset,minRun,maxRun,userMode="user",_idx=0,ajax=0,pagerStep=RES_PER_PAGE,**kwargs): 
         """
            @type  dbsInst: string
            @param dbsInst: user selection of DBS menu
            @rtype : string
            @return: returns HTML code
         """
+        if  not dataset:
+            page  = self.genTopHTML(userMode=userMode)
+            page += "<p>You must specify dataset</p>"
+            page += self.genBottomHTML()
+            return page
         if  int(maxRun) - int(minRun) > 100:
             page  = self.genTopHTML(userMode=userMode)
             page += "<p>You requested more then 100 runs. Such query takes too much"
@@ -2016,7 +2021,7 @@ class DDServer(Controller):
 
             nResults=0
             try:    
-               res=self.helper.getRuns(dbsInst, dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
+               res=self.helper.getRuns(dbsInst,dataset,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
                nResults=res[0] # res=nRuns, minRun, maxRun
             except:
                msg="No runs found for your request:<br />"
@@ -2035,7 +2040,7 @@ class DDServer(Controller):
 
             # the progress bar for all results
             if _idx:
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,primD,primType,minRun,maxRun,_idx-1,userMode,pagerStep)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;dataset=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,dataset,minRun,maxRun,_idx-1,userMode,pagerStep)
             tot=_idx
             for x in xrange(_idx,_idx+GLOBAL_STEP):
                 if nResults>x*pagerStep:
@@ -2044,9 +2049,9 @@ class DDServer(Controller):
                 ref=index+1
                 if index==_idx:
                    ref="""<span class="gray_box">%s</span>"""%(index+1)
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,primD,primType,minRun,maxRun,index,userMode,pagerStep,ref)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;dataset=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,dataset,minRun,maxRun,index,userMode,pagerStep,ref)
             if  nResults>(_idx+1)*pagerStep:
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,primD,primType,minRun,maxRun,_idx+1,userMode,pagerStep)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;dataset=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,dataset,minRun,maxRun,_idx+1,userMode,pagerStep)
 
             if _idx and (_idx*pagerStep)>nResults:
                return "No data found for this request"
@@ -2059,13 +2064,13 @@ class DDServer(Controller):
                          'pagerId'  : pagerId,
                          'nameForPager': "rows",
                          'pList'    : [],
-                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
+                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,dataset,minRun,maxRun,_idx,ajax,userMode,pagerId)
                         }
             t = templatePagerStep(searchList=[_nameSpace]).respond()
             pagerPage=str(t)
 
             nRun = self.helper.getNRuns(dbsInst, minRun,maxRun)
-            runList,runDBInfoDict=self.helper.getRuns(dbsInst, dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
+            runList,runDBInfoDict=self.helper.getRuns(dbsInst,dataset,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
             if len(runList):
                 page+=pagerPage
                 nameSpace = {
@@ -2086,10 +2091,9 @@ class DDServer(Controller):
                 page+=str(t)
                 pagerId+=1
                 _nameSpace['pagerId']=pagerId
-                _nameSpace['onchange']="javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode,pagerId)
+                _nameSpace['onchange']="javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,dataset,minRun,maxRun,_idx,ajax,userMode,pagerId)
                 t = templatePagerStep(searchList=[_nameSpace]).respond()
                 page+=str(t)
-#                page+=pagerPage
         except:
             t=self.errorReport(dbsInst, "Fail in getRunsFromRange function")
             page+=str(t)

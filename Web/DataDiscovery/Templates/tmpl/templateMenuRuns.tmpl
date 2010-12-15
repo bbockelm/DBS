@@ -21,7 +21,8 @@
 </div>
 </td>
 <td>
-<select name="dbsInst" id="kw_dbsInstSelector" onchange="javascript:resetRunNav()" style="$style">
+##<select name="dbsInst" id="kw_dbsInstSelector" onchange="javascript:resetRunNav()" style="$style">
+<select name="dbsInst" id="kw_dbsInstSelector" style="$style">
 #for dbs in $dbsList
 <option value="$dbs">$dbs</option>
 #end for
@@ -33,33 +34,14 @@
 
 <tr>
 <td align="right">
-<div id="primDSTypeDef">
-<b>Data types</b>
+<div id="datasetDef">
+<b>Dataset</b>
 </div>
 </td>
 <td>
 
-<div id="kw_primType_holder">
-<select name="primType" id="kw_primType" style="$style" onchange="ajaxGetRunRange()">
-<option value="Any">Any</option>
-</select>
-</div>
-
-</td>
-</tr>
-
-<tr>
-<td align="right">
-<div id="primDef">
-<b>Primary Dataset</b>
-</div>
-</td>
-<td>
-
-<div id="kw_prim_holder">
-<select name="primD" id="kw_prim" style="$style" onchange="ajaxGetRunRange()">
-<option value="Any">Any</option>
-</select>
+<div id="kw_dataset_holder">
+<input name="dataset" value="" size="80"/>
 </div>
 
 </td>
@@ -87,7 +69,7 @@
 </td>
 <td>
 <input type="submit" value="Find" id='userRunId' />
-<input type="reset" value="Reset" onclick="resetRunNav()" />
+##<input type="reset" value="Reset" onclick="resetRunNav()" />
 </td>
 </tr>
 
@@ -100,10 +82,8 @@
 var tooltip;
 tooltip="<p>List of known DBS instances.</p>";
 MakeTooltip("t_dbsInst","dbsInstDef",tooltip);
-tooltip="<p>This is a list of primary datasets known in DBS. In a case of real data it is trigger lines, in a case of MC it is MC generators.</p> <p><b>Example:</b> mc-onsel-120_PU_Zee </p>";
-MakeTooltip("t_primDef","primDef",tooltip);
-tooltip="<p>List of know primary datasets types, e.g. mc for Monte Carlo, cosmic for cosmic data, raw for raw data, data for real processed data.</p>";
-MakeTooltip("t_primType","primDSTypeDef",tooltip);
+tooltip="<p>Dataset path, e.g. /Mu/Run2010B-Dec4ReReco_v1/RECO</p>";
+MakeTooltip("t_dataset","datasetDef",tooltip);
 tooltip="<p>Here you can specify you desired run range. If you see N/A that means there is no runs available for your selection above.</p>";
 MakeTooltip("t_runRange","runRangeDef",tooltip);
 </script>

@@ -1453,9 +1453,9 @@ function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx,pagerId) {
    var url='getFileBlocks?dbsInst='+dbsInst+'&site='+site+'&ajax='+ajax+'&userMode='+userMode+'&idx='+idx+'&pagerStep='+pagerStep;
    load(url);
 }
-function LoadGetRunsFromRange(dbsInst,primD,primType,minRun,maxRun,idx,ajax,userMode,pagerId) {
+function LoadGetRunsFromRange(dbsInst,dataset,minRun,maxRun,idx,ajax,userMode,pagerId) {
    var pagerStep=$('pagerStep'+pagerId).value;
-   var url='getRunsFromRange?dbsInst='+dbsInst+'&primD='+primD+'&primType='+primType+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
+   var url='getRunsFromRange?dbsInst='+dbsInst+'&dataset='+dataset+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
 function LoadGetRuns(dbsInst,dataset,idx,ajax,userMode,pagerId) {

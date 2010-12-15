@@ -374,9 +374,12 @@ def sizeFormat(i):
     except:
        return "N/A"
     for x in ['','KB','MB','GB','TB','PB']:
-        if num<1024.:
+#        if num<1024.:
+#            return "%3.1f%s" % (num, x)
+#        num /=1024.
+        if num<1000.:
             return "%3.1f%s" % (num, x)
-        num /=1024.
+        num /=1000.
 
 def formatLumi(int_lumi,html=1):
     try:
