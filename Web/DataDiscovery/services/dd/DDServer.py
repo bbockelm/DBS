@@ -2000,11 +2000,28 @@ class DDServer(Controller):
             page += "<p>You must specify dataset</p>"
             page += self.genBottomHTML()
             return page
+        pat = re.compile("/.*/.*/[A-Z].*")
+        if  not pat.match(dataset):
+            page  = self.genTopHTML(userMode=userMode)
+            page += "<p>Wrong dataset pattern</p>"
+            page += self.genBottomHTML()
+            return page
+        pat = re.compile("[1-9][0-9]+")
+        if  not pat.match(minRun) or not pat.match(maxRun):
+            page  = self.genTopHTML(userMode=userMode)
+            page += "<p>Wrong run number pattern</p>"
+            page += self.genBottomHTML()
+            return page
         if  int(maxRun) - int(minRun) > 100:
             page  = self.genTopHTML(userMode=userMode)
             page += "<p>You requested more then 100 runs. Such query takes too much"
             page += " time in DBS to proceed. Please re-evaluate your request.</p>"
             page += "<p>minRun=%s, maxRun=%s</p>" % (minRun, maxRun)
+            page += self.genBottomHTML()
+            return page
+        if  int(maxRun) < int(minRun):
+            page  = self.genTopHTML(userMode=userMode)
+            page += "<p>Wrong run range, max run number greater then min run number</p>"
             page += self.genBottomHTML()
             return page
         _idx=int(_idx)
