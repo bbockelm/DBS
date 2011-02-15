@@ -6,6 +6,7 @@ import sys
 import os
 import unittest	
 import validate as valid
+from operator import itemgetter, attrgetter
 from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
@@ -24,11 +25,12 @@ path = sys.argv[3]
 srcURL = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
 #dstURL = "http://cmssrv48.fnal.gov:8383/DBSlocal/servlet/DBSServlet"
 #dstURL = "http://vocmsvm05.cern.ch:8880/INT2RG_admin/servlet/DBSServlet"
-dstURL = "http://cmssrv17.fnal.gov:8989/DBSTEST/servlet/DBSServlet"
+#dstURL = "http://cmssrv17.fnal.gov:8989/DBSTEST/servlet/DBSServlet"
+dstURL = "http://lnxcu9.lns.cornell.edu:8080/DBS/servlet/DBSServlet"
 #path = "/DY_mumu_10/CMSSW_1_3_1-Spring07-1349/GEN-SIM-DIGI-RECO"
 #path = "/Cosmics/Commissioning08-MW32_v1/RAW"
 #path = "/RelValSinglePiPt100/CMSSW_3_0_0_pre7_IDEAL_30X_v1/GEN-SIM-RECO"
-path = "/RelValSinglePiPt100/CMSSW_3_0_0_pre7_IDEAL_30X_v1/GEN-SIM-RECO"
+path = "/W1Jets_ptW-0to100_TuneZ2_7TeV-alpgen-tauola/Fall10-START38_V12-v2/GEN-SIM-RAW"
 
 try:
 	optManager  = DbsOptionParser()
@@ -42,8 +44,9 @@ try:
 	block = ""
 	if len(sys.argv) > 4 :
 		block = sys.argv[4]
-
-	api.migrateDatasetContents(srcURL, dstURL, path, block , False, True)
+                api.dbsMigrateBlock(srcURL, dstURL, block)
+        else:
+	        api.dbsMigrateDataset(srcURL, dstURL, path)
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
@@ -62,6 +65,7 @@ dstApi = DbsApi(args)
 pathTokens = path.split("/")
 primName = pathTokens[1]
 procName = pathTokens[2]
+tierName = pathTokens[3]
 
 class Test_001(unittest.TestCase):
 	def testPrimary(self):
@@ -73,14 +77,19 @@ class Test_001(unittest.TestCase):
 class Test_002(unittest.TestCase):
 	def testProcessed(self):
 		print 'testProcessed'
-		procSrcList = srcApi.listProcessedDatasets(patternPrim = primName, patternProc = procName)
-		procDstList = dstApi.listProcessedDatasets(patternPrim = primName, patternProc = procName, patternDT=pathTokens[3])
-		#print processedInDBS
-		print '\n\n\nprocSrcList',procSrcList
-		print '\n\n\nprocDstList',procDstList
+		procSrcList = srcApi.listProcessedDatasets(patternPrim = primName, patternProc = procName, patternDT=tierName)
+		procDstList = dstApi.listProcessedDatasets(patternPrim = primName, patternProc = procName, patternDT=tierName)
 		valid.assertProc(self, procSrcList[0], procDstList[0])
-		for i in range(len(procSrcList[0]['AlgoList'])):
-			valid.assertAlgo(self, procSrcList[0]['AlgoList'][i], procDstList[0]['AlgoList'][i])
+
+		algoSrcList = procSrcList[0]['AlgoList']
+		algoDstList = procDstList[0]['AlgoList']
+		algoSrcList.sort(key=lambda obj: obj['ParameterSetID']['Hash'])
+		algoDstList.sort(key=lambda obj: obj['ParameterSetID']['Hash'])
+		algoSrcList.sort(key=lambda obj: obj['ApplicationFamily'])
+		algoDstList.sort(key=lambda obj: obj['ApplicationFamily'])
+
+		for i in range(len(algoSrcList)):
+			valid.assertAlgo(self, algoSrcList[i], algoDstList[i])
 
 			
 		parentSrcList = srcApi.listDatasetParents(path)
@@ -140,6 +149,8 @@ class Test_005(unittest.TestCase):
 
 			algoSrcList = fileSrcList[i]['AlgoList']
 			algoDstList = fileDstList[i]['AlgoList']
+			algoSrcList.sort(key=lambda obj: obj['ParameterSetID']['Hash'])
+			algoDstList.sort(key=lambda obj: obj['ParameterSetID']['Hash'])
 			algoSrcList.sort(key=lambda obj: obj['ApplicationFamily'])
 			algoDstList.sort(key=lambda obj: obj['ApplicationFamily'])
 			#print algoSrcList
