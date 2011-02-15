@@ -382,7 +382,7 @@ class testDBS(unittest.TestCase):
             dbs_query.append(itemlist)
 
         # call executeSummary
-        query ="find dataset where " + "dataset like * order by dataset asc"
+        query ="find dataset where " + "dataset like * order by dataset desc"
         ###########query ="find dataset where dataset like *CRUZET4*"
         params['query'] = query
         params['api'] = 'executeSummary'
