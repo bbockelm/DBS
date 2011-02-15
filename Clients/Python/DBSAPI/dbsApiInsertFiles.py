@@ -161,6 +161,7 @@ def dbsApiImplInsertFiles(self, dataset=None, files=[], block=None):
        xmlinput += " number_of_events='"+str(file.get('NumberOfEvents', ''))+"'"
        xmlinput += " size='"+str(file.get('FileSize', ''))+"'"
        xmlinput += " file_status='"+file.get('Status', '')+"'" 
+       xmlinput += " status='"+file.get('Status', '')+"'" 
        xmlinput += " type= '"+file.get('FileType', '')+"'"
        xmlinput += " validation_status='"+file.get('ValidationStatus', '')+"'"
        xmlinput += " queryable_meta_data='"+file.get('QueryableMetadata', '')+"'"
