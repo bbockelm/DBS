@@ -129,7 +129,7 @@ fileCkecksum2 = 'test_cksum_2_' + ran
 fileAdler322 = 'test_adler32_2_' + ran
 fileMd52 = 'test_md5_2_' + ran
 fileSize2 = 122657
-fileStatus2 = validStatus
+fileStatus2 = invalidStatus
 fileValidStatus2 = validStatus
 fileType2 = 'STREAMER'
 
@@ -518,7 +518,7 @@ def assertProc(test, procIn1, procIn2):
 def assertRun(test, runIn1, runIn2):
 	test.assertEqual(runIn1['RunNumber'], runIn2['RunNumber'])
 	test.assertEqual(runIn1['NumberOfEvents'], runIn2['NumberOfEvents'])
-	test.assertEqual(runIn1['NumberOfLumiSections'], runIn2['NumberOfLumiSections'])
+#	test.assertEqual(runIn1['NumberOfLumiSections'], runIn2['NumberOfLumiSections'])
 	test.assertEqual(runIn1['TotalLuminosity'], runIn2['TotalLuminosity'])
 	test.assertEqual(runIn1['StoreNumber'], runIn2['StoreNumber'])
 	test.assertEqual(runIn1['StartOfRun'], runIn2['StartOfRun'])
