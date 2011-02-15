@@ -72,7 +72,7 @@ find file,run,lumi where ads.name in ( MyAds, Myades )
 find ads,file where dataset = /TestPrimary_001_20080501_10h06m06s/TestProcessed_20080501_10h06m06s/GEN-SIM
 find ads, ads.def, file
 #find dataset.parent where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM and file.createdate > 0
-find lumi.startevnum, lumi.endevnum, lumi.id where file.createdate > 0
+# find lumi.startevnum, lumi.endevnum, lumi.id where file.createdate > 0
 find file where lumi.evnum  = 150
 find lumi, dataset where lumi.evnum  = 150
 find file, file.createdate where  file.createdate = 2007-04-20 
@@ -85,7 +85,7 @@ find run, run.createdate where run.createdate = 2008-05-01
 find run, run.createdate where run.createdate = 2008
 find run, run.createdate where run.createdate < 2008
 find run, run.createdate where run.createdate > 2008
-find run,file  order by file
+# find run,file  order by file
 find run,file where dataset = /test_primary_001/TestProcessedDS002/GEN-SIM  order by file
 find run where primds = test_primary_001
 find count(file), dataset where dataset like *
@@ -123,7 +123,7 @@ find dataset  where site like castorsrm.cr.cnaf*
 find dataset  where site = castorsrm.cr.cnaf.infn.it
 find dataset  where site = test_seM_ee563854-0ed2-4010-82ba-e94e7868cbff
 find dataset, site
-find dataset where run between 51437 and 51450 or run between 0 and 30000
+find dataset where run between 51437 and 51450 or run between 30000 and 31000
 find dataset where dataset.id between 1 and 2 or dataset like *on*
 find block, block.size,  block.createdate, block.moddate, block.createby, block.modby where dataset = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO
 find block.size,  block.createdate, block.moddate, block.createby, block.modby where block = /CSA07Muon/CMSSW_1_6_7-CSA07-Tier0-A1-Chowder/RECO#01123fd3-5486-41fe-8b90-7dbb8fbe69b8
@@ -174,4 +174,4 @@ find max(run.starttime)
 find primds, primds.createby where primds.createby = *Sekhri*
 find file where file.createby = null
 find block where site = null
-find config.content
+find config.content where dataset = /W1Jets_ptW-0to100_TuneZ2_7TeV-alpgen-tauola/Fall10-START38_V12-v2/GEN-SIM-RAW
