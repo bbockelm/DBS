@@ -1,6 +1,6 @@
 /**
- $Revision: 1.141 $"
- $Id: DBSApiFileLogic.java,v 1.141 2010/08/11 21:01:53 afaq Exp $"
+ $Revision: 1.142 $"
+ $Id: DBSApiFileLogic.java,v 1.142 2010/08/24 16:45:17 afaq Exp $"
  *
  */
 
@@ -1084,7 +1084,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         String fileID = "";
 			//Using get from APILogic, so that it can call checkWord on lfn, else all other places can use DBSUtil.get
                         String lfn = get(file, "lfn", true);
-                        String fileStatus = DBSUtil.get(file, "file_status").toUpperCase();
+                        String fileStatus = DBSUtil.get(file, "status").toUpperCase();
+                        if (isNull(fileStatus)) fileStatus = DBSUtil.get(file, "file_status").toUpperCase();
 
                         String type = DBSUtil.get(file, "type").toUpperCase();
 
