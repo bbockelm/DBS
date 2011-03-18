@@ -8,7 +8,6 @@ import re
 import time
 import types
 import traceback
-import memcache
 try:
     # Python 2.5
     import xml.etree.ElementTree as ET
@@ -16,7 +15,7 @@ except:
     # prior requires elementtree
     import elementtree.ElementTree as ET
 
-from   utils.DDUtil     import findInString, genkey, natsort24, timeGMT
+from   utils.DDUtil     import findInString, natsort24, timeGMT
 
 # DBS imports
 from   RS.Wrapper import RegService
@@ -134,7 +133,7 @@ class DBSManager(object):
     """
     DBS manager which construct DBS API based on DBS RS service
     """
-    def __init__(self, dbs_ver, use_rs=0, cachelist=[], limit=600, verbose = None):
+    def __init__(self, dbs_ver, use_rs=0, verbose = None):
         self.dbsconfig={'mode':'POST', 'retry':2}
         self.verbose = verbose
         self.dbsapi  = {}
@@ -145,10 +144,6 @@ class DBSManager(object):
             self.init_DB(dbs_ver)
         else:
             self.init_RS()
-        if  self.verbose:
-            print "\n+++ Using memcached servers", cachelist
-        self.cache   = memcache.Client(cachelist, debug=verbose)
-        self.limit   = int(limit)
 
     # This will go away once RS is commissioned
     def init_DB(self, dbs_ver):
@@ -279,70 +274,27 @@ class DBSManager(object):
         """
         return dbsquery(self.queryxml(dbsalias, userinput, q_start, q_end))
 
-    def getfromcache(self, key, key1, res):
-        if  self.verbose>1:
-            print "\n\n### DBSManager::exe uses cache"
-        rowlist = ['%s' % i for i in range(0, res)]
-        rowdict = self.cache.get_multi(rowlist, key_prefix=key)
-        titles = self.cache.get(key1)
-        keys = natsort24(rowdict.keys())
-        result = [rowdict[k] for k in keys]
-        return result, titles
-
-    def storetocache(self, key, result, key1, titles):
-        rowdict = {}
-        rowid = 0
-        for row in result:
-            rowkey = '%s' % rowid
-            rowdict[rowkey] = row
-            rowid += 1
-        self.cache.set_multi(rowdict, time=self.limit, key_prefix=key)
-        self.cache.set(key, rowid, self.limit)
-        self.cache.set(key1, titles, self.limit)
-
     def summary(self, dbsalias, userinput, q_start = "", q_end = "", 
                 sort_key = "", sort_order = ""):
         """
         Return SQL summary query output for given user input
         """
-        # ask restults from cache
-        key = genkey('summary:%s:%s:%s:%s:%s:%s' \
-                % (dbsalias, userinput, q_start, q_end, sort_key, sort_order))
-        key1= genkey('titles:%s:%s:%s:%s:%s:%s' \
-                % (dbsalias, userinput, q_start, q_end, sort_key, sort_order))
-        res = self.cache.get(key)
-        if  res and type(res) is types.IntType:
-            return self.getfromcache(key, key1, res)
-
         dbsapi = self.getapi(dbsalias)
         data = dbsapi.executeSummary(userinput, begin = q_start, end = q_end,
                         sortKey = sort_key, sortOrder = sort_order)
         result, titles = dbsparser(data, 'summary_view')
         if  not result[0]: # fail to get summary view info
             result, titles = dbsparser(data)
-
-        # add results to cache
-        self.storetocache(key, result, key1, titles)
-
         return result, titles
 
     def count(self, dbsalias, userinput):
         """
         Execute DBS query for given user input and return total number of found results
         """
-        # ask restults from cache
-        key = genkey('count:%s:%s' % (dbsalias, userinput))
-        res = self.cache.get(key)
-        if  res:
-            return int(res)
-
         dbsapi = self.getapi(dbsalias)
         dbsxml = dbsapi.countQuery(userinput)
         result, titles = dbsparser(dbsxml)
         res = int(result[0][0])
-
-        # add results to cache
-        self.cache.set(key, res, self.limit)
         return res
 
     def exexml(self, dbsalias, userinput, q_start = "", q_end = ""):
@@ -358,13 +310,6 @@ class DBSManager(object):
         Execute DBS query for given user input and return results in a list format
         returns two lists, one with results and another with titles
         """
-        # ask restults from cache
-        key = genkey('%s:%s:%s:%s' % (dbsalias, userinput, q_start, q_end))
-        key1= genkey('titles:%s:%s:%s:%s' % (dbsalias, userinput, q_start, q_end))
-        res = self.cache.get(key)
-        if  res and type(res) is types.IntType:
-            return self.getfromcache(key, key1, res)
-
         if  not dbsalias or dbsalias.lower() == 'all':
             for alias in self.aliases():
                 result, titles = dbsparser(
@@ -374,9 +319,6 @@ class DBSManager(object):
         else:
             result, titles = dbsparser(
                                 self.exexml(dbsalias, userinput, q_start, q_end))
-
-        # add results to cache
-        self.storetocache(key, result, key1, titles)
 
         return result, titles
 

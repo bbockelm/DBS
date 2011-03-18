@@ -27,7 +27,7 @@ class DDConfig:
     self.configFile=uFileName
     if not os.path.isfile(uFileName):
        raise DDException(args="The '%s' config file does not exists"%uFileName)
-    iList=['engine','user','password','verbose','dbname','url','iface','rs','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary','memcache','cachelimit']
+    iList=['engine','user','password','verbose','dbname','url','iface','rs','querylimit','querythreshold','loggerdir','masthead','mastfooter','admin_url','admin_ver','dbs_url','dbs_ver','ns','global_dd','dbsprimary']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -51,15 +51,6 @@ class DDConfig:
     if not self.configDict.has_key('ns'):
        return ""
     return self.configDict['ns']
-  def memcache(self):
-    if not self.configDict.has_key('memcache'):
-       return []
-    cachelist = self.configDict['memcache'].split(",")
-    return cachelist
-  def cachelimit(self):
-    if not self.configDict.has_key('cachelimit'):
-       return 0
-    return self.configDict['cachelimit']
   def adminUrl(self):
     if not self.configDict.has_key('admin_url'):
        return ""
