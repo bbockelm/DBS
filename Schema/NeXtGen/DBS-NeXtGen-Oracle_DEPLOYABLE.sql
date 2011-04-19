@@ -1834,7 +1834,7 @@ PROMPT AUTO INC TRIGGER FOR Trigger for Table: timelog
 -- AUTO INC TRIGGER FOR reasoncode.ID using SEQ seq_reasoncode
 
 PROMPT AUTO INC TRIGGER FOR Trigger for Table: reasoncode
- CREATE OR REPLACE TRIGGER reasoncode_TRIG before insert on reasoncode    for each row begin     if inserting then       if :NEW.ID is null then          select seq_reasoncode.nextval into :NEW.ID from dual;       end if;    end if; end;
+ CREATE OR REPLACE TRIGGER reasoncode_TRIG before insert on reasoncode    for each row begin     if inserting then       if :NEW.ReasonCode is null then          select seq_reasoncode.nextval into :NEW.ReasonCode from dual;       end if;    end if; end;
 /
 
 -- ====================================================
