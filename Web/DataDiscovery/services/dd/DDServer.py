@@ -4345,7 +4345,6 @@ All LFNs in a block
     def outputConfigMap(self):
         """Log server configuration parameters"""
         serverVars = [
-#                      'httpservers',
                       'instance',
                       'interrupt',
                       'max_request_body_size',
@@ -4356,7 +4355,6 @@ All LFNs in a block
                       'socket_host',
                       'socket_port',
                       'socket_file',
-                      'reverse_dns',
                       'socket_queue_size',
                       'thread_pool',
                      ]
