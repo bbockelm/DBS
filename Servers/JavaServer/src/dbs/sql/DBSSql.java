@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.245 $"
- $Id: DBSSql.java,v 1.245 2010/09/27 14:00:51 afaq Exp $"
+ $Revision: 1.246 $"
+ $Id: DBSSql.java,v 1.246 2011/07/15 19:11:20 dsr Exp $"
  *
  */
 package dbs.sql;
@@ -1898,10 +1898,8 @@ public class DBSSql {
 			"ps.Version as PS_VERSION, \n" +
 			"ps.Type as PS_TYPE, \n" +
 			"ps.Annotation as PS_ANNOTATION, \n" +
-			"ps.Content as PS_CONTENT, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
-			"blk.Path as PATH \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM "+owner()+"ProcessedDataset procds \n" +
 			"JOIN "+owner()+"PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
@@ -1928,9 +1926,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN "+owner()+"Person percb \n" +
 				"ON percb.id = procds.CreatedBy \n" +
 			"LEFT OUTER JOIN "+owner()+"Person perlm \n" +
-				"ON perlm.id = procds.LastModifiedBy \n" +
-			"LEFT OUTER JOIN "+owner()+"Block blk \n" +
-				"ON blk.Dataset = procds.id \n";
+				"ON perlm.id = procds.LastModifiedBy \n";
 
 		boolean useAnd = false;
 		sql += "WHERE \n";

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.95 $"
- $Id: DBSApiProcDSLogic.java,v 1.95 2010/08/13 16:31:28 afaq Exp $"
+ $Revision: 1.96 $"
+ $Id: DBSApiProcDSLogic.java,v 1.96 2010/08/13 19:55:15 afaq Exp $"
  *
  */
 
@@ -99,7 +99,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				String exe = get(rs, "APP_EXECUTABLE_NAME");
 				String ver = get(rs, "APP_VERSION");
 				String pset = get(rs, "PS_HASH");
-				String path =  get(rs, "PATH");
+				String path = "/"+get(rs, "PRIMARY_DATASET_NAME")
+							+"/"+get(rs, "PROCESSED_DATASET_NAME")
+								+"/"+get(rs, "DATA_TIER");
+				//String path =  get(rs, "PATH");
 				String status = get(rs, "STATUS");
 				if(apiVersion.compareTo("DBS_2_0_9") < 0) {
 					if (status.equals("VALID-RO")) 
