@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.244 $"
- $Id: DBSSql.java,v 1.244 2010/09/27 10:09:25 afaq Exp $"
+ $Revision: 1.245 $"
+ $Id: DBSSql.java,v 1.245 2010/09/27 14:00:51 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1877,7 +1877,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listProcessedDatasets(Connection conn, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, boolean all) throws SQLException {
-		String sql = "SELECT procds.id as id, \n" +
+		String sql = "SELECT DISTINCT procds.id as id, \n" +
 			"primds.Name as PRIMARY_DATASET_NAME, \n" +
 			"dt.Name as DATA_TIER, \n" +
 			"procds.name as PROCESSED_DATASET_NAME, \n" +
