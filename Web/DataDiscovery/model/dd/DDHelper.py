@@ -510,7 +510,6 @@ class DDHelper():
         result = self.queryDBS(dbsInst, query)
         oList  = []
         for item in result:
-            print item
             softRel, name, content, ver, psType, ann, cDate, cBy, mDate, mBy=item
             if not name: continue
             content = str(content) # since content is LOB object
