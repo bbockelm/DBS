@@ -42,8 +42,34 @@ function footerMenuText() {
    return _footerMenuText('$host','$userMode');
 }
 </script>
+
+<!-- Redirection to DAS -->
+<script type="text/javascript">
+var RedirCookie = "DBSDD_KeepInDbs";
+var days = 3;
+
+function GetRedirCookie() {
+   return (document.cookie.indexOf(RedirCookie) > -1);
+}
+
+function SetRedirCookie() {
+   var exp = '';
+   var now = new Date();
+   then = now.getTime() + (days * 24 * 60 * 60 * 1000);
+   now.setTime(then);
+   exp = '; expires=' + now.toGMTString();
+   document.cookie = RedirCookie + '=' + "dbs" + exp;
+   return true;
+}
+
+function CallDasRedir() {
+   if (! GetRedirCookie())
+      location.href = "/das/";
+}
+</script>
+
 </head>
-<body onload="setGreeting();ajaxInit('$dbsGlobal');loadMasthead();initialize_dhtmlHistory();$onload" id="content">
+<body onload="setTimeout('CallDasRedir()', 10000);setGreeting();ajaxInit('$dbsGlobal');loadMasthead();initialize_dhtmlHistory();$onload" id="content">
 
 <noscript>
 <h1 class="box_red">Warning:</h1>
@@ -85,8 +111,16 @@ use a different browser with JavaScript support to use this page.
 -->
 <div style="background-color: white; color: red; font-weight:bold; font-size:12pt; width:600px; left:25%; margin: auto; border: 1px dashed #004080;" align="center">
 <br />
-Data Discovery service will be deprecated in late Oct. 2011, please switch to
-<a href="https://cmsweb.cern.ch/das/">DAS</a>
-<br/>
+<script type="text/javascript">
+if (GetRedirCookie()) {
+   document.write('Data Discovery service will be deprecated in Dec. 2011.');
+   document.write('<br />Please switch to <a href="/das/">DAS</a>.');
+} else {
+   document.write('You will be redirected to <a href="/das/">DAS</a> in 10 seconds. ');
+   document.write('<br />Click <a onclick="SetRedirCookie()" href="/dbs_discovery/">here</a> ');
+   document.write('to use Data Discovery instead.');
+}
+</script>
+<br /><br />
 </div>
 <!-- end of templateTop.tmpl -->
