@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
-                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
-<ShortName>DBSSearch</ShortName>
-<Description>CMS DBS Search</Description>
-<Image type="image/png">http://cmsweb.cern.ch/dbs_discovery/images/CMSLogo.png</Image>
-<Url type="text/html" method="get" template="http://cmsweb.cern.ch/dbs_discovery/aSearch?userInput={searchTerms}"/>
-<moz:SearchForm>http://cmsweb.cern.ch/dbs_discovery/aSearch</moz:SearchForm>
-</OpenSearchDescription>
