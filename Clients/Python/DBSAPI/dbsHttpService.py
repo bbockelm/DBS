@@ -15,13 +15,16 @@ except Exception, ex:
                 raise DbsToolError(args=exmsg, code="9999")
 
 from dbsExecHandler import DbsExecHandler
-import os, re, string, urllib, urllib2, gzip, time, socket
 
-import os, re, string, xml.sax, xml.sax.handler
+import os, re, string, urllib, urllib2, gzip, time, socket
+import xml.sax, xml.sax.handler
+import platform
+
 from xml.sax.saxutils import escape, unescape
 from xml.sax import SAXParseException
 try:
   from socket import ssl, sslerror, error
+  import ssl
 except:
   print "Unable to import socket modules, \nStatement failed: \
 	\n      from socket import ssl, sslerror, error \
@@ -244,6 +247,21 @@ class DbsHttpService:
        		self.conto = "\n\nhttps://" + self.Host + ":" + self.Port  + request_string + "\n\n"
 		key, cert = self.getKeyCert()
 		self.conn = httplib.HTTPSConnection(self.Host, int(self.Port), key, cert)
+
+		# need to separate connection creation and connection handshake, socket doesn't
+		# allow that and SSL doesn't make it easy
+		sock = socket.create_connection((self.conn.host, self.conn.port), self.conn.timeout)
+		self.conn.sock = ssl.wrap_socket(sock, self.conn.key_file, self.conn.cert_file,
+						 do_handshake_on_connect=False)
+		try:
+			self.conn.sock._sslobj.dont_insert_empty_fragments()
+		except AttributeError:
+		        vt = platform.python_version_tuple()
+			if vt[0] == '2' and ((vt[1] == '6' and vt[2] >= '8') or
+					     (vt[1] == '7' and vt[2] >= '3')):
+				print "Unable to reset SSL empty fragment insertion, HTTPS may hang"
+
+		self.conn.sock._sslobj.do_handshake()
 
        params = urllib.urlencode(args)
 
