@@ -15,13 +15,16 @@ except Exception, ex:
                 raise DbsToolError(args=exmsg, code="9999")
 
 from dbsExecHandler import DbsExecHandler
-import os, re, string, urllib, urllib2, gzip, time, socket
 
-import os, re, string, xml.sax, xml.sax.handler
+import os, re, string, urllib, urllib2, gzip, time, socket
+import xml.sax, xml.sax.handler
+import platform
+
 from xml.sax.saxutils import escape, unescape
 from xml.sax import SAXParseException
 try:
   from socket import ssl, sslerror, error
+  import ssl
 except:
   print "Unable to import socket modules, \nStatement failed: \
 	\n      from socket import ssl, sslerror, error \
@@ -30,10 +33,6 @@ except:
   pass
 
 import urlparse
-
-##import logging
-##from dbsLogger import **
-
 
 http_responses = {
     100: ('Continue', 'Request received, please continue'),
@@ -133,7 +132,7 @@ class DbsHttpService:
 	    self.UserID = Args['userID']
 	    self.retry_att = 0
             if Args.has_key('retry'):
-               self.retry = Args['retry']
+               self.retry = int(Args['retry'])
             else:
                self.retry = None
 
@@ -175,7 +174,7 @@ class DbsHttpService:
    # All looks OK, still doesn't gurantee proxy's validity etc.
    return key, proxy
    
-  def _call(self, args, typ, repeat = 3, delay = 2 ):
+  def _call(self, args, typ, repeat = 0, delay = 2 ):
 	  if self.retry and not self.retry_att:
             self.retry_att=1
             repeat=self.retry
@@ -185,7 +184,7 @@ class DbsHttpService:
 	  except DbsConnectionError ,  ex:
 		  ret = self.callAgain(args, typ, repeat, delay)
 		  if ret in ("EXP"):
-			exmsg ="Failed to connect in 03 Attempts\n"
+			exmsg ="Failed to connect in %s retry attempt(s)\n" % self.retry
 			exmsg+=str(ex)
 			raise DbsConnectionError(args=exmsg, code=5999)
 		  else:
@@ -193,16 +192,16 @@ class DbsHttpService:
 	  except DbsDatabaseError, ex:
                   ret = self.callAgain(args, typ, repeat, delay)
                   if ret in ("EXP"):
-                        exmsg ="Failed to connect in 03 Attempts\n"
+                        exmsg ="Failed to connect in %s retry attempt(s)\n" % self.retry
                         exmsg+=str(ex)
                         raise DbsConnectionError(args=exmsg, code=5999)
                   else:
                         return ret
 		  
   def callAgain(self, args, typ, repeat, delay):
-	  print "I will retry in %s seconds" % delay
 
 	  if(repeat!=0):
+		  print "I will retry in %s seconds" % delay
 		  self.Host = self.ipList[repeat % len(self.ipList)]
 		  repeat -= 1
 		  time.sleep(delay)
@@ -249,8 +248,21 @@ class DbsHttpService:
 		key, cert = self.getKeyCert()
 		self.conn = httplib.HTTPSConnection(self.Host, int(self.Port), key, cert)
 
-       #####logging.log(DBSINFO, self.conto)	
- 
+		# need to separate connection creation and connection handshake, socket doesn't
+		# allow that and SSL doesn't make it easy
+		sock = socket.create_connection((self.conn.host, self.conn.port), self.conn.timeout)
+		self.conn.sock = ssl.wrap_socket(sock, self.conn.key_file, self.conn.cert_file,
+						 do_handshake_on_connect=False)
+		try:
+			self.conn.sock._sslobj.dont_insert_empty_fragments()
+		except AttributeError:
+		        vt = platform.python_version_tuple()
+			if vt[0] == '2' and ((vt[1] == '6' and vt[2] >= '8') or
+					     (vt[1] == '7' and vt[2] >= '3')):
+				print "Unable to reset SSL empty fragment insertion, HTTPS may hang"
+
+		self.conn.sock._sslobj.do_handshake()
+
        params = urllib.urlencode(args)
 
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", 
@@ -259,9 +271,7 @@ class DbsHttpService:
        if typ == 'POST':
           result = self.conn.request(typ, request_string, params, headers)  
        else:
-          result = self.conn.request(typ, request_string, {}, headers )
-
-       #####logging.log(DBSINFO, request_string)
+          result = self.conn.request(typ, request_string, "", headers )
 
        response = self.conn.getresponse() 
 
@@ -285,7 +295,6 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       #####logging.log(DBSDEBUG, data)
 
     except sslerror, ex:
 	msg  = "HTTPS Error, Unable to make API call"
@@ -357,12 +366,10 @@ class DbsHttpService:
                 warn  = "\n DBS Raised a warning message"
                 warn += "\n Waring Message: " + attrs['message']
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
-                #####logging.log(DBSWARNING, warn)
 
 	     if name =='info':
                 info = "\n DBS Info Message: %s " %attrs['message']
 		info += "\n Detail: %s " %attrs['detail']+"\n"
-                #####logging.log(DBSINFO, info)
 		
 #      print data
       tokenToSearch = 'took too long to execute'
