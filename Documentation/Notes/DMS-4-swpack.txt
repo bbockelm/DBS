@@ -1,6 +1,0 @@
-** Software distribution
-
-DAR vs. RPMs vs. Pacman.  Installing software at sites.  Special
-production needs?  Interaction with other aspects?  Use one mechanism
-for distributing files to sites?
-
