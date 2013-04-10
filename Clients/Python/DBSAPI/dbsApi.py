@@ -8,6 +8,7 @@
 
 # system modules
 import os, re, string, socket, xml.sax, xml.sax.handler
+import pwd
 import base64
 from xml.sax.saxutils import escape
 from cStringIO import StringIO
@@ -29,7 +30,7 @@ import inspect
 from dbsUtil import *
 
 #DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
-__version__ = "$Name:  $"
+__version__ = "$Name: DBS_2_1_9 $"
 
 class DbsApi(DbsConfig):
   """
@@ -71,7 +72,7 @@ class DbsApi(DbsConfig):
     #Store info about current user
     if not self.configDict.has_key('userID'):
     	#Args['userID'] = os.getlogin()+'@'+socket.gethostname()
-    	Args['userID'] = os.environ['USER']+'@'+socket.gethostname()
+    	Args['userID'] = os.environ.get('USER', pwd.getpwuid(os.geteuid()).pw_name)+'@'+socket.gethostname()
     # Connect to the Server proxy
     self._server = ""
     if not self.configDict.has_key('mode'):
