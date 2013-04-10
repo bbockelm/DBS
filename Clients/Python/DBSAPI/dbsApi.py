@@ -30,7 +30,7 @@ import inspect
 from dbsUtil import *
 
 #DBS Api version, set from the CVS checkout tag, for HEAD version, set it in dbs.config
-__version__ = "$Name: DBS_2_1_9 $"
+__version__ = "$Name: DBS_2_1_6 $"
 
 class DbsApi(DbsConfig):
   """
